@@ -3,13 +3,16 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+module
 
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # Results about compactness properties for intervals in complete lattices
 -/
+
+@[expose] public section
 
 variable {ι α : Type*} [CompleteLattice α]
 
@@ -36,7 +39,7 @@ instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
     change sSup (((↑) : Iic a → α) '' (range f)) = sSup s
     congr
     ext b
-    simpa using hx b
+    simpa [f] using hx b
 
 end Set.Iic
 
@@ -62,6 +65,6 @@ theorem complementedLattice_of_complementedLattice_Iic
   have hu₁ : u ⊆ {a | IsAtom a} := by
     rintro a ⟨-, ⟨i, rfl⟩, ⟨-, ⟨hi, rfl⟩, ha : a ∈ t i hi⟩⟩
     exact ht' i hi a ha
-  have hu₂ : sSup u = ⨆ i ∈ s, f i := by simp_rw [sSup_iUnion, biSup_congr' ht]
+  have hu₂ : sSup u = ⨆ i ∈ s, f i := by simp_rw [u, sSup_iUnion, biSup_congr' ht]
   rw [eq_top_iff, ← h', ← hu₂]
   exact sSup_le_sSup hu₁

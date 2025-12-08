@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-! Morphism properties equipped with a localized category
 
@@ -36,18 +38,19 @@ assumption, but one may use
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable (W : MorphismProperty C)
 
 namespace MorphismProperty
 
 /-- The data of a localized category with a given universe
-for the morphisms.  -/
+for the morphisms. -/
 class HasLocalization where
   /-- the objects of the localized category. -/
   {D : Type u}

@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.SetTheory.Cardinal.Basic
+module
 
-#align_import category_theory.limits.small_complete from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder
@@ -25,6 +25,8 @@ we instead show that the homsets are subsingleton.
 
 small complete, preorder, Freyd
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -50,23 +52,23 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       have z : (2 : Cardinal) ≤ #(X ⟶ Y) := by
         rw [Cardinal.two_le_iff]
         exact ⟨_, _, r_ne_s⟩
-      let md := ΣZ W : C, Z ⟶ W
+      let md := Σ Z W : C, Z ⟶ W
       let α := #md
-      apply not_le_of_lt (Cardinal.cantor α)
-      let yp : C := ∏ fun _ : md => Y
-      refine' _root_.trans _ _
+      apply not_le_of_gt (Cardinal.cantor α)
+      let yp : C := ∏ᶜ fun _ : md => Y
+      apply _root_.trans _ _
       · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]
         apply le_of_eq
         rw [Cardinal.eq]
-        refine' ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, _, _⟩⟩
+        refine ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, ?_, ?_⟩⟩
         · intro f
           ext k
-          simp
+          simp [yp]
         · intro f
           ext ⟨j⟩
-          simp
+          simp [yp]
       · apply Cardinal.mk_le_of_injective _
         · intro f
           exact ⟨_, _, f⟩

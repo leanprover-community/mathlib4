@@ -3,131 +3,112 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Monotone.Basic
+module
 
-#align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.OfNat
 
 /-!
-# Basic algebraic instances on the integers
+# Basic operations on the integers
 
-This file contains instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
+This file builds on `Data.Int.Init` by adding basic lemmas on integers.
+depending on Mathlib definitions.
 -/
 
-set_option autoImplicit true
+@[expose] public section
 
 open Nat
 
 namespace Int
+variable {a b c d m n : ℤ}
 
-instance instCommRingInt : CommRing ℤ where
-  zero_mul := Int.zero_mul
-  mul_zero := Int.mul_zero
-  mul_comm := Int.mul_comm
-  left_distrib := Int.mul_add
-  right_distrib := Int.add_mul
-  mul_one := Int.mul_one
-  one_mul := Int.one_mul
-  npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := by rw [Int.mul_comm]; rfl
-  mul_assoc := Int.mul_assoc
-  add_comm := Int.add_comm
-  add_assoc := Int.add_assoc
-  add_zero := Int.add_zero
-  zero_add := Int.zero_add
-  add_left_neg := Int.add_left_neg
-  nsmul := (·*·)
-  nsmul_zero := Int.zero_mul
-  nsmul_succ n x :=
-    show (n + 1 : ℤ) * x = x + n * x
-    by rw [Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul := (·*·)
-  zsmul_zero' := Int.zero_mul
-  zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
-  sub_eq_add_neg _ _ := Int.sub_eq_add_neg
-  natCast := (·)
-  natCast_zero := rfl
-  natCast_succ _ := rfl
-  intCast := (·)
-  intCast_ofNat _ := rfl
-  intCast_negSucc _ := rfl
+-- TODO: Tag in Lean
+attribute [simp] natAbs_pos
 
-@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+@[gcongr] alias ⟨_, GCongr.ofNat_le_ofNat⟩ := ofNat_le
 
-@[simp, norm_cast]
-theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
-  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
-  · induction m with
-    | zero => simp
-    | succ m ih => simp_all [add_mul]
-  · induction m with
-    | zero => simp
-    | succ m ih => simp_all [add_mul]
-#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
+instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
-lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat _
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
-@[simp, norm_cast] lemma cast_pow [Ring R] (n : ℤ) (m : ℕ) : ↑(n ^ m) = (n ^ m : R) := by
-  induction' m with m ih <;> simp [_root_.pow_succ, *]
-#align int.cast_pow Int.cast_pow
+section inductionOn'
 
-/-! ### Extra instances to short-circuit type class resolution
+variable {C : ℤ → Sort*} (z b : ℤ)
+  (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1))
 
-These also prevent non-computable instances like `Int.normedCommRing` being used to construct
-these instances non-computably.
--/
-instance : AddCommMonoid ℤ    := by infer_instance
-instance : AddMonoid ℤ        := by infer_instance
-instance : Monoid ℤ           := by infer_instance
-instance : CommMonoid ℤ       := by infer_instance
-instance : CommSemigroup ℤ    := by infer_instance
-instance : Semigroup ℤ        := by infer_instance
-instance : AddCommGroup ℤ     := by infer_instance
-instance : AddGroup ℤ         := by infer_instance
-instance : AddCommSemigroup ℤ := by infer_instance
-instance : AddSemigroup ℤ     := by infer_instance
-instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
-instance : Distrib ℤ          := by infer_instance
+variable {z b H0 Hs Hp}
 
-lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [_root_.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
-#align int.nat_abs_pow Int.natAbs_pow
+lemma inductionOn'_add_one (hz : b ≤ z) :
+    (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
+  apply cast_eq_iff_heq.mpr
+  lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
+  rw [show z + 1 - b = zb + 1 by cutsat]
+  have : b + zb = z := by omega
+  subst this
+  convert cast_heq _ _
+  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
 
-theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
-#align int.coe_nat_strict_mono Int.coe_nat_strictMono
+end inductionOn'
 
-section Multiplicative
+section strongRec
 
-open Multiplicative
+variable {P : ℤ → Sort*} {lt : ∀ n < m, P n} {ge : ∀ n ≥ m, (∀ k < n, P k) → P n}
 
-lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
-#align int.to_add_pow Int.toAdd_pow
+lemma strongRec_of_ge :
+    ∀ hn : m ≤ n, m.strongRec lt ge n = ge n hn fun k _ ↦ m.strongRec lt ge k := by
+  refine m.strongRec (fun n hnm hmn ↦ (Int.not_lt.mpr hmn hnm).elim) (fun n _ ih hn ↦ ?_) n
+  rw [Int.strongRec, dif_neg (Int.not_lt.mpr hn)]
+  congr; revert ih
+  refine n.inductionOn' m (fun _ ↦ ?_) (fun k hmk ih' ih ↦ ?_) (fun k hkm ih' _ ↦ ?_) <;> ext l hl
+  · rw [inductionOn'_self, strongRec_of_lt hl]
+  · rw [inductionOn'_add_one hmk]; split_ifs with hlm
+    · rw [strongRec_of_lt hlm]
+    · rw [ih' fun l hl ↦ ih l (Int.lt_trans hl k.lt_succ), ih _ hl]
+  · rw [inductionOn'_sub_one hkm, ih']
+    exact fun l hlk hml ↦ (Int.not_lt.mpr hkm <| Int.lt_of_le_of_lt hml hlk).elim
 
-lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
-#align int.to_add_zpow Int.toAdd_zpow
+end strongRec
 
-@[simp] lemma ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_zpow ..).symm
-#align int.of_add_mul Int.ofAdd_mul
+/-! ### nat abs -/
 
-end Multiplicative
+lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n⟩
+
+lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
+  refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
+  convert Nat.pow_right_injective h using 2
+  rw [Function.comp_apply, natAbs_pow]
+
+/-! ### dvd -/
+
+@[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℤ) ↔ OfNat.ofNat x ∣ y :=
+  natCast_dvd_natCast
+
+@[norm_cast] theorem natCast_dvd_ofNat {x y : ℕ} : (x : ℤ) ∣ (ofNat(y) : ℤ) ↔ x ∣ OfNat.ofNat y :=
+  natCast_dvd_natCast
+
+lemma natCast_dvd {m : ℕ} : (m : ℤ) ∣ n ↔ m ∣ n.natAbs := by
+  obtain hn | hn := natAbs_eq n <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.dvd_neg]
+
+lemma dvd_natCast {n : ℕ} : m ∣ (n : ℤ) ↔ m.natAbs ∣ n := by
+  obtain hn | hn := natAbs_eq m <;> rw [hn] <;> simp [← natCast_dvd_natCast, Int.neg_dvd]
+
+lemma eq_zero_of_dvd_of_nonneg_of_lt (hm : 0 ≤ m) (hmn : m < n) (hnm : n ∣ m) : m = 0 :=
+  eq_zero_of_dvd_of_natAbs_lt_natAbs hnm (natAbs_lt_natAbs_of_nonneg_of_lt hm hmn)
+
+/-- If two integers are congruent to a sufficiently large modulus, they are equal. -/
+lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
+    (h2 : natAbs (a - c) < natAbs b) : a = c :=
+  Int.eq_of_sub_eq_zero (eq_zero_of_dvd_of_natAbs_lt_natAbs (dvd_self_sub_of_emod_eq h1) h2)
+
+lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
+  not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
+
+theorem gcd_emod (m n : ℤ) : (m % n).gcd n = m.gcd n := by
+  conv_rhs => rw [← m.emod_add_mul_ediv n, gcd_add_mul_left_left]
 
 end Int
-
--- TODO: Do we really need this lemma? This is just `smul_eq_mul`
-lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
-#align zsmul_int_int zsmul_int_int
-
-lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _
-#align zsmul_int_one zsmul_int_one
-
-assert_not_exists Set.range

@@ -3,14 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Lean.Message
+module
 
-/-!
-# Additional operations on MessageData and related types
--/
+public import Lean.Message
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
-set_option autoImplicit true
-
-open Lean Std Format MessageData
-instance [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
-  ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2⟩
+deprecated_module (since := "2025-08-18")

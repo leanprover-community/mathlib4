@@ -3,7 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Data.Int.ModEq
+module
+
+public meta import Mathlib.Data.Int.ModEq
+public meta import Mathlib.Tactic.HaveI
 
 /-! # `mod_cases` tactic
 
@@ -11,7 +14,7 @@ The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e :
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.
 -/
 
-set_option autoImplicit true
+public meta section
 
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq
@@ -25,7 +28,7 @@ there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
+@[expose] def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
   ∀ z, lb ≤ z ∧ z < n ∧ a ≡ ↑z [ZMOD ↑n] → p
 
 /--
@@ -35,7 +38,7 @@ The actual mathematical content of the proof is here.
 @[inline] def onModCases_start (p : Sort*) (a : ℤ) (n : ℕ) (hn : Nat.ble 1 n = true)
     (H : OnModCases n a (nat_lit 0) p) : p :=
   H (a % ↑n).toNat <| by
-    have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
+    have := natCast_pos.2 <| Nat.le_of_ble_eq_true hn
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
     refine ⟨Nat.zero_le _, ?_, ?_⟩
     · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
@@ -62,7 +65,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
 -/
-partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     haveI' : $b =Q $n := ⟨⟩
@@ -81,8 +84,8 @@ Int case of `mod_cases h : e % n`.
 def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
-  let p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId
@@ -102,7 +105,7 @@ there exists `0 ≤ m < n` such that `a ≡ m (mod n)`.
 It asserts that if `∃ m, lb ≤ m < n ∧ a ≡ m (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
+@[expose] def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
   ∀ m, lb ≤ m ∧ m < n ∧ a ≡ m [MOD n] → p
 
 /--
@@ -138,16 +141,17 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 -/
-partial def proveOnModCases (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
-    pure ((q(onModCases_stop $p $n $a) : Expr), [])
+    have : $b =Q $n := ⟨⟩
+    pure (q(onModCases_stop $p $n $a), [])
   else
     let ty := q($a ≡ $b [MOD $n] → $p)
     let g ← mkFreshExprMVarQ ty
     let ((pr : Q(OnModCases $n $a (Nat.add $b 1) $p)), acc) ←
       proveOnModCases n a (mkRawNatLit (b.natLit! + 1)) p
-    pure ((q(onModCases_succ $b $g $pr) : Expr), g.mvarId! :: acc)
+    pure (q(onModCases_succ $b $g $pr), g.mvarId! :: acc)
 
 /--
 Nat case of `mod_cases h : e % n`.
@@ -156,7 +160,7 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId
@@ -192,3 +196,5 @@ elab_rules : tactic
     | ~q(ℤ) => IntMod.modCases h e n
     | ~q(ℕ) => NatMod.modCases h e n
     | _ => throwError "mod_cases only works with Int and Nat"
+
+end Mathlib.Tactic.ModCases

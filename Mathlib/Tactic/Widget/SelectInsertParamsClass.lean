@@ -3,8 +3,11 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Widget.InteractiveGoal
-import Lean.Elab.Deriving.Ord
+module
+
+public import Mathlib.Init
+public meta import Lean.Widget.InteractiveGoal
+public meta import Lean.Elab.Deriving.Basic
 
 /-! # SelectInsertParamsClass
 
@@ -12,6 +15,8 @@ Defines the basic class of parameters for a select and insert widget.
 
 This needs to be in a separate file in order to initialize the deriving handler.
 -/
+
+public meta section
 
 open Lean Meta Server
 
@@ -27,7 +32,7 @@ class SelectInsertParamsClass (α : Type) where
   replaceRange : α → Lsp.Range
 
 namespace Lean.Elab
-open Command Meta Parser Term
+open Command Parser
 
 private def mkSelectInsertParamsInstance (declName : Name) : TermElabM Syntax.Command :=
   `(command|instance : SelectInsertParamsClass (@$(mkCIdent declName)) :=
@@ -43,5 +48,5 @@ def mkSelectInsertParamsInstanceHandler (declNames : Array Name) : CommandElabM 
   else
     return false
 
-initialize registerDerivingHandler `SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
+initialize registerDerivingHandler ``SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
 end Lean.Elab

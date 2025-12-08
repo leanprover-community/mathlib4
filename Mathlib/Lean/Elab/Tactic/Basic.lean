@@ -3,12 +3,14 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jon Eugster
 -/
-import Mathlib.Lean.Meta
+module
+
+public import Mathlib.Lean.Meta
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
 
-set_option autoImplicit true
+@[expose] public section
 
 open Lean Elab Tactic
 
@@ -35,7 +37,7 @@ def doneWithScope (scope : MessageData) : TacticM Unit := do
 Like `focusAndDone` but takes a scope (e.g. tactic name) as an argument to
 produce more detailed error messages.
 -/
-def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM α :=
+def focusAndDoneWithScope {α : Type} (scope : MessageData) (tactic : TacticM α) : TacticM α :=
   focus do
     let a ← try tactic catch e =>
       if isAbortTacticException e then throw e

@@ -3,12 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+module
 
-#align_import algebraic_topology.fundamental_groupoid.simply_connected from "leanprover-community/mathlib"@"38341f11ded9e2bc1371eb42caad69ecacf8f541"
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
@@ -21,6 +21,8 @@ A topological space is simply connected if its fundamental groupoid is equivalen
 
   - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
+
+@[expose] public section
 
 universe u
 
@@ -36,8 +38,6 @@ open scoped ContinuousMap
 @[mk_iff simply_connected_def]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
-#align simply_connected_space SimplyConnectedSpace
-#align simply_connected_def simply_connected_def
 
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
@@ -46,7 +46,6 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     FundamentalGroupoid.nonempty_iff X, and_congr_right_iff, Nonempty.forall]
   intros
   exact ⟨fun h _ _ => h _ _, fun h _ _ => h _ _⟩
-#align simply_connected_iff_unique_homotopic simply_connected_iff_unique_homotopic
 
 namespace SimplyConnectedSpace
 
@@ -56,8 +55,6 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
-attribute [local instance] Path.Homotopic.setoid
-
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -66,7 +63,6 @@ instance (priority := 100) : PathConnectedSpace X :=
 /-- In a simply connected space, any two paths are homotopic -/
 theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p₂ :=
   Quotient.eq.mp (@Subsingleton.elim (Path.Homotopic.Quotient x y) _ _ _)
-#align simply_connected_space.paths_homotopic SimplyConnectedSpace.paths_homotopic
 
 instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [ContractibleSpace Y] :
     SimplyConnectedSpace Y where
@@ -74,11 +70,8 @@ instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [Con
     let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u+1} := (ContractibleSpace.hequiv Y PUnit.{u+1}).some
     ⟨(FundamentalGroupoidFunctor.equivOfHomotopyEquiv H).trans
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
-#align simply_connected_space.of_contractible SimplyConnectedSpace.ofContractible
 
 end SimplyConnectedSpace
-
-attribute [local instance] Path.Homotopic.setoid
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
@@ -88,7 +81,6 @@ theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
   ⟨by intro; constructor <;> infer_instance, fun h => by
     cases h; rw [simply_connected_iff_unique_homotopic]
     exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
-#align simply_connected_iff_paths_homotopic simply_connected_iff_paths_homotopic
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
 theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
@@ -96,4 +88,3 @@ theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
-#align simply_connected_iff_paths_homotopic' simply_connected_iff_paths_homotopic'

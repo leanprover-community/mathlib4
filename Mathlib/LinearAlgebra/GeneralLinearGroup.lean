@@ -3,9 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Module.Equiv
+module
 
-#align_import linear_algebra.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
+public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 # The general linear group of linear maps
@@ -20,6 +20,8 @@ See also `Matrix.GeneralLinearGroup`
 
 -/
 
+@[expose] public section
+
 
 variable (R M : Type*)
 
@@ -28,10 +30,8 @@ namespace LinearMap
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The group of invertible linear maps from `M` to itself -/
-@[reducible]
-def GeneralLinearGroup :=
+abbrev GeneralLinearGroup :=
   (M →ₗ[R] M)ˣ
-#align linear_map.general_linear_group LinearMap.GeneralLinearGroup
 
 namespace GeneralLinearGroup
 
@@ -41,9 +41,19 @@ variable {R M}
 def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
   { f.val with
     invFun := f.inv.toFun
-    left_inv := fun m ↦ show (f.inv * f.val) m = m by erw [f.inv_val]; simp
-    right_inv := fun m ↦ show (f.val * f.inv) m = m by erw [f.val_inv]; simp }
-#align linear_map.general_linear_group.to_linear_equiv LinearMap.GeneralLinearGroup.toLinearEquiv
+    left_inv := fun m ↦ show (f.inv * f.val) m = m by simp
+    right_inv := fun m ↦ show (f.val * f.inv) m = m by simp }
+
+@[simp] lemma coe_toLinearEquiv (f : GeneralLinearGroup R M) :
+    f.toLinearEquiv = (f : M → M) := rfl
+
+theorem toLinearEquiv_mul (f g : GeneralLinearGroup R M) :
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := by
+  rfl
+
+theorem toLinearEquiv_inv (f : GeneralLinearGroup R M) :
+    (f⁻¹).toLinearEquiv = (f.toLinearEquiv)⁻¹ := by
+  rfl
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
 def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
@@ -51,29 +61,80 @@ def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
   inv := (f.symm : M →ₗ[R] M)
   val_inv := LinearMap.ext fun _ ↦ f.apply_symm_apply _
   inv_val := LinearMap.ext fun _ ↦ f.symm_apply_apply _
-#align linear_map.general_linear_group.of_linear_equiv LinearMap.GeneralLinearGroup.ofLinearEquiv
 
-variable (R M)
+@[simp] lemma coe_ofLinearEquiv (f : M ≃ₗ[R] M) :
+    ofLinearEquiv f = (f : M → M) := rfl
 
+theorem ofLinearEquiv_mul (f g : M ≃ₗ[R] M) :
+    ofLinearEquiv (f * g) = ofLinearEquiv f * ofLinearEquiv g := by
+  rfl
+
+theorem ofLinearEquiv_inv (f : M ≃ₗ[R] M) :
+    ofLinearEquiv (f⁻¹) = (ofLinearEquiv f)⁻¹ := by
+  rfl
+
+variable (R M) in
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
 equivalences between `M` and itself. -/
 def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
   toFun := toLinearEquiv
   invFun := ofLinearEquiv
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
   map_mul' x y := by ext; rfl
-#align linear_map.general_linear_group.general_linear_equiv LinearMap.GeneralLinearGroup.generalLinearEquiv
 
 @[simp]
 theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
     (generalLinearEquiv R M f : M →ₗ[R] M) = f := by ext; rfl
-#align linear_map.general_linear_group.general_linear_equiv_to_linear_map LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
 
 @[simp]
 theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
     (generalLinearEquiv R M f) = (f : M → M) := rfl
-#align linear_map.general_linear_group.coe_fn_general_linear_equiv LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
+
+section Functoriality
+
+variable {R₁ R₂ R₃ M₁ M₂ M₃ : Type*}
+  [Semiring R₁] [Semiring R₂] [Semiring R₃]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R₁ M₁] [Module R₂ M₂] [Module R₃ M₃]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
+  {σ₂₁ : R₂ →+* R₁} {σ₃₂ : R₃ →+* R₂} {σ₃₁ : R₃ →+* R₁}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₁₃ σ₃₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₂ σ₂₃] [RingHomInvPair σ₃₁ σ₁₃]
+  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+
+/-- A semilinear equivalence from `V` to `W` determines an isomorphism of general linear
+groups. -/
+def congrLinearEquiv (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
+    GeneralLinearGroup R₁ M₁ ≃* GeneralLinearGroup R₂ M₂ :=
+  Units.mapEquiv (LinearEquiv.conjRingEquiv e₁₂).toMulEquiv
+
+@[simp] lemma congrLinearEquiv_apply (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (g : GeneralLinearGroup R₁ M₁) :
+    congrLinearEquiv e₁₂ g = ofLinearEquiv (e₁₂.symm.trans <| g.toLinearEquiv.trans e₁₂) :=
+  rfl
+
+@[simp] lemma congrLinearEquiv_symm (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) :
+    (congrLinearEquiv e₁₂).symm = congrLinearEquiv e₁₂.symm :=
+  rfl
+
+@[simp]
+lemma congrLinearEquiv_trans
+    {N₁ N₂ N₃ : Type*} [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+    [Module R N₁] [Module R N₂] [Module R N₃] (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) = congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+/-- Stronger form of `congrLinearEquiv.trans` applying to semilinear maps. Not a simp lemma as
+`σ₁₃` and `σ₃₁` cannot be inferred from the LHS. -/
+lemma congrLinearEquiv_trans' (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (congrLinearEquiv e₁₂).trans (congrLinearEquiv e₂₃) =
+      congrLinearEquiv (e₁₂.trans e₂₃) :=
+  rfl
+
+@[simp]
+lemma congrLinearEquiv_refl :
+    congrLinearEquiv (LinearEquiv.refl R₁ M₁) = MulEquiv.refl (GeneralLinearGroup R₁ M₁) :=
+  rfl
+
+end Functoriality
 
 end GeneralLinearGroup
 

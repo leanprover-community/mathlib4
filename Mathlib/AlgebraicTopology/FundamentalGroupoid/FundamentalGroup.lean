@@ -3,13 +3,14 @@ Copyright (c) 2021 Mark Lavrentyev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Lavrentyev
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+module
 
-#align_import algebraic_topology.fundamental_groupoid.fundamental_group from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Fundamental group of a space
@@ -18,43 +19,34 @@ Given a topological space `X` and a basepoint `x`, the fundamental group is the 
 of `x` i.e. the group with elements being loops based at `x` (quotiented by homotopy equivalence).
 -/
 
+@[expose] public section
 
-universe u v
-
-variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
 noncomputable section
 
 open CategoryTheory
 
+variable (X)
+
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
-def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
-  @Aut (FundamentalGroupoid X) _ ⟨x⟩
-#align fundamental_group FundamentalGroup
+def FundamentalGroup (x : X) :=
+  End (FundamentalGroupoid.mk x)
 
-instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
-  dsimp only [FundamentalGroup]
-  infer_instance
+instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs (Group (End _))
 
-instance (X : Type u) [TopologicalSpace X] (x : X) : Inhabited (FundamentalGroup X x) := by
-  dsimp only [FundamentalGroup]
-  infer_instance
+instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs (Inhabited (End _))
+
+variable {X}
 
 namespace FundamentalGroup
-
-attribute [local instance] Path.Homotopic.setoid
-
--- porting note: removed this attribute
---attribute [local reducible] FundamentalGroupoid
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
-  Aut.autMulEquivOfIso (asIso ⟦p⟧)
-#align fundamental_group.fundamental_group_mul_equiv_of_path FundamentalGroup.fundamentalGroupMulEquivOfPath
+  ((Groupoid.isoEquivHom ..).symm ⟦p⟧).conj
 
 variable (x₀ x₁)
 
@@ -62,30 +54,38 @@ variable (x₀ x₁)
 def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
-#align fundamental_group.fundamental_group_mul_equiv_of_path_connected FundamentalGroup.fundamentalGroupMulEquivOfPathConnected
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) :
+abbrev toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
-  p.hom
-#align fundamental_group.to_arrow FundamentalGroup.toArrow
+  p
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
-abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
+abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
-#align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {X : TopCat} {x : X}
+abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
-    FundamentalGroup X x where
-  hom := p
-  inv := CategoryTheory.Groupoid.inv p
-#align fundamental_group.from_arrow FundamentalGroup.fromArrow
+    FundamentalGroup X x :=
+  p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
-abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
+abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
-#align fundamental_group.from_path FundamentalGroup.fromPath
+
+/-- The homomorphism between fundamental groups induced by a continuous map. -/
+@[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
+  (FundamentalGroupoid.map f).mapEnd _
+
+variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
+
+/-- The homomorphism from π₁(X, x) to π₁(Y, y) induced by a continuous map `f` with `f x = y`. -/
+def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
+  (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
+
+theorem mapOfEq_apply (p : Path x x) :
+    mapOfEq f h (fromPath ⟦p⟧) = fromPath ⟦(p.map f.continuous).cast h.symm h.symm⟧ :=
+  FundamentalGroupoid.conj_eqToHom ..
 
 end FundamentalGroup

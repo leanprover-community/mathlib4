@@ -3,28 +3,32 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Meta.Tactic.Assert
-import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
-import Std.Data.List.Basic
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Term
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Assert
+public import Lean.Meta.Tactic.Clear
+public import Batteries.CodeAction  -- to enable the hole code action
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
-set_option autoImplicit true
+public section
 
 open Lean Meta
 
 namespace Lean.MVarId
 
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
-  es.foldlM (λ mv e => do
+  es.foldlM (fun mv e ↦ do
       let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"
@@ -38,87 +42,18 @@ For example, if we want to do introductions for propositions like `¬p`,
 the `¬` needs to be unfolded into `→ False`, and `intros` does not do such unfolding. -/
 partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   run #[] mvarId
-  where
+where
   /-- Implementation of `intros!`. -/
   run (acc : Array FVarId) (g : MVarId) :=
-  try
-    let ⟨f, g⟩ ← mvarId.intro1
-    run (acc.push f) g
-  catch _ =>
-    pure (acc, g)
-
-/--
-Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
-If successful, returns the new goal, and otherwise returns the original `MVarId`.
-
-This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
--/
-def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to convert an `Eq` into an `Iff` by applying `propext`.
-If successful, then returns then new goal, otherwise returns the original `MVarId`.
--/
-def propext (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
-    -- We don't want a unification specializing `Sort*` to `Prop`.
-    let tgt ← withReducible mvarId.getType'
-    let some (ty, _, _) := tgt.eq? | failure
-    guard ty.isProp
-    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
-
-We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
-specialize `Sort _` to `Prop`.
--/
-def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `proofIrrelHeq
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, _, rhs) := tgt.heq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
-      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
-
-/--
-Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
-
-We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
-This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
-`Sort _` to `Prop`.
--/
-def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `subsingletonElim
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, rhs) := tgt.eq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
-      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
+    try
+      let ⟨f, g⟩ ← mvarId.intro1
+      run (acc.push f) g
+    catch _ =>
+      pure (acc, g)
 
 end Lean.MVarId
 
 namespace Lean.Meta
-
-/-- Count how many local hypotheses appear in an expression. -/
-def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat := do
-  let e' ← instantiateMVars e
-  return (← getLocalHyps).toList.countP fun h => h.occurs e'
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
 annotations. -/
@@ -135,6 +70,8 @@ namespace Lean.Elab.Tactic
 def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
   liftMetaTactic fun g => do pure [← tac g]
 
+variable {α : Type}
+
 @[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
     TermElabM (α × State) :=
   x ctx |>.run s
@@ -147,24 +84,24 @@ def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
 -- making it quite painful to call `simp` from `MetaM`.
 def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
   mvarId.withContext do
-   let pendingMVarsSaved := (← get).pendingMVars
-   modify fun s => { s with pendingMVars := [] }
-   let aux : TacticM (Option α × List MVarId) :=
-     /- Important: the following `try` does not backtrack the state.
-        This is intentional because we don't want to backtrack the error message
-        when we catch the "abort internal exception"
-        We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
-     try
-       let a ← x
-       pure (a, ← getUnsolvedGoals)
-     catch ex =>
-       if isAbortTacticException ex then
-         pure (none, ← getUnsolvedGoals)
-       else
-         throw ex
-   try
-     aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
-   finally
-     modify fun s => { s with pendingMVars := pendingMVarsSaved }
+    let pendingMVarsSaved := (← get).pendingMVars
+    modify fun s => { s with pendingMVars := [] }
+    let aux : TacticM (Option α × List MVarId) :=
+      /- Important: the following `try` does not backtrack the state.
+          This is intentional because we don't want to backtrack the error message
+          when we catch the "abort internal exception"
+          We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
+      try
+        let a ← x
+        pure (a, ← getUnsolvedGoals)
+      catch ex =>
+        if isAbortTacticException ex then
+          pure (none, ← getUnsolvedGoals)
+        else
+          throw ex
+    try
+      aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
+    finally
+      modify fun s => { s with pendingMVars := pendingMVarsSaved }
 
 end Lean.Elab.Tactic

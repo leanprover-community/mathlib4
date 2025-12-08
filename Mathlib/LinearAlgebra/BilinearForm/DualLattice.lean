@@ -3,7 +3,9 @@ Copyright (c) 2018 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 
@@ -17,8 +19,15 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 Properly develop the material in the context of lattices.
 -/
 
+@[expose] public section
+
+open LinearMap (BilinForm)
+open Module
+
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+
+namespace LinearMap
 
 namespace BilinForm
 
@@ -31,14 +40,15 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
   smul_mem' r a ha y hy := by
     convert (1 : Submodule R S).smul_mem r (ha y hy)
-    rw [← IsScalarTower.algebraMap_smul S r a, bilin_smul_left, Algebra.smul_def]
+    rw [← IsScalarTower.algebraMap_smul S r a]
+    simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
 
 lemma mem_dualSubmodule {N : Submodule R M} {x} :
     x ∈ B.dualSubmodule N ↔ ∀ y ∈ N, B x y ∈ (1 : Submodule R S) := Iff.rfl
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
+  change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
   exact forall₂_swap
 
@@ -46,12 +56,12 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
 def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
-  (x.prop y y.prop).choose
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose
 
 @[simp]
 lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
     algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
-  (x.prop y y.prop).choose_spec
+  (Submodule.mem_one.mp <| x.prop y y.prop).choose_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
@@ -61,12 +71,12 @@ def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
     { toFun := B.dualSubmoduleParing x
-      map_add' := fun x y ↦ NoZeroSMulDivisors.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ NoZeroSMulDivisors.algebraMap_injective R S
+      map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
+      map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_add' := fun x y ↦ LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
       (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ NoZeroSMulDivisors.algebraMap_injective R S
+    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
@@ -89,43 +99,48 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     rw [← (B.dualBasis hB b).sum_repr x]
     apply sum_mem
     rintro i -
-    obtain ⟨r, hr⟩ := hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
-    simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
+    obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
+    simp only [dualBasis_repr_apply, ← hr, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
-    obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
-    simp only [sum_right, bilin_smul_right]
+    obtain ⟨f, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp hy
+    simp only [map_sum]
     apply sum_mem
     rintro j -
-    rw [← IsScalarTower.algebraMap_smul S (f j), B.bilin_smul_right, apply_dualBasis_left,
-      mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
-    exact ⟨_, rfl⟩
+    rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]
+    simp_rw [apply_dualBasis_left]
+    rw [smul_eq_mul, mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
+    exact Submodule.mem_one.mpr ⟨_, rfl⟩
 
 lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis_flip B hB]
+    dualBasis_dualBasis_flip hB]
 
 lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
-    dualBasis_flip_dualBasis B hB]
+    dualBasis_flip_dualBasis hB]
 
 lemma dualSubmodule_dualSubmodule_of_basis
     {ι} [Finite ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis B hB hB']
+    dualBasis_dualBasis hB hB']
+
+end BilinForm
+
+end LinearMap

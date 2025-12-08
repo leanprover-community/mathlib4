@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units
+module
 
-#align_import algebra.divisibility.units from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Divisibility and units
@@ -15,9 +15,11 @@ import Mathlib.Algebra.Group.Units
 ## Main definition
 
 * `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
-divisors of `x` and `y` are the units.
+  divisors of `x` and `y` are the units.
 
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -28,23 +30,19 @@ section Monoid
 variable [Monoid α] {a b : α} {u : αˣ}
 
 /-- Elements of the unit group of a monoid represented as elements of the monoid
-    divide any element of the monoid. -/
+divide any element of the monoid. -/
 theorem coe_dvd : ↑u ∣ a :=
   ⟨↑u⁻¹ * a, by simp⟩
-#align units.coe_dvd Units.coe_dvd
 
-/-- In a monoid, an element `a` divides an element `b` iff `a` divides all
-    associates of `b`. -/
+/-- In a monoid, an element `a` divides an element `b` iff `a` divides all associates of `b`. -/
 theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
-  Iff.intro (fun ⟨c, Eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← Eq, Units.mul_inv_cancel_right]⟩)
-    fun ⟨c, Eq⟩ ↦ Eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
-#align units.dvd_mul_right Units.dvd_mul_right
+  Iff.intro (fun ⟨c, eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← eq, Units.mul_inv_cancel_right]⟩)
+    fun ⟨_, eq⟩ ↦ eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
 
 /-- In a monoid, an element `a` divides an element `b` iff all associates of `a` divide `b`. -/
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b :=
-  Iff.intro (fun ⟨c, Eq⟩ => ⟨↑u * c, Eq.trans (mul_assoc _ _ _)⟩) fun h =>
+  Iff.intro (fun ⟨c, eq⟩ => ⟨↑u * c, eq.trans (mul_assoc _ _ _)⟩) fun h =>
     dvd_trans (Dvd.intro (↑u⁻¹) (by rw [mul_assoc, u.mul_inv, mul_one])) h
-#align units.mul_right_dvd Units.mul_right_dvd
 
 end Monoid
 
@@ -53,18 +51,16 @@ section CommMonoid
 variable [CommMonoid α] {a b : α} {u : αˣ}
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
-    associates of `b`. -/
+associates of `b`. -/
 theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
   rw [mul_comm]
   apply dvd_mul_right
-#align units.dvd_mul_left Units.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`.-/
+  left associates of `a` divide `b`. -/
 theorem mul_left_dvd : ↑u * a ∣ b ↔ a ∣ b := by
   rw [mul_comm]
   apply mul_right_dvd
-#align units.mul_left_dvd Units.mul_left_dvd
 
 end CommMonoid
 
@@ -74,51 +70,47 @@ namespace IsUnit
 
 section Monoid
 
-variable [Monoid α] {a b u : α} (hu : IsUnit u)
+variable [Monoid α] {a b u : α}
 
 /-- Units of a monoid divide any element of the monoid. -/
 @[simp]
-theorem dvd : u ∣ a := by
+theorem dvd (hu : IsUnit u) : u ∣ a := by
   rcases hu with ⟨u, rfl⟩
   apply Units.coe_dvd
-#align is_unit.dvd IsUnit.dvd
 
 @[simp]
-theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b := by
+theorem dvd_mul_right (hu : IsUnit u) : a ∣ b * u ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.dvd_mul_right
-#align is_unit.dvd_mul_right IsUnit.dvd_mul_right
 
-/-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`.-/
+/-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`. -/
 @[simp]
-theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b := by
+theorem mul_right_dvd (hu : IsUnit u) : a * u ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.mul_right_dvd
-#align is_unit.mul_right_dvd IsUnit.mul_right_dvd
 
-theorem isPrimal : IsPrimal u := fun _ _ _ ↦ ⟨u, 1, hu.dvd, one_dvd _, (mul_one u).symm⟩
+theorem isPrimal (hu : IsUnit u) : IsPrimal u :=
+  fun _ _ _ ↦ ⟨u, 1, hu.dvd, one_dvd _, (mul_one u).symm⟩
 
 end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] {a b u : α} (hu : IsUnit u)
+variable [CommMonoid α] {a b u : α}
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
-    associates of `b`. -/
+associates of `b`. -/
 @[simp]
-theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
+theorem dvd_mul_left (hu : IsUnit u) : a ∣ u * b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.dvd_mul_left
-#align is_unit.dvd_mul_left IsUnit.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`.-/
+  left associates of `a` divide `b`. -/
 @[simp]
-theorem mul_left_dvd : u * a ∣ b ↔ a ∣ b := by
+theorem mul_left_dvd (hu : IsUnit u) : u * a ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.mul_left_dvd
-#align is_unit.mul_left_dvd IsUnit.mul_left_dvd
 
 end CommMonoid
 
@@ -130,23 +122,25 @@ variable [CommMonoid α]
 
 theorem isUnit_iff_dvd_one {x : α} : IsUnit x ↔ x ∣ 1 :=
   ⟨IsUnit.dvd, fun ⟨y, h⟩ => ⟨⟨x, y, h.symm, by rw [h, mul_comm]⟩, rfl⟩⟩
-#align is_unit_iff_dvd_one isUnit_iff_dvd_one
 
 theorem isUnit_iff_forall_dvd {x : α} : IsUnit x ↔ ∀ y, x ∣ y :=
   isUnit_iff_dvd_one.trans ⟨fun h _ => h.trans (one_dvd _), fun h => h _⟩
-#align is_unit_iff_forall_dvd isUnit_iff_forall_dvd
 
 theorem isUnit_of_dvd_unit {x y : α} (xy : x ∣ y) (hu : IsUnit y) : IsUnit x :=
   isUnit_iff_dvd_one.2 <| xy.trans <| isUnit_iff_dvd_one.1 hu
-#align is_unit_of_dvd_unit isUnit_of_dvd_unit
 
 theorem isUnit_of_dvd_one {a : α} (h : a ∣ 1) : IsUnit (a : α) :=
   isUnit_iff_dvd_one.mpr h
-#align is_unit_of_dvd_one isUnit_of_dvd_one
 
 theorem not_isUnit_of_not_isUnit_dvd {a b : α} (ha : ¬IsUnit a) (hb : a ∣ b) : ¬IsUnit b :=
   mt (isUnit_of_dvd_unit hb) ha
-#align not_is_unit_of_not_is_unit_dvd not_isUnit_of_not_isUnit_dvd
+
+@[simp]
+lemma dvd_pow_self_iff {x : α} {n : ℕ} :
+    x ∣ x ^ n ↔ n ≠ 0 ∨ IsUnit x := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [isUnit_iff_dvd_one]
+  · simp [hn, dvd_pow_self]
 
 end CommMonoid
 
@@ -158,6 +152,7 @@ def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y
 variable [CommMonoid α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
+theorem symmetric_isRelPrime : Symmetric (IsRelPrime : α → α → Prop) := fun _ _ ↦ .symm
 
 theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩
@@ -195,6 +190,8 @@ theorem IsRelPrime.isUnit_of_dvd (H : IsRelPrime x y) (d : x ∣ y) : IsUnit x :
 section IsUnit
 
 variable (hu : IsUnit x)
+
+include hu
 
 theorem isRelPrime_mul_unit_left_left : IsRelPrime (x * y) z ↔ IsRelPrime y z :=
   ⟨IsRelPrime.of_mul_left_right, fun H _ h ↦ H (hu.dvd_mul_left.mp h)⟩
@@ -251,8 +248,9 @@ theorem IsRelPrime.mul_left (H1 : IsRelPrime x z) (H2 : IsRelPrime y z) : IsRelP
     obtain ⟨a, b, ha, hb, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul h
     exact (H1 ha <| (dvd_mul_right a b).trans hz).mul (H2 hb <| (dvd_mul_left b a).trans hz)
 
-theorem IsRelPrime.mul_right (H1 : IsRelPrime x y) (H2 : IsRelPrime x z) : IsRelPrime x (y * z) :=
-  by rw [isRelPrime_comm] at H1 H2 ⊢; exact H1.mul_left H2
+theorem IsRelPrime.mul_right (H1 : IsRelPrime x y) (H2 : IsRelPrime x z) :
+    IsRelPrime x (y * z) := by
+  rw [isRelPrime_comm] at H1 H2 ⊢; exact H1.mul_left H2
 
 theorem IsRelPrime.mul_left_iff : IsRelPrime (x * y) z ↔ IsRelPrime x z ∧ IsRelPrime y z :=
   ⟨fun H ↦ ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ ↦ H1.mul_left H2⟩

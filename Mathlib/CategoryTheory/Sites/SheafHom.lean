@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-! Internal hom of sheaves
 
@@ -25,6 +26,8 @@ natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 namespace CategoryTheory
@@ -42,7 +45,7 @@ to the type of morphisms between the "restrictions" of `F` and `G` to the catego
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := whiskerLeft (Over.map f.unop).op
+  map f := Functor.whiskerLeft (Over.map f.unop).op
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -80,11 +83,11 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
       naturality := by
         rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
         dsimp
-        refine' Eq.trans _ ((s.1 ⟨X₁⟩).naturality
+        refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
-        erw [← s.2 f.op, presheafHom_map_app_op_mk_id]
+        rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
-  invFun f := ⟨fun X => whiskerLeft _ f, fun _ => rfl⟩
+  invFun f := ⟨fun _ => Functor.whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
     dsimp
     ext ⟨X⟩ ⟨Y : Over X⟩
@@ -92,7 +95,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv f := rfl
 
 variable {F G}
 
@@ -110,7 +112,7 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
     dsimp at H
-    simp only [Functor.map_id, FunctorToTypes.map_id_apply] at H
+    simp only [FunctorToTypes.map_id_apply] at H
     rw [H, presheafHom_map_app_op_mk_id]
     rfl
 
@@ -121,10 +123,10 @@ variable {X : C} {S : Sieve X}
 
 namespace PresheafHom.IsSheafFor
 
-variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) (hx : x.Compatible)
-  {Y : C} (g : Y ⟶ X)
+variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-lemma exists_app :
+include hG in
+lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
       ∀ {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)), φ ≫ G.map p.op =
         F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ := by
@@ -149,9 +151,10 @@ lemma exists_app :
   exact ((hG g).fac c ⟨Over.mk p, hp⟩)
 
 /-- Auxiliary definition for `presheafHom_isSheafFor`. -/
-noncomputable def app : F.obj (op Y) ⟶ G.obj (op Y) := (exists_app hG x hx g).choose
+noncomputable def app (hx : x.Compatible) (g : Y ⟶ X) : F.obj (op Y) ⟶ G.obj (op Y) :=
+  (exists_app hG x hx g).choose
 
-lemma app_cond {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)) :
+lemma app_cond (hx : x.Compatible) (g : Y ⟶ X) {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)) :
     app hG x hx g ≫ G.map p.op = F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ :=
   (exists_app hG x hx g).choose_spec p hp
 
@@ -159,12 +162,13 @@ end PresheafHom.IsSheafFor
 
 variable (F G S)
 
+include hG in
 open PresheafHom.IsSheafFor in
-lemma presheafHom_isSheafFor  :
+lemma presheafHom_isSheafFor :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
-  · refine' ⟨
+  apply existsUnique_of_exists_of_unique
+  · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
@@ -172,10 +176,10 @@ lemma presheafHom_isSheafFor  :
           rintro ⟨Z : Over Y₂.left, hZ⟩
           dsimp
           rw [assoc, assoc, app_cond hG x hx Y₂.hom Z.hom hZ, ← G.map_comp, ← op_comp]
-          erw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
+          rw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
             ← F.map_comp_assoc, op_comp]
           congr 3
-          simp }, _⟩
+          simp }, ?_⟩
     rw [PresheafHom.isAmalgamation_iff _ _ hx]
     intro Y g hg
     dsimp
@@ -190,7 +194,7 @@ lemma presheafHom_isSheafFor  :
     rintro ⟨Z : Over Y.left, hZ⟩
     dsimp
     let φ : Over.mk (Z.hom ≫ Y.hom) ⟶ Y := Over.homMk Z.hom
-    refine' (y₁.naturality φ.op).symm.trans (Eq.trans _ (y₂.naturality φ.op))
+    refine (y₁.naturality φ.op).symm.trans (Eq.trans ?_ (y₂.naturality φ.op))
     rw [(hy₁ _ _ hZ), ← ((hy₂ _ _ hZ))]
 
 end
@@ -221,7 +225,7 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
 def sheafHom'Iso (F G : Sheaf J A) :
     sheafHom' F G ≅ presheafHom F.1 G.1 :=
   NatIso.ofComponents
-    (fun _ => Equiv.toIso (equivOfFullyFaithful (sheafToPresheaf _ _))) (fun _ => rfl)
+    (fun _ => Sheaf.homEquiv.toIso) (fun _ => rfl)
 
 /-- Given two sheaves `F` and `G` on a site `(C, J)` with values in a category `A`,
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`
@@ -234,8 +238,7 @@ def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
 def sheafHomSectionsEquiv (F G : Sheaf J A) :
     (sheafHom F G).1.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
-    ((presheafHomSectionsEquiv F.1 G.1).trans
-    ((equivOfFullyFaithful (sheafToPresheaf _ _)).symm))
+    ((presheafHomSectionsEquiv F.1 G.1).trans Sheaf.homEquiv.symm)
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :

@@ -1,0 +1,41 @@
+name: update nolints
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # At 00:00 UTC on Sunday.
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build, lint and update nolints and style exceptions
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: update nolints.json
+        shell: bash
+        run: |
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
+          author: "leanprover-community-bot <leanprover.community@gmail.com>"
+          commit-message: "chore(scripts): update nolints.json"
+          branch: "nolints"
+          base: master
+          title: "chore(scripts): update nolints.json"
+          body: |
+            I am happy to remove some nolints for you!
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          labels: "auto-merge-after-CI"

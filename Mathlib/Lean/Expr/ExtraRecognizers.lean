@@ -3,12 +3,16 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Additional Expr recognizers needing theory imports
 
 -/
+
+@[expose] public section
 
 namespace Lean.Expr
 
@@ -21,7 +25,7 @@ def coeTypeSet? (e : Expr) : Option Expr := do
     let .lam _ _ body _ := e.appArg! | failure
     guard <| body.isAppOfArity ``Membership.mem 5
     let #[_, _, inst, .bvar 0, s] := body.getAppArgs | failure
-    guard <| inst.isAppOfArity ``Set.instMembershipSet 1
+    guard <| inst.isAppOfArity ``Set.instMembership 1
     return s
   else
     failure

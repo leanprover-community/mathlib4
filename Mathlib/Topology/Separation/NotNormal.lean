@@ -3,15 +3,18 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Cardinality
-import Mathlib.Topology.Separation
-import Mathlib.Topology.TietzeExtension
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Topology.TietzeExtension
 /-!
 # Not normal topological spaces
 
 In this file we prove (see `IsClosed.not_normal_of_continuum_le_mk`) that a separable space with a
 discrete subspace of cardinality continuum is not a normal topological space.
 -/
+
+@[expose] public section
 
 open Set Function Cardinal Topology TopologicalSpace
 
@@ -31,11 +34,11 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype
   -- To obtain a contradiction, we will prove `2 ^ 𝔠 ≤ 𝔠`.
-  refine (Cardinal.cantor 𝔠).not_le ?_
+  refine (Cardinal.cantor 𝔠).not_ge ?_
   calc
     -- Any function `s → ℝ` is continuous, hence `2 ^ 𝔠 ≤ #C(s, ℝ)`
     2 ^ 𝔠 ≤ #C(s, ℝ) := by
-      rw [(ContinuousMap.equivFnOfDiscrete _ _).cardinal_eq, mk_arrow, mk_real, lift_continuum,
+      rw [ContinuousMap.equivFnOfDiscrete.cardinal_eq, mk_arrow, mk_real, lift_continuum,
         lift_uzero]
       exact (power_le_power_left two_ne_zero h).trans (power_le_power_right (nat_lt_continuum 2).le)
     -- By the Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`,
@@ -55,4 +58,4 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
 /-- Let `s` be a closed set in a separable space. If the induced topology on `s` is discrete and `s`
 has cardinality at least continuum, then the ambient space is not a normal space. -/
 theorem IsClosed.not_normal_of_continuum_le_mk {s : Set X} (hs : IsClosed s) [DiscreteTopology s]
-    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_le hmk
+    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_ge hmk

@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -28,6 +30,8 @@ the Liquid Tensor Experiment.
 * https://stacks.math.columbia.edu/tag/0111
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -112,9 +116,11 @@ instance [K.HasHomology i] [K.HasHomology j] :
 
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  dsimp
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+  dsimp [-Fin.reduceFinMk]
   infer_instance
 
+include hij in
 /-- The diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j` is exact
 when `c.Rel i j`. -/
 lemma composableArrows₃_exact [CategoryWithHomology C] :
@@ -152,7 +158,8 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    (homologyMap φ j) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence
 
@@ -173,13 +180,13 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine' CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
       rw [← p_opcyclesMap_assoc, hk, comp_zero])
     dsimp at H
-    refine' ⟨S.X₃.descOpcycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₃.descOpcycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_epi (S.g.f (c.prev i)), comp_zero, Hom.comm_assoc, H.2,
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
@@ -201,12 +208,12 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
-    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₁.liftCycles H.1 _ rfl ?_, ?_⟩
     · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
 
-variable  {S : ShortComplex (HomologicalComplex C c)}
+variable {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
@@ -216,7 +223,9 @@ such that `c.Rel i j`, this is the snake diagram whose four lines are respective
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
-noncomputable def snakeInput : ShortComplex.SnakeInput C where
+@[simps]
+noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+    ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
   L₂ := (cyclesFunctor C c j).mapShortComplex.obj S
@@ -267,8 +276,8 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
-short complex `S`.  -/
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 
 @[reassoc (attr := simp)]
@@ -283,6 +292,7 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
+include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)
     (HomologicalComplex.homologyMap S.g i) (by rw [← HomologicalComplex.homologyMap_comp,
@@ -295,7 +305,7 @@ lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i
     have e : S.map (HomologicalComplex.homologyFunctor C c i) ≅
         S.map (HomologicalComplex.opcyclesFunctor C c i) :=
       ShortComplex.isoMk (asIso (S.X₁.homologyι i))
-        (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by aesop_cat) (by aesop_cat)
+        (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by simp) (by simp)
     exact ShortComplex.exact_of_iso e.symm (opcycles_right_exact S hS.exact i)
 
 /-- Exactness of `S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j`. -/
@@ -327,6 +337,22 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0
       (by rw [← cancel_mono (S.X₂.iCycles j), HomologicalComplex.liftCycles_comp_cyclesMap,
         HomologicalComplex.liftCycles_i, assoc, assoc, opcyclesToCycles_iCycles,
         HomologicalComplex.p_fromOpcycles, hx₁])
+
+theorem mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
+
+theorem epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
+
+theorem isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    IsIso (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
+
+/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
+`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
+noncomputable def δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    S.X₃.homology i ≅ S.X₁.homology j :=
+  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
 
 end ShortExact
 

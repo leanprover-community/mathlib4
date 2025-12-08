@@ -3,7 +3,10 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Tactic.Lint
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -24,10 +27,14 @@ However, note that Unicode has a rather restricted character set for superscript
 parser for complex expressions.
 -/
 
-set_option autoImplicit true
+public meta section
+
+universe u
 
 namespace Mathlib.Tactic
-open Lean Parser PrettyPrinter
+
+open Lean Parser PrettyPrinter Delaborator Std
+
 namespace Superscript
 
 instance : Hashable Char := ⟨fun c => hash c.1⟩
@@ -35,9 +42,9 @@ instance : Hashable Char := ⟨fun c => hash c.1⟩
 /-- A bidirectional character mapping. -/
 structure Mapping where
   /-- Map from "special" (e.g. superscript) characters to "normal" characters. -/
-  toNormal : HashMap Char Char := {}
+  toNormal : Std.HashMap Char Char := {}
   /-- Map from "normal" text to "special" (e.g. superscript) characters. -/
-  toSpecial : HashMap Char Char := {}
+  toSpecial : Std.HashMap Char Char := {}
   deriving Inhabited
 
 /-- Constructs a mapping (intended for compile time use). Panics on violated invariants. -/
@@ -68,7 +75,7 @@ otherwise it will parse only 1. If successful, it passes the result to `k` as an
 where `a..b` is a token and `b..c` is whitespace.
 -/
 partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := true)
-    (k : Array (String.Pos × String.Pos × String.Pos) → ParserState → ParserState) :
+    (k : Array (String.Pos.Raw × String.Pos.Raw × String.Pos.Raw) → ParserState → ParserState) :
     ParserFn := fun c s =>
   let start := s.pos
   let s := takeWhile1Fn p errorMsg c s
@@ -92,10 +99,11 @@ partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := tru
 variable {α : Type u} [Inhabited α] (as : Array α) (leftOfPartition : α → Bool) in
 /-- Given a predicate `leftOfPartition` which is true for indexes `< i` and false for `≥ i`,
 returns `i`, by binary search. -/
-@[specialize] partial def partitionPoint (lo := 0) (hi := as.size) : Nat :=
+@[specialize]
+def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
-    let a := as.get! m
+    let a := as[m]!
     if leftOfPartition a then
       partitionPoint (m+1) hi
     else
@@ -116,36 +124,35 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     (many := true) : ParserFn := fun c s =>
   let start := s.pos
   satisfyTokensFn m.toNormal.contains errorMsg many c s (k := fun toks s => Id.run do
-    let input := c.input
     let mut newStr := ""
     -- This consists of a sorted array of `(from, to)` pairs, where indexes `from+i` in `newStr`
     -- such that `from+i < from'` for the next element of the array, are mapped to `to+i`.
-    let mut aligns := #[((0 : String.Pos), start)]
+    let mut aligns := #[((0 : String.Pos.Raw), start)]
     for (start, stopTk, stopWs) in toks do
       let mut pos := start
       while pos < stopTk do
-        let c := input.get pos
-        let c' := m.toNormal.find! c
-        newStr := newStr.push c'
-        pos := pos + c
-        if String.csize c != String.csize c' then
-          aligns := aligns.push (newStr.endPos, pos)
+        let ch := c.get pos
+        let ch' := m.toNormal[ch]!
+        newStr := newStr.push ch'
+        pos := pos + ch
+        if ch.utf8Size != ch'.utf8Size then
+          aligns := aligns.push (newStr.rawEndPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
-        aligns := aligns.push (newStr.endPos, stopWs)
+        aligns := aligns.push (newStr.rawEndPos, stopWs)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
-    align (pos : String.Pos) :=
+    align (pos : String.Pos.Raw) :=
       let i := partitionPoint aligns (·.1 ≤ pos)
       let (a, b) := aligns[i - 1]!
-      pos - a + b
+      pos.unoffsetBy a |>.offsetBy b
     let s := { s with pos := align s'.pos, errorMsg := s'.errorMsg }
     if s.hasError then return s
     let rec
     /-- Applies the alignment mapping to a `Substring`. -/
-    alignSubstr : Substring → Substring
-      | ⟨_newStr, start, stop⟩ => ⟨input, align start, align stop⟩,
+    alignSubstr : Substring.Raw → Substring.Raw
+      | ⟨_newStr, start, stop⟩ => c.substring (align start) (align stop),
     /-- Applies the alignment mapping to a `SourceInfo`. -/
     alignInfo : SourceInfo → SourceInfo
       | .original leading pos trailing endPos =>
@@ -176,7 +183,8 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
 * `errorMsg`: shown when the parser does not match
 * `p`: the inner parser (usually `term`), to be called on the body of the superscript
 * `many`: if false, whitespace is not allowed inside the superscript
-* `kind`: the term will be wrapped in a node with this kind
+* `kind`: the term will be wrapped in a node with this kind;
+  generally this is a name of the parser declaration itself.
 -/
 def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
     (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
@@ -193,10 +201,32 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
 def scriptParser.parenthesizer (k : SyntaxNodeKind) (p : Parenthesizer) : Parenthesizer :=
   Parenthesizer.node.parenthesizer k p
 
+/-- Map over the strings in a `Format`. -/
+def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m String) : m Format :=
+  match f with
+  | .group f b => (.group · b) <$> Std.Format.mapStringsM f f'
+  | .tag t g => .tag t <$> Std.Format.mapStringsM g f'
+  | .append f g => .append <$> Std.Format.mapStringsM f f' <*> Std.Format.mapStringsM g f'
+  | .nest n f => .nest n <$> Std.Format.mapStringsM f f'
+  | .text s => .text <$> f' s
+  | .align _ | .line | .nil => pure f
+
 /-- Formatter for the script parser. -/
-def scriptParser.formatter (k : SyntaxNodeKind) (p : Formatter) : Formatter :=
-  -- FIXME, this is wrong since it doesn't superscript the text
+def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) :
+    Formatter := do
+  let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
+  let st ← get
+  let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
+    let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
+    .ok (String.ofList s))
+  match transformed with
+  | .error err =>
+    -- TODO: this only appears if the caller explicitly calls the pretty-printer
+    Lean.logErrorAt (← get).stxTrav.cur s!"Not a {name}: '{err}'"
+    set { st with stack := stack ++ st.stack }
+  | .ok newStack =>
+    set { st with stack := stack ++ newStack }
 
 end Superscript
 
@@ -221,8 +251,20 @@ def superscript (p : Parser) : Parser :=
 def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
-def superscript.formatter := Superscript.scriptParser.formatter ``superscript
+def superscript.formatter :=
+  Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
+/-- Shorthand for `superscript(term)`.
+
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
+
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
+
+initialize register_parser_alias superscript
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -246,31 +288,45 @@ def subscript (p : Parser) : Parser :=
 def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := Superscript.scriptParser.formatter ``subscript
+def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
-section deleteme -- lean4#2269
+/-- Shorthand for `subscript(term)`.
 
-@[nolint docBlame]
-def registerAliasCore {α} (mapRef : IO.Ref (AliasTable α)) (aliasName : Name)
-    (value : AliasValue α) : IO Unit := do
-  if (← mapRef.get).contains aliasName then
-    throw ↑s!"alias '{aliasName}' has already been declared"
-  mapRef.modify (·.insert aliasName value)
+This is needed because the initializer below does not always run, and if it has not run then
+downstream parsers using the combinators will crash.
 
-@[nolint docBlame]
-def registerAlias (aliasName declName : Name) (p : ParserAliasValue)
-    (kind? : Option SyntaxNodeKind := none) (info : ParserAliasInfo := {}) : IO Unit := do
-  registerAliasCore parserAliasesRef aliasName p
-  if let some kind := kind? then
-    parserAlias2kindRef.modify (·.insert aliasName kind)
-  parserAliases2infoRef.modify (·.insert aliasName { info with declName })
+See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Non-builtin.20parser.20aliases/near/365125476
+for some context. -/
+@[term_parser]
+def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
 
-end deleteme
+initialize register_parser_alias subscript
 
-initialize
-  registerAlias `superscript ``superscript superscript
-  registerAliasCore Formatter.formatterAliasesRef `superscript superscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `superscript superscript.parenthesizer
-  registerAlias `subscript ``subscript subscript
-  registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
-  registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+/-- Returns true if every character in `stx : Syntax` can be superscripted
+(or subscripted). -/
+private partial def Superscript.isValid (m : Mapping) : Syntax → Bool
+  | .node _ kind args => kind == hygieneInfoKind || (!(scripted kind) && args.all (isValid m))
+  | .atom _ s => valid s
+  | .ident _ _ s _ => valid s.toString
+  | _ => false
+where
+  valid (s : String) : Bool :=
+    s.all ((m.toSpecial.insert ' ' ' ').contains ·)
+  scripted : SyntaxNodeKind → Bool :=
+    #[``subscript, ``superscript].contains
+
+/-- Successfully delaborates only if the resulting expression can be superscripted.
+
+See `Mapping.superscript` in this file for legal superscript characters. -/
+def delabSuperscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .superscript stx.raw then pure stx else failure
+
+/-- Successfully delaborates only if the resulting expression can be subscripted.
+
+See `Mapping.subscript` in this file for legal subscript characters. -/
+def delabSubscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .subscript stx.raw then pure stx else failure
+
+end Mathlib.Tactic

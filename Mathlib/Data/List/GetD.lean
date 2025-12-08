@@ -4,18 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn,
 Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Util.AssertExists
 
 /-! # getD and getI
 
 This file provides theorems for working with the `getD` and `getI` functions. These are used to
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
-
 -/
+
+@[expose] public section
+
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 namespace List
 
@@ -27,94 +31,60 @@ section getD
 
 variable (d : α)
 
-@[simp]
-theorem getD_nil : getD [] n d = d :=
-  rfl
-#align list.nthd_nil List.getD_nilₓ -- argument order
+theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
+  grind
 
-@[simp]
-theorem getD_cons_zero : getD (x :: xs) 0 d = x :=
-  rfl
-#align list.nthd_cons_zero List.getD_cons_zeroₓ -- argument order
-
-@[simp]
-theorem getD_cons_succ : getD (x :: xs) (n + 1) d = getD xs n d :=
-  rfl
-#align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
-
-theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
-  induction l generalizing n with
-  | nil => exact absurd hn (not_lt_of_ge (Nat.zero_le _))
-  | cons head tail ih =>
-    cases n
-    · exact getD_cons_zero _ _ _
-    · exact ih _
-
-@[simp]
-theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
-  induction l generalizing n with
-  | nil => rfl
-  | cons head tail ih =>
-    cases n
-    · rfl
-    · simp [ih]
-
-set_option linter.deprecated false in
-@[deprecated getD_eq_get]
-theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn :=
-  getD_eq_get ..
-#align list.nthd_eq_nth_le List.getD_eq_nthLeₓ -- argument order
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction l generalizing n with
-  | nil => exact getD_nil _ _
-  | cons head tail ih =>
-    cases n
-    · refine' absurd (Nat.zero_lt_succ _) (not_lt_of_ge hn)
-    · exact ih (Nat.le_of_succ_le_succ hn)
-#align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
+  grind
+
+theorem getD_reverse {l : List α} (i) (h : i < length l) :
+    getD l.reverse i = getD l (l.length - 1 - i) := by
+  funext a
+  rwa [List.getD_eq_getElem?_getD, List.getElem?_reverse, ← List.getD_eq_getElem?_getD]
 
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
-def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
-  fun _ => isFalse fun H => H (getD_nil _ _)
-#align list.decidable_nthd_nil_ne List.decidableGetDNilNeₓ -- argument order
+def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
+  fun _ => isFalse fun H => H getD_nil
 
 @[simp]
-theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;> simp
-#align list.nthd_singleton_default_eq List.getD_singleton_default_eqₓ -- argument order
+theorem getElem?_getD_singleton_default_eq (n : ℕ) : [d][n]?.getD d = d := by cases n <;> simp
 
 @[simp]
-theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
-  induction r generalizing n with
-  | zero => simp
-  | succ n ih => cases n <;> simp [ih]
-#align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
+theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.getD d = d := by
+  grind
 
-theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
-    (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
+theorem getD_replicate {y i n} (h : i < n) :
+    getD (replicate n x) i y = x := by
+  rw [getD_eq_getElem, getElem_replicate]
+  rwa [length_replicate]
+
+theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_get _ _ h', get_append _ h, getD_eq_get]
-#align list.nthd_append List.getD_appendₓ -- argument order
+  rw [getD_eq_getElem _ _ (Nat.lt_of_lt_of_le h (length_append ▸ Nat.le_add_right _ _)),
+    getElem_append_left h, getD_eq_getElem]
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++ l').length with
-  | inl h' =>
-    rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
-    · rw [length_append] at h'
-      exact Nat.sub_lt_left_of_lt_add h h'
-    · exact not_lt_of_le h
-  | inr h' =>
-    rw [getD_eq_default _ _ h', getD_eq_default]
-    rwa [le_tsub_iff_left h, ← length_append]
-#align list.nthd_append_right List.getD_append_rightₓ -- argument order
+  grind
 
-theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
-  cases lt_or_le n l.length with
-  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
-  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
-#align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
+theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := by
+  cases Nat.lt_or_ge n l.length with
+  | inl h => rw [getD_eq_getElem _ _ h, getElem?_eq_getElem h, Option.getD_some]
+  | inr h => rw [getD_eq_default _ _ h, getElem?_eq_none_iff.mpr h, Option.getD_none]
+
+theorem getD_surjective_iff {l : List α} {d : α} :
+    (l.getD · d).Surjective ↔ (∀ x, x = d ∨ x ∈ l) := by
+  apply forall_congr'
+  have : ∃ x, l.length ≤ x := ⟨_, Nat.le_refl _⟩
+  simp only [getD_eq_getElem?_getD, getD_getElem?, dite_eq_iff, Nat.not_lt, exists_prop, exists_or,
+    exists_and_right, this, mem_iff_getElem?, getElem?_eq_some_iff]
+  grind
+
+theorem getD_surjective {l : List α} (h : ∀ x, x ∈ l) (d : α) : (l.getD · d).Surjective :=
+  getD_surjective_iff.mpr fun _ ↦ .inr <| h _
 
 end getD
 
@@ -125,50 +95,36 @@ variable [Inhabited α]
 @[simp]
 theorem getI_nil : getI ([] : List α) n = default :=
   rfl
-#align list.inth_nil List.getI_nil
 
 @[simp]
 theorem getI_cons_zero : getI (x :: xs) 0 = x :=
   rfl
-#align list.inth_cons_zero List.getI_cons_zero
 
 @[simp]
 theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
-#align list.inth_cons_succ List.getI_cons_succ
 
-theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
-  getD_eq_get ..
-
-@[deprecated getI_eq_get]
-theorem getI_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getI n = l.nthLe n hn :=
-  getI_eq_get ..
-#align list.inth_eq_nth_le List.getI_eq_nthLe
+theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
+  getD_eq_getElem l default hn
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
-#align list.inth_eq_default List.getI_eq_default
 
 theorem getD_default_eq_getI {n : ℕ} : l.getD n default = l.getI n :=
   rfl
-#align list.nthd_default_eq_inth List.getD_default_eq_getIₓ -- new argument `n`
 
-theorem getI_append (l l' : List α) (n : ℕ) (h : n < l.length)
-    (h' : n < (l ++ l').length := h.trans_le ((length_append l l').symm ▸ le_self_add)) :
-    (l ++ l').getI n = l.getI n :=
-  getD_append _ _ _ _ h h'
-#align list.inth_append List.getI_append
+theorem getI_append (l l' : List α) (n : ℕ) (h : n < l.length) :
+    (l ++ l').getI n = l.getI n := getD_append _ _ _ _ h
 
 theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getI n = l'.getI (n - l.length) :=
   getD_append_right _ _ _ _ h
-#align list.inth_append_right List.getI_append_right
 
-theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
-  rw [← getD_default_eq_getI, getD_eq_getD_get?, Option.getD_default_eq_iget]
-#align list.inth_eq_iget_nth List.getI_eq_iget_get?
+theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
+  rw [← getD_default_eq_getI, getD_eq_getD_getElem?, Option.getD_default_eq_iget]
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
-#align list.inth_zero_eq_head List.getI_zero_eq_headI
 
 end getI
+
+end List

@@ -3,9 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.Algebra.CharP.Reduced
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.FieldTheory.KummerPolynomial
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -15,22 +18,24 @@ In this file we define perfect fields, together with a generalisation to (commut
 prime characteristic.
 
 ## Main definitions / statements:
- * `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
-   if its absolute Frobenius map `x ↦ xᵖ` is bijective.
- * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
-   separable.
- * `PerfectRing.toPerfectField`: a field that is perfect in the sense of Serre is a perfect field.
- * `PerfectField.toPerfectRing`: a perfect field of characteristic `p` (prime) is perfect in the
-   sense of Serre.
- * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
- * `PerfectField.ofFinite`: all finite fields are perfect.
- * `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
-   it is square-free.
- * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
-   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
-   and `L` is also a perfect field.
+* `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
+  if its absolute Frobenius map `x ↦ xᵖ` is bijective.
+* `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
+  separable.
+* `PerfectRing.toPerfectField`: a field that is perfect in the sense of Serre is a perfect field.
+* `PerfectField.toPerfectRing`: a perfect field of characteristic `p` (prime) is perfect in the
+  sense of Serre.
+* `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
+* `PerfectField.ofFinite`: all finite fields are perfect.
+* `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
+  it is square-free.
+* `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
+  if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
+  and `L` is also a perfect field.
 
 -/
+
+@[expose] public section
 
 open Function Polynomial
 
@@ -51,7 +56,6 @@ variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [ExpChar R p]
     [IsReduced R] (h : Surjective <| frobenius R p) : PerfectRing R p :=
   ⟨frobenius_inj R p, h⟩
-#align perfect_ring.of_surjective PerfectRing.ofSurjective
 
 instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
@@ -75,11 +79,9 @@ theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobeniu
 @[simps! apply]
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
-#align frobenius_equiv frobeniusEquiv
 
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
-#align coe_frobenius_equiv coe_frobeniusEquiv
 
 theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
 
@@ -117,7 +119,7 @@ theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x 
   rw [iterateFrobeniusEquiv_def, pow_one]
 
 @[simp]
-theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+theorem iterateFrobeniusEquiv_zero : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
   RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
 
 @[simp]
@@ -153,11 +155,66 @@ theorem frobeniusEquiv_symm_comp_frobenius :
   ext; simp
 
 @[simp]
+theorem coe_frobenius_comp_coe_frobeniusEquiv_symm :
+    ⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm = id := by
+  ext
+  simp
+
+@[simp]
+theorem coe_frobeniusEquiv_symm_comp_coe_frobenius :
+    ⇑(frobeniusEquiv R p).symm ∘ ⇑(frobenius R p) = id := by
+  ext
+  simp
+
+@[simp]
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
+@[simp]
+theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
+    ((frobeniusEquiv R p).symm ^[n]) x ^ (p ^ n) = x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih]
+
+section commute
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
+    [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p]
+
+/--
+The `(frobeniusEquiv R p).symm` version of `MonoidHom.map_frobenius`.
+`(frobeniusEquiv R p).symm` commute with any monoid homomorphisms.
+-/
+theorem MonoidHom.map_frobeniusEquiv_symm (f : R →* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← MonoidHom.map_frobenius]
+
+theorem RingHom.map_frobeniusEquiv_symm (f : R →+* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← RingHom.map_frobenius]
+
+theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
+  apply_fun (frobeniusEquiv S p)^[n]
+  · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
+    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+      · simp
+      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+  apply Function.Injective.iterate
+  simp
+
+theorem RingHom.map_iterate_frobeniusEquiv_symm (f : R →+* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) :=
+  MonoidHom.map_iterate_frobeniusEquiv_symm p (f.toMonoidHom) n x
+
+end commute
+
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
-#align injective_pow_p injective_pow_p
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
@@ -172,7 +229,7 @@ theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p]
 
 instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
-  bijective_frobenius := (bijective_frobenius R p).Prod_map (bijective_frobenius S p)
+  bijective_frobenius := (bijective_frobenius R p).prodMap (bijective_frobenius S p)
 
 end PerfectRing
 
@@ -206,35 +263,15 @@ instance ofFinite [Finite K] : PerfectField K := by
 variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
-instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
-  refine' PerfectRing.ofSurjective _ _ fun y ↦ _
-  let f : K[X] := X ^ p - C y
-  let L := f.SplittingField
-  let ι := algebraMap K L
-  have hf_deg : f.degree ≠ 0 := by
-    rw [degree_X_pow_sub_C (expChar_pos K p) y, p.cast_ne_zero]; exact (expChar_pos K p).ne'
-  let a : L := f.rootOfSplits ι (SplittingField.splits f) hf_deg
-  have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
-  have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
-  let g : K[X] := minpoly K a
-  suffices (g.map ι).natDegree = 1 by
-    rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
-    obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
-    refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
-    rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
-  have hg_dvd : g.map ι ∣ (X - C a) ^ p := by
-    convert Polynomial.map_dvd ι (minpoly.dvd K a hfa)
-    rw [sub_pow_expChar, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, ← ha_pow, map_pow]
-  have ha : IsIntegral K a := .of_finite K a
-  have hg_pow : g.map ι = (X - C a) ^ (g.map ι).natDegree := by
-    obtain ⟨q, -, hq⟩ := (dvd_prime_pow (prime_X_sub_C a) p).mp hg_dvd
-    rw [eq_of_monic_of_associated ((minpoly.monic ha).map ι) ((monic_X_sub_C a).pow q) hq,
-      natDegree_pow, natDegree_X_sub_C, mul_one]
-  have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
-  rw [hg_pow] at hg_sep
-  refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
-  rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
-  exact minpoly.degree_pos ha
+instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
+  refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
+  rcases hp with _ | hp
+  · simp [frobenius]
+  rw [← not_forall_not]
+  apply mt (X_pow_sub_C_irreducible_of_prime hp)
+  apply mt separable_of_irreducible
+  simp [separable_def, isCoprime_zero_right, isUnit_iff_degree_eq_zero,
+    derivative_X_pow, degree_X_pow_sub_C hp.pos, hp.ne_zero]
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
@@ -247,14 +284,15 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
 end PerfectField
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
-theorem Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [PerfectField K] (halg : Algebra.IsAlgebraic K L) : IsSeparable K L :=
-  ⟨fun x ↦ PerfectField.separable_of_irreducible <| minpoly.irreducible (halg x).isIntegral⟩
+instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
+    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : Algebra.IsSeparable K L :=
+  ⟨fun x ↦ PerfectField.separable_of_irreducible <|
+    minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then so is `L`. -/
 theorem Algebra.IsAlgebraic.perfectField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [PerfectField K] (halg : Algebra.IsAlgebraic K L) : PerfectField L := ⟨fun {f} hf ↦ by
-  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral halg.isIntegral
+    [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
+  obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
   exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
 
 namespace Polynomial
@@ -293,8 +331,8 @@ theorem roots_expand_image_frobenius_subset [DecidableEq R] :
   convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
+section PerfectRing
 variable {p n f}
-
 variable [PerfectRing R p]
 
 theorem roots_expand_pow :
@@ -307,6 +345,7 @@ theorem roots_expand_pow :
 
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
+  rfl
 
 theorem roots_X_pow_char_pow_sub_C {y : R} :
     (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by
@@ -345,7 +384,9 @@ theorem roots_expand_image_frobenius [DecidableEq R] :
   rw [Finset.image_toFinset, roots_expand_map_frobenius,
       (roots f).toFinset_nsmul _ (expChar_pos R p).ne']
 
-variable (p n f) [DecidableEq R]
+end PerfectRing
+
+variable [DecidableEq R]
 
 /-- If `f` is a polynomial over an integral domain `R` of characteristic `p`, then there is
 a map from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
@@ -370,13 +411,16 @@ noncomputable def rootsExpandPowToRoots :
 @[simp]
 theorem rootsExpandPowToRoots_apply (x) : (rootsExpandPowToRoots p n f x : R) = x ^ p ^ n := rfl
 
+variable [PerfectRing R p]
+
 /-- If `f` is a polynomial over a perfect integral domain `R` of characteristic `p`, then there is
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
-      Finset.setOf_mem, Finset.coe_image]; rfl
+  ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
+      frobeniusEquiv_apply]
 
 @[simp]
 theorem rootsExpandEquivRoots_apply (x) : (rootsExpandEquivRoots p f x : R) = x ^ p := rfl
@@ -386,9 +430,11 @@ a bijection from the set of roots of `Polynomial.expand R (p ^ n) f` to the set 
 It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
-  ((iterateFrobeniusEquiv R p n).image _).trans <| .Set.ofEq <| show _ '' (setOf _) = setOf _ by
+  ((iterateFrobeniusEquiv R p n).image _).trans <|
+    .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image]; rfl
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]
 theorem rootsExpandPowEquivRoots_apply (n : ℕ) (x) :

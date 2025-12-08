@@ -3,10 +3,10 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+module
 
-import Mathlib.Tactic.Linarith.Elimination
-import Mathlib.Tactic.Linarith.Parsing
-import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Parsing
+public meta import Mathlib.Util.Qq
 
 /-!
 # Deriving a proof of false
@@ -20,11 +20,13 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-set_option autoImplicit true
+public meta section
 
 open Lean Elab Tactic Meta
 
 namespace Qq
+
+variable {u : Level}
 
 /-- Typesafe conversion of `n : ℕ` to `Q($α)`. -/
 def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
@@ -39,7 +41,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
 
 end Qq
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 open Ineq
 open Qq
@@ -47,7 +49,7 @@ open Qq
 /-! ### Auxiliary functions for assembling proofs -/
 
 /-- A typesafe version of `mulExpr`. -/
-def mulExpr' (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
+def mulExpr' {u : Level} (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
   if n = 1 then e else
     let n := ofNatQ α inst n
     q($n * $e)
@@ -62,15 +64,15 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
   return mulExpr' n inst e
 
 /-- A type-safe analogue of `addExprs`. -/
-def addExprs' {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
+def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
-    where
-    /-- Inner loop for `addExprs'`. -/
-    go (p : Q($α)) : List Q($α) → Q($α)
-    | [] => p
-    | [q] => q($p + $q)
-    | q::t => go q($p + $q) t
+where
+  /-- Inner loop for `addExprs'`. -/
+  go (p : Q($α)) : List Q($α) → Q($α)
+  | [] => p
+  | [q] => q($p + $q)
+  | q::t => go q($p + $q) t
 
 /-- `addExprs L` creates an `Expr` representing the sum of the elements of `L`, associated left. -/
 def addExprs : List Expr → MetaM Expr
@@ -91,11 +93,11 @@ def addIneq : Ineq → Ineq → (Name × Ineq)
   | eq, le => (``Linarith.le_of_eq_of_le, le)
   | eq, lt => (``Linarith.lt_of_eq_of_lt, lt)
   | le, eq => (``Linarith.le_of_le_of_eq, le)
-  | le, le => (``add_nonpos, le)
-  | le, lt => (``add_lt_of_le_of_neg, lt)
+  | le, le => (``Linarith.add_nonpos, le)
+  | le, lt => (``Linarith.add_lt_of_le_of_neg, lt)
   | lt, eq => (``Linarith.lt_of_lt_of_eq, lt)
-  | lt, le => (``add_lt_of_neg_of_le, lt)
-  | lt, lt => (``Left.add_neg, lt)
+  | lt, le => (``Linarith.add_lt_of_neg_of_le, lt)
+  | lt, lt => (``Linarith.add_neg, lt)
 
 /--
 `mkLTZeroProof coeffs pfs` takes a list of proofs of the form `tᵢ Rᵢ 0`,
@@ -109,50 +111,54 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       return t
   | ((h, c)::t) => do
       let (iq, h') ← mkSingleCompZeroOf c h
-      let (_, t) ← t.foldlM (λ pr ce => step pr.1 pr.2 ce.1 ce.2) (iq, h')
+      let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
-  where
-    /--
-    `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
-    of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
-    along with this proof.
-    -/
-    step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
-      let (iq, h') ← mkSingleCompZeroOf coeff npf
-      let (nm, niq) := addIneq c iq
-      return (niq, ← mkAppM nm #[pf, h'])
+where
+  /--
+  `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
+  of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
+  along with this proof.
+  -/
+  step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
+    let (iq, h') ← mkSingleCompZeroOf coeff npf
+    let (nm, niq) := addIneq c iq
+    return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let (t, _) ← getRelSides (← inferType prf)
+  let (_, _, t, _) ← (← inferType prf).ineq?
   return t
 
 /-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
 def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  inferType (← leftOfIneqProof prf)
+  let (_, ty, _) ← (← inferType prf).ineq?
+  return ty
 
 /--
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``zero_lt_one #[tp, none, none, none, none, none]
+  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none, none, none]
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--
-`addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
-proof, it adds a proof of `-t = 0` to the list.
+`addNegEqProofsIdx l` inspects a list `l` of pairs `(h, i)` where `h` proves
+`tᵢ Rᵢ 0` and `i` records the original index of the hypothesis. For each
+equality proof `t = 0` in the list, it appends a proof of `-t = 0` with the
+same index `i`. All other entries are preserved.
 -/
-def addNegEqProofs : List Expr → MetaM (List Expr)
+def addNegEqProofsIdx : List (Expr × Nat) → MetaM (List (Expr × Nat))
   | [] => return []
-  | (h::tl) => do
+  | (⟨h, i⟩::tl) => do
     let (iq, t) ← parseCompAndExpr (← inferType h)
     match iq with
     | Ineq.eq => do
-      let nep := mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
-      let tl ← addNegEqProofs tl
-      return h::nep::tl
-    | _ => return h :: (← addNegEqProofs tl)
+      let nep :=
+        mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
+      let tl ← addNegEqProofsIdx tl
+      return (h, i)::(nep, i)::tl
+    | _ => return (h, i) :: (← addNegEqProofsIdx tl)
 
 /--
 `proveEqZeroUsing tac e` tries to use `tac` to construct a proof of `e = 0`.
@@ -169,9 +175,7 @@ def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
 Given a list `l` of proofs of `tᵢ Rᵢ 0`,
 it tries to derive a contradiction from `l` and use this to produce a proof of `False`.
 
-An oracle is used to search for a certificate of unsatisfiability.
-In the current implementation, this is the Fourier Motzkin elimination routine in
-`Elimination.lean`, but other oracles could easily be swapped in.
+`oracle : CertificateOracle` is used to search for a certificate of unsatisfiability.
 
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
 If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
@@ -184,48 +188,73 @@ We have also that
 since for each `i`, `(m i)*tᵢ ≤ 0` and at least one is strictly negative.
 So we conclude a contradiction `0 < 0`.
 
-It remains to produce proofs of (1) and (2). (1) is verified by calling the `discharger` tactic
-of the `LinarithConfig` object, which is typically `ring`. We prove (2) by folding over the
-set of hypotheses.
+It remains to produce proofs of (1) and (2). (1) is verified by calling the provided `discharger`
+tactic, which is typically `ring`. We prove (2) by folding over the set of hypotheses.
+
+`transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
-def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM Expr
+def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM (Expr × List Nat)
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
-      trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
+      Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
-      let l' ← addNegEqProofs l
-      trace[linarith.detail] "... finished `addNegEqProofs`."
-      let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
-      trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
-      trace[linarith.detail] (← inputs.mapM inferType)
-      let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
-      trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
-      trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
+      let lidx := l.zipIdx
+      let l' ← detailTrace "addNegEqProofs" <| addNegEqProofsIdx lidx
+      let inputsTagged : List (Expr × Option Nat) ←
+        detailTrace "mkNegOneLtZeroProof" <|
+          return ((← mkNegOneLtZeroProof (← typeOfIneqProof h)), none) ::
+            (l'.reverse.map fun ⟨e, i⟩ => (e, some i))
+      let inputs := inputsTagged.map Prod.fst
+      trace[linarith.detail] "inputs:{indentD <| toMessageData (← inputs.mapM inferType)}"
+      let (comps, max_var) ← detailTrace "linearFormsAndMaxVar" <|
+        linearFormsAndMaxVar transparency inputs
+      trace[linarith.detail] "comps:{indentD <| toMessageData comps}"
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Std.HashMap Nat Nat ← try
-        oracle comps max_var
-      catch e =>
-        trace[linarith] e.toMessageData
-        throwError "linarith failed to find a contradiction"
-      trace[linarith] "linarith has found a contradiction: {certificate.toList}"
-      let enum_inputs := inputs.enum
-      -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
-      let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
-      -- `sm` is the sum of input terms, scaled to cancel out all variables.
-      let sm ← addExprs mls
-      -- let sm ← instantiateMVars sm
-      trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
+      let certificate : Std.HashMap Nat Nat ←
+        withTraceNode `linarith (return m!"{exceptEmoji ·} Invoking oracle") do
+          let certificate ←
+            try
+              oracle.produceCertificate comps max_var
+            catch e =>
+              trace[linarith] e.toMessageData
+              throwError "linarith failed to find a contradiction"
+          trace[linarith] "found a contradiction: {certificate.toList}"
+          return certificate
+      let (sm, zip, idxs) ←
+        withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
+          let enum_inputs := inputsTagged.zipIdx
+          -- construct a list pairing nonzero coeffs with the proof of their corresponding
+          -- comparison and track the original index
+          let used := enum_inputs.filterMap fun ⟨⟨e, orig?⟩, n⟩ =>
+            (certificate[n]?).map fun c => (e, c, orig?)
+          let zip := used.map fun ⟨e, c, _⟩ => (e, c)
+          let mls ← used.mapM fun ⟨e, c, _⟩ => do mulExpr c (← leftOfIneqProof e)
+          -- `sm` is the sum of input terms, scaled to cancel out all variables.
+          let sm ← addExprs mls
+          -- let sm ← instantiateMVars sm
+          trace[linarith] "{indentD sm}\nshould be both 0 and negative"
+          let idxs :=
+            (used.foldl (fun acc (_, _, orig?) =>
+                match orig? with
+                | some i => i :: acc
+                | none => acc) []).eraseDups
+          return (sm, zip, idxs)
       -- we prove that `sm = 0`, typically with `ring`.
-      let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
+      let sm_eq_zero ← detailTrace "proveEqZeroUsing" <| proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
-      let sm_lt_zero ← mkLTZeroProof zip
-      -- this is a contradiction.
-      let pftp ← inferType sm_lt_zero
-      let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
-      let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
-      mkAppM ``Linarith.lt_irrefl #[pf']
+      let sm_lt_zero ← detailTrace "mkLTZeroProof" <| mkLTZeroProof zip
+      let pf ← detailTrace "Linarith.lt_irrefl" do
+        -- this is a contradiction.
+        let pftp ← inferType sm_lt_zero
+        let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
+        let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
+        mkAppM ``Linarith.lt_irrefl #[pf']
+      return (pf, idxs)
+where
+  /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
+  detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
+    withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
 
-end Linarith
+end Mathlib.Tactic.Linarith

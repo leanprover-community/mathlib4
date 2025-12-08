@@ -1,45 +1,70 @@
 name: Label New Contributors
 
-on:
-  pull_request:
-    types: [opened]
+# Written with ChatGPT: https://chat.openai.com/share/3777ceb1-d722-4705-bacd-ba3f04b387be
+
+on: 
+  pull_request_target:
+    types:
+      - opened
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
 
 jobs:
-  label-new-contributor:
+  label-and-report-new-contributor:
     runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    if: github.repository == 'leanprover-community/mathlib4'
     permissions:
+      checks: write
       pull-requests: write
-
+      contents: read
     steps:
-    - name: Get PR author
-      id: pr-author
-      run: echo "::set-output name=author::$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")"
-      shell: bash
+      - name: Label PR and report count
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const creator = context.payload.sender.login
+            const { owner, repo } = context.repo;
 
-    - name: Check if user is new contributor
-      id: check-contributor
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const { owner, repo } = context.repo
-          const author = "${{ steps.pr-author.outputs.author }}"
-          const prs = await github.rest.pulls.list({
-            owner,
-            repo,
-            state: "closed",
-            author
-          })
-          return (prs.data.length < 5)
+            // Use search API to find merged PRs by this author
+            // Note: mathlib4 uses bors for merging, which doesn't mark PRs as merged in GitHub's sense
+            // Instead, we search for the exact "[Merged by Bors] - " prefix that bors adds to PR titles
+            const searchQuery = `repo:${owner}/${repo}+is:pr+author:${creator}+in:title+"[Merged by Bors] -"`;
+            const searchResult = await github.rest.search.issuesAndPullRequests({
+              q: searchQuery
+            });
+            const pullRequestCount = searchResult.data.total_count;
 
-    - name: Add label if new contributor
-      if: steps.check-contributor.outputs.result == 'true'
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const { owner, repo, number } = context.issue
-          await github.rest.issues.addLabels({
-            owner,
-            repo,
-            issue_number: number,
-            labels: ['new-contributor']
-          })
+            // We could filter out bot users here, with:
+            // const isBot = (github.rest.users.getByUsername(creator).type === "Bot");
+            // But we choose to label PRs by new bot contributors as well.
+
+            // Determine if the creator has 5 or fewer merged pull requests
+            if (pullRequestCount <= 5) {
+              // Add the "new-contributor" label to the current pull request
+              await github.rest.issues.addLabels({
+                issue_number: context.issue.number,
+                owner,
+                repo,
+                labels: ['new-contributor']
+              });
+            }
+
+            // Create a check run with a message about the merged PR count by this author
+            const message = `Found ${pullRequestCount} merged PRs by ${creator}.`;
+            await github.rest.checks.create({
+              owner,
+              repo,
+              name: 'New Contributor Check',
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'neutral',
+              output: {
+                title: message,
+                summary: message,
+              },
+            });

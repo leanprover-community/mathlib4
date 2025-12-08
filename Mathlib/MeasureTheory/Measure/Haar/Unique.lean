@@ -3,12 +3,17 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Measure.EverywherePos
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.EverywherePos
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -55,7 +60,7 @@ measure. We follow McQuillan's answer at https://mathoverflow.net/questions/4566
 On second-countable groups, one can arrive to slightly different uniqueness results by using that
 the operations are measurable. In particular, one can get uniqueness assuming σ-finiteness of
 the measures but discarding the assumption that they are finite on compact sets. See
-`haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
+`haarMeasure_unique` in the file `Mathlib/MeasureTheory/Measure/Haar/Basic.lean`.
 
 ## References
 
@@ -63,7 +68,9 @@ the measures but discarding the assumption that they are finite on compact sets.
 [Fremlin, *Measure Theory* (volume 4)][fremlin_vol4]
 -/
 
-open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
+@[expose] public section
+
+open Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 /-- In a locally compact regular space with an inner regular measure, the measure of a compact
@@ -79,10 +86,10 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
   · simp only [le_iInf_iff]
     intro f f_cont f_comp fk f_nonneg
     apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
-    · exact eventually_of_forall f_nonneg
+    · exact Eventually.of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
-  · apply le_of_forall_lt' (fun r hr ↦ ?_)
-    simp only [iInf_lt_iff, exists_prop, exists_and_left]
+  · apply le_of_forall_gt (fun r hr ↦ ?_)
+    simp only [iInf_lt_iff, exists_prop]
     obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
       hk.exists_isOpen_lt_of_lt r hr
     obtain ⟨⟨f, f_cont⟩, fk, fU, f_comp, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 1 k ∧ EqOn f 0 Uᶜ
@@ -98,7 +105,7 @@ compactly supported continuous function on a topological group `G`, and `μ` is 
 sets. -/
 @[to_additive]
 lemma continuous_integral_apply_inv_mul
-    {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+    {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
     {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {g : G → E}
@@ -123,7 +130,7 @@ namespace Measure
 
 section Group
 
-variable {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
 
 /-!
@@ -165,8 +172,8 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
       exact h'g.comp_homeomorph ((Homeomorph.inv G).trans (Homeomorph.mulRight x))
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
-    congr with x; rw [mul_assoc, inv_mul_cancel (D_pos x).ne', mul_one]
-  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [integral_mul_left]
+    congr with x; rw [mul_assoc, inv_mul_cancel₀ (D_pos x).ne', mul_one]
+  _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [D, integral_const_mul]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
       apply integral_integral_swap_of_hasCompactSupport
       · apply Continuous.mul
@@ -184,9 +191,9 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         have : ∀ (p : G × G), p ∉ K ×ˢ closure M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ K; swap
-          · simp [image_eq_zero_of_nmem_tsupport H]
+          · simp [image_eq_zero_of_notMem_tsupport H]
           have : g (y⁻¹ * x) = 0 := by
-            apply image_eq_zero_of_nmem_tsupport
+            apply image_eq_zero_of_notMem_tsupport
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
@@ -216,9 +223,9 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ L; swap
-          · simp [image_eq_zero_of_nmem_tsupport H]
+          · simp [image_eq_zero_of_notMem_tsupport H]
           have : f (y * x) = 0 := by
-            apply image_eq_zero_of_nmem_tsupport
+            apply image_eq_zero_of_notMem_tsupport
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
@@ -228,10 +235,10 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
-      simp_rw [integral_mul_right]
+      simp_rw [integral_mul_const]
       congr with x
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
-  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
+  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_const_mul _ _
 
 /-- Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
@@ -250,10 +257,8 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
     ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_pos : 0 < ∫ x, g x ∂μ := by
-    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
-    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
-    · exact g_cont.integrable_of_hasCompactSupport g_comp
+  have int_g_pos : 0 < ∫ x, g x ∂μ :=
+    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
   let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
@@ -271,10 +276,9 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
     integral_isMulLeftInvariant_isMulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rw [← A, mul_assoc, mul_comm] at B
-  simp only [B, integral_smul_nnreal_measure]
-  rfl
+  simp [B, integral_smul_nnreal_measure, c, NNReal.smul_def]
 
-open Classical in
+open scoped Classical in
 /-- Given two left-invariant measures which are finite on compacts, `haarScalarFactor μ' μ` is a
 scalar such that `∫ f dμ' = (haarScalarFactor μ' μ) ∫ f dμ` for any compactly supported continuous
 function `f`.
@@ -283,14 +287,14 @@ Note that there is a dissymmetry in the assumptions between `μ'` and `μ`: the 
 only be finite on compact sets, while `μ` has to be finite on compact sets and positive on open
 sets, i.e., a Haar measure, to exclude for instance the case where `μ = 0`, where the definition
 doesn't make sense. -/
-@[to_additive "Given two left-invariant measures which are finite on compacts,
+@[to_additive /-- Given two left-invariant measures which are finite on compacts,
 `addHaarScalarFactor μ' μ` is a scalar such that `∫ f dμ' = (addHaarScalarFactor μ' μ) ∫ f dμ` for
 any compactly supported continuous function `f`.
 
 Note that there is a dissymmetry in the assumptions between `μ'` and `μ`: the measure `μ'` needs
 only be finite on compact sets, while `μ` has to be finite on compact sets and positive on open
 sets, i.e., an additive Haar measure, to exclude for instance the case where `μ = 0`, where the
-definition doesn't make sense."]
+definition doesn't make sense. -/]
 noncomputable def haarScalarFactor
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     ℝ≥0 :=
@@ -302,10 +306,10 @@ up to the scalar `haarScalarFactor μ' μ`. See also
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which gives the same result for compact
 sets, and `measure_isHaarMeasure_eq_smul_of_isOpen` for open sets. -/
 @[to_additive integral_isAddLeftInvariant_eq_smul_of_hasCompactSupport
-"Two left invariant measures integrate in the same way continuous compactly supported functions,
+/-- Two left invariant measures integrate in the same way continuous compactly supported functions,
 up to the scalar `addHaarScalarFactor μ' μ`. See also
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which gives the same result for compact
-sets, and `measure_isAddHaarMeasure_eq_smul_of_isOpen` for open sets."]
+sets, and `measure_isAddHaarMeasure_eq_smul_of_isOpen` for open sets. -/]
 theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
@@ -317,7 +321,78 @@ theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     exact (exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ).choose_spec
       f hf h'f
 
-@[to_additive]
+@[to_additive addHaarScalarFactor_eq_integral_div]
+lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsHaarMeasure μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {f : G → ℝ} (hf : Continuous f)
+    (h'f : HasCompactSupport f) (int_nonzero : ∫ x, f x ∂μ ≠ 0) :
+    haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
+  have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ hf h'f
+  rw [integral_smul_nnreal_measure] at this
+  exact EuclideanDomain.eq_div_of_mul_eq_left int_nonzero this.symm
+
+@[to_additive (attr := simp) addHaarScalarFactor_smul]
+lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaarMeasure μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0} :
+    haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
+    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    haarScalarFactor (c • μ') μ = (∫ x, g x ∂(c • μ')) / ∫ x, g x ∂μ :=
+      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+    _ = (c • (∫ x, g x ∂μ')) / ∫ x, g x ∂μ := by simp
+    _ = c • ((∫ x, g x ∂μ') / ∫ x, g x ∂μ) := smul_div_assoc c _ _
+    _ = c • haarScalarFactor μ' μ := by
+      rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
+
+@[to_additive mul_addHaarScalarFactor_smul]
+lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
+    [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
+    (hc : c ≠ 0) :
+    haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+    c * haarScalarFactor μ' (c • μ) = haarScalarFactor μ' μ := by
+  have : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
+    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
+      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
+    _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
+    _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
+      rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
+      exact mul_div_mul_left (∫ (x : G), g x ∂μ') (∫ (x : G), g x ∂μ) (by simp [hc])
+    _ = μ'.haarScalarFactor μ :=
+      (haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero).symm
+
+@[to_additive addHaarScalarFactor_smul_smul]
+lemma haarScalarFactor_smul_smul [LocallyCompactSpace G] (μ' μ : Measure G)
+    [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0}
+    (hc : c ≠ 0) :
+    haveI : IsHaarMeasure (c • μ) := IsHaarMeasure.nnreal_smul _ hc
+    haarScalarFactor (c • μ') (c • μ) = haarScalarFactor μ' μ := by
+  rw [haarScalarFactor_smul, smul_eq_mul, mul_haarScalarFactor_smul _ _ hc]
+
+@[to_additive (attr := simp)]
+lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
+    haarScalarFactor μ μ = 1 := by
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
+    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
+      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+    _ = 1 := div_self int_g_ne_zero
+
+@[to_additive addHaarScalarFactor_eq_mul]
 lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
     [IsHaarMeasure μ] [IsHaarMeasure ν] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     haarScalarFactor μ' ν = haarScalarFactor μ' μ * haarScalarFactor μ ν := by
@@ -337,38 +412,14 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
     · exact g_cont.integrable_of_hasCompactSupport g_comp
   change (haarScalarFactor μ' ν : ℝ) * ∫ (x : G), g x ∂ν =
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
-  simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, NNReal.eq_iff] using Z
+  simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, ← NNReal.eq_iff] using Z
 
-@[to_additive (attr := simp)]
-lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
-    haarScalarFactor μ μ = 1 := by
-  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
-  by_cases hG : LocallyCompactSpace G; swap
-  · simp [haarScalarFactor, hG]
-  -- Fix some nonzero continuous function with compact support `g`.
-  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-    ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ μ g_cont g_comp
-  have int_g_pos : 0 < ∫ x, g x ∂μ := by
-    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
-    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
-    · exact g_cont.integrable_of_hasCompactSupport g_comp
-  rw [integral_smul_nnreal_measure, eq_comm] at Z
-  change (haarScalarFactor μ μ : ℝ) * ∫ (x : G), g x ∂μ = ∫ (x : G), g x ∂μ at Z
-  simpa [mul_eq_right₀ (M₀ := ℝ), int_g_pos.ne'] using Z
-
-  /-- The scalar factor between two left-invariant measures is non-zero when both measures are
+/-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
 @[to_additive]
 lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure μ]
     [IsHaarMeasure μ'] : 0 < haarScalarFactor μ' μ :=
   pos_iff_ne_zero.2 (fun H ↦ by simpa [H] using haarScalarFactor_eq_mul μ' μ μ')
-
-@[deprecated] alias haarScalarFactor_pos_of_isOpenPosMeasure :=
-  haarScalarFactor_pos_of_isHaarMeasure  -- deprecated on 2024-02-12
-
-@[deprecated] alias addHaarScalarFactor_pos_of_isOpenPosMeasure :=
-  addHaarScalarFactor_pos_of_isAddHaarMeasure  -- deprecated on 2024-02-12
 
 /-!
 ### Uniqueness of measure of sets with compact closure
@@ -415,12 +466,12 @@ Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which works for any set with
 compact closure. -/
 @[to_additive measure_preimage_isAddLeftInvariant_eq_smul_of_hasCompactSupport
-"Two left invariant measures give the same mass to level sets of continuous compactly supported
+/-- Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure."]
+compact closure. -/]
 lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
@@ -445,35 +496,35 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · exact fun n ↦ (vf_cont n).aestronglyMeasurable
     · apply IntegrableOn.integrable_indicator _ (isClosed_tsupport f).measurableSet
       simpa using IsCompact.measure_lt_top h'f
-    · refine fun n ↦ eventually_of_forall (fun x ↦ ?_)
+    · refine fun n ↦ Eventually.of_forall (fun x ↦ ?_)
       by_cases hx : x ∈ tsupport f
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast
         exact thickenedIndicator_le_one _ _ _
-      · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_not_mem]
+      · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_notMem]
         rw [thickenedIndicator_zero]
         · simp
-        · simpa [image_eq_zero_of_nmem_tsupport hx] using (u_mem n).2.le
-    · refine eventually_of_forall (fun x ↦ ?_)
+        · simpa [image_eq_zero_of_notMem_tsupport hx] using (u_mem n).2.le
+    · filter_upwards with x
       have T := tendsto_pi_nhds.1 (thickenedIndicator_tendsto_indicator_closure
         (fun n ↦ (u_mem n).1) u_lim ({1} : Set ℝ)) (f x)
-      simp only [thickenedIndicator_toFun, closure_singleton] at T
+      simp only [thickenedIndicator_apply, closure_singleton] at T
       convert NNReal.tendsto_coe.2 T
       simp
   have M n : ∫ (x : G), v n (f x) ∂μ' = ∫ (x : G), v n (f x) ∂(haarScalarFactor μ' μ • μ) := by
     apply integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ (vf_cont n)
     apply h'f.comp_left
-    simp only [v, thickenedIndicator_toFun, NNReal.coe_eq_zero]
+    simp only [v, thickenedIndicator_apply, NNReal.coe_eq_zero]
     rw [thickenedIndicatorAux_zero (u_mem n).1]
-    · simp only [ENNReal.zero_toNNReal]
+    · simp only [ENNReal.toNNReal_zero]
     · simpa using (u_mem n).2.le
   have I1 := I μ' (by infer_instance)
   simp_rw [M] at I1
-  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂μ'
+  have J1 : ∫ (x : G), indicator {1} (fun _ ↦ (1 : ℝ)) (f x) ∂μ'
       = ∫ (x : G), indicator {1} (fun _ ↦ 1) (f x) ∂(haarScalarFactor μ' μ • μ) :=
     tendsto_nhds_unique I1 (I (haarScalarFactor μ' μ • μ) (by infer_instance))
-  have J2 : ENNReal.toReal (μ' (f ⁻¹' {1}))
-      = ENNReal.toReal ((haarScalarFactor μ' μ • μ) (f ⁻¹' {1})) := by
+  have J2 : μ'.real (f ⁻¹' {1})
+      = (haarScalarFactor μ' μ • μ).real (f ⁻¹' {1}) := by
     have : (fun x ↦ indicator {1} (fun _ ↦ (1 : ℝ)) (f x)) =
         (fun x ↦ indicator (f ⁻¹' {1}) (fun _ ↦ (1 : ℝ)) x) := by
       ext x
@@ -482,7 +533,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     simpa only [this, mf, integral_indicator_const, smul_eq_mul, mul_one, Pi.smul_apply,
       nnreal_smul_coe_apply, ENNReal.toReal_mul, ENNReal.coe_toReal] using J1
   have C : IsCompact (f ⁻¹' {1}) := h'f.isCompact_preimage hf isClosed_singleton (by simp)
-  rw [ENNReal.toReal_eq_toReal C.measure_lt_top.ne C.measure_lt_top.ne] at J2
+  rw [measureReal_eq_measureReal_iff C.measure_lt_top.ne C.measure_lt_top.ne] at J2
   simpa using J2
 
 /-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
@@ -492,12 +543,12 @@ Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which gives equality for any
 set with compact closure. -/
 @[to_additive smul_measure_isAddInvariant_le_of_isCompact_closure
-"If an invariant measure is inner regular, then it gives less mass to sets with compact closure
+/-- If an invariant measure is inner regular, then it gives less mass to sets with compact closure
 than any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which gives equality for any
-set with compact closure."]
+set with compact closure. -/]
 lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     [InnerRegularCompactLTTop μ]
@@ -523,12 +574,12 @@ Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which works for any set with
 compact closure, and removes the inner regularity assumption. -/
 @[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompactLTTop
-" If an invariant measure is inner regular, then it gives the same mass to measurable sets with
+/-- If an invariant measure is inner regular, then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which works for any set with
-compact closure, and removes the inner regularity assumption."]
+compact closure, and removes the inner regularity assumption. -/]
 lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompactLTTop
     [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
@@ -547,10 +598,11 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
   have st : s ⊆ t := (IsClosed.closure_subset_iff t_closed).mp hf
   have A : ν (t \ s) ≤ μ' (t \ s) := by
     apply smul_measure_isMulInvariant_le_of_isCompact_closure _ _ (t_closed.measurableSet.diff hs)
-    exact t_comp.closure_of_subset (diff_subset t s)
+    exact t_comp.closure_of_subset diff_subset
   have B : μ' t = ν t :=
     measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
-  rwa [measure_diff st hs, measure_diff st hs, ← B, ENNReal.sub_le_sub_iff_left] at A
+  rwa [measure_diff st hs.nullMeasurableSet, measure_diff st hs.nullMeasurableSet, ← B,
+    ENNReal.sub_le_sub_iff_left] at A
   · exact measure_mono st
   · exact t_comp.measure_lt_top.ne
   · exact ((measure_mono st).trans_lt t_comp.measure_lt_top).ne
@@ -563,12 +615,12 @@ Auxiliary lemma in the proof of the more general
 `measure_isMulInvariant_eq_smul_of_isCompact_closure`, which removes the
 measurability assumption. -/
 @[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure_of_measurableSet
-"Given an invariant measure then it gives the same mass to measurable sets with
+/-- Given an invariant measure then it gives the same mass to measurable sets with
 compact closure as any other invariant measure, up to the scalar `addHaarScalarFactor μ' μ`.
 
 Auxiliary lemma in the proof of the more general
 `measure_isAddInvariant_eq_smul_of_isCompact_closure`, which removes the
-measurability assumption."]
+measurability assumption. -/]
 lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {s : Set G} (hs : MeasurableSet s) (h's : IsCompact (closure s)) :
@@ -585,10 +637,10 @@ Given two left-invariant measures which are finite on compacts, they coincide in
 sense: they give the same value to sets with compact closure, up to the multiplicative
 constant `haarScalarFactor μ' μ`. -/
 @[to_additive measure_isAddInvariant_eq_smul_of_isCompact_closure
-"**Uniqueness of left-invariant measures**:
+/-- **Uniqueness of left-invariant measures**:
 Given two left-invariant measures which are finite on compacts, they coincide in the following
 sense: they give the same value to sets with compact closure, up to the multiplicative
-constant `addHaarScalarFactor μ' μ`. "]
+constant `addHaarScalarFactor μ' μ`. -/]
 theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {s : Set G} (h's : IsCompact (closure s)) :
@@ -601,8 +653,8 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = ν ((toMeasurable ν s) ∩ (closure s)) := by
       apply measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _
       · exact (measurableSet_toMeasurable ν s).inter isClosed_closure.measurableSet
-      · exact h's.closure_of_subset (inter_subset_right _ _)
-    _ ≤ ν (toMeasurable ν s) := measure_mono (inter_subset_left _ _)
+      · exact h's.closure_of_subset inter_subset_right
+    _ ≤ ν (toMeasurable ν s) := measure_mono inter_subset_left
     _ = ν s := measure_toMeasurable s
   · calc
     ν s ≤ ν ((toMeasurable μ' s) ∩ (closure s)) :=
@@ -610,8 +662,8 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = μ' ((toMeasurable μ' s) ∩ (closure s)) := by
       apply (measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _).symm
       · exact (measurableSet_toMeasurable μ' s).inter isClosed_closure.measurableSet
-      · exact h's.closure_of_subset (inter_subset_right _ _)
-    _ ≤ μ' (toMeasurable μ' s) := measure_mono (inter_subset_left _ _)
+      · exact h's.closure_of_subset inter_subset_right
+    _ ≤ μ' (toMeasurable μ' s) := measure_mono inter_subset_left
     _ = μ' s := measure_toMeasurable s
 
 /-- **Uniqueness of Haar measures**:
@@ -654,11 +706,6 @@ lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ :
   ext s _hs
   simp [A s, ← Z]
 
-@[deprecated] alias haarScalarFactor_eq_one_of_isProbabilityMeasure :=
-  isHaarMeasure_eq_of_isProbabilityMeasure -- deprecated on 2024-02-12
-@[deprecated] alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure :=
-  isAddHaarMeasure_eq_of_isProbabilityMeasure -- deprecated on 2024-02-12
-
 /-!
 ### Uniqueness of measure of open sets
 
@@ -684,7 +731,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     exact ⟨closure k, hk.closure, isClosed_closure, mem_of_superset hmem subset_closure⟩
   have one_k : 1 ∈ k := mem_of_mem_nhds k_mem
   let A : Set (Set G) := {t | t ⊆ s ∧ PairwiseDisjoint t (fun x ↦ x • k)}
-  obtain ⟨m, mA, m_max⟩ : ∃ m ∈ A, ∀ a ∈ A, m ⊆ a → a = m := by
+  obtain ⟨m, m_max⟩ : ∃ m, Maximal (· ∈ A) m := by
     apply zorn_subset
     intro c cA hc
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
@@ -700,17 +747,16 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       exact (cA mc).2 (am xa) (bm yb) hxy
     · intro a ac
       exact subset_biUnion_of_mem (u := id) ac
-  change m ⊆ s ∧ PairwiseDisjoint m (fun x ↦ x • k) at mA
+  obtain ⟨hms : m ⊆ s, hdj : PairwiseDisjoint m (fun x ↦ x • k)⟩ := m_max.prop
   have sm : s ⊆ ⋃ x ∈ m, x • (k * k⁻¹) := by
     intro y hy
     by_cases h'y : m ∪ {y} ∈ A
-    · have : m ∪ {y} = m := m_max _ h'y (subset_union_left m {y})
-      have ym : y ∈ m := by simpa using (subset_union_right _ _).trans this.subset
+    · have ym : y ∈ m := m_max.mem_of_prop_insert (by simpa using h'y)
       have : y ∈ y • (k * k⁻¹) := by
         simpa using mem_leftCoset y (Set.mul_mem_mul one_k (Set.inv_mem_inv.mpr one_k))
       exact mem_biUnion ym this
-    · obtain ⟨x, -, xm, z, zy, zx⟩ : ∃ x, y ≠ x ∧ x ∈ m ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
-        simpa [A, mA.1, hy, insert_subset_iff, pairwiseDisjoint_insert, mA.2, not_disjoint_iff]
+    · obtain ⟨x, xm, -, z, zy, zx⟩ : ∃ x ∈ m, y ≠ x ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
+        simpa [A, hms, hy, insert_subset_iff, pairwiseDisjoint_insert, hdj, not_disjoint_iff]
           using h'y
       have : y ∈ x • (k * k⁻¹) := by
         rw [show y = x * ((x⁻¹ * z) * (y⁻¹ * z)⁻¹) by group]
@@ -718,7 +764,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
           (Set.inv_mem_inv.mpr ((mem_leftCoset_iff y).mp zy))
         exact mem_leftCoset x this
       exact mem_biUnion xm this
-  rcases eq_empty_or_nonempty m with rfl|hm
+  rcases eq_empty_or_nonempty m with rfl | hm
   · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty, subset_empty_iff] at sm
     simp [sm]
   by_cases h'm : Set.Countable m
@@ -737,7 +783,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     congr with n
     apply measure_isMulInvariant_eq_smul_of_isCompact_closure
     have : IsCompact (f n • (k * k⁻¹)) := IsCompact.smul (f n) (k_comp.mul k_comp.inv)
-    exact this.closure_of_subset <| (disjointed_subset _ _).trans (inter_subset_right _ _)
+    exact this.closure_of_subset <| (disjointed_subset _ _).trans inter_subset_right
   · have H : ∀ (ρ : Measure G), IsEverywherePos ρ s → ρ s = ∞ := by
       intro ρ hρ
       have M : ∀ (i : ↑m), MeasurableSet (s ∩ (i : G) • k) :=
@@ -746,15 +792,15 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have : ∑' (x : m), ρ (s ∩ ((x : G) • k)) < ∞ := by
         apply lt_of_le_of_lt (MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint _ M _) _
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
-            mA.2.mono (fun x ↦ inter_subset_right _ _)
+            hdj.mono (fun x ↦ inter_subset_right)
           exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
-        · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left s])) h'm.lt_top
+        · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left])) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
-        apply eq_univ_iff_forall.2 (fun i ↦ ?_)
-        apply ne_of_gt (hρ (i : G) (mA.1 i.2) _ _)
-        exact inter_mem_nhdsWithin s (by simpa using smul_mem_nhds (i : G) k_mem)
+        refine eq_univ_iff_forall.2 fun i ↦ ?_
+        refine ne_of_gt (hρ (i : G) (hms i.2) _ ?_)
+        exact inter_mem_nhdsWithin s (by simpa)
       rw [this] at C
       have : Countable m := countable_univ_iff.mp C
       exact to_countable m
@@ -772,9 +818,9 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
 Given two Haar measures, they coincide in the following sense: they give the same value to open
 sets, up to the multiplicative constant `haarScalarFactor μ' μ`. -/
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isOpen
-"**Uniqueness of Haar measures**:
+/-- **Uniqueness of Haar measures**:
 Given two additive Haar measures, they coincide in the following sense: they give the same value to
-open sets, up to the multiplicative constant `addHaarScalarFactor μ' μ`."]
+open sets, up to the multiplicative constant `addHaarScalarFactor μ' μ`. -/]
 theorem measure_isHaarMeasure_eq_smul_of_isOpen [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] {s : Set G} (hs : IsOpen s) :
     μ' s = haarScalarFactor μ' μ • μ s :=
@@ -812,14 +858,13 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
   have st : s ⊆ t := subset_inter (subset_toMeasurable μ' s) (subset_toMeasurable μ s)
   have mu'_t : μ' t = μ' s := by
     apply le_antisymm
-    · exact (measure_mono (inter_subset_left _ _)).trans (measure_toMeasurable s).le
+    · exact (measure_mono inter_subset_left).trans (measure_toMeasurable s).le
     · exact measure_mono st
   have mu_t : μ t = μ s := by
     apply le_antisymm
-    · exact (measure_mono (inter_subset_right _ _)).trans (measure_toMeasurable s).le
+    · exact (measure_mono inter_subset_right).trans (measure_toMeasurable s).le
     · exact measure_mono st
-  simp only [← mu'_t, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, ← mu_t,
-    nnreal_smul_coe_apply]
+  simp only [← mu'_t, ← mu_t, nnreal_smul_coe_apply]
   apply B
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
   · exact mu_t.le.trans_lt hs.lt_top
@@ -867,17 +912,12 @@ lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopolog
   isMulLeftInvariant_eq_smul_of_regular μ' μ
   -- one could use as well `isMulLeftInvariant_eq_smul_of_innerRegular`, as in a
   -- second countable topological space all Haar measures are regular and inner regular
-#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isMulLeftInvariant_eq_smul
-#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddLeftInvariant_eq_smul
 
-@[deprecated] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul -- deprecated on 2024-02-12
-@[deprecated] alias isAddHaarMeasure_eq_smul :=
-  isAddLeftInvariant_eq_smul -- deprecated on 2024-02-12
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
 second countable group. -/
 @[to_additive
-"An invariant measure is absolutely continuous with respect to an additive Haar measure. "]
+/-- An invariant measure is absolutely continuous with respect to an additive Haar measure. -/]
 theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
     [SecondCountableTopology G] (μ ν : Measure G)
     [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
@@ -885,17 +925,44 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   have h : haarMeasure K = (haarScalarFactor (haarMeasure K) ν : ℝ≥0∞) • ν :=
     isMulLeftInvariant_eq_smul (haarMeasure K) ν
   rw [haarMeasure_unique μ K, h, smul_smul]
-  exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
+  exact smul_absolutelyContinuous
+
+/-- A continuous surjective monoid homomorphism of topological groups with compact codomain
+is measure preserving, provided that the Haar measures on the domain and on the codomain
+have the same total mass.
+-/
+@[to_additive
+  /-- A continuous surjective additive monoid homomorphism of topological groups with compact
+  codomain is measure preserving, provided that the Haar measures on the domain and on the codomain
+  have the same total mass. -/]
+theorem _root_.MonoidHom.measurePreserving
+    {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] [CompactSpace H]
+    [MeasurableSpace H] [BorelSpace H]
+    {μ : Measure G} [IsHaarMeasure μ] {ν : Measure H} [IsHaarMeasure ν]
+    {f : G →* H} (hcont : Continuous f) (hsurj : Surjective f) (huniv : μ univ = ν univ) :
+    MeasurePreserving f μ ν where
+  measurable := hcont.measurable
+  map_eq := by
+    have : IsFiniteMeasure μ := ⟨by rw [huniv]; apply measure_lt_top⟩
+    have : (μ.map f).IsHaarMeasure := isHaarMeasure_map_of_isFiniteMeasure μ f hcont hsurj
+    set C : ℝ≥0 := haarScalarFactor (μ.map f) ν
+    have hC : μ.map f = C • ν := isMulLeftInvariant_eq_smul_of_innerRegular _ _
+    suffices C = 1 by rwa [this, one_smul] at hC
+    have : C * ν univ = 1 * ν univ := by
+      rw [one_mul, ← smul_eq_mul, ← ENNReal.smul_def, ← smul_apply, ← hC,
+        map_apply hcont.measurable .univ, preimage_univ, huniv]
+    rwa [ENNReal.mul_left_inj (NeZero.ne _) (measure_ne_top _ _), ENNReal.coe_eq_one] at this
 
 end Group
 
 section CommGroup
 
-variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
-@[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
+@[to_additive
+/-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
     [LocallyCompactSpace G] [Regular μ] : IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
@@ -914,15 +981,14 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
     conv_rhs => rw [μeq]
     simp
   have : c ^ 2 = 1 ^ 2 :=
-    (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
+    (ENNReal.mul_left_inj (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
           K.isCompact.measure_lt_top.ne).1 this
-  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  have : c = 1 := (ENNReal.pow_right_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
-#align measure_theory.measure.is_haar_measure.is_inv_invariant MeasureTheory.Measure.IsHaarMeasure.isInvInvariant_of_regular
-#align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant_of_regular
 
 /-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
-@[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
+@[to_additive
+/-- Any regular additive Haar measure is invariant under negation in an abelian group. -/]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
     [LocallyCompactSpace G] [InnerRegular μ] : IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
@@ -941,32 +1007,16 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
     conv_rhs => rw [μeq]
     simp
   have : c ^ 2 = 1 ^ 2 :=
-    (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
+    (ENNReal.mul_left_inj (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
           K.isCompact.measure_lt_top.ne).1 this
-  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  have : c = 1 := (ENNReal.pow_right_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
 
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
     MeasurePreserving (fun g : G => g ^ n) μ μ :=
-  { measurable := (continuous_zpow n).measurable
-    map_eq := by
-      let f := @zpowGroupHom G _ n
-      have hf : Continuous f := continuous_zpow n
-      have : (μ.map f).IsHaarMeasure :=
-        isHaarMeasure_map_of_isFiniteMeasure μ f hf (RootableBy.surjective_pow G ℤ hn)
-      let C : ℝ≥0∞ := haarScalarFactor (μ.map f) μ
-      have hC : μ.map f = C • μ := isMulLeftInvariant_eq_smul_of_innerRegular _ _
-      suffices C = 1 by rwa [this, one_smul] at hC
-      have h_univ : (μ.map f) univ = μ univ := by
-        rw [map_apply_of_aemeasurable hf.measurable.aemeasurable MeasurableSet.univ,
-          preimage_univ]
-      have hμ₀ : μ univ ≠ 0 := IsOpenPosMeasure.open_pos univ isOpen_univ univ_nonempty
-      have hμ₁ : μ univ ≠ ∞ := CompactSpace.isFiniteMeasure.measure_univ_lt_top.ne
-      rwa [hC, smul_apply, Algebra.id.smul_eq_mul, mul_comm, ← ENNReal.eq_div_iff hμ₀ hμ₁,
-        ENNReal.div_self hμ₀ hμ₁] at h_univ }
-#align measure_theory.measure.measure_preserving_zpow MeasureTheory.Measure.measurePreserving_zpow
-#align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
+  (zpowGroupHom n).measurePreserving (μ := μ) (continuous_zpow n)
+    (RootableBy.surjective_pow G ℤ hn) rfl
 
 @[to_additive]
 theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
@@ -974,11 +1024,42 @@ theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf
-#align measure_theory.measure.measure_preserving.zpow MeasureTheory.Measure.MeasurePreserving.zpow
-#align measure_theory.measure.measure_preserving.zsmul MeasureTheory.Measure.MeasurePreserving.zsmul
 
 end CommGroup
 
+section DistribMulAction
+variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+  [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A] [LocallyCompactSpace A]
+  [ContinuousConstSMul G A] {μ ν : Measure A} [μ.IsAddHaarMeasure] [ν.IsAddHaarMeasure] {g : G}
+
+variable (μ ν) in
+lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :
+    addHaarScalarFactor (g • μ) (g • ν) = addHaarScalarFactor μ ν := by
+  obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_zero⟩ :
+    ∃ f : C(A, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 0 ≠ 0 := exists_continuous_nonneg_pos 0
+  have int_f_ne_zero : ∫ x, f x ∂g • ν ≠ 0 :=
+    (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+  apply NNReal.coe_injective
+  rw [addHaarScalarFactor_eq_integral_div (g • μ) (g • ν) f_cont f_comp int_f_ne_zero,
+    integral_domSMul, integral_domSMul]
+  refine (addHaarScalarFactor_eq_integral_div _ _ (by fun_prop) ?_ ?_).symm
+  · exact f_comp.comp_isClosedEmbedding (Homeomorph.smul _).isClosedEmbedding
+  · rw [← integral_domSMul]
+    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+
+variable (μ) in
+lemma addHaarScalarFactor_smul_congr (g : Gᵈᵐᵃ) :
+    addHaarScalarFactor μ (g • μ) = addHaarScalarFactor ν (g • ν) := by
+  rw [addHaarScalarFactor_eq_mul _ (g • ν), addHaarScalarFactor_domSMul,
+    mul_comm, ← addHaarScalarFactor_eq_mul]
+
+variable (μ) in
+lemma addHaarScalarFactor_smul_congr' (g : Gᵈᵐᵃ) :
+    addHaarScalarFactor (g • μ) μ = addHaarScalarFactor (g • ν) ν := by
+  rw [addHaarScalarFactor_eq_mul _ (g • ν), addHaarScalarFactor_domSMul,
+    mul_comm, ← addHaarScalarFactor_eq_mul]
+
+end DistribMulAction
 end Measure
 
 end MeasureTheory

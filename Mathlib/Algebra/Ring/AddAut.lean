@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Algebra.Module.Basic
+module
 
-#align_import algebra.ring.add_aut from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Group.Units.Opposite
+public import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Multiplication on the left/right as additive automorphisms
@@ -18,32 +20,28 @@ See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft
 `Rˣ` as an automorphism.
 -/
 
+@[expose] public section
+
 
 namespace AddAut
 
 variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def mulLeft : Rˣ →* AddAut R :=
   DistribMulAction.toAddAut _ _
-#align add_aut.mul_left AddAut.mulLeft
-#align add_aut.mul_left_apply_apply AddAut.mulLeft_apply_apply
-#align add_aut.mul_left_apply_symm_apply AddAut.mulLeft_apply_symm_apply
 
 /-- Right multiplication by a unit of a semiring as an additive automorphism. -/
 def mulRight (u : Rˣ) : AddAut R :=
   DistribMulAction.toAddAut Rᵐᵒᵖˣ R (Units.opEquiv.symm <| MulOpposite.op u)
-#align add_aut.mul_right AddAut.mulRight
 
 @[simp]
 theorem mulRight_apply (u : Rˣ) (x : R) : mulRight u x = x * u :=
   rfl
-#align add_aut.mul_right_apply AddAut.mulRight_apply
 
 @[simp]
 theorem mulRight_symm_apply (u : Rˣ) (x : R) : (mulRight u).symm x = x * u⁻¹ :=
   rfl
-#align add_aut.mul_right_symm_apply AddAut.mulRight_symm_apply
 
 end AddAut

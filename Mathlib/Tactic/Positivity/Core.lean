@@ -3,13 +3,15 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Std.Lean.Parser
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Int.Cast.Lemmas
-import Qq
+module
+
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.HaveI
+public meta import Mathlib.Algebra.Order.Invertible
+public meta import Mathlib.Algebra.Order.Ring.Cast
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Data.Nat.Cast.Basic
+public meta import Qq
 
 /-!
 ## `positivity` core functionality
@@ -20,19 +22,19 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
-set_option autoImplicit true
+public meta section
 
-open Lean hiding Rat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity " term,+ : attr
 
-lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
+lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
 namespace Mathlib.Meta.Positivity
 
-variable {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
 
 /-- The result of `positivity` running on an expression `e` of type `α`. -/
 inductive Strictness (e : Q($α)) where
@@ -43,11 +45,16 @@ inductive Strictness (e : Q($α)) where
   deriving Repr
 
 /-- Gives a generic description of the `positivity` result. -/
-def Strictness.toString : Strictness zα pα e → String
+def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
   | positive _ => "positive"
   | nonnegative _ => "nonnegative"
   | nonzero _ => "nonzero"
   | none => "none"
+
+/-- Extract a proof that `e` is positive, if possible, from `Strictness` information about `e`. -/
+def Strictness.toPositive {e} : Strictness zα pα e → Option Q(0 < $e)
+  | .positive pf => some pf
+  | _ => .none
 
 /-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
 -/
@@ -65,16 +72,13 @@ def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
-  eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
+  eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
 
 /-- Read a `positivity` extension from a declaration of the right type. -/
 def mkPositivityExt (n : Name) : ImportM PositivityExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PositivityExt opts ``PositivityExt n
-
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
 
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
@@ -102,6 +106,7 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
     | `(attr| positivity $es,*) => do
+      ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv
@@ -115,48 +120,72 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e discrTreeConfig
+        DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
 }
 
-lemma lt_of_le_of_ne' [PartialOrder A] :
-    (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
+variable {A : Type*} {e : A}
 
-lemma pos_of_isNat [StrictOrderedSemiring A]
+lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat [OrderedSemiring A]
+lemma pos_of_isNat' {n : ℕ}
+    [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A] [h'' : NeZero (1 : A)]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  apply Nat.cast_pos'.2
+  simpa using w
+
+lemma nonneg_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat [StrictOrderedRing A]
+lemma nonneg_of_isNat' {n : ℕ}
+    [AddMonoidWithOne A] [PartialOrder A] [AddLeftMono A] [ZeroLEOneClass A]
+    (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  exact Nat.cast_nonneg' n
+
+lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
   simpa using w
 
-lemma pos_of_isRat [LinearOrderedRing A] :
-    (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
+lemma pos_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] [IsStrictOrderedRing A] :
+    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have pos_n : (0 < (n : A)) := Nat.cast_pos (n := n) |>.2 (of_decide_eq_true h)
+    rw [eq]
+    exact mul_pos pos_n pos_invOf_d
+
+lemma pos_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
+  | ⟨inv, eq⟩, h => by
+    have pos_invOf_d : (0 < ⅟(d : A)) := pos_invOf_of_invertible_cast d
     have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
 
-lemma nonneg_of_isRat [LinearOrderedRing A] :
+lemma nonneg_of_isNNRat {n d : ℕ} [Semiring A] [LinearOrder A] :
+    (NormNum.IsNNRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
+  | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
+
+lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat [LinearOrderedRing A] :
+lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
-    have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have pos_invOf_d : (0 < ⅟(d : A)) := pos_invOf_of_invertible_cast d
     have neg_n : ((n : A) < 0) := Int.cast_lt_zero (n := n) |>.2 (of_decide_eq_true h)
     have neg := mul_neg_of_neg_of_pos neg_n pos_invOf_d
     rw [eq]
@@ -165,7 +194,7 @@ lemma nz_of_isRat [LinearOrderedRing A] :
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
-def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
+def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
   try t catch e =>
     trace[Tactic.positivity.failure] "{e.toMessageData}"
     pure .none
@@ -173,7 +202,7 @@ def catchNone (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) 
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone [Monad m] [Alternative m]
+def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
     (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
   match ← t with
   | .none => failure
@@ -185,39 +214,87 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(StrictOrderedSemiring $α)
-      assumeInstancesCommute
-      have p : Q(NormNum.IsNat $e $lit) := p
-      haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(@pos_of_isNat $α _ _ _ $p $p'))
+      -- NB. The `try` branch is actually a special case of the `catch` branch,
+      -- hence is not strictly necessary. However, this makes a small but measurable performance
+      -- difference, as synthesising the `try` classes is a bit faster.
+      try
+        let _a ← synthInstanceQ q(Semiring $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(IsOrderedRing $α)
+        let _a ← synthInstanceQ q(Nontrivial $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat (A := $α) $p $p'))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(AddLeftMono $α)
+        let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+        let _a ← synthInstanceQ q(NeZero (1 : $α))
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        pure (.positive q(pos_of_isNat' (A := $α) $p $p'))
     else
-      let _a ← synthInstanceQ q(OrderedSemiring $α)
-      assumeInstancesCommute
-      have p : Q(NormNum.IsNat $e $lit) := p
-      pure (.nonnegative q(nonneg_of_isNat $p))
+      -- NB. The `try` branch is actually a special case of the `catch` branch,
+      -- hence is not strictly necessary. However, this makes a small but measurable performance
+      -- difference, as synthesising the `try` classes is a bit faster.
+      try
+        let _a ← synthInstanceQ q(Semiring $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(IsOrderedRing $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        pure (.nonnegative q(nonneg_of_isNat $p))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let _a ← synthInstanceQ q(AddMonoidWithOne $α)
+        let _a ← synthInstanceQ q(PartialOrder $α)
+        let _a ← synthInstanceQ q(AddLeftMono $α)
+        let _a ← synthInstanceQ q(ZeroLEOneClass $α)
+        assumeInstancesCommute
+        have p : Q(NormNum.IsNat $e $lit) := p
+        pure (.nonnegative q(nonneg_of_isNat' $p))
   | .isNegNat _ lit p =>
-    let _a ← synthInstanceQ q(StrictOrderedRing $α)
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(PartialOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
     pure (.nonzero q(nz_of_isNegNat $p $p'))
-  | .isRat _i q n d p =>
-    let _a ← synthInstanceQ q(LinearOrderedRing $α)
+  | .isNNRat _i q n d p =>
+    let _a ← synthInstanceQ q(Semiring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
-    have p : Q(NormNum.IsRat $e $n $d) := p
+    have p : Q(NormNum.IsNNRat $e $n $d) := p
     if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
-      pure (.positive q(pos_of_isRat $p $w))
-    else if q = 0 then -- should not be reachable, but just in case
+      pure (.positive q(pos_of_isNNRat $p $w))
+    else -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
-      pure (.nonnegative q(nonneg_of_isRat $p $w))
-    else
-      haveI' w : decide ($n < 0) =Q true := ⟨⟩
+      pure (.nonnegative q(nonneg_of_isNNRat $p $w))
+  | .isNegNNRat _i q n d p =>
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
+    assumeInstancesCommute
+    have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
+    if q < 0 then
+      haveI' w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
+    else -- should not be reachable, but just in case
+      haveI' w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
+      pure (.nonnegative q(nonneg_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
+  let _add ← synthInstanceQ q(AddMonoid $α)
+  let _le ← synthInstanceQ q(PartialOrder $α)
+  let _i ← synthInstanceQ q(CanonicallyOrderedAdd $α)
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 
@@ -297,7 +374,7 @@ variable {zα pα} in
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
+def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
     MetaM (Strictness zα pα e) := do
   match t₁ with
   | .none => catchNone t₂
@@ -317,7 +394,7 @@ def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
 def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
-  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e discrTreeConfig do
+  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
     try
       result ← orElse result <| ext.eval zα pα e
     catch err =>
@@ -342,7 +419,25 @@ private inductive OrderRel : Type
 end Meta.Positivity
 namespace Meta.Positivity
 
-/-- An auxillary entry point to the `positivity` tactic. Given a proposition `t` of the form
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
+or, failing that, nonnegative; return a Boolean (signalling whether the strict or non-strict
+inequality was established) together with the proof as an expression. -/
+def bestResult (e : Expr) : MetaM (Bool × Expr) := do
+  let ⟨u, α, _⟩ ← inferTypeQ' e
+  let zα ← synthInstanceQ q(Zero $α)
+  let pα ← synthInstanceQ q(PartialOrder $α)
+  match ← try? (Meta.Positivity.core zα pα e) with
+  | some (.positive pf) => pure (true, pf)
+  | some (.nonnegative pf) => pure (false, pf)
+  | _ => throwError "could not establish the nonnegativity of {e}"
+
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it nonnegative.
+-/
+def proveNonneg (e : Expr) : MetaM Expr := do
+  let (strict, pf) ← bestResult e
+  if strict then mkAppM ``le_of_lt #[pf] else pure pf
+
+/-- An auxiliary entry point to the `positivity` tactic. Given a proposition `t` of the form
 `0 [≤/</≠] e`, attempts to recurse on the structure of `t` to prove it. It returns a proof
 or fails. -/
 def solve (t : Q(Prop)) : MetaM Expr := do
@@ -374,7 +469,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
   | ~q($a ≠ ($b : ($α : Type _))) =>
-    let _zα ← synthInstanceQ (q(Zero $α) : Q(Type u_1))
+    let _zα ← synthInstanceQ q(Zero $α)
     if ← isDefEq b q((0 : $α)) then
       rest α b a .ne
     else
@@ -394,12 +489,16 @@ end Meta.Positivity
 
 namespace Tactic.Positivity
 
-open Lean Elab Tactic
+open Tactic
 
 /-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
 numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`.  This tactic
 either closes the goal or fails.
+
+`positivity [t₁, …, tₙ]` first executes `have := t₁; …; have := tₙ` in the current goal,
+then runs `positivity`. This is useful when `positivity` needs derived premises such as `0 < y`
+for division/reciprocal, or `0 ≤ x` for real powers.
 
 Examples:
 ```
@@ -408,7 +507,32 @@ example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
+
+example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
+    0 < a ^ c + 1 / (d - c) := by
+  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
 ```
 -/
-elab (name := positivity) "positivity" : tactic => do
-  liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+syntax (name := positivity) "positivity" (" [" term,* "]")? : tactic
+
+elab_rules : tactic
+| `(tactic| positivity) => liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+macro_rules
+| `(tactic| positivity [$h,*]) => `(tactic| · ($[have := $h];*); positivity)
+
+end Positivity
+
+end Mathlib.Tactic
+
+/-!
+We set up `positivity` as a first-pass discharger for `gcongr` side goals.
+-/
+
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+
+/-!
+We register `positivity` with the `hint` tactic.
+-/
+
+register_hint 1000 positivity

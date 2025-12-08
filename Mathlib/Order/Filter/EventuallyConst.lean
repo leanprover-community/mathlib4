@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Order.Filter.Subsingleton
-import Mathlib.Algebra.Function.Indicator
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Subsingleton
 /-!
 # Functions that are eventually constant along a filter
 
@@ -21,6 +23,8 @@ Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
 -/
 
+@[expose] public section
+
 open Set
 
 variable {α β γ δ : Type*} {l : Filter α} {f : α → β}
@@ -32,7 +36,7 @@ def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingl
 
 theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
-  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, ball_image_iff]
+  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, forall_mem_image]
 
 theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
@@ -70,6 +74,10 @@ theorem eventuallyConst_set' {s : Set α} :
 theorem eventuallyConst_set {s : Set α} :
     EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
+
+theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
+    EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
+  .rfl
 
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
@@ -114,9 +122,9 @@ lemma apply {ι : Type*} {p : ι → Type*} {g : α → ∀ x, p x}
 lemma comp₂ {g : α → γ} (hf : EventuallyConst f l) (op : β → γ → δ) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ op (f x) (g x)) l :=
   ((hf.prod hg).map op.uncurry).anti <|
-    (tendsto_map (f := op.uncurry)).comp (tendsto_map.prod_mk tendsto_map)
+    (tendsto_map (f := op.uncurry)).comp (tendsto_map.prodMk tendsto_map)
 
-lemma prod_mk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
+lemma prodMk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ (f x, g x)) l :=
   hf.comp₂ Prod.mk hg
 
@@ -130,7 +138,7 @@ variable [One β] {s : Set α} {c : β}
 @[to_additive]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
     EventuallyConst s l := by
-  simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
+  simpa [Function.comp_def, hc, imp_false] using h.comp (· = c)
 
 @[to_additive]
 theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
@@ -151,7 +159,7 @@ end EventuallyConst
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
-  (atTop_basis.eventuallyConst_iff' fun i _ ↦ left_mem_Ici).trans <| by
+  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ left_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :
@@ -162,3 +170,5 @@ lemma eventuallyConst_atTop_nat {f : ℕ → α} :
   · induction m, hm using Nat.le_induction with
     | base => rfl
     | succ m hm ihm => exact (h m hm).trans ihm
+
+end Filter

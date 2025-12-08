@@ -3,9 +3,10 @@ Copyright (c) 2023 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ArithMult.Init
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ArithMult.Init
 
 /-!
 # Multiplicativity
@@ -13,6 +14,8 @@ import Mathlib.Tactic.ArithMult.Init
 We define the arith_mult tactic using aesop
 
 -/
+
+public meta section
 
 namespace ArithmeticFunction
 
@@ -41,3 +44,5 @@ proof term. -/
 macro (name := arith_mult?) "arith_mult?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   { show_term { arith_mult $c* } })
+
+end ArithmeticFunction

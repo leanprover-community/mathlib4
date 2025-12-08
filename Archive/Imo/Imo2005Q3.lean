@@ -5,17 +5,16 @@ Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Linarith
-
-#align_import imo.imo2005_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
+import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2005 Q3
 Let `x`, `y` and `z` be positive real numbers such that `xyz ≥ 1`. Prove that:
 `(x^5 - x^2)/(x^5 + y^2 + z^2) + (y^5 - y^2)/(y^5 + z^2 + x^2) + (z^5 - z^2)/(z^5 + x^2 + y^2) ≥ 0`
 
-# Solution
+## Solution
 The solution by Iurie Boreico from Moldova is presented, which won a special prize during the exam.
 The key insight is that `(x^5-x^2)/(x^5+y^2+z^2) ≥ (x^2-y*z)/(x^2+y^2+z^2)`, which is proven by
 factoring `(x^5-x^2)/(x^5+y^2+z^2) - (x^5-x^2)/(x^3*(x^2+y^2+z^2))` into a non-negative expression
@@ -31,9 +30,7 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) -
         (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =
       (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
-        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) := by
-    field_simp
-    ring
+        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) := by field
   have h₅ :
     (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
         ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) ≥ 0 := by positivity
@@ -41,8 +38,7 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2)
       ≥ (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by linarith only [key, h₅]
     _ ≥ (x ^ 5 - x ^ 2 * (x * y * z)) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by gcongr
-    _ = (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by field_simp; ring
-#align imo2005_q3.key_insight Imo2005Q3.key_insight
+    _ = (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by field
 
 end Imo2005Q3
 
@@ -60,4 +56,3 @@ theorem imo2005_q3 (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x *
       gcongr ?_ + ?_ + ?_ <;> apply key_insight <;> linarith
     _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) := by ring
     _ ≥ 0 := by positivity
-#align imo2005_q3 imo2005_q3

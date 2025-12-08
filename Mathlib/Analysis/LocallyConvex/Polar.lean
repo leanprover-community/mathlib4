@@ -3,12 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
 
-#align_import analysis.locally_convex.polar from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set
@@ -26,7 +25,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 * `LinearMap.polar_eq_iInter`: The polar as an intersection.
 * `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
-* `LinearMap.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
+* `LinearMap.polar_isClosed`: The polar is closed in the weak topology induced by `B.flip`.
 
 ## References
 
@@ -37,6 +36,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 polar
 -/
 
+@[expose] public section
 
 variable {𝕜 E F : Type*}
 
@@ -47,35 +47,42 @@ namespace LinearMap
 section NormedRing
 
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
-for all `x ∈ s`.-/
+for all `x ∈ s`. -/
 def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
-#align linear_map.polar LinearMap.polar
 
 theorem polar_mem_iff (s : Set E) (y : F) : y ∈ B.polar s ↔ ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   Iff.rfl
-#align linear_map.polar_mem_iff LinearMap.polar_mem_iff
 
 theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B x y‖ ≤ 1 :=
   hy
-#align linear_map.polar_mem LinearMap.polar_mem
+
+theorem polar_eq_biInter_preimage (s : Set E) :
+    B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
+
+-- TODO: this theorem is abusing defeq between F and WeakBilin B.flip
+theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
+  rw [polar_eq_biInter_preimage]
+  exact isClosed_biInter
+    fun _ _ ↦ Metric.isClosed_closedBall.preimage (WeakBilin.eval_continuous B.flip _)
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
-#align linear_map.zero_mem_polar LinearMap.zero_mem_polar
+
+theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
+  use 0
+  exact zero_mem_polar B s
 
 theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
   simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
-#align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
 
 /-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
 `B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
@@ -83,58 +90,55 @@ that `polar` is order-reversing. -/
 theorem polar_gc :
     GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>
   ⟨fun h _ hx _ hy => h hy _ hx, fun h _ hx _ hy => h hy _ hx⟩
-#align linear_map.polar_gc LinearMap.polar_gc
 
 @[simp]
 theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
   B.polar_gc.l_iSup
-#align linear_map.polar_Union LinearMap.polar_iUnion
 
 @[simp]
 theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
   B.polar_gc.l_sup
-#align linear_map.polar_union LinearMap.polar_union
 
 theorem polar_antitone : Antitone (B.polar : Set E → Set F) :=
   B.polar_gc.monotone_l
-#align linear_map.polar_antitone LinearMap.polar_antitone
 
 @[simp]
 theorem polar_empty : B.polar ∅ = Set.univ :=
   B.polar_gc.l_bot
-#align linear_map.polar_empty LinearMap.polar_empty
 
 @[simp]
+theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_antisymm
+  (fun _ hy => hy _ rfl)
+  (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
+
+theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
+  simp only [polar_singleton, Set.mem_setOf_eq]
+
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
-  rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
-  exact zero_le_one
-#align linear_map.polar_zero LinearMap.polar_zero
+  simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.setOf_true]
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]
   exact hy x hx
-#align linear_map.subset_bipolar LinearMap.subset_bipolar
 
 @[simp]
 theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.polar s :=
   (B.polar_antitone (B.subset_bipolar s)).antisymm (subset_bipolar B.flip (B.polar s))
-#align linear_map.tripolar_eq_polar LinearMap.tripolar_eq_polar
 
-/-- The polar set is closed in the weak topology induced by `B.flip`. -/
-theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
-    (B.polar s) := by
-  rw [polar_eq_iInter]
-  refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
-  exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
-#align linear_map.polar_weak_closed LinearMap.polar_weak_closed
+@[deprecated (since := "2025-10-06")] alias polar_weak_closed := polar_isClosed
+
+theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
+    ⋂₀ (B.polar '' { F | F.Finite ∧ F ⊆ s }) = B.polar s := by
+  ext x
+  simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
+  refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
+  simpa [mem_polar_singleton] using hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
 
 end NormedRing
 
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -142,8 +146,8 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
-  refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
-  refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)
+  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
+  refine norm_le_zero_iff.mp (le_of_forall_gt_imp_ge_of_dense fun ε hε => ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
@@ -151,8 +155,142 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
         mul_inv_cancel_left₀ hc.ne']
     _ ≤ ε * 1 := by gcongr; exact hy _ trivial
     _ = ε := mul_one _
-#align linear_map.polar_univ LinearMap.polar_univ
+
+theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
+  ext y
+  constructor
+  · intro hy x hx
+    obtain ⟨r, hr⟩ := NormedField.exists_lt_norm 𝕜 ‖B x y‖⁻¹
+    contrapose! hr
+    rw [← one_div, le_div_iff₀ (norm_pos_iff.2 hr)]
+    simpa using hy _ (SMulMemClass.smul_mem r hx)
+  · intro h x hx
+    simp [h x hx]
+
+/-- The polar of a set closed under scalar multiplication as a submodule -/
+def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : Submodule 𝕜 F :=
+  .copy (⨅ x ∈ m, LinearMap.ker (B x)) (B.polar m) <| by ext; simp [polar_subMulAction]
 
 end NontriviallyNormedField
 
 end LinearMap
+
+namespace StrongDual
+
+section
+
+variable (R M : Type*) [SeminormedCommRing R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+
+theorem dualPairing_separatingLeft : (topDualPairing R M).SeparatingLeft := by
+  rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
+  exact ContinuousLinearMap.coe_injective
+
+@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_separatingLeft :=
+  dualPairing_separatingLeft
+
+end
+
+section
+
+/-- Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar `polar R s` is the
+subset of `StrongDual R M` consisting of those functionals which evaluate to something of norm at
+most one at all points `z ∈ s`. -/
+def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
+    [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
+  (topDualPairing R M).flip.polar
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar := polar
+
+/-- Given a subset `s` in a monoid `M` (over a field `𝕜`) closed under scalar multiplication,
+the polar `polarSubmodule 𝕜 s` is the submodule of `StrongDual 𝕜 M` consisting of those functionals
+which evaluate to zero at all points `z ∈ s`. -/
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {M : Type*} [AddCommMonoid M]
+    [TopologicalSpace M] [Module 𝕜 M] {S : Type*} [SetLike S M] [SMulMemClass S 𝕜 M] (m : S) :
+    Submodule 𝕜 (StrongDual 𝕜 M) := (topDualPairing 𝕜 M).flip.polarSubmodule m
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polarSubmodule := polarSubmodule
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
+
+lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
+    (polarSubmodule 𝕜 m : Set (StrongDual 𝕜 E)) = polar 𝕜 m := rfl
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polarSubmodule_eq_polar :=
+  polarSubmodule_eq_polar
+
+theorem mem_polar_iff {x' : StrongDual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
+  Iff.rfl
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.mem_polar_iff := mem_polar_iff
+
+lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    polarSubmodule 𝕜 m = { y : StrongDual 𝕜 E | ∀ x ∈ m, y x = 0 } :=
+  (topDualPairing 𝕜 E).flip.polar_subMulAction _
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polarSubmodule_eq_setOf :=
+  polarSubmodule_eq_setOf
+
+lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S)
+    (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 :=
+  propext_iff.mp congr($(polarSubmodule_eq_setOf 𝕜 m) y)
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.mem_polarSubmodule :=
+  mem_polarSubmodule
+
+@[simp]
+theorem zero_mem_polar (s : Set E) : (0 : StrongDual 𝕜 E) ∈ polar 𝕜 s :=
+  LinearMap.zero_mem_polar _ s
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.zero_mem_polar := zero_mem_polar
+
+theorem polar_nonempty (s : Set E) : Set.Nonempty (polar 𝕜 s) :=
+  LinearMap.polar_nonempty _ _
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar_nonempty := polar_nonempty
+
+open Set
+
+@[simp]
+theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
+  LinearMap.polar_empty _
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar_empty := polar_empty
+
+@[simp]
+theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
+  simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, topDualPairing_apply]
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar_singleton := polar_singleton
+
+theorem mem_polar_singleton {a : E} (y : StrongDual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
+  simp only [polar_singleton, mem_setOf_eq]
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.mem_polar_singleton :=
+  mem_polar_singleton
+
+theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
+  LinearMap.polar_zero _
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar_zero := polar_zero
+
+end
+
+section
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+
+open Set
+
+@[simp]
+theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
+  (topDualPairing 𝕜 E).flip.polar_univ
+    (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
+
+@[deprecated (since := "2025-08-12")] alias _root_.NormedSpace.polar_univ := polar_univ
+
+end
+
+end StrongDual

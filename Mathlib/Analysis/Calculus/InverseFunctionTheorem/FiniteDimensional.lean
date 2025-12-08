@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # A lemma about `ApproximatesLinearOn` that needs `FiniteDimensional`
@@ -16,6 +18,8 @@ can be extended to a homeomorphism of the whole space.
 This used to be the only lemma in `Mathlib/Analysis/Calculus/Inverse`
 depending on `FiniteDimensional`, so it was moved to a new file when the original file got split.
 -/
+
+@[expose] public section
 
 open Set
 open scoped NNReal
@@ -36,13 +40,14 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
     ∃ u : E → F, LipschitzWith (lipschitzExtensionConstant F * c) u ∧ EqOn (f - ⇑f') u s :=
     hf.lipschitzOnWith.extend_finite_dimension
   let g : E → F := fun x => f' x + u x
-  have fg : EqOn f g s := fun x hx => by simp_rw [← uf hx, Pi.sub_apply, add_sub_cancel'_right]
+  have fg : EqOn f g s := fun x hx => by simp_rw [g, ← uf hx, Pi.sub_apply, add_sub_cancel]
   have hg : ApproximatesLinearOn g (f' : E →L[ℝ] F) univ (lipschitzExtensionConstant F * c) := by
     apply LipschitzOnWith.approximatesLinearOn
-    rw [lipschitzOn_univ]
+    rw [lipschitzOnWith_univ]
     convert hu
     ext x
-    simp only [g, add_sub_cancel', ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
+    simp only [g, add_sub_cancel_left, ContinuousLinearEquiv.coe_coe, Pi.sub_apply]
   haveI : FiniteDimensional ℝ E := f'.symm.finiteDimensional
   exact ⟨hg.toHomeomorph g hc, fg⟩
-#align approximates_linear_on.exists_homeomorph_extension ApproximatesLinearOn.exists_homeomorph_extension
+
+end ApproximatesLinearOn

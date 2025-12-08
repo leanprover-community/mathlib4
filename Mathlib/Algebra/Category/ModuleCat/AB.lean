@@ -1,0 +1,52 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+/-!
+
+# AB axioms in module categories
+
+This file proves that the category of modules over a ring satisfies Grothendieck's axioms AB5, AB4,
+and AB4*. Further, it proves that `R` is a separator in the category of modules over `R`, and
+concludes that this category is Grothendieck abelian.
+-/
+
+@[expose] public section
+
+universe u v
+
+open CategoryTheory Limits
+
+variable (R : Type u) [Ring R]
+
+instance : AB5 (ModuleCat.{u} R) where
+  ofShape J _ _ :=
+    HasExactColimitsOfShape.domain_of_functor J (forget₂ (ModuleCat R) AddCommGrpCat)
+
+attribute [local instance] Abelian.hasFiniteBiproducts
+
+instance : AB4 (ModuleCat.{u} R) := AB4.of_AB5 _
+
+instance : AB4Star (ModuleCat.{u} R) where
+  ofShape J :=
+    HasExactLimitsOfShape.domain_of_functor (Discrete J) (forget₂ (ModuleCat R) AddCommGrpCat.{u})
+
+lemma ModuleCat.isSeparator [Small.{v} R] : IsSeparator (ModuleCat.of.{v} R (Shrink.{v} R)) :=
+    fun X Y f g h ↦ by
+  simp only [ObjectProperty.singleton_iff, ModuleCat.hom_ext_iff, hom_comp,
+    LinearMap.ext_iff, LinearMap.coe_comp, Function.comp_apply, forall_eq'] at h
+  ext x
+  simpa using h (ModuleCat.ofHom ((LinearMap.toSpanSingleton R X x).comp
+    (Shrink.linearEquiv R R : Shrink R →ₗ[R] R))) 1
+
+instance [Small.{v} R] : HasSeparator (ModuleCat.{v} R) where
+  hasSeparator := ⟨ModuleCat.of R (Shrink.{v} R), ModuleCat.isSeparator R⟩
+
+instance : IsGrothendieckAbelian.{u} (ModuleCat.{u} R) where

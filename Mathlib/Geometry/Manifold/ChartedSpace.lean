@@ -3,16 +3,16 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Init.Align
-import Mathlib.Topology.PartialHomeomorph
+module
 
-#align_import geometry.manifold.charted_space from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
+public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Charted spaces
 
-A smooth manifold is a topological space `M` locally modelled on a euclidean space (or a euclidean
-half-space for manifolds with boundaries, or an infinite dimensional vector space for more general
+A smooth manifold is a topological space `M` locally modelled on a Euclidean space (or a Euclidean
+half-space for manifolds with boundaries, or an infinite-dimensional vector space for more general
 notions of manifolds), i.e., the manifold is covered by open subsets on which there are local
 homeomorphisms (the charts) going to a model space `H`, and the changes of charts should be smooth
 maps.
@@ -31,22 +31,22 @@ therefore two different ingredients in a charted space:
 We separate these two parts in the definition: the charted space structure is just the set of
 charts, and then the different smoothness requirements (smooth manifold, orientable manifold,
 contact manifold, and so on) are additional properties of these charts. These properties are
-formalized through the notion of structure groupoid, i.e., a set of partial homeomorphisms stable
-under composition and inverse, to which the change of coordinates should belong.
+formalized through the notion of structure groupoid, i.e., a set of open partial homeomorphisms
+stable under composition and inverse, to which the change of coordinates should belong.
 
 ## Main definitions
 
-* `StructureGroupoid H` : a subset of partial homeomorphisms of `H` stable under composition,
+* `StructureGroupoid H` : a subset of open partial homeomorphisms of `H` stable under composition,
   inverse and restriction (ex: partial diffeomorphisms).
-* `continuousGroupoid H` : the groupoid of all partial homeomorphisms of `H`.
+* `continuousGroupoid H` : the groupoid of all open partial homeomorphisms of `H`.
 * `ChartedSpace H M` : charted space structure on `M` modelled on `H`, given by an atlas of
-  partial homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
+  open partial homeomorphisms from `M` to `H` whose sources cover `M`. This is a type class.
 * `HasGroupoid M G` : when `G` is a structure groupoid on `H` and `M` is a charted space
   modelled on `H`, require that all coordinate changes belong to `G`. This is a type class.
 * `atlas H M` : when `M` is a charted space modelled on `H`, the atlas of this charted
   space structure, i.e., the set of charts.
 * `G.maximalAtlas M` : when `M` is a charted space modelled on `H` and admitting `G` as a
-  structure groupoid, one can consider all the partial homeomorphisms from `M` to `H` such that
+  structure groupoid, one can consider all the open partial homeomorphisms from `M` to `H` such that
   changing coordinate from any chart to them belongs to `G`. This is a larger atlas, called the
   maximal atlas (for the groupoid `G`).
 * `Structomorph G M M'` : the type of diffeomorphisms between the charted spaces `M` and `M'` for
@@ -104,11 +104,13 @@ In the definition of a charted space, the model space is written as an explicit 
 can be several model spaces for a given topological space. For instance, a complex manifold
 (modelled over `ℂ^n`) will also be seen sometimes as a real manifold modelled over `ℝ^(2n)`.
 
-## Notations
+## Notation
 
-In the locale `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
+In the scope `Manifold`, we denote the composition of open partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -118,18 +120,17 @@ universe u
 
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
-/- Notational shortcut for the composition of partial homeomorphisms and partial equivs, i.e.,
-`PartialHomeomorph.trans` and `PartialEquiv.trans`.
+/- Notational shortcut for the composition of open partial homeomorphisms and partial equivs, i.e.,
+`OpenPartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
-scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ₕ " => OpenPartialHomeomorph.trans
 
-scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set OpenPartialHomeomorph Manifold
 
 /-! ### Structure groupoids -/
-
 
 section Groupoid
 
@@ -142,45 +143,51 @@ groupoid is naturally a vector bundle) I prefer that the members of the groupoid
 defined on sets of the form `s × E`. There is a typeclass `ClosedUnderRestriction` for groupoids
 which have the restriction property.
 
-The only nontrivial requirement is locality: if a partial homeomorphism belongs to the groupoid
-around each point in its domain of definition, then it belongs to the groupoid. Without this
-requirement, the composition of structomorphisms does not have to be a structomorphism. Note that
-this implies that a partial homeomorphism with empty source belongs to any structure groupoid, as
-it trivially satisfies this condition.
+The only nontrivial requirement is locality: if an open partial homeomorphism belongs to the
+groupoid around each point in its domain of definition, then it belongs to the groupoid. Without
+this requirement, the composition of structomorphisms does not have to be a structomorphism. Note
+that this implies that an open partial homeomorphism with empty source belongs to any structure
+groupoid, as it trivially satisfies this condition.
 
-There is also a technical point, related to the fact that a partial homeomorphism is by definition a
-global map which is a homeomorphism when restricted to its source subset (and its values outside
-of the source are not relevant). Therefore, we also require that being a member of the groupoid only
-depends on the values on the source.
+There is also a technical point, related to the fact that an open partial homeomorphism is by
+definition a global map which is a homeomorphism when restricted to its source subset (and its
+values outside of the source are not relevant). Therefore, we also require that being a member of
+the groupoid only depends on the values on the source.
 
 We use primes in the structure names as we will reformulate them below (without primes) using a
 `Membership` instance, writing `e ∈ G` instead of `e ∈ G.members`.
 -/
 
 
-/-- A structure groupoid is a set of partial homeomorphisms of a topological space stable under
+/-- A structure groupoid is a set of open partial homeomorphisms of a topological space stable under
 composition and inverse. They appear in the definition of the smoothness class of a manifold. -/
 structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
-  members : Set (PartialHomeomorph H H)
-  trans' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ∈ members → e ≫ₕ e' ∈ members
-  symm' : ∀ e : PartialHomeomorph H H, e ∈ members → e.symm ∈ members
-  id_mem' : PartialHomeomorph.refl H ∈ members
-  locality' : ∀ e : PartialHomeomorph H H,
+  /-- Members of the structure groupoid are open partial homeomorphisms. -/
+  members : Set (OpenPartialHomeomorph H H)
+  /-- Structure groupoids are stable under composition. -/
+  trans' : ∀ e e' : OpenPartialHomeomorph H H, e ∈ members → e' ∈ members → e ≫ₕ e' ∈ members
+  /-- Structure groupoids are stable under inverse. -/
+  symm' : ∀ e : OpenPartialHomeomorph H H, e ∈ members → e.symm ∈ members
+  /-- The identity morphism lies in the structure groupoid. -/
+  id_mem' : OpenPartialHomeomorph.refl H ∈ members
+  /-- Let `e` be an open partial homeomorphism. If for every `x ∈ e.source`, the restriction of e
+  to some open set around `x` lies in the groupoid, then `e` lies in the groupoid. -/
+  locality' : ∀ e : OpenPartialHomeomorph H H,
     (∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ members) → e ∈ members
-  mem_of_eqOnSource' : ∀ e e' : PartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
-#align structure_groupoid StructureGroupoid
+  /-- Membership in a structure groupoid respects the equivalence of open partial homeomorphisms. -/
+  mem_of_eqOnSource' : ∀ e e' : OpenPartialHomeomorph H H, e ∈ members → e' ≈ e → e' ∈ members
 
 variable [TopologicalSpace H]
 
-instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
-  ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
+instance : Membership (OpenPartialHomeomorph H H) (StructureGroupoid H) :=
+  ⟨fun (G : StructureGroupoid H) (e : OpenPartialHomeomorph H H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
-    where
+instance (H : Type u) [TopologicalSpace H] :
+    SetLike (StructureGroupoid H) (OpenPartialHomeomorph H H) where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -228,29 +235,28 @@ instance : InfSet (StructureGroupoid H) :=
       intro e e' he he'e
       exact fun i hi => i.mem_of_eqOnSource' e e' (he i hi) he'e)⟩
 
-theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
+theorem StructureGroupoid.trans (G : StructureGroupoid H) {e e' : OpenPartialHomeomorph H H}
     (he : e ∈ G) (he' : e' ∈ G) : e ≫ₕ e' ∈ G :=
   G.trans' e e' he he'
-#align structure_groupoid.trans StructureGroupoid.trans
 
-theorem StructureGroupoid.symm (G : StructureGroupoid H) {e : PartialHomeomorph H H} (he : e ∈ G) :
-    e.symm ∈ G :=
+theorem StructureGroupoid.symm (G : StructureGroupoid H) {e : OpenPartialHomeomorph H H}
+    (he : e ∈ G) : e.symm ∈ G :=
   G.symm' e he
-#align structure_groupoid.symm StructureGroupoid.symm
 
-theorem StructureGroupoid.id_mem (G : StructureGroupoid H) : PartialHomeomorph.refl H ∈ G :=
+theorem StructureGroupoid.id_mem (G : StructureGroupoid H) : OpenPartialHomeomorph.refl H ∈ G :=
   G.id_mem'
-#align structure_groupoid.id_mem StructureGroupoid.id_mem
 
-theorem StructureGroupoid.locality (G : StructureGroupoid H) {e : PartialHomeomorph H H}
+theorem StructureGroupoid.locality (G : StructureGroupoid H) {e : OpenPartialHomeomorph H H}
     (h : ∀ x ∈ e.source, ∃ s, IsOpen s ∧ x ∈ s ∧ e.restr s ∈ G) : e ∈ G :=
   G.locality' e h
-#align structure_groupoid.locality StructureGroupoid.locality
 
-theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : PartialHomeomorph H H}
-    (he : e ∈ G) (h : e' ≈ e) : e' ∈ G :=
+theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H)
+    {e e' : OpenPartialHomeomorph H H} (he : e ∈ G) (h : e' ≈ e) : e' ∈ G :=
   G.mem_of_eqOnSource' e e' he h
-#align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
+
+theorem StructureGroupoid.mem_iff_of_eqOnSource {G : StructureGroupoid H}
+    {e e' : OpenPartialHomeomorph H H} (h : e ≈ e') : e ∈ G ↔ e' ∈ G :=
+  ⟨fun he ↦ G.mem_of_eqOnSource he (Setoid.symm h), fun he' ↦ G.mem_of_eqOnSource he' h⟩
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
 instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
@@ -260,25 +266,23 @@ instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
     dsimp at h
     induction h
     rfl
-#align structure_groupoid.partial_order StructureGroupoid.partialOrder
 
 theorem StructureGroupoid.le_iff {G₁ G₂ : StructureGroupoid H} : G₁ ≤ G₂ ↔ ∀ e, e ∈ G₁ → e ∈ G₂ :=
   Iff.rfl
-#align structure_groupoid.le_iff StructureGroupoid.le_iff
 
 /-- The trivial groupoid, containing only the identity (and maps with empty source, as this is
 necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
-  members := {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
+  members := {OpenPartialHomeomorph.refl H} ∪ { e : OpenPartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
-    cases' he with he he
+    rcases he with he | he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
-      have : e ≫ₕ e' ∈ { e : PartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
+      have : e ≫ₕ e' ∈ { e : OpenPartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
-    cases' (mem_union _ _ _).1 he with E E
+    rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
@@ -293,8 +297,8 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       have x's : x ∈ (e.restr s).source := by
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
-      cases' hs with hs hs
-      · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H := by
+      rcases hs with hs | hs
+      · replace hs : OpenPartialHomeomorph.restr e s = OpenPartialHomeomorph.refl H := by
           simpa only using hs
         have : (e.restr s).source = univ := by
           rw [hs]
@@ -302,32 +306,33 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         have : e.toPartialEquiv.source ∩ interior s = univ := this
         have : univ ⊆ interior s := by
           rw [← this]
-          exact inter_subset_right _ _
+          exact inter_subset_right
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
         simpa only [this, restr_univ] using hs
       · exfalso
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
   mem_of_eqOnSource' e e' he he'e := by
-    cases' he with he he
+    rcases he with he | he
     · left
       have : e = e' := by
-        refine' eq_of_eqOnSource_univ (Setoid.symm he'e) _ _ <;>
+        refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
     · right
       have he : e.toPartialEquiv.source = ∅ := he
       rwa [Set.mem_setOf_eq, EqOnSource.source_eq he'e]
-#align id_groupoid idGroupoid
 
 /-- Every structure groupoid contains the identity groupoid. -/
 instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
   bot := idGroupoid H
   bot_le := by
     intro u f hf
-    have hf : f ∈ {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
+    have hf :
+        f ∈ {OpenPartialHomeomorph.refl H} ∪ { e : OpenPartialHomeomorph H H | e.source = ∅ } :=
+      hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
-    cases' hf with hf hf
+    rcases hf with hf | hf
     · rw [hf]
       apply u.id_mem
     · apply u.locality
@@ -337,47 +342,54 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
 
 instance : Inhabited (StructureGroupoid H) := ⟨idGroupoid H⟩
 
-/-- To construct a groupoid, one may consider classes of partial homeomorphisms such that
+/-- To construct a groupoid, one may consider classes of open partial homeomorphisms such that
 both the function and its inverse have some property. If this property is stable under composition,
 one gets a groupoid. `Pregroupoid` bundles the properties needed for this construction, with the
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
+  /-- Property describing membership in this groupoid: the pregroupoid "contains"
+  all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
+  /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
     IsOpen u → IsOpen v → IsOpen (u ∩ f ⁻¹' v) → property (g ∘ f) (u ∩ f ⁻¹' v)
+  /-- Pregroupoids contain the identity map (on `univ`) -/
   id_mem : property id univ
+  /-- The pregroupoid property is "local", in the sense that `f` has the pregroupoid property on `u`
+  iff its restriction to each open subset of `u` has it -/
   locality :
     ∀ {f u}, IsOpen u → (∀ x ∈ u, ∃ v, IsOpen v ∧ x ∈ v ∧ property f (u ∩ v)) → property f u
+  /-- If `f = g` on `u` and `property f u`, then `property g u` -/
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
-#align pregroupoid Pregroupoid
 
 /-- Construct a groupoid of partial homeos for which the map and its inverse have some property,
 from a pregroupoid asserting that this property is stable under composition. -/
 def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
-  members := { e : PartialHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
+  members :=
+    { e : OpenPartialHomeomorph H H | PG.property e e.source ∧ PG.property e.symm e.target }
   trans' e e' he he' := by
     constructor
     · apply PG.comp he.1 he'.1 e.open_source e'.open_source
       apply e.continuousOn_toFun.isOpen_inter_preimage e.open_source e'.open_source
     · apply PG.comp he'.2 he.2 e'.open_target e.open_target
       apply e'.continuousOn_invFun.isOpen_inter_preimage e'.open_target e.open_target
-  symm' e he := ⟨he.2, he.1⟩
+  symm' _ he := ⟨he.2, he.1⟩
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
-    · refine' PG.locality e.open_source fun x xu ↦ _
+    · refine PG.locality e.open_source fun x xu ↦ ?_
       rcases he x xu with ⟨s, s_open, xs, hs⟩
-      refine' ⟨s, s_open, xs, _⟩
+      refine ⟨s, s_open, xs, ?_⟩
       convert hs.1 using 1
-      dsimp [PartialHomeomorph.restr]
+      dsimp [OpenPartialHomeomorph.restr]
       rw [s_open.interior_eq]
-    · refine' PG.locality e.open_target fun x xu ↦ _
+    · refine PG.locality e.open_target fun x xu ↦ ?_
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
-      refine' ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
+      refine ⟨e.target ∩ e.symm ⁻¹' s, ?_, ⟨xu, xs⟩, ?_⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
         convert hs.2 using 1
-        dsimp [PartialHomeomorph.restr]
+        dsimp [OpenPartialHomeomorph.restr]
         rw [s_open.interior_eq]
   mem_of_eqOnSource' e e' he ee' := by
     constructor
@@ -385,51 +397,40 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      -- Porting note: was
-      -- convert he.2
-      -- rw [A.1]
-      -- rfl
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
-      exact he.2
-#align pregroupoid.groupoid Pregroupoid.groupoid
 
-theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph H H} :
+theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
   Iff.rfl
-#align mem_groupoid_of_pregroupoid mem_groupoid_of_pregroupoid
 
 theorem groupoid_of_pregroupoid_le (PG₁ PG₂ : Pregroupoid H)
     (h : ∀ f s, PG₁.property f s → PG₂.property f s) : PG₁.groupoid ≤ PG₂.groupoid := by
-  refine' StructureGroupoid.le_iff.2 fun e he ↦ _
+  refine StructureGroupoid.le_iff.2 fun e he ↦ ?_
   rw [mem_groupoid_of_pregroupoid] at he ⊢
   exact ⟨h _ _ he.1, h _ _ he.2⟩
-#align groupoid_of_pregroupoid_le groupoid_of_pregroupoid_le
 
-theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : PartialHomeomorph H H}
+theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : OpenPartialHomeomorph H H}
     (he' : e ≈ e') (he : PG.property e e.source) : PG.property e' e'.source := by
   rw [← he'.1]
   exact PG.congr e.open_source he'.eqOn.symm he
-#align mem_pregroupoid_of_eq_on_source mem_pregroupoid_of_eqOnSource
 
 /-- The pregroupoid of all partial maps on a topological space `H`. -/
-@[reducible]
-def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
+abbrev continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
   comp _ _ _ _ _ := trivial
   id_mem := trivial
   locality _ _ := trivial
   congr _ _ _ := trivial
-#align continuous_pregroupoid continuousPregroupoid
 
 instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
   ⟨continuousPregroupoid H⟩
 
-/-- The groupoid of all partial homeomorphisms on a topological space `H`. -/
+/-- The groupoid of all open partial homeomorphisms on a topological space `H`. -/
 def continuousGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H :=
   Pregroupoid.groupoid (continuousPregroupoid H)
-#align continuous_groupoid continuousGroupoid
 
-/-- Every structure groupoid is contained in the groupoid of all partial homeomorphisms. -/
+/-- Every structure groupoid is contained in the groupoid of all open partial homeomorphisms. -/
 instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   top := continuousGroupoid H
   le_top _ _ _ := ⟨trivial, trivial⟩
@@ -437,7 +438,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
 instance : CompleteLattice (StructureGroupoid H) :=
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
-      refine' fun s =>
+      exact fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
       fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with
     le := (· ≤ ·)
@@ -447,7 +448,7 @@ instance : CompleteLattice (StructureGroupoid H) :=
     top := instStructureGroupoidOrderTop.top
     le_top := instStructureGroupoidOrderTop.le_top
     inf := (· ⊓ ·)
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
@@ -455,57 +456,52 @@ instance : CompleteLattice (StructureGroupoid H) :=
 homeomorphisms to open subsets of the source. -/
 class ClosedUnderRestriction (G : StructureGroupoid H) : Prop where
   closedUnderRestriction :
-    ∀ {e : PartialHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
-#align closed_under_restriction ClosedUnderRestriction
+    ∀ {e : OpenPartialHomeomorph H H}, e ∈ G → ∀ s : Set H, IsOpen s → e.restr s ∈ G
 
 theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestriction G]
-    {e : PartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
+    {e : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
-#align closed_under_restriction' closedUnderRestriction'
 
-/-- The trivial restriction-closed groupoid, containing only partial homeomorphisms equivalent
+/-- The trivial restriction-closed groupoid, containing only open partial homeomorphisms equivalent
 to the restriction of the identity to the various open subsets. -/
 def idRestrGroupoid : StructureGroupoid H where
-  members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ PartialHomeomorph.ofSet s h }
+  members := { e | ∃ (s : Set H) (h : IsOpen s), e ≈ OpenPartialHomeomorph.ofSet s h }
   trans' := by
     rintro e e' ⟨s, hs, hse⟩ ⟨s', hs', hse'⟩
     refine ⟨s ∩ s', hs.inter hs', ?_⟩
-    have := PartialHomeomorph.EqOnSource.trans' hse hse'
-    rwa [PartialHomeomorph.ofSet_trans_ofSet] at this
+    have := OpenPartialHomeomorph.EqOnSource.trans' hse hse'
+    rwa [OpenPartialHomeomorph.ofSet_trans_ofSet] at this
   symm' := by
     rintro e ⟨s, hs, hse⟩
-    refine' ⟨s, hs, _⟩
+    refine ⟨s, hs, ?_⟩
     rw [← ofSet_symm]
-    exact PartialHomeomorph.EqOnSource.symm' hse
+    exact OpenPartialHomeomorph.EqOnSource.symm' hse
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
   locality' := by
     intro e h
-    refine' ⟨e.source, e.open_source, by simp only [mfld_simps], _⟩
+    refine ⟨e.source, e.open_source, by simp only [mfld_simps], ?_⟩
     intro x hx
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
       rw [e.restr_source]
-      refine' ⟨hx, _⟩
+      refine ⟨hx, ?_⟩
       rw [hs.interior_eq]
       exact hxs
-    simpa only [mfld_simps] using PartialHomeomorph.EqOnSource.eqOn hes' hes
+    simpa only [mfld_simps] using OpenPartialHomeomorph.EqOnSource.eqOn hes' hes
   mem_of_eqOnSource' := by
     rintro e e' ⟨s, hs, hse⟩ hee'
     exact ⟨s, hs, Setoid.trans hee' hse⟩
-#align id_restr_groupoid idRestrGroupoid
 
 theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRestrGroupoid H _ :=
   ⟨s, hs, refl _⟩
-#align id_restr_groupoid_mem idRestrGroupoid_mem
 
 /-- The trivial restriction-closed groupoid is indeed `ClosedUnderRestriction`. -/
 instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
-    refine' Setoid.trans (PartialHomeomorph.EqOnSource.restr he s) _
+    refine Setoid.trans (OpenPartialHomeomorph.EqOnSource.restr he s) ?_
     exact ⟨by simp only [hs.interior_eq, mfld_simps], by simp only [mfld_simps, eqOn_refl]⟩⟩
-#align closed_under_restriction_id_restr_groupoid closedUnderRestriction_idRestrGroupoid
 
 /-- A groupoid is closed under restriction if and only if it contains the trivial restriction-closed
 groupoid. -/
@@ -513,28 +509,20 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     ClosedUnderRestriction G ↔ idRestrGroupoid ≤ G := by
   constructor
   · intro _i
-    apply StructureGroupoid.le_iff.mpr
+    rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
-    refine' G.mem_of_eqOnSource _ hes
+    refine G.mem_of_eqOnSource ?_ hes
     convert closedUnderRestriction' G.id_mem hs
-    -- Porting note: was
-    -- change s = _ ∩ _
-    -- rw [hs.interior_eq]
-    -- simp only [mfld_simps]
-    ext
-    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
-    · simp [hs]
-    · simp [hs.interior_eq]
+    ext <;> simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
-    rw [← ofSet_trans (e : PartialHomeomorph H H) hs]
-    refine' G.trans _ he
+    rw [← ofSet_trans (e : OpenPartialHomeomorph H H) hs]
+    refine G.trans ?_ he
     apply StructureGroupoid.le_iff.mp h
     exact idRestrGroupoid_mem hs
-#align closed_under_restriction_iff_id_le closedUnderRestriction_iff_id_le
 
-/-- The groupoid of all partial homeomorphisms on a topological space `H`
+/-- The groupoid of all open partial homeomorphisms on a topological space `H`
 is closed under restriction. -/
 instance : ClosedUnderRestriction (continuousGroupoid H) :=
   (closedUnderRestriction_iff_id_le _).mpr le_top
@@ -542,7 +530,6 @@ instance : ClosedUnderRestriction (continuousGroupoid H) :=
 end Groupoid
 
 /-! ### Charted spaces -/
-
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
 homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
@@ -556,21 +543,20 @@ sometimes as a real manifold over `ℝ^(2n)`.
 @[ext]
 class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M] where
   /-- The atlas of charts in the `ChartedSpace`. -/
-  protected atlas : Set (PartialHomeomorph M H)
+  protected atlas : Set (OpenPartialHomeomorph M H)
   /-- The preferred chart at each point in the charted space. -/
-  protected chartAt : M → PartialHomeomorph M H
+  protected chartAt : M → OpenPartialHomeomorph M H
   protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
-#align charted_space ChartedSpace
 
 /-- The atlas of charts in a `ChartedSpace`. -/
 abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
+    [ChartedSpace H M] : Set (OpenPartialHomeomorph M H) :=
   ChartedSpace.atlas
 
 /-- The preferred chart at a point `x` in a charted space `M`. -/
 abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
+    [ChartedSpace H M] (x : M) : OpenPartialHomeomorph M H :=
   ChartedSpace.chartAt x
 
 @[simp, mfld_simps]
@@ -583,45 +569,30 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
     [ChartedSpace H M] (x : M) : chartAt H x ∈ atlas H M :=
   ChartedSpace.chart_mem_atlas x
 
+lemma nonempty_of_chartedSpace {H : Type*} {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : Nonempty H :=
+  ⟨chartAt H x x⟩
+
+lemma isEmpty_of_chartedSpace (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
+    [ChartedSpace H M] [IsEmpty H] : IsEmpty M := by
+  rcases isEmpty_or_nonempty M with hM | ⟨⟨x⟩⟩
+  · exact hM
+  · exact (IsEmpty.false (chartAt H x x)).elim
+
 section ChartedSpace
-
-/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
-  atlas := {PartialHomeomorph.refl H}
-  chartAt _ := PartialHomeomorph.refl H
-  mem_chart_source x := mem_univ x
-  chart_mem_atlas _ := mem_singleton _
-#align charted_space_self chartedSpaceSelf
-
-/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
-the atlas members are just the identity. -/
-@[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : PartialHomeomorph H H} :
-    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H :=
-  Iff.rfl
-#align charted_space_self_atlas chartedSpaceSelf_atlas
-
-/-- In the model space, `chartAt` is always the identity. -/
-theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
-    chartAt H x = PartialHomeomorph.refl H := rfl
-#align chart_at_self_eq chartAt_self_eq
 
 section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
--- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
   (chartAt H x).map_source (mem_chart_source _ _)
-#align mem_chart_target mem_chart_target
 
 theorem chart_source_mem_nhds (x : M) : (chartAt H x).source ∈ 𝓝 x :=
   (chartAt H x).open_source.mem_nhds <| mem_chart_source H x
-#align chart_source_mem_nhds chart_source_mem_nhds
 
 theorem chart_target_mem_nhds (x : M) : (chartAt H x).target ∈ 𝓝 (chartAt H x x) :=
   (chartAt H x).open_target.mem_nhds <| mem_chart_target H x
-#align chart_target_mem_nhds chart_target_mem_nhds
 
 variable (M) in
 @[simp]
@@ -631,31 +602,26 @@ theorem iUnion_source_chartAt : (⋃ x : M, (chartAt H x).source) = (univ : Set 
 theorem ChartedSpace.isOpen_iff (s : Set M) :
     IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
   rw [isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source) (iUnion_source_chartAt H M)]
-  simp only [(chartAt H _).isOpen_image_iff_of_subset_source (inter_subset_left _ _)]
+  simp only [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
-Especially useful for working with `BasicSmoothVectorBundleCore`. -/
+Especially useful for working with `BasicContMDiffVectorBundleCore`. -/
 def achart (x : M) : atlas H M :=
   ⟨chartAt H x, chart_mem_atlas H x⟩
-#align achart achart
 
 theorem achart_def (x : M) : achart H x = ⟨chartAt H x, chart_mem_atlas H x⟩ :=
   rfl
-#align achart_def achart_def
 
 @[simp, mfld_simps]
-theorem coe_achart (x : M) : (achart H x : PartialHomeomorph M H) = chartAt H x :=
+theorem coe_achart (x : M) : (achart H x : OpenPartialHomeomorph M H) = chartAt H x :=
   rfl
-#align coe_achart coe_achart
 
 @[simp, mfld_simps]
 theorem achart_val (x : M) : (achart H x).1 = chartAt H x :=
   rfl
-#align achart_val achart_val
 
 theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
   mem_chart_source H x
-#align mem_achart_source mem_achart_source
 
 open TopologicalSpace
 
@@ -667,16 +633,14 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
   haveI := hsc.toEncodable
   rw [biUnion_eq_iUnion] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt H (x : M)).open_source) hs
-#align charted_space.second_countable_of_countable_cover ChartedSpace.secondCountable_of_countable_cover
 
 variable (M)
 
-theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
+theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
-    countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
+    countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
-#align charted_space.second_countable_of_sigma_compact ChartedSpace.secondCountable_of_sigma_compact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
@@ -690,41 +654,130 @@ theorem ChartedSpace.locallyCompactSpace [LocallyCompactSpace H] : LocallyCompac
   refine .of_hasBasis this ?_
   rintro x s ⟨_, h₂, h₃⟩
   exact h₂.image_of_continuousOn ((chartAt H x).continuousOn_symm.mono h₃)
-#align charted_space.locally_compact ChartedSpace.locallyCompactSpace
 
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
 theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyConnectedSpace M := by
-  let e : M → PartialHomeomorph M H := chartAt H
-  refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
-      (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
+  let e : M → OpenPartialHomeomorph M H := chartAt H
+  refine locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
+      (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) ?_ ?_
   · intro x
-    simpa only [e, PartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [e, OpenPartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
-#align charted_space.locally_connected_space ChartedSpace.locallyConnectedSpace
+
+/-- If a topological space `M` admits an atlas with locally path-connected charts,
+then `M` itself is locally path-connected. -/
+theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
+  let e := chartAt H x
+  let t := s ∩ e.source
+  have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
+  refine ⟨e.symm '' pathComponentIn (e '' t) (e x), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
+  · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
+    apply e.symm.image_mem_nhds (by simp [e])
+    exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
+  · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+  · exact (image_mono pathComponentIn_subset).trans
+      (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
 def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
     (M : Type*) [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] :
     ChartedSpace H M where
-  atlas := image2 PartialHomeomorph.trans (atlas H' M) (atlas H H')
+  atlas := image2 OpenPartialHomeomorph.trans (atlas H' M) (atlas H H')
   chartAt p := (chartAt H' p).trans (chartAt H (chartAt H' p p))
   mem_chart_source p := by simp only [mfld_simps]
   chart_mem_atlas p := ⟨chartAt _ p, chart_mem_atlas _ p, chartAt _ _, chart_mem_atlas _ _, rfl⟩
-#align charted_space.comp ChartedSpace.comp
 
 theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
     {M : Type*} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
 
+/-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
+the real line with a double origin). -/
+theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
+  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  by_cases hy : y ∈ (chartAt H x).source
+  · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
+    · exact OpenPartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
+    · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
+        mem_singleton_iff, true_and]
+      exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
+  · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
+
+/-- A charted space over a discrete space is discrete. -/
+theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
+  apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
+  have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
+    isOpen_inter_preimage _ (isOpen_discrete _)
+  convert this
+  refine Subset.antisymm (by simp) ?_
+  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
+  intro y hy h'y
+  exact (chartAt H x).injOn hy (mem_chart_source _ x) h'y
+
 end
 
-library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
+section Constructions
+
+/-- An empty type is a charted space over any topological space. -/
+def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+  atlas := ∅
+  chartAt x := (IsEmpty.false x).elim
+  mem_chart_source x := (IsEmpty.false x).elim
+  chart_mem_atlas x := (IsEmpty.false x).elim
+
+/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
+instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
+  atlas := {OpenPartialHomeomorph.refl H}
+  chartAt _ := OpenPartialHomeomorph.refl H
+  mem_chart_source x := mem_univ x
+  chart_mem_atlas _ := mem_singleton _
+
+/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
+the atlas members are just the identity. -/
+@[simp, mfld_simps]
+theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : OpenPartialHomeomorph H H} :
+    e ∈ atlas H H ↔ e = OpenPartialHomeomorph.refl H :=
+  Iff.rfl
+
+/-- In the model space, `chartAt` is always the identity. -/
+theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
+    chartAt H x = OpenPartialHomeomorph.refl H := rfl
+
+/-- Any discrete space is a charted space over a singleton set.
+We keep this as a definition (not an instance) to avoid instance search trying to search for
+`DiscreteTopology` or `Unique` instances.
+-/
+def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
+  atlas :=
+    letI f := fun x : M ↦ OpenPartialHomeomorph.const
+      (isOpen_discrete {x}) (isOpen_discrete {h.default})
+    Set.image f univ
+  chartAt x := OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default})
+  mem_chart_source x := by simp
+  chart_mem_atlas x := by simp
+
+/-- A chart on the discrete space is the constant chart. -/
+@[simp, mfld_simps]
+lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
+    [DiscreteTopology M] [h : Unique H] {x : M} :
+    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H)
+    chartAt H x = OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
+  rfl
+
+section Products
+
+library_note2 «Manifold type tags» /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
@@ -744,34 +797,27 @@ solves this problem. -/
 see note [Manifold type tags]. -/
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
-#align model_prod ModelProd
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
-#align model_pi ModelPi
 
 section
 
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
-
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
-#align model_prod_inhabited modelProdInhabited
 
 instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
--- Porting note: simpNF false positive
--- Next lemma shows up often when dealing with derivatives, register it as simp.
-@[simp, mfld_simps, nolint simpNF]
+-- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
+@[simp, mfld_simps]
 theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
   rfl
-#align model_prod_range_prod_id modelProd_range_prod_id
 
 end
 
@@ -779,10 +825,8 @@ section
 
 variable {ι : Type*} {Hi : ι → Type*}
 
--- Porting note: Old proof was `Pi.inhabited _`.
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  ⟨fun _ ↦ default⟩
-#align model_pi_inhabited modelPiInhabited
+  Pi.instInhabited
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
   Pi.topologicalSpace
@@ -794,11 +838,10 @@ construction of the atlas of product maps. -/
 instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
     [ChartedSpace H' M'] : ChartedSpace (ModelProd H H') (M × M') where
-  atlas := image2 PartialHomeomorph.prod (atlas H M) (atlas H' M')
+  atlas := image2 OpenPartialHomeomorph.prod (atlas H M) (atlas H' M')
   chartAt x := (chartAt H x.1).prod (chartAt H' x.2)
   mem_chart_source x := ⟨mem_chart_source H x.1, mem_chart_source H' x.2⟩
   chart_mem_atlas x := mem_image2_of_mem (chart_mem_atlas H x.1) (chart_mem_atlas H' x.2)
-#align prod_charted_space prodChartedSpace
 
 section prodChartedSpace
 
@@ -813,56 +856,136 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [Topologic
 theorem prodChartedSpace_chartAt :
     chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
-#align prod_charted_space_chart_at prodChartedSpace_chartAt
 
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
-  · simp [prodChartedSpace, atlas, ChartedSpace.atlas]
+  · simp [atlas, ChartedSpace.atlas]
   · ext1
     simp only [prodChartedSpace_chartAt, chartAt_self_eq, refl_prod_refl]
     rfl
-#align charted_space_self_prod chartedSpaceSelf_prod
 
 end prodChartedSpace
 
 /-- The product of a finite family of charted spaces is naturally a charted space, with the
 canonical construction of the atlas of finite product maps. -/
-instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
+instance piChartedSpace {ι : Type*} [Finite ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
     (M : ι → Type*) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
-  atlas := PartialHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
-  chartAt f := PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i)
+  atlas := OpenPartialHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
+  chartAt f := OpenPartialHomeomorph.pi fun i ↦ chartAt (H i) (f i)
   mem_chart_source f i _ := mem_chart_source (H i) (f i)
   chart_mem_atlas f := mem_image_of_mem _ fun i _ ↦ chart_mem_atlas (H i) (f i)
-#align pi_charted_space piChartedSpace
 
 @[simp, mfld_simps]
-theorem piChartedSpace_chartAt {ι : Type*} [Fintype ι] (H : ι → Type*)
+theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     [∀ i, TopologicalSpace (H i)] (M : ι → Type*) [∀ i, TopologicalSpace (M i)]
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
-    chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
+    chartAt (H := ModelPi H) f = OpenPartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
-#align pi_charted_space_chart_at piChartedSpace_chartAt
+
+end Products
+
+section sum
+
+variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M']
+
+/-- The disjoint union of two charted spaces modelled on a non-empty space `H`
+is a charted space over `H`. -/
+def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+  atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
+    ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
+  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
+  chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
+    (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
+  mem_chart_source p := by
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl, lift_openEmbedding_source,
+        ← OpenPartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
+      use x, cm.mem_chart_source x
+    | inr x =>
+      rw [Sum.elim_inr, lift_openEmbedding_source,
+        ← OpenPartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
+      use x, cm'.mem_chart_source x
+  chart_mem_atlas p := by
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl]
+      left
+      use ChartedSpace.chartAt x, cm.chart_mem_atlas x
+    | inr x =>
+      rw [Sum.elim_inr]
+      right
+      use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
+
+open scoped Classical in
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
+  by_cases! h : Nonempty H
+  · exact ChartedSpace.sum_of_nonempty
+  have : IsEmpty M := isEmpty_of_chartedSpace H
+  have : IsEmpty M' := isEmpty_of_chartedSpace H
+  exact empty H (M ⊕ M')
+
+lemma ChartedSpace.sum_chartAt_inl (x : M) :
+    haveI : Nonempty H := nonempty_of_chartedSpace x
+    chartAt H (Sum.inl x)
+      = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
+  rfl
+
+lemma ChartedSpace.sum_chartAt_inr (x' : M') :
+    haveI : Nonempty H := nonempty_of_chartedSpace x'
+    chartAt H (Sum.inr x')
+      = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
+  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
+  rfl
+
+@[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
+    (chartAt H (.inl x : M ⊕ M')) (Sum.inl y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inl]
+  exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
+
+@[simp, mfld_simps] lemma sum_chartAt_inr_apply {x y : M'} :
+    (chartAt H (.inr x : M ⊕ M')) (Sum.inr y) = (chartAt H x) y := by
+  haveI : Nonempty H := nonempty_of_chartedSpace x
+  rw [ChartedSpace.sum_chartAt_inr]
+  exact OpenPartialHomeomorph.lift_openEmbedding_apply _ _
+
+lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
+    {e : OpenPartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+    (∃ f : OpenPartialHomeomorph M H, f ∈ (atlas H M)
+      ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
+    ∨ (∃ f' : OpenPartialHomeomorph M' H, f' ∈ (atlas H M') ∧
+      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
+  simp only [atlas, sum, h, ↓reduceDIte] at he
+  obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+  · rw [← hxe]; left; use x
+  · rw [← hxe]; right; use x
+
+end sum
+
+end Constructions
 
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
 
-
 /-- Sometimes, one may want to construct a charted space structure on a space which does not yet
 have a topological structure, where the topology would come from the charts. For this, one needs
-charts that are only partial equivs, and continuity properties for their composition.
+charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
+  /-- An atlas of charts, which are only `PartialEquiv`s -/
   atlas : Set (PartialEquiv M H)
+  /-- The preferred chart at each point -/
   chartAt : M → PartialEquiv M H
   mem_chart_source : ∀ x, x ∈ (chartAt x).source
   chart_mem_atlas : ∀ x, chartAt x ∈ atlas
   open_source : ∀ e e' : PartialEquiv M H, e ∈ atlas → e' ∈ atlas → IsOpen (e.symm.trans e').source
   continuousOn_toFun : ∀ e e' : PartialEquiv M H, e ∈ atlas → e' ∈ atlas →
     ContinuousOn (e.symm.trans e') (e.symm.trans e').source
-#align charted_space_core ChartedSpaceCore
 
 namespace ChartedSpaceCore
 
@@ -873,28 +996,26 @@ protected def toTopologicalSpace : TopologicalSpace M :=
   TopologicalSpace.generateFrom <|
     ⋃ (e : PartialEquiv M H) (_ : e ∈ c.atlas) (s : Set H) (_ : IsOpen s),
       {e ⁻¹' s ∩ e.source}
-#align charted_space_core.to_topological_space ChartedSpaceCore.toTopologicalSpace
 
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
-  refine' ⟨e, he, univ, isOpen_univ, _⟩
+  refine ⟨e, he, univ, isOpen_univ, ?_⟩
   simp only [Set.univ_inter, Set.preimage_univ]
-#align charted_space_core.open_source' ChartedSpaceCore.open_source'
 
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=
-    Subset.antisymm (inter_subset_left _ _) fun x hx ↦
+    Subset.antisymm inter_subset_left fun x hx ↦
       ⟨hx, PartialEquiv.target_subset_preimage_source _ hx⟩
   simpa [PartialEquiv.trans_source, E] using c.open_source e e he he
-#align charted_space_core.open_target ChartedSpaceCore.open_target
 
-/-- An element of the atlas in a charted space without topology becomes a partial homeomorphism
-for the topology constructed from this atlas. The `PartialHomeomorph` version is given in this
-definition. -/
-protected def partialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
-    @PartialHomeomorph M H c.toTopologicalSpace _ :=
-  { c.toTopologicalSpace, e with
+/-- An element of the atlas in a charted space without topology becomes an open partial
+homeomorphism for the topology constructed from this atlas. The `OpenPartialHomeomorph` version is
+given in this definition. -/
+protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
+    @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
+  { __ := c.toTopologicalSpace
+    __ := e
     open_source := by convert c.open_source' he
     open_target := by convert c.open_target he
     continuousOn_toFun := by
@@ -922,25 +1043,24 @@ protected def partialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
         congr 1
         exact inter_comm _ _
       simpa [f, PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
-#align charted_space_core.local_homeomorph ChartedSpaceCore.partialHomeomorph
+
+@[deprecated (since := "2025-08-29")] alias
+  partialHomeomorph := ChartedSpaceCore.openPartialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/
 def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
-  { c.toTopologicalSpace with
-    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.partialHomeomorph e he}
-    chartAt := fun x ↦ c.partialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
+  { __ := c.toTopologicalSpace
+    atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.openPartialHomeomorph e he}
+    chartAt := fun x ↦ c.openPartialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
       simp only [mem_iUnion, mem_singleton_iff]
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
-#align charted_space_core.to_charted_space ChartedSpaceCore.toChartedSpace
 
 end ChartedSpaceCore
 
 /-! ### Charted space with a given structure groupoid -/
-
-
 section HasGroupoid
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -949,33 +1069,31 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 groupoid. -/
 class HasGroupoid {H : Type*} [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (G : StructureGroupoid H) : Prop where
-  compatible : ∀ {e e' : PartialHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
-#align has_groupoid HasGroupoid
+  compatible :
+    ∀ {e e' : OpenPartialHomeomorph M H}, e ∈ atlas H M → e' ∈ atlas H M → e.symm ≫ₕ e' ∈ G
 
 /-- Reformulate in the `StructureGroupoid` namespace the compatibility condition of charts in a
 charted space admitting a structure groupoid, to make it more easily accessible with dot
 notation. -/
 theorem StructureGroupoid.compatible {H : Type*} [TopologicalSpace H] (G : StructureGroupoid H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G]
-    {e e' : PartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) : e.symm ≫ₕ e' ∈ G :=
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) :
+    e.symm ≫ₕ e' ∈ G :=
   HasGroupoid.compatible he he'
-#align structure_groupoid.compatible StructureGroupoid.compatible
 
 theorem hasGroupoid_of_le {G₁ G₂ : StructureGroupoid H} (h : HasGroupoid M G₁) (hle : G₁ ≤ G₂) :
     HasGroupoid M G₂ :=
   ⟨fun he he' ↦ hle (h.compatible he he')⟩
-#align has_groupoid_of_le hasGroupoid_of_le
 
 theorem hasGroupoid_inf_iff {G₁ G₂ : StructureGroupoid H} : HasGroupoid M (G₁ ⊓ G₂) ↔
     HasGroupoid M G₁ ∧ HasGroupoid M G₂ :=
   ⟨(fun h ↦ ⟨hasGroupoid_of_le h inf_le_left, hasGroupoid_of_le h inf_le_right⟩),
   fun ⟨h1, h2⟩ ↦ { compatible := fun he he' ↦ ⟨h1.compatible he he', h2.compatible he he'⟩ }⟩
 
-theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : PartialHomeomorph M H},
+theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : OpenPartialHomeomorph M H},
     e ∈ atlas H M → e' ∈ atlas H M → PG.property (e.symm ≫ₕ e') (e.symm ≫ₕ e').source) :
     HasGroupoid M PG.groupoid :=
   ⟨fun he he' ↦ mem_groupoid_of_pregroupoid.mpr ⟨h he he', h he' he⟩⟩
-#align has_groupoid_of_pregroupoid hasGroupoid_of_pregroupoid
 
 /-- The trivial charted space structure on the model space is compatible with any groupoid. -/
 instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : StructureGroupoid H) :
@@ -983,19 +1101,18 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
   compatible {e e'} he he' := by
     rw [chartedSpaceSelf_atlas] at he he'
     simp [he, he', StructureGroupoid.id_mem]
-#align has_groupoid_model_space hasGroupoid_model_space
 
-/-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
+/-- Any charted space structure is compatible with the groupoid of all open partial
+homeomorphisms. -/
 instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
-  refine' ⟨fun _ _ ↦ _⟩
+  refine ⟨fun _ _ ↦ ?_⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]
-#align has_groupoid_continuous_groupoid hasGroupoid_continuousGroupoid
 
-/-- If `G` is closed under restriction, the transition function between
-  the restriction of two charts `e` and `e'` lies in `G`. -/
-theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : StructureGroupoid H}
-    (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
+/-- If `G` is closed under restriction, the transition function between the restriction of two
+charts `e` and `e'` lies in `G`. -/
+theorem StructureGroupoid.trans_restricted {e e' : OpenPartialHomeomorph M H}
+    {G : StructureGroupoid H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
     (e.subtypeRestr hs).symm ≫ₕ e'.subtypeRestr hs ∈ G :=
   G.mem_of_eqOnSource (closedUnderRestriction' (G.compatible he he')
@@ -1003,39 +1120,34 @@ theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : S
 
 section MaximalAtlas
 
-variable (M) (G : StructureGroupoid H)
+variable (G : StructureGroupoid H)
 
+variable (M) in
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all charts that are compatible with the atlas, i.e., such
 that changing coordinates with an atlas member gives an element of the groupoid. -/
-def StructureGroupoid.maximalAtlas : Set (PartialHomeomorph M H) :=
+def StructureGroupoid.maximalAtlas : Set (OpenPartialHomeomorph M H) :=
   { e | ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G }
-#align structure_groupoid.maximal_atlas StructureGroupoid.maximalAtlas
-
-variable {M}
 
 /-- The elements of the atlas belong to the maximal atlas for any structure groupoid. -/
 theorem StructureGroupoid.subset_maximalAtlas [HasGroupoid M G] : atlas H M ⊆ G.maximalAtlas M :=
   fun _ he _ he' ↦ ⟨G.compatible he he', G.compatible he' he⟩
-#align structure_groupoid.subset_maximal_atlas StructureGroupoid.subset_maximalAtlas
 
 theorem StructureGroupoid.chart_mem_maximalAtlas [HasGroupoid M G] (x : M) :
     chartAt H x ∈ G.maximalAtlas M :=
   G.subset_maximalAtlas (chart_mem_atlas H x)
-#align structure_groupoid.chart_mem_maximal_atlas StructureGroupoid.chart_mem_maximalAtlas
 
 variable {G}
 
-theorem mem_maximalAtlas_iff {e : PartialHomeomorph M H} :
+theorem mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
     e ∈ G.maximalAtlas M ↔ ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G :=
   Iff.rfl
-#align mem_maximal_atlas_iff mem_maximalAtlas_iff
 
 /-- Changing coordinates between two elements of the maximal atlas gives rise to an element
 of the structure groupoid. -/
-theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H}
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : OpenPartialHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
-  refine' G.locality fun x hx ↦ _
+  refine G.locality fun x hx ↦ ?_
   set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
@@ -1043,7 +1155,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have xs : x ∈ s := by
     simp only [s, f, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
-  refine' ⟨s, hs, xs, _⟩
+  refine ⟨s, hs, xs, ?_⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _ _)).2
   have C : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ∈ G := G.trans A B
@@ -1055,12 +1167,11 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
     _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
     _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
   exact G.mem_of_eqOnSource C (Setoid.symm D)
-#align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
 
-open PartialHomeomorph in
+open OpenPartialHomeomorph in
 /-- The maximal atlas of a structure groupoid is stable under equivalence. -/
-lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource {e e' : PartialHomeomorph M H} (h : e' ≈ e)
-    (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
+lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource {e e' : OpenPartialHomeomorph M H}
+    (h : e' ≈ e) (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
   intro e'' he''
   obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
   exact ⟨G.mem_of_eqOnSource l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
@@ -1069,16 +1180,50 @@ lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource {e e' : PartialHomeomorph
 variable (G)
 
 /-- In the model space, the identity is in any maximal atlas. -/
-theorem StructureGroupoid.id_mem_maximalAtlas : PartialHomeomorph.refl H ∈ G.maximalAtlas H :=
+theorem StructureGroupoid.id_mem_maximalAtlas : OpenPartialHomeomorph.refl H ∈ G.maximalAtlas H :=
   G.subset_maximalAtlas <| by simp
-#align structure_groupoid.id_mem_maximal_atlas StructureGroupoid.id_mem_maximalAtlas
 
 /-- In the model space, any element of the groupoid is in the maximal atlas. -/
-theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorph H H}
+theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : OpenPartialHomeomorph H H}
     (hf : f ∈ G) : f ∈ G.maximalAtlas H := by
-  rintro e (rfl : e = PartialHomeomorph.refl H)
+  rintro e (rfl : e = OpenPartialHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
-#align structure_groupoid.mem_maximal_atlas_of_mem_groupoid StructureGroupoid.mem_maximalAtlas_of_mem_groupoid
+
+theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G ≤ G') :
+    G.maximalAtlas M ⊆ G'.maximalAtlas M :=
+  fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
+
+private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    (e.restr s).symm ≫ₕ e' ∈ G := by
+  have hs'' : IsOpen (e '' (e.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
+    exact e.open_source.inter hs
+  have : (e.restr (e.source ∩ s)).symm ≫ₕ e' ∈ G := by
+    apply G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').1 hs'')
+    exact e.restr_symm_trans (e.open_source.inter hs) hs'' inter_subset_left
+  refine G.mem_of_eqOnSource this ?_
+  exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
+
+private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    e'.symm ≫ₕ e.restr s ∈ G := by
+  have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source e' inter_subset_left]
+    exact e'.open_source.inter hs
+  have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
+    rw [← image_source_inter_eq']
+    exact isOpen_image_source_inter e' hs
+  exact G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').2 ht) (e.symm_trans_restr e' hs)
+
+/-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
+the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
+theorem restr_mem_maximalAtlas [ClosedUnderRestriction G]
+    {e : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
+    e.restr s ∈ G.maximalAtlas M :=
+  fun _e' he' ↦ ⟨restr_mem_maximalAtlas_aux1 G he he' hs, restr_mem_maximalAtlas_aux2 G he he' hs⟩
 
 end MaximalAtlas
 
@@ -1086,75 +1231,67 @@ section Singleton
 
 variable {α : Type*} [TopologicalSpace α]
 
-namespace PartialHomeomorph
+namespace OpenPartialHomeomorph
 
-variable (e : PartialHomeomorph α H)
+variable (e : OpenPartialHomeomorph α H)
 
-/-- If a single partial homeomorphism `e` from a space `α` into `H` has source covering the whole
-space `α`, then that partial homeomorphism induces an `H`-charted space structure on `α`.
+/-- If a single open partial homeomorphism `e` from a space `α` into `H` has source covering the
+whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
-`OpenEmbedding.singletonChartedSpace`.) -/
+`IsOpenEmbedding.singletonChartedSpace`.) -/
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
   mem_chart_source _ := by rw [h]; apply mem_univ
   chart_mem_atlas _ := by tauto
-#align local_homeomorph.singleton_charted_space PartialHomeomorph.singletonChartedSpace
 
 @[simp, mfld_simps]
 theorem singletonChartedSpace_chartAt_eq (h : e.source = Set.univ) {x : α} :
     @chartAt H _ α _ (e.singletonChartedSpace h) x = e :=
   rfl
-#align local_homeomorph.singleton_charted_space_chart_at_eq PartialHomeomorph.singletonChartedSpace_chartAt_eq
 
 theorem singletonChartedSpace_chartAt_source (h : e.source = Set.univ) {x : α} :
     (@chartAt H _ α _ (e.singletonChartedSpace h) x).source = Set.univ :=
   h
-#align local_homeomorph.singleton_charted_space_chart_at_source PartialHomeomorph.singletonChartedSpace_chartAt_source
 
-theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ) (e' : PartialHomeomorph α H)
-    (h' : e' ∈ (e.singletonChartedSpace h).atlas) : e' = e :=
+theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ)
+    (e' : OpenPartialHomeomorph α H) (h' : e' ∈ (e.singletonChartedSpace h).atlas) : e' = e :=
   h'
-#align local_homeomorph.singleton_charted_space_mem_atlas_eq PartialHomeomorph.singletonChartedSpace_mem_atlas_eq
 
-/-- Given a partial homeomorphism `e` from a space `α` into `H`, if its source covers the whole
-space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any structure
-groupoid `G` which is closed under restrictions. -/
+/-- Given an open partial homeomorphism `e` from a space `α` into `H`, if its source covers the
+whole space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any
+structure groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
-  { e.singletonChartedSpace h with
+  { __ := e.singletonChartedSpace h
     compatible := by
       intro e' e'' he' he''
       rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
         e.singletonChartedSpace_mem_atlas_eq h e'' he'']
-      refine' G.mem_of_eqOnSource _ e.symm_trans_self
+      refine G.mem_of_eqOnSource ?_ e.symm_trans_self
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
-#align local_homeomorph.singleton_has_groupoid PartialHomeomorph.singleton_hasGroupoid
 
-end PartialHomeomorph
+end OpenPartialHomeomorph
 
-namespace OpenEmbedding
+namespace Topology.IsOpenEmbedding
 
 variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
-See `PartialHomeomorph.singletonChartedSpace`. -/
-def singletonChartedSpace {f : α → H} (h : OpenEmbedding f) : ChartedSpace H α :=
-  (h.toPartialHomeomorph f).singletonChartedSpace (toPartialHomeomorph_source _ _)
-#align open_embedding.singleton_charted_space OpenEmbedding.singletonChartedSpace
+See `OpenPartialHomeomorph.singletonChartedSpace`. -/
+def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
+  (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 
-theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : OpenEmbedding f) {x : α} :
+theorem singletonChartedSpace_chartAt_eq {f : α → H} (h : IsOpenEmbedding f) {x : α} :
     ⇑(@chartAt H _ α _ h.singletonChartedSpace x) = f :=
   rfl
-#align open_embedding.singleton_charted_space_chart_at_eq OpenEmbedding.singletonChartedSpace_chartAt_eq
 
-theorem singleton_hasGroupoid {f : α → H} (h : OpenEmbedding f) (G : StructureGroupoid H)
+theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
-  (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
-#align open_embedding.singleton_has_groupoid OpenEmbedding.singleton_hasGroupoid
+  (h.toOpenPartialHomeomorph f).singleton_hasGroupoid (toOpenPartialHomeomorph_source _ _) G
 
-end OpenEmbedding
+end Topology.IsOpenEmbedding
 
 end Singleton
 
@@ -1163,7 +1300,6 @@ namespace TopologicalSpace.Opens
 open TopologicalSpace
 
 variable (G : StructureGroupoid H) [HasGroupoid M G]
-
 variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
@@ -1174,22 +1310,20 @@ protected instance instChartedSpace : ChartedSpace H s where
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
-#align topological_space.opens.charted_space TopologicalSpace.Opens.instChartedSpace
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
- of some chart on `M`. -/
-lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
-    ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
+of some chart on `M`. -/
+lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
+    (he : e ∈ atlas H s) : ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he)⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
-  every chart of `t` is the restriction of some chart on `H`. -/
+every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
-lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
-    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he')⟩
+lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : OpenPartialHomeomorph t H}
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht :=
+  chart_eq ht he'
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
@@ -1199,12 +1333,11 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    refine' G.mem_of_eqOnSource _
+    refine G.mem_of_eqOnSource ?_
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
-#align topological_space.opens.has_groupoid TopologicalSpace.Opens.instHasGroupoid
 
 theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
@@ -1215,16 +1348,15 @@ theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
-    (chartAt H (Set.inclusion hUV x)).symm
-    =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
-    Set.inclusion hUV ∘ (chartAt H x).symm := by
+    (chartAt H (Opens.inclusion hUV x)).symm
+    =ᶠ[𝓝 (chartAt H (Opens.inclusion hUV x) (Set.inclusion hUV x))]
+    Opens.inclusion hUV ∘ (chartAt H x).symm := by
   set e := chartAt H (x : M)
   have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
     apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds <| e.subtypeRestr_symm_eqOn_of_le ⟨x⟩
-    ⟨Set.inclusion hUV x⟩ hUV
-#align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
+    ⟨Opens.inclusion hUV x⟩ hUV
 end TopologicalSpace.Opens
 
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
@@ -1232,7 +1364,7 @@ end TopologicalSpace.Opens
 NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
 can contain more charts than these. -/
-lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
+lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : OpenPartialHomeomorph M H}
     (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
   intro e' he'
@@ -1244,17 +1376,18 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
 
+@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
+  StructureGroupoid.subtypeRestr_mem_maximalAtlas
+
 /-! ### Structomorphisms -/
 
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
-  mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →
-    c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toPartialHomeomorph ≫ₕ c' ∈ G
-#align structomorph Structomorph
+  mem_groupoid : ∀ c : OpenPartialHomeomorph M H, ∀ c' : OpenPartialHomeomorph M' H, c ∈ atlas H M →
+    c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toOpenPartialHomeomorph ≫ₕ c' ∈ G
 
 variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} [ChartedSpace H M']
   [ChartedSpace H M'']
@@ -1264,21 +1397,19 @@ def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGr
     Structomorph G M M :=
   { Homeomorph.refl M with
     mem_groupoid := fun c c' hc hc' ↦ by
-      change PartialHomeomorph.symm c ≫ₕ PartialHomeomorph.refl M ≫ₕ c' ∈ G
-      rw [PartialHomeomorph.refl_trans]
+      change OpenPartialHomeomorph.symm c ≫ₕ OpenPartialHomeomorph.refl M ≫ₕ c' ∈ G
+      rw [OpenPartialHomeomorph.refl_trans]
       exact G.compatible hc hc' }
-#align structomorph.refl Structomorph.refl
 
 /-- The inverse of a structomorphism is a structomorphism. -/
 def Structomorph.symm (e : Structomorph G M M') : Structomorph G M' M :=
   { e.toHomeomorph.symm with
     mem_groupoid := by
       intro c c' hc hc'
-      have : (c'.symm ≫ₕ e.toHomeomorph.toPartialHomeomorph ≫ₕ c).symm ∈ G :=
+      have : (c'.symm ≫ₕ e.toHomeomorph.toOpenPartialHomeomorph ≫ₕ c).symm ∈ G :=
         G.symm (e.mem_groupoid c' c hc' hc)
       rwa [trans_symm_eq_symm_trans_symm, trans_symm_eq_symm_trans_symm, symm_symm, trans_assoc]
         at this }
-#align structomorph.symm Structomorph.symm
 
 /-- The composition of structomorphisms is a structomorphism. -/
 def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
@@ -1290,11 +1421,11 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       Then g ∘ e ∘ c⁻¹ and c' ∘ e' ∘ g⁻¹ are both smooth as e and e' are structomorphisms, so
       their composition is smooth, and it coincides with c' ∘ e' ∘ e ∘ c⁻¹ around x. -/
       intro c c' hc hc'
-      refine' G.locality fun x hx ↦ _
-      let f₁ := e.toHomeomorph.toPartialHomeomorph
-      let f₂ := e'.toHomeomorph.toPartialHomeomorph
-      let f := (e.toHomeomorph.trans e'.toHomeomorph).toPartialHomeomorph
-      have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toPartialHomeomorph _ _
+      refine G.locality fun x hx ↦ ?_
+      let f₁ := e.toHomeomorph.toOpenPartialHomeomorph
+      let f₂ := e'.toHomeomorph.toOpenPartialHomeomorph
+      let f := (e.toHomeomorph.trans e'.toHomeomorph).toOpenPartialHomeomorph
+      have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toOpenPartialHomeomorph _ _
       -- define the atlas g around y
       let y := (c.symm ≫ₕ f₁) x
       let g := chartAt (H := H) y
@@ -1306,11 +1437,11 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have : x ∈ s := by
         constructor
         · simp only [f₁, trans_source, preimage_univ, inter_univ,
-            Homeomorph.toPartialHomeomorph_source]
+            Homeomorph.toOpenPartialHomeomorph_source]
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂
-      refine' ⟨s, open_s, this, _⟩
+      refine ⟨s, open_s, this, ?_⟩
       let F₁ := (c.symm ≫ₕ f₁ ≫ₕ g) ≫ₕ g.symm ≫ₕ f₂ ≫ₕ c'
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
@@ -1320,44 +1451,51 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
           EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
             (EqOnSource.trans' (self_trans_symm g) (_root_.refl _)))
-        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' :=
-          by simp only [trans_assoc, _root_.refl]
+        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' := by
+          simp only [trans_assoc, _root_.refl]
         _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
-        _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
-          by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
+        _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s := by
+          simp only [trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [F₂, feq, _root_.refl]
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
-#align structomorph.trans Structomorph.trans
 
 /-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
 theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
-    {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
+    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)
     (hs : Nonempty e.source) [HasGroupoid M G] [ClosedUnderRestriction G] :
-    let s := { carrier := e.source, is_open' := e.open_source : Opens M };
-    let t := { carrier := e.target, is_open' := e.open_target : Opens H };
-    ∀ c' ∈ atlas H t, e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
+    let s := { carrier := e.source, is_open' := e.open_source : Opens M }
+    let t := { carrier := e.target, is_open' := e.open_target : Opens H }
+    ∀ c' ∈ atlas H t,
+      e.toHomeomorphSourceTarget.toOpenPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
   intro s t c' hc'
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
   obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
   rw [hc', (chartAt_self_eq)]
   -- Our expression equals this chart, at least on its source.
-  rw [PartialHomeomorph.subtypeRestr_def, PartialHomeomorph.trans_refl]
-  let goal := e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ (t.partialHomeomorphSubtypeCoe this)
+  rw [OpenPartialHomeomorph.subtypeRestr_def, OpenPartialHomeomorph.trans_refl]
+  let goal :=
+    e.toHomeomorphSourceTarget.toOpenPartialHomeomorph ≫ₕ (t.openPartialHomeomorphSubtypeCoe this)
   have : goal ≈ e.subtypeRestr (s := s) hs :=
-    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp [s, goal], by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
+    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr
+      ⟨by
+        simp only [trans_toPartialEquiv, PartialEquiv.trans_source,
+          Homeomorph.toOpenPartialHomeomorph_source, toFun_eq_coe,
+          Homeomorph.toOpenPartialHomeomorph_apply, Opens.openPartialHomeomorphSubtypeCoe_source,
+          preimage_univ, inter_self, subtypeRestr_source, goal, s]
+        exact Subtype.coe_preimage_self _ |>.symm, by intro _ _; rfl⟩
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.subtypeRestr_mem_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
-def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
+def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
     let s : Opens M := { carrier := e.source, is_open' := e.open_source }
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
     Structomorph G s t := by
   intro s t
-  by_cases h : Nonempty e.source
+  by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
       mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
@@ -1366,11 +1504,12 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
-  · have : IsEmpty s := not_nonempty_iff.mp h
-    have : IsEmpty t := isEmpty_coe_sort.mpr
-      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp this))
+  · have : IsEmpty t := isEmpty_coe_sort.mpr
+      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
+
+set_option linter.style.longFile 1700

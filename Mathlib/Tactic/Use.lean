@@ -3,7 +3,11 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-import Std.Logic
+module
+
+public meta import Mathlib.Tactic.WithoutCDot
+public meta import Lean.Meta.Tactic.Util
+public meta import Lean.Elab.Tactic.Basic
 
 /-!
 # The `use` tactic
@@ -15,8 +19,10 @@ just like the `exists` tactic, but they can be a little more flexible.
 that more closely matches `use` from mathlib3.
 
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
-applying `exists_prop`. See the failing test in `test/Use.lean`.
+applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
@@ -200,3 +206,5 @@ elab (name := useSyntax)
 @[inherit_doc useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
+
+end Mathlib.Tactic

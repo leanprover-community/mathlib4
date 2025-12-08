@@ -3,12 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Function.Indicator
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Field
+module
 
-#align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Tactic.Zify
 
 /-!
 # Field and action structures on the nonnegative rationals
@@ -17,36 +18,18 @@ This file provides additional results about `NNRat` that cannot live in earlier 
 cycles.
 -/
 
+@[expose] public section
+
 open Function
 open scoped NNRat
 
--- The `LinearOrderedCommGroupWithZero` instance is a shortcut instance for performance
-deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
-
 namespace NNRat
-variable {α : Type*} {p q : ℚ≥0}
-
-instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdered
-
-@[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
-#align nnrat.coe_inv NNRat.coe_inv
-
-@[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
-#align nnrat.coe_div NNRat.coe_div
-
-/-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
-  MulAction.compHom α coeHom.toMonoidHom
-
-/-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
-  DistribMulAction.compHom α coeHom.toMonoidHom
+variable {α : Type*} {q : ℚ≥0}
 
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
   (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
-#align nnrat.coe_indicator NNRat.coe_indicator
 
 end NNRat
 
@@ -61,15 +44,12 @@ lemma toNNRat_inv (q : ℚ) : toNNRat q⁻¹ = (toNNRat q)⁻¹ := by
   · rw [toNNRat_eq_zero.mpr hq, inv_zero, toNNRat_eq_zero.mpr (inv_nonpos.mpr hq)]
   · nth_rw 1 [← Rat.coe_toNNRat q hq]
     rw [← coe_inv, toNNRat_coe]
-#align rat.to_nnrat_inv Rat.toNNRat_inv
 
 lemma toNNRat_div (hp : 0 ≤ p) : toNNRat (p / q) = toNNRat p / toNNRat q := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← toNNRat_inv, ← toNNRat_mul hp]
-#align rat.to_nnrat_div Rat.toNNRat_div
 
 lemma toNNRat_div' (hq : 0 ≤ q) : toNNRat (p / q) = toNNRat p / toNNRat q := by
   rw [div_eq_inv_mul, div_eq_inv_mul, toNNRat_mul (inv_nonneg.2 hq), toNNRat_inv]
-#align rat.to_nnrat_div' Rat.toNNRat_div'
 
 end Rat
 
@@ -77,19 +57,32 @@ end Rat
 
 namespace NNRat
 
-variable {p q : ℚ≥0}
-
-@[simp]
-lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
-  ext : 1
-  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
-    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.prop)]
-  exact Rat.num_div_den q
-#align nnrat.num_div_denom NNRat.num_div_den
+variable {q : ℚ≥0}
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
 protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
   rw [← num_div_den q]; apply h
-#align nnrat.rec NNRat.rec
+
+theorem mul_num (q₁ q₂ : ℚ≥0) :
+    (q₁ * q₂).num = q₁.num * q₂.num / Nat.gcd (q₁.num * q₂.num) (q₁.den * q₂.den) := by
+  zify
+  convert Rat.mul_num q₁ q₂ <;> norm_cast
+
+theorem mul_den (q₁ q₂ : ℚ≥0) :
+    (q₁ * q₂).den = q₁.den * q₂.den / Nat.gcd (q₁.num * q₂.num) (q₁.den * q₂.den) := by
+  convert Rat.mul_den q₁ q₂
+  norm_cast
+
+/-- A version of `NNRat.mul_den` without division. -/
+theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ≥0) :
+    q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
+  convert Rat.den_mul_den_eq_den_mul_gcd q₁ q₂
+  norm_cast
+
+/-- A version of `NNRat.mul_num` without division. -/
+theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ≥0) :
+    q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).gcd (q₁.den * q₂.den)) := by
+  zify
+  convert Rat.num_mul_num_eq_num_mul_gcd q₁ q₂ <;> norm_cast
 
 end NNRat

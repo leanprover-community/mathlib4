@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.RingTheory.Polynomial.Nilpotent
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Irreducible
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 
@@ -25,7 +27,7 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 -/
 
-open scoped Classical Polynomial
+@[expose] public section
 
 open Polynomial
 
@@ -46,7 +48,7 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
   wlog hb : IsUnit (b.map ι) generalizing a b
   · exact (this b a (mul_comm a b ▸ h)
-      (hi.2 _ _ (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
+      (hi.2 (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
   have hn (i : ℕ) (hi : i ≠ 0) : IsNilpotent (b.coeff i) := by
     obtain ⟨_, _, h⟩ := Polynomial.isUnit_iff.1 hb
     simpa only [coeff_map, coeff_C, hi, ite_false, ← RingHom.mem_ker,
@@ -56,6 +58,6 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   have hc : f.leadingCoeff = _ := congr(coeff $h f.natDegree)
   rw [hm, coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j ↦ a.coeff i * b.coeff j,
     Finset.sum_range_succ, ← sub_eq_iff_eq_add, Nat.sub_self] at hc
-  rw [← add_sub_cancel' 1 (-(_ * _)), ← sub_eq_add_neg, hc]
+  rw [← add_sub_cancel_left 1 (-(_ * _)), ← sub_eq_add_neg, hc]
   exact IsNilpotent.isUnit_sub_one <| show _ ∈ nilradical R from sum_mem fun i hi ↦
     Ideal.mul_mem_left _ _ <| hn _ <| Nat.sub_ne_zero_of_lt (List.mem_range.1 hi)
