@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
