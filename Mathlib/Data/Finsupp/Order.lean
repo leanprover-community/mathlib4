@@ -59,13 +59,13 @@ end OrderedAddCommMonoid
 section IsOrderedCancelAddMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
-variable {f : ι →₀ α} {h₁ : ι → α → β}
+variable {f : ι →₀ α} {g : ι → α → β}
 
-theorem sum_pos (h : ∀ i ∈ f.support, 0 < h₁ i (f i)) (hs : f.support.Nonempty) :
-    0 < f.sum h₁ := Finset.sum_pos h hs
+theorem sum_pos (h : ∀ i ∈ f.support, 0 < g i (f i)) (hf : f ≠ 0) : 0 < f.sum g :=
+  Finset.sum_pos h (by simpa)
 
-theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i))
-    (hs : ∃ i ∈ f.support, 0 < h₁ i (f i)) : 0 < f.sum h₁ := Finset.sum_pos' h hs
+theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ g i (f i)) (hf : ∃ i ∈ f.support, 0 < g i (f i)) :
+    0 < f.sum g := Finset.sum_pos' h hf
 
 end IsOrderedCancelAddMonoid
 
