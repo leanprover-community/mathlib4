@@ -502,8 +502,8 @@ lemma mul_nat_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun κ : Cardi
   simpa [mul_comm] using this
 
 @[simp]
-lemma nat_mul_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n = μ * n ↔ κ = μ :=
-  (mul_nat_strictMono hneq0).injective.eq_iff
+lemma nat_mul_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ = n * μ ↔ κ = μ :=
+  (nat_mul_strictMono hneq0).injective.eq_iff
 
 @[simp]
 lemma mul_nat_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n = μ * n ↔ κ = μ :=
