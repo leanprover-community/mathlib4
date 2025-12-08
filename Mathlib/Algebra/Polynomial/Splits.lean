@@ -127,13 +127,6 @@ alias degree_eq_card_roots' := Splits.degree_eq_card_roots
 
 end CommRing
 
-theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C [CommSemiring R] [CommRing L] [Algebra R L]
-    (s : Multiset L) {x : L} (hx : x ∈ s) {p : R[X]}
-    (hp : mapAlg R L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
-  rw [← aeval_map_algebraMap L, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
-  rw [Multiset.map_map, Multiset.mem_map]
-  exact ⟨x, hx, by simp⟩
-
 variable [CommRing R] [Field K] [Field L] [Field F]
 variable (i : K →+* L)
 
