@@ -113,7 +113,7 @@ section
 /-- We construct our `k[G]`-linear retraction of `i` as
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
-def equivariantProjection : W →ₗ[k[G]] V := 
+def equivariantProjection : W →ₗ[k[G]] V :=
   Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
