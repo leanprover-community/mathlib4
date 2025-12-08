@@ -253,19 +253,11 @@ alias splits_of_splits_id := Splits.map
 
 end UFD
 
-theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (f.map (j.comp i)))
-    (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits (f.map i) := by
-  choose lift lift_eq using roots_mem_range
-  rw [splits_iff_exists_multiset]
-  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective ?_⟩
-  conv_lhs => rw [Polynomial.map_map, Splits.eq_prod_roots h]
-  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
-    map_C, map_X, lift_eq, Multiset.pmap_eq_map]
-  simp
+@[deprecated (since := "2025-12-09")]
+alias splits_of_comp := Splits.of_splits_map
 
-theorem splits_id_of_splits {f : K[X]} (h : Splits (f.map i))
-    (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (f.map (RingHom.id K)) :=
-  splits_of_comp (RingHom.id K) i h roots_mem_range
+@[deprecated (since := "2025-12-09")]
+alias splits_id_of_splits := Splits.of_splits_map
 
 theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Splits (f.map i)) :
     Splits (f.map (j.comp i)) :=

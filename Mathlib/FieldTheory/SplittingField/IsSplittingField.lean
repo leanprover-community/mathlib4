@@ -159,8 +159,9 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateFie
 theorem IntermediateField.splits_of_splits (h : (p.map (algebraMap K L)).Splits)
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : (p.map (algebraMap K F)).Splits := by
   classical
-  simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
-  exact splits_of_comp _ F.val.toRingHom h hF
+  have := Splits.of_splits_map (f := p.map (algebraMap K F)) (algebraMap F L)
+  rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq] at this
+  exact this h (by simpa [rootSet_def] using hF)
 
 theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
     (p.map (algebraMap K F)).Splits ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
