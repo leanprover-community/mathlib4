@@ -66,18 +66,18 @@ variable {s : (k : Fin n) → (i : β k) → Type*}
 variable [∀ k, ∀ i, AddCommMonoid (s k i)] [∀ k, ∀ i, Module R (s k i)]
 
 /-
-## RFC
+## RFCs
+
+### Minor `tprod` equivalences
 
 In `tprodFinTprodEquiv`, we combine six equivalences. These requires some care
 to unpack in the first `simp` lemma below. Alternatively, one could introduce
-intermediate equivalences and prove `simp` lemmas for those.
+these intermediate equivalences
 
-The intermediate equivalences are:
+  `(⨂ i : Fin n, s i) ⊗ (⨂ i : Fin m, s i) ≃ₗ[R] ⨂ i : Fin (n + m), s i`
+  `(⨂ i : Fin n, s i) ⊗ s i₀ ≃ₗ[R] ⨂ i : Fin (n + 1), s i`
 
-`(⨂ i : Fin n, s i) ⊗ (⨂ i : Fin m, s i) ≃ₗ[R] ⨂ i : Fin (n + m), s i`
-
-`(⨂ i : Fin n, s i) ⊗ s i₀ ≃ₗ[R] ⨂ i : Fin (n + 1), s i`
-
+and prove `simp` lemmas for those.
 
 Trade-offs for the alternative approach:
 * Pro -- Slightly more transparent proof; More Truths for Mathlib
@@ -88,13 +88,12 @@ What's the preferred way of handling this?
 If #2, one could collect equivalences in a PiTensorProduct/Equiv.lean.
 
 
-### Equivalence
+### General equivalences
 
-The following equivalence is not particular to `PiTensorProduct`s. Should it go elsewhere?
+`sigmaFinSuccEquiv` is not particular to `PiTensorProduct`s. Should it go elsewhere?
 
 Logic/Equiv/Fin/Basic.lean?
 Logic/Equiv/Basic.lean? (one doesn't currently import any `Fin` files)
-
 -/
 
 /-- Split off last summand of a dependent sum over `Fin n.succ` -/
