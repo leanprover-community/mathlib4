@@ -240,15 +240,4 @@ lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
   obtain ⟨t, ht, htr⟩ := h v hv r hr
   exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
-@[to_additive]
-lemma HasProdLocallyUniformlyOn_pnat_iff {f : ℕ → β → α} {g : β → α} :
-    HasProdLocallyUniformlyOn (fun n : ℕ+ ↦ f n) g s ↔ HasProdLocallyUniformlyOn f g s := by
-  simp_rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn]
-
-
-
-
-  sorry
-
-
 end LocallyUniformlyOn
