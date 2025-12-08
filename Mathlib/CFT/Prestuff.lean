@@ -1,11 +1,15 @@
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.FieldTheory.RatFunc.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Noetherian.Nilpotent
-import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Conductor
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.FieldTheory.RatFunc.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.Conductor
+
+@[expose] public section
 
 open TensorProduct
 

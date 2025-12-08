@@ -1,7 +1,11 @@
-import Mathlib.CFT.GoingDown
-import Mathlib.RingTheory.LocalProperties.Reduced
-import Mathlib.RingTheory.Polynomial.IsIntegrallyClosed
-import Mathlib.RingTheory.QuasiFinite
+module
+
+public import Mathlib.CFT.GoingDown
+public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Polynomial.IsIntegrallyClosed
+public import Mathlib.RingTheory.QuasiFinite
+
+@[expose] public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
 
@@ -469,7 +473,7 @@ variable (R) in
 def ZariskiMainProperty (p : Ideal S) [p.IsPrime] : Prop :=
   ∃ r : integralClosure R S, r.1 ∉ p ∧ Function.Bijective
     (IsLocalization.Away.map (Localization.Away r)
-      (Localization.Away ((integralClosure R S).subtype r)) (integralClosure R S).subtype r)
+      (Localization.Away ((integralClosure R S).val r)) (integralClosure R S).val.toRingHom r)
 
 lemma zariskiMainProperty_iff {p : Ideal S} [p.IsPrime] :
     ZariskiMainProperty R p ↔ ∃ r ∉ p, IsIntegral R r ∧ ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by

@@ -1,6 +1,9 @@
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.RingTheory.Ideal.GoingDown
+module
 
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.Ideal.GoingDown
+
+@[expose] public section
 
 namespace Polynomial
 

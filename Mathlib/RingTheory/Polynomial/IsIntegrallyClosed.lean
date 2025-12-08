@@ -1,7 +1,11 @@
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Polynomial.RationalRoot
+module
+
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 section
+
+@[expose] public section
 
 open scoped nonZeroDivisors
 

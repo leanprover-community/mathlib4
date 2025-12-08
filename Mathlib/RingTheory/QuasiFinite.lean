@@ -1,9 +1,13 @@
-import Mathlib.CFT.Prestuff
-import Mathlib.RingTheory.Jacobson.Artinian
-import Mathlib.RingTheory.Spectrum.Prime.Jacobson
-import Mathlib.RingTheory.TensorProduct.Pi
-import Mathlib.RingTheory.Unramified.LocalRing
-import Mathlib.RingTheory.TensorProduct.Quotient
+module
+
+public import Mathlib.CFT.Prestuff
+public import Mathlib.RingTheory.Jacobson.Artinian
+public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.RingTheory.TensorProduct.Quotient
+
+@[expose] public section
 
 section
 
@@ -431,6 +435,43 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
   congr($((isDiscrete_specComap_preimage_singleton ⟨_, inferInstance⟩).eq_of_specializes
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
     (PrimeSpectrum.ext h₂.symm)).1)
+
+/-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra,
+then `T` is quasi-finite over `R` -/
+lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R T]
+    (s : S) [IsLocalization.Away s T] : Algebra.QuasiFinite R T := by
+  let A := Algebra.adjoin R {s}
+  let sA : A := ⟨s, Algebra.subset_adjoin (by simp)⟩
+  let f : Localization.Away sA →+* T := IsLocalization.Away.lift sA (g := algebraMap _ _)
+    (IsLocalization.Away.algebraMap_isUnit s)
+  let := f.toAlgebra
+  let : Algebra A (Localization.Away sA) := OreLocalization.instAlgebra
+  let : SMul A (Localization.Away sA) := Algebra.toSMul
+  let : MulAction A (Localization.Away sA) := Algebra.toModule.toDistribMulAction.toMulAction
+  have : IsScalarTower R A (Localization.Away sA) := OreLocalization.instIsScalarTower
+  have : IsScalarTower A (Localization.Away sA) T :=
+    .of_algebraMap_eq (by simp [f, RingHom.algebraMap_toAlgebra, A])
+  have : IsScalarTower R (Localization.Away sA) T := .to₁₃₄ R A (Localization.Away sA) T
+  have : Algebra.IsIntegral (Localization.Away sA) T := by
+    refine ⟨fun x ↦ ?_⟩
+    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) x
+    have : _root_.IsIntegral (Localization.Away sA) (algebraMap S T x) :=
+      (Algebra.IsIntegral.isIntegral (R := R) x).algebraMap.tower_top
+    convert this.smul (Localization.Away.invSelf sA ^ n)
+    rw [IsLocalization.mk'_eq_iff_eq_mul]
+    simp only [map_pow, Algebra.smul_mul_assoc]
+    trans (sA • Localization.Away.invSelf sA) ^ n • (algebraMap S T x)
+    · simp [Algebra.smul_def, -map_pow, Localization.Away.invSelf, Localization.mk_eq_mk']
+    · simp only [Algebra.smul_def, map_pow, map_mul, mul_pow,
+        ← IsScalarTower.algebraMap_apply, Subalgebra.algebraMap_def, sA]
+      ring
+  have : Module.Finite (Localization.Away sA) T :=
+    have : Algebra.FiniteType (Localization.Away sA) T := .of_restrictScalars_finiteType R _ _
+    Algebra.IsIntegral.finite
+  have : Module.Finite R A :=
+    Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral _)
+  have : Algebra.QuasiFinite R (Localization.Away sA) := .of_isLocalization (.powers sA)
+  exact .trans _ (Localization.Away sA) _
 
 end QuasiFinite
 
