@@ -59,7 +59,8 @@ protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff_posSemid
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 
-private lemma hej {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ : (-A).PosSemidef) : A = 0 := by
+private lemma le_antisymm_aux {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ : (-A).PosSemidef) :
+    A = 0 := by
   classical
   ext i j
   have hdiag i : A i i = 0 :=
@@ -73,7 +74,8 @@ private lemma hej {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ : (-A).PosSe
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
-    simpa [sub_eq_zero, eq_comm] using hej h₁ (by simpa only [← neg_sub B, le_iff] using h₂)
+    simpa [sub_eq_zero, eq_comm] using le_antisymm_aux h₁
+     (by simpa only [← neg_sub B, le_iff] using h₂)
 
 scoped[MatrixOrder] attribute [instance] Matrix.instPartialOrder
 
