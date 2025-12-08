@@ -79,8 +79,13 @@ It returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
-  if let `(Lean.Parser.Module.import| $[public%$_]? $[meta%$_]? import $[all%$_]? $n) := s then
-    rest.push n
+  -- Check if this is an import node by kind, rather than pattern matching all optional modifiers.
+  -- This is more robust if the import syntax changes.
+  if s.isOfKind `Lean.Parser.Module.import then
+    -- The module name is the last identifier in the import node arguments
+    match s.getArgs.filter (·.isIdent) |>.back? with
+    | some n => rest.push n
+    | none => rest
   else
     rest
 
