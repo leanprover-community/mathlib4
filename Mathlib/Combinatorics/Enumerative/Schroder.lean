@@ -23,20 +23,20 @@ combinatorial contexts.
 
 ## Main definitions
 
-* `largeSchroder n`: the `n`th large Schroder number, defined recursively as
-  `largeSchroder (n + 1) = largeSchroder n +
-    ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)`.
-* `smallSchroder n`: the `n`th small Schroder number, defined as
-  `smallSchroder n = largeSchroder n / 2` for `n ≠ 1` and `smallSchroder 1 = 1`.
+* `largeSchroder n`: the `n`th large Schröder number, defined recursively as `L 0 = 1` and
+  `L (n + 1) = L n + ∑ i ≤ n, L i * L (n - i)`.
+* `smallSchroder n`: the `n`th small Schröder number, defined as `S 0 = 1` and `S n = L n / 2`
+  for `n > 0`.
 
 ## Main results
 
-* `largeSchroder_pos_even` : The large Schroder numbers are positive and even for `n ≥ 1`.
-  `largeSchroder n = 2 * smallSchroder (n + 1)` for `n ≥ 1`.
-* `smallSchroder_sum_range` : A recursive formula for small Schroder numbers:
-  `smallSchroder (n + 1) =
-    3 * smallSchroder n +
-      2 * ∑ i ∈ range (n - 2), smallSchroder (i + 2) * smallSchroder (n - 1 - i)`.
+* `largeSchroder_even` : The large Schröder numbers are positive and even for `n > 0`.
+* `smallSchroder_succ` : A recursive formula for small Schröder numbers:
+  `S (n + 1) = 3 * S n + 2 * ∑ i < n - 2, S (i + 2) * S (n - 1 - i)`.
+
+## Tags
+
+Schroeder, Schroder
 -/
 
 @[expose] public section
@@ -46,7 +46,7 @@ open Finset
 namespace Nat
 variable {n : ℕ}
 
-/-- The recursive definition of the sequence of the large Schroder numbers :
+/-- The recursive definition of the sequence of the large Schröder numbers :
 `a (n + 1) = a n + ∑ i : Fin n.succ, a i * a (n - i)` -/
 def largeSchroder : ℕ → ℕ
   | 0 => 1
@@ -70,7 +70,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
     have : k < n + 1 := by simp at hk; lia
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
 
-/-- The small Schroder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
+/-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
 def smallSchroder : ℕ → ℕ
   | 0 => 1
   | 1 => 1
