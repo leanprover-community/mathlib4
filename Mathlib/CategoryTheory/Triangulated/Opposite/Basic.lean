@@ -58,7 +58,7 @@ private abbrev OppositeShiftAux :=
 
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
-noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
+scoped instance : HasShift Cᵒᵖ ℤ :=
   (inferInstance : HasShift (OppositeShiftAux C) ℤ)
 
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
@@ -71,7 +71,7 @@ open Opposite
 
 /-- The shift functor on the opposite category identifies to the opposite functor
 of a shift functor on the original category. -/
-noncomputable def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
+def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
     shiftFunctor Cᵒᵖ n ≅ (shiftFunctor C m).op := eqToIso (by
   obtain rfl : m = -n := by lia
   rfl)
@@ -126,7 +126,7 @@ variable (C) in
 functor is `(shiftFunctor C n).op`. Do not unfold the definitions of the unit and counit
 isomorphisms: the compatibilities they satisfy are stated as separate lemmas. -/
 @[simps functor inverse]
-noncomputable def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ where
+def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ where
   functor := shiftFunctor Cᵒᵖ n
   inverse := (shiftFunctor C n).op
   unitIso := NatIso.op (shiftFunctorCompIsoId C (-n) n n.add_left_neg) ≪≫
@@ -279,7 +279,7 @@ lemma shift_opShiftFunctorEquivalence_counitIso_inv_app (X : C) (m n : ℤ) (hmn
 
 /-- Given objects `X` and `Y` in `Cᵒᵖ`, this is the bijection
 `(op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧)` for any `n : ℤ`. -/
-noncomputable def opShiftFunctorEquivalenceSymmHomEquiv {n : ℤ} {X Y : Cᵒᵖ} :
+def opShiftFunctorEquivalenceSymmHomEquiv {n : ℤ} {X Y : Cᵒᵖ} :
     (Opposite.op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧) :=
   (opShiftFunctorEquivalence C n).symm.toAdjunction.homEquiv X Y
 
