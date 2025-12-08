@@ -12,7 +12,7 @@ public import Mathlib.Data.Finite.Sigma
 /-!
 # Finite simplicial sets
 
-A simplicial set is finite (`Simplicial.Finite`) if it has finitely
+A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
 
 -/
@@ -60,7 +60,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
       refine ⟨d + 1, fun m hm ↦ ?_⟩
       have := Finset.le_max hm
       rw [hd, WithBot.coe_le_coe] at this
-      cutsat
+      lia
     · rw [Finset.not_nonempty_iff_eq_empty] at h
       simp only [h]
       exact ⟨0, by simp⟩
@@ -71,7 +71,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
   intro hx
   have := hd (φ (N.mk _ hx)) (by simp)
   dsimp [φ] at this
-  cutsat
+  lia
 
 instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   obtain ⟨n⟩ := n
