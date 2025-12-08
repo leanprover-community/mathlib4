@@ -232,7 +232,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   refine ContinuousOn.intervalIntegrable fun x hx ↦ ContinuousAt.continuousWithinAt ?_
   rw [Set.mem_uIcc] at hx
   have : x ≠ 0 := by bound
-  have : log x ^ 2 ≠ 0 := by simp; bound
+  have : log x ^ 2 ≠ 0 := pow_ne_zero _ (log_ne_zero.mpr (by grind))
   fun_prop (disch := assumption)
 
 /- Simple bound on the integral from monotonicity.
