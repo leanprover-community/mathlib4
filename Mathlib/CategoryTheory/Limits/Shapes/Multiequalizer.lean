@@ -536,6 +536,9 @@ theorem ofPiFork_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c 
     (ofPiFork a).ι i = a.ι ≫ c.proj _ :=
   rfl
 
+@[deprecated (since := "2025-12-08")]
+alias ofPiFork_π_app_left := ofPiFork_ι
+
 @[simp]
 theorem ofPiFork_π_app_right
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
@@ -752,6 +755,12 @@ theorem ofSigmaCofork_π
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
     (ofSigmaCofork a).π i = d.inj i ≫ a.π :=
   rfl
+
+@[deprecated (since := "2025-12-08")]
+alias ofSigmaCofork_ι_app_right := ofSigmaCofork_π
+
+@[deprecated (since := "2025-12-08")]
+alias ofSigmaCofork_ι_app_right' := ofSigmaCofork_π
 
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
