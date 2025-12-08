@@ -17,39 +17,41 @@ This file provides tooling to use the Katona circle method, which is double-coun
 `n` elements on a circle under some condition.
 -/
 
+@[expose] public section
+
 open Fintype Finset Nat
 
-variable {α : Type*} [Fintype α]
+variable {X : Type*} [Fintype X]
 
-variable (α) in
-/-- A numbering of a fintype `α` is a bijection between `α` and `Fin (card α)`. -/
-abbrev Numbering : Type _ := α ≃ Fin (card α)
+variable (X) in
+/-- A numbering of a fintype `X` is a bijection between `X` and `Fin (card X)`. -/
+abbrev Numbering : Type _ := X ≃ Fin (card X)
 
-@[simp] lemma Fintype.card_numbering [DecidableEq α] : card (Numbering α) = (card α)! :=
+@[simp] lemma Fintype.card_numbering [DecidableEq X] : card (Numbering X) = (card X)! :=
   card_equiv (equivFin _)
 
 namespace Numbering
-variable {f : Numbering α} {s t : Finset α}
+variable {f : Numbering X} {s t : Finset X}
 
 /-- `IsPrefix f s` means that the elements of `s` precede the elements of `sᶜ`
 in the numbering `f`. -/
-def IsPrefix (f : Numbering α) (s : Finset α) := ∀ x, x ∈ s ↔ f x < #s
+def IsPrefix (f : Numbering X) (s : Finset X) := ∀ x, x ∈ s ↔ f x < #s
 
 lemma IsPrefix.subset_of_card_le_card (hs : IsPrefix f s) (ht : IsPrefix f t) (hst : #s ≤ #t) :
     s ⊆ t := fun a ha ↦ (ht a).mpr <| ((hs a).mp ha).trans_le hst
 
-variable [DecidableEq α]
+variable [DecidableEq X]
 
 instance : Decidable (IsPrefix f s) := by unfold IsPrefix; infer_instance
 
 /-- The set of numberings of which `s` is a prefix. -/
-def prefixed (s : Finset α) : Finset (Numbering α) := {f | IsPrefix f s}
+def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
 
 @[simp] lemma mem_prefixed : f ∈ prefixed s ↔ IsPrefix f s := by simp [prefixed]
 
 /-- Decompose a numbering of which `s` is a prefix into a numbering of `s` and a numbering on `sᶜ`.
 -/
-def prefixedEquiv (s : Finset α) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where
+def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(sᶜ) where
   toFun f :=
     { fst.toFun x := ⟨f.1 x, by simp [← mem_prefixed.1 f.2 x]⟩
       fst.invFun n :=
@@ -84,12 +86,11 @@ def prefixedEquiv (s : Finset α) : prefixed s ≃ Numbering s × Numbering ↑(
         by_cases hx : x ∈ s
         · have : g ⟨x, hx⟩ < #s := by simpa using (g ⟨x, hx⟩).2
           simp [hx, this]
-        · simp [hx, Equiv.symm_apply_eq]
+        · simp [hx]
       val.right_inv n := by
-        obtain hns | hsn := lt_or_le n.1 #s
+        obtain hns | hsn := lt_or_ge n.1 #s
         · simp [hns]
-        · simp [hsn.not_lt, hsn, dif_neg (mem_compl.1 <| Subtype.prop _), Fin.ext_iff,
-            Fintype.card_subtype_le]
+        · simp [hsn.not_gt, hsn, mem_compl.1 <| Subtype.prop _]
       property := mem_prefixed.2 fun x ↦ by
         constructor
         · intro hx
@@ -103,11 +104,11 @@ def prefixedEquiv (s : Finset α) : prefixed s ≃ Numbering s × Numbering ↑(
       simp [hx]
   right_inv g := by simp +contextual [Prod.ext_iff, DFunLike.ext_iff]
 
-lemma card_prefixed (s : Finset α) : #(prefixed s) = (#s)! * (card α - #s)! := by
+lemma card_prefixed (s : Finset X) : #(prefixed s) = (#s)! * (card X - #s)! := by
   simpa [-mem_prefixed] using Fintype.card_congr (prefixedEquiv s)
 
 @[simp]
-lemma dens_prefixed (s : Finset α) : (prefixed s).dens = ((card α).choose #s : ℚ≥0)⁻¹ := by
+lemma dens_prefixed (s : Finset X) : (prefixed s).dens = ((card X).choose #s : ℚ≥0)⁻¹ := by
   simp [dens, card_prefixed, Nat.cast_choose _ s.card_le_univ]
 
 -- TODO: This can be strengthened to an iff
