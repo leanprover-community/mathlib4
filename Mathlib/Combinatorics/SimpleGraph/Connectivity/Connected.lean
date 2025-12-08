@@ -733,7 +733,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 
-theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
+theorem isBridge_iff_and_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff]
   rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
