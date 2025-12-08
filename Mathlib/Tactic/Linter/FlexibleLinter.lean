@@ -94,14 +94,14 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
-register_option linter.flexible : Bool := {
+public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
 }
@@ -208,8 +208,7 @@ The function is used to extract "location" information about `stx`: either expli
 
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
-partial
-def toStained : Syntax → Std.HashSet Stained
+partial def toStained : Syntax → Std.HashSet Stained
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
@@ -300,7 +299,7 @@ def stoppers : Std.HashSet Name :=
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
-  `omega` and `cutsat`, `grobner`
+  `omega` and `lia`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -334,6 +333,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
     ``Lean.Parser.Tactic.cutsat,
+    `tacticLia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
