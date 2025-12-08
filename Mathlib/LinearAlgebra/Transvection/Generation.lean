@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Transvections.Basic
+public import Mathlib.LinearAlgebra.Transvection.Basic
 
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
@@ -153,6 +153,8 @@ theorem map_eq_of_mem_fixingSubgroup
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
 
+/-- If an element of `SpecialLinearGroup K V` fixes a submodule `W`,
+this is the element of `SpecialLinearGroup K (V ⧸ W)` deduced by quotient (as a `MonoidHom`). -/
 def mkQ (W : Submodule K V) :
     fixingSubgroup (SpecialLinearGroup K V) W.carrier →* SpecialLinearGroup K (V ⧸ W) where
   toFun := fun ⟨e, he⟩ ↦
