@@ -240,6 +240,26 @@ lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ 
   hasWeakDeriv m hm := hf.hasWeakDeriv m (lt_of_lt_of_le hm hk)
   memLp m hm := hf.memLp m (le_trans hm hk)
 
+-- TODO: add doc-string!
+def shrink_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {ν : Measure E}
+    (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) : E → FormalMultilinearSeries ℝ E F := by
+  intro x k
+  have aux := g x k
+  sorry -- define a new power series, which are the weak derivatives w.r.t. ν instead
+
+lemma mono_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ)
+    {ν : Measure E} (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) :
+    HasWTaylorSeriesUpTo Ω f (hf.shrink_measure hν) k p ν where
+  zero_eq := sorry -- hf.zero_eq
+  hasWeakDeriv m hm := by sorry -- should follow by construction
+  memLp m hm := sorry -- should follow by MemLp.mono_measure and the construction
+
+lemma mono_exponent [IsFiniteMeasure μ] (hf : HasWTaylorSeriesUpTo Ω f g k p μ)
+    {p' : ℝ≥0∞} (hp' : p' ≤ p) : HasWTaylorSeriesUpTo Ω f g k p' μ where
+  zero_eq := hf.zero_eq
+  hasWeakDeriv := hf.hasWeakDeriv
+  memLp m hm := (hf.memLp m hm).mono_exponent hp'
+
 lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
     (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
     (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
@@ -326,7 +346,19 @@ lemma mono_k {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : MemS
   revert hf
   exact fun ⟨g, hg⟩ ↦ ⟨g, hg.mono hk'⟩
 
--- TODO: add proofs of monotonicity in `μ` and (if `Ω` is bounded) in `p`
+/-- `MemSobolev Ω f k p μ` is monotone in the measure `μ`:
+if `ν ≤ μ` on `Ω`, then `MemSobolev Ω f k p μ` implies `MemSobolev Ω f k p ν`. -/
+lemma mono_measure (hf : MemSobolev Ω f k p μ)
+    {ν : Measure E} (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) : MemSobolev Ω f k p ν := by
+  revert hf
+  exact fun ⟨g, hg⟩ ↦ ⟨hg.shrink_measure hν, hg.mono_measure hν⟩
+
+/-- If `Ω` is bounded, `MemSobolev Ω f k p μ` is monotone in `p`:
+`f ∈ W^{k,p}(Ω)` and `q ≤ p`, then also `f ∈ W^{k,q}(Ω)`. -/
+lemma mono_p_of_measure_lt_top [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ)
+    {p' : ℝ≥0∞} (hp' : p' ≤ p) : MemSobolev Ω f k p' μ := by
+  revert hf
+  exact fun ⟨g, hg⟩ ↦ ⟨g, hg.mono_exponent hp'⟩
 
 end monotonicity
 
