@@ -107,6 +107,8 @@ variable {M : SheafOfModules.{u'} R} (P : Presentation M)
   (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
   (hf' : F.obj (unit R) ≅ unit S) (I : Type u')
 
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, then `F` preserve free sheaf. -/
 def map_free : F.obj (free I) ≅ free (R := S) I :=
   (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
     (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ hf').symm
