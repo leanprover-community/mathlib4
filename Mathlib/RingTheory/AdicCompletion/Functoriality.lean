@@ -462,4 +462,4 @@ theorem surjective_of_mk_map_comp_surjective [IsPrecomplete I R] [haus : IsHausd
     rfl
   have _ := IsHausdorff.map_algebraMap_iff.mp haus
   apply surjective_of_mkQ_comp_surjective (I := I) (f := fₗ)
-  convert h
+  rwa [Ideal.smul_top_eq_map]

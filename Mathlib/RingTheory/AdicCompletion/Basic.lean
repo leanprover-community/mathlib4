@@ -78,8 +78,9 @@ theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Algebra R S] :
   simp only [← Ideal.map_pow]
   rfl
 
-lemma IsHausdorff.map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S] [IsScalarTower R S M]
-    (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] : IsHausdorff I M := by
+theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
+    [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
+    IsHausdorff I M := by
   refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩
   apply SModEq.of_toAddSubgroup_le
       (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
