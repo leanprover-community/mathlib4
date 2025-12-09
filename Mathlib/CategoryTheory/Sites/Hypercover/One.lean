@@ -220,7 +220,7 @@ instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) 
   default := ⟨(⟨⟩, ⟨⟩), ⟨⟩⟩
   uniq _ := rfl
 
-/-- If `E` is a pre-`0`-hypercover and `F` a presheaf, the induced equalizer of
+/-- If `E` is a pre-`1`-hypercover and `F` a presheaf, the induced equalizer of
 the single object covering obtained from `E` by taking coproducts is limiting
 if and only if the induced multiequalizer of `E` is limiting. -/
 noncomputable
