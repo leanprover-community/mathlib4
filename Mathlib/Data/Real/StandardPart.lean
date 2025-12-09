@@ -151,17 +151,17 @@ theorem mk_lt_mk {x y : ArchimedeanClass.Finite K} : mk x < mk y ↔ x < y ∧ m
 theorem lt_of_mk_lt_mk {x y : ArchimedeanClass.Finite K} (h : mk x < mk y) : x < y :=
   (mk_lt_mk.1 h).1
 
-private theorem mul_lt_mul_of_pos_left' {x y z : FiniteResidueField K} (h : x < y) (hz : 0 < z) :
-    z * x < z * y := by
+private theorem mul_le_mul_of_nonneg_left' {x y z : FiniteResidueField K} (h : x ≤ y) (hz : 0 ≤ z) :
+    z * x ≤ z * y := by
   induction x with | mk x
   induction y with | mk y
   induction z with | mk z
   rw [← map_mul, ← map_mul]
   rw [← map_zero mk] at hz
-  rw [mk_lt_mk] at h hz ⊢
-  aesop
+  rw [mk_le_mk] at h hz ⊢
+  grind [mul_le_mul_of_nonneg_left]
 
-instance : IsStrictOrderedRing (FiniteResidueField K) where
+instance : IsOrderedRing (FiniteResidueField K) where
   zero_le_one := mk.monotone' zero_le_one
   add_le_add_left x y h z := by
     induction x with | mk x
@@ -170,18 +170,10 @@ instance : IsStrictOrderedRing (FiniteResidueField K) where
     obtain h | h := mk_le_mk.1 h
     · exact mk.monotone' <| add_le_add_left h _
     · rw [h]
-  le_of_add_le_add_left x y z h := by
-    induction x with | mk x
-    induction y with | mk y
-    induction z with | mk z
-    obtain h | h := mk_le_mk.1 h
-    · exact mk.monotone' <| le_of_add_le_add_left h
-    · apply le_of_eq
-      simpa using h
-  mul_lt_mul_of_pos_left _ hx _ _ h := mul_lt_mul_of_pos_left' h hx
-  mul_lt_mul_of_pos_right x hx y z h := by
+  mul_le_mul_of_nonneg_left _ hx _ _ h := mul_le_mul_of_nonneg_left' h hx
+  mul_le_mul_of_nonneg_right x hx y z h := by
     simp_rw [mul_comm _ x]
-    exact mul_lt_mul_of_pos_left' h hx
+    exact mul_le_mul_of_nonneg_left' h hx
 
 instance : Archimedean (FiniteResidueField K) where
   arch x y hy := by
@@ -301,7 +293,6 @@ theorem standardPart_natCast (n : ℕ) : standardPart (n : K) = n := by
 
 @[simp]
 theorem standardPart_ratCast (q : ℚ) : standardPart (q : K) = q := by
-  have := IsOrderedRing.toIsStrictOrderedRing K
   cases q with | div n d hd
   simp_rw [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast]
   obtain rfl | hn := eq_or_ne n 0
@@ -313,7 +304,7 @@ theorem standardPart_ratCast (q : ℚ) : standardPart (q : K) = q := by
 
 @[simp]
 theorem standardPart_real (f : ℝ →+*o K) (r : ℝ) : standardPart (f r) = r := by
-  rw [standardPart, dif_pos]
+  rw [standardPart, dif_pos] 
   exact r.ringHom_apply <|
     (LinearOrderedField.inducedOrderRingHom _ ℝ).comp (FiniteResidueField.ofArchimedean f)
 
