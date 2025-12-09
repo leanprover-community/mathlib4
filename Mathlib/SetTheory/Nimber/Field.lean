@@ -272,17 +272,17 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
-private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+private def List.toNimber {a : Nimber} : List a.toOrdinal.ToType → Nimber
   | [] => 0
   | x :: l =>
-    let a' := ∗((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    let a' := ∗(x)
     invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
   refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨l, rfl⟩
-  use Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩ :: l
+  use .mk ⟨toOrdinal a', ha⟩ :: l
   rw [List.toNimber]
   simp
 

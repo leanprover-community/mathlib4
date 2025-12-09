@@ -62,14 +62,12 @@ class ConditionallyCompleteLinearOrderedField (α : Type*) extends
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
-  archimedean_iff_nat_lt.2
-    (by
-      by_contra! h
-      obtain ⟨x, h⟩ := h
-      have := csSup_le (range_nonempty Nat.cast)
-        (forall_mem_range.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
-      linarith)
+  archimedean_iff_nat_lt.2 <| by
+    by_contra! ⟨x, h⟩
+    have := csSup_le (range_nonempty Nat.cast)
+      (forall_mem_range.2 fun m =>
+        le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+    linarith
 
 namespace LinearOrderedField
 
