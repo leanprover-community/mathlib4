@@ -29,12 +29,8 @@ attribute [local simp] FunctorToTypes.naturality in
 @[simps]
 def NatTrans.monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
   I := (Subpresheaf.range f).toPresheaf
-  m := { app X := Subtype.val }
-  m_mono := by
-    rw [NatTrans.mono_iff_mono_app]
-    intro X
-    simp [mono_iff_injective]
-  e := { app X := fun x ↦ ⟨f.app _ x, ⟨x, rfl⟩⟩ }
+  m := (Subpresheaf.range f).ι
+  e := Subpresheaf.toRange f
 
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
@@ -53,7 +49,7 @@ noncomputable def NatTrans.monoFactorisationIsImage {F G : C ⥤ Type u} (f : F 
   lift_fac H := by
     ext
     simp only [monoFactorisation_I, Subpresheaf.toPresheaf_obj, Subpresheaf.range_obj,
-      FunctorToTypes.comp, MonoFactorisation.fac_apply, monoFactorisation_m_app]
+      FunctorToTypes.comp, MonoFactorisation.fac_apply, monoFactorisation_m, Subpresheaf.ι_app]
     generalize_proofs h
     exact h.choose_spec
 
