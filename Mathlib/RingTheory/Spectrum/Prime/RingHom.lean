@@ -279,7 +279,7 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     simp [Ideal.eq_bot_of_prime, k, ← RingHom.ker_eq_comap_bot]
   · obtain ⟨q, rfl⟩ := h
     let f : k ⊗[R] S →ₐ[R] q.asIdeal.ResidueField :=
-      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ rfl)
+      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
     exact RingHom.domain_nontrivial f.toRingHom
 
