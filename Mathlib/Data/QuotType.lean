@@ -22,8 +22,6 @@ directly using `Quot` and `Quotient` APIs.
 * `QuotType Q α r`      : the type `Q` is canonically isomorphic to `Quot α r`.
                           used for deriving `QuotType` instances from the output type.
 * `QuotType.HasQuot`    : used for deriving `QuotType` instances from the input type.
-* `QuotType.Hint`       : used for deriving `QuotType` instances from the hint.
-* `QuotType.HasQuotHint`: used for deriving `QuotType` instances from the hint and the input type.
 * `mkQ`                 : the quotient map inferred from the output type
 
 ## Notations
@@ -31,8 +29,6 @@ directly using `Quot` and `Quotient` APIs.
 * `⟦a⟧`                 : the quotient map inferred from the output type
 * `mkQ'` `⟦a⟧'`         : the quotient map inferred from the input type
                             via typeclass `QuotType.HasQuot`
-* `mkQ_h` `⟦a⟧_h`       : the quotient map inferred from the hint via typeclass `QuotType.Hint`
-                            or the hint and the input type via typeclass `QuotType.HasQuotHint`
 -/
 
 @[expose] public section
@@ -143,97 +139,11 @@ macro "⟦" t:term "⟧'" : term => `(mkQ' $t)
 /-- The quotient map. Inferred from the input type. -/
 macro "⟦" t:term " : " α:term "⟧'" : term => `(⟦($t : $α)⟧')
 
-/--
-`QuotType.Hint` is used for deriving `QuotType` instances from the hint.
-
-```
-scoped instance {α} (r : α → α → Prop) : QuotType.Hint r (Quot r) α r where
-```
-
-```
-instance (p : Submodule R M) : QuotType.Hint p (M ⧸ p) M p.quotientRel where
-```
--/
-class Hint {Hint : Sort*} (hint : Hint)
-    (Q : outParam Sort*) (α : outParam Sort*) (r : outParam (α → α → Prop))
-    [QuotType Q α r] : Prop where
-
-/--
-`QuotType.HasQuotHint` is used for deriving `QuotType` instances from the hint and the input type.
-
-```
-scoped instance [Group G] [MulAction G α] :
-    QuotType.HasQuotHint G (MulAction.orbitRel.Quotient G α) α (MulAction.orbitRel G α) where
-```
--/
-class HasQuotHint {Hint : Sort*} (hint : Hint)
-    (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
-    [QuotType Q α r] : Prop where
-
-/-- The quotient map. Inferred from the hint via typeclass `QuotType.Hint` or
-the hint and the input type via typeclass `QuotType.HasQuotHint`. -/
-syntax:max (name := mkQ_) "mkQ_" term:max : term
-
-@[term_elab QuotType.mkQ_, inherit_doc QuotType.mkQ_]
-meta def mkQ_Impl : TermElab := fun stx typ? => do
-  let `(mkQ_ $h) := stx | throwUnsupportedSyntax
-  let h ← withSynthesize do elabTerm h none
-  synthesizeSyntheticMVars
-  let h ← instantiateMVars h
-  let H ← inferType h
-  let v ← match ← inferType H with | .sort v => pure v | _ => mkFreshLevelMVar
-  have H : Q(Sort v) := H
-  have h : Q($H) := h
-
-  let Q ← mkFreshExprMVarQ q(Sort $(← mkFreshLevelMVar))
-  let α ← mkFreshExprMVarQ q(Sort $(← mkFreshLevelMVar))
-  let r ← mkFreshExprMVarQ q($α → $α → Prop)
-  let inst ← mkFreshExprMVarQ q(QuotType $Q $α $r)
-  if let .some _ ← trySynthInstanceQ q(@Hint $H $h $Q $α $r $inst) then
-    return q(@QuotType.mkQ $Q $α $r $inst)
-
-  let .some expectedType := typ? |
-    let α ← mkFreshTypeMVar
-    let β ← mkFreshTypeMVar
-    postponeElabTerm stx (some (← mkArrow α β))
-  let expectedType ← instantiateMVars expectedType
-  let expectedType ← whnf expectedType
-  let .forallE _ α _ _ := expectedType |
-    if expectedType.isMVar then tryPostpone
-    throwError "Expected type is not a function."
-  if α.isMVar then
-    tryPostpone
-    throwError "The input type is not known, cannot find an instance of `QuotType.Hint` \
-                  for hint `{h}`."
-
-  let Q ← mkFreshExprMVarQ q(Sort $(← mkFreshLevelMVar))
-  let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
-  have α : Q(Sort u) := α
-  let r ← mkFreshExprMVarQ q($α → $α → Prop)
-  let inst ← mkFreshExprMVarQ q(QuotType $Q $α $r)
-  let .some _ ← trySynthInstanceQ q(@HasQuotHint $H $h $Q $α $r $inst) |
-    tryPostpone
-    throwError "Cannot find an instance of `QuotType.Hint` for hint `{h}` or \
-                  an instance of `QuotType.HasQuotHint` for input type `{α}` and hint `{h}`."
-  pure q(@QuotType.mkQ $Q $α $r $inst)
-
-/-- The quotient map. Inferred from the hint via typeclass `QuotType.Hint` or
-the hint and the input type via typeclass `QuotType.HasQuotHint`. -/
-macro:max "⟦" t:term "⟧_" h:term:max : term => `(mkQ_$h $t)
-
-/-- The quotient map. Inferred from the hint via typeclass `QuotType.Hint` or
-the hint and the input type via typeclass `QuotType.HasQuotHint`. -/
-macro:max "⟦" t:term " : " α:term "⟧_" h:term:max : term => `(⟦($t : $α)⟧_$h)
-
 end QuotType
 
 namespace Quot
 
 instance instQuotType {α} (r : α → α → Prop) : QuotType (Quot r) α r where
-
-@[nolint defLemma docBlame]
-scoped instance instQuotTypeHint {α} (r : α → α → Prop) :
-    QuotType.Hint r (Quot r) α r where
 
 end Quot
 
