@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 In this file we prove that sinh is bijective and hence has an
 inverse, arsinh.
-We also define a principal inverse of cosh, arcosh.
 
 ## Main definitions
 
