@@ -1018,8 +1018,7 @@ lemma isoSpec_image_zeroLocus [IsAffine X]
     (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   rw [← X.toSpecΓ_preimage_zeroLocus]
-  erw [Set.image_preimage_eq]
-  exact (bijective_of_isIso X.isoSpec.hom.base).surjective
+  simp [Scheme.isoSpec, Set.image_preimage_eq (h := (bijective_of_isIso _).surjective)]
 
 lemma toSpecΓ_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
     X.toSpecΓ '' X.zeroLocus s = PrimeSpectrum.zeroLocus s :=
