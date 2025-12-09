@@ -5,9 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-!
 # Cardinality of Hahn series
@@ -125,9 +126,9 @@ section LinearOrder
 variable [LinearOrder Γ]
 
 theorem card_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤ sum fun n ↦ x.card ^ n := by
+    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤ max ℵ₀ x.card := by
   rw [← lift_uzero (card _)]
-  refine (card_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
+  refine (sum_pow_le_max_aleph0 _).trans' <| (card_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
   rw [SummableFamily.powers_toFun]
   split_ifs
   · exact card_pow_le ..
@@ -137,8 +138,7 @@ theorem card_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : Hah
     x⁻¹.card ≤ max ℵ₀ x.card := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
-  apply (sum_pow_le_max_aleph0 _).trans' <|
-    (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
+  apply (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
   gcongr
   refine (card_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| card_mono fun _ ↦ ?_
   aesop (add simp [coeff_single_mul])
