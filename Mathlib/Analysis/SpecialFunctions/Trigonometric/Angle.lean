@@ -903,16 +903,7 @@ lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
   suffices ((2 : ℕ) • (θ + π)).sign = (θ + π).sign ↔ θ + π = π ∨ |(θ + π).toReal| < π / 2 by
     simp only [smul_add, two_nsmul_coe_pi, add_zero, sign_add_pi, add_eq_right] at this
     simp only [this, h, false_or]
-    obtain ⟨ha, hb⟩ := θ.toReal_mem_Ioc
-    rcases le_or_gt θ.toReal 0 with hθ | hθ
-    · nth_rw 1 [← coe_toReal θ]
-      rw [abs_of_nonpos hθ, ← coe_add, toReal_coe_eq_self_iff.2 ⟨by linarith, by linarith⟩,
-        abs_of_nonneg (by linarith)]
-      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
-    · nth_rw 1 [← coe_toReal θ]
-      rw [abs_of_pos hθ, ← coe_add, toReal_coe_eq_self_sub_two_pi_iff.2 ⟨by linarith, by linarith⟩,
-        abs_of_nonpos (by linarith)]
-      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
+    simp [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]
   exact sign_two_nsmul_eq_sign_iff
 
 lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
@@ -941,15 +932,15 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
   rw [hk] at hu hn
   have hk0 : k ≤ 0 := by
     by_contra hk1
-    grw [← show 1 ≤ k by cutsat] at hu
+    grw [← show 1 ≤ k by lia] at hu
     simp only [Int.cast_one] at hu
     linarith [pi_pos]
   have hkn1 : -1 ≤ k := by
     by_contra hkn2
-    grw [show k ≤ -2 by cutsat] at hn
+    grw [show k ≤ -2 by lia] at hn
     simp only [Int.cast_neg, Int.cast_ofNat] at hn
     linarith [pi_pos]
-  obtain rfl | rfl : k = -1 ∨ k = 0 := (by cutsat) <;> grind
+  obtain rfl | rfl : k = -1 ∨ k = 0 := (by lia) <;> grind
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
