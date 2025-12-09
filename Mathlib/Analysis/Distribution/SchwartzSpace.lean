@@ -694,6 +694,24 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
 
+/-- The bilinear pairing of Schwartz functions.
+
+The continuity in the left argument is provided in `SchwartzMap.pairing_continuous_left`. -/
+def pairing (B : E →L[𝕜] F →L[𝕜] G) : 𝓢(D, E) →ₗ[𝕜] 𝓢(D, F) →L[𝕜] 𝓢(D, G) where
+  toFun f := bilinLeftCLM B.flip f.hasTemperateGrowth
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+theorem pairing_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : 𝓢(D, F)) :
+    pairing B f g = fun x ↦ B (f x) (g x) := rfl
+
+@[simp]
+theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : 𝓢(D, F)) (x : D) :
+    pairing B f g x = B (f x) (g x) := rfl
+
+theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
+    Continuous (pairing B · g) := (pairing B.flip g).continuous
+
 end Multiplication
 
 section Comp
