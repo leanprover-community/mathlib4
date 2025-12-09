@@ -3,7 +3,9 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Commute.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -27,6 +29,8 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 
 The results here should be used to golf the basic `Group` lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
@@ -349,7 +353,7 @@ theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u�
 end Monoid
 
 /-!
-# `IsUnit` predicate
+### `IsUnit` predicate
 -/
 
 section IsUnit
@@ -385,18 +389,21 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp, grind ←)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
 @[to_additive]
-theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a :=
-  ⟨Units.mkOfMulEqOne a b h, rfl⟩
+theorem IsUnit.of_mul_eq_one [CommMonoid M] {a : M} (b : M) (h : a * b = 1) : IsUnit a :=
+  ⟨.mkOfMulEqOne a b h, rfl⟩
+
+@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
 
 @[to_additive]
-theorem isUnit_of_mul_eq_one_right [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit b := by
-  rw [mul_comm] at h
-  exact isUnit_of_mul_eq_one b a h
+theorem IsUnit.of_mul_eq_one_right [CommMonoid M] {b : M} (a : M) (h : a * b = 1) : IsUnit b :=
+  .of_mul_eq_one a <| mul_comm a b ▸ h
+
+@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
 section Monoid
 variable [Monoid M] {a b : M}
@@ -417,15 +424,26 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
+@[to_additive] lemma Subsingleton.units_of_isUnit (h : ∀ a : M, IsUnit a → a = 1) :
+    Subsingleton Mˣ := subsingleton_of_forall_eq 1 fun u ↦ Units.ext <| h u u.isUnit
+
+variable [Subsingleton Mˣ]
+
+@[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
+@[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]
+
+@[deprecated (since := "2025-11-19")] alias units_eq_one := Units.eq_one
+
 @[to_additive (attr := simp)]
-lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
-  ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
+lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
+  mp := IsUnit.eq_one
+  mpr := by rintro rfl; exact isUnit_one
 
 end Monoid
 
 @[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
-  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
+  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => .of_mul_eq_one b hab⟩
 
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by

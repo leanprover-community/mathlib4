@@ -3,12 +3,14 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -45,6 +47,8 @@ inner product spaces.
 
 -/
 
+@[expose] public section
+
 variable {𝕜 E F G H : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
   [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
@@ -58,12 +62,13 @@ namespace TensorProduct
 /-- Bilinear map for the inner product on tensor products.
 On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
 private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
+  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 
 private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
 
+variable (𝕜) in
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
@@ -139,7 +144,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCo
 
 @[simp] theorem norm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ = ‖x‖ * ‖y‖ := by
-  simp [norm_eq_sqrt_re_inner (𝕜 := 𝕜), Real.sqrt_mul inner_self_nonneg]
+  simpa using congr(√(RCLike.re $(inner_tmul 𝕜 x x y y)))
 
 @[simp] theorem nnnorm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖₊ = ‖x‖₊ * ‖y‖₊ := by simp [← NNReal.coe_inj]
@@ -252,7 +257,7 @@ def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     inner_map_map f.toLinearIsometry g.toLinearIsometry
 
 @[simp] lemma congrIsometry_apply (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
-    congrIsometry f g x = congr f g x := rfl
+    congrIsometry f g x = congr (σ₁₂ := .id _) f g x := rfl
 
 lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     (congrIsometry f g).symm = congrIsometry f.symm g.symm := rfl
@@ -430,16 +435,18 @@ theorem ext_iff_inner_left_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
 end TensorProduct
 
 section orthonormal
-variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
+variable {ι₁ ι₂ : Type*}
 
 open Module
 
 /-- The tensor product of two orthonormal vectors is orthonormal. -/
 theorem Orthonormal.tmul
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 :=
-  orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
-    simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
+    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 := by
+  classical
+  rw [orthonormal_iff_ite]
+  rintro ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
+  simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
 
 /-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct

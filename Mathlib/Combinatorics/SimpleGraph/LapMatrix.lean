@@ -3,9 +3,10 @@ Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
-import Mathlib.Analysis.Matrix.Order
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 
 /-!
 # Laplacian Matrix
@@ -23,6 +24,8 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
   is the dimension of the nullspace of its Laplacian matrix.
 
 -/
+
+@[expose] public section
 
 open Finset Matrix Module
 
@@ -93,10 +96,9 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
 /-- The Laplacian matrix is positive semidefinite -/
 theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
-  constructor
+  refine .of_dotProduct_mulVec_nonneg ?_ (fun x ↦ ?_)
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
-  · intro x
-    rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
+  · rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj

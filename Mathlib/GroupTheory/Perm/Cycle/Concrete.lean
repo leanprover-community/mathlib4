@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Cycle
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.Perm.List
+module
+
+public import Mathlib.Data.List.Cycle
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.Perm.List
 
 /-!
 
@@ -42,6 +44,8 @@ on recursion over `Finset.univ`.
 
 -/
 
+@[expose] public section
+
 
 open Equiv Equiv.Perm List
 
@@ -58,7 +62,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
   · rintro h x hx hx'
     specialize h x
     rw [formPerm_apply_mem_eq_self_iff _ hl _ hx, formPerm_apply_mem_eq_self_iff _ hl' _ hx'] at h
-    cutsat
+    lia
   · intro h x
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
@@ -368,6 +372,9 @@ theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ 
   rw [toCycle, key]
   simp [hx]
 
+theorem exists_toCycle_toList (f : Perm α) (hf : IsCycle f) : ∃ x, toCycle f hf = toList f x :=
+  Exists.casesOn hf (fun x h => ⟨ x, Perm.toCycle_eq_toList f hf x h.1⟩)
+
 theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := by
   obtain ⟨x, hx, -⟩ := id hf
   simpa [toCycle_eq_toList f hf x hx] using nodup_toList _ _
@@ -375,6 +382,26 @@ theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := b
 theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontrivial := by
   obtain ⟨x, hx, -⟩ := id hf
   simp [toCycle_eq_toList f hf x hx, hx, Cycle.nontrivial_coe_nodup_iff (nodup_toList _ _)]
+
+@[simp]
+theorem mem_toCycle_iff_support (f : Perm α) (hf : f.IsCycle) : x ∈ f.toCycle hf ↔ f x ≠ x := by
+  constructor
+  · have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+    simp only [hl, Cycle.mem_coe_iff, ne_eq]
+    intro h
+    have ⟨ h1, h2 ⟩ := mem_toList_iff.mp h
+    exact ((isCycle_iff_sameCycle (mem_support.mp h2)).mp (y := x) hf).mp h1
+  · intro h
+    simp only [toCycle_eq_toList f hf x h, Cycle.mem_coe_iff, toList, mem_iterate, iterate_eq_pow]
+    use 0
+    exact ⟨ by simpa, by simp ⟩
+
+@[simp]
+theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
+    (toCycle f hf).next (nodup_toCycle f hf) x hx = f x := by
+  have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+  simp only [hl, Cycle.mem_coe_iff] at ⊢ hx
+  exact Equiv.Perm.next_toList_eq_apply f l x hx
 
 /-- Any cyclic `f : Perm α` is isomorphic to the nontrivial `Cycle α`
 that corresponds to repeated application of `f`.
@@ -470,7 +497,7 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
 -- mutes `'decide' tactic does nothing [linter.unusedTactic]`
 set_option linter.unusedTactic false in
 @[inherit_doc Cycle.formPerm]
-notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 /-- Represents a permutation as product of disjoint cycles:

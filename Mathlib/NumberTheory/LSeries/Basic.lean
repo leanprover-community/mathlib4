@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Michael Stoll
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # L-series
@@ -51,6 +53,8 @@ by David Loeffler and Michael Stoll.
 
 L-series
 -/
+
+@[expose] public section
 
 open Complex
 
@@ -316,8 +320,8 @@ by a constant times `n^(re s)`. -/
 lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
     ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C * n ^ s.re := by
   replace h := h.norm
-  by_contra! H
-  obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
+  use tsum fun n ↦ ‖term f s n‖
+  by_contra! ⟨n, hn₀, hn⟩
   have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this

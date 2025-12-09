@@ -3,14 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.Topology.Sheaves.CommRingCat
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.RingTheory.Localization.InvSubmonoid
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.Topology.Sheaves.CommRingCat
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Affine schemes
@@ -33,6 +35,8 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -106,8 +110,6 @@ theorem essImage_Spec {X : Scheme} : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 
-@[deprecated (since := "2025-04-08")] alias mem_Spec_essImage := essImage_Spec
-
 instance isAffine_affineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
   ⟨Functor.essImage.unit_isIso X.property⟩
 
@@ -122,8 +124,6 @@ theorem IsAffine.of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y
 
 theorem IsAffine.iff_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsAffine X ↔ IsAffine Y :=
   ⟨fun _ ↦ .of_isIso (inv f), fun _ ↦ .of_isIso f⟩
-
-@[deprecated (since := "2025-03-31")] alias isAffine_of_isIso := IsAffine.of_isIso
 
 /-- If `f : X ⟶ Y` is a morphism between affine schemes, the corresponding arrow is isomorphic
 to the arrow of the morphism on prime spectra induced by the map on global sections. -/

@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Submonoid.Basic
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Submonoid of opposite monoids
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Group.Submonoid.Basic
 For every monoid `M`, we construct an equivalence between submonoids of `M` and that of `Mᵐᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -66,7 +70,7 @@ theorem unop_le_unop_iff {S₁ S₂ : Submonoid Mᵐᵒᵖ} : S₁.unop ≤ S₂
   MulOpposite.unop_surjective.forall
 
 /-- A submonoid `H` of `G` determines a submonoid `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) /-- A additive submonoid `H` of `G` determines an additive submonoid
+@[to_additive (attr := simps) /-- An additive submonoid `H` of `G` determines an additive submonoid
 `H.op` of the opposite group `Gᵐᵒᵖ`. -/]
 def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   toFun := Submonoid.op

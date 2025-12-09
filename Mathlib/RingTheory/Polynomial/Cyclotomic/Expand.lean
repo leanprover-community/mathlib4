@@ -3,8 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic polynomials and `expand`.
@@ -24,6 +26,8 @@ We gather results relating cyclotomic polynomials and `expand`.
 * `Polynomial.cyclotomic_mul_prime_pow_eq` : If `R` is of characteristic `p` and `¬p ∣ m`, then
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -113,7 +117,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   | succ k hk =>
     have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
     rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-    exact hk (by cutsat) (of_irreducible_expand hp.ne_zero h)
+    exact hk (by lia) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
