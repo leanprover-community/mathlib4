@@ -40,7 +40,7 @@ class NegAntiClass (α : Type*) [LE α] [Neg α] where
 class InvAntiClass (α : Type*) [LE α] [Inv α] where
   inv_le_inv {x y : α} (h : x ≤ y) : y⁻¹ ≤ x⁻¹
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, gcongr)]
 theorem inv_le_inv [LE α] [Inv α] [InvAntiClass α] : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   InvAntiClass.inv_le_inv
 
@@ -59,6 +59,9 @@ theorem inv_lt_inv_iff [Preorder α] [InvolutiveInv α] [InvAntiClass α] : a⁻
 @[to_additive]
 alias ⟨lt_of_inv_lt_inv, _⟩ := inv_lt_inv_iff
 
+@[to_additive (attr := gcongr)]
+alias ⟨_, inv_lt_inv⟩ := inv_lt_inv_iff
+
 section InvolutiveInv
 
 variable [InvolutiveInv α]
@@ -73,6 +76,9 @@ theorem inv_le : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
 
 @[to_additive]
 alias ⟨inv_le_of_inv_le, _⟩ := inv_le
+
+@[deprecated (since := "2025-12-08")]
+alias inv_le_of_inv_le' := inv_le_of_inv_le
 
 @[to_additive]
 theorem le_inv : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
@@ -734,7 +740,6 @@ end Right
 section Left
 
 variable [MulLeftStrictMono α] [MulRightStrictMono α]
-
 
 @[to_additive (attr := simp)]
 theorem div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
