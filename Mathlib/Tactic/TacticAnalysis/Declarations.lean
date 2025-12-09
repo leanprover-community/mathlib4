@@ -361,7 +361,10 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
               return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
             catch _ =>
               return i.tacI.stx.reprint.getD "???")
-            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            let newTacticPP := (← try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim
+            catch _ =>
+              return tac.reprint.getD "???")
             -- Check if this is a self-replacement (tactic replacing itself)
             if !selfReplacements && oldTacticPP == newTacticPP then
               continue
