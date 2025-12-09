@@ -29,7 +29,128 @@ open Function
 
 universe u
 
-variable {α : Type u}
+variable {α : Type u} {a b c d : α}
+
+/-- A typeclass that expresses that negation is antitone. -/
+class NegAntiClass (α : Type*) [LE α] [Neg α] where
+  neg_le_neg {x y : α} (h : x ≤ y) : -y ≤ -x
+
+/-- A typeclass that expresses that inversion is antitone. -/
+@[to_additive existing]
+class InvAntiClass (α : Type*) [LE α] [Inv α] where
+  inv_le_inv {x y : α} (h : x ≤ y) : y⁻¹ ≤ x⁻¹
+
+@[to_additive (attr := simp)]
+theorem inv_le_inv [LE α] [Inv α] [InvAntiClass α] : a ≤ b → b⁻¹ ≤ a⁻¹ :=
+  InvAntiClass.inv_le_inv
+
+@[to_additive (attr := simp)]
+theorem inv_le_inv_iff [LE α] [InvolutiveInv α] [InvAntiClass α] : a⁻¹ ≤ b⁻¹ ↔ b ≤ a where
+  mp h := by simpa using inv_le_inv h
+  mpr := inv_le_inv
+
+@[to_additive]
+alias ⟨le_of_inv_le_inv, _⟩ := inv_le_inv_iff
+
+@[to_additive (attr := simp)]
+theorem inv_lt_inv_iff [Preorder α] [InvolutiveInv α] [InvAntiClass α] : a⁻¹ < b⁻¹ ↔ b < a := by
+  simp [lt_iff_le_not_ge]
+
+@[to_additive]
+alias ⟨lt_of_inv_lt_inv, _⟩ := inv_lt_inv_iff
+
+section InvolutiveInv
+
+variable [InvolutiveInv α]
+
+section LE
+
+variable [LE α] [InvAntiClass α]
+
+@[to_additive]
+theorem inv_le : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
+  simpa using inv_le_inv_iff (b := b⁻¹)
+
+@[to_additive]
+alias ⟨inv_le_of_inv_le, _⟩ := inv_le
+
+@[to_additive]
+theorem le_inv : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
+  simpa using inv_le_inv_iff (a := a⁻¹)
+
+@[to_additive]
+alias ⟨le_inv_of_le_inv, _⟩ := le_inv
+
+end LE
+
+section Preorder
+
+variable [Preorder α] [InvAntiClass α]
+
+@[to_additive]
+theorem inv_lt : a⁻¹ < b ↔ b⁻¹ < a := by
+  simpa using inv_lt_inv_iff (b := b⁻¹)
+
+@[deprecated (since := "2025-12-08")]
+alias inv_lt' := inv_lt
+
+@[to_additive]
+alias ⟨inv_lt_of_inv_lt, _⟩ := inv_lt
+
+@[to_additive]
+theorem lt_inv : a < b⁻¹ ↔ b < a⁻¹ := by
+  simpa using inv_lt_inv_iff (a := a⁻¹)
+
+@[deprecated (since := "2025-12-08")]
+alias lt_inv' := lt_inv
+
+@[to_additive]
+alias ⟨lt_inv_of_lt_inv, _⟩ := lt_inv
+
+@[deprecated (since := "2025-12-08")]
+alias inv_lt_of_inv_lt' := inv_lt_of_inv_lt
+
+end Preorder
+
+end InvolutiveInv
+
+section DivisionMonoid
+
+variable [DivisionMonoid α]
+
+section LE
+
+variable [LE α] [InvAntiClass α]
+
+-- TODO: do we keep the left and right covariant versions?
+
+@[to_additive (attr := simp)]
+theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
+  simpa using inv_le_inv_iff (α := α) (b := 1)
+
+@[to_additive (attr := simp)]
+theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
+  simpa using inv_le_inv_iff (α := α) (a := 1)
+
+end LE
+
+section Preorder
+
+variable [Preorder α] [InvAntiClass α]
+
+-- TODO: do we keep the left and right covariant versions?
+
+@[to_additive (attr := simp)]
+theorem inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
+  simp [lt_iff_le_not_ge]
+
+@[to_additive (attr := simp)]
+theorem one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
+  simp [lt_iff_le_not_ge]
+
+end Preorder
+
+end DivisionMonoid
 
 section Group
 
@@ -37,7 +158,7 @@ variable [Group α]
 
 section MulLeftMono
 
-variable [LE α] [MulLeftMono α] {a b c : α}
+variable [LE α] [MulLeftMono α]
 
 /-- Uses `left` co(ntra)variant. -/
 @[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
@@ -80,7 +201,7 @@ end MulLeftMono
 
 section MulLeftStrictMono
 
-variable [LT α] [MulLeftStrictMono α] {a b c : α}
+variable [LT α] [MulLeftStrictMono α]
 
 /-- Uses `left` co(ntra)variant. -/
 @[to_additive (attr := simp) Left.neg_pos_iff /-- Uses `left` co(ntra)variant. -/]
@@ -121,7 +242,7 @@ end MulLeftStrictMono
 
 section MulRightMono
 
-variable [LE α] [MulRightMono α] {a b c : α}
+variable [LE α] [MulRightMono α]
 
 /-- Uses `right` co(ntra)variant. -/
 @[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
@@ -167,7 +288,7 @@ end MulRightMono
 
 section MulRightStrictMono
 
-variable [LT α] [MulRightStrictMono α] {a b c : α}
+variable [LT α] [MulRightStrictMono α]
 
 /-- Uses `right` co(ntra)variant. -/
 @[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
@@ -211,7 +332,7 @@ end MulRightStrictMono
 
 section MulLeftMono_MulRightMono
 
-variable [LE α] [MulLeftMono α] {a b c d : α}
+variable [LE α] [MulLeftMono α]
 
 @[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
@@ -225,12 +346,11 @@ alias ⟨_, sub_le_self⟩ := sub_le_self_iff
 
 variable [MulRightMono α]
 
-@[to_additive (attr := simp)]
-theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
-  rw [← mul_le_mul_iff_left a, ← mul_le_mul_iff_right b]
-  simp
-
-alias ⟨le_of_neg_le_neg, _⟩ := neg_le_neg_iff
+@[to_additive]
+instance (priority := 50) : InvAntiClass α where
+  inv_le_inv {a b} h := by
+    rw [← mul_le_mul_iff_left a, ← mul_le_mul_iff_right b]
+    simpa
 
 @[to_additive]
 theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b := by
@@ -241,7 +361,7 @@ end MulLeftMono_MulRightMono
 
 section MulLeftStrictMono_MulRightStrictMono
 
-variable [LT α] [MulLeftStrictMono α] {a b c d : α}
+variable [LT α] [MulLeftStrictMono α]
 
 @[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
@@ -252,23 +372,9 @@ alias ⟨_, sub_lt_self⟩ := sub_lt_self_iff
 variable [MulRightStrictMono α]
 
 @[to_additive (attr := simp)]
-theorem inv_lt_inv_iff : a⁻¹ < b⁻¹ ↔ b < a := by
+theorem inv_lt_inv_iff' : a⁻¹ < b⁻¹ ↔ b < a := by
   rw [← mul_lt_mul_iff_left a, ← mul_lt_mul_iff_right b]
   simp
-
-@[to_additive neg_lt]
-theorem inv_lt' : a⁻¹ < b ↔ b⁻¹ < a := by rw [← inv_lt_inv_iff, inv_inv]
-
-@[to_additive lt_neg]
-theorem lt_inv' : a < b⁻¹ ↔ b < a⁻¹ := by rw [← inv_lt_inv_iff, inv_inv]
-
-alias ⟨lt_inv_of_lt_inv, _⟩ := lt_inv'
-
-attribute [to_additive] lt_inv_of_lt_inv
-
-alias ⟨inv_lt_of_inv_lt', _⟩ := inv_lt'
-
-attribute [to_additive neg_lt_of_neg_lt] inv_lt_of_inv_lt'
 
 @[to_additive]
 theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
@@ -351,7 +457,7 @@ variable [CommGroup α]
 
 section LE
 
-variable [LE α] [MulLeftMono α] {a b c d : α}
+variable [LE α] [MulLeftMono α]
 
 @[to_additive]
 theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_mul_le_iff_le_mul, mul_comm]
@@ -368,7 +474,7 @@ end LE
 
 section LT
 
-variable [LT α] [MulLeftStrictMono α] {a b c d : α}
+variable [LT α] [MulLeftStrictMono α]
 
 @[to_additive]
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
@@ -392,10 +498,6 @@ attribute [to_additive] one_le_of_inv_le_one
 alias ⟨le_one_of_one_le_inv, _⟩ := Left.one_le_inv_iff
 
 attribute [to_additive nonpos_of_neg_nonneg] le_one_of_one_le_inv
-
-alias ⟨lt_of_inv_lt_inv, _⟩ := inv_lt_inv_iff
-
-attribute [to_additive] lt_of_inv_lt_inv
 
 alias ⟨one_lt_of_inv_lt_one, _⟩ := Left.inv_lt_one_iff
 
@@ -467,7 +569,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [MulRightMono α] {a b c : α}
+variable [MulRightMono α]
 
 @[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
@@ -514,7 +616,7 @@ end Right
 
 section Left
 
-variable [MulLeftMono α] [MulRightMono α] {a b c : α}
+variable [MulLeftMono α] [MulRightMono α]
 
 @[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
@@ -535,7 +637,7 @@ variable [CommGroup α]
 
 section LE
 
-variable [LE α] [MulLeftMono α] {a b c d : α}
+variable [LE α] [MulLeftMono α]
 
 /-- See also `div_le_div_iff` for a version that works for `LinearOrderedSemifield` with
 additional assumptions. -/
@@ -572,7 +674,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α] [MulLeftMono α] {a b c d : α}
+variable [Preorder α] [MulLeftMono α]
 
 @[to_additive (attr := gcongr) sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
@@ -591,7 +693,7 @@ variable [Group α] [LT α]
 
 section Right
 
-variable [MulRightStrictMono α] {a b c : α}
+variable [MulRightStrictMono α]
 
 @[to_additive (attr := simp)]
 theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
@@ -632,12 +734,12 @@ end Right
 section Left
 
 variable [MulLeftStrictMono α] [MulRightStrictMono α]
-  {a b c : α}
+
 
 @[to_additive (attr := simp)]
 theorem div_lt_div_iff_left (a : α) : a / b < a / c ↔ c < b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_lt_mul_iff_left a⁻¹, inv_mul_cancel_left,
-    inv_mul_cancel_left, inv_lt_inv_iff]
+    inv_mul_cancel_left, inv_lt_inv_iff']
 
 @[to_additive (attr := simp)]
 theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
@@ -657,7 +759,7 @@ variable [CommGroup α]
 
 section LT
 
-variable [LT α] [MulLeftStrictMono α] {a b c d : α}
+variable [LT α] [MulLeftStrictMono α]
 
 @[to_additive sub_lt_sub_iff]
 theorem div_lt_div_iff' : a / b < c / d ↔ a * d < c * b := by
@@ -689,7 +791,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] [MulLeftStrictMono α] {a b c d : α}
+variable [Preorder α] [MulLeftStrictMono α]
 
 @[to_additive (attr := gcongr) sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
@@ -699,7 +801,7 @@ theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
 end Preorder
 
 section LinearOrder
-variable [LinearOrder α] [MulLeftMono α] {a b c d : α}
+variable [LinearOrder α] [MulLeftMono α]
 
 @[to_additive] lemma lt_or_lt_of_div_lt_div : a / d < b / c → a < b ∨ c < d := by
   contrapose!; exact fun h ↦ div_le_div'' h.1 h.2
@@ -782,18 +884,18 @@ variable {β : Type*} [Group α] [Preorder α] [MulLeftStrictMono α]
 
 @[to_additive]
 theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
-  inv_lt_inv_iff.2 (hf hxy)
+  inv_lt_inv_iff'.2 (hf hxy)
 
 @[to_additive]
 theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
-  inv_lt_inv_iff.2 (hf hxy)
+  inv_lt_inv_iff'.2 (hf hxy)
 
 @[to_additive]
 theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_lt_inv_iff'.2 (hf hx hy hxy)
 
 @[to_additive]
 theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
-  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_lt_inv_iff'.2 (hf hx hy hxy)
 
 end
