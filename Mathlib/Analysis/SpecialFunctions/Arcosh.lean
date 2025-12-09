@@ -50,7 +50,7 @@ variable {x y : ℝ}
 def arcosh (x : ℝ) :=
   log (x + √(x ^ 2 - 1))
 
-theorem exp_arcosh (x : ℝ) (hx : 1 ≤ x) : exp (arcosh x) = x + √(x ^ 2 - 1) := by
+theorem exp_arcosh {x : ℝ} (hx : 1 ≤ x) : exp (arcosh x) = x + √(x ^ 2 - 1) := by
   apply exp_log
   positivity
 
