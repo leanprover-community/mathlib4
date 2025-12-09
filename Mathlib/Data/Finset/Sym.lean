@@ -138,15 +138,8 @@ variable [DecidableEq α]
 theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
   refine z.ind fun x y ↦ ?_
-  rw [mk_mem_sym2_iff, mem_image]
-  constructor
-  · intro h
-    use (x, y)
-    simp only [mem_product, h, and_self]
-  · rintro ⟨⟨a, b⟩, h⟩
-    simp only [mem_product, Sym2.eq_iff] at h
-    obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
-      <;> simp [h]
+  simp only [mem_sym2_iff, Sym2.mem_iff, mem_image, Sym2.eq, Sym2.rel_iff']
+  grind
 
 theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
