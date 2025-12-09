@@ -3,21 +3,25 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The quotient category is linear
 
 If `r : HomRel C` is a congruence on a preadditive category `C` which satisfies certain
 compatibilities, we have already defined a preadditive structure on `Quotient r` in
-the file `CategoryTheory.Quotient.Preadditive` such that `functor r : C ⥤ Quotient r` is
-an additive functor. In this file, assuming moreover that `C` is a `R`-linear category
+the file `Mathlib/CategoryTheory/Quotient/Preadditive.lean` such that `functor r : C ⥤ Quotient r`
+is an additive functor. In this file, assuming moreover that `C` is a `R`-linear category
 and that the relation `r` is compatible with the scalar multiplication by any `a : R`, we
 show that `Quotient r` is a `R`-linear category and that `functor r : C ⥤ Quotient r`
 is a `R`-linear functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

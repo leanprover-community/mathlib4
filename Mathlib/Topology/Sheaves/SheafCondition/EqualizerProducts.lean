@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # The sheaf condition in terms of an equalizer of products
@@ -19,6 +21,8 @@ We show that this sheaf condition is equivalent to the "pairwise intersections" 
 the presheaf is valued in a category with products, and thereby equivalent to the default sheaf
 condition.
 -/
+
+@[expose] public section
 
 
 universe v' v u
@@ -70,12 +74,12 @@ theorem res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U
 
 /-- Copy of `limit.hom_ext`, specialized to `piOpens` for use by the `ext` tactic. -/
 @[ext] theorem piOpens.hom_ext
-  {X : C} {f f' : X ⟶ piOpens F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
+    {X : C} {f f' : X ⟶ piOpens F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
   limit.hom_ext w
 
 /-- Copy of `limit.hom_ext`, specialized to `piInters` for use by the `ext` tactic. -/
 @[ext] theorem piInters.hom_ext
-  {X : C} {f f' : X ⟶ piInters F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
+    {X : C} {f f' : X ⟶ piInters F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
   limit.hom_ext w
 
 @[elementwise]

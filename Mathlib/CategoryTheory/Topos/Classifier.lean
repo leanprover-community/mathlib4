@@ -3,10 +3,12 @@ Copyright (c) 2024 Charlie Conneen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Charlie Conneen, Pablo Donato, Klaus Gy
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
-import Mathlib.CategoryTheory.Subobject.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
 
@@ -50,6 +52,8 @@ Let `C` refer to a category with a terminal object.
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 
 -/
+
+@[expose] public section
 
 universe u v u₀ v₀
 
@@ -199,8 +203,10 @@ instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
-noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
+noncomputable def truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
+
+instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
 
 /-- The following diagram
 ```
@@ -219,7 +225,8 @@ It also follows that `C` is a balanced category.
 -/
 instance isRegularMonoCategory : IsRegularMonoCategory C where
   regularMonoOfMono :=
-    fun m => ⟨regularOfIsPullbackFstOfRegular (isPullback_χ m).w (isPullback_χ m).isLimit⟩
+    fun m => ⟨⟨regularOfIsPullbackFstOfRegular truthIsRegularMono
+      (isPullback_χ m).w (isPullback_χ m).isLimit⟩⟩
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.

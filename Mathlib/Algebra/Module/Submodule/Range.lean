@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Range of linear maps
@@ -26,6 +28,8 @@ Note that this also means that dot notation (i.e. `f.range` for a linear map `f`
 ## Tags
 linear algebra, vector space, module, range
 -/
+
+@[expose] public section
 
 open Function
 
@@ -297,6 +301,9 @@ theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ ↔ p ≤ p' :=
   eq_top_iff.trans <| map_le_iff_le_comap.symm.trans <| by rw [map_subtype_top]
 
+@[simp] lemma submoduleOf_eq_top {p q : Submodule R M} :
+    p.submoduleOf q = ⊤ ↔ q ≤ p := by simp [submoduleOf]
+
 @[simp]
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl
@@ -362,6 +369,11 @@ def mapIic (p : Submodule R M) :
     (p : Submodule R M) (q : Submodule R p) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl
+
+lemma codisjoint_map [RingHomSurjective τ₁₂] {f : F} (hf : Function.Surjective f)
+    {p q : Submodule R M} (hpq : Codisjoint p q) : Codisjoint (p.map f) (q.map f) := by
+  rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
+    LinearMap.range_eq_top_of_surjective f hf]
 
 end AddCommMonoid
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 /-!
 # The braided and symmetric category structures on graded objects
 
@@ -17,6 +19,8 @@ When `C` is a braided category and suitable assumptions are made, we obtain the 
 structure on `GradedObject I C` and show that it is symmetric if `C` is symmetric.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -78,7 +82,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
   conv_rhs => rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.tensorHom_id,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.comp_tensor_id, assoc,
     MonoidalCategory.tensorHom_id, MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y X Z i₂ i₁ i₃ k
@@ -116,7 +120,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
   conv_rhs => rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.id_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.id_tensor_comp, assoc,
     MonoidalCategory.id_tensorHom, MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc X Z Y i₁ i₃ i₂ k

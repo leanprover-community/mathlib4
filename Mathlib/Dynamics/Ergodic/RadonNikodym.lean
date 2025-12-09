@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.Topology.Order.CountableSeparating
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.Topology.Order.CountableSeparating
 
 /-!
 # Radon-Nikodym derivative of invariant measures
@@ -22,6 +24,8 @@ and the other is σ-finite.
 It isn't clear if the finiteness assumptions are optimal in this file.
 We should either weaken them, or describe an example showing that it's impossible.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Set
 
@@ -78,10 +82,10 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   have hsm : MeasurableSet s := measurable_rnDeriv _ _ measurableSet_Iio
   have hμ_diff : μ (f ⁻¹' s \ s) = μ (s \ f ⁻¹' s) :=
     measure_diff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfμ.measure_preimage hsm.nullMeasurableSet) (measure_ne_top _ _)
+      (hfμ.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   have hν_diff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
     measure_diff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfν.measure_preimage hsm.nullMeasurableSet) (measure_ne_top _ _)
+      (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_diff ▸ this)
   contrapose! hμ_diff with h₀
@@ -91,7 +95,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
     _ < ∫⁻ _ in s \ f ⁻¹' s, c ∂ν := by
       apply setLIntegral_strict_mono (hsm.diff (hfμ.measurable hsm)) (hν_diff ▸ h₀) measurable_const
       · rw [setLIntegral_rnDeriv hμν]
-        apply measure_ne_top
+        finiteness
       · exact .of_forall fun x hx ↦ hx.1
     _ = ∫⁻ _ in f ⁻¹' s \ s, c ∂ν := by simp [hν_diff]
     _ ≤ ∫⁻ a in f ⁻¹' s \ s, μ.rnDeriv ν a ∂ν :=

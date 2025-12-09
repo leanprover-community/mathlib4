@@ -3,12 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-import Mathlib.ModelTheory.Algebra.Ring.Definability
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+public import Mathlib.ModelTheory.Algebra.Ring.Definability
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck
@@ -30,12 +31,14 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 
 ## References
 
-The first order theory of algebraically closed fields, along with the Lefschetz Principle and
+The first-order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -91,7 +94,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
-/-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
+/-- The collection of first-order formulas corresponding to the Ax-Grothendieck theorem. -/
 noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
@@ -241,5 +244,4 @@ algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by
-  simpa [Set.injective_iff_injOn_univ, Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 p
+  simpa using ax_grothendieck_zeroLocus 0 p

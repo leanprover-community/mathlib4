@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Order.Monotone.Odd
-import Mathlib.Analysis.Calculus.LogDeriv
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Order.Monotone.Odd
+public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Differentiability of trigonometric functions
@@ -21,6 +23,8 @@ computed.
 
 sin, cos, tan, angle
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -808,7 +812,7 @@ end Real
 
 section iteratedDeriv
 
-/-! ### Simp lemmas for iterated derivaties of `sin` and `cos`. -/
+/-! ### Simp lemmas for iterated derivatives of `sin` and `cos`. -/
 
 namespace Complex
 
@@ -1463,7 +1467,7 @@ private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
 is. -/
 @[positivity Real.sinh _]
-def evalSinh : PositivityExt where eval {u α} _ _ e := do
+meta def evalSinh : PositivityExt where eval {u α} _ _ e := do
   let zα : Q(Zero ℝ) := q(inferInstance)
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
   match u, α, e with

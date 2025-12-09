@@ -3,11 +3,15 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Junyan Xu
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.Multiset
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
+
+@[expose] public section
 
 universe u v
 
@@ -64,8 +68,6 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
-  classical
-  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+@[deprecated (since := "2025-10-06")] alias mk_multiset_of_countable := mk_eq_aleph0
 
 end Cardinal

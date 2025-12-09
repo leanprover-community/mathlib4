@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Ring Homomorphisms surjective on stalks
@@ -17,6 +19,8 @@ of primes `p = f⁻¹(q)`. We show that this property is stable under compositio
 that surjections and localizations satisfy this.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 variable {T : Type*} [CommRing T]
@@ -42,7 +46,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
   constructor
   · intro H y
     obtain ⟨a, ha⟩ := H (IsLocalization.mk' _ y (1 : P.primeCompl))
-    obtain ⟨a, t, rfl⟩ := IsLocalization.mk'_surjective (P.comap f).primeCompl a
+    obtain ⟨a, t, rfl⟩ := IsLocalization.exists_mk'_eq (P.comap f).primeCompl a
     rw [Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq,
       Submonoid.coe_one, one_mul, IsLocalization.eq_iff_exists P.primeCompl] at ha
     obtain ⟨c, hc⟩ := ha
@@ -151,7 +155,7 @@ lemma surjectiveOnStalks_of_isLocalization
     [Algebra R S] [IsLocalization M S] :
     SurjectiveOnStalks (algebraMap R S) := by
   refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M s
   exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
 
 lemma SurjectiveOnStalks.baseChange

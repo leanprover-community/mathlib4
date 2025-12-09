@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`
@@ -19,6 +21,8 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -172,10 +176,10 @@ theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ 
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
     (hl : castSucc i < a) (hu : b < succ i) : b < a := by
-  simp [Fin.lt_def, -val_fin_lt] at *; omega
+  simp [Fin.lt_def, -val_fin_lt] at *; lia
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simpa [Fin.lt_def, -val_fin_lt] using by omega
+  simpa [Fin.lt_def, -val_fin_lt] using by lia
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -244,7 +248,7 @@ open Fin.NatCast in
 @[norm_cast, simp]
 theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
-  exact val_cast_of_lt (Nat.lt.step a.is_lt)
+  exact val_cast_of_lt (Nat.lt_succ_of_lt a.is_lt)
 
 open Fin.NatCast in
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by
@@ -252,7 +256,7 @@ theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
-    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by omega)
+    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by lia)
 
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :

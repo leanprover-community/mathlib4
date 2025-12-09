@@ -3,11 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Group.DenselyOrdered
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Group.DenselyOrdered
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Archimedean classes of a linearly ordered ring
@@ -35,6 +37,8 @@ reasons:
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
@@ -104,7 +108,7 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     induction y with | mk y
     induction z with | mk z
     rw [← mk_mul, ← mk_mul]
-    exact mk_mul_le_of_le le_rfl h
+    exact mk_mul_le_of_le h le_rfl
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
@@ -183,10 +187,9 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
-variable [Ring S] [IsStrictOrderedRing S]
-
-theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
-    (f : R →+* S) (hf : StrictMono f) : mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
+theorem mk_le_mk_iff_denselyOrdered [Ring S] [IsStrictOrderedRing S]
+    [DenselyOrdered R] [Archimedean R] {x y : S} (f : R →+* S) (hf : StrictMono f) :
+    mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
   have H {q} : 0 < f q ↔ 0 < q := by simpa using hf.lt_iff_lt (a := 0)
   constructor
   · rintro ⟨(_ | n), hn⟩

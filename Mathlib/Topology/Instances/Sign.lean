@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Sign.Defs
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on `SignType`
@@ -12,6 +14,8 @@ import Mathlib.Topology.Order.Basic
 This file gives `SignType` the discrete topology, and proves continuity results for `SignType.sign`
 in an `OrderTopology`.
 -/
+
+@[expose] public section
 
 instance : TopologicalSpace SignType :=
   ⊥

@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
@@ -20,6 +22,8 @@ and related notions.
 * `ContMDiff.contMDiff_tangentMap` states that the bundled derivative
   of a `Cⁿ` function is `Cᵐ` when `m + 1 ≤ n`.
 -/
+
+@[expose] public section
 
 open Set Function Filter ChartedSpace IsManifold Bundle
 
@@ -358,7 +362,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
   rcases p with ⟨x, v⟩
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by
     apply IsOpen.mem_nhds
-    · apply (PartialHomeomorph.open_target _).preimage I.continuous_invFun
+    · apply (OpenPartialHomeomorph.open_target _).preimage I.continuous_invFun
     · simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
     haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) ⊤ (zeroSection E (TangentSpace I : M → Type _)) :=
@@ -374,7 +378,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
-    Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
+    Function.comp_def, map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1
@@ -469,7 +473,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM` read in target chart.
-    simp only [prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
@@ -508,7 +512,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM'` read in target chart.
-    simp only [prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+    simp only [prodChartedSpace_chartAt, OpenPartialHomeomorph.prod_toPartialEquiv,
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by
