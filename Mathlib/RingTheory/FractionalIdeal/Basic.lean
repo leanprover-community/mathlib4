@@ -147,7 +147,7 @@ noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalI
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
 defined by mapping `x` to `I.den • x`. -/
-noncomputable def equivNum [NoZeroSMulDivisors R P] [Nontrivial P]
+noncomputable def equivNum [Module.IsTorsionFree R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num :=
   equivNumOfIsSMulRegular (smul_right_injective P h_nz)
 
@@ -179,15 +179,6 @@ theorem coe_ext_iff {I J : FractionalIdeal S P} :
 @[ext]
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
-
-@[simp]
- theorem equivNum_apply [Nontrivial P] [NoZeroSMulDivisors R P] {I : FractionalIdeal S P}
-    (h_nz : (I.den : R) ≠ 0) (x : I) :
-    algebraMap R P (equivNum h_nz x) = I.den • x := by
-  change Algebra.linearMap R P _ = _
-  rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
-    Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
-    DistribMulAction.toLinearMap_apply]
 
 /-- Copy of a `FractionalIdeal` with a new underlying set equal to the old one.
 Useful to fix definitional equalities. -/
@@ -360,8 +351,8 @@ instance : Inhabited (FractionalIdeal S P) :=
 instance : One (FractionalIdeal S P) :=
   ⟨(⊤ : Ideal R)⟩
 
-theorem zero_of_num_eq_bot [NoZeroSMulDivisors R P] (hS : 0 ∉ S) {I : FractionalIdeal S P}
-    (hI : I.num = ⊥) : I = 0 := by
+theorem zero_of_num_eq_bot [IsDomain R] [Module.IsTorsionFree R P] (hS : 0 ∉ S)
+    {I : FractionalIdeal S P} (hI : I.num = ⊥) : I = 0 := by
   rw [← coeToSubmodule_eq_bot, eq_bot_iff]
   intro x hx
   suffices (den I : R) • x = 0 from
@@ -713,8 +704,32 @@ end Order
 
 section FG
 
-variable {R : Type*} [CommRing R] [Nontrivial R] {S : Submonoid R}
-variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDivisors R P]
+variable {R : Type*} [CommRing R] [IsDomain R] {S : Submonoid R}
+variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [Module.IsTorsionFree R P]
+
+/-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
+defined by mapping `x` to `den I • x`. -/
+noncomputable def equivNum {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
+  refine LinearEquiv.trans
+    (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
+      ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
+    (Submodule.equivMapOfInjective (Algebra.linearMap R P)
+      (FaithfulSMul.algebraMap_injective R P) (num I)).symm
+  · rw [← den_mul_self_eq_num]
+    exact Submodule.smul_mem_pointwise_smul _ _ _ hx
+  · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
+    rwa [Submonoid.smul_def, Submonoid.smul_def, smul_right_inj h_nz, SetCoe.ext_iff] at hxy
+  · rw [← den_mul_self_eq_num] at hy
+    obtain ⟨x, hx, hxy⟩ := hy
+    exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+
+@[simp]
+ lemma equivNum_apply {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
+    algebraMap R P (equivNum h_nz x) = I.den • x := by
+  change Algebra.linearMap R P _ = _
+  rw [equivNum, LinearEquiv.trans_apply, LinearEquiv.ofBijective_apply, LinearMap.restrict_apply,
+    Submodule.map_equivMapOfInjective_symm_apply, Subtype.coe_mk,
+    DistribMulAction.toLinearMap_apply]
 
 /-- The fractional ideals of a Noetherian ring are finitely generated. -/
 lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :

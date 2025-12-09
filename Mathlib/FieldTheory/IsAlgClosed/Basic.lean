@@ -271,7 +271,7 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
 /-- Typeclass for an extension being an algebraic closure. -/
 @[stacks 09GS]
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
-    [NoZeroSMulDivisors R K] : Prop where
+    [Module.IsTorsionFree R K] : Prop where
   isAlgClosed : IsAlgClosed K
   isAlgebraic : Algebra.IsAlgebraic R K
 
@@ -295,7 +295,7 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
   isAlgebraic := .of_finite F F
 
 theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
-    [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
+    [Algebra.IsIntegral R K] [Module.IsTorsionFree R K]
     (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) :
     IsAlgClosure R K where
   isAlgebraic := inferInstance
@@ -328,8 +328,8 @@ private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
-  [NoZeroSMulDivisors R M] [Algebra.IsAlgebraic R S]
+variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [Module.IsTorsionFree R S]
+  [Module.IsTorsionFree R M] [Algebra.IsAlgebraic R S]
 
 variable {M}
 
@@ -402,8 +402,8 @@ namespace IsAlgClosure
 section
 
 variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
-variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
-variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
+variable [Algebra R M] [Module.IsTorsionFree R M] [IsAlgClosure R M]
+variable [Algebra R L] [Module.IsTorsionFree R L] [IsAlgClosure R L]
 
 attribute [local instance] IsAlgClosure.isAlgClosed in
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
@@ -417,8 +417,8 @@ end
 
 variable (K : Type*) (J : Type*) (R : Type u) (S : Type*) (L : Type v) (M : Type w)
   [Field K] [Field J] [CommRing R] [CommRing S] [Field L] [Field M]
-  [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
-  [Algebra S L] [NoZeroSMulDivisors S L] [IsAlgClosure S L]
+  [Algebra R M] [Module.IsTorsionFree R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
+  [Algebra S L] [Module.IsTorsionFree S L] [IsAlgClosure S L]
 
 section EquivOfAlgebraic
 
@@ -432,9 +432,9 @@ theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
-noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
+noncomputable def equivOfAlgebraic' [Nontrivial S] [Module.IsTorsionFree R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
-  have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R S L
+  have : Module.IsTorsionFree R L := .trans_faithfulSMul R S L
   have : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }

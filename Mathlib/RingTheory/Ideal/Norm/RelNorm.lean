@@ -45,7 +45,7 @@ open Submodule
 
 variable (R S : Type*) [CommRing R] [IsDomain R] {S : Type*} [CommRing S] [IsDomain S]
 variable [IsIntegrallyClosed R] [IsIntegrallyClosed S] [Algebra R S] [Module.Finite R S]
-variable [NoZeroSMulDivisors R S]
+variable [Module.IsTorsionFree R S]
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -106,7 +106,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     {Rₘ : Type*} (Sₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-    [IsIntegrallyClosed Rₘ] [IsDomain Rₘ] [IsDomain Sₘ] [NoZeroSMulDivisors Rₘ Sₘ]
+    [IsIntegrallyClosed Rₘ] [IsDomain Rₘ] [IsDomain Sₘ] [Module.IsTorsionFree Rₘ Sₘ]
     [Module.Finite Rₘ Sₘ] [IsIntegrallyClosed Sₘ] :
     spanNorm Rₘ (I.map (algebraMap S Sₘ)) = (spanNorm R I).map (algebraMap R Rₘ) := by
   let K := FractionRing R
@@ -215,7 +215,7 @@ theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
 section spanNorm_spanNorm
 
 variable (T : Type*) [CommRing T] [IsDomain T] [IsIntegrallyClosed T] [Algebra R T] [Algebra T S]
-  [Module.Finite R T] [Module.Finite T S] [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+  [Module.Finite R T] [Module.Finite T S] [Module.IsTorsionFree R T] [Module.IsTorsionFree T S]
   [IsScalarTower R T S]
 
 open _root_.Algebra
@@ -340,7 +340,7 @@ theorem relNorm_le_comap (I : Ideal S) : relNorm R I ≤ comap (algebraMap R S) 
 
 theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Algebra T S] [IsScalarTower R T S] [Module.Finite R T] [Module.Finite T S]
-    [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+    [Module.IsTorsionFree R T] [Module.IsTorsionFree T S]
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
   spanNorm_spanNorm _ _ _
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
@@ -1362,31 +1361,12 @@ lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s �
       exists_const] at hxy ⊢
     simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy
 
-lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
+theorem isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
     [IsLocalization S A] [IsLocalizedModule S f] : Module.IsTorsionFree A N :=
   isTorsionFree_of_forall_isRegular f S <| by simp [isRegular_iff_ne_zero]
 
 instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
     IsTorsionFree (Localization S) (LocalizedModule S M) :=
   isTorsionFree (LocalizedModule.mkLinearMap S M) S
-
-theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
-    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
-  rw [noZeroSMulDivisors_iff]
-  intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
-  obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
-  rw [Function.uncurry_apply_pair] at hcx ⊢
-  rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
-  obtain ⟨u, hl⟩ := hcx
-  rw [← smul_assoc] at hl
-  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
-  · rw [IsLocalization.mk'_eq_zero_iff]
-    exact Or.inl ⟨u, hua⟩
-  · simp
-
-instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors (Localization S) (LocalizedModule S M) :=
-  noZeroSMulDivisors (LocalizedModule.mkLinearMap S M) S
 
 end IsLocalizedModule
