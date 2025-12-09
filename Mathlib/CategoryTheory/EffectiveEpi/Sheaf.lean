@@ -1,16 +1,40 @@
+/-
+Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 module
 
-public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.CategoryTheory.Sites.LeftExact
-public import Mathlib.CategoryTheory.Sites.Limits
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.Condensed.Light.Module
-public import Mathlib.Condensed.Module
+
+/-!
+
+# The category of type-valued sheaves is a regular epi category
+
+This file proves two main results:
+* When the target category `D` is a regular epi category (i.e. every epimorphism is regular) and
+  has pushouts and kernel pairs of epimorphisms, the functor category `C ⥤ D` is a regular epi
+  category. This is an instance that applies directly when `D` is `Type*`.
+* `isRegularEpiCategory_sheaf`: Let `J` be a Grothendieck topology on `C`, and suppose that
+  `D` is a regular epi category which has pushouts and pullbacks, and that sheafification of
+  `D`-valued `J`-sheaves exists. Suppose further that the category `Sheaf J D` is balanced, and
+  that the underlying morphism of presheaves of every epimorphism in `Sheaf J D` can be factored
+  as an epimorphism followed by a monomorphism. Then `Sheaf J D` is a regular epi category.
+
+  Note: This is not an instance because of the factorisation requirement, but it can in principle be
+  turned into an instance whenever `D` has equalizers and `Cᵒᵖ ⥤ D` has images. This holds in
+  particular when `D` is `Type*` or any abelian category. We add it as an instance for `D := Type*`,
+  but the fact that `Sheaf J D` is a regular epi category when `D` is an abelian category
+  already follows from the sheaf category being abelian.
+
+## References
+
+We follow the proof of Proposition 3.4.13 in [borceux-vol3]
+*Handbook of Categorical Algebra: Volume 3, Sheaf Theory*, by Borceux, 1994.
+-/
 
 @[expose] public section
 
@@ -106,76 +130,12 @@ lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
           rintro (_ | _)
           all_goals simp [c] }⟩⟩
 
-instance (J : GrothendieckTopology C) [HasPullbacks D] [HasPushouts D] [HasEqualizers D]
-    [IsRegularEpiCategory D] [HasImages (Cᵒᵖ ⥤ D)] [HasSheafify J D] [Balanced (Sheaf J D)] :
-    IsRegularEpiCategory (Sheaf J D) := isRegularEpiCategory_sheaf J fun f hf ↦
+instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
+    IsRegularEpiCategory (Sheaf J (Type u)) := isRegularEpiCategory_sheaf J fun f hf ↦
   ⟨image f.val, factorThruImage f.val, image.ι f.val, inferInstance, inferInstance, by simp⟩
-
-@[simps obj map]
-def NatTrans.image {F G : C ⥤ Type u} (f : F ⟶ G) : C ⥤ Type u where
-  obj X := Set.range <| f.app X
-  map g := fun ⟨x, hx⟩ ↦ ⟨G.map g x, by
-    obtain ⟨y, rfl⟩ := hx
-    exact ⟨F.map g y, FunctorToTypes.naturality F G f g y⟩⟩
-
-attribute [local simp] FunctorToTypes.naturality in
-@[simps]
-def NatTrans.monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
-  I := f.image
-  m := { app X := Subtype.val }
-  m_mono := by
-    rw [NatTrans.mono_iff_mono_app]
-    intro X
-    simp [mono_iff_injective]
-  e := { app X := fun x ↦ ⟨f.app _ x, ⟨x, rfl⟩⟩ }
-
-@[simp]
-lemma FunctorToTypes.monoFactorisation_fac {F G : C ⥤ Type u} {f : F ⟶ G} {X : C}
-    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
-  simp [← types_comp_apply, ← NatTrans.comp_app]
-
-noncomputable def NatTrans.monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :
-    IsImage f.monoFactorisation where
-  lift H := {
-    app X := fun ⟨x, hx⟩ ↦ H.e.app _ hx.choose
-    naturality X Y g := by
-      ext ⟨⟩
-      apply show Function.Injective (H.m.app Y) by rw [← mono_iff_injective]; infer_instance
-      simp only [monoFactorisation_I, image_obj, types_comp_apply, image_map,
-        FunctorToTypes.monoFactorisation_fac, FunctorToTypes.naturality]
-      generalize_proofs h₁ h₂
-      rw [h₁.choose_spec, h₂.choose_spec] }
-  lift_fac H := by
-    ext
-    simp only [monoFactorisation_I, image_obj, FunctorToTypes.comp,
-      FunctorToTypes.monoFactorisation_fac, monoFactorisation_m_app]
-    generalize_proofs h
-    exact h.choose_spec
-
-instance : HasImages (C ⥤ Type*) where
-  has_image f := { exists_image := ⟨ { F := _, isImage := f.monoFactorisationIsImage } ⟩ }
-
-instance : HasStrongEpiMonoFactorisations (C ⥤ Type*) where
-  has_fac {F G} f := ⟨{ I := image f, m := image.ι f, e := factorThruImage f }⟩
-
-example (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
-    IsRegularEpiCategory (Sheaf J (Type u)) :=
-  inferInstance
 
 example {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) :
     IsRegularEpiCategory (Sheaf J (Type (max u v))) :=
-  inferInstance
-
-example (J : GrothendieckTopology C) (A : Type*) [Category A] [Abelian A] [HasSheafify J A] :
-    IsRegularEpiCategory (Sheaf J A) :=
-  inferInstance
-
-example (J : GrothendieckTopology C) (R : Type*) [Ring R] [HasSheafify J (ModuleCat.{u} R)] :
-    IsRegularEpiCategory (Sheaf J (ModuleCat.{u} R)) :=
-  inferInstance
-
-example {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) (R : Type (max u v)) [Ring R] :
-    IsRegularEpiCategory (Sheaf J (ModuleCat.{max u v} R)) :=
   inferInstance
 
 end CategoryTheory
