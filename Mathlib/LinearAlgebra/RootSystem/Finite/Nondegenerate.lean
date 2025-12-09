@@ -95,8 +95,8 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
   ne_zero := IsAnisotropic.rootForm_root_ne_zero
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
 
-lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R N] {i j k : ι}
-    {m n : R} (hk : m • P.root i + n • P.root j = P.root k) :
+lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsionFree R N]
+    {i j k : ι} {m n : R} (hk : m • P.root i + n • P.root j = P.root k) :
     letI Q :=
       (m * m) * P.pairing i j + (m * n) * (P.pairing i j * P.pairing j i) + (n * n) * P.pairing j i
     Q • P.coroot k = m • P.pairing i j • P.coroot i + n • P.pairing j i • P.coroot j := by
@@ -128,7 +128,7 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R
     · module
     · ring_nf
   simp only [h₄] at h₁
-  apply smul_right_injective _ (c := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
+  apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
   convert h₁ using 1
   · module
@@ -143,7 +143,7 @@ lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
     finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (P.corootSpan S) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
   have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
+  have : Module.IsTorsionFree S N := .trans_faithfulSMul S R N
   have h_ne : ∏ i, (P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i)) ≠ 0 := by
     refine Finset.prod_ne_zero_iff.mpr fun i _ h ↦ ?_
     have := (FaithfulSMul.algebraMap_eq_zero_iff S R).mpr h
@@ -172,7 +172,7 @@ lemma finrank_corootSpan_eq [P.IsAnisotropic] :
 lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors S M := NoZeroSMulDivisors.trans_faithfulSMul S R M
+  have : Module.IsTorsionFree S M := .trans_faithfulSMul S R M
   rw [← LinearMap.ker_eq_bot, ← top_disjoint]
   refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
   rw [finrank_top, ← finrank_corootSpan_eq, ← finrank_range_polarization_eq_finrank_span_coroot]
