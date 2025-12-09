@@ -165,6 +165,11 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
   ne_top' := by simpa using h.ne_top
   mem_or_mem_of_forall' {x y} := by simpa using h.mem_or_mem_of_forall
 
+theorem isCompletelyPrime_ideal_prod_top {I : Ideal R} [h : I.IsCompletelyPrime] :
+    (prod I (⊤ : Ideal S)).IsCompletelyPrime where
+  ne_top' := by simpa using h.ne_top
+  mem_or_mem' {x y} := by simpa using h.mem_or_mem
+
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]

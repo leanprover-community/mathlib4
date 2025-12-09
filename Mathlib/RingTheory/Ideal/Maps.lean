@@ -811,18 +811,17 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 end RingRing
 
 /-- The kernel of a homomorphism to a domain is a completely prime ideal. -/
-theorem ker_isCompletelyPrime {F : Type*} [Semiring R] [CommSemiring S] [IsDomain S]
+theorem ker_isCompletelyPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsCompletelyPrime :=
-  have := Ideal.bot_prime (α := S)
+  have := Ideal.bot_isCompletelyPrime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsCompletelyPrime
 
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
 theorem ker_isPrime {F : Type*} [Semiring R] [CommSemiring S] [IsDomain S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
-  have := Ideal.bot_prime (α := S)
-  inferInstanceAs (Ideal.comap f ⊥).IsPrime
+  (ker_isCompletelyPrime f).isPrime
 
 /-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
@@ -1028,7 +1027,7 @@ instance map_isCompletelyPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEqu
   exact Ideal.IsCompletelyPrime.comap (RingEquiv.symm (f : R ≃+* S))
 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
-theorem map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
+instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
   have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
   rw [h, map_comap_of_equiv (f : R ≃+* S)]

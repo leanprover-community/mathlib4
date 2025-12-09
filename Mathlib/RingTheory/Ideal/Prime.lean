@@ -89,9 +89,12 @@ theorem IsPrime.mem_or_mem_of_forall {I : Ideal α} (hI : I.IsPrime) {x y : α} 
     (∀ a, x * a * y ∈ I) → x ∈ I ∨ y ∈ I :=
   hI.2
 
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
+theorem bot_isCompletelyPrime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsCompletelyPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
-    mul_eq_zero.mp (by simpa only [Submodule.mem_bot, mul_one] using h 1)⟩
+    mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
+
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
+  bot_isCompletelyPrime.isPrime
 
 lemma IsCompletelyPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsCompletelyPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
@@ -169,7 +172,7 @@ theorem not_isPrime_iff :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem IsPrime.mul_mem_iff_mem_or_mem [I.IsTwoSided] (hI : I.IsPrime) :
+theorem IsPrime.mul_mem_iff_mem_or_mem (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
@@ -179,11 +182,11 @@ theorem IsPrime.pow_mem_iff_mem (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n)
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
-lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
   rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
-lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsPrime]
     {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
   rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
