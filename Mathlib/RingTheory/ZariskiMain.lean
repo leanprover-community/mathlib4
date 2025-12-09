@@ -1,9 +1,16 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.CFT.GoingDown
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Polynomial.IsIntegrallyClosed
 public import Mathlib.RingTheory.QuasiFinite
+
+/-! # Algebraic ZMT -/
 
 @[expose] public section
 
@@ -372,7 +379,6 @@ lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed [Faithfu
   let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite R[X] S := RingHom.finite_algebraMap.mpr hx'
-  have := Ideal.isPrime_map_C_of_isPrime (inferInstanceAs (P.under R).IsPrime)
   have : FaithfulSMul R[X] S := by
     rw [faithfulSMul_iff_algebraMap_injective, injective_iff_map_eq_zero]
     intro p hp

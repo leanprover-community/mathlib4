@@ -1,12 +1,15 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.AlgebraicGeometry.Cover.Directed
 import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 import Mathlib.RingTheory.ZariskiMain
 import Mathlib.Tactic.DepRewrite
--- import Mathlib.CategoryTheory.EffectiveEpi.Comp
--- import Mathlib.CategoryTheory.ExtremalEpi
--- import Mathlib.Combinatorics.Quiver.ReflQuiver
--- import Mathlib.Order.BourbakiWitt
+
+/-! # Relative Normalization -/
 
 open CategoryTheory Limits
 
