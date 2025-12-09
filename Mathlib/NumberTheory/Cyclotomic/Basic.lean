@@ -424,12 +424,12 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     simp only [mem_setOf_eq]
     rw [isRoot_of_unity_iff (NeZero.pos n)]
     refine ⟨NeZero.ne n, n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
-    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
+    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map_algebraMap]
     exact hx.2
   · simp only [mem_setOf_eq] at hx
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx.2
     refine SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin ?_) _)
-    rw [mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, map_cyclotomic, ← IsRoot]
+    rw [mem_rootSet', map_cyclotomic, ← eval_map_algebraMap, map_cyclotomic, ← IsRoot]
     exact ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic (NeZero.pos n)⟩
 
 theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ} [NeZero n] [IsDomain B] {ζ : B}
@@ -440,10 +440,10 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ} [NeZero n] [
       exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
     refine (isRoot_of_unity_iff (NeZero.pos n) B).2 ?_
     refine ⟨n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
-    rw [mem_rootSet', aeval_def, ← eval_map, map_cyclotomic, ← IsRoot] at hx
+    rw [mem_rootSet', ← eval_map_algebraMap, map_cyclotomic, ← IsRoot] at hx
     exact hx.2
   · simp only [mem_singleton_iff] at hx
-    simpa only [hx, mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, IsRoot] using
+    simpa only [hx, mem_rootSet', map_cyclotomic, ← eval_map_algebraMap, IsRoot] using
       And.intro (cyclotomic_ne_zero n B) (hζ.isRoot_cyclotomic (NeZero.pos n))
 
 theorem adjoin_primitive_root_eq_top {n : ℕ} [NeZero n] [IsDomain B]

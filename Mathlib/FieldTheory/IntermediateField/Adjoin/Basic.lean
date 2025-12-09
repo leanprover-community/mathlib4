@@ -486,7 +486,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     apply minpoly.dvd
     rw [aeval_def, eval₂_eq_eval_map]
     erw [g.map_toSubring K'.toSubring]
-    rw [eval_map, ← aeval_def]
+    rw [eval_map_algebraMap]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
     intro K
