@@ -344,7 +344,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
   algebraMap := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
   smul_def' := fun _ x =>
     Quotient.inductionOn' x fun _ =>
-      ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
+      ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
   commutes' := by rintro r ⟨x⟩; exact congr_arg (⟦·⟧) (Algebra.commutes r x)
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
@@ -436,6 +436,12 @@ theorem Quotient.factorₐ_apply (x : A ⧸ I) :
     Quotient.factorₐ R₁ hIJ x = Quotient.factor hIJ x := rfl
 
 @[simp]
+lemma Quotient.factorₐ_refl {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] (I : Ideal A) :
+    Ideal.Quotient.factorₐ R (le_refl I) = AlgHom.id R _ := by
+  ext
+  simp
+
+@[simp]
 lemma Quotient.factorₐ_comp {K : Ideal A} [K.IsTwoSided] (hJK : J ≤ K) :
     (Ideal.Quotient.factorₐ R₁ hJK).comp (Ideal.Quotient.factorₐ R₁ hIJ) =
       Ideal.Quotient.factorₐ R₁ (hIJ.trans hJK) :=
@@ -518,10 +524,21 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
     kerLiftAlg f with }
 
 /-- The **first isomorphism theorem** for algebras. -/
-@[simps!]
+@[simps! -isSimp apply]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
     (A ⧸ (RingHom.ker f)) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
+
+@[simp]
+lemma quotientKerAlgEquivOfSurjective_mk {f : A →ₐ[R₁] B} (hf : Function.Surjective f)
+    (a : A) : Ideal.quotientKerAlgEquivOfSurjective hf (Ideal.Quotient.mk _ a) = f a :=
+  rfl
+
+@[simp]
+lemma quotientKerAlgEquivOfSurjective_symm_apply {f : A →ₐ[R₁] B} (hf : Function.Surjective f)
+    (a : A) : (Ideal.quotientKerAlgEquivOfSurjective hf).symm (f a) = a := by
+  apply (Ideal.quotientKerAlgEquivOfSurjective hf).injective
+  simp
 
 end
 
@@ -691,7 +708,7 @@ theorem algebraMap_quotient_injective {R} [CommRing R] {I : Ideal A} [I.IsTwoSid
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
-  rw [← RingHom.map_sub] at hab
+  rw [← map_sub] at hab
   exact Quotient.eq.mpr hab
 
 variable (R₁)
@@ -832,7 +849,7 @@ def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
 `I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`). -/
 def quotQuotEquivQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ I ⊔ J :=
-  RingEquiv.ofHomInv (quotQuotToQuotSup I J) (liftSupQuotQuotMk I J)
+  RingEquiv.ofRingHom (quotQuotToQuotSup I J) (liftSupQuotQuotMk I J)
     (by
       repeat apply Ideal.Quotient.ringHom_ext
       rfl)
@@ -1066,6 +1083,13 @@ theorem quotQuotEquivQuotOfLE_comp_quotQuotMkₐ (h : I ≤ J) :
 @[simp]
 theorem quotQuotEquivQuotOfLE_symm_comp_mkₐ (h : I ≤ J) :
     AlgHom.comp (↑(quotQuotEquivQuotOfLEₐ R h).symm) (Quotient.mkₐ R J) = quotQuotMkₐ R I J :=
+  rfl
+
+lemma quotQuotEquivQuotOfLEₐ_comp_mkₐ (h : I ≤ J) :
+    (quotQuotEquivQuotOfLEₐ R h).toAlgHom.comp (Ideal.Quotient.mkₐ _ _) =
+      Ideal.Quotient.factorₐ _ h := by
+  ext x
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   rfl
 
 end AlgebraQuotient
