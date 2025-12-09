@@ -293,7 +293,7 @@ theorem moves_in (hα : 4 ≤ Nat.card α) {t : Set α} {a b : α}
     rw [one_lt_ncard_iff] at h
     obtain ⟨c, d, hc, hd, hcd⟩ := h
     use ⟨Equiv.swap a b * Equiv.swap c d, by
-      apply swap_mul_swap_mem_alternatingGroup <;> rwa [swap_isSwap_iff]⟩
+      apply mul_mem_alternatingGroup_of_isSwap <;> rwa [swap_isSwap_iff]⟩
     constructor
     · rw [mem_stabilizer_set_iff_subset_smul_set t.toFinite, subset_smul_set_iff]
       rintro _ ⟨x, hx, rfl⟩
@@ -371,10 +371,7 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
       use! g, hG' (by rwa [stabilizer_compl] at hg), H
     · intro h
       apply (lt_iff_le_not_ge.mp hG).right
-      intro g hg
-      simp only [mem_stabilizer_iff]
-      rw [← Subgroup.coe_mk G g hg, ← Subgroup.smul_def, ← mem_stabilizer_iff, h]
-      exact Subgroup.mem_top _
+      rwa [← Subgroup.subgroupOf_eq_top]
   apply IsPreprimitive.mk
   -- We reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
