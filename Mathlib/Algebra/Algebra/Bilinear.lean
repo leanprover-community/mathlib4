@@ -305,3 +305,7 @@ lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toL
   TensorProduct.ext' <| by simp
 
 end AlgHom
+
+lemma LinearMap.toSpanSingleton_one_eq_algebraLinearMap [CommSemiring R] [Semiring A]
+    [Algebra R A] : toSpanSingleton R A 1 = Algebra.linearMap R A := by
+  ext; simp
