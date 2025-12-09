@@ -1,4 +1,4 @@
-import Mathlib.Data.QuotLike
+import Mathlib.Data.QuotType
 
 namespace Quot
 
@@ -12,12 +12,6 @@ variable {α} {r : α → α → Prop} (a : α)
 
 /-- info: ⟦a⟧ : Quot r -/
 #guard_msgs in #check ((⟦a⟧ : _) : Quot r)
-
-/-- info: mkQ : α → Quot r -/
-#guard_msgs in #check (mkQ_ r : _)
-
-/-- info: ⟦a⟧ : Quot r -/
-#guard_msgs in #check (⟦a⟧_ r : _)
 
 end Quot
 
@@ -61,18 +55,10 @@ variable (A B : Type*) [HintClass A B] (b : B)
 
 def Q := Quot (α := B) (HintClass.r A)
 
-instance : QuotLike (Q A B) B (HintClass.r A) where
+instance : QuotType (Q A B) B (HintClass.r A) where
 
 /--
 info: let this := ⋯;
 mkQ : B → Q A B
 -/
-#guard_msgs in #check let : QuotLike.HasQuot (Q A B) B (HintClass.r A) := ⟨⟩; (mkQ' : B → _)
-
-instance : QuotLike.HasQuotHint A (Q A B) B (HintClass.r A) where
-
-/-- info: mkQ : B → Q A B -/
-#guard_msgs in #check (((mkQ_ A : _) : _ → _) : B → _)
-
-/-- info: ⟦b⟧ : Q A B -/
-#guard_msgs in #check (⟦b⟧_A : _)
+#guard_msgs in #check let : QuotTypeOut (Q A B) B (HintClass.r A) := ⟨⟩; (mkQ' : B → _)
