@@ -119,7 +119,7 @@ if there exists a neighbourhood `u` of `x₀` such that `f.uncurry : H × ℝ �
 derivative is continuous on `u ×ˢ [[a, b]]`, then a derivative of
 `fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
 `∫ t in a..b, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ`. -/
-nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] [NoAtoms μ]
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] [NoAtoms μ]
     {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
     (hF₁ : ContinuousOn f.uncurry (u ×ˢ [[a, b]]))
     (hF₂ : ∀ t ∈ [[a, b]], DifferentiableOn 𝕜 (fun x ↦ f x t) u)
@@ -131,16 +131,15 @@ nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasu
     exact (h hu (uIcc_comm a b ▸ hF₁) (uIcc_comm a b ▸ hF₂) (uIcc_comm a b ▸ hF₃)
       (le_of_not_ge hab)).neg
   simp_rw [intervalIntegral.integral_of_le hab, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab]
-  exact hasFDerivAt_integral_of_continuousOn_fderiv (𝕜 := 𝕜) (μ := μ) (H := H) (E := E)
-    hu (k := [[a, b]]) isCompact_uIcc hF₁ hF₂ hF₃
+  exact _root_.hasFDerivAt_integral_of_continuousOn_fderiv
+    hu isCompact_uIcc isCompact_uIcc.measure_lt_top hF₁ hF₂ hF₃
 
 /-- A convenient special case of `intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le`:
 if `f.uncurry : H × ℝ → E` is continuously differentiable on `u ×ˢ [[a, b]]` for a neighbourhood `u`
 of `x₀`, then a derivative of `fun x => ∫ t in a..b, f x t ∂μ` in `x₀` can be computed as
 `∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ`. -/
-nonrec theorem hasFDerivAt_integral_of_contDiffOn
-    [IsLocallyFiniteMeasure μ] [NoAtoms μ] {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {H : Type*} [NormedAddCommGroup H]
+theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] [NoAtoms μ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H → ℝ → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {a b : ℝ}
     (hF : ContDiffOn ℝ 1 f.uncurry (u ×ˢ [[a, b]])) :
     HasFDerivAt (fun x => ∫ t in a..b, f x t ∂μ)
@@ -151,7 +150,7 @@ nonrec theorem hasFDerivAt_integral_of_contDiffOn
     · simp [hab, hasFDerivAt_const]
   wlog hu' : IsOpen u with h
   · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
-    exact h (hu'.2.1.mem_nhds hu'.2.2) (hF.mono <| prod_mono_left hu'.1) hab hu'.2.1
+    exact h (μ := μ) (hu'.2.1.mem_nhds hu'.2.2) (hF.mono <| prod_mono_left hu'.1) hab hu'.2.1
   refine hasFDerivAt_integral_of_continuousOn_fderiv hu hF.continuousOn (fun t ht ↦
     hF.differentiableOn_one.comp (by fun_prop) fun x hx ↦ (⟨hx, ht⟩ : (x, t) ∈ _ ×ˢ _)) ?_
   refine .congr (f := fun x ↦ (fderivWithin ℝ f.uncurry (u ×ˢ Icc a b) x).comp (.inl ℝ H ℝ))
@@ -172,9 +171,11 @@ nonrec theorem hasFDerivAt_integral_of_contDiffOn
     exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
       (hu'.uniqueDiffWithinAt hx.1)
 
+end intervalIntegral
+
 /-- If `f.uncurry : H × ℝ → E` is Cⁿ on `u ×ˢ [[a, b]]`, the parametric integral
 `fun x ↦ ∫ t in a..b, f x t ∂μ` is Cⁿ on `u` too. -/
-lemma _root_.ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
     [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H → ℝ → E} {u : Set H} (hu : IsOpen u) {a b : ℝ} {n : ℕ∞}
     (hf : ContDiffOn ℝ n f.uncurry (u ×ˢ [[a, b]])) :
@@ -216,10 +217,8 @@ lemma _root_.ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocall
 
 /-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
 `fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
-lemma _root_.ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
     [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
     (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
   contDiffOn_univ.1 <| ContDiffOn.parametric_intervalIntegral isOpen_univ hf.contDiffOn
-
-end intervalIntegral

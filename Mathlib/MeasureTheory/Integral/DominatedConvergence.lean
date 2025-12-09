@@ -633,7 +633,7 @@ theorem continuous_parametric_intervalIntegral_of_continuous'
     (hf : Continuous f.uncurry) (a₀ b₀ : ℝ) :
     Continuous fun x ↦ ∫ t in a₀..b₀, f x t ∂μ := by fun_prop
 
-lemma ContinuousOn.parametric_intervalIntegral {u : Set X}
+lemma _root_.ContinuousOn.parametric_intervalIntegral {u : Set X}
     {a₀ b₀ : ℝ} (hf : ContinuousOn f.uncurry (u ×ˢ [[a₀, b₀]])) :
     ContinuousOn (fun x ↦ ∫ t in a₀..b₀, f x t ∂μ) u := by
   wlog hab : a₀ ≤ b₀ with h

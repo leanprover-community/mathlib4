@@ -264,9 +264,8 @@ is continuous and continuously differentiable in the first argument on `u ×ˢ k
 of `fun x => ∫ t in k, f x t ∂μ` in `x₀` can be computed as
 `∫ t in k, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ`. -/
 theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
-    [OpensMeasurableSpace α] [SecondCountableTopology α] [IsFiniteMeasureOnCompacts μ]
-    [IsLocallyFiniteMeasure μ] {f : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
-    (hk : IsCompact k) (hF₁ : ContinuousOn f.uncurry (u ×ˢ k))
+    [OpensMeasurableSpace α] {f : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
+    (hk : IsCompact k) (hk' : μ k < ⊤) (hF₁ : ContinuousOn f.uncurry (u ×ˢ k))
     (hF₂ : ∀ t ∈ k, DifferentiableOn 𝕜 (fun x ↦ f x t) u)
     (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1) (u ×ˢ k)) :
     HasFDerivAt (fun x => ∫ t in k, f x t ∂μ)
@@ -274,7 +273,7 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Spa
   -- wlog shrink u to an open neighbourhood
   wlog hu' : IsOpen u with h
   · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
-    exact h (hu'.2.1.mem_nhds hu'.2.2) hk (hF₁.mono <| prod_mono_left hu'.1)
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hk' (hF₁.mono <| prod_mono_left hu'.1)
       (fun t ht ↦ (hF₂ t ht).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
   have hxu := mem_of_mem_nhds hu
   let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ f y x.2) x.1‖
@@ -295,23 +294,24 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Spa
     exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
       fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
   -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained ε and bound
-  have hk' : MeasurableSet k := hk.measurableSet
-  simp_rw [← integral_subtype_comap hk']
+  have hk'' : MeasurableSet k := hk.measurableSet
+  have := isCompact_iff_compactSpace.1 hk
+  simp_rw [← integral_subtype_comap hk'']
   refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
     (F' := fun x (t : k) ↦ fderiv 𝕜 (fun x ↦ f x t) x) hε ?_ ?_ ?_ ?_ ?_ ?_
   · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
-    refine Continuous.aestronglyMeasurable ?_
+    refine Continuous.aestronglyMeasurable_of_compactSpace ?_
     exact (hF₁.uncurry_left x hx).comp_continuous (by fun_prop) (by simp)
-  · have := IsFiniteMeasureOnCompacts.comap' μ (α := k) continuous_subtype_val (.subtype_coe hk')
-    have := isCompact_iff_compactSpace.1 hk
+  · have : IsFiniteMeasure (Measure.comap ((↑) : k → α) μ) :=
+      ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
     refine integrableOn_univ.1 <| ContinuousOn.integrableOn_compact isCompact_univ <|
       continuousOn_univ.2 <| (hF₁.uncurry_left _ hxu).comp_continuous (by fun_prop) (by simp)
-  · refine Continuous.aestronglyMeasurable ?_
+  · refine Continuous.aestronglyMeasurable_of_compactSpace ?_
     exact hF₃.comp_continuous (f := fun t : k ↦ (x₀, ↑t)) (by fun_prop) fun t ↦ ⟨hxu, t.2⟩
   · refine .of_forall fun t x hx ↦ (hB (x, t) ⟨hx, t.2⟩).le
   · have : IsFiniteMeasure (μ.comap ((↑) : k → _)) := ⟨by
-      rw [μ.comap_apply _ Subtype.val_injective (fun s hs ↦ hk'.subtype_image hs) .univ]
-      simpa using hk.measure_lt_top⟩
+      rw [μ.comap_apply _ Subtype.val_injective (fun s hs ↦ hk''.subtype_image hs) .univ]
+      simpa using hk'⟩
     exact integrable_const _
   · refine .of_forall fun t x hx ↦ ?_
     exact (DifferentiableOn.differentiableAt (hF₂ t <| t.2) (hu'.mem_nhds <| hε' hx)).hasFDerivAt
