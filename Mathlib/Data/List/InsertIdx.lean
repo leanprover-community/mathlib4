@@ -117,6 +117,14 @@ theorem insertIdx_injective (n : ℕ) (x : α) :
   intro l₁ l₂ hl
   simpa using congr($hl |>.eraseIdx n)
 
+theorem take_insertIdx_eq_take_of_le (l : List α) x i j (h : i ≤ j) :
+    (l.insertIdx j x).take i = l.take i :=
+  ext_getElem (by grind) (by grind)
+
+theorem take_eraseIdx_eq_take_of_le (l : List α) i j (h : i ≤ j) :
+    (l.eraseIdx j).take i = l.take i :=
+  ext_getElem (by grind) (by grind)
+
 end InsertIdx
 
 end List
