@@ -87,10 +87,10 @@ theorem arcosh_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ arcosh x := by
     _ ≤ x + √(x ^ 2 - 1) := by gcongr; positivity
 
 theorem arcosh_pos {x : ℝ} (hx : 1 < x) : 0 < arcosh x := by
-  have hx' := le_of_lt hx
-  apply Std.lt_of_le_of_ne (arcosh_nonneg hx')
-  contrapose! hx
-  exact ge_of_eq ((arcosh_eq_zero_iff hx').mp hx.symm).symm
+  apply log_pos
+  calc
+    1 < x + 0 := by simpa
+    _ ≤ x + √(x ^ 2 - 1) := by gcongr; positivity
 
 theorem arcosh_le_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x ≤ arcosh y ↔ x ≤ y := by
   rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
