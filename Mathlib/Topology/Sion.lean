@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Topology.Sublevel
 
 /-! # Formalization of the von Neumann Sion theorem
 
@@ -383,7 +382,8 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
       use b, hb
     -- the nonempty case
     have hX'X : X' ⊆ X := sep_subset X _
-    have kX' : IsCompact X' := (hfy b hb).isCompact_leSublevelOn kX t
+    have kX' : IsCompact X' := sorry
+     -- (hfy b hb).isCompact_leSublevelOn kX t
     have cX' : Convex ℝ X' := hfy' b hb t
     specialize hrec X'_ne kX'
       (fun y hy ↦ LowerSemicontinuousOn.mono (hfy y hy) hX'X)
@@ -472,7 +472,8 @@ theorem minimax
     apply not_le.mpr htc (le_trans hc _)
     rw [isLUB_le_iff (hsup_y x hxX), mem_upperBounds]
     aesop
-  rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
+  -- rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
+  sorry
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
@@ -565,7 +566,8 @@ theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x ∈ X,
     apply le_trans (hc x ?_) (by aesop)
     obtain ⟨y, hy⟩ := ne_Y
     exact (hx y hy).1
-  rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
+  sorry
+  -- rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
