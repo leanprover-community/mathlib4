@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous linear maps on products and Pi types
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -53,11 +57,11 @@ variable (R M₁ M₂)
 
 /-- The left injection into a product is a continuous linear map. -/
 def inl : M₁ →L[R] M₁ × M₂ :=
-  (id R M₁).prod 0
+  (ContinuousLinearMap.id R M₁).prod 0
 
 /-- The right injection into a product is a continuous linear map. -/
 def inr : M₂ →L[R] M₁ × M₂ :=
-  (0 : M₂ →L[R] M₁).prod (id R M₂)
+  (0 : M₂ →L[R] M₁).prod (.id R M₂)
 
 end
 
@@ -116,7 +120,7 @@ theorem coe_snd' : ⇑(snd R M₁ M₂) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = id R (M₁ × M₂) :=
+theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = .id R (M₁ × M₂) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]
@@ -273,7 +277,9 @@ variable (S : Type*) [Semiring S]
   [Module S M₂] [ContinuousAdd M₂] [SMulCommClass R S M₂] [ContinuousConstSMul S M₂]
   [Module S M₃] [ContinuousAdd M₃] [SMulCommClass R S M₃] [ContinuousConstSMul S M₃]
 
-/-- `ContinuousLinearMap.prod` as a `LinearEquiv`. -/
+/-- `ContinuousLinearMap.prod` as a `LinearEquiv`.
+
+See `ContinuousLinearMap.prodL` for the `ContinuousLinearEquiv` version. -/
 @[simps apply]
 def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] M →L[R] M₂ × M₃ :=
   { prodEquiv with
@@ -324,9 +330,8 @@ lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .i
 their domains.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 
-TODO: Upgrade this to a `ContinuousLinearEquiv`. This should be true for any topological
-vector space over a normed field thanks to `ContinuousLinearMap.precomp` and
-`ContinuousLinearMap.postcomp`. -/
+See `ContinuousLinearMap.coprodEquivL` for the `ContinuousLinearEquiv` version.
+-/
 @[simps]
 def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S M]
     [ContinuousConstSMul S M] [SMulCommClass R S M] :

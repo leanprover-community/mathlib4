@@ -3,13 +3,15 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed spaces
@@ -17,6 +19,8 @@ import Mathlib.Analysis.Normed.MulAction
 In this file we define (semi)normed spaces and algebras. We also prove some theorems
 about these definitions.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 𝕜' E F α : Type*}
@@ -34,8 +38,9 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
 
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
-typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
-"semi modules". -/
+typeclass can be used for "seminormed spaces" too, just as `Module` can be used for
+"semimodules". -/
+@[ext]
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
@@ -95,6 +100,7 @@ theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E}
 instance NormedSpace.discreteTopology_zmultiples
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
+  have : IsAddTorsionFree E := .of_module_rat E
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
@@ -206,11 +212,10 @@ This cannot be an instance because in order to apply it,
 Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
 We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
-  by_cases H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
+  by_cases! H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
   · letI := NontriviallyNormedField.ofNormNeOne H
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
-  · push_neg at H
-    rcases exists_ne (0 : E) with ⟨x, hx⟩
+  · rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
     refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
@@ -296,23 +301,25 @@ end NNReal
 
 variable (𝕜)
 
-/--
-Preimages of cobounded sets under the algebra map are cobounded.
--/
-theorem algebraMap_cobounded_le_cobounded [NormOneClass 𝕜'] :
-    Filter.map (algebraMap 𝕜 𝕜') (Bornology.cobounded 𝕜) ≤ Bornology.cobounded 𝕜' := by
+open Filter Bornology in
+/-- Preimages of cobounded sets under the algebra map are cobounded. -/
+@[simp]
+theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
+    [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] :
+    Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') := by
   intro c hc
-  rw [Filter.mem_map, ← Bornology.isCobounded_def, ← Bornology.isBounded_compl_iff,
-    isBounded_iff_forall_norm_le]
-  obtain ⟨s, hs⟩ := isBounded_iff_forall_norm_le.1
-    (Bornology.isBounded_compl_iff.2 (Bornology.isCobounded_def.1 hc))
-  use s
-  exact fun x hx ↦ by simpa [norm_algebraMap, norm_one] using hs ((algebraMap 𝕜 𝕜') x) hx
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
+  obtain ⟨s, hs⟩ := hc
+  exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
+
+@[deprecated (since := "2025-11-04")] alias
+  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine Isometry.of_dist_eq fun x y => ?_
-  rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
+  rw [dist_eq_norm, dist_eq_norm, ← map_sub, norm_algebraMap']
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
@@ -460,6 +467,12 @@ See Note [reducible non-instances].
 -/
 abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
+
+theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
+    [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
+  ext
+  apply algebraMap_smul
 
 end NormedSpace
 

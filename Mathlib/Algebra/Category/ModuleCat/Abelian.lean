@@ -3,16 +3,20 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of left R-modules is abelian.
 
 Additionally, two linear maps are exact in the categorical sense iff `range f = ker g`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -87,13 +91,13 @@ instance forget_reflectsLimitsOfSize :
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget₂_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrp.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrpCat.{max v w}) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
   ModuleCat.forget_reflectsLimitsOfSize.{v, v}
 
-instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
+instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) :=
   ModuleCat.forget₂_reflectsLimitsOfSize.{v, v}
 
 end ReflectsLimits

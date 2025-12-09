@@ -3,21 +3,23 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
 
-This files contains special families of filter bases on rings and modules that give rise to
+This file contains special families of filter bases on rings and modules that give rise to
 non-archimedean topologies.
 
 The main definition is `RingSubgroupsBasis` which is a predicate on a family of
 additive subgroups of a ring. The predicate ensures there is a topology
 `RingSubgroupsBasis.topology` which is compatible with a ring structure and admits the given
-family as a basis of neighborhoods of zero. In particular the given subgroups become open subgroups
+family as a basis of neighborhoods of zero. In particular, the given subgroups become open subgroups
 (bundled in `RingSubgroupsBasis.openAddSubgroup`) and we get a non-archimedean topological ring
 (`RingSubgroupsBasis.nonarchimedean`).
 
@@ -25,6 +27,8 @@ A special case of this construction is given by `SubmodulesBasis` where the subg
 sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
+
+@[expose] public section
 
 open Set Filter Function Lattice
 
@@ -325,7 +329,7 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
     hB.toModuleFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff.mp hU
   exact ⟨hB.openAddSubgroup i, hi⟩
 
-library_note "non-Archimedean non-instances"/--
+library_note2 «non-Archimedean non-instances» /--
 The non-Archimedean subgroup basis lemmas cannot be instances because some instances
 (such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
 cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where

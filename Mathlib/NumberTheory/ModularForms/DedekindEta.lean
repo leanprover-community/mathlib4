@@ -3,10 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 
 /-!
 # Dedekind eta function
@@ -21,6 +22,8 @@ differentiable on the upper half-plane.
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
+
+@[expose] public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex

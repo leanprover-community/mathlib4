@@ -3,21 +3,23 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Commuting with applications of the continuous functional calculus
 
 This file shows that if an element `b` commutes with both `a` and `star a`, then it commutes
 with `cfc f a` (or `cfcₙ f a`). In the case where `a` is selfadjoint, we may reduce the hypotheses.
 
-# Main results
+## Main results
 
 * `Commute.cfc` and `Commute.cfcₙ`: an element commutes with `cfc f a` or `cfcₙ f a` if it
   commutes with both `a` and `star a`. Specialized versions for `ℝ` and `ℝ≥0` or for
   `IsSelfAdjoint a` which do not require the user to show the element commutes with `star a` are
   provided for convenience.
 
-# Implementation notes
+## Implementation notes
 
 The proof of `Commute.cfcHom` and `Commute.cfcₙHom` could be made simpler by appealing to basic
 facts about double commutants, but doing so would require extra type class assumptions so that we
@@ -25,6 +27,8 @@ can talk about topological star algebras. Instead, we avoid this to minimize the
 to call these lemmas, and give a straightforward proof by induction.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
@@ -54,8 +58,8 @@ protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    change cfcHom ha f ∈ { x | x * b = b * x}
-    rw [← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
+    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+      ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcHom_continuous ha |>.tendsto _
 
@@ -133,14 +137,14 @@ protected theorem Commute.cfcₙHom {a b : A} (ha : p a) (hb₁ : Commute a b)
   open scoped NonUnitalContinuousFunctionalCalculus in
   induction f using ContinuousMapZero.induction_on_of_compact with
   | zero => simp
-  | smul  r f hf => rw [map_smul]; exact hf.smul_left r
+  | smul r f hf => rw [map_smul]; exact hf.smul_left r
   | id => rwa [cfcₙHom_id ha]
   | star_id => rwa [map_star, cfcₙHom_id]
   | add f g hf hg => rw [map_add]; exact hf.add_left hg
   | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
   | frequently f hf =>
-    change cfcₙHom ha f ∈ { x | x * b = b * x}
-    rw [← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
+    rw [commute_iff_eq, ← Set.mem_setOf (p := fun x => x * b = b * x),
+      ← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
     apply mem_closure_of_frequently_of_tendsto hf
     exact cfcₙHom_continuous ha |>.tendsto _
 
