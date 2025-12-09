@@ -795,9 +795,10 @@ theorem isBridge_iff_forall_cycle_notMem {v w : V} (hvw : G.Adj v w) :
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp only [hvw, true_and]
 
-theorem isBridge_iff_forall_cycle_notMem2 {e : Sym2 V} (he : e ∈ G.edgeSet):
-    G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges := sorry
-  -- (Sym2.ind (fun u v => ((fun (h₁ : G.Adj u v) => isBridge_iff_forall_cycle_notMem h₁) he)) e)
+theorem isBridge_iff_forall_cycle_notMem2 {e : Sym2 V} (he : e ∈ G.edgeSet) :
+    G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges := by
+  induction e
+  apply isBridge_iff_forall_cycle_notMem he
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
