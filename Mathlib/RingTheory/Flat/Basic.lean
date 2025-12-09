@@ -176,7 +176,7 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
   refine (f Q).comp (Function.RightInverse.injective (g := lTensor Q r) fun x ↦ ?_)
   simp [← comp_apply, ← lTensor_comp, h]
 
-/-- A `R`-module linearly equivalent to a flat `R`-module is flat. -/
+/-- An `R`-module linearly equivalent to a flat `R`-module is flat. -/
 lemma of_linearEquiv [Flat R M] (e : N ≃ₗ[R] M) : Flat R N :=
   of_retract e.toLinearMap e.symm (by simp)
 

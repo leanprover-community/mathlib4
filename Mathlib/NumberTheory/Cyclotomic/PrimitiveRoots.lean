@@ -214,7 +214,7 @@ section Field
 variable {K} [Field K] [NumberField K]
 
 variable (n) in
-/-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
+/-- If an `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
 theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
     {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by

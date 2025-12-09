@@ -196,7 +196,7 @@ section Maps
 variable [AddCommMonoid N] [AddCommMonoid O]
 variable [Module R M] [Module R N] [Module R O]
 
-/-- The image of a convex cone under a `R`-linear map is a convex cone. -/
+/-- The image of a convex cone under an `R`-linear map is a convex cone. -/
 def map (f : M →ₗ[R] N) (C : ConvexCone R M) : ConvexCone R N where
   carrier := f '' C
   smul_mem' := fun c hc _ ⟨x, hx, hy⟩ => hy ▸ f.map_smul c x ▸ mem_image_of_mem f (C.smul_mem hc hx)
@@ -219,7 +219,7 @@ theorem map_map (g : N →ₗ[R] O) (f : M →ₗ[R] N) (C : ConvexCone R M) :
 theorem map_id (C : ConvexCone R M) : C.map LinearMap.id = C :=
   SetLike.coe_injective <| image_id _
 
-/-- The preimage of a convex cone under a `R`-linear map is a convex cone. -/
+/-- The preimage of a convex cone under an `R`-linear map is a convex cone. -/
 def comap (f : M →ₗ[R] N) (C : ConvexCone R N) : ConvexCone R M where
   carrier := f ⁻¹' C
   smul_mem' c hc x hx := by

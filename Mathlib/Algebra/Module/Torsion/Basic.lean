@@ -531,7 +531,7 @@ instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
-/-- If a `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
+/-- If an `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
 map from the `R`-module `M` to the `R ⧸ I`-module `M`. -/
 def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
     let _ := hM.module; M →ₛₗ[Ideal.Quotient.mk I] M :=

@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Extension.Basic
 
 ## Main definition
 
-- `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
+- `Algebra.Generators`: A family of generators of an `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
   3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
@@ -54,7 +54,7 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A family of generators of a `R`-algebra `S` consists of
+/-- A family of generators of an `R`-algebra `S` consists of
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/

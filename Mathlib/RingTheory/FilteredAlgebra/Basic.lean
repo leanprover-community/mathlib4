@@ -27,7 +27,7 @@ In this file, we define the concept of filtration for abelian groups, rings, and
   is in `F (i + j)`.
 
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a
-  family of subsets of a `R` module `M`, an increasing series `FM` in `σM` is a module filtration
+  family of subsets of an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration
   if `IsFiltration F F_lt` and the pointwise scalar multiplication of `F i` and `FM j`
   is in `F (i +ᵥ j)`.
 
@@ -88,7 +88,7 @@ variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOr
 variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
-a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
+an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
