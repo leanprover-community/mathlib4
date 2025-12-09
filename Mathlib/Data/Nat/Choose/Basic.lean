@@ -133,6 +133,9 @@ theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (suc
     rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
       succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
 
+theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (k + 1) * (k + 1) :=
+  succ_mul_choose_eq
+
 theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp
@@ -321,6 +324,7 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
   | zero => simp
   | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
+@[gcongr]
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
