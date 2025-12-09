@@ -668,4 +668,28 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 --     LinearOrderedAddCommMonoid (WithBot α) :=
 --   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
+lemma WithTop.add_cast_cancel {α : Type*} [Add α] [IsRightCancelAdd α]
+    (a b : WithBot (WithTop α)) (c : α) : a + c = b + c ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  induction a with
+  | bot => exact (WithBot.add_coe_eq_bot_iff.mp (h.symm.trans (bot_add _))).symm
+  | coe a =>
+    induction b with
+    | bot => simp at h
+    | coe b =>
+      rw [← coe_add, ← coe_add, WithBot.coe_inj] at h
+      simpa using (WithTop.add_right_inj WithTop.coe_ne_top).mp h
+
+lemma WithTop.cast_add_cancel {α : Type*} [Add α] [IsLeftCancelAdd α]
+    (a b : WithBot (WithTop α)) (c : α) : c + a = c + b ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  induction a with
+  | bot => exact (WithBot.coe_add_eq_bot_iff.mp (h.symm.trans (add_bot _))).symm
+  | coe a =>
+    induction b with
+    | bot => simp at h
+    | coe b =>
+      rw [← coe_add, ← coe_add, WithBot.coe_inj] at h
+      simpa using (WithTop.add_left_inj WithTop.coe_ne_top).mp h
+
 end WithBot

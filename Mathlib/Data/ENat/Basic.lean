@@ -599,18 +599,14 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
 
-lemma WithBot.add_natCast_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  induction a with
-  | bot => exact (WithBot.add_coe_eq_bot_iff.mp (h.symm.trans (bot_add _))).symm
-  | coe a =>
-    induction b with
-    | bot => simp at h
-    | coe b =>
-      have : (c : WithBot ℕ∞) = (c : ℕ∞) := rfl
-      simp only [this, ← coe_add, coe_inj] at h
-      simpa using (WithTop.add_right_inj (ENat.coe_ne_top c)).mp h
+lemma WithBot.add_natCast_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b :=
+  WithBot.WithTop.add_cast_cancel a b c
 
-lemma WithBot.natCast_add_cancel (a b : WithBot ℕ∞) (c : ℕ) : c + a = c + b ↔ a = b := by
-  rw [add_comm _ a, add_comm _ b]
-  exact WithBot.add_natCast_cancel a b c
+lemma WithBot.add_one_cancel (a b : WithBot ℕ∞) : a + 1 = b + 1 ↔ a = b :=
+  WithBot.WithTop.add_cast_cancel a b 1
+
+lemma WithBot.natCast_add_cancel (a b : WithBot ℕ∞) (c : ℕ) : c + a = c + b ↔ a = b :=
+  WithBot.WithTop.cast_add_cancel a b c
+
+lemma WithBot.one_add_cancel (a b : WithBot ℕ∞) : 1 + a = 1 + b ↔ a = b :=
+  WithBot.WithTop.cast_add_cancel a b 1
