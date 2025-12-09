@@ -392,7 +392,52 @@ end
 
 section
 
-variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [ClosedIciTopology γ]
+variable {γ : Type*} [LinearOrder γ]
+
+/-- The sublevel sets of a lower semicontinuous function on a compact set are compact. -/
+theorem LowerSemicontinuousOn.isCompact_inter_preimage_Iic {f : α → γ}
+    (hfs : LowerSemicontinuousOn f s) (ks : IsCompact s) (c : γ) :
+    IsCompact (s ∩ f ⁻¹' Iic c) := by
+  rw [lowerSemicontinuousOn_iff_preimage_Iic] at hfs
+  obtain ⟨v, hv, hv'⟩ := hfs c
+  exact hv' ▸ ks.inter_right hv
+
+/-- The overlevel sets of an upper semicontinuous function on a compact set are compact. -/
+theorem UpperSemicontinuousOn.isCompact_inter_preimage_Ici {f : α → γ}
+    (hfs : UpperSemicontinuousOn f s) (ks : IsCompact s) (c : γ) :
+    IsCompact (s ∩ f ⁻¹' Ici c) :=
+  LowerSemicontinuousOn.isCompact_inter_preimage_Iic (γ := γᵒᵈ) hfs ks c
+
+open scoped Set.Notation in
+/-- An intersection of sublevel sets of a lower semicontinuous function
+on a compact set is empty if and only if a finite sub-intersection is already empty. -/
+theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset
+    {ι : Type*} {f : ι → α → γ}
+    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) s) :
+    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Iic c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, c < f i x := by
+  refine ⟨fun H ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
+  · suffices ∀ i ∈ I, IsClosed (s ↓∩ (fun i ↦ f i ⁻¹' Iic c) i) by
+      simpa [Set.eq_empty_iff_forall_notMem] using
+        ks.elim_finite_subfamily_isClosed_subtype _ this H
+    exact fun i hi ↦ lowerSemicontinuous_restrict_iff.mpr (hfi i hi) |>.isClosed_preimage c
+  · rw [Set.eq_empty_iff_forall_notMem]
+    simp only [mem_inter_iff, mem_iInter, mem_preimage, mem_Iic, not_and, not_forall,
+      exists_prop, not_le]
+    simp only [Subtype.exists, exists_and_right] at hu
+    grind
+
+open scoped Set.Notation in
+/-- An intersection of overlevel sets of a lower semicontinuous function
+on a compact set is empty if and only if a finite sub-intersection is already empty. -/
+theorem UpperSemicontinuousOn.inter_biInter_preimage_Ici_eq_empty_iff_exists_finset
+    {ι : Type*} {f : ι → α → γ}
+    (ks : IsCompact s) {I : Set ι} {c : γ} (hfi : ∀ i ∈ I, UpperSemicontinuousOn (f i) s) :
+    s ∩ ⋂ i ∈ I, (f i) ⁻¹' Ici c = ∅ ↔ ∃ u : Finset I, ∀ x ∈ s, ∃ i ∈ u, f i x < c :=
+  LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset ks hfi (γ := γᵒᵈ)
+
+section
+
+variable [TopologicalSpace γ] [ClosedIciTopology γ]
 
 theorem lowerSemicontinuousOn_iff_isClosed_epigraph {f : α → γ} {s : Set α} (hs : IsClosed s) :
     LowerSemicontinuousOn f s ↔ IsClosed {p : α × γ | p.1 ∈ s ∧ f p.1 ≤ p.2} := by
@@ -414,6 +459,8 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
   simp [← lowerSemicontinuousOn_univ_iff, lowerSemicontinuousOn_iff_isClosed_epigraph]
 
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
+
+end
 
 end
 
