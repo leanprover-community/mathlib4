@@ -5,7 +5,7 @@ Authors: James Arthur, Chris Hughes, Shing Tak Lam
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -38,7 +38,6 @@ arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
 -/
 
 @[expose] public section
-
 
 noncomputable section
 
