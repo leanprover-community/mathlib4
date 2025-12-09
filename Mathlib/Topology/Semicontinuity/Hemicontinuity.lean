@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.ContinuousOn
 
 /-! # Hemicontinuity
 
@@ -92,3 +93,40 @@ lemma lowerHemicontinuous_iff_isClosed_preimage_Iic :
     rw [compl_surjective.forall]
     simp [← isOpen_compl_iff]
   exact lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl
+
+/-! ### Singleton maps -/
+
+lemma upperHemicontinuous_singleton_id : UpperHemicontinuous ({·} : α → Set α) := by
+  simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff]
+
+lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
+    UpperHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
+  refine ⟨?_, fun hf ↦ upperHemicontinuous_singleton_id.upperHemicontinuousWithinAt _ _ |>.comp hf
+    (mapsTo_image _ _)⟩
+  simp only [upperHemicontinuousWithinAt_iff, nhdsSet_singleton, ContinuousWithinAt,
+    tendsto_iff_forall_eventually_mem]
+  intro h t ht
+  filter_upwards [h t ht] with x
+  exact mem_of_mem_nhds
+
+lemma upperHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
+    UpperHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
+  simpa [upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
+    using upperHemicontinuousWithinAt_singleton_iff (s := univ)
+
+lemma upperHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
+    UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
+  forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
+
+lemma upperHemicontinuous_singleton_iff {f : α → β} :
+    UpperHemicontinuous ({f ·}) ↔ Continuous f := by
+  simpa [upperHemicontinuousOn_univ_iff] using upperHemicontinuousOn_singleton_iff (s := univ)
+
+/-- An upper hemicontinuous function which takes closed values has a closed graph. -/
+lemma UpperHemicontinuous.isClosed_graph (hf : UpperHemicontinuous f)
+    (hf_closed : ∀ x, IsClosed (f x)) (hf_dom : IsClosed {x | f x ≠ ∅}) :
+    IsClosed {x : α × β | x.2 ∈ f x.1} := by
+
+
+
+  sorry

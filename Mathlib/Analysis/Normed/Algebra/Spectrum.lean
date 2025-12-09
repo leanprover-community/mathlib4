@@ -13,6 +13,8 @@ public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -105,7 +107,7 @@ lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
 
 end Algebra
 
-variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
@@ -207,7 +209,7 @@ section NNReal
 
 open NNReal
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] [NormOneClass A]
 
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
@@ -282,7 +284,7 @@ section resolvent
 
 open Filter Asymptotics Bornology Topology
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
@@ -402,7 +404,7 @@ namespace AlgHom
 
 section NormedField
 
-variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -434,7 +436,7 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
@@ -453,7 +455,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [HasSummableGeomSeries A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
@@ -650,7 +652,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     linarith [h_le.2]
 
 lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
@@ -660,13 +662,13 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
   NNReal.spectralRadius_mem_spectrum ha ha'
 
 lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
+    [HasSummableGeomSeries A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
     (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   simp only [← hx₂, ENNReal.coe_toReal, coe_nnnorm, Real.norm_eq_abs]
@@ -688,3 +690,58 @@ lemma compactSpace {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
   exact h.image ▸ h_cpct.image (map_continuous f)
 
 end QuasispectrumRestricts
+
+namespace spectrum
+
+open Filter Set
+
+variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+  [HasSummableGeomSeries A]
+
+variable (𝕜 A) in
+-- it would be nice to have the sequential characterization too, which would avoid a bunch of this
+-- nonsense.
+lemma upperHemicontinuous : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
+  intro a s
+  simp only [← subset_interior_iff_mem_nhdsSet]
+  have hu : IsOpen (interior s) := isOpen_interior
+  generalize interior s = u at *
+  contrapose
+  simp only [not_eventually, Set.not_subset, ← Set.mem_compl_iff]
+  intro hs
+  obtain ⟨seq, seq_tendsto, h_seq⟩ := exists_seq_forall_of_frequently hs
+  choose x hx hx' using h_seq
+  obtain ⟨r, hr⟩ := Metric.isBounded_range_of_tendsto seq seq_tendsto |>.exists_norm_le
+  obtain ⟨y, -, φ, hφ, φ_tendsto⟩ := tendsto_subseq_of_bounded
+    (Metric.isBounded_closedBall (x := 0) (r := r * ‖(1 : A)‖)) (x := x) fun n ↦ by
+      simp only [Metric.mem_closedBall, dist_zero_right]
+      apply spectrum.norm_le_norm_mul_of_mem (hx n) |>.trans
+      gcongr
+      exact hr _ ⟨n, rfl⟩
+  have h₁ : Tendsto (fun n ↦ algebraMap 𝕜 A ((x ∘ φ) n) - (seq ∘ φ) n)
+      atTop (𝓝 (algebraMap 𝕜 A y - a)) :=
+    continuous_algebraMap 𝕜 A |>.tendsto _ |>.comp φ_tendsto |>.sub <|
+      seq_tendsto.comp hφ.tendsto_atTop
+  refine ⟨y, ?_, ?_⟩
+  · exact nonunits.isClosed.mem_of_tendsto h₁ <| .of_forall fun n ↦ hx (φ n)
+  · exact hu.isClosed_compl.mem_of_tendsto φ_tendsto <| .of_forall fun n ↦ hx' (φ n)
+
+lemma subset_of_frequently (a : A) (s : Set 𝕜) (h : ∃ᶠ x in 𝓝 a, s ⊆ spectrum 𝕜 x) :
+    s ⊆ spectrum 𝕜 a := by
+  intro y hy
+  replace h := h.mp <| .of_forall fun x hx ↦ hx hy
+  obtain ⟨seq, seq_tendsto, h_seq⟩ := exists_seq_forall_of_frequently h
+  exact nonunits.isClosed.mem_of_tendsto (tendsto_const_nhds.sub seq_tendsto) <| .of_forall h_seq
+
+open Metric in
+lemma exists_compact_neighborhood (a : A) :
+    ∃ s : Set 𝕜, IsCompact s ∧ ∀ᶠ x in 𝓝 a, spectrum 𝕜 x ⊆ s := by
+  have := spectrum.upperHemicontinuous 𝕜 A a
+  obtain ⟨t, ht₁, ht₂, hat₁, hat₂⟩ := exists_compact_closed_between (spectrum.isCompact (𝕜 := 𝕜) a)
+    isOpen_thickening (self_subset_thickening zero_lt_one _)
+  have hat₃ : t ∈ 𝓝ˢ (spectrum 𝕜 a) := by rwa [← subset_interior_iff_mem_nhdsSet]
+  refine ⟨t, ht₁, this t hat₃ |>.mp <| .of_forall fun x ↦ ?_⟩
+  simpa [← subset_interior_iff_mem_nhdsSet] using (Set.Subset.trans · interior_subset)
+
+
+end spectrum
