@@ -16,7 +16,7 @@ public import Mathlib.Probability.Martingale.OptionalStopping
 
 This file proves Lévy's generalized Borel-Cantelli lemma which is a generalization of the
 Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel-Cantelli lemmas
-by choosing appropriate filtrations. This file also contains the one sided martingale bound which
+by choosing appropriate filtrations. This file also contains the one-sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
 **Note**: the usual Borel-Cantelli lemmas are not in this file.
@@ -25,7 +25,7 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 
 ## Main results
 
-- `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one sided martingale bound: given
+- `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one-sided martingale bound: given
   a submartingale `f` with uniformly bounded differences, the set for which `f` converges is almost
   everywhere equal to the set for which it is bounded.
 - `MeasureTheory.ae_mem_limsup_atTop_iff`: Lévy's generalized Borel-Cantelli:
@@ -46,7 +46,7 @@ namespace MeasureTheory
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
 
 /-!
-### One sided martingale bound
+### One-sided martingale bound
 -/
 
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
@@ -144,7 +144,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto_aux [IsFiniteMeasure μ] (hf :
   filter_upwards [hf.exists_tendsto_of_abs_bddAbove_aux hf0 hbdd] with ω hω using
     ⟨hω, fun ⟨c, hc⟩ => hc.bddAbove_range⟩
 
-/-- One sided martingale bound: If `f` is a submartingale which has uniformly bounded differences,
+/-- One-sided martingale bound: If `f` is a submartingale which has uniformly bounded differences,
 then for almost every `ω`, `f n ω` is bounded above (in `n`) if and only if it converges. -/
 theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
@@ -178,12 +178,12 @@ filtration $(\mathcal{F}_n)$, and a sequence of sets $(s_n)$ such that for all
 $n$, $s_n \in \mathcal{F}_n$, $limsup_n s_n$ is almost everywhere equal to the set for which
 $\sum_n \mathbb{P}[s_n \mid \mathcal{F}_n] = \infty$.
 
-The proof strategy follows by constructing a martingale satisfying the one sided martingale bound.
+The proof strategy follows by constructing a martingale satisfying the one-sided martingale bound.
 In particular, we define
 $$
   f_n := \sum_{k < n} \mathbf{1}_{s_{n + 1}} - \mathbb{P}[s_{n + 1} \mid \mathcal{F}_n].
 $$
-Then, as a martingale is both a sub and a super-martingale, the set for which it is unbounded from
+Then, as a martingale is both a sub- and a super-martingale, the set for which it is unbounded from
 above must agree with the set for which it is unbounded from below almost everywhere. Thus, it
 can only converge to $\pm \infty$ with probability 0. Thus, by considering
 $$
