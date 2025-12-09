@@ -37,7 +37,7 @@ namespace OpenPartialHomeomorph
 variable (e : OpenPartialHomeomorph X Y)
 
 /-!
-## Constants
+## Constants
 
 `PartialEquiv.const` as an open partial homeomorphism
 -/
