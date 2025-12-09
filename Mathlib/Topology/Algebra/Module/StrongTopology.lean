@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Strong topologies on the space of continuous linear maps
