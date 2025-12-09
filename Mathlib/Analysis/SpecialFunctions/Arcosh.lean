@@ -63,28 +63,23 @@ lemma add_sqrt_self_sq_sub_one_inv {x : ℝ} (hx : 1 ≤ x) :
   rw [← pow_two_sub_pow_two, sq_sqrt (sub_nonneg_of_le (one_le_pow₀ hx)), sub_sub_cancel]
 
 /-- `arcosh` is the right inverse of `cosh` over [1, ∞). -/
-@[simp]
 theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
   rw [arcosh, cosh_eq, exp_neg, exp_log (by positivity), add_sqrt_self_sq_sub_one_inv hx]
   ring
 
-@[simp]
 theorem arcosh_eq_zero_iff {x : ℝ} (hx : 1 ≤ x) : arcosh x = 0 ↔ x = 1 := by
   rw [← exp_injective.eq_iff, exp_arcosh x hx, exp_zero]
   grind
 
-@[simp]
 theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
   rw [arcosh, sinh_eq, exp_neg, exp_log (by positivity), add_sqrt_self_sq_sub_one_inv hx]
   ring
 
 /-- `arcosh` is the left inverse of `cosh` over [0, ∞). -/
-@[simp]
 theorem arcosh_cosh {x : ℝ} (hx : 0 ≤ x) : arcosh (cosh x) = x := by
 rw [arcosh, ← exp_eq_exp, exp_log (by positivity), ← eq_sub_iff_add_eq', exp_sub_cosh,
     ← sq_eq_sq₀ (sqrt_nonneg _) (sinh_nonneg_iff.mpr hx), ← sinh_sq, sq_sqrt (pow_two_nonneg _)]
 
-@[simp]
 theorem arcosh_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ arcosh x := by
   apply log_nonneg
   calc
@@ -93,20 +88,17 @@ theorem arcosh_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ arcosh x := by
       apply (le_add_iff_nonneg_right _).mpr
       apply sqrt_nonneg
 
-@[simp]
 theorem arcosh_pos {x : ℝ} (hx : 1 < x) : 0 < arcosh x := by
   have hx' := le_of_lt hx
   apply Std.lt_of_le_of_ne (arcosh_nonneg hx')
   contrapose! hx
   exact ge_of_eq ((arcosh_eq_zero_iff hx').mp hx.symm).symm
 
-@[simp]
 theorem arcosh_le_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x ≤ arcosh y ↔ x ≤ y := by
   rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
   rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
   exact cosh_le_cosh.symm
 
-@[simp]
 theorem arcosh_lt_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x < arcosh y ↔ x < y := by
   rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
   rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
