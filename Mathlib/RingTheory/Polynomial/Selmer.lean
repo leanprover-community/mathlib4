@@ -41,6 +41,7 @@ namespace IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
 
+-- #32611
 protected theorem finite [FiniteDimensional K L] : Finite G := by
   apply Nat.finite_of_card_ne_zero
   rw [hGKL.card_eq_finrank]
@@ -156,6 +157,7 @@ theorem rootSet.coe_smul
     {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
 
+-- #32615
 theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
@@ -195,6 +197,32 @@ theorem fiddly' {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
   simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
     fiddly''' (Set.surjective_mapsTo_image_restrict f s)
+
+theorem _root_.Finset.sum_le_one_iff {α : Type*} {s : Finset α} {f : α → ℕ} :
+    ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y : α, x ∈ s → y ∈ s → 0 < f x → 0 < f y → x = y ∧ f x = 1 := by
+  classical
+  refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, ?_⟩
+  · replace h := (Finset.sum_mono_set f (show {x, y} ⊆ s by grind)).trans h
+    grind
+  · intro h
+    by_cases hx : ∃ x ∈ s, 0 < f x
+    · obtain ⟨x, hsx, hfx⟩ := hx
+      rw [Finset.sum_eq_add_sum_diff_singleton hsx]
+      have hs : ∀ y ∈ s \ {x}, f y = 0 := by grind
+      rw [Finset.sum_congr rfl hs, Finset.sum_const_zero, add_zero]
+      grind
+    · have hs : ∀ x ∈ s, f x = 0 := by simpa using hx
+      rw [Finset.sum_congr rfl hs, Finset.sum_const_zero]
+      exact one_pos.le
+
+theorem _root_.Multiset.card_le_card_toFinset_add_one_iff {α : Type*} [DecidableEq α]
+    {m : Multiset α} : m.card ≤ m.toFinset.card + 1 ↔
+      ∀ x y : α, 1 < m.count x → 1 < m.count y → x = y ∧ m.count x = 2 := by
+  rw [← m.toFinset_sum_count_eq, m.toFinset.card_eq_sum_ones, ← tsub_le_iff_left,
+    ← Finset.sum_tsub_distrib _ (by simp [Multiset.one_le_count_iff_mem]), Finset.sum_le_one_iff]
+  simp only [tsub_pos_iff_lt, Multiset.mem_toFinset, Nat.pred_eq_succ_iff, zero_add]
+  exact ⟨fun h x y hx hy ↦ h x y (Multiset.one_le_count_iff_mem.mp hx.le)
+    (Multiset.one_le_count_iff_mem.mp hy.le) hx hy, fun h x y _ _ hx hy ↦ h x y hx hy⟩
 
 theorem tada -- R = ℤ, S = 𝓞 K
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
@@ -469,6 +497,35 @@ theorem X_pow_sub_X_sub_one_gal :
     rw [Monic.natDegree_map (hp ▸ trinomial_monic zero_lt_one hn)] at this
     rw [this]
     rw [rootSet_def, aroots_def, Set.ncard_coe_finset]
-    sorry
+    rw [Multiset.card_le_card_toFinset_add_one_iff]
+    have h : ∀ x : F, 1 < (map (algebraMap ℤ F) (X ^ n - X - 1)).roots.count x →
+        x = n / (1 - n) ∧ x ≠ 0:= by
+      intro x hx
+      rw [count_roots, one_lt_rootMultiplicity_iff_isRoot_iterate_derivative
+        (Monic.map _ (hp ▸ trinomial_monic zero_lt_one hn)).ne_zero] at hx
+      have hx0 := hx 0 one_pos.le
+      have hx1 := hx 1 le_rfl
+      simp [derivative_X_pow, sub_eq_iff_eq_add] at hx0 hx1
+      rw [pow_sub_of_lt x hn, pow_one, hx0] at hx1
+      have hx0 : x ≠ 0 := by
+        rintro rfl
+        simp at hx1
+      rw [← mul_assoc, mul_inv_eq_one₀ hx0] at hx1
+      rw [mul_add, mul_one, eq_comm, ← sub_eq_iff_eq_add, ← one_sub_mul, mul_comm] at hx1
+      refine ⟨eq_div_of_mul_eq ?_ hx1, hx0⟩
+      rw [sub_ne_zero]
+      rintro hn0
+      rw [← hn0] at hx1
+      simp at hx1
+    intro x y hx hy
+    have hx' := h x hx
+    replace hy := h y hy
+    use hx'.1.trans hy.1.symm
+    refine le_antisymm ?_ hx
+    rw [count_roots]
+    by_contra! hx''
+    replace hx'' := Polynomial.isRoot_iterate_derivative_of_lt_rootMultiplicity hx''
+    simp [derivative_X_pow, Nat.cast_sub hn.le, sub_eq_zero, hx'.2] at hx''
+    grind
 
 end Polynomial
