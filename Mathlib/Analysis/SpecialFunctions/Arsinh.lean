@@ -5,7 +5,7 @@ Authors: James Arthur, Chris Hughes, Shing Tak Lam
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -39,7 +39,6 @@ arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
 
 @[expose] public section
 
-
 noncomputable section
 
 open Function Filter Set
@@ -50,7 +49,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
+/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
