@@ -492,10 +492,13 @@ theorem single_zero_mul_eq_smul [Semiring R] {r : R} {x : HahnSeries Γ R} :
   ext
   exact coeff_single_zero_mul
 
-theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
+theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
     support (x * y) ⊆ support x + support y := by
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
+
+@[deprecated (since := "2025-12-09")]
+alias support_mul_subset_add_support := support_mul_subset
 
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
@@ -530,7 +533,7 @@ theorem orderTop_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.
   refine le_antisymm (order_le_of_coeff_ne_zero this) ?_
   rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, HahnSeries.order_of_ne hxy,
     ← Set.IsWF.min_add]
-  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
 theorem orderTop_add_le_mul {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
@@ -547,7 +550,7 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
     (Eq.mpr (congrArg (fun _a ↦ _a ≠ 0) (coeff_mul_order_add_order x y)) h)) ?_
   rw [order_of_ne <| leadingCoeff_ne_zero.mp hx, order_of_ne <| leadingCoeff_ne_zero.mp hy,
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
-  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
 theorem leadingCoeff_mul_of_nonzero {x y : HahnSeries Γ R}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
@@ -571,8 +574,8 @@ variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
   ext b
-  rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset_add_support,
-    coeff_mul_right' (y.isPWO_support.add z.isPWO_support) support_mul_subset_add_support]
+  rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
+    coeff_mul_right' (y.isPWO_support.add z.isPWO_support) support_mul_subset]
   simp only [coeff_mul, sum_mul, mul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
@@ -718,7 +721,7 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
   ext b
   rw [coeff_smul_left (x.isPWO_support.add y.isPWO_support)
-    HahnSeries.support_mul_subset_add_support, coeff_smul_right
+    HahnSeries.support_mul_subset, coeff_smul_right
     (y.isPWO_support.vadd ((of R).symm z).isPWO_support) support_smul_subset_vadd_support]
   simp only [HahnSeries.coeff_mul, coeff_smul, sum_smul, smul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l +ᵥ j), (l, j)⟩)
@@ -793,7 +796,7 @@ theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMo
     rw [coeff_mul_order_add_order x y]
     exact mul_ne_zero (leadingCoeff_ne_zero.mpr hx) (leadingCoeff_ne_zero.mpr hy)
   · rw [order_of_ne hx, order_of_ne hy, order_of_ne (mul_ne_zero hx hy), ← Set.IsWF.min_add]
-    exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+    exact Set.IsWF.min_le_min_of_subset support_mul_subset
 
 @[simp]
 theorem order_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
@@ -921,7 +924,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       exact ⟨i, j, h1, rfl⟩
   · rw [embDomain_notin_range hg, eq_comm]
     contrapose! hg
-    obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset_add_support ((mem_support _ _).2 hg)
+    obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
     obtain ⟨j, _, rfl⟩ := support_embDomain_subset hj
     exact ⟨i + j, hf i j⟩

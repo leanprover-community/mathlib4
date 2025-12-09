@@ -46,7 +46,10 @@ variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
     { coeff := r • x.coeff
-      isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
+      isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset ..) }⟩
+
+theorem support_smul_subset (r : R) (x : HahnSeries Γ V) : (r • x).support ⊆ x.support :=
+  Function.support_const_smul_subset ..
 
 @[simp]
 theorem coeff_smul' (r : R) (x : HahnSeries Γ V) : (r • x).coeff = r • x.coeff :=
@@ -69,8 +72,7 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
     exact not_top_lt
   · simp only [orderTop_of_ne_zero hrx, orderTop_of_ne_zero <| right_ne_zero_of_smul hrx,
       WithTop.coe_lt_coe]
-    exact Set.IsWF.min_of_subset_not_lt_min
-      (Function.support_smul_subset_right (fun _ => r) x.coeff)
+    exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right ..)
 
 theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
     x.orderTop ≤ (r • x).orderTop :=
@@ -80,7 +82,7 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
   simp_all only [order, dite_false]
-  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
+  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right ..)
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order :=
@@ -102,7 +104,10 @@ variable [AddMonoid R]
 instance : Add (HahnSeries Γ R) where
   add x y :=
     { coeff := x.coeff + y.coeff
-      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add _ _) }
+      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add ..) }
+
+theorem support_add_subset (x y : HahnSeries Γ R) : (x + y).support ⊆ x.support ∪ y.support :=
+  Function.support_add ..
 
 @[simp]
 theorem coeff_add' (x y : HahnSeries Γ R) : (x + y).coeff = x.coeff + y.coeff :=
@@ -184,13 +189,6 @@ lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).leadingCoeff = .op x.unop.leadingCoeff := by
   apply AddOpposite.unop_injective
   rw [← addOppositeEquiv_leadingCoeff, AddEquiv.apply_symm_apply, AddOpposite.unop_op]
-
-theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
-  fun a ha => by
-  rw [mem_support, coeff_add] at ha
-  rw [Set.mem_union, mem_support, mem_support]
-  contrapose! ha
-  rw [ha.1, ha.2, add_zero]
 
 protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hxy : x + y ≠ 0) :
@@ -333,16 +331,12 @@ theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
 
 end AddCommMonoid
 
-section AddGroup
+section NegZeroClass
 
-variable [AddGroup R]
+variable [NegZeroClass R]
 
 instance : Neg (HahnSeries Γ R) where
-  neg x :=
-    { coeff := fun a => -x.coeff a
-      isPWO_support' := by
-        rw [Function.support_fun_neg]
-        exact x.isPWO_support }
+  neg x := x.map (-ZeroHom.id _)
 
 @[simp]
 theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
@@ -351,10 +345,19 @@ theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
 theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
+end NegZeroClass
+
+section AddGroup
+
+variable [AddGroup R]
+
 instance : Sub (HahnSeries Γ R) where
   sub x y :=
     { coeff := x.coeff - y.coeff
-      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_sub _ _) }
+      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_sub ..) }
+
+theorem support_sub_subset (x y : HahnSeries Γ R) : (x - y).support ⊆ x.support ∪ y.support :=
+  Function.support_sub ..
 
 @[simp]
 theorem coeff_sub' (x y : HahnSeries Γ R) : (x - y).coeff = x.coeff - y.coeff :=
@@ -383,7 +386,7 @@ theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
 
 @[simp]
 protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
-    ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
+    ((-x).map f : HahnSeries Γ S) = -x.map f := by
   ext; simp
 
 @[simp]

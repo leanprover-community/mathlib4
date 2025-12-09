@@ -5,36 +5,40 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.RingTheory.HahnSeries.Summable
-public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Cardinality of Hahn series
 
-We define `HahnSeries.card` as the cardinality of the support of a Hahn series. We find bounds on
-the cardinalities of different expressions, and build corresponding substructures.
+We define `HahnSeries.card` as the cardinality of the support of a Hahn series, and find bounds for
+the cardinalities of different operations.
+
+## Todo
+
+Build the subgroups, subrings, etc. of Hahn series with less than a given infinite cardinal.
 -/
 
 @[expose] public section
 
 open Cardinal
 
--- TODO: move
-open Function in
-@[to_additive]
-lemma Pi.subsingleton_mulSupport_mulSingle {M ι : Type*} [DecidableEq ι] [One M]
-    {i : ι} {a : M} : (mulSupport (mulSingle i a)).Subsingleton := by
-  classical
-  rw [mulSupport_mulSingle]
-  split_ifs with h <;> simp
-
 namespace HahnSeries
 
-variable {Γ R A : Type*} [PartialOrder Γ] [Zero R]
+variable {Γ R S : Type*} [PartialOrder Γ]
+
+/-! ### Cardinality function -/
+
+section Zero
+variable [Zero R]
 
 /-- The cardinality of the support of a Hahn series. -/
 def card (x : HahnSeries Γ R) : Cardinal :=
   #x.support
+
+theorem card_mono [Zero S] {x : HahnSeries Γ R} {y : HahnSeries Γ S} (h : x.support ⊆ y.support) :
+    x.card ≤ y.card :=
+  mk_le_mk_of_subset h
 
 @[simp]
 theorem card_zero : card (0 : HahnSeries Γ R) = 0 := by
@@ -43,7 +47,33 @@ theorem card_zero : card (0 : HahnSeries Γ R) = 0 := by
 theorem card_single_of_ne (a : Γ) {r : R} (h : r ≠ 0) : card (single a r) = 1 := by
   rw [card, support_single_of_ne h, mk_singleton]
 
-theorem card_single_le (a : Γ) (r : R) : card (single a r) ≤ 1 := by
-  classical exact mk_le_one_iff_set_subsingleton.2 Pi.subsingleton_support_single
+theorem card_single_le (a : Γ) (r : R) : card (single a r) ≤ 1 :=
+  (mk_le_mk_of_subset support_single_subset).trans_eq (mk_singleton a)
+
+theorem card_map_le [Zero S] (x : HahnSeries Γ R) (f : ZeroHom R S) : (x.map f).card ≤ x.card :=
+  card_mono <| support_map_subset ..
+
+theorem card_truncLT_le [DecidableLT Γ] (x : HahnSeries Γ R) (c : Γ) :
+    (truncLT c x).card ≤ x.card :=
+  card_mono <| support_truncLT_subset ..
+
+theorem card_smul_le (s : S) (x : HahnSeries Γ R) [SMulZeroClass S R] : (s • x).card ≤ x.card :=
+  card_mono <| support_smul_subset ..
+
+end Zero
+
+theorem card_add_le [AddMonoid R] (x y : HahnSeries Γ R) : (x + y).card ≤ x.card + y.card :=
+  (mk_le_mk_of_subset (support_add_subset ..)).trans (mk_union_le ..)
+
+theorem card_sub_le [AddGroup R] (x y : HahnSeries Γ R) : (x - y).card ≤ x.card + y.card :=
+  (mk_le_mk_of_subset (support_sub_subset ..)).trans (mk_union_le ..)
+
+theorem card_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
+    {x y : HahnSeries Γ R} : (x * y).card ≤ x.card * y.card :=
+  (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
+
+  #exit
+
+/-! ### Substructures -/
 
 end HahnSeries

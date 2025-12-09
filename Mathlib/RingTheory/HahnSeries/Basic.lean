@@ -72,6 +72,10 @@ nonrec def support (x : HahnSeries Γ R) : Set Γ :=
   support x.coeff
 
 @[simp]
+theorem support_mk (f : Γ → R) (h) : support ⟨f, h⟩ = Function.support f :=
+  rfl
+
+@[simp]
 theorem isPWO_support (x : HahnSeries Γ R) : x.support.IsPWO :=
   x.isPWO_support'
 
@@ -81,7 +85,7 @@ theorem isWF_support (x : HahnSeries Γ R) : x.support.IsWF :=
 
 @[simp]
 theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
-  Iff.refl _
+  .rfl
 
 instance : Zero (HahnSeries Γ R) :=
   ⟨{  coeff := 0
@@ -130,6 +134,10 @@ def map [Zero S] (x : HahnSeries Γ R) {F : Type*} [FunLike F R S] [ZeroHomClass
 protected lemma map_zero [Zero S] (f : ZeroHom R S) :
     (0 : HahnSeries Γ R).map f = 0 := by
   ext; simp
+
+theorem support_map_subset [Zero S] (x : HahnSeries Γ R) (f : ZeroHom R S) :
+    (x.map f).support ⊆ x.support :=
+  Function.support_comp_subset (ZeroHomClass.map_zero f) _
 
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
 def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
@@ -568,10 +576,19 @@ def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) :
       isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
   map_zero' := by ext; simp
 
+theorem support_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : HahnSeries Γ R) :
+    (truncLT c x).support = {y ∈ x.support | y < c} := by
+  simp [truncLT, Function.support, and_comm]
+
+theorem support_truncLT_subset [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : HahnSeries Γ R) :
+    (truncLT c x).support ⊆ x.support := by
+  rw [support_truncLT]
+  exact Set.sep_subset ..
+
 @[simp]
 protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
     (c : Γ) (x : HahnSeries Γ R) (i : Γ) :
-    (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0 := rfl
 
 theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ]
     {c i : Γ} (h : i < c) (x : HahnSeries Γ R) : (truncLT c x).coeff i = x.coeff i := by
