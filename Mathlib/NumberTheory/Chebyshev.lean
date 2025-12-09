@@ -163,8 +163,8 @@ theorem integrable_theta_div_id_mul_log_sq (x : ℝ) :
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
-  rw [card_eq_sum_ones, range_succ_eq_Icc_zero]
-  rw [← add_sum_erase (a := 2) _ _ (by simp [prime_two, le_floor hx])]
+  rw [card_eq_sum_ones, range_succ_eq_Icc_zero,
+    ← add_sum_erase (a := 2) _ _ (by simp [prime_two, le_floor hx])]
   trans 1 + ∑ x ∈ Ioc 2 ⌊x⌋₊ with x.Prime, 1
   · norm_cast
     congr
@@ -176,27 +176,25 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · grind
   rw [sum_filter]
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n => log n)
-  trans 1 + ∑ n ∈ Ioc 2 ⌊x⌋₊, (1 / log n) * a n
+  trans 1 + ∑ n ∈ Ioc 2 ⌊x⌋₊, (log n)⁻¹ * a n
   · congr 1
     apply sum_congr rfl fun n hn ↦ ?_
     unfold a
     split_ifs with h
-    · simp only [one_div, Set.mem_setOf_eq, h, Set.indicator_of_mem]
+    · simp only [Set.mem_setOf_eq, h, Set.indicator_of_mem]
       have : log n ≠ 0 := by
         apply log_ne_zero_of_pos_of_ne_one <;> norm_cast
         exacts [h.pos, h.ne_one]
       field
     · simp [h]
-  rw [(by simp : 2 = ⌊(2 : ℝ)⌋₊)]
-  rw [sum_mul_eq_sub_sub_integral_mul a (f := fun n ↦ 1 / log n) (by linarith) (by linarith)]
+  rw [(by simp : 2 = ⌊(2 : ℝ)⌋₊), sum_mul_eq_sub_sub_integral_mul a (f := fun n ↦ (log n)⁻¹)
+    (by linarith) hx, ← intervalIntegral.integral_of_le hx]
   · have int_deriv (f : ℝ → ℝ) :
-      ∫ u in Set.Ioc 2 x, deriv (fun x ↦ 1 / log x) u * f u =
+      ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
-      rw [← intervalIntegral.integral_of_le hx]
-      apply intervalIntegral.integral_congr
-      intro u hu
+      apply intervalIntegral.integral_congr fun u hu ↦ ?_
       rw [Set.uIcc_of_le hx] at hu
-      simp only [one_div, mul_inv_rev, mul_neg]
+      simp only [mul_inv_rev, mul_neg]
       rw [deriv_log_inv]
       · ring
       all_goals linarith [hu.1]
@@ -210,16 +208,13 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have : log z ≠ 0 := by
       apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
     fun_prop (disch := assumption)
-  · simp only [one_div]
-    have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹:= by
+  · have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹:= by
       intro y hy
       rw [deriv_log_inv, mul_inv, ← div_eq_mul_inv, neg_div]
       all_goals linarith [hy.1]
-    apply ContinuousOn.integrableOn_Icc
-    intro z hz
+    apply ContinuousOn.integrableOn_Icc fun z hz ↦ ?_
     apply ContinuousWithinAt.congr (f := fun x => - (x * log x ^ 2)⁻¹)
-    · apply ContinuousWithinAt.neg
-      apply ContinuousAt.continuousWithinAt
+    · apply ContinuousWithinAt.neg <| ContinuousAt.continuousWithinAt _
       have : z ≠ 0 := by linarith [hz.1]
       have : z * (log z) ^ 2 ≠ 0 := by
         apply mul_ne_zero this <| pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩
