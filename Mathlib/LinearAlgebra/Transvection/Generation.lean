@@ -219,7 +219,7 @@ theorem finrank_fixedSubmodule_mul_transvection_le
     finrank K (e * t).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
   conv_rhs => rw [show e = (e * t) * t⁻¹ from by aesop]
   rw [← inv_mem_transvections] at ht
-  exact le_one_add_finrank_fixedSubmodule_mul_transvection_mul (e * t) t⁻¹ ht
+  exact le_one_add_finrank_fixedSubmodule_mul_transvection (e * t) t⁻¹ ht
 
 /-- If an element of `SpecialLinearGroup K V` fixes a submodule `W`,
 this is the element of `SpecialLinearGroup K (V ⧸ W)` deduced by quotient (as a `MonoidHom`). -/
@@ -414,11 +414,19 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
       simp only [add_assoc, Nat.reduceAdd] at h
       by_cases he' : e.reduce = 1
       · -- e.reduce = 1
-        have : ∃ u : V, u ∉ e.fixedSubmodule := sorry
+        have : ∃ u : V, u ∉ e.fixedSubmodule := by
+          by_contra! he
+          rw [← eq_top_iff'] at he
+          rw [he, ← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank, finrank_top] at h
+          simp at h
         obtain ⟨u, hu⟩ := this
-        have hu' : e u - u ∈ e.fixedSubmodule := sorry
+        have hu' : e u - u ∈ e.fixedSubmodule := by
+          rw [← e.fixedSubmodule.ker_mkQ, LinearMap.mem_ker,
+            map_sub, sub_eq_zero]
+          simp [← reduce_apply, he']
         simp only at hu'
-        have hu'' : e u - u ≠ 0 := sorry
+        have hu'' : e u - u ≠ 0 := by
+          rwa [ne_eq, sub_eq_zero, ← mem_fixedSubmodule_iff]
         simp only at hu''
         obtain ⟨f₀, hfu, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hu inferInstance
         rw [← LinearMap.le_ker_iff_map] at hf

@@ -70,17 +70,18 @@ lemma ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
-/-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
-theorem subsingleton_of_finrank_le_one [Module.Free R V] (d1 : Module.finrank R V ≤ 1) :
+/-- If a finite free module has `Module.finrank` at most `1`,
+then its special linear group is trivial. -/
+theorem subsingleton_of_finrank_le_one [Module.Free R V] [Module.Finite R V]
+    (d1 : Module.finrank R V ≤ 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
     nontriviality V
     nontriviality R
     replace d1 : Module.finrank R V = 1 := by
       apply le_antisymm d1
-      by_contra! h
-      simp only [Nat.lt_one_iff] at h
-      sorry
+      change 0 < _
+      rwa [Module.finrank_pos_iff_of_free R V]
     ext x
     by_cases hx : x = 0
     · simp [hx]
