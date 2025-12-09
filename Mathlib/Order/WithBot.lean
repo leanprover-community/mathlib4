@@ -817,14 +817,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 
-instance preorder [Preorder α] : Preorder (WithTop α) where
-  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
-  le_refl x := by cases x <;> simp
-  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
 section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithTop α}
