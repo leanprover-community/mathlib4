@@ -735,8 +735,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
 
 theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
-  rw [isBridge_iff]
-  rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
+  rw [isBridge_iff, reachable_delete_edges_iff_exists_walk, not_exists_not]
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     (hb : ∀ p : G.Walk v w, s(v, w) ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
