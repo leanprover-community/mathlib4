@@ -140,9 +140,9 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   have h_sep : h.Separable := separable_gcd_right _ (.map (Algebra.IsSeparable.isSeparable F β))
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
-    · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
+    · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map_algebraMap, ←
         Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
-    · rw [eval_map, ← aeval_def, minpoly.aeval]
+    · rw [eval_map_algebraMap, minpoly.aeval]
   have h_splits : Splits (h.map ιEE') := by
     rw [← Polynomial.gcd_map]
     exact (SplittingField.splits _).splits_of_dvd (map_ne_zero map_g_ne_zero)
