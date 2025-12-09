@@ -18,7 +18,7 @@ universe u v
 
 namespace CategoryTheory
 
-open Category Functor Limits EffectiveEpiFamily
+open Category Functor Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
@@ -156,10 +156,7 @@ instance : HasImages (C ⥤ Type*) where
   has_image f := { exists_image := ⟨ { F := _, isImage := f.monoFactorisationIsImage } ⟩ }
 
 instance : HasStrongEpiMonoFactorisations (C ⥤ Type*) where
-  has_fac {F G} f := ⟨{
-    I := image f
-    m := image.ι f
-    e := factorThruImage f }⟩
+  has_fac {F G} f := ⟨{ I := image f, m := image.ι f, e := factorThruImage f }⟩
 
 example (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
     IsRegularEpiCategory (Sheaf J (Type u)) :=
