@@ -70,8 +70,8 @@ noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
   (Ideal.Quotient.liftₐ I (Algebra.ofId _ _)
     fun _ ↦ Ideal.algebraMap_residueField_eq_zero.mpr).toRingHom.toAlgebra
 
-instance : IsScalarTower R (R ⧸ I) I.ResidueField :=
-  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+instance (I : Ideal A) [I.IsPrime] : IsScalarTower R (A ⧸ I) I.ResidueField :=
+  .of_algebraMap_eq' rfl
 
 @[simp]
 lemma algebraMap_mk (x) :
@@ -108,6 +108,14 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
+
+lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
+    Function.Surjective (algebraMap R I.ResidueField) := by
+  rw [IsScalarTower.algebraMap_eq R (R ⧸ I) _]
+  exact I.bijective_algebraMap_quotient_residueField.surjective.comp Ideal.Quotient.mk_surjective
+
+instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
+  .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
