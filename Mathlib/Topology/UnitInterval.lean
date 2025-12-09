@@ -371,7 +371,7 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexCombo x (convexCombo y z t) s =
       convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
         (convexCombo_assoc_coeff₂ s t) := by
-  simp [convexCombo, coe_mul]
+  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
   by_cases hs : (s : ℝ) = 1
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
@@ -387,6 +387,29 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
         grind
       field_simp
       ring_nf
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
+
+theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo (convexCombo x y s) z t =
+      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂' s t))
+        (convexCombo_assoc_coeff₁' s t) := by
+  rw [← convexCombo_symm, ← convexCombo_symm y x, convexCombo_assoc, ← convexCombo_symm x,
+    ← convexCombo_symm z y]
+  rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
+
 
 private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
@@ -425,6 +448,7 @@ theorem continuous_convexCombo {a b : ℝ} :
     Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
   apply Continuous.subtype_mk
   fun_prop
+
 
 end Set.Icc
 
