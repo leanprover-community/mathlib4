@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in affine spaces
@@ -23,6 +25,8 @@ and reflection of a point in an affine subspace.
   affine subspace.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -193,10 +197,7 @@ part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     s.direction.orthogonalProjection (p -ᵥ orthogonalProjection s p) = 0 := by
-  apply Submodule.orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-  intro c hc
-  rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
-    orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
+  simpa using vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /-- The characteristic property of the orthogonal projection, for a point given in the underlying
 space. This form is typically more convenient to use than
@@ -551,6 +552,16 @@ variable [NormedAddTorsor V P]
 def orthogonalProjectionSpan {n : ℕ} (s : Simplex 𝕜 P n) :
     P →ᴬ[𝕜] affineSpan 𝕜 (Set.range s.points) :=
   orthogonalProjection (affineSpan 𝕜 (Set.range s.points))
+
+lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ : Simplex ℝ P n}
+    {p₁ p₂ : P} (h : Set.range s₁.points = Set.range s₂.points) (hp : p₁ = p₂) :
+    (s₁.orthogonalProjectionSpan p₁ : P) = s₂.orthogonalProjectionSpan p₂ :=
+  orthogonalProjection_congr (by rw [h]) hp
+
+@[simp] lemma orthogonalProjectionSpan_reindex {m n : ℕ} (s : Simplex ℝ P m)
+    (e : Fin (m + 1) ≃ Fin (n + 1)) (p : P) :
+    ((s.reindex e).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p :=
+  orthogonalProjectionSpan_congr (s.reindex_range_points e) rfl
 
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector is a

@@ -3,8 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Eric Wieser
 -/
-import Mathlib.Data.Nat.Factors
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public meta import Mathlib.Data.Nat.Factors
+public meta import Mathlib.Tactic.NormNum.Prime
+import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 
 /-!
 # `simproc` for `Nat.primeFactorsList`
@@ -12,6 +15,8 @@ import Mathlib.Tactic.NormNum.Prime
 Note that since `norm_num` can only produce numerals,
 we can't register this as a `norm_num` extension.
 -/
+
+public meta section
 
 open Nat
 
@@ -59,8 +64,8 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
     Nat.primeFactorsList n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
   have := List.isChain_iff_pairwise.1 (@List.IsChain.tail _ _ (_ :: _) h₁)
-  (List.eq_of_perm_of_sorted
-    (Nat.primeFactorsList_unique h₃ h₂) this (Nat.primeFactorsList_sorted _)).symm
+  ((Nat.primeFactorsList_unique h₃ h₂).eq_of_pairwise'
+     this (Nat.primeFactorsList_sorted _).pairwise).symm
 
 open Lean Elab Tactic Qq
 
@@ -122,7 +127,7 @@ private partial def evalPrimeFactorsListAux
       pure ⟨q([$ea]), q($eh ▸ FactorsHelper.singleton_self $ea)⟩
     else do
       let eh_a_lt_n : Q(Nat.blt $ea $en = true) :=
-        have : a < n := by cutsat
+        have : a < n := by lia
         (q(Eq.refl true) : Expr)
       let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q(inferInstance) q($enl) ehn n | failure
       have : $lit =Q $en := ⟨⟩

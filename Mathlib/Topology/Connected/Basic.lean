@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Order.SuccPred.Relation
-import Mathlib.Topology.Irreducible
+module
+
+public import Mathlib.Data.Set.SymmDiff
+public import Mathlib.Order.SuccPred.Relation
+public import Mathlib.Topology.Irreducible
 
 /-!
 # Connected subsets of topological spaces
@@ -33,6 +35,8 @@ See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 -/
+
+@[expose] public section
 
 open Set Function Topology TopologicalSpace Relation
 

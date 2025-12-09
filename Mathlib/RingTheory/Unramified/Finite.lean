@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.IdempotentFG
-import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Flat.Stability
+module
+
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Unramified.Basic
+public import Mathlib.RingTheory.Flat.Stability
 
 /-!
 # Various results about unramified algebras
@@ -29,6 +31,8 @@ of formally unramified algebras which are essentially of finite type.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped TensorProduct

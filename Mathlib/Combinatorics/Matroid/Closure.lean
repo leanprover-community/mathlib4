@@ -3,9 +3,11 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Map
-import Mathlib.Order.Closure
-import Mathlib.Order.CompleteLatticeIntervals
+module
+
+public import Mathlib.Combinatorics.Matroid.Map
+public import Mathlib.Order.Closure
+public import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Matroid Closure
@@ -26,13 +28,13 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 
 ## Main definitions
 
-* For `M : Matroid α` and `F : Set α`, `M.IsFlat F` means that `F` is a isFlat of `M`.
+* For `M : Matroid α` and `F : Set α`, `M.IsFlat F` means that `F` is an isFlat of `M`.
 * For `M : Matroid α` and `X : Set α`, `M.closure X` is the closure of `X` in `M`.
 * For `M : Matroid α` and `X : ↑(Iic M.E)` (i.e. a bundled subset of `M.E`),
   `M.subtypeClosure X` is the closure of `X`, viewed as a term in `↑(Iic M.E)`.
   This is a `ClosureOperator` on `↑(Iic M.E)`.
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
-  or equivalently that `S` contains a isBase of `M`.
+  or equivalently that `S` contains an isBase of `M`.
 
 ## Implementation details
 
@@ -75,6 +77,8 @@ the subtype `↑(Iic M.E)` via `Matroid.SubtypeClosure`, albeit less elegantly.
 In lemma names, the words `spanning` and `isFlat` are used as suffixes,
 for instance we have `ground_spanning` rather than `spanning_ground`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -640,7 +644,8 @@ alias Indep.not_mem_closure_diff_of_mem := Indep.notMem_closure_diff_of_mem
 lemma Indep.closure_insert_diff_eq_of_mem_closure (hI : M.Indep I) (hf : f ∈ M.closure I)
     (he : e ∈ M.closure (insert f I \ {e})) : M.closure (insert f I \ {e}) = M.closure I := by
   apply subset_antisymm <;> apply closure_subset_closure_of_subset_closure
-  · rintro a (rfl | haI)
+  · simp only [subset_def, mem_diff, mem_insert_iff, mem_singleton_iff]
+    rintro a (rfl | haI)
     exacts [hf, M.subset_closure _ hI.subset_ground haI]
   · intro a haI
     obtain rfl | ne := eq_or_ne a e
@@ -649,6 +654,7 @@ lemma Indep.closure_insert_diff_eq_of_mem_closure (hI : M.Indep I) (hf : f ∈ M
 lemma Indep.indep_insert_diff_of_mem_closure (hI : M.Indep I) (hfI : f ∈ M.closure I)
     (he : e ∈ M.closure (insert f I \ {e})) (heI : e ∈ insert f I) :
     M.Indep (insert f I \ {e}) := by
+  simp only [mem_insert_iff] at heI
   obtain rfl | heI := heI
   · exact hI.subset (by simp)
   rw [Indep.insert_diff_indep_iff (hI.subset (diff_subset ..)) heI]

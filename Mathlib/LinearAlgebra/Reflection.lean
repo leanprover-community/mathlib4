@@ -3,15 +3,17 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FiniteSpan
-import Mathlib.RingTheory.Polynomial.Chebyshev
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FiniteSpan
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Reflections in linear algebra
@@ -47,6 +49,8 @@ definitions, which require an ambient `InnerProductSpace` structure, are `reflec
 should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
+
+@[expose] public section
 
 open Function Set
 open Module hiding Finite
@@ -139,7 +143,7 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZero
   refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
   · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
     suffices f y • x ∈ p by
-      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      have aux : f y • x ∈ p ⊓ R ∙ x := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
       rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
       exact aux.resolve_right hx
     specialize h' hy
@@ -427,7 +431,6 @@ lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ
   suffices h : f y • x = (2 : R) • y by
     rw [hfy, two_smul R x, two_smul R y, ← two_zsmul, ← two_zsmul] at h
     exact smul_right_injective _ two_ne_zero h
-  rw [← not_infinite] at hΦ
   contrapose! hΦ
   apply ((infinite_range_reflection_reflection_iterate_iff hfx hgy
     (by rw [hfy, hgx]; norm_cast)).mpr hΦ).mono

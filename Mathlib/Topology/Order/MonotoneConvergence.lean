@@ -3,7 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Bounded monotone sequences converge
@@ -24,6 +26,8 @@ then `f n ≤ a` for all `n`.
 
 monotone convergence
 -/
+
+@[expose] public section
 
 open Filter Set Function
 open scoped Topology

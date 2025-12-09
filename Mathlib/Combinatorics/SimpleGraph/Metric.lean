@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Graph metric
@@ -31,6 +33,8 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 graph metric, distance
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -295,7 +299,7 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
   have : r.length = ru.length + s.length + rv.length := by simp [r]
   have := dist_le r
-  cutsat
+  lia
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
@@ -314,17 +318,17 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
-      cutsat)]
+      lia)]
     omega
   have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
-    cutsat
+    lia
   by_cases hadj : G.Adj v (p.getVert 2)
   · have : G.dist v w ≤ p.tail.tail.length + 1 :=
       dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
-    cutsat
+    lia
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist

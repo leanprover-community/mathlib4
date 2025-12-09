@@ -3,12 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
-import Mathlib.Topology.Algebra.ContinuousAffineEquiv
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -32,6 +35,8 @@ match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since
 algebra-homomorphisms.)
 
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -207,6 +212,10 @@ theorem id_apply (x : P) : (AffineIsometry.id : P →ᵃⁱ[𝕜] P) x = x :=
 theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜 P :=
   rfl
 
+@[simp]
+theorem toContinuousAffineMap_id : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
+  rfl
+
 instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
   ⟨id⟩
 
@@ -269,6 +278,11 @@ theorem coe_subtypeₐᵢ (s : AffineSubspace 𝕜 P) [Nonempty s] : ⇑s.subtyp
 @[simp]
 theorem subtypeₐᵢ_toAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
     s.subtypeₐᵢ.toAffineMap = s.subtype :=
+  rfl
+
+@[simp]
+theorem toContinuousAffineMap_subtypeₐᵢ (s : AffineSubspace 𝕜 P) [Nonempty s] :
+    s.subtypeₐᵢ.toContinuousAffineMap = s.subtypeA :=
   rfl
 
 end AffineSubspace
@@ -444,19 +458,8 @@ theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
   rfl
 
 /-- Reinterpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
-instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv⟩
-
-instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
-  ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
-
-@[simp]
-theorem coe_coe : ⇑(e : P ≃ᴬ[𝕜] P₂) = e :=
-  rfl
-
-@[simp]
-theorem coe_coe' : ⇑(e : P →ᴬ[𝕜] P₂) = e :=
-  rfl
 
 variable (𝕜 P)
 
@@ -476,6 +479,9 @@ theorem coe_refl : ⇑(refl 𝕜 P) = id :=
 @[simp]
 theorem toAffineEquiv_refl : (refl 𝕜 P).toAffineEquiv = AffineEquiv.refl 𝕜 P :=
   rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_refl : (refl 𝕜 P).toContinuousAffineEquiv = .refl 𝕜 P := rfl
 
 @[simp]
 theorem toIsometryEquiv_refl : (refl 𝕜 P).toIsometryEquiv = IsometryEquiv.refl P :=
@@ -509,6 +515,14 @@ theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
 
 @[simp]
 theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_symm :
+    e.symm.toContinuousAffineEquiv = e.toContinuousAffineEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]

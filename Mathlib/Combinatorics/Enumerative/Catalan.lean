@@ -3,12 +3,16 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Nat.Choose.Central
+
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Central
+import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.Field
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
 
 /-!
 # Catalan numbers
@@ -41,6 +45,8 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
   Fuss-Catalan, etc.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -146,8 +152,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (antidiagonal n).attach.biUnion fun ijh =>
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; cutsat
-    · simp_wf; have := snd_le ijh.2; cutsat
+    · simp_wf; have := fst_le ijh.2; lia
+    · simp_wf; have := snd_le ijh.2; lia
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]

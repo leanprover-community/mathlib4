@@ -3,13 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
 whose forgetful functors both reflect isomorphisms, itself reflects isomorphisms.
 -/
+
+@[expose] public section
 
 
 universe u
