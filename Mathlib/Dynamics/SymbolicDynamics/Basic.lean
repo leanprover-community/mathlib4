@@ -136,7 +136,7 @@ at position `h` in the shifted configuration is the value that was at position
 For example, if `G = ℤ` (with addition) and `A = {0, 1}`, then
 `shift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
-@[to_additive shift /-- The **right-translation shift** on configurations, in additive notation.
+@[to_additive /-- The **right-translation shift** on configurations, in additive notation.
 
 We call *configuration* an element of `G → A`.
 
@@ -153,21 +153,21 @@ step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
-@[to_additive shift_apply] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
+@[to_additive] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
   mulShift g x h = x (h * g) := rfl
 
-@[to_additive shift_zero] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
+@[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
 /-- Composition of right-translation shifts corresponds to multiplication in the monoid `G`. -/
-@[to_additive shift_add] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+@[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
     mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 variable [TopologicalSpace A]
 
 /-- The right-translation shift is continuous. -/
-@[to_additive (attr := fun_prop) continuous_shift] lemma continuous_mulShift (g : G) :
+@[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   unfold mulShift
@@ -664,7 +664,7 @@ Formally:
 * the carrier is `forbidden F` (configurations avoiding `F`),
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
-@[to_additive subshift_from_forbidden]
+@[to_additive]
 def mulSubshift_from_forbidden [DiscreteTopology A] (F : Set (Pattern A G)) : MulSubshift A G where
   carrier := mulForbidden F
   isClosed := mulForbidden_closed F
@@ -678,7 +678,7 @@ a *finite* family of patterns.
 
 Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` is a
 `Finset (Pattern A G)`. -/
-@[to_additive subshift_of_finite_type]
+@[to_additive]
 def mulSubshift_of_finite_type [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
   mulSubshift_from_forbidden (F : Set (Pattern A G))
 
