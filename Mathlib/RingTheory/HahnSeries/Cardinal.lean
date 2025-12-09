@@ -138,9 +138,12 @@ theorem card_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : Hah
   · simp
   apply (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
   gcongr
-  apply (card_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| card_mono _
-  rw [← single_zero_one]
+  refine (card_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| card_mono fun _ ↦ ?_
   aesop
+
+theorem card_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y : HahnSeries Γ R) :
+    (x / y).card ≤ x.card * sum fun n ↦ y.card ^ n :=
+  (card_mul_le ..).trans <| mul_le_mul_right (card_inv_le y) _
 
 end LinearOrder
 end HahnSeries
