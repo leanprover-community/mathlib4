@@ -226,6 +226,36 @@ lemma saturate_of_superset (K : Coverage C) {X : C} {S T : Sieve X} (h : S ≤ T
   · apply Saturate.top
   · assumption
 
+lemma saturate_iff_saturate_toPrecoverage (K : Coverage C) {X : C} {S : Sieve X} :
+    K.Saturate X S ↔ K.toPrecoverage.Saturate X S := by
+  constructor <;> intro hS
+  · induction hS with
+    | of _ _ hS => exact .of _ _ hS
+    | top => exact .top _
+    | transitive _ _ _ _ _ ih1 ih2 => exact .transitive _ _ _ ih1 ih2
+  · induction hS with
+    | of _ _ hS => exact .of _ _ hS
+    | top => exact .top _
+    | pullback _ R hR Y f ih =>
+      clear hR
+      induction ih generalizing Y with
+      | of X S hS =>
+        obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
+        suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
+          saturate_of_superset _ this (Saturate.of _ _ hR1)
+        rintro Z g ⟨W, i, e, h1, h2⟩
+        obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
+        refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
+        simp only [hh2, reassoc_of% h2, Category.assoc]
+      | top X => apply Saturate.top
+      | transitive X R S _ hS H1 _ =>
+        apply Saturate.transitive
+        · apply H1 _ f
+        intro Z g hg
+        rw [← Sieve.pullback_comp]
+        exact hS hg
+    | transitive _ _ _ _ _ ih1 ih2 => exact .transitive _ _ _ ih1 ih2
+
 /--
 The Grothendieck topology associated to a coverage `K`.
 It is defined *inductively* as follows:
@@ -238,28 +268,10 @@ The pullback compatibility condition for a coverage ensures that the
 associated Grothendieck topology is pullback stable, and so an additional constructor
 in the inductive construction is not needed.
 -/
-def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
-  sieves := Saturate K
-  top_mem' := .top
-  pullback_stable' := by
-    intro X Y S f hS
-    induction hS generalizing Y with
-    | of X S hS =>
-      obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
-      suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
-        saturate_of_superset _ this (Saturate.of _ _ hR1)
-      rintro Z g ⟨W, i, e, h1, h2⟩
-      obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
-      refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
-      simp only [hh2, reassoc_of% h2, Category.assoc]
-    | top X => apply Saturate.top
-    | transitive X R S _ hS H1 _ =>
-      apply Saturate.transitive
-      · apply H1 f
-      intro Z g hg
-      rw [← Sieve.pullback_comp]
-      exact hS hg
-  transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
+def toGrothendieck (K : Coverage C) : GrothendieckTopology C := by
+  apply K.toPrecoverage.toGrothendieck.copy K.Saturate
+  ext
+  exact K.saturate_iff_saturate_toPrecoverage.symm
 
 lemma mem_toGrothendieck {K : Coverage C} {X : C} {S : Sieve X} :
     S ∈ K.toGrothendieck X ↔ Saturate K X S := .rfl
@@ -390,7 +402,7 @@ lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
     induction hS with
     | of _ _ hS => exact .of _ _ hS
     | top => exact J.toCoverage.toGrothendieck.top_mem _
-    | pullback _ _ _ _ ih => exact J.toCoverage.toGrothendieck.pullback_stable _ ih
+    | pullback _ _ _ _ _ ih => exact J.toCoverage.toGrothendieck.pullback_stable _ ih
     | transitive _ _ _ _ _ ih1 ih2 => exact J.toCoverage.toGrothendieck.transitive ih1 _ ih2
 
 namespace GrothendieckTopology
@@ -427,14 +439,7 @@ lemma Precoverage.toGrothendieck_le_iff_le_toPrecoverage {K : Precoverage C}
 
 lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
     J.toPrecoverage.toGrothendieck = J.toGrothendieck := by
-  refine le_antisymm ?_ ?_
-  · rw [Precoverage.toGrothendieck_eq_sInf]
-    exact sInf_le (fun _ _ hS => .of _ _ hS)
-  · intro _ _ hS
-    induction hS with
-    | of _ _ hS => exact .of _ _ hS
-    | top => exact J.toPrecoverage.toGrothendieck.top_mem _
-    | transitive _ _ _ _ _ ih ih' => exact J.toPrecoverage.toGrothendieck.transitive ih _ ih'
+  rw [Coverage.toGrothendieck, GrothendieckTopology.copy_eq]
 
 open Coverage
 

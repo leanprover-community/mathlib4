@@ -44,7 +44,7 @@ See `Precoverage.toGrothendieck`.
 inductive Saturate (J : Precoverage C) : (X : C) → Sieve X → Prop where
   | of (X : C) (S : Presieve X) (hS : S ∈ J X) : J.Saturate X (Sieve.generate S)
   | top (X : C) : J.Saturate X ⊤
-  | pullback (X : C) (S : Sieve X) : J.Saturate X S → ∀ {Y : C} (f : Y ⟶ X),
+  | pullback (X : C) (S : Sieve X) : J.Saturate X S → ∀ (Y : C) (f : Y ⟶ X),
       J.Saturate Y (S.pullback f)
   | transitive (X : C) (S R : Sieve X) : J.Saturate X S →
       (∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → J.Saturate Y (R.pullback f)) → J.Saturate X R
@@ -61,13 +61,13 @@ It is defined *inductively* as follows:
 def toGrothendieck (J : Precoverage C) : GrothendieckTopology C where
   sieves := J.Saturate
   top_mem' := .top
-  pullback_stable' _ _ _ _ hS := .pullback _ _ hS _
+  pullback_stable' _ _ _ _ hS := .pullback _ _ hS _ _
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
 
 lemma mem_toGrothendieck_iff {X : C} {S : Sieve X} :
     S ∈ J.toGrothendieck X ↔ J.Saturate X S := .rfl
 
-@[grind]
+@[grind .]
 lemma generate_mem_toGrothendieck {X : C} {R : Presieve X} (hR : R ∈ J X) :
     Sieve.generate R ∈ J.toGrothendieck X :=
   .of _ _ hR
@@ -86,7 +86,7 @@ lemma toGrothendieck_eq_sInf (J : Precoverage C) :
     induction hS with
     | of _ _ hS => exact hK _ hS
     | top => exact K.top_mem _
-    | pullback _ _ _ _ ih => exact K.pullback_stable _ ih
+    | pullback _ _ _ _ _ ih => exact K.pullback_stable _ ih
     | transitive _ _ _ _ _ ih1 ih2 => exact K.transitive ih1 _ ih2
   · exact sInf_le (fun _ _ hS => .of _ _ hS)
 
@@ -113,7 +113,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       exact fun _ _ => H S hS
     | top =>
       simp [Presieve.isSheafFor_top_sieve P]
-    | pullback X S hS f ih =>
+    | pullback X S hS _ f ih =>
       intro Y f
       rw [← S.pullback_comp]
       exact ih (f ≫ _)
