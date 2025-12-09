@@ -103,9 +103,10 @@ between the two viewpoints, since both may naturally want to reuse names like
 
 * Openness/closedness results for cylinders and occurrence sets use
   `[DiscreteTopology A]`. Closedness proofs that enumerate values additionally
-  require `[Fintype A]`, `[DecidableEq A]`, and `[DecidableEq G]` (for `Finset`
-  manipulations and `Function.update`).
+  require `[Fintype A]` and `[DecidableEq A]`.
 -/
+
+set_option linter.style.openClassical false
 
 @[expose] public section
 
@@ -153,10 +154,10 @@ step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
-@[to_additive] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
+@[to_additive (attr := simp)] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
   mulShift g x h = x (h * g) := rfl
 
-@[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
+@[to_additive (attr := simp)] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
 /-- Composition of right-translation shifts corresponds to multiplication in the monoid `G`. -/
@@ -228,7 +229,7 @@ section SubshiftDef
 variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [AddMonoid G]
 
-/-- A *subshift* on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
+/-- A *subshift* on an alphabet `A` is a closed, shift-invariant subset of `G → A`. Formally, it is
 composed of:
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
@@ -240,7 +241,7 @@ structure Subshift where
   /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
   /-- Shift invariance of `carrier` for the additive shift `shift`. -/
-  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift g x ∈ carrier
+  mapsTo : ∀ g : G, MapsTo (shift g) carrier carrier
 
 end SubshiftDef
 
@@ -248,26 +249,14 @@ section MulSubshiftDef
 variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [Monoid G]
 
-/-- A *subshift* on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
-composed of:
-* `carrier`: the underlying set of allowed configurations.
-* `isClosed`: the set is topologically closed in `A^G`.
-* `shiftInvariant`: the set is invariant under all right-translation shifts
-  `(mulShift g)`. -/
-@[to_additive existing Subshift
-/-- A *subshift* on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
-composed of:
-* `carrier`: the underlying set of allowed configurations.
-* `isClosed`: the set is topologically closed in `A^G`.
-* `shiftInvariant`: the set is invariant under all right-translation shifts
-  `(shift g)`. -/]
+@[to_additive existing Subshift]
 structure MulSubshift where
   /-- The underlying set of configurations. -/
   carrier : Set (G → A)
   /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
   /-- Shift invariance of `carrier`. -/
-  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, mulShift g x ∈ carrier
+  mapsTo : ∀ g : G, MapsTo (mulShift g) carrier carrier
 
 end MulSubshiftDef
 
@@ -277,7 +266,7 @@ end MulSubshiftDef
 It is the subshift whose underlying set is the set of all configurations
 `G → A`.
 -/
-@[to_additive SymbolicDynamics.FullShift.fullShift
+@[to_additive fullShift
 /-- Example: the **full shift** on alphabet `A` over the additive monoid `G`.
 
 It is the subshift whose underlying set is the set of all configurations
@@ -286,7 +275,7 @@ It is the subshift whose underlying set is the set of all configurations
 def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : MulSubshift A G where
   carrier := Set.univ
   isClosed := isClosed_univ
-  shiftInvariant := by
+  mapsTo := by
     intro _ _ _
     simp
 
@@ -375,10 +364,14 @@ def mulForbidden (F : Set (Pattern A G)) : Set (G → A) :=
 
 end Forbidden
 
-section OccursAt
+section OccursInAt
+
 
 variable {A : Type*} [Inhabited A]
-variable {G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G]
+variable {G : Type*} [Monoid G] [IsRightCancelMul G]
+
+section PatternExtension
+open scoped Classical
 -- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v)
 -- or (_ + v).
 
@@ -428,10 +421,11 @@ noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A :=
         simpa [Finset.mem_image] using hmem
       let w := Classical.choose ex
       have hw  : w ∈ p.support := (Classical.choose_spec ex).1
-      have hwv : w * v = h     := (Classical.choose_spec ex).2
+      have hwv : w * v = h := (Classical.choose_spec ex).2
       p.data ⟨w, hw⟩
     else
       default
+end PatternExtension
 
 namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
@@ -465,6 +459,7 @@ under right-multiplication by `v`. -/
 lemma mulExtend_apply_mul_right_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     p.mulExtend v (w * v) = p.data ⟨w, hw⟩ := by
+  classical
   -- (w*v) is in the translated support
   have hmem : (w * v) ∈ p.support.image (· * v) :=
     Finset.mem_image.mpr ⟨w, hw, rfl⟩
@@ -531,7 +526,7 @@ the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every po
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
-lemma mulForbidden_shift_invariant {A G : Type*} [Monoid G]
+lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Monoid G]
     (F : Set (Pattern A G)) (h : G) :
     Set.MapsTo (fun x => mulShift h x)
     (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
@@ -541,34 +536,10 @@ lemma mulForbidden_shift_invariant {A G : Type*} [Monoid G]
   contrapose! hx
   simpa [mulOccursInAt_mulShift] using hx
 
-/-- The set of patterns with fixed support `U`. -/
-@[to_additive FixedSupport]
-def MulFixedSupport (A : Type*) (G : Type*) (U : Finset G) :=
-  { p : Pattern A G // p.support = U }
-
-attribute [inherit_doc SymbolicDynamics.FullShift.Pattern.MulFixedSupport]
-  SymbolicDynamics.FullShift.Pattern.FixedSupport
-
-/-- An equivalence between patterns with fixed support and functions on that support.
-
-Concretely, `fixedSupport A G U` is the subtype of patterns whose support is
-exactly `U`. Such a pattern is determined uniquely by its values on `U`,
-i.e. by a function `U → A`. This equivalence makes that identification precise:
-
-* `toFun` sends a fixed-support pattern to the function recording its values,
-* `invFun` rebuilds the pattern from a function on `U`.
-
-This shows immediately that `fixedSupport A G U` is finite whenever `U` is. -/
-@[to_additive equivFun
-  /-- Additive version: equivalence between fixed-support additive patterns and functions. -/]
-def mulEquivFun {U : Finset G} :
-  MulFixedSupport A G U ≃ (U → A) where
-  toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
-  invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
-  left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
-  right_inv := by intro f; rfl
-
 end Pattern
+
+section OccursInAtEqCylinder
+open scoped Classical
 
 /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
 in which a pattern `p` occurs at position `g`.
@@ -608,15 +579,15 @@ lemma mulOccursInAt_eq_cylinder
       H (u * g) (Finset.mem_image_of_mem (· * g) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
     simpa [Pattern.mulExtend_apply_mul_right_of_mem (p := p) (v := g) (w := u) hu] using hx
-
-end OccursAt
+end OccursInAtEqCylinder
+end OccursInAt
 
 /-! ## Forbidden sets and subshifts -/
 
 section DefSubshiftByForbidden
 
 variable {A : Type*} [TopologicalSpace A] [Inhabited A]
-variable {G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G]
+variable {G : Type*} [Monoid G] [IsRightCancelMul G]
 
 /-- Occurrence sets are open. -/
 @[to_additive isOpen_occursInAt]
@@ -629,24 +600,33 @@ lemma isOpen_mulOccursInAt [DiscreteTopology A] (p : Pattern A G) (g : G) :
 Since each occurrence set `{ x | p.mulOccursInAt x v }` is open (when `A` is discrete),
 its complement `{ x | ¬ p.mulOccursInAt x v }` is closed; `forbidden F` is the intersection
 of these closed sets over `p ∈ F` and `v ∈ G`. -/
-@[to_additive forbidden_closed
-/-- Avoiding a fixed family of patterns is a closed condition (in the product topology on `G → A`).
+@[to_additive /-- Avoiding a fixed family of patterns is a closed
+condition (in the product topology on `G → A`).
 
 Since each occurrence set `{ x | p.occursInAt x v }` is open (when `A` is discrete),
 its complement `{ x | ¬ p.occursInAt x v }` is closed; `forbidden F` is the intersection
 of these closed sets over `p ∈ F` and `v ∈ G`. -/]
-lemma mulForbidden_closed [DiscreteTopology A] (F : Set (Pattern A G)) :
+lemma isClosed_mulForbidden [DiscreteTopology A] (F : Set (Pattern A G)) :
     IsClosed (mulForbidden F) := by
   rw [mulForbidden]
-  have : {x | ∀ p ∈ F, ∀ v : G, ¬ p.mulOccursInAt x v}
-       = ⋂ (p : Pattern A G) (h : p ∈ F), ⋂ (v : G), {x | ¬ p.mulOccursInAt x v} := by
+  -- Rewrite as an intersection indexed by `p ∈ F` and `v : G`.
+  have h_eq :
+      {x | ∀ p ∈ F, ∀ v : G, ¬ p.mulOccursInAt x v}
+        = ⋂ (p : Pattern A G) (hp : p ∈ F) (v : G), {x | ¬ p.mulOccursInAt x v} := by
     ext x; simp
-  rw [this]
-  refine isClosed_iInter ?_;
-  intro p; refine isClosed_iInter ?_;
-  intro _; refine isClosed_iInter ?_;
-  intro v; have : {x | ¬p.mulOccursInAt x v} = {x | p.mulOccursInAt x v}ᶜ := by ext x; simp
-  simpa [this, isClosed_compl_iff] using isOpen_mulOccursInAt p v
+  rw [h_eq]
+  -- Now prove that this big intersection is closed.
+  have h_closed :
+      IsClosed (⋂ (p : Pattern A G) (hp : p ∈ F) (v : G), {x | ¬ p.mulOccursInAt x v}) := by
+    refine isClosed_iInter (fun p => ?_)
+    refine isClosed_iInter (fun hp => ?_)
+    refine isClosed_iInter (fun v => ?_)
+    -- For each `p, hp, v`, the section is the complement of an open occurrence set.
+    have : {x | ¬ p.mulOccursInAt x v} = {x | p.mulOccursInAt x v}ᶜ := by
+      ext x; simp
+    simpa [this, isClosed_compl_iff] using
+      isOpen_mulOccursInAt (A := A) (G := G) p v
+  simpa using h_closed
 
 /-- Occurrence sets are closed. -/
 @[to_additive isClosed_occursInAt]
@@ -665,13 +645,13 @@ Formally:
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
 @[to_additive]
-def mulSubshift_from_forbidden [DiscreteTopology A] (F : Set (Pattern A G)) : MulSubshift A G where
+def MulSubshift.ofForbidden [DiscreteTopology A] (F : Set (Pattern A G)) : MulSubshift A G where
   carrier := mulForbidden F
-  isClosed := mulForbidden_closed F
-  shiftInvariant := Pattern.mulForbidden_shift_invariant F
+  isClosed := isClosed_mulForbidden F
+  mapsTo := Pattern.mapsTo_mulShift_mulForbidden F
 
-attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_from_forbidden]
-  SymbolicDynamics.FullShift.subshift_from_forbidden
+attribute [inherit_doc SymbolicDynamics.FullShift.MulSubshift.ofForbidden]
+  SymbolicDynamics.FullShift.Subshift.ofForbidden
 
 /-- A subshift of finite type (SFT) is a subshift defined by forbidding
 a *finite* family of patterns.
@@ -680,7 +660,7 @@ Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` i
 `Finset (Pattern A G)`. -/
 @[to_additive]
 def mulSubshift_of_finite_type [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
-  mulSubshift_from_forbidden (F : Set (Pattern A G))
+  MulSubshift.ofForbidden (F : Set (Pattern A G))
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_of_finite_type]
   SymbolicDynamics.FullShift.subshift_of_finite_type
@@ -689,16 +669,49 @@ end DefSubshiftByForbidden
 
 section Language
 
-variable {A : Type*} [Fintype A] [TopologicalSpace A]
-variable {G : Type*} [Monoid G]
+variable {A : Type*} [Fintype A]
+variable {G : Type*}
 
+/-- Patterns with support exactly `U` form a finite set. -/
+lemma finite_patterns_with_support
+    {A G : Type*} [Fintype A]
+    (U : Finset G) :
+    ({ p : Pattern A G | p.support = U } : Set (Pattern A G)).Finite := by
+  classical
+  -- Local equivalence between the subtype and functions on U
+  have e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
+  { toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
+    invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
+    left_inv := by
+      rintro ⟨p, hU⟩
+      apply Subtype.ext
+      cases hU
+      rfl
+    right_inv := by intro f; rfl }
 
-/-- `fixedSupport A G U` is a finite type: there are only finitely many patterns
-with support exactly `U`. This follows from the equivalence with functions `U → A`. -/
-@[to_additive SymbolicDynamics.FullShift.fintypeFixedSupport] noncomputable
-instance mulFintypeFixedSupport {U : Finset G} :
-    Fintype (Pattern.MulFixedSupport A G U) := by
-  classical exact Fintype.ofEquiv (U → A) (Pattern.mulEquivFun (A := A) (G := G) (U := U)).symm
+  -- Give a Fintype structure to the subtype via this equivalence
+  haveI : Fintype { p : Pattern A G // p.support = U } :=
+    Fintype.ofEquiv (U → A) e.symm
+
+  -- Now prove finiteness of `{ p : Pattern A G | p.support = U }` by
+  -- viewing it as the image of `univ` in that finite subtype
+  let T := { p : Pattern A G // p.support = U }
+  have h_univ : (Set.univ : Set T).Finite :=
+    Set.finite_univ
+  let coeT : T → Pattern A G := fun p => (p : Pattern A G)
+  have h_image : (Set.image coeT (Set.univ : Set T)).Finite :=
+    h_univ.image _
+  have himage_eq :
+      Set.image coeT (Set.univ : Set T)
+        = ({ p : Pattern A G | p.support = U } : Set (Pattern A G)) := by
+    ext p; constructor
+    · intro hp
+      rcases hp with ⟨p', -, rfl⟩
+      exact p'.property
+    · intro hp
+      refine ⟨⟨p, hp⟩, ?_, rfl⟩
+      simp
+  simpa [himage_eq] using h_image
 
 /-- The language of a set of configurations `X` on a finite shape `U`.
 
@@ -716,32 +729,6 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulLanguageOn]
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Monoid G]
     (Y : MulSubshift A G) (U : Finset G) : Set (Pattern A G) :=
   SymbolicDynamics.FullShift.mulLanguageOn (A:=A) (G:=G) Y.carrier U
-
-/-- The cardinality of the language of `X` on a finite set `U`.
-
-That is, the number of distinct patterns supported on `U` which appear
-in some configuration of `X`. Since `U` is finite, this is a finite number. -/
-@[to_additive languageCardOn]
-noncomputable def mulLanguageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
-  -- Image of a map into the finite type `FixedSupport A G U`
-  let f : {x : G → A // x ∈ X} → Pattern.MulFixedSupport A G U :=
-    fun x => ⟨Pattern.fromConfig x.1 U, rfl⟩
-  have hfin : (Set.range f).Finite := (Set.finite_univ :
-    (Set.univ : Set (Pattern.MulFixedSupport A G U)).Finite)
-    |>.subset (by intro y hy; simp)
-  exact hfin.toFinset.card
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulLanguageCardOn]
-  SymbolicDynamics.FullShift.languageCardOn
-
-/-- The number of patterns which appear in the configurations of the carrier
-of a subshift `Y` on a finite set `U`. -/
-@[to_additive patternCountOn]
-noncomputable def mulPatternCountOn (Y : MulSubshift A G) (U : Finset G) : ℕ :=
-  mulLanguageCardOn (A := A) (G := G) Y.carrier U
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulPatternCountOn]
-  SymbolicDynamics.FullShift.patternCountOn
 
 end Language
 
