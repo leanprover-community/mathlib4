@@ -103,7 +103,7 @@ theorem IsIntegral.mem_range_algHom_of_minpoly_splits
     (int : IsIntegral R x) (h : Splits ((minpoly R x).map (algebraMap R K))) (f : K →ₐ[R] L) :
     x ∈ f.range :=
   show x ∈ Set.range f from Set.image_subset_range _ ((minpoly R x).rootSet K) <| by
-    rw [image_rootSet h f, mem_rootSet']
+    rw [h.image_rootSet, mem_rootSet']
     exact ⟨((minpoly.monic int).map _).ne_zero, minpoly.aeval R x⟩
 
 theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScalarTower R K L]
