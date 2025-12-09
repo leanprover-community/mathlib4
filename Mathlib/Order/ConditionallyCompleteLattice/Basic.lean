@@ -123,14 +123,14 @@ theorem WithBot.coe_sInf' [InfSet α] {s : Set α} (hs : BddBelow s) :
 end
 
 instance ConditionallyCompleteLinearOrder.toLinearOrder [h : ConditionallyCompleteLinearOrder α] :
-  LinearOrder α where
-  min_def := fun a b ↦ by
+    LinearOrder α where
+  min_def a b := by
     by_cases hab : a = b
     · simp [hab]
     · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
       · simp [h₁]
       · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
-  max_def := fun a b ↦ by
+  max_def a b := by
     by_cases hab : a = b
     · simp [hab]
     · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
@@ -440,14 +440,12 @@ instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) where
   le_csSup := fun _ f ⟨g, hg⟩ hf i =>
     le_csSup ⟨g i, Set.forall_mem_range.2 fun ⟨_, hf'⟩ => hg hf' i⟩ ⟨⟨f, hf⟩, rfl⟩
-  csSup_le := fun s _ hs hf i =>
-    (csSup_le (by haveI := hs.to_subtype; apply range_nonempty)) fun _ ⟨⟨_, hg⟩, hb⟩ =>
-      hb ▸ hf hg i
+  csSup_le s _ hs hf i :=
+    (csSup_le (by have := hs.to_subtype; apply range_nonempty)) fun _ ⟨⟨_, hg⟩, hb⟩ => hb ▸ hf hg i
   csInf_le := fun _ f ⟨g, hg⟩ hf i =>
     csInf_le ⟨g i, Set.forall_mem_range.2 fun ⟨_, hf'⟩ => hg hf' i⟩ ⟨⟨f, hf⟩, rfl⟩
-  le_csInf := fun s _ hs hf i =>
-    (le_csInf (by haveI := hs.to_subtype; apply range_nonempty)) fun _ ⟨⟨_, hg⟩, hb⟩ =>
-      hb ▸ hf hg i
+  le_csInf s _ hs hf i :=
+    (le_csInf (by have := hs.to_subtype; apply range_nonempty)) fun _ ⟨⟨_, hg⟩, hb⟩ => hb ▸ hf hg i
 
 section ConditionallyCompleteLinearOrder
 
@@ -933,10 +931,10 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 gives a conditionally complete lattice -/
 noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) where
-  le_csSup := fun _ a _ haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
-  csSup_le := fun _ _ hS haS => (WithTop.isLUB_sSup' hS).2 haS
-  csInf_le := fun _ _ hS haS => (WithTop.isGLB_sInf' hS).1 haS
-  le_csInf := fun _ a _ haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS
+  le_csSup _ a _ haS := (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
+  csSup_le _ _ hS haS := (WithTop.isLUB_sSup' hS).2 haS
+  csInf_le _ _ hS haS := (WithTop.isGLB_sInf' hS).1 haS
+  le_csInf _ a _ haS := (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS
 
 /-- Adding a bottom element to a conditionally complete lattice
 gives a conditionally complete lattice -/
@@ -958,13 +956,13 @@ noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
 open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
-  le_sSup := fun _ a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
-  sSup_le := fun S a ha => by
+  le_sSup _ a haS := (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
+  sSup_le S a ha := by
     rcases S.eq_empty_or_nonempty with h | h
     · change ite _ _ _ ≤ a
       simp [h]
     · exact (WithTop.isLUB_sSup' h).2 ha
-  sInf_le := fun S a haS =>
+  sInf_le S a haS :=
     show ite _ _ _ ≤ a by
       simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
       split_ifs with h₁
@@ -978,7 +976,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           use ⊥
           intro b _
           exact bot_le
-  le_sInf := fun _ a haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS
+  le_sInf _ a haS := (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
