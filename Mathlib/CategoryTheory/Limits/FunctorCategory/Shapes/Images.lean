@@ -41,17 +41,12 @@ noncomputable def NatTrans.monoFactorisationIsImage {F G : C ⥤ Type u} (f : F 
     naturality X Y g := by
       ext ⟨⟩
       apply show Function.Injective (H.m.app Y) by rw [← mono_iff_injective]; infer_instance
-      simp only [monoFactorisation_I, Subpresheaf.toPresheaf_obj, Subpresheaf.range_obj,
-        types_comp_apply, Subpresheaf.toPresheaf_map_coe, MonoFactorisation.fac_apply,
-        FunctorToTypes.naturality]
-      generalize_proofs h₁ h₂
-      rw [h₁.choose_spec, h₂.choose_spec] }
+      simp [FunctorToTypes.naturality]
+      grind }
   lift_fac H := by
     ext
-    simp only [monoFactorisation_I, Subpresheaf.toPresheaf_obj, Subpresheaf.range_obj,
-      FunctorToTypes.comp, MonoFactorisation.fac_apply, monoFactorisation_m, Subpresheaf.ι_app]
-    generalize_proofs h
-    exact h.choose_spec
+    simp
+    grind
 
 instance : HasImages (C ⥤ Type*) where
   has_image f := { exists_image := ⟨ { F := _, isImage := f.monoFactorisationIsImage } ⟩ }
