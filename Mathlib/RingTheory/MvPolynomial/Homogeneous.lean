@@ -174,6 +174,7 @@ lemma monomial_mem_homogeneousSubmodule_pow_degree
     rw [Finsupp.degree_add, Finsupp.degree_single, monomial_single_add, pow_add]
     exact Submodule.mul_mem_mul (Submodule.pow_mem_pow _ (isHomogeneous_X R a) _) h
 
+@[simp]
 lemma homogeneousSubmodule_one_pow (n : ℕ) :
     (homogeneousSubmodule σ R 1) ^ n = homogeneousSubmodule σ R n := by
   refine le_antisymm ?_ fun x hx ↦ ?_
