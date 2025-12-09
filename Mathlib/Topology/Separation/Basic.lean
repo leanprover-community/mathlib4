@@ -754,6 +754,8 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
+instance (priority := low) [DiscreteTopology X] : T1Space X where t1 _ := isClosed_discrete _
+
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
   discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
 
