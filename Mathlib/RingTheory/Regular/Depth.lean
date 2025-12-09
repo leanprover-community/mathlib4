@@ -34,7 +34,7 @@ the vanishing of certain `Ext` typs and length of maximal regular sequence in a 
     zero lucus of `I`, `∀ i < n, Ext N M i = 0`
   · `∀ i < n, Ext (A⧸I) M i = 0`
   · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zerolucus of `I`, `∀ i < n, Ext N M i = 0`
+    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
   · there exist a `M`-regular sequence of length `n` with every element in `I`
 
 -/
@@ -117,11 +117,8 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
 
 end IsSMulRegular
 
+universe v u
 
-
-universe w v u
-
-open IsLocalRing LinearMap
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
@@ -143,9 +140,8 @@ lemma exist_isRegular_of_exist_subsingleton_ext [IsNoetherianRing R] (I : Ideal 
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
     have : Subsingleton (N →ₗ[R] M) :=
-      let _ := h_ext 0 n.zero_lt_succ
-      let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.symm.subsingleton
-      (ModuleCat.homAddEquiv (M := N) (N := M)).symm.subsingleton
+      let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
+      ModuleCat.homAddEquiv.symm.subsingleton
     rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
     have := Ideal.le_radical mem_ann
     rw [h_supp', Ideal.mem_radical_iff] at this
@@ -181,7 +177,7 @@ lemma exist_isRegular_of_exist_subsingleton_ext [IsNoetherianRing R] (I : Ideal 
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hxk, reg⟩
 
-lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
+lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{v} R}
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
@@ -219,8 +215,7 @@ lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n 
       have kpos : k > 0 := by
         by_contra h
         simp only [Nat.eq_zero_of_not_pos h, pow_zero, Module.mem_annihilator, one_smul] at hk
-        absurd Nntr
-        exact not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)
+        exact (not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)) Nntr
       simp only [isRegular_cons_iff] at reg
       let M' := (QuotSMulTop a M)
       have le_smul : a • ⊤ ≤ I • (⊤ : Submodule R M) := by
@@ -246,22 +241,31 @@ lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n 
       · rw [eq0]
         have : Subsingleton (N →ₗ[R] M) := subsingleton_linearMap_iff.mpr
           ⟨a ^ k, hk, (IsSMulRegular.pow k reg.1)⟩
-        have : Subsingleton (N ⟶ M) := ModuleCat.homEquiv.subsingleton
-        exact Ext.addEquiv₀.subsingleton
+        exact (Ext.addEquiv₀.trans ModuleCat.homAddEquiv).subsingleton
       · have lt : i - 1 < n := by omega
         let g := (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp N (add_zero i)))
         have mono_g : Mono g := by
-          apply ShortComplex.Exact.mono_g (CategoryTheory.Abelian.Ext.covariant_sequence_exact₁'
-            N reg.1.smulShortComplex_shortExact (i - 1) i (by omega)) (IsZero.eq_zero_of_src _ _)
+          apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact (i - 1) i
+            (by omega)).mono_g (IsZero.eq_zero_of_src _ _)
           exact @AddCommGrpCat.isZero_of_subsingleton _
             (ih (ModuleCat.of R M') smul_lt' exist_reg' (i - 1) lt)
         let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
-        have mono_gk : Mono gk := mono_of_mono a kpos i mono_g
+        have mono_gk : Mono gk := pow_mono_of_mono a kpos i mono_g
         have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
-/-- The Rees theorem -/
+/--
+The Rees theorem
+For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
+`R`-module `M` satisfying `IM < M`, we proved TFAE:
+· for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
+  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+· `∀ i < n, Ext (A⧸I) M i = 0`
+· there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+  zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+· there exist a `M`-regular sequence of length `n` with every element in `I`
+-/
 lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
@@ -275,22 +279,17 @@ lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
   have ntrQ : Nontrivial (R ⧸ I) := by
     apply Submodule.Quotient.nontrivial_iff.mpr (lt_top_iff_ne_top.mpr _).ne
     by_contra eq
-    absurd smul_lt
-    simp [eq]
-  have suppQ : Module.support R (R ⧸ I) = PrimeSpectrum.zeroLocus I := by
-    rw [Module.support_eq_zeroLocus, Ideal.annihilator_quotient]
+    simp [eq] at smul_lt
+  have suppQ : Module.support R (Shrink.{v} (R ⧸ I)) = PrimeSpectrum.zeroLocus I := by
+    rw [(Shrink.linearEquiv R _).support_eq, Module.support_eq_zeroLocus, annihilator_quotient]
   tfae_have 1 → 2 := by
     intro h1 i hi
     apply h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I))) _ i hi
-    simp_rw [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm]
-    rw [true_and, true_and, (Shrink.linearEquiv R _).support_eq, suppQ]
+    exact ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ.subset⟩
   tfae_have 2 → 3 := by
     intro h2
     use (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
-    simp only [instNontrivialShrink, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm,
-      true_and]
-    refine ⟨?_, h2⟩
-    rw [(Shrink.linearEquiv R _).support_eq, suppQ]
+    exact ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
   tfae_have 3 → 4 := exist_isRegular_of_exist_subsingleton_ext I n M smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
     ext_subsingleton_of_exist_isRegular I n N Nsupp M smul_lt h4 i hi
