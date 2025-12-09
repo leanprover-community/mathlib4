@@ -543,6 +543,7 @@ theorem Quot.exact {α r} [IsEquiv α r] {a b : α} : Quot.mk r a = Quot.mk r b 
 theorem exact [IsEquiv α r] {a b : α} : (⟦a⟧ : Q) = ⟦b⟧ → r a b :=
   fun h ↦ Quot.exact (eq_iff_quotMk.mp h)
 
+@[simp]
 theorem eq [IsEquiv α r] {a b : α} : (⟦a⟧ : Q) = ⟦b⟧ ↔ r a b :=
   ⟨exact, sound⟩
 
