@@ -658,6 +658,10 @@ lemma Submodule.comap_lt_top_of_lt_range {M N : Type*} [AddCommGroup M] [Module 
   have : y ∉ Submodule.comap f p := by simpa [hy] using nmem
   exact lt_of_le_not_ge (fun _ a ↦ trivial) fun a ↦ this (a trivial)
 
+section
+
+universe w
+
 /-- Universe invariant of `moduleDepth`, would be repalced by a more general version when universe
 invariant of `Ext` is provided. -/
 lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
@@ -705,5 +709,7 @@ lemma ring_depth_uLift [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     ((Shrink.linearEquiv.{max u w} R R).trans ULift.moduleEquiv.symm).toModuleIso
   rw [← I.depth_eq_of_iso e]
   exact ring_depth_invariant.{max u w} I lt_top
+
+end
 
 end depth
