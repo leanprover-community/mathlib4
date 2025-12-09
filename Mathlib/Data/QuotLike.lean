@@ -3,9 +3,11 @@ Copyright (c) 2024 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Logic.Unique
-import Qq.MetaM
+module
+
+public import Mathlib.Logic.Relator
+public import Mathlib.Logic.Unique
+public meta import Qq.MetaM
 
 /-!
 # Typeclass for quotient types
@@ -32,6 +34,8 @@ directly using `Quot` and `Quotient` APIs.
 * `mkQ_h` `⟦a⟧_h`       : the quotient map inferred from the hint via typeclass `QuotLike.Hint`
                             or the hint and the input type via typeclass `QuotLike.HasQuotHint`
 -/
+
+@[expose] public section
 
 /--
 The definition of `QuotLike`. It is needed to avoid name clashes
@@ -90,7 +94,7 @@ elab "⟦" a:term "⟧" : term <= Q => do
 open PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `mkQ` -/
 @[delab app.QuotLikeStruct.mkQ]
-def delabMkQ : Delab := do
+meta def delabMkQ : Delab := do
   guard <| (← getExpr).isAppOfArity' ``mkQ 5
   let a ← withNaryArg 4 delab
   `(⟦$a⟧)
@@ -120,7 +124,7 @@ class HasQuot (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Pro
 syntax (name := mkQ') "mkQ'" : term
 
 @[term_elab QuotLike.mkQ', inherit_doc QuotLike.mkQ']
-def mkQ'Impl : TermElab := fun stx typ? => do
+meta def mkQ'Impl : TermElab := fun stx typ? => do
   let .some expectedType := typ? |
     let α ← mkFreshTypeMVar
     let β ← mkFreshTypeMVar
@@ -182,7 +186,7 @@ the hint and the input type via typeclass `QuotLike.HasQuotHint`. -/
 syntax:max (name := mkQ_) "mkQ_" term:max : term
 
 @[term_elab QuotLike.mkQ_, inherit_doc QuotLike.mkQ_]
-def mkQ_Impl : TermElab := fun stx typ? => do
+meta def mkQ_Impl : TermElab := fun stx typ? => do
   let `(mkQ_ $h) := stx | throwUnsupportedSyntax
   let h ← withSynthesize do elabTerm h none
   synthesizeSyntheticMVars
