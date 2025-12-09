@@ -5,8 +5,7 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Precoverage
-public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 
 /-!
 
@@ -368,11 +367,9 @@ lemma Pretopology.toGrothendieck_toCoverage [HasPullbacks C] (J : Pretopology C)
   · refine Coverage.saturate_of_superset _ ?_ (.of _ _ hR)
     rwa [Sieve.generate_le_iff]
 
-namespace Precoverage
-
 /-- A precoverage with pullbacks defines a coverage. -/
 @[simps toPrecoverage]
-def toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] :
+def Precoverage.toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] :
     Coverage C where
   __ := J
   pullback X Y f S hS := by
@@ -380,17 +377,21 @@ def toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] 
     exact ⟨S.pullbackArrows f, J.pullbackArrows_mem _ hS,
       Presieve.FactorsThruAlong.pullbackArrows f S⟩
 
-/-- A precoverage with pullbacks defines a Grothendieck topology. -/
-def toGrothendieck (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] :
-    GrothendieckTopology C :=
-  J.toCoverage.toGrothendieck
-
-lemma mem_toGrothendieck_iff {J : Precoverage C} [J.HasPullbacks] [J.IsStableUnderBaseChange]
-    {X : C} {S : Sieve X} :
-    S ∈ toGrothendieck J X ↔ J.toCoverage.Saturate X S :=
-  .rfl
-
-end Precoverage
+lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
+    [J.IsStableUnderBaseChange] :
+    J.toCoverage.toGrothendieck = J.toGrothendieck := by
+  refine le_antisymm ?_ ?_
+  · intro _ _ hS
+    induction hS with
+    | of _ _ hS => exact generate_mem_toGrothendieck hS
+    | top => exact J.toGrothendieck.top_mem _
+    | transitive _ _ _ _ _ ih1 ih2 => exact J.toGrothendieck.transitive ih1 _ ih2
+  · intro _ _ hS
+    induction hS with
+    | of _ _ hS => exact .of _ _ hS
+    | top => exact J.toCoverage.toGrothendieck.top_mem _
+    | pullback _ _ _ _ ih => exact J.toCoverage.toGrothendieck.pullback_stable _ ih
+    | transitive _ _ _ _ _ ih1 ih2 => exact J.toCoverage.toGrothendieck.transitive ih1 _ ih2
 
 namespace GrothendieckTopology
 
@@ -420,8 +421,20 @@ end GrothendieckTopology
 defined. -/
 lemma Precoverage.toGrothendieck_le_iff_le_toPrecoverage {K : Precoverage C}
     {J : GrothendieckTopology C} [K.HasPullbacks] [K.IsStableUnderBaseChange] :
-    K.toGrothendieck ≤ J ↔ K ≤ J.toPrecoverage :=
-  (Coverage.gi C).gc _ _
+    K.toGrothendieck ≤ J ↔ K ≤ J.toPrecoverage := by
+  rw [← toGrothendieck_toCoverage]
+  exact (Coverage.gi C).gc _ _
+
+lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
+    J.toPrecoverage.toGrothendieck = J.toGrothendieck := by
+  refine le_antisymm ?_ ?_
+  · rw [Precoverage.toGrothendieck_eq_sInf]
+    exact sInf_le (fun _ _ hS => .of _ _ hS)
+  · intro _ _ hS
+    induction hS with
+    | of _ _ hS => exact .of _ _ hS
+    | top => exact J.toPrecoverage.toGrothendieck.top_mem _
+    | transitive _ _ _ _ _ ih ih' => exact J.toPrecoverage.toGrothendieck.transitive ih _ ih'
 
 open Coverage
 
@@ -435,72 +448,20 @@ the associated Grothendieck topology.
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
     Presieve.IsSheaf K.toGrothendieck P ↔
     (∀ {X : C} (R : Presieve X), R ∈ K X → Presieve.IsSheafFor P R) := by
+  rw [← toGrothendieck_toPrecoverage, Precoverage.isSheaf_toGrothendieck_iff]
   constructor
-  · intro H X R hR
-    rw [Presieve.isSheafFor_iff_generate]
-    apply H _ <| Saturate.of _ _ hR
   · intro H X S hS
-    -- This is the key point of the proof:
-    -- We must generalize the induction in the correct way.
-    suffices ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f).arrows by
-      simpa using this (f := 𝟙 _)
-    induction hS with
-    | of X S hS =>
-      intro Y f
-      obtain ⟨T, hT1, hT2⟩ := K.pullback f S hS
-      apply Presieve.isSheafFor_of_factorsThru (S := T)
-      · intro Z g hg
-        obtain ⟨W, i, e, h1, h2⟩ := hT2 hg
-        exact ⟨Z, 𝟙 _, g, ⟨W, i, e, h1, h2⟩, by simp⟩
-      · apply H; assumption
-      · intro Z g _
-        obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
-        exact ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
-    | top => intros; simpa using Presieve.isSheafFor_top_sieve _
-    | transitive X R S _ _ H1 H2 =>
-      intro Y f
-      simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
-      choose H1 H1' using H1
-      choose H2 H2' using H2
-      refine ⟨?_, fun x hx => ?_⟩
-      · intro x t₁ t₂ h₁ h₂
-        refine (H1 f).ext (fun Z g hg => ?_)
-        refine (H2 hg (𝟙 _)).ext (fun ZZ gg hgg => ?_)
-        simp only [Sieve.pullback_id, Sieve.pullback_apply] at hgg
-        simp only [← types_comp_apply]
-        rw [← P.map_comp, ← op_comp, h₁, h₂]
-        simpa only [Sieve.pullback_apply, Category.assoc] using hgg
-      let y : ∀ ⦃Z : C⦄ (g : Z ⟶ Y),
-        ((S.pullback (g ≫ f)).pullback (𝟙 _)).arrows.FamilyOfElements P :=
-        fun Z g ZZ gg hgg => x (gg ≫ g) (by simpa using hgg)
-      have hy : ∀ ⦃Z : C⦄ (g : Z ⟶ Y), (y g).Compatible := by
-        intro Z g Y₁ Y₂ ZZ g₁ g₂ f₁ f₂ h₁ h₂ h
-        rw [hx]
-        rw [reassoc_of% h]
-      choose z hz using fun ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄ (hg : R.pullback f g) =>
-        H2' hg (𝟙 _) (y g) (hy g)
-      let q : (R.pullback f).arrows.FamilyOfElements P := fun Z g hg => z hg
-      have hq : q.Compatible := by
-        intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ h
-        apply (H2 h₁ g₁).ext
-        intro ZZ gg hgg
-        simp only [← types_comp_apply]
-        rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
-        · dsimp [y]; congr 1; simp only [Category.assoc, h]
-        · simpa [reassoc_of% h] using hgg
-        · simpa using hgg
-      obtain ⟨t, ht⟩ := H1' f q hq
-      refine ⟨t, fun Z g hg => ?_⟩
-      refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
-      rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
-      on_goal 2 => simpa using hgg
-      refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
-      rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
-      on_goal 2 => simpa using hggg
-      refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
-      rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
-      apply hx
-      simp
+    simpa [← Presieve.isSheafFor_iff_generate] using H (f := 𝟙 X) S hS
+  · intro H X Y f S hS
+    obtain ⟨T, hT1, hT2⟩ := K.pullback f S hS
+    apply Presieve.isSheafFor_of_factorsThru (S := T)
+    · intro Z g hg
+      obtain ⟨W, i, e, h1, h2⟩ := hT2 hg
+      exact ⟨Z, 𝟙 _, g, ⟨W, i, e, h1, h2⟩, by simp⟩
+    · apply H; assumption
+    · intro Z g _
+      obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
+      exact ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
 
 /--
 A presheaf is a sheaf for the Grothendieck topology generated by a union of coverages iff it is a
