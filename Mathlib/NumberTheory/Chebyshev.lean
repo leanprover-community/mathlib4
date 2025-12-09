@@ -201,7 +201,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       · ring
       all_goals linarith [hu.1]
     rw [int_deriv]
-    have : log 2 ≠ 0 := by simp; linarith
+    have : log 2 ≠ 0 := by positivity
     simp [a, Set.indicator_apply, sum_filter, show Icc 0 2 = {0, 1, 2} by grind,
       prime_two, theta_eq_sum_Icc, this]
     grind
@@ -315,11 +315,9 @@ theorem integral_theta_div_log_sq_isBigO :
     apply intervalIntegrable_one_div_log_sq <;> linarith
   · intro t ht
     have : 1 ≤ t := by linarith [ht.1]
-    rw [abs_of_nonneg]
-    · grw [theta_le_log4_mul_x (by linarith)]
-      exact le_of_eq (by field)
-    apply div_nonneg <| theta_nonneg _
-    positivity
+    rw [abs_of_nonneg (by positivity [theta_nonneg t])]
+    grw [theta_le_log4_mul_x (by linarith)]
+    exact le_of_eq (by field)
 
 theorem integral_theta_div_log_sq_isLittleO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =o[atTop] (fun x ↦ x / log x) := by
