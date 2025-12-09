@@ -47,7 +47,14 @@ open Nat
 
 namespace Int
 
-variable {R : Type u} [AddGroupWithOne R]
+variable {R : Type u}
+
+@[simp, norm_cast]
+theorem cast_ite [IntCast R] (P : Prop) [Decidable P] (m n : ℤ) :
+    ((ite P m n : ℤ) : R) = ite P (m : R) (n : R) :=
+  apply_ite _ _ _ _
+
+variable [AddGroupWithOne R]
 
 -- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
 -- introducing the "implementation detail" `Int.negSucc`.
