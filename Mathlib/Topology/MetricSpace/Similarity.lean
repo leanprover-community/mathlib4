@@ -141,14 +141,8 @@ theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
 
 /-- Reversing the order of vertices preserves similarity. -/
 theorem reverse_of_three (h : ![a, b, c] ∼ ![a', b', c']) :
-    ![c, b, a] ∼ ![c', b', a'] := by
-  have hl : ![c, b, a] = ![a, b, c] ∘ Equiv.swap 0 2 := by
-    ext i
-    fin_cases i <;> simp; rfl
-  have hr : ![c', b', a'] = ![a', b', c'] ∘ Equiv.swap 0 2 := by
-    ext i
-    fin_cases i <;> simp; rfl
-  grind [index_equiv]
+    ![c, b, a] ∼ ![c', b', a'] :=
+  h.comm_left.comm_right.comm_left
 
 end Triangle
 

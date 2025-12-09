@@ -38,13 +38,11 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
     (h₂ : ∠ b c a = ∠ b' c' a') :
     ![a, b, c] ∼ ![a', b', c'] := by
   have hne_pi_div_two : ∠ a b c ≠ Real.pi / 2 ∨ ∠ b c a ≠ Real.pi / 2 := by
-    by_contra hq
-    simp only [ne_eq, not_or, Decidable.not_not] at hq
+    by_contra! hq
     have := angle_lt_pi_div_two_of_angle_eq_pi_div_two hq.1 (ne₂₃_of_not_collinear h_not_col).symm
     grind
   have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
-    by_contra hq
-    simp only [ne_eq, not_or, not_not] at hq
+    by_contra! hq
     rw [hq.1] at h₁
     rw [hq.2.1] at h₂
     grind [angle_self_left]
@@ -146,11 +144,7 @@ theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
 
 /-- In two similar triangles, all three corresponding angles are equal. -/
 theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :
-    ∠ a b c = ∠ a' b' c' ∧ ∠ b c a = ∠ b' c' a' ∧ ∠ c a b = ∠ c' a' b' := by
-  have h2 := h.comm_right.angle_eq
-  rw [angle_comm, angle_comm a'] at h2
-  have h3 := h.comm_left.angle_eq
-  rw [angle_comm, angle_comm b'] at h3
-  exact ⟨h.angle_eq, h2, h3⟩
+    ∠ a b c = ∠ a' b' c' ∧ ∠ b c a = ∠ b' c' a' ∧ ∠ c a b = ∠ c' a' b' :=
+  ⟨h.angle_eq, h.comm_left.comm_right.angle_eq, h.comm_right.comm_left.angle_eq⟩
 
 end EuclideanGeometry
