@@ -197,7 +197,7 @@ have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := do if decl.type.hasInstanceBinderOf p then liftTermElabM do
+    TermElabM Unit := do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxs p
   if let some maxIdx := unusedInstances.back? then
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
@@ -258,8 +258,10 @@ def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
   for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter declFilter
-    for thm in thms do
+    let thms := t.getTheorems (← getEnv) |>.filter fun thm =>
+      declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
+    -- use `liftTermElabM` on the outside in the hopes of sharing a cache
+    unless thms.isEmpty do liftTermElabM do for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter
         fun unusedParams =>
           -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
