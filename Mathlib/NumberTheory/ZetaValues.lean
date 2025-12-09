@@ -51,16 +51,16 @@ def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
 section Evaluation
 
 @[simp]
-theorem bernoulliFun_zero {x : ℝ} : bernoulliFun 0 x = 1 := by
+theorem bernoulliFun_zero (x : ℝ) : bernoulliFun 0 x = 1 := by
   simp only [bernoulliFun, Polynomial.bernoulli_zero, Polynomial.map_one, Polynomial.eval_one]
 
 @[simp]
-theorem bernoulliFun_one {x : ℝ} : bernoulliFun 1 x = x - 1 / 2 := by
+theorem bernoulliFun_one (x : ℝ) : bernoulliFun 1 x = x - 1 / 2 := by
   simp [bernoulliFun, Polynomial.bernoulli_def, Finset.sum_range_succ]
   ring
 
 @[simp]
-theorem bernoulliFun_two {x : ℝ} : bernoulliFun 2 x = x ^ 2 - x + 6⁻¹ := by
+theorem bernoulliFun_two (x : ℝ) : bernoulliFun 2 x = x ^ 2 - x + 6⁻¹ := by
   simp [bernoulliFun, Polynomial.bernoulli_def, Finset.sum_range_succ]
   ring
 
@@ -89,7 +89,7 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
-variable {k : ℕ}
+variable (k : ℕ)
 
 theorem contDiff_bernoulliFun : ContDiff ℝ ⊤ (bernoulliFun k) := by
   simp +unfoldPartialApp [bernoulliFun, Polynomial.eval_map_algebraMap, Polynomial.contDiff_aeval]
@@ -97,9 +97,9 @@ theorem contDiff_bernoulliFun : ContDiff ℝ ⊤ (bernoulliFun k) := by
 @[continuity, fun_prop]
 theorem continuous_bernoulliFun : Continuous (bernoulliFun k) := Polynomial.continuous_aeval _
 
-theorem intervalIntegrable_bernoulliFun {a b : ℝ} :
+theorem intervalIntegrable_bernoulliFun (a b : ℝ) :
     IntervalIntegrable (bernoulliFun k) volume a b :=
-  continuous_bernoulliFun.intervalIntegrable a b
+  (continuous_bernoulliFun k).intervalIntegrable a b
 
 @[simp]
 theorem deriv_bernoulliFun :
@@ -112,13 +112,13 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   simp [Nat.cast_add_one_ne_zero k]
 
-variable (k) in
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
   simp +contextual [
     integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      intervalIntegrable_bernoulliFun,
+      (intervalIntegrable_bernoulliFun k _ _),
     bernoulliFun_eval_one, ← sub_div, ite_div]
 
+variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
     ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
   rw [integral_bernoulliFun, if_neg hk]
@@ -194,7 +194,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
 ### Values at 1/2
 -/
 
-theorem bernoulliFun_eval_half_eq_zero {k : ℕ} : bernoulliFun (2 * k + 1) 2⁻¹ = 0 := by
+theorem bernoulliFun_eval_half_eq_zero (k : ℕ) : bernoulliFun (2 * k + 1) 2⁻¹ = 0 := by
   have h := bernoulliFun_eval_one_sub (k := 2 * k + 1) (x := 2⁻¹)
   simp only [pow_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, mul_neg, mul_one, neg_mul,
     one_mul, ← one_div, (sub_eq_of_eq_add (add_halves (1 : ℝ)).symm)] at h

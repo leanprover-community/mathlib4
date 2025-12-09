@@ -238,7 +238,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
     grind
   · cases (n + 1 - i).even_or_odd with
     | inl h => grind [neg_one_pow_eq_ite]
-    | inr h => rw [bernoulli_odd_eq_zero] <;> grind
+    | inr h => rw [bernoulli_eq_zero_of_odd] <;> grind
   · grind
   · simp
 
