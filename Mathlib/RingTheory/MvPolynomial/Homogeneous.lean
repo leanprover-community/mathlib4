@@ -136,6 +136,7 @@ theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
 
 alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomogeneous
 
+@[simp]
 lemma homogeneousSubmodule_zero :
     MvPolynomial.homogeneousSubmodule σ R 0 = 1 := by
   ext
