@@ -258,7 +258,6 @@ public register_option linter.nonbreakingSpace : Bool := { defValue := true }
 @[inherit_doc linter.nonbreakingSpace]
 def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   unless getLinterValue linter.nonbreakingSpace opts do return (#[], none)
-
   let mut errors := Array.mkEmpty 0
   for h : idx in [:lines.size] do
     let line := lines[idx]
