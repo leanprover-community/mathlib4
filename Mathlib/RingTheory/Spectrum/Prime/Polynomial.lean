@@ -83,7 +83,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
         q.asIdeal.ResidueField :=
       Algebra.TensorProduct.lift
         (Ideal.Quotient.liftₐ (Ideal.span s) (Algebra.ofId A _) hs)
-        (Ideal.ResidueField.mapₐ _ _ rfl)
+        (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         fun _ _ ↦ .all _ _
     have := H.map F
     rw [AlgHom.commutes, isNilpotent_iff_eq_zero, ← RingHom.mem_ker,
