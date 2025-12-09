@@ -1,13 +1,17 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.FieldTheory.RatFunc.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Noetherian.Nilpotent
-public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+/-! #Stuff -/
 
 @[expose] public section
 
@@ -100,118 +104,6 @@ lemma RingHom.SurjectiveOnStalks.baseChange'
   convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
     (hf.baseChange (S := T))
 
-lemma Ideal.surjectiveOnStalks_residueField {R : Type*} [CommRing R] (I : Ideal R) [I.IsPrime] :
-    (algebraMap R I.ResidueField).SurjectiveOnStalks :=
-  (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
-    (RingHom.surjectiveOnStalks_of_isLocalization I.primeCompl _)
-
-lemma Ideal.ResidueField.exists_smul_eq_tensor_one
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (x : S ⊗[R] p.ResidueField) : ∃ r ∉ p, ∃ s, r • x = s ⊗ₜ[R] 1 := by
-  obtain ⟨t, r, a, hrt, e⟩ := RingHom.SurjectiveOnStalks.exists_mul_eq_tmul
-    p.surjectiveOnStalks_residueField x ⊥ bot_prime
-  obtain ⟨t, rfl⟩ := IsLocalRing.residue_surjective t
-  obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl t
-  simp only [Algebra.smul_def, Submodule.mem_bot, mul_eq_zero, algebraMap_residueField_eq_zero,
-    IsLocalRing.residue_eq_zero_iff, not_or, IsLocalization.AtPrime.mk'_mem_maximal_iff] at hrt
-  refine ⟨r * y, p.primeCompl.mul_mem hrt.1 hrt.2, y • a, ?_⟩
-  rw [Algebra.smul_def, ← Algebra.TensorProduct.includeRight.commutes, smul_tmul,
-    ← Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.includeRight_apply]
-  simpa [← tmul_smul, Submonoid.smul_def, ← smul_mul_assoc, smul_comm _ r,
-    ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
-    ← IsScalarTower.algebraMap_apply] using congr(t • $e)
-
-lemma Ideal.IsPrime.mul_mem_iff {R : Type*} [CommRing R] {I : Ideal R} [I.IsPrime]
-    {x y : R} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
-  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
-
-attribute [-instance] Module.free_of_finite_type_torsion_free'
-  NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
-  Module.Free.instFaithfulSMulOfNontrivial in
--- attribute [local instance high] AlgHom.instNonUnitalAlgHomClassOfAlgHomClass
---   NonUnitalAlgHomClass.instLinearMapClass SemilinearMapClass.toMulActionSemiHomClass in
-lemma Ideal.ResidueField.exists_smul_eq_one_tensor
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (x : p.ResidueField ⊗[R] S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
-  obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tensor_one _
-    (Algebra.TensorProduct.comm _ _ _ x)
-  refine ⟨r, hr, s, by
-    simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
-
-attribute [-instance] Module.free_of_finite_type_torsion_free'
-  NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
-  Module.Free.instFaithfulSMulOfNontrivial in
-@[simps]
-noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
-  toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
-        (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal congr($(q.2.symm).asIdeal))
-          (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ .all _ _)).toRingHom, RingHom.ker_isPrime _⟩
-  invFun q := ⟨Algebra.TensorProduct.includeRight.toRingHom.specComap q, by
-    simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← specComap_comp_apply,
-      AlgHom.comp_algebraMap_of_tower, Set.mem_singleton_iff]
-    rw [IsScalarTower.algebraMap_eq R p.asIdeal.ResidueField, specComap_comp_apply,
-      Subsingleton.elim (α := PrimeSpectrum p.asIdeal.ResidueField) (RingHom.specComap _ q) ⊥]
-    ext
-    exact Ideal.algebraMap_residueField_eq_zero⟩
-  left_inv q := by ext x; simp
-  right_inv q := by
-    ext x
-    obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tensor _ x
-    rw [← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), iff_comm,
-      ← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
-    · simp
-    · rw [← Ideal.mem_comap, ← PrimeSpectrum.specComap_asIdeal]
-      convert hr
-      rw [IsScalarTower.algebraMap_eq R p.asIdeal.ResidueField, specComap_comp_apply,
-        Subsingleton.elim (α := PrimeSpectrum p.asIdeal.ResidueField) (RingHom.specComap _ q) ⊥]
-      ext
-      exact Ideal.algebraMap_residueField_eq_zero
-    · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
-        -Ideal.ResidueField.map_algebraMap]
-
-noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField' (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃o
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
-  __ := preimageEquivTensorResidueField R S p
-  map_rel_iff' {q₁ q₂} := by
-    constructor
-    · obtain ⟨q₁, rfl⟩ := (preimageEquivTensorResidueField R S p).symm.surjective q₁
-      obtain ⟨q₂, rfl⟩ := (preimageEquivTensorResidueField R S p).symm.surjective q₂
-      simpa using Ideal.comap_mono
-    · intro H x hx
-      obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tensor _ x
-      rw [← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
-      · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
-        simpa using H hx
-      · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
-      · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
-
-noncomputable def PrimeSpectrum.preimageHomeomorphTensorResidueField (R S : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃ₜ
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) := by
-  letI H : Topology.IsEmbedding (preimageOrderIsoTensorResidueField' R S p).symm := by
-    refine (Topology.IsEmbedding.of_comp_iff .subtypeVal).mp ?_
-    have := PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks _ S _
-      (Ideal.surjectiveOnStalks_residueField p.asIdeal)
-    exact ((Homeomorph.prodUnique _ _).isEmbedding.comp this).comp
-      (homeomorphOfRingEquiv (Algebra.TensorProduct.comm _ _ _).toRingEquiv).isEmbedding
-  exact
-  { __ := preimageOrderIsoTensorResidueField' R S p
-    continuous_toFun := by
-      convert (H.toHomeomorphOfSurjective
-        (preimageOrderIsoTensorResidueField' R S p).symm.surjective).symm.continuous
-      ext1 x
-      obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
-        (preimageOrderIsoTensorResidueField' R S p).symm.surjective).surjective x
-      simp only [Equiv.toFun_as_coe, RelIso.coe_fn_toEquiv, Homeomorph.symm_apply_apply]
-      simp
-    continuous_invFun := H.continuous }
-
 open TopologicalSpace Topology PrimeSpectrum in
 lemma _root_.PrimeSpectrum.sigmaToPi_preimage_basicOpen_single
     {I : Type*} (R : I → Type*) [∀ i, CommRing (R i)]
@@ -281,14 +173,14 @@ instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : Ideal R) [P.
     (Q' : Ideal (P.ResidueField ⊗[R] S)) [Q'.IsPrime] : Q'.LiesOver P :=
   .trans _ (⊥ : Ideal P.ResidueField) _
 
--- set_option maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 attribute [-instance] Module.free_of_finite_type_torsion_free'
   NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
   Module.Free.instFaithfulSMulOfNontrivial in
 noncomputable def Ideal.Fiber.residueFieldEquiv
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P]
-    (Q' : Ideal (P.ResidueField ⊗[R] S)) [Q'.IsPrime]
+    (Q' : Ideal (P.Fiber S)) [Q'.IsPrime]
     (H : Q'.comap Algebra.TensorProduct.includeRight = Q) :
     Q'.ResidueField ≃ₐ[P.ResidueField] Q.ResidueField :=
   let f₁ : Q.ResidueField →+* Q'.ResidueField :=
@@ -296,11 +188,11 @@ noncomputable def Ideal.Fiber.residueFieldEquiv
   let f₂ : Q.ResidueField →ₐ[R] Q'.ResidueField := ⟨f₁, by
     simp [f₁, IsScalarTower.algebraMap_apply R S Q.ResidueField,
       IsScalarTower.algebraMap_apply R (P.ResidueField ⊗[R] S) Q'.ResidueField]⟩
-  let f₃ : P.ResidueField ⊗[R] S →ₐ[R] Q.ResidueField :=
+  let f₃ : P.Fiber S →ₐ[R] Q.ResidueField :=
     Algebra.TensorProduct.lift (IsScalarTower.toAlgHom _ _ _)
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
   have hf₃ : Q' = RingHom.ker f₃ :=
-    congr($(((PrimeSpectrum.preimageEquivTensorResidueField R S ⟨P, ‹_›⟩).symm_apply_eq
+    congr($(((PrimeSpectrum.preimageEquivFiber R S ⟨P, ‹_›⟩).symm_apply_eq
       (x := ⟨Q', ‹_›⟩) (y := ⟨⟨Q, ‹_›⟩, PrimeSpectrum.ext (Q.over_def P).symm⟩)).mp
       (Subtype.ext <| PrimeSpectrum.ext H)).1)
   let f₄ : Q'.ResidueField →ₐ[R] Q.ResidueField :=
