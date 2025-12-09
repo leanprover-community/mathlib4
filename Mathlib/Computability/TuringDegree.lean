@@ -3,21 +3,22 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Elan Roth
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Order.Antisymmetrization
 
 /-!
-# Oracle Computability and Turing Degrees
+# Oracle computability and Turing degrees
 
-This file defines a model of oracle computability using partial recursive functions.
-This file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
-equivalence relation, and define Turing degrees as the quotient under this relation.
+This file defines a model of oracle computability using partial recursive functions. It introduces
+Turing reducibility and equivalence, proves that Turing equivalence is an equivalence relation, and
+defines Turing degrees as the quotient under this relation.
 
-## Main Definitions
+## Main definitions
 
-- `RecursiveIn O f`:
-  An inductive definition representing that a partial function `f` is partial recursive given access
-  to a set of oracles O.
+- `RecursiveIn O f`: An inductive definition representing that a partial function `f` is partially
+  recursive given access to a set of oracles O.
 - `TuringReducible`: A relation defining Turing reducibility between partial functions.
 - `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
 - `TuringDegree`: The type of Turing degrees, defined as the quotient of partial functions under
@@ -28,9 +29,9 @@ equivalence relation, and define Turing degrees as the quotient under this relat
 - `f ≤ᵀ g` : `f` is Turing reducible to `g`.
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 
-## Implementation Notes
+## Implementation notes
 
-The type of partial functions recursive in a set of oracle `O` is the smallest type containing
+The type of partial functions recursive in a set of oracles `O` is the smallest type containing
 the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
@@ -44,6 +45,8 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
+
+@[expose] public section
 
 open Primrec Nat.Partrec Part
 

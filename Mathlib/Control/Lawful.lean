@@ -3,12 +3,15 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
+module
 
-import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # Functor Laws, applicative laws, and monad Laws
 -/
+
+@[expose] public section
 
 universe u v
 

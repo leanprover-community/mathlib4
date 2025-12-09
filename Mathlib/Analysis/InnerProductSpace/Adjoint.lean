@@ -3,8 +3,10 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Adjoint of operators on Hilbert spaces
@@ -37,6 +39,8 @@ finite-dimensional spaces.
 adjoint
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -74,7 +78,7 @@ theorem adjointAux_apply (A : E →L[𝕜] F) (x : F) :
   rfl
 
 theorem adjointAux_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪adjointAux A y, x⟫ = ⟪y, A x⟫ := by
-  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', innerSL_apply_coe,
+  rw [adjointAux_apply, toDual_symm_apply, toSesqForm_apply_coe, coe_comp', coe_innerSL_apply,
     Function.comp_apply]
 
 theorem adjointAux_inner_right (A : E →L[𝕜] F) (x : E) (y : F) :
@@ -206,10 +210,10 @@ instance : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →L[𝕜] E) :=
-  ⟨LinearIsometryEquiv.map_add adjoint⟩
+  ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →L[𝕜] E) :=
-  ⟨LinearIsometryEquiv.map_smulₛₗ adjoint⟩
+  ⟨map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
   rfl
@@ -557,10 +561,10 @@ instance : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →ₗ[𝕜] E) :=
-  ⟨LinearEquiv.map_add adjoint⟩
+  ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →ₗ[𝕜] E) :=
-  ⟨LinearEquiv.map_smulₛₗ adjoint⟩
+  ⟨map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →ₗ[𝕜] E) : star A = A.adjoint :=
   rfl
@@ -676,18 +680,18 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
   -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
-  have := unitary.star_mul_self_of_mem hu
+  have := Unitary.star_mul_self_of_mem hu
   u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
   -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
-  have := unitary.star_mul_self_of_mem hu
+  have := Unitary.star_mul_self_of_mem hu
   u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
 end ContinuousLinearMap
 
-namespace unitary
+namespace Unitary
 
 theorem norm_map (u : unitary (H →L[𝕜] H)) (x : H) : ‖(u : H →L[𝕜] H) x‖ = ‖x‖ :=
   u.val.norm_map_of_mem_unitary u.property x
@@ -726,6 +730,18 @@ lemma linearIsometryEquiv_coe_apply (u : unitary (H →L[𝕜] H)) :
 lemma linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
+
+end Unitary
+
+namespace unitary
+
+@[deprecated (since := "2025-10-29")] alias norm_map := Unitary.norm_map
+@[deprecated (since := "2025-10-29")] alias inner_map_map := Unitary.inner_map_map
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv := Unitary.linearIsometryEquiv
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_apply :=
+  Unitary.linearIsometryEquiv_coe_apply
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_symm_apply :=
+  Unitary.linearIsometryEquiv_coe_symm_apply
 
 end unitary
 

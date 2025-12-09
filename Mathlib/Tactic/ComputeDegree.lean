@@ -3,8 +3,9 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -29,7 +30,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-##  Future work
+## Future work
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
@@ -44,7 +45,7 @@ See the doc-strings for more details.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree`, `natDegree` and `coeff` are equally supported.
 
-##  Implementation details
+## Implementation details
 
 Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
@@ -78,13 +79,15 @@ The leaves of the process are
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
 
+public meta section
+
 open Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
 
 section recursion_lemmas
 /-!
-###  Simple lemmas about `natDegree`
+### Simple lemmas about `natDegree`
 
 The lemmas in this section all have the form `natDegree <some form of cast> ≤ 0`.
 Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.
@@ -525,4 +528,4 @@ end Mathlib.Tactic.ComputeDegree
 /-!
  We register `compute_degree` with the `hint` tactic.
  -/
-register_hint compute_degree
+register_hint 1000 compute_degree

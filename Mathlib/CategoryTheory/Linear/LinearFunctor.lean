@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Module.LinearMap.Rat
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Linear Functors
@@ -13,13 +15,15 @@ import Mathlib.Algebra.Module.LinearMap.Rat
 An additive functor between two `R`-linear categories is called *linear*
 if the induced map on hom types is a morphism of `R`-modules.
 
-# Implementation details
+## Implementation details
 
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

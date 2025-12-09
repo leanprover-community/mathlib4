@@ -3,7 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Isometric linear maps
@@ -16,6 +18,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
+
+@[expose] public section
 
 variable {R M M₁ M₂ M₃ M₄ N : Type*}
 

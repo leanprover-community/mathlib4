@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -53,9 +57,8 @@ lemma max_pair (a b : α) :
     Finset.max {a, b} = max (↑a) (↑b) := by
   simp
 
-theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
-  obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
-  exact ⟨b, h⟩
+theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b :=
+  let ⟨b, h, _⟩ := WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) _ rfl; ⟨b, h⟩
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
   let ⟨_, h⟩ := h
@@ -140,9 +143,8 @@ lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
-theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
-  obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
-  exact ⟨b, h⟩
+theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
+  let ⟨b, h, _⟩ := WithTop.le_iff_forall.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
   let ⟨_, h⟩ := h
@@ -270,7 +272,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
+    s.min' (Finset.card_pos.1 <| by lia) < s.max' (Finset.card_pos.1 <| by lia) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 
@@ -282,19 +284,19 @@ theorem min'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.N
 
 theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
@@ -403,10 +405,10 @@ theorem min'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.eras
   ne_of_mem_erase (min'_mem _ s0)
 
 theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
-  by_cases s0 : (s.erase x).Nonempty
+  by_cases! s0 : (s.erase x).Nonempty
   · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
-  · rw [not_nonempty_iff_eq_empty.mp s0, max_empty]
+  · rw [s0, max_empty]
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by

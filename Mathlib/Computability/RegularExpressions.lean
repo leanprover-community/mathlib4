@@ -3,8 +3,10 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Computability.Language
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions
@@ -19,6 +21,8 @@ Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
 Multiple competing PRs towards that goal are in review.
 See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
 -/
+
+@[expose] public section
 
 open List Set
 
@@ -283,7 +287,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [not_true, Ne, false_and] at helem
-          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem

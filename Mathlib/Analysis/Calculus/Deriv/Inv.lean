@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Comp
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Comp
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -19,6 +21,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative
 -/
+
+@[expose] public section
 
 
 universe u
@@ -98,7 +102,7 @@ variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 theorem HasDerivWithinAt.fun_inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
-  field_simp
+  ring
 
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x :=

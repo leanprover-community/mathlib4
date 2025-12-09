@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Frobenius
-import Mathlib.RingTheory.WittVector.Verschiebung
-import Mathlib.RingTheory.WittVector.MulP
+module
+
+public import Mathlib.RingTheory.WittVector.Frobenius
+public import Mathlib.RingTheory.WittVector.Verschiebung
+public import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -24,6 +26,8 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector
@@ -170,7 +174,8 @@ theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
   induction i generalizing y with
   | zero => simp
   | succ i ih =>
-    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
+    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply',
+      iterate_succ_apply]
 
 section CharP
 

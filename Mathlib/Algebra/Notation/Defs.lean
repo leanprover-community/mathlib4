@@ -3,10 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.AssertExists
 
 /-!
 # Typeclasses for algebraic operations
@@ -31,6 +33,8 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
+@[expose] public section
+
 assert_not_exists Function.Bijective
 
 universe u v w
@@ -45,9 +49,9 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hVAdd : α → β → γ
 
-attribute [notation_class  smul Simps.copySecond] HSMul
-attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
-attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
+attribute [notation_class smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs] HSMul
+attribute [notation_class zsmul Simps.zsmulArgs] HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
@@ -74,11 +78,7 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 attribute [to_additive (attr := default_instance)] instHSMul
-
-@[to_additive]
-theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
-
-attribute [to_additive existing (reorder := 1 2)] instHPow
+attribute [to_additive existing] instHPow
 
 variable {G : Type*}
 

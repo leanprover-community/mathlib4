@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Shift.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Tactic.Linarith
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -21,6 +23,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 `F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -85,7 +89,7 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by lia))
     (fun _ _ _ => by simp [h])) (fun _ ↦ by ext; simp)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
@@ -94,7 +98,7 @@ to the addition of integers. -/
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by lia))
     (fun _ _ _ => by
       subst h
       dsimp
@@ -231,14 +235,14 @@ def mapCochainComplexShiftIso (n : ℤ) :
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
-  iso := F.mapCochainComplexShiftIso
-  zero := by
+  commShiftIso := F.mapCochainComplexShiftIso
+  commShiftIso_zero := by
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
     simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
        HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
-  add := fun a b => by
+  commShiftIso_add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp
