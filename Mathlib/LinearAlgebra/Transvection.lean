@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
 /-!
 # Transvections in a module
@@ -193,11 +195,8 @@ namespace LinearMap.transvection
 
 open LinearMap LinearEquiv
 
-open scoped TensorProduct
-
 variable {A : Type*} [CommRing A] [Algebra R A]
 
-variable (A) in
 theorem baseChange (f : Module.Dual R V) (v : V) :
     (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
   ext; simp [transvection, TensorProduct.tmul_add]
@@ -206,14 +205,14 @@ theorem _root_.LinearEquiv.transvection.baseChange
     {f : Module.Dual R V} {v : V} (h : f v = 0)
     (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
-  simp [← toLinearMap_inj, coe_baseChange,
-    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
+  simp [← toLinearMap_inj, transvection.coe_toLinearMap, transvection.baseChange]
 
 open IsBaseChange
 
 variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
+@[simp]
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
@@ -221,7 +220,7 @@ theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endHom_comp_apply, toDual_comp_apply]
+  | tmul x => simp [transvection.apply, toDual_comp_apply, endHom_apply]
 
 end LinearMap.transvection
 
