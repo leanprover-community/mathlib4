@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -1221,6 +1221,8 @@ section integration_by_parts
 
 open ENNReal MeasureTheory
 
+section one_dim
+
 variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
@@ -1234,7 +1236,22 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
     (bilinLeftCLM L g.hasTemperateGrowth f).integrable
 
+variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for multiplication of scalar-valued Schwartz functions. -/
+theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
+    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_smul_deriv_right_eq_neg_left (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, F)) :
+    ∫ (x : ℝ), f x • deriv g x = -∫ (x : ℝ), deriv f x • g x :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.lsmul ℝ 𝕜)
 
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
@@ -1244,12 +1261,52 @@ theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)
   integral_bilinear_deriv_right_eq_neg_left f g
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
 
-/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+end one_dim
+
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+  [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
+
+open scoped LineDeriv
+
+/-- Integration by parts of Schwartz functions for directional derivatives.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : 𝓢(D, F))
+    (L : E →L[ℝ] F →L[ℝ] V) (v : D) :
+    ∫ (x : D), L (f x) (∂_{v} g x) ∂μ = -∫ (x : D), L (∂_{v} f x) (g x) ∂μ := by
+  apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable (v := v)
+    (bilinLeftCLM L g.hasTemperateGrowth _).integrable
+    (bilinLeftCLM L (∂_{v} g).hasTemperateGrowth _).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth _).integrable
+  all_goals
+  intro x
+  exact (hasFDerivAt _ x).hasLineDerivAt v
+
+variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+/-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
-theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
-    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
-  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+theorem integral_mul_lineDerivOp_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, 𝕜)) (v : D) :
+    ∫ (x : D), f x * ∂_{v} g x ∂μ = -∫ (x : D), ∂_{v} f x * g x ∂μ :=
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜) v
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for directional derivatives.
+
+Version for scalar multiplication. -/
+theorem integral_smul_lineDerivOp_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, F)) (v : D) :
+    ∫ (x : D), f x • ∂_{v} g x ∂μ = -∫ (x : D), ∂_{v} f x • g x ∂μ :=
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g (ContinuousLinearMap.lsmul ℝ 𝕜) v
+
+/-- Integration by parts of Schwartz functions for directional derivatives.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜] V)) (g : 𝓢(D, F))
+    (v : D) : ∫ (x : D), f x (∂_{v} g x) ∂μ = -∫ (x : D), ∂_{v} f x (g x) ∂μ :=
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ) v
 
 end integration_by_parts
 
