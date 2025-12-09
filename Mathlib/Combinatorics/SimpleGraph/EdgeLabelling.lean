@@ -3,10 +3,12 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Olivia Röhrig
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Edge labellings
@@ -19,6 +21,8 @@ This module defines labellings of the edges of a graph.
 
 - `SimpleGraph.EdgeLabelling.labelGraph`: the graph consisting of all edges with a given label.
 -/
+
+@[expose] public section
 
 open Finset
 open Fintype (card)
