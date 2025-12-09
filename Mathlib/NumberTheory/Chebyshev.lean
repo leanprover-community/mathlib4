@@ -27,6 +27,8 @@ These give logarithmically weighted sums of primes and prime powers.
 
 - `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
 - `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
+- `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
+- `Chebyshev.eventually_primeCounting_le` gives an upper bound on the prime counting function.
 
 ## Notation
 
@@ -263,7 +265,8 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
-theorem sqrt_isLittleO :
+-- Somewhat arbitrary bound which we use to estimate the second term.
+private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^2) := by
   apply isLittleO_mul_iff_isLittleO_div _|>.mp
   · conv => arg 2; ext; rw [mul_comm]
@@ -291,6 +294,7 @@ theorem integral_one_div_log_sq_isBigO :
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isLittleO.isBigO
 
+/-- Bound on the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
   apply IsBigO.trans _ integral_one_div_log_sq_isBigO
@@ -313,8 +317,7 @@ theorem integral_theta_div_log_sq_isBigO :
     have : 1 ≤ t := by linarith [ht.1]
     rw [abs_of_nonneg]
     · grw [theta_le_log4_mul_x (by linarith)]
-      field_simp
-      rfl
+      exact le_of_eq (by field)
     apply div_nonneg <| theta_nonneg _
     positivity
 
@@ -336,6 +339,7 @@ theorem primeCounting_sub_theta_div_log_isBigO :
   rw [primeCounting_eq_theta_div_log_add_integral hx]
   simp
 
+/-- Chebyshev's upper bound on the prime counting function -/
 theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
     ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ (log 4 + ε) * x / log x := by
   have := integral_theta_div_log_sq_isLittleO.bound εpos
