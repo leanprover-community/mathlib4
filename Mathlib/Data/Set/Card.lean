@@ -182,7 +182,7 @@ theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t
 
 @[simp]
 theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i : α, Set (ι i)} :
-  (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
+    (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
   simp only [encard, ENat.card]
   rw [Cardinal.mk_congr (Equiv.Set.univPi s)]
   simp [Cardinal.prod_eq_of_fintype]
