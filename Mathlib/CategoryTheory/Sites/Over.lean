@@ -332,6 +332,8 @@ abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
 
 section
 
+-- TODO: Generalize this section to arbitrary precoverages.
+
 variable (K : Precoverage C) [K.HasPullbacks] [K.IsStableUnderBaseChange]
 
 /-- The Grothendieck topology on `Over X`, obtained from localizing the topology generated
