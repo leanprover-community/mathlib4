@@ -171,7 +171,7 @@ lemma monomial_mem_homogeneousSubmodule_pow_degree
   induction s using Finsupp.induction with
   | zero => simp
   | single_add a b f _ _ h =>
-    rw [Finsupp.degree_add, Finsupp.degree_single, monomial_single_add, pow_add]
+    rw [map_add, Finsupp.degree_single, monomial_single_add, pow_add]
     exact Submodule.mul_mem_mul (Submodule.pow_mem_pow _ (isHomogeneous_X R a) _) h
 
 @[simp]
