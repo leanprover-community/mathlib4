@@ -79,7 +79,7 @@ section SubsemiringAlgebra
 variable {C : Type*} [SetLike C R] [SubsemiringClass C R]
 
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : C) : Algebra S A where
+instance (priority := 900) ofSubsemiring (S : C) : Algebra S A where
   algebraMap := (algebraMap R A).comp (Subsemiring.subtype <| .ofClass S)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
