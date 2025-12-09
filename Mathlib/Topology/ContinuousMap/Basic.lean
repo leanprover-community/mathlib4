@@ -281,7 +281,7 @@ def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 
 @[simp]
-theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) :=
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.restrict f :=
   rfl
 
 @[simp]
@@ -378,7 +378,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
 @[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
-  simp only [coe_restrict, Function.comp_apply, liftCover_coe]
+  simp only [restrict_apply, liftCover_coe]
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),

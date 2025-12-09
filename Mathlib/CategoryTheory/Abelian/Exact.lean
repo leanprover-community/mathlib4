@@ -68,6 +68,11 @@ theorem exact_iff_epi_imageToKernel : S.Exact ↔ Epi (imageToKernel S.f S.g S.z
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
   exact Arrow.isoMk (imageSubobjectIso S.f).symm (kernelSubobjectIso S.g).symm
 
+lemma exact_iff_isIso_imageToKernel' : S.Exact ↔ IsIso (imageToKernel' S.f S.g S.zero) := by
+  simp only [S.exact_iff_epi_imageToKernel', isIso_iff_mono_and_epi, iff_and_self]
+  intro
+  apply Limits.kernel.lift_mono
+
 theorem exact_iff_isIso_imageToKernel : S.Exact ↔ IsIso (imageToKernel S.f S.g S.zero) := by
   rw [S.exact_iff_epi_imageToKernel]
   constructor
@@ -75,6 +80,12 @@ theorem exact_iff_isIso_imageToKernel : S.Exact ↔ IsIso (imageToKernel S.f S.g
     apply isIso_of_mono_of_epi
   · intro
     infer_instance
+
+lemma Exact.isIso_imageToKernel (hS : S.Exact) : IsIso (imageToKernel S.f S.g S.zero) :=
+  S.exact_iff_isIso_imageToKernel.1 hS
+
+lemma Exact.isIso_imageToKernel' (hS : S.Exact) : IsIso (imageToKernel' S.f S.g S.zero) :=
+  S.exact_iff_isIso_imageToKernel'.1 hS
 
 /-- In an abelian category, a short complex `S` is exact
 iff `imageSubobject S.f = kernelSubobject S.g`.

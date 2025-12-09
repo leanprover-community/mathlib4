@@ -122,7 +122,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
   obtain ⟨m, hm⟩ := hG (σ h)
   refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
-  rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
+  rw [map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 
 @[to_additive]
 lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
@@ -625,14 +625,18 @@ end CommGroup
 end IsSimpleGroup
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_isCyclic_and_prime_card [Finite α] [CommGroup α] :
-    IsSimpleGroup α ↔ IsCyclic α ∧ (Nat.card α).Prime := by
-  constructor
-  · intro h
-    exact ⟨IsSimpleGroup.isCyclic, IsSimpleGroup.prime_card⟩
-  · rintro ⟨_, hp⟩
-    haveI : Fact (Nat.card α).Prime := ⟨hp⟩
-    exact isSimpleGroup_of_prime_card rfl
+theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
+    IsSimpleGroup α ↔ (Nat.card α).Prime :=
+  ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
+
+@[to_additive]
+theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+    IsSimpleGroup α ↔ (Nat.card α).Prime :=
+  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+  Group.is_simple_iff_prime_card
+
+@[deprecated (since := "2025-11-19")]
+alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
 section SpecificInstances
 
@@ -641,9 +645,8 @@ instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, m
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective
 
-instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
-  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
-    ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+  AddCommGroup.is_simple_iff_prime_card.2 (by simpa using hp.out)
 
 end SpecificInstances
 
@@ -736,7 +739,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by lia
 
 end Exponent
 

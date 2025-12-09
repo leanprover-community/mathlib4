@@ -6,6 +6,7 @@ Authors: Thomas Browning, Nailin Guan
 module
 
 public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
@@ -104,10 +105,10 @@ section
 variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
-into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
+into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` to
 `(A →ₜ* B)`. -/
 @[to_additive (attr := coe) /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousAddMonoidHom`.
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHomClass.toMonoidHom f with }
@@ -359,7 +360,7 @@ theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
-@[to_additive /-- Makes an continuous additive isomorphism from
+@[to_additive /-- Makes a continuous additive isomorphism from
 a homeomorphism which preserves addition. -/]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩

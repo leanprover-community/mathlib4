@@ -170,25 +170,17 @@ namespace Game
 local infixl:50 " ⧏ " => LF
 local infixl:50 " ‖ " => Fuzzy
 
-instance addLeftMono : AddLeftMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_le_add_left _ _ _ _ b c h a⟩
+instance addLeftMono : AddLeftMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_le_add_right (α := PGame) h a
 
-instance addRightMono : AddRightMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_le_add_right _ _ _ _ b c h a⟩
+instance addRightMono : AddRightMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_le_add_left (α := PGame) h a
 
-instance addLeftStrictMono : AddLeftStrictMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_lt_add_left _ _ _ _ b c h a⟩
+instance addLeftStrictMono : AddLeftStrictMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_lt_add_right (α := PGame) h a
 
-instance addRightStrictMono : AddRightStrictMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_lt_add_right _ _ _ _ b c h a⟩
+instance addRightStrictMono : AddRightStrictMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_lt_add_left (α := PGame) h a
 
 theorem add_lf_add_right : ∀ {b c : Game} (_ : b ⧏ c) (a), (b + a : Game) ⧏ c + a := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
@@ -198,8 +190,8 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply PGame.add_lf_add_left h
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid Game :=
-  { add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
+instance isOrderedAddMonoid : IsOrderedAddMonoid Game where
+  add_le_add_left := @add_le_add_left _ _ _ Game.addRightMono
 
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :

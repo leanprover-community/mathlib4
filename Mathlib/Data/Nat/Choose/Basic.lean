@@ -133,6 +133,9 @@ theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (suc
     rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
       succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
 
+theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (k + 1) * (k + 1) :=
+  succ_mul_choose_eq
+
 theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp
@@ -306,7 +309,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      cutsat
+      lia
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
@@ -321,10 +324,19 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
   | zero => simp
   | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
+@[gcongr]
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
 theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
+
+theorem choose_eq_one_iff {n k : ℕ} : n.choose k = 1 ↔ k = 0 ∨ n = k := by
+  rcases lt_trichotomy k n with hk | rfl | hk
+  · have := k.choose_succ_self_right.symm.trans_le (k.choose_mono hk)
+    have := n.choose_zero_right
+    grind
+  · simp
+  · simp [choose_eq_zero_of_lt hk, hk.ne, Nat.ne_zero_of_lt hk]
 
 /-! #### Multichoose
 
