@@ -122,7 +122,7 @@ theorem prod_eq_prod_of_nonempty'
 end Prod
 
 /-!
-# Pi types
+## Pi types
 
 Finite indexed products of partial homeomorphisms
 -/
