@@ -53,9 +53,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
       simp [eq0, IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt
         <| support_of_supportDim_eq_zero R N dim]
-  · have eqr (n : ℕ∞) : n.toNat = r → n = r := by
-      let _ : NeZero r := ⟨eq0⟩
-      simp
+  · let _ : NeZero r := ⟨eq0⟩
+    have eqr (n : ℕ∞) : n.toNat = r → n = r := by simp
     refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
       (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
         (((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L))).toNat = r →
@@ -147,8 +146,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           simp only [← hk, ← ENat.coe_sub, ← hm, Nat.cast_lt]
           simp only [← hm, Nat.cast_lt] at dimlt'
           omega
-      have zero : IsZero
-        (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
+      have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrpCat.isZero_of_subsingleton _ this
       have epi' : Function.Surjective
         ⇑(x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
@@ -195,9 +193,6 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           · exact ihr _ lt (ModuleCat.of.{v} R L3) rfl
           · exact ih3' ntr.2 eq
         let S : ShortComplex (ModuleCat.{v} R) := {
-          X₁ := ModuleCat.of R L1
-          X₂ := ModuleCat.of R L2
-          X₃ := ModuleCat.of R L3
           f := ModuleCat.ofHom f
           g := ModuleCat.ofHom g
           zero := by
