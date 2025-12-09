@@ -338,6 +338,9 @@ variable [NegZeroClass R]
 instance : Neg (HahnSeries Γ R) where
   neg x := x.map (-ZeroHom.id _)
 
+theorem support_neg_subset (x : HahnSeries Γ R) : (-x).support ⊆ x.support :=
+  support_map_subset ..
+
 @[simp]
 theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
   rfl
@@ -368,7 +371,7 @@ theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
 
 instance : AddGroup (HahnSeries Γ R) := fast_instance%
   coeff_injective.addGroup _
-    coeff_zero' coeff_add' (coeff_neg') (coeff_sub')
+    coeff_zero' coeff_add' coeff_neg' coeff_sub'
     (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
 
 @[simp]

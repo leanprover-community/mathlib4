@@ -16,7 +16,8 @@ the cardinalities of different operations.
 
 ## Todo
 
-Build the subgroups, subrings, etc. of Hahn series with less than a given infinite cardinal.
+- Bound the cardinality of the inverse.
+- Build the subgroups, subrings, etc. of Hahn series with less than a given infinite cardinal.
 -/
 
 @[expose] public section
@@ -35,6 +36,10 @@ variable [Zero R]
 /-- The cardinality of the support of a Hahn series. -/
 def card (x : HahnSeries Γ R) : Cardinal :=
   #x.support
+
+theorem card_congr [Zero S] {x : HahnSeries Γ R} {y : HahnSeries Γ S} (h : x.support = y.support) :
+    x.card = y.card := by
+  simp_rw [card, h]
 
 theorem card_mono [Zero S] {x : HahnSeries Γ R} {y : HahnSeries Γ S} (h : x.support ⊆ y.support) :
     x.card ≤ y.card :=
@@ -62,8 +67,15 @@ theorem card_smul_le (s : S) (x : HahnSeries Γ R) [SMulZeroClass S R] : (s • 
 
 end Zero
 
+theorem card_neg_le [NegZeroClass R] (x : HahnSeries Γ R) : (-x).card ≤ x.card :=
+  card_mono <| support_neg_subset ..
+
 theorem card_add_le [AddMonoid R] (x y : HahnSeries Γ R) : (x + y).card ≤ x.card + y.card :=
   (mk_le_mk_of_subset (support_add_subset ..)).trans (mk_union_le ..)
+
+@[simp]
+theorem card_neg [AddGroup R] (x : HahnSeries Γ R) : (-x).card = x.card :=
+  card_congr support_neg
 
 theorem card_sub_le [AddGroup R] (x y : HahnSeries Γ R) : (x - y).card ≤ x.card + y.card :=
   (mk_le_mk_of_subset (support_sub_subset ..)).trans (mk_union_le ..)
@@ -71,9 +83,5 @@ theorem card_sub_le [AddGroup R] (x y : HahnSeries Γ R) : (x - y).card ≤ x.ca
 theorem card_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
     {x y : HahnSeries Γ R} : (x * y).card ≤ x.card * y.card :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
-
-  #exit
-
-/-! ### Substructures -/
 
 end HahnSeries
