@@ -108,6 +108,10 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
+-- move this
+instance : IsLocalHom (C : _ →+* Polynomial R) where
+  map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
+
 /-- The degree 1 polynomial `a • X + C b` is relatively irreducible. -/
 theorem relativelyIrreducible_smul_X_add_C [IsDomain R] (a : R) (b : R) :
     RelativelyIrreducible R (a • X + C b : Polynomial R) := by
@@ -141,6 +145,124 @@ open scoped Polynomial
 section
 
 variable {n : Type*} {R : Type*} [CommRing R]
+
+theorem optionEquivLeft_coeff_coeff'
+    (p : MvPolynomial (Option n) R) (m : ℕ) (d : n →₀ ℕ) :
+    coeff d (((optionEquivLeft R n) p).coeff m) = p.coeff (d.optionElim m) := by
+  induction p using MvPolynomial.induction_on' generalizing d m with
+  | monomial j r =>
+    rw [optionEquivLeft_monomial]
+    classical
+    simp +contextual [Finsupp.ext_iff, Option.forall, Polynomial.coeff_monomial, apply_ite]
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+
+lemma irreducible_mul_X_add [IsDomain R]
+    (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars)
+    (h : ∀ p, p ∣ f → p ∣ g → IsUnit p) :
+    Irreducible (f * X i + g) := by
+  classical
+  let e₁ := renameEquiv R (σ := n) (Equiv.optionSubtypeNe i).symm
+  let e₂ := optionEquivLeft R {j // j ≠ i}
+  let e := e₁.trans e₂
+  have heX : e (X i) = .X := by simp [e, e₁, e₂, optionEquivLeft_X_none]
+  suffices ∀ {p}, i ∉ p.vars → e p = .C ((e p).coeff 0) by
+    rw [← MulEquiv.irreducible_iff e, map_add, map_mul, heX, this hif, this hig,
+      ← Polynomial.smul_eq_C_mul]
+    apply Polynomial.irreducible_smul_X_add_C
+    · contrapose! hf0
+      apply e.injective
+      rw [this hif, hf0, map_zero, map_zero]
+    · intro p hpf hpg
+      refine isUnit_of_map_unit Polynomial.C _ (isUnit_of_map_unit e.symm _ ?_)
+      apply h
+      · replace hpf := map_dvd e.symm <| map_dvd Polynomial.C hpf
+        rwa [← this hif, e.symm_apply_apply] at hpf
+      · replace hpg := map_dvd e.symm <| map_dvd Polynomial.C hpg
+        rwa [← this hig, e.symm_apply_apply] at hpg
+  intro p hp
+  apply Polynomial.eq_C_of_degree_le_zero
+  rw [Polynomial.degree_le_iff_coeff_zero]
+  intro m hm
+  ext d
+  suffices ((rename (Equiv.optionSubtypeNe i).symm) p).coeff (d.optionElim m) = 0 by
+    simpa [e, e₁, e₂, optionEquivLeft_coeff_coeff']
+  rw [coeff_rename_eq_zero]
+  intro d' hd'
+  contrapose! hp
+  rw [mem_vars]
+  rw [← mem_support_iff] at hp
+  refine ⟨_, hp, ?_⟩
+  rw [Finsupp.mem_support_iff]
+  obtain rfl : d' i = m := by simpa [Finsupp.mapDomain_equiv_apply] using congr($hd' none)
+  simp_all [ne_of_gt]
+
+lemma irreducible_of_pairwise_disjoint [IsDomain R]
+    (f : MvPolynomial n R) (h0 : f.support.Nontrivial)
+    (h1 : Set.PairwiseDisjoint (f.support : Set (n →₀ ℕ)) (fun d ↦ d.support))
+    (h2 : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
+    Irreducible f := by
+  obtain ⟨d, hd, hd0⟩ := h0.exists_ne 0
+  rw [ne_eq, ← Finsupp.support_eq_empty, ← ne_eq, ← Finset.nonempty_iff_ne_empty] at hd0
+  rcases hd0 with ⟨i, hi⟩
+  have hfd : f.coeff d ≠ 0 := by simpa [mem_support_iff] using hd
+  let φ : MvPolynomial n R := monomial (d - .single i 1) (f.coeff d)
+  let ψ : MvPolynomial n R := f - φ * X i
+  have hf : f = φ * X i + ψ := by grind
+  rw [hf]
+  apply irreducible_mul_X_add
+  · simp [φ, monomial_eq_zero, hfd]
+  · sorry
+  · sorry
+  · intro p hpφ hpψ
+    simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
+    obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
+    obtain rfl : m = 0 := by sorry
+    simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
+    refine ⟨b, ?_, rfl⟩
+    apply h2
+    intro k
+    obtain rfl | hk := eq_or_ne k d
+    · exact hb
+    by_cases hkf : coeff k f = 0
+    · simp [hkf]
+    suffices coeff k (φ * X i) = 0 by
+      rw [hf, coeff_add, this, zero_add]
+      rw [← C_apply, C_dvd_iff_dvd_coeff] at hpψ
+      apply hpψ
+    classical
+    rw [coeff_mul_X', ite_eq_right_iff]
+    intro hik
+    rw [← ne_eq, ← mem_support_iff] at hkf
+    have := h1 hkf hd hk
+    simp_all [Function.onFun, disjoint_iff, Finset.eq_empty_iff_forall_notMem]
+
+lemma irreducible_mul_X_add' [IsDomain R]
+    (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars) :
+    Irreducible (f * X i + g) where
+  not_isUnit h := by
+    rw [isUnit_iff_eq_C_of_isReduced] at h
+    obtain ⟨r, hr, h⟩ := h
+    obtain ⟨j, hj⟩ := exists_coeff_ne_zero hf0
+    apply hj
+    suffices coeff (j + Finsupp.single i 1) g = 0 ∧ coeff (j + Finsupp.single i 1) (C r) = 0 by
+      have aux := congr(coeff (j + Finsupp.single i 1) $h)
+      simpa [this] using aux
+    clear hj
+    constructor
+    · contrapose! hig
+      rw [mem_vars]
+      simp_rw [← mem_support_iff] at hig
+      refine ⟨_, hig, ?_⟩
+      simp
+    · classical
+      rw [coeff_C, if_neg]
+      intro hji
+      simpa using congr($hji i)
+  isUnit_or_isUnit := by
+    intro p q hpq
+    have hd : (p * q).degreeOf i ≤ 1 := by
+      sorry
+    sorry
 
 lemma irreducible_of_relativelyIrreducible
     (f : MvPolynomial n R) (hf : RelativelyIrreducible R f)
