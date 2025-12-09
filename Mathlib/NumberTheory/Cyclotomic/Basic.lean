@@ -424,7 +424,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     simp only [mem_setOf_eq]
     rw [isRoot_of_unity_iff (NeZero.pos n)]
     refine ⟨NeZero.ne n, n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
-    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
+    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map_algebraMap]
     exact hx.2
   · simp only [mem_setOf_eq] at hx
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx.2

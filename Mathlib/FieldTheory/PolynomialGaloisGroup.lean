@@ -306,7 +306,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
       Splits.exists_eval_eq_zero (SplittingField.splits (r.comp q)) fun h =>
         hr' ((mul_eq_zero.mp (natDegree_comp.symm.trans (natDegree_eq_of_degree_eq_some
           (by rwa [degree_map] at h)))).resolve_right hq)
-    rw [eval_map, ← aeval_def, aeval_comp] at hx
+    rw [eval_map_algebraMap, aeval_comp] at hx
     have h_normal : Normal F (r.comp q).SplittingField := SplittingField.instNormal (r.comp q)
     have qx_int := Normal.isIntegral h_normal (aeval x q)
     exact (h_normal.splits _).splits_of_dvd (map_ne_zero (minpoly.ne_zero (h_normal.isIntegral _)))
