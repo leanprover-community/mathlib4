@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.RingTheory.HahnSeries.Summable
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of Hahn series
@@ -133,16 +134,17 @@ theorem card_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Co
   · cases i <;> simp
 
 theorem card_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : HahnSeries Γ R) :
-    x⁻¹.card ≤ sum fun n ↦ x.card ^ n := by
+    x⁻¹.card ≤ max ℵ₀ x.card := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
-  apply (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
+  apply (sum_pow_le_max_aleph0 _).trans' <|
+    (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
   gcongr
   refine (card_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| card_mono fun _ ↦ ?_
-  aesop
+  aesop (add simp [coeff_single_mul])
 
 theorem card_div_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x y : HahnSeries Γ R) :
-    (x / y).card ≤ x.card * sum fun n ↦ y.card ^ n :=
+    (x / y).card ≤ x.card * max ℵ₀ y.card :=
   (card_mul_le ..).trans <| mul_le_mul_right (card_inv_le y) _
 
 end LinearOrder
