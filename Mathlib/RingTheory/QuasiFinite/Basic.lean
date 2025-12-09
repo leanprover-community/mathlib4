@@ -23,13 +23,13 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 ## Main definition and results
 - `Algebra.QuasiFinite`: The class of quasi-finite algebras.
   We say that an `R`-algebra `S` is quasi-finite
-  if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all `κ(p)`.
+  if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all prime `p` of `R`.
 - `Algebra.QuasiFinite.finite_specComap_preimage_singleton`:
   Quasi-finite algebras have finite fibers.
 - `Algebra.QuasiFinite.iff_of_isArtinianRing`:
   Over an artinian ring, an algebra is quasi-finite iff it is module-finite.
-- `Algebra.QuasiFinite.iff_finite_specComap_preimage_singleton`: For a finite-type `R`-algebra `A`,
-  `A` is quasi-finite if and only if `Spec A → Spec R` has finite fibers.
+- `Algebra.QuasiFinite.iff_finite_specComap_preimage_singleton`: For a finite-type `R`-algebra `S`,
+  `S` is quasi-finite if and only if `Spec S → Spec R` has finite fibers.
 
 -/
 
@@ -49,7 +49,7 @@ namespace Algebra
 variable (R S) in
 /--
 We say that an `R`-algebra `S` is quasi-finite
-if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all `κ(p)`.
+if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all prime `p` of `R`.
 
 This is slightly different from the stacks projects definition,
 but works better when `S` is not of finite type over `R` (e.g. the stalk of a finite-type algebra).
