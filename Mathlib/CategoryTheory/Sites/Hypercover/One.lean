@@ -160,7 +160,7 @@ lemma forkOfIsColimit_ι_map_inj {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E
 
 open Opposite
 
-/-- The multifork associated to a pre-`0`-hypercover is limiting if and only if
+/-- The multifork associated to a pre-`1`-hypercover is limiting if and only if
 the fork induced by taking the coproduct of the components is limiting. -/
 noncomputable def isLimitMultiforkEquivIsLimitFork
     {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) (F : Cᵒᵖ ⥤ A)
