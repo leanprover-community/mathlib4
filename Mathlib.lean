@@ -14417,6 +14417,12 @@ public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Topology.OmegaCompletePartialOrder
 public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 public import Mathlib.Topology.Order
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Bornology
