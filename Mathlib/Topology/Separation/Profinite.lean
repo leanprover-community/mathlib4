@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
@@ -130,7 +131,7 @@ instance (priority := 100) [TotallyDisconnectedSpace H] : TotallySeparatedSpace 
 
 /-- In a totally disconnected compact Hausdorff space `X`, if `Z ⊆ U` are subsets with `Z` closed
 and `U` open, there exists a clopen `C` with `Z ⊆ C ⊆ U`. -/
-lemma exists_clopen_of_closed_subset_open {X : Type u}
+lemma exists_clopen_of_closed_subset_open {X : Type*}
     [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
     {Z U : Set X} (hZ : IsClosed Z) (hU : IsOpen U) (hZU : Z ⊆ U) :
     ∃ C : Set X, IsClopen C ∧ Z ⊆ C ∧ C ⊆ U := by
@@ -142,5 +143,95 @@ lemma exists_clopen_of_closed_subset_open {X : Type u}
   choose I hI using hZ.isCompact.elim_finite_subcover V (fun z ↦ (hV z).1.isOpen) V_cover
   -- the union of this finite subcover does the job
   exact ⟨⋃ (i ∈ I), V i, I.finite_toSet.isClopen_biUnion (fun i _ ↦ (hV i).1), hI, by simp_all⟩
+
+/-- Let `X` be a totally disconnected compact Hausdorff space, `D i ⊆ X` a finite family of clopens,
+and `Z i ⊆ D i` closed. Assume that the `Z i` are pairwise disjoint. Then there exist clopens
+`Z i ⊆ C i ⊆ D i` with the `C i` disjoint, and such that `∪ C i = ∪ D i`. -/
+lemma exists_clopen_partition_of_closed_partition
+    {X I : Type*} [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
+    [Finite I] {Z D : I → Set X}
+    (Z_closed : ∀ i, IsClosed (Z i)) (D_clopen : ∀ i, IsClopen (D i))
+    (Z_subset_D : ∀ i, Z i ⊆ D i) (Z_disj : univ.PairwiseDisjoint Z) :
+    ∃ C : I → Set X, (∀ i, IsClopen (C i)) ∧ (∀ i, Z i ⊆ C i) ∧ (∀ i, C i ⊆ D i) ∧
+    (⋃ i, D i) ⊆ (⋃ i, C i)  ∧ (univ.PairwiseDisjoint C) := by
+  induction I using Finite.induction_empty_option with
+  | of_equiv e IH =>
+    obtain ⟨C, h1, h2, h3, h4, h5⟩ := IH (Z := Z ∘ e) (D := D ∘ e)
+      (fun i ↦ Z_closed (e i)) (fun i ↦ D_clopen (e i))
+      (fun i ↦ Z_subset_D (e i)) (by simpa [← e.injective.injOn.pairwiseDisjoint_image])
+    refine ⟨C ∘ e.symm, fun i ↦ h1 (e.symm i), fun i ↦ by simpa using h2 (e.symm i),
+      fun i ↦ by simpa using h3 (e.symm i), ?_,
+      by simpa [← e.symm.injective.injOn.pairwiseDisjoint_image]⟩
+    simp only [Function.comp_apply, iUnion_subset_iff] at h4 ⊢
+    intro i
+    simpa [e.symm.surjective.iUnion_comp C] using h4 (e.symm i)
+  | h_empty => exact ⟨fun _ ↦ univ, by simp, by simp, by simp, by simp, fun i ↦ PEmpty.elim i⟩
+  | @h_option I _ IH =>
+    -- let `Z'` be the restriction of `Z` along `some : I → Option I`
+    let Z' : I → Set X := fun i ↦ Z (some i)
+    have Z'_closed (i : I) : IsClosed (Z (some i)) := Z_closed (some i)
+    have Z'_disj : univ.PairwiseDisjoint (Z ∘ some)  := by
+      rw [← (Option.some_injective _).injOn.pairwiseDisjoint_image]
+      exact PairwiseDisjoint.subset Z_disj (by simp)
+    -- find Z 0 ⊆ V ⊆ D 0 \ ⋃ Z' using clopen_sandwich
+    let U : Set X  := D none \ iUnion (Z ∘ some)
+    have U_open : IsOpen U := IsOpen.sdiff (D_clopen none).2
+      (isClosed_iUnion_of_finite (fun i ↦ Z_closed (some i)))
+    have Z0_subset_U : Z none ⊆ U := by
+      rw [subset_diff]
+      simpa using ⟨Z_subset_D none, fun i ↦ (by apply Z_disj; all_goals simp)⟩
+    obtain ⟨V, V_clopen, Z0_subset_V, V_subset_U⟩ :=
+      exists_clopen_of_closed_subset_open (Z_closed none) U_open Z0_subset_U
+    have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U diff_subset
+    -- choose Z' i ⊆ C' i ⊆ D' i = D i.succ \ V using induction hypothesis
+    let D' : I → Set X := fun i ↦ D (some i) \ V
+    have D'_clopen (i : I): IsClopen (D' i) := IsClopen.diff (D_clopen (some i)) V_clopen
+    have Z'_subset_D' (i : I) : Z' i ⊆ D' i := by
+      rw [subset_diff]
+      refine ⟨by grind, Disjoint.mono_right V_subset_U ?_⟩
+      exact Disjoint.mono_left (subset_iUnion_of_subset i fun _ h ↦ h) disjoint_sdiff_right
+    obtain ⟨C', C'_clopen, Z'_subset_C', C'_subset_D', C'_cover_D', C'_disj⟩ :=
+      IH Z'_closed D'_clopen Z'_subset_D' Z'_disj
+    have C'_subset_D (i : I): C' i ⊆ D (some i) := subset_trans (C'_subset_D' i) diff_subset
+    -- now choose C0 = D 0 \ ⋃ C' i
+    let C0 : Set X := D none \ iUnion (fun i ↦ C' i)
+    have C0_subset_D0 : C0 ⊆ D none := diff_subset
+    have C0_clopen : IsClopen C0 := IsClopen.diff (D_clopen none)
+      (isClopen_iUnion_of_finite C'_clopen)
+    have Z0_subset_C0 : Z none ⊆ C0 := by
+      unfold C0
+      apply subset_diff.mpr
+      constructor
+      · exact Z_subset_D none
+      · apply Disjoint.mono_left Z0_subset_V
+        exact disjoint_iUnion_right.mpr fun i ↦ Disjoint.mono_right (C'_subset_D' i)
+          disjoint_sdiff_right
+    -- patch together to define C := cases C0 C', and verify the needed properties
+    let C : Option I → Set X := fun i ↦ Option.casesOn i C0 C'
+    have C_clopen : ∀ i, IsClopen (C i) := fun i ↦ Option.casesOn i C0_clopen C'_clopen
+    have Z_subset_C : ∀ i, Z i ⊆ C i := fun i ↦ Option.casesOn i Z0_subset_C0 Z'_subset_C'
+    have C_subset_D : ∀ i, C i ⊆ D i := fun i ↦ Option.casesOn i C0_subset_D0 C'_subset_D
+    have C_cover_D : (⋃ i, D i) ⊆ (⋃ i, C i) := by
+      intro x hx
+      rw [mem_iUnion] at hx ⊢
+      by_cases hx0 : x ∈ C0; { exact ⟨none, hx0⟩ }
+      by_cases hxD : x ∈ D none
+      · have hxC' : x ∈ ⋃ i, C' i := by grind
+        obtain ⟨i, hi⟩ := mem_iUnion.mp hxC'
+        exact ⟨some i, hi⟩
+      · obtain ⟨none | j, hi⟩ := hx; {grind}
+        have hxD' : x ∈ ⋃ i, D' i := mem_iUnion.mpr ⟨j, by grind⟩
+        obtain ⟨k, hk⟩ := mem_iUnion.mp <| C'_cover_D' hxD'
+        exact ⟨some k, hk⟩
+    have C_disj : univ.PairwiseDisjoint C := by
+      rw [Set.pairwiseDisjoint_iff]
+      rintro (_ | i) _ (_ | j) _
+      · simp
+      · simpa [C, C0, Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty] using
+          Disjoint.mono_right (subset_iUnion (fun i ↦ C' i) j) disjoint_sdiff_left
+      · simpa [C, C0, Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty] using
+          Disjoint.mono_left (subset_iUnion (fun j ↦ C' j) i) disjoint_sdiff_right
+      · simpa using (Set.pairwiseDisjoint_iff.mp C'_disj) (by trivial) (by trivial)
+    exact ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩
 
 end LocallyCompact
