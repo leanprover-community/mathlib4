@@ -138,7 +138,7 @@ lemma exists_clopen_of_closed_subset_open {X : Type*}
   -- every `z ∈ Z` has clopen neighborhood `V z ⊆ U`
   choose V hV using fun (z : Z) ↦ compact_exists_isClopen_in_isOpen hU (hZU z.property)
   -- the `V z` cover `Z`
-  have V_cover : Z ⊆ iUnion V := fun z hz ↦ mem_iUnion.mpr ⟨⟨z, hz⟩, (hV ⟨z, hz⟩).2.1⟩
+  have V_cover : Z ⊆ ⋃ z, V z := fun z hz ↦ mem_iUnion.mpr ⟨⟨z, hz⟩, (hV ⟨z, hz⟩).2.1⟩
   -- choose a finite subcover
   choose I hI using hZ.isCompact.elim_finite_subcover V (fun z ↦ (hV z).1.isOpen) V_cover
   -- the union of this finite subcover does the job
@@ -162,9 +162,8 @@ lemma exists_clopen_partition_of_closed_partition
     refine ⟨C ∘ e.symm, fun i ↦ h1 (e.symm i), fun i ↦ by simpa using h2 (e.symm i),
       fun i ↦ by simpa using h3 (e.symm i), ?_,
       by simpa [← e.symm.injective.injOn.pairwiseDisjoint_image]⟩
-    simp only [Function.comp_apply, iUnion_subset_iff] at h4 ⊢
-    intro i
-    simpa [e.symm.surjective.iUnion_comp C] using h4 (e.symm i)
+    simp only [Function.comp_apply, iUnion_subset_iff] at h4
+    simpa [e.symm.surjective.iUnion_comp C] using fun i ↦ h4 (e.symm i)
   | h_empty => exact ⟨fun _ ↦ univ, by simp, by simp, by simp, by simp, fun i ↦ PEmpty.elim i⟩
   | @h_option I _ IH =>
     -- let `Z'` be the restriction of `Z` along `some : I → Option I`
@@ -173,8 +172,8 @@ lemma exists_clopen_partition_of_closed_partition
     have Z'_disj : univ.PairwiseDisjoint (Z ∘ some)  := by
       rw [← (Option.some_injective _).injOn.pairwiseDisjoint_image]
       exact PairwiseDisjoint.subset Z_disj (by simp)
-    -- find Z 0 ⊆ V ⊆ D 0 \ ⋃ Z' using clopen_sandwich
-    let U : Set X  := D none \ iUnion (Z ∘ some)
+    -- find `Z none ⊆ V ⊆ D none \ ⋃ Z'` using `exists_clopen_of_closed_subset_open`
+    let U : Set X  := D none \ ⋃ i, Z (some i)
     have U_open : IsOpen U := IsOpen.sdiff (D_clopen none).2
       (isClosed_iUnion_of_finite (fun i ↦ Z_closed (some i)))
     have Z0_subset_U : Z none ⊆ U := by
@@ -183,36 +182,27 @@ lemma exists_clopen_partition_of_closed_partition
     obtain ⟨V, V_clopen, Z0_subset_V, V_subset_U⟩ :=
       exists_clopen_of_closed_subset_open (Z_closed none) U_open Z0_subset_U
     have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U diff_subset
-    -- choose Z' i ⊆ C' i ⊆ D' i = D i.succ \ V using induction hypothesis
+    -- choose `Z' i ⊆ C' i ⊆ D' i = D i.succ \ V` using the inductive hypothesis
     let D' : I → Set X := fun i ↦ D (some i) \ V
-    have D'_clopen (i : I): IsClopen (D' i) := IsClopen.diff (D_clopen (some i)) V_clopen
+    have D'_clopen (i : I): IsClopen (D' i) := (D_clopen (some i)).diff V_clopen
     have Z'_subset_D' (i : I) : Z' i ⊆ D' i := by
       rw [subset_diff]
       refine ⟨by grind, Disjoint.mono_right V_subset_U ?_⟩
-      exact Disjoint.mono_left (subset_iUnion_of_subset i fun _ h ↦ h) disjoint_sdiff_right
+      exact Disjoint.mono_left (subset_iUnion_of_subset i fun _ h ↦ h) (by grind)
     obtain ⟨C', C'_clopen, Z'_subset_C', C'_subset_D', C'_cover_D', C'_disj⟩ :=
       IH Z'_closed D'_clopen Z'_subset_D' Z'_disj
-    have C'_subset_D (i : I): C' i ⊆ D (some i) := subset_trans (C'_subset_D' i) diff_subset
-    -- now choose C0 = D 0 \ ⋃ C' i
-    let C0 : Set X := D none \ iUnion (fun i ↦ C' i)
-    have C0_subset_D0 : C0 ⊆ D none := diff_subset
-    have C0_clopen : IsClopen C0 := IsClopen.diff (D_clopen none)
-      (isClopen_iUnion_of_finite C'_clopen)
-    have Z0_subset_C0 : Z none ⊆ C0 := by
-      unfold C0
-      apply subset_diff.mpr
-      constructor
-      · exact Z_subset_D none
-      · apply Disjoint.mono_left Z0_subset_V
-        exact disjoint_iUnion_right.mpr fun i ↦ Disjoint.mono_right (C'_subset_D' i)
-          disjoint_sdiff_right
-    -- patch together to define C := cases C0 C', and verify the needed properties
+    -- now choose `C0 = D none \ ⋃ C' i`
+    let C0 : Set X := D none \ ⋃ i, C' i
+    have : IsClopen C0 := (D_clopen none).diff (isClopen_iUnion_of_finite C'_clopen)
+    have : Z none ⊆ C0 := by
+      simp only [C0, subset_diff]
+      exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simpa using by grind)⟩
+    -- patch together to define `C none := C0`, `C (some i) := C' i`
+    -- and verify the needed properties
     let C : Option I → Set X := fun i ↦ Option.casesOn i C0 C'
-    have C_clopen : ∀ i, IsClopen (C i) := fun i ↦ Option.casesOn i C0_clopen C'_clopen
-    have Z_subset_C : ∀ i, Z i ⊆ C i := fun i ↦ Option.casesOn i Z0_subset_C0 Z'_subset_C'
-    have C_subset_D : ∀ i, C i ⊆ D i := fun i ↦ Option.casesOn i C0_subset_D0 C'_subset_D
-    have C_cover_D : (⋃ i, D i) ⊆ (⋃ i, C i) := by
-      intro x hx
+    refine ⟨C, ?_, ?_, ?_, ?_, ?_⟩
+    all_goals try rintro (_ | i); all_goals grind
+    · intro x hx
       rw [mem_iUnion] at hx ⊢
       by_cases hx0 : x ∈ C0; { exact ⟨none, hx0⟩ }
       by_cases hxD : x ∈ D none
@@ -223,15 +213,13 @@ lemma exists_clopen_partition_of_closed_partition
         have hxD' : x ∈ ⋃ i, D' i := mem_iUnion.mpr ⟨j, by grind⟩
         obtain ⟨k, hk⟩ := mem_iUnion.mp <| C'_cover_D' hxD'
         exact ⟨some k, hk⟩
-    have C_disj : univ.PairwiseDisjoint C := by
-      rw [Set.pairwiseDisjoint_iff]
+    · rw [Set.pairwiseDisjoint_iff]
       rintro (_ | i) _ (_ | j) _
       · simp
       · simpa [C, C0, Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty] using
-          Disjoint.mono_right (subset_iUnion (fun i ↦ C' i) j) disjoint_sdiff_left
+          Disjoint.mono_right (subset_iUnion C' j) disjoint_sdiff_left
       · simpa [C, C0, Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty] using
-          Disjoint.mono_left (subset_iUnion (fun j ↦ C' j) i) disjoint_sdiff_right
+          Disjoint.mono_left (subset_iUnion C' i) disjoint_sdiff_right
       · simpa using (Set.pairwiseDisjoint_iff.mp C'_disj) (by trivial) (by trivial)
-    exact ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩
 
 end LocallyCompact
