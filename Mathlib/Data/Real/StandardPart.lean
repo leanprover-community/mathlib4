@@ -304,7 +304,7 @@ theorem standardPart_ratCast (q : ℚ) : standardPart (q : K) = q := by
 
 @[simp]
 theorem standardPart_real (f : ℝ →+*o K) (r : ℝ) : standardPart (f r) = r := by
-  rw [standardPart, dif_pos] 
+  rw [standardPart, dif_pos]
   exact r.ringHom_apply <|
     (LinearOrderedField.inducedOrderRingHom _ ℝ).comp (FiniteResidueField.ofArchimedean f)
 
