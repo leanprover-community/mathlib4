@@ -103,6 +103,11 @@ variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : S
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
   [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
+def map_free (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
+    (hf' : F.obj (unit R) ≅ unit S) (I : Type u') : F.obj (free I) ≅ free (R := S) I :=
+  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
+    (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ hf').symm
+
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -114,6 +119,27 @@ def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
   letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
   letI g := P.generators.π
   have H : f ≫ g = 0 := by simp [f, g]
+  letI f_new := (map_free F hf' P.relations.I).inv ≫ F.map f ≫ (map_free F hf' P.generators.I).hom
+  letI g_new := (map_free F hf' P.generators.I).inv ≫ F.map g
+  haveI H' : f_new ≫ g_new = 0 := by simp [f_new, g_new, ← Functor.map_comp, H]
+  letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
+    refine cokernel.cokernelIso f_new g_new ?_ ?_
+    obtain h := Presentation.isColimit P
+    have aux : cokernel f ≅ M :=
+      Limits.IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h
+    have aux' : (F.mapCocone (CokernelCofork.ofπ
+      (f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))
+      P.generators.π (by simp))).pt = F.obj M := rfl
+    obtain h' := (Limits.isColimitOfPreserves F h)
+    have aux : IsColimit (colimit.cocone (parallelPair f_new 0)) := by
+      exact colimit.isColimit (parallelPair f_new 0)
+    have aux_f : (colimit.cocone (parallelPair f_new 0)).pt = cokernel f_new := by
+      rfl
+    /- here failed-/
+    refine Limits.IsColimit.coconePointUniqueUpToIso aux h'
+  presentationOfIsCokernelFree f_new g_new H' h'
+  /-
+  William's work
   letI f_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map f ≫
     (PreservesCoproduct.iso F _).hom ≫ (Sigma.mapIso fun b ↦ hf').hom
   letI g_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map g
@@ -141,6 +167,13 @@ def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
       · aesop
       · aesop
   presentationOfIsCokernelFree f_new g_new H' h'
+  -/
+
+
+-- theorem map_aux {M : SheafOfModules.{u'} R} (P : Presentation M)
+--     (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
+--     (hf' : F.obj (unit R) ≅ unit S) :
+--      (P.map F hf').generators.π = F.map (P.generators.π) := sorry
 
 end
 
