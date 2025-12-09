@@ -57,10 +57,10 @@ theorem exp_arcosh (x : ℝ) (hx : 1 ≤ x) : exp (arcosh x) = x + √(x ^ 2 - 1
 @[simp]
 theorem arcosh_zero : arcosh 1 = 0 := by simp [arcosh]
 
-lemma x_add_sqrt_x_sq_sub_one_inv (x : ℝ) (hx : 1 ≤ x) :
-  (x + √(x ^ 2 - 1))⁻¹ = x - √(x ^ 2 - 1) := by
-    apply inv_eq_of_mul_eq_one_right
-    rw [← pow_two_sub_pow_two, sq_sqrt (sub_nonneg_of_le (one_le_pow₀ hx)), sub_sub_cancel]
+lemma add_sqrt_self_sq_sub_one_inv (x : ℝ) (hx : 1 ≤ x) :
+    (x + √(x ^ 2 - 1))⁻¹ = x - √(x ^ 2 - 1) := by
+  apply inv_eq_of_mul_eq_one_right
+  rw [← pow_two_sub_pow_two, sq_sqrt (sub_nonneg_of_le (one_le_pow₀ hx)), sub_sub_cancel]
 
 /-- `arcosh` is the right inverse of `cosh` over [1, ∞). -/
 @[simp]
