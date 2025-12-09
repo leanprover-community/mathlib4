@@ -139,8 +139,8 @@ theorem IsScalarTower.isAlgebraic [Algebra F K] [Algebra F L] [Algebra.IsAlgebra
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
-  · rw [← f.toAlgHom.comp_algebraMap]
-    exact splits_comp_of_splits _ _ (splits F p)
+  · rw [← f.toAlgHom.comp_algebraMap, ← map_map]
+    exact (splits F p).map _
   · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
       (splits F p).adjoin_rootSet_eq_range, adjoin_rootSet F p]
 
@@ -159,8 +159,9 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateFie
 theorem IntermediateField.splits_of_splits (h : (p.map (algebraMap K L)).Splits)
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : (p.map (algebraMap K F)).Splits := by
   classical
-  simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
-  exact splits_of_comp _ F.val.toRingHom h hF
+  have := Splits.of_splits_map (f := p.map (algebraMap K F)) (algebraMap F L)
+  rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq] at this
+  exact this h (by simpa [rootSet_def] using hF)
 
 theorem IntermediateField.splits_iff_mem (h : (p.map (algebraMap K L)).Splits) :
     (p.map (algebraMap K F)).Splits ↔ ∀ x ∈ p.rootSet L, x ∈ F := by

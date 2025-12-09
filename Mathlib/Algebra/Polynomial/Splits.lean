@@ -253,64 +253,37 @@ alias splits_of_splits_id := Splits.map
 
 end UFD
 
-theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (f.map (j.comp i)))
-    (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits (f.map i) := by
-  choose lift lift_eq using roots_mem_range
-  rw [splits_iff_exists_multiset]
-  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective ?_⟩
-  conv_lhs => rw [Polynomial.map_map, Splits.eq_prod_roots h]
-  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
-    map_C, map_X, lift_eq, Multiset.pmap_eq_map]
-  simp
+@[deprecated (since := "2025-12-09")]
+alias splits_of_comp := Splits.of_splits_map
 
-theorem splits_id_of_splits {f : K[X]} (h : Splits (f.map i))
-    (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (f.map (RingHom.id K)) :=
-  splits_of_comp (RingHom.id K) i h roots_mem_range
+@[deprecated (since := "2025-12-09")]
+alias splits_id_of_splits := Splits.of_splits_map
 
-theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Splits (f.map i)) :
-    Splits (f.map (j.comp i)) :=
-  f.map_map i j ▸ h.map j
+@[deprecated (since := "2025-12-09")]
+alias splits_comp_of_splits := Splits.map
 
 variable [Algebra R K] [Algebra R L]
 
 theorem splits_of_algHom {f : R[X]} (h : Splits (f.map (algebraMap R K))) (e : K →ₐ[R] L) :
     Splits (f.map (algebraMap R L)) := by
-  rw [← e.comp_algebraMap_of_tower R]; exact splits_comp_of_splits _ _ h
+  rw [← e.comp_algebraMap_of_tower R, ← map_map]; exact h.map _
 
 variable (L) in
 theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
     (h : Splits (f.map (algebraMap R K))) : Splits (f.map (algebraMap R L)) :=
   splits_of_algHom h (IsScalarTower.toAlgHom R K L)
 
-theorem eval₂_derivative_of_splits [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : (P.map f).Splits)
-    (x : L) :
-    eval₂ f x P.derivative = f (P.leadingCoeff) *
-      ((P.map f).roots.map fun a ↦ (((P.map f).roots.erase a).map (x - ·)).prod).sum := by
-  conv_lhs => rw [← eval_map, ← derivative_map, Splits.eq_prod_roots hP]
-  classical
-  simp [derivative_prod, eval_multisetSum, eval_multiset_prod]
+@[deprecated (since := "2025-12-08")]
+alias eval₂_derivative_of_splits := Splits.eval_derivative
 
-theorem aeval_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
-    (hP : (P.map (algebraMap K L)).Splits) (r : L) :
-    aeval r P.derivative = algebraMap K L P.leadingCoeff *
-      ((P.aroots L).map fun a ↦ (((P.aroots L).erase a).map (r - ·)).prod).sum :=
-  eval₂_derivative_of_splits hP r
+@[deprecated (since := "2025-12-08")]
+alias aeval_derivative_of_splits := Splits.eval_derivative
 
-theorem eval_derivative_of_splits [DecidableEq K] {P : K[X]} (hP : P.Splits) (r : K) :
-    eval r P.derivative = P.leadingCoeff *
-      (P.roots.map fun a ↦ ((P.roots.erase a).map (r - ·)).prod).sum := by
-  simpa using eval₂_derivative_of_splits (hP.map <| .id K) r
+@[deprecated (since := "2025-12-08")]
+alias eval_derivative_of_splits := Splits.eval_derivative
 
-/-- Let `P` be a monic polynomial over `K` that splits over `L`. Let `r : L` be a root of `P`.
-Then $P'(r) = \prod_{a}(r-a)$, where the product in the RHS is taken over all roots of `P` in `L`,
-with the multiplicity of `r` reduced by one. -/
-theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
-    (hP : (P.map (algebraMap K L)).Splits) {r : L} (hr : r ∈ P.aroots L) :
-    aeval r (Polynomial.derivative P) = (((P.aroots L).erase r).map fun a => r - a).prod := by
-  replace hmo := hmo.map (algebraMap K L)
-  rw [aeval_def, ← eval_map, ← derivative_map]
-  nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
-  rw [eval_multiset_prod_X_sub_C_derivative hr]
+@[deprecated (since := "2025-12-08")]
+alias aeval_root_derivative_of_splits := Splits.eval_root_derivative
 
 theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
     (h : p.Splits) (hx : p.eval x ≠ 0) :
@@ -319,7 +292,7 @@ theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
   suffices p.roots.map (fun z ↦ p.leadingCoeff * ((p.roots.erase z).map (fun w ↦ x - w) ).prod) =
       p.roots.map fun i ↦ p.leadingCoeff * ((x - i)⁻¹ * (p.roots.map (fun z ↦ x - z)).prod) by
     nth_rw 2 [Splits.eq_prod_roots h]
-    simp [eval_derivative_of_splits h, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
+    simp [h.eval_derivative, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
       mul_comm, mul_left_comm]
   refine Multiset.map_congr rfl fun z hz ↦ ?_
   rw [← Multiset.prod_map_erase hz, inv_mul_cancel_left₀]

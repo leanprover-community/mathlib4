@@ -286,13 +286,13 @@ theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ 
   · rw [←
       (SplittingField.lift q₁
           ((SplittingField.splits _).splits_of_dvd (map_ne_zero (mul_ne_zero hq₁ hq₂))
-             ((map_dvd_map' _).mpr (dvd_mul_right q₁ q₂)))).comp_algebraMap]
-    exact splits_comp_of_splits _ _ h₁
+             ((map_dvd_map' _).mpr (dvd_mul_right q₁ q₂)))).comp_algebraMap, ← map_map]
+    exact h₁.map _
   · rw [←
       (SplittingField.lift q₂
           ((SplittingField.splits _).splits_of_dvd (map_ne_zero (mul_ne_zero hq₁ hq₂))
-             ((map_dvd_map' _).mpr (dvd_mul_left q₂ q₁)))).comp_algebraMap]
-    exact splits_comp_of_splits _ _ h₂
+             ((map_dvd_map' _).mpr (dvd_mul_left q₂ q₁)))).comp_algebraMap, ← map_map]
+    exact h₂.map _
 
 /-- `p` splits in the splitting field of `p ∘ q`, for `q` non-constant. -/
 theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
