@@ -359,9 +359,10 @@ theorem notMem_reachabilitySet_and_isAcyclic_iff_isAcyclic_sup_fromEdgeSet {e : 
     e ∉ G.reachabilitySet ∧ G.IsAcyclic ↔ (G ⊔ fromEdgeSet {e}).IsAcyclic := by
   refine ⟨fun ⟨hnreach, hacyc⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach,
     fun hacyc' ↦ ⟨fun hreach ↦ ?_, hacyc'.anti le_sup_left⟩⟩
-  refine isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges.mp
-    (isAcyclic_iff_forall_edge_isBridge.mp hacyc' <| by grind [edgeSet_sup, edgeSet_fromEdgeSet])
-      |>.right <| reachabilitySet_mono ?_ hreach
+  have hbridge := isAcyclic_iff_forall_edge_isBridge.mp (e := e) hacyc' <| by
+    grind [edgeSet_sup, edgeSet_fromEdgeSet, Sym2.mem_diagSet_iff_isDiag]
+  apply isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges.mp hbridge |>.right
+  refine reachabilitySet_mono ?_ hreach
   rw [deleteEdges, sup_sdiff]
   apply le_sup_of_le_left
   rw [← deleteEdges, deleteEdges_eq_self.mpr <| Set.disjoint_singleton_left.mpr hnedge |>.symm]
