@@ -233,7 +233,7 @@ variable (G : Type*) [AddMonoid G]
 composed of:
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
-* `shiftInvariant`: the set is invariant under all right-translation shifts
+* `mapsTo`: the set is invariant under all right-translation shifts
   `(shift g)`. -/
 structure Subshift where
   /-- The underlying set of configurations (additive monoid version). -/
@@ -249,6 +249,13 @@ section MulSubshiftDef
 variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [Monoid G]
 
+/-- A *subshift* on an alphabet `A` over a multiplicative monoid `G` is a closed,
+shift-invariant subset of `G → A`, where the shift is given by right-multiplication.
+Formally, it is composed of:
+* `carrier`: the underlying set of allowed configurations.
+* `isClosed`: the set is topologically closed in `A^G`.
+* `mapsTo`: the set is invariant under all right-translation shifts
+  `(mulShift g)`. -/
 @[to_additive existing Subshift]
 structure MulSubshift where
   /-- The underlying set of configurations. -/
