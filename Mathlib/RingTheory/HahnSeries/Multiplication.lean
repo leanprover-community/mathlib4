@@ -448,13 +448,13 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
       simp only [smul_eq_mul]
       exact add_mul }
 
-theorem coeff_single_mul_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
-    {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
+theorem coeff_single_mul_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a b : Γ} :
+    (single b r * x).coeff (a + b) = r * x.coeff a := by
   rw [← of_symm_smul_of_eq_mul, add_comm, ← vadd_eq_add]
   exact HahnModule.coeff_single_smul_vadd
 
-theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
-    {b : Γ} : (x * single b r).coeff (a + b) = x.coeff a * r := by
+theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a b : Γ} :
+    (x * single b r).coeff (a + b) = x.coeff a * r := by
   by_cases hr : r = 0
   · simp [hr, coeff_mul]
   simp only [hr, coeff_mul, support_single_of_ne, Ne, not_false_iff]
@@ -479,11 +479,24 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   · simp
 
 @[simp]
+theorem coeff_single_mul [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
+    [IsOrderedAddMonoid Γ'] {r : R} {x : HahnSeries Γ' R} {a b : Γ'} :
+    (single b r * x).coeff a = r * x.coeff (a - b) := by
+  simpa using coeff_single_mul_add (a := a - b) (b := b)
+
+@[simp]
+theorem coeff_mul_single [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
+    [IsOrderedAddMonoid Γ'] {r : R} {x : HahnSeries Γ' R} {a b : Γ'} :
+    (x * single b r).coeff a = x.coeff (a - b) * r := by
+  simpa using coeff_mul_single_add (a := a - b) (b := b)
+
+@[simp]
 theorem coeff_mul_single_zero [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
     (x * single 0 r).coeff a = x.coeff a * r := by rw [← add_zero a, coeff_mul_single_add, add_zero]
 
+@[simp]
 theorem coeff_single_zero_mul [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
-    ((single 0 r : HahnSeries Γ R) * x).coeff a = r * x.coeff a := by
+    (single 0 r * x).coeff a = r * x.coeff a := by
   rw [← add_zero a, coeff_single_mul_add, add_zero]
 
 @[simp]

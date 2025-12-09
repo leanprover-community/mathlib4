@@ -851,9 +851,8 @@ variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
 @[simps -isSimp inv]
 instance : DivInvMonoid (HahnSeries Γ R) where
-  inv x :=
-    single (-x.order) x.leadingCoeff⁻¹ *
-      (SummableFamily.powers <| 1 - single (-x.order) x.leadingCoeff⁻¹ * x).hsum
+  inv x := single (-x.order) x.leadingCoeff⁻¹ *
+    (SummableFamily.powers <| 1 - single (-x.order) x.leadingCoeff⁻¹ * x).hsum
 
 @[simp]
 theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := by

@@ -58,6 +58,14 @@ theorem card_single_of_ne (a : Γ) {r : R} (h : r ≠ 0) : card (single a r) = 1
 theorem card_single_le (a : Γ) (r : R) : card (single a r) ≤ 1 :=
   (mk_le_mk_of_subset support_single_subset).trans_eq (mk_singleton a)
 
+@[simp]
+theorem card_one_le [Zero Γ] [One R] : card (1 : HahnSeries Γ R) ≤ 1 :=
+  card_single_le ..
+
+@[simp]
+theorem card_one [Zero Γ] [One R] [NeZero (1 : R)] : card (1 : HahnSeries Γ R) = 1 :=
+  card_single_of_ne _ one_ne_zero
+
 theorem card_map_le [Zero S] (x : HahnSeries Γ R) (f : ZeroHom R S) : (x.map f).card ≤ x.card :=
   card_mono <| support_map_subset ..
 
@@ -87,12 +95,25 @@ theorem card_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalN
     (x y : HahnSeries Γ R) : (x * y).card ≤ x.card * y.card :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
 
+theorem card_single_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [NonUnitalNonAssocSemiring R] (x : HahnSeries Γ R) (a : Γ) (r : R) :
+    (single a r * x).card ≤ x.card := by
+  simpa using (card_mul_le ..).trans (mul_le_mul_left (card_single_le ..) _)
+
+theorem card_mul_single_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [NonUnitalNonAssocSemiring R] (x : HahnSeries Γ R) (a : Γ) (r : R) :
+    (x * single a r).card ≤ x.card := by
+  simpa using (card_mul_le ..).trans (mul_le_mul_right (card_single_le ..) _)
+
 theorem card_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R]
-    (x : HahnSeries Γ R) (n : ℕ) : (x ^ n).card ≤ x.card ^ n := sorry
+    (x : HahnSeries Γ R) (n : ℕ) : (x ^ n).card ≤ x.card ^ n := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp_rw [pow_succ]
+    exact (card_mul_le ..).trans <| mul_le_mul_left IH _
 
-  #exit
-
-theorem card_hsum_le [AddCommMonoid R] {s : SummableFamily Γ R α} :
+theorem card_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
     lift s.hsum.card ≤ sum fun a : α ↦ (s a).card :=
   (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
     mk_iUnion_le_sum_mk_lift
@@ -103,7 +124,23 @@ section LinearOrder
 variable [LinearOrder Γ]
 
 theorem card_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤
+    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤ sum fun n ↦ x.card ^ n := by
+  rw [← lift_uzero (card _)]
+  refine (card_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
+  rw [SummableFamily.powers_toFun]
+  split_ifs
+  · exact card_pow_le ..
+  · cases i <;> simp
+
+theorem card_inv_le [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] (x : HahnSeries Γ R) :
+    x⁻¹.card ≤ sum fun n ↦ x.card ^ n := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  apply (card_single_mul_le ..).trans <| (card_hsum_powers_le ..).trans _
+  gcongr
+  apply (card_single_mul_le _ (-x.order) x.leadingCoeff⁻¹).trans' <| card_mono _
+  rw [← single_zero_one]
+  aesop
 
 end LinearOrder
 end HahnSeries
