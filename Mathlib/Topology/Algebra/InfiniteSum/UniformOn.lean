@@ -137,7 +137,7 @@ end UniformlyOn
 
 section LocallyUniformlyOn
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]
@@ -387,7 +387,7 @@ end Uniformly
 
 section LocallyUniformly
 /-!
-## Locally uniform convergence of sums and products
+## Locally uniform convergence of sums and products
 -/
 
 variable [TopologicalSpace β]
