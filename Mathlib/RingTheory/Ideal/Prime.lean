@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Yuyang Zhao
 -/
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 
@@ -15,6 +17,8 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -75,6 +79,12 @@ theorem IsCompletelyPrime.mem_or_mem {I : Ideal α} (hI : I.IsCompletelyPrime) {
     x * y ∈ I → x ∈ I ∨ y ∈ I :=
   hI.2
 
+theorem IsCompletelyPrime.mul_mem_iff_mem_or_mem [I.IsTwoSided] (hI : I.IsCompletelyPrime) :
+    ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
+  ⟨hI.mem_or_mem, by
+    rintro (h | h)
+    exacts [I.mul_mem_right y h, I.mul_mem_left x h]⟩
+
 theorem IsPrime.mem_or_mem_of_forall {I : Ideal α} (hI : I.IsPrime) {x y : α} :
     (∀ a, x * a * y ∈ I) → x ∈ I ∨ y ∈ I :=
   hI.2
@@ -82,6 +92,14 @@ theorem IsPrime.mem_or_mem_of_forall {I : Ideal α} (hI : I.IsPrime) {x y : α} 
 theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot, mul_one] using h 1)⟩
+
+lemma IsCompletelyPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsCompletelyPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  rw [Ideal.IsCompletelyPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+lemma IsCompletelyPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsCompletelyPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsCompletelyPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsCompletelyPrime] : Submonoid α where
@@ -160,6 +178,14 @@ theorem IsPrime.mul_mem_iff_mem_or_mem [I.IsTwoSided] (hI : I.IsPrime) :
 theorem IsPrime.pow_mem_iff_mem (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
+
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
 end Ideal
 

@@ -5,11 +5,12 @@ Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Cop
 María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
 Francesco Veneziano
 -/
+module
 
-import Mathlib.Analysis.AbsoluteValue.Equivalence
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
 # Ostrowski’s Theorem
@@ -37,6 +38,8 @@ Extend to arbitrary number fields.
 
 absolute value, Ostrowski's theorem
 -/
+
+@[expose] public section
 
 open Filter Nat Real Topology
 
@@ -158,13 +161,12 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     simp only [Nat.cast_one, map_one, lt_self_iff_false] at hp1
   · rintro a b rfl
     rw [Nat.isUnit_iff, Nat.isUnit_iff]
-    by_contra! con
-    obtain ⟨ha₁, hb₁⟩ := con
+    by_contra! ⟨ha₁, hb₁⟩
     obtain ⟨ha₀, hb₀⟩ : a ≠ 0 ∧ b ≠ 0 := by
       refine mul_ne_zero_iff.mp fun h ↦ ?_
       rwa [h, Nat.cast_zero, map_zero, lt_self_iff_false] at hp0
-    have hap : a < a * b := lt_mul_of_one_lt_right (by cutsat) (by cutsat)
-    have hbp : b < a * b := lt_mul_of_one_lt_left (by cutsat) (by cutsat)
+    have hap : a < a * b := lt_mul_of_one_lt_right (by lia) (by lia)
+    have hbp : b < a * b := lt_mul_of_one_lt_left (by lia) (by lia)
     have ha :=
       le_of_not_gt <| not_and.mp ((hmin a).mt hap.not_ge) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
@@ -353,7 +355,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   · simp
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.mpr ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
-  have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; cutsat)
+  have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; lia)
   exact (tendsto_const_rpow_inv (by positivity)).mul tendsto_nat_rpow_inv
 
 -- ## Step 2: given m, n ≥ 2 and |m| = m^s, |n| = n^t for s, t > 0, we have t ≤ s
@@ -437,7 +439,7 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
     inv_pos.mpr (logb_pos (Nat.one_lt_cast.mpr oneltm) (one_lt_of_not_bounded notbdd oneltm)),
     fun n ↦ ?_⟩
   rcases lt_trichotomy n 1 with h | rfl | h
-  · obtain rfl : n = 0 := by cutsat
+  · obtain rfl : n = 0 := by lia
     have : (logb (↑m) (f ↑m))⁻¹ ≠ 0 := by
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]

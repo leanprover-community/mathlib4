@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
@@ -31,6 +33,8 @@ We provide the definition and related lemmas about associated primes of modules.
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]

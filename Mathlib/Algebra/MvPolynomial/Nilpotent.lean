@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Polynomial.Nilpotent
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Nilpotents and units in multivariate polynomial rings
@@ -16,6 +18,8 @@ We prove that
   A multivariate polynomial is invertible iff its constant term is invertible
   and its other coefficients are nilpotent.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

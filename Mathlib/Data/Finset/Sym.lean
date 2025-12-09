@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Multiset.Sym
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Fintype.Vector
+public import Mathlib.Data.Multiset.Sym
 
 /-!
 # Symmetric powers of a finset
@@ -25,6 +27,8 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym` forms a Galois connection between `Finset α` and `Finset (Sym α n)`. Similar for
 `Finset.sym2`.
 -/
+
+@[expose] public section
 
 namespace Finset
 
@@ -112,8 +116,7 @@ theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
-  rw [← not_iff_not]
-  simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
+  contrapose!; exact sym2_eq_empty
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
@@ -226,8 +229,7 @@ theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replic
       Sym.eq_replicate_iff.2 fun _b hb ↦ eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
 
 theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
-  rw [← not_nonempty_iff_eq_empty] at h ⊢
-  exact fun hs ↦ h (hs.sym _)
+  contrapose! h; exact h.sym _
 
 @[simp]
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
@@ -239,7 +241,7 @@ theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
 
 @[simp]
 theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
-  simp only [nonempty_iff_ne_empty, ne_eq, sym_eq_empty, not_and_or, not_ne_iff]
+  contrapose!; exact sym_eq_empty
 
 @[simp]
 theorem sym_univ [Fintype α] (n : ℕ) : (univ : Finset α).sym n = univ :=

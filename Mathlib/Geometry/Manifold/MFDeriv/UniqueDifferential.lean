@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds
@@ -18,6 +20,8 @@ In this file, we prove various properties of unique derivative sets in manifolds
 * `tangentBundle_proj_preimage`: if `s` has the unique differential property,
   its preimage under the tangent bundle projection also has
 -/
+
+@[expose] public section
 
 noncomputable section
 

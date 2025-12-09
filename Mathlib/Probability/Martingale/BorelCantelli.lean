@@ -3,10 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Order.Archimedean.IndicatorCard
-import Mathlib.Probability.Martingale.Centering
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Martingale.OptionalStopping
+module
+
+public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+public import Mathlib.Probability.Martingale.Centering
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
 
@@ -31,6 +33,8 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
   `limsup atTop s` is almost everywhere equal to the set for which `∑ ℙ[s (n + 1)∣ℱ n] = ∞`.
 
 -/
+
+@[expose] public section
 
 
 open Filter
@@ -194,8 +198,8 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun n => f n ω) := by
   have hbdd' : ∀ᵐ ω ∂μ, ∀ i, |(-f) (i + 1) ω - (-f) i ω| ≤ R := by
     filter_upwards [hbdd] with ω hω i
-    erw [← abs_neg, neg_sub, sub_neg_eq_add, neg_add_eq_sub]
-    exact hω i
+    simp only [Pi.neg_apply]
+    grind
   have hup := hf.submartingale.bddAbove_iff_exists_tendsto hbdd
   have hdown := hf.neg.submartingale.bddAbove_iff_exists_tendsto hbdd'
   filter_upwards [hup, hdown] with ω hω₁ hω₂

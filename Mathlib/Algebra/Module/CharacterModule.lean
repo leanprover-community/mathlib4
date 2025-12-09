@@ -3,11 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle.Defs
-import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Character module of a module
@@ -27,6 +28,8 @@ an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l`
   `(N ⊗ M)⋆` given by `curry` and `uncurry`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

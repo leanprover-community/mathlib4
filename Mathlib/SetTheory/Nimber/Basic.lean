@@ -3,9 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Data.Nat.Bitwise
+public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Nimber.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -40,6 +42,8 @@ To reduce API duplication, we opt not to implement operations on `Nimber` on `Or
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
 needed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -135,13 +139,13 @@ theorem induction {p : Nimber → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → 
   Ordinal.induction
 
 protected theorem le_zero {a : Nimber} : a ≤ 0 ↔ a = 0 :=
-  Ordinal.le_zero
+  nonpos_iff_eq_zero (α := Ordinal)
 
 protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
-  Ordinal.not_lt_zero a
+  not_lt_zero (α := Ordinal)
 
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
-  Ordinal.pos_iff_ne_zero
+  pos_iff_ne_zero (α := Ordinal)
 
 theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
   Ordinal.lt_one_iff_zero
