@@ -70,13 +70,8 @@ theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
 
 @[simp]
 theorem arcosh_eq_zero_iff {x : ℝ} (hx : 1 ≤ x) : arcosh x = 0 ↔ x = 1 := by
-  constructor
-  case mpr => intro hx; subst hx; exact arcosh_zero
-  case mp =>
-  intro h
-  convert congrArg cosh h
-  · rw [cosh_arcosh hx]
-  · rw [cosh_zero]
+  rw [← exp_injective.eq_iff, exp_arcosh x hx, exp_zero]
+  grind
 
 @[simp]
 theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
