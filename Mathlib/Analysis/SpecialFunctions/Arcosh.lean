@@ -5,8 +5,8 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Arsinh
 
 /-!
 # Inverse of the cosh function
@@ -33,7 +33,7 @@ arcosh, arccosh, argcosh, acosh
 
 noncomputable section
 
-open Function Filter Set NNReal
+open Function Filter Set
 
 open scoped Topology
 
