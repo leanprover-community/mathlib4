@@ -153,7 +153,7 @@ register_hint 200 fun_prop
 end Hint
 
 /-!
-# Register tactics with `try?`. Tactics with larger priority run first.
+## Register tactics with `try?`. Tactics with larger priority run first.
 -/
 
 section Try

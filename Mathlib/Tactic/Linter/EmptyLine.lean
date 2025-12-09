@@ -25,7 +25,7 @@ def Substring.Raw.getRange : Substring.Raw → Syntax.Range
 
 namespace Syntax
 /-!
-# `Syntax` filters
+## `Syntax` filters
 -/
 
 /--
