@@ -38,10 +38,10 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G] [NonUnitalNonAssocSemiring A]
 
-/-- A non_unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
+/-- A non-unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
 values on the functions `single a 1`. -/
 @[to_additive (dont_translate := k) /--
-A non_unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
+A non-unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
 values on the functions `single a 1`. -/]
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : k[G] →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=

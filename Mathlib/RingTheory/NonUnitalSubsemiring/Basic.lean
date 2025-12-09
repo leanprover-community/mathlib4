@@ -744,7 +744,7 @@ theorem sofLeftInverse'_symm_apply {g : S → R} {f : F} (h : Function.LeftInver
   rfl
 
 /-- Given an equivalence `e : R ≃+* S` of non-unital semirings and a non-unital subsemiring
-`s` of `R`, `non_unital_subsemiring_map e s` is the induced equivalence between `s` and
+`s` of `R`, `nonUnitalSubsemiringMap e s` is the induced equivalence between `s` and
 `s.map e` -/
 @[simps!]
 def nonUnitalSubsemiringMap (e : R ≃+* S) (s : NonUnitalSubsemiring R) :
