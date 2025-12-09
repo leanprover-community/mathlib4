@@ -25,6 +25,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 section Pullback
 
+@[simps!]
 def combinePullbackCones (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f.app X) (g.app X))
     (hc : ∀ X, IsLimit (c X)) : PullbackCone f g :=
   PullbackCone.mk (W := {
