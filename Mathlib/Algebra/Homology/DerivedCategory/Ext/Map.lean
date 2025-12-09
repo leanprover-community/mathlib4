@@ -62,9 +62,6 @@ universe t t'
 
 variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
 
-instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
-
 open Functor in
 lemma Abelian.Ext.mapExactFunctor_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
     (e : Ext X Y n) : (e.mapExactFunctor F).hom =
