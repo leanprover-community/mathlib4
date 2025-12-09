@@ -136,6 +136,7 @@ namespace Polynomial
 
 section Moore
 
+-- #32616
 theorem aeval_smul {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (f : R[X])
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G) (x : S) :
     aeval (g • x) f = g • (aeval x f) := by
@@ -162,7 +163,8 @@ theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
-theorem fiddly''' {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
+theorem Function.Surjective.card_le_card_add_one_iff
+    {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
     Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
   rcases isEmpty_or_nonempty α
@@ -192,11 +194,11 @@ theorem fiddly''' {α β : Type*} [Finite α] {f : α → β} (hf : Function.Sur
       (Function.surjInv_eq hf (f a)).symm (Function.surjInv_eq hf (f b)).symm
       (ha (f a)).symm (hb (f b)).symm)
 
-theorem fiddly' {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
+theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
     s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
   simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
-    fiddly''' (Set.surjective_mapsTo_image_restrict f s)
+    Function.Surjective.card_le_card_add_one_iff (Set.surjective_mapsTo_image_restrict f s)
 
 theorem _root_.Finset.sum_le_one_iff {α : Type*} {s : Finset α} {f : α → ℕ} :
     ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y : α, x ∈ s → y ∈ s → 0 < f x → 0 < f y → x = y ∧ f x = 1 := by
@@ -261,7 +263,7 @@ theorem tada -- R = ℤ, S = 𝓞 K
   split_ifs with hz hz'
   · subst hz
     simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (fiddly' (f.rootSet S) π).mp h
+    have key := (Set.ncard_le_ncard_image_add_one_iff (f.rootSet S) π).mp h
       (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
     simp [hπ] at key
     simp [← Polynomial.rootSet.coe_smul] at key
@@ -271,7 +273,8 @@ theorem tada -- R = ℤ, S = 𝓞 K
     exact key.symm
   · simp [hz']
   · simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (fiddly' (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
+    have key := (Set.ncard_le_ncard_image_add_one_iff
+      (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
     simp [hπ] at key
     simp [← Polynomial.rootSet.coe_smul] at key
     simp [hx] at key
