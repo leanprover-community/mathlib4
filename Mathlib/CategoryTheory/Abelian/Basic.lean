@@ -286,7 +286,7 @@ end ToNonPreadditiveAbelian
 
 section
 
-/-! We now promote some instances that were constructed using `NonPreadditiveAbelian`. -/
+/-! We now promote some instances that were constructed using `nonPreadditiveAbelian`. -/
 
 
 attribute [local instance] nonPreadditiveAbelian
