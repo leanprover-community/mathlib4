@@ -48,7 +48,7 @@ See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNam
 We also do not count declarations which begin with `_auto`, as these are always-public auxiliary
 declarations created to hold the syntax of autoparams. It is not clear yet whether they are
 intended to be public, but for now we avoid them.
-See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/PrivateModule.20linter.20not.20firing/near/562418477).
+See lean4#11569 and [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/PrivateModule.20linter.20not.20firing/near/562418477).
 
 Note that metaprograms should not add public declarations when run in private scopes. Doing so would
 likely be a bug in the metaprogram. As such, we do not perform further checks for automatically
