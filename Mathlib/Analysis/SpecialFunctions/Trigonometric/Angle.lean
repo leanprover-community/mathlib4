@@ -900,6 +900,16 @@ theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : 2 • a
     contradiction
   · rw [h3]
 
+theorem angle_sub_angle_neq_pi_of_nonzero_sign_eq (a b : Real.Angle) (h_sign : a.sign = b.sign)
+  (h_ne : b.sign ≠ 0) : a - b ≠ π := by
+  intro h
+  have h' : a = b + π := by
+    simp [← h]
+  have h_sign' := h_sign
+  rw [h', Real.Angle.sign_add_pi] at h_sign'
+  simp only [SignType.neg_eq_self_iff] at h_sign'
+  contradiction
+
 theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign = b.sign) :
     (2:ℤ) • a = (2:ℤ) • b ↔ a = b:= by
   rw [Real.Angle.two_zsmul_eq_iff]
