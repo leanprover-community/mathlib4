@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
 /-!
 # Polar coordinate change of variables for the mixed space of a number field
