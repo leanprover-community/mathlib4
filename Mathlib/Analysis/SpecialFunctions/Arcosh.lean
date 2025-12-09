@@ -17,11 +17,7 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.arcosh`: An inverse function of `Real.cosh` as a function from [0, ∞) to [1, ∞).
 
-- `Real.cosh'`, `Real.arcosh'`: Versions of `Real.cosh` and `Real.arcosh` restricted
-  to the domains [0, ∞) and [1, ∞), respectively.
-
-- `Real.cosh'Equiv`, `Real.cosh'OrderIso`, `Real.cosh'Homeomorph`: `Real.cosh'` as an `Equiv`,
-  `OrderIso`, and `Homeomorph`, respectively.
+- `Real.coshPartialEquiv`: `Real.cosh` as a `PartialEquiv`.
 
 ## Main Results
 
@@ -105,7 +101,8 @@ theorem arcosh_le_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x ≤ ar
 theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arcosh y ↔ x < y :=
   strictMonoOn_arcosh.lt_iff_lt hx hy
 
-def coshEquiv : PartialEquiv ℝ ℝ where
+/-- `Real.cosh` as a `PartialEquiv`. -/
+def coshPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := cosh
   invFun := arcosh
   source := { r | 0 ≤ r }
@@ -114,141 +111,5 @@ def coshEquiv : PartialEquiv ℝ ℝ where
   map_target' _ hr := arcosh_nonneg hr
   left_inv' _ hr := arcosh_cosh hr
   right_inv' _ hr := cosh_arcosh hr
-
-end Real
-
-/-- Real numbers which are at least 1. -/
-def AOReal := { r : ℝ // 1 ≤ r } deriving
-  Preorder, PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  TopologicalSpace, UniformSpace, PseudoMetricSpace,
-  Nontrivial, Inhabited
-
-namespace AOReal
-
-@[inherit_doc] scoped notation "ℝ≥1" => AOReal
-
-instance : OrderTopology ℝ≥1 :=
-  orderTopology_of_ordConnected (t := Ici 1)
-
-/-- Coercion `ℝ≥1 → ℝ`. -/
-@[coe] def toReal : ℝ≥1 → ℝ := Subtype.val
-
-instance : Coe ℝ≥1 ℝ := ⟨toReal⟩
-
--- Simp lemma to put back `n.val` into the normal form given by the coercion.
-@[simp]
-theorem val_eq_coe (n : ℝ≥1) : n.val = n :=
-  rfl
-
-@[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal ⟨a, ha⟩ = a := rfl
-
-end AOReal
-
-open AOReal
-
-namespace Real
-
-/-- `cosh` as a function from [0, ∞) to [1, ∞) -/
-@[pp_nodot]
-def cosh' (x : ℝ≥0) : ℝ≥1 :=
-  {
-    val := cosh x
-    property := one_le_cosh _
-  }
-
-/-- `arcosh` as a function from [1, ∞) to [0, ∞). -/
-@[pp_nodot]
-def arcosh' (x : ℝ≥1) : ℝ≥0 :=
-  {
-    val := arcosh x
-    property := arcosh_nonneg x.property
-  }
-
-@[simp]
-theorem cosh'_arcosh' (x : ℝ≥1) : cosh' (arcosh' x) = x := by
-  rw [cosh', arcosh']
-  congr
-  rw [NNReal.coe_mk, cosh_arcosh, AOReal.val_eq_coe]
-  exact x.property
-
-@[simp]
-theorem arcosh'_cosh' (x : ℝ≥0) : arcosh' (cosh' x) = x := by
-  rw [cosh', arcosh']
-  congr
-  rw [AOReal.coe_mk, arcosh_cosh, NNReal.val_eq_coe]
-  exact x.property
-
-/-- `cosh'` is injective. -/
-theorem cosh'_injective : Injective cosh' :=
-  RightInverse.injective arcosh'_cosh'
-
-/-- `cosh'` is surjective. -/
-theorem cosh'_surjective : Surjective cosh' :=
-  LeftInverse.surjective cosh'_arcosh'
-
-/-- `cosh'` is bijective, both injective and surjective. -/
-theorem cosh'_bijective : Bijective cosh' :=
-  ⟨cosh'_injective, cosh'_surjective⟩
-
-/-- `Real.cosh'` as an `Equiv`. -/
-@[simps]
-def cosh'Equiv : ℝ≥0 ≃ ℝ≥1 where
-  toFun := cosh'
-  invFun := arcosh'
-  left_inv := arcosh'_cosh'
-  right_inv := cosh'_arcosh'
-
-@[simp]
-theorem cosh'_le_cosh' (x y : ℝ≥0) : cosh' x ≤ cosh' y ↔ x ≤ y := by
-  constructor
-  · intro h
-    have : cosh x ≤ cosh y := by
-      rw [cosh', cosh'] at h
-      exact h
-    have := cosh_le_cosh.mp this
-    rw [NNReal.abs_eq, NNReal.abs_eq, coe_le_coe] at this
-    exact this
-  · intro h
-    rw [cosh', cosh']
-    gcongr
-    apply cosh_le_cosh.mpr
-    rw [NNReal.abs_eq, NNReal.abs_eq, coe_le_coe]
-    exact h
-
-/-- `Real.cosh'` as an `OrderIso`. -/
-def cosh'OrderIso : ℝ≥0 ≃o ℝ≥1 where
-  toEquiv := cosh'Equiv
-  map_rel_iff' := @cosh'_le_cosh'
-
-/-- `Real.cosh'` as a `Homeomorph`. -/
-def cosh'Homeomorph : ℝ≥0 ≃ₜ ℝ≥1 :=
-  cosh'OrderIso.toHomeomorph
-
-theorem arcosh'_bijective : Bijective arcosh' :=
-  cosh'Equiv.symm.bijective
-
-theorem arcosh'_injective : Injective arcosh' :=
-  cosh'Equiv.symm.injective
-
-theorem arcosh'_surjective : Surjective arcosh' :=
-  cosh'Equiv.symm.surjective
-
-theorem arcosh'_strictMono : StrictMono arcosh' :=
-  cosh'OrderIso.symm.strictMono
-
-@[simp]
-theorem arcosh'_inj (x y) : arcosh' x = arcosh' y ↔ x = y :=
-  arcosh'_injective.eq_iff
-
-@[simp]
-theorem arcosh'_le_arcosh' (x y) : arcosh' x ≤ arcosh' y ↔ x ≤ y :=
-  cosh'OrderIso.symm.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.arcosh'_le_arcosh'⟩ := arcosh'_le_arcosh'
-
-@[simp]
-theorem arcosh'_lt_arcosh' (x y) : arcosh' x < arcosh' y ↔ x < y :=
-  cosh'OrderIso.symm.lt_iff_lt
-
 
 end Real
