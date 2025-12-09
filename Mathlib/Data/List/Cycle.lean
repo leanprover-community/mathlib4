@@ -337,44 +337,8 @@ theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
   all_goals grind
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
-    prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) :=
-  match l with
-  | [] => by simp at hi
-  | x::l => by
-    induction l generalizing i x with
-    | nil => simp
-    | cons y l hl =>
-      rcases i with (_ | _ | i)
-      · simp [getLast_eq_getElem]
-      · simp only [mem_cons, nodup_cons] at h
-        push_neg at h
-        simp only [zero_add, getElem_cons_succ, getElem_cons_zero,
-          List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, length, add_comm,
-          Nat.add_sub_cancel_left, Nat.mod_self]
-      · rw [prev_ne_cons_cons]
-        · convert hl i.succ y h.of_cons (Nat.le_of_succ_le_succ hi) using 1
-          have : ∀ k hk, (y :: l)[k] = (x :: y :: l)[k + 1]'(Nat.succ_lt_succ hk) := by
-            simp
-          rw [this]
-          congr
-          simp only [Nat.add_succ_sub_one, add_zero, length]
-          simp only [length, Nat.succ_lt_succ_iff] at hi
-          set k := l.length
-          rw [Nat.succ_add, ← Nat.add_succ, Nat.add_mod_right, Nat.succ_add, ← Nat.add_succ _ k,
-            Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.mod_eq_of_lt]
-          · exact Nat.lt_succ_of_lt hi
-          · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
-        · intro H
-          suffices i.succ.succ = 0 by simpa
-          suffices Fin.mk _ hi = ⟨0, by lia⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
-        · intro H
-          suffices i.succ.succ = 1 by simpa
-          suffices Fin.mk _ hi = ⟨1, by lia⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
+    l.prev l[i] (get_mem ..) = l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia)) := by
+  grind [prev_eq_getElem, idxOf_getElem]
 
 @[simp]
 theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :

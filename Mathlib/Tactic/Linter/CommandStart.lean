@@ -291,11 +291,11 @@ to avoid cutting into "words".
 
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
-def mkWindow (orig : String) (start ctx : Nat) : String :=
+public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
   let middle := orig.takeEnd (start + 1)
-  let headCtx := head.takeEndWhile (fun (c : Char) => !c.isWhitespace)
-  let tail := middle.drop ctx |>.takeWhile (fun (c : Char) => !c.isWhitespace)
+  let headCtx := head.takeEndWhile (!·.isWhitespace)
+  let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]

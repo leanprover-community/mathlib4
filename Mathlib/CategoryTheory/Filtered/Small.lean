@@ -110,7 +110,7 @@ theorem small_fullSubcategory_filteredClosure :
         simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
       · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure.eq_1]
+        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
         rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
@@ -261,7 +261,7 @@ theorem small_fullSubcategory_cofilteredClosure :
       simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure.eq_1]
+      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
