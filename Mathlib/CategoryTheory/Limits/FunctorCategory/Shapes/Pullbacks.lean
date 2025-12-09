@@ -30,7 +30,7 @@ with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X �
 them together to give a pullback cone for the cospan formed by `f` and `g`.
 `combinePullbackConesIsLimit` shows that this pullback cone is limiting. -/
 @[simps!]
-def combinePullbackCones (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f.app X) (g.app X))
+def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f.app X) (g.app X))
     (hc : ∀ X, IsLimit (c X)) : PullbackCone f g :=
   PullbackCone.mk (W := {
     obj X := (c X).pt
@@ -44,14 +44,15 @@ def combinePullbackCones (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f
 /--
 The pullback cone `combinePullbackCones` is limiting.
 -/
-def combinePullbackConesIsLimit (f : F ⟶ H) (g : G ⟶ H)
+def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
     (c : ∀ X, PullbackCone (f.app X) (g.app X)) (hc : ∀ X, IsLimit (c X)) :
-    IsLimit (combinePullbackCones f g c hc) := evaluationJointlyReflectsLimits _ fun k ↦ by
-  refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
-  · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-  · refine Cones.ext (Iso.refl _) ?_
-    rintro (_ | _ | _)
-    all_goals cat_disch
+    IsLimit (combine f g c hc) :=
+  evaluationJointlyReflectsLimits _ fun k ↦ by
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
+    · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    · refine Cones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _)
+      all_goals cat_disch
 
 variable [HasPullbacks C]
 
