@@ -453,7 +453,7 @@ theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.
     PreZeroHypercover.pullback₁_X, ulift_X, ulift_f, PreZeroHypercover.pullback₁_f]
   simp_rw [pullback.condition_assoc, ← ulift_f, ← ι_fromGlued, Category.assoc, glueMorphisms,
     IsIso.hom_inv_id_assoc, ulift_f, hf]
-  erw [Multicoequalizer.π_desc]
+  simp [CategoryTheory.GlueData.ι]
 
 end Cover
 
