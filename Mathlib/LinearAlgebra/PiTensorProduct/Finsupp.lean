@@ -33,7 +33,7 @@ of modules indexed by `ι`, then the tensor product of the family `κ i →₀ M
 equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
 noncomputable def ofFinsuppEquiv :
-  (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
+    (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
   haveI := Classical.typeDecidableEq (⨂[R] (i : ι), M i)
   PiTensorProduct.congr (fun _ ↦ finsuppLequivDFinsupp R) ≪≫ₗ
     ofDFinsuppEquiv ≪≫ₗ
