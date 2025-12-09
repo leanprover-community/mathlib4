@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Edge labellings
@@ -85,7 +84,7 @@ theorem get_comm (x y : V) (h) : C.get y x h = C.get x y h.symm := by
 @[ext]
 theorem ext_get {C' : EdgeLabelling G K}
     (h : ∀ x y, (h : G.Adj x y) → C.get x y h = C'.get x y h) : C = C' := by
-  refine funext fun ⟨e, he⟩ => ?_
+  funext ⟨e, he⟩
   induction e using Sym2.inductionOn
   exact h _ _ he
 
@@ -212,9 +211,11 @@ theorem toTopEdgeLabelling_get {G : SimpleGraph V} [DecidableRel G.Adj] {x y : V
     G.toTopEdgeLabelling.get x y H = if G.Adj x y then 1 else 0 :=
   rfl
 
+@[simp]
 theorem toTopEdgeLabelling_labelGraph (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.toTopEdgeLabelling.labelGraph 1 = G := by ext x y; simpa [imp_false] using G.ne_of_adj
 
+@[simp]
 theorem toTopEdgeLabelling_labelGraph_compl (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.toTopEdgeLabelling.labelGraph 0 = Gᶜ := by ext x y; simp [imp_false]
 
