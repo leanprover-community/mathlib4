@@ -808,8 +808,7 @@ lemma ideal_depth_quotient_regular_sequence_add_length_eq_ideal_depth (I : Ideal
     I.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     I.depth M := by
   apply moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth _ M rs reg
-  convert h
-  rw [LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ I)), Ideal.annihilator_quotient]
+  simpa [(Shrink.linearEquiv R (R ⧸ I)).annihilator_eq , Ideal.annihilator_quotient] using h
 
 lemma depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRing R]
     (M : ModuleCat.{v} R) (rs : List R)
@@ -827,8 +826,7 @@ section ring
 
 local instance (R : Type*) [CommRing R] (I : Ideal R) [IsNoetherianRing R] :
     IsNoetherianRing (R ⧸ I) :=
-  isNoetherianRing_of_surjective R _ (Ideal.Quotient.mk I)
-    Ideal.Quotient.mk_surjective
+  isNoetherianRing_of_surjective R _ (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
 
 lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
     [IsLocalRing R] [IsNoetherianRing R] [IsLocalRing R'] [IsNoetherianRing R'] (e : R ≃+* R') :
@@ -864,8 +862,8 @@ lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetheria
       simp only [List.mem_map] at hr
       rcases hr with ⟨r', hr', eq⟩
       simpa [← eq] using mem r' hr'
-    have reg' : RingTheory.Sequence.IsRegular M (rs.map (algebraMap R S)) := by
-      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff S M rs).mpr reg.1, ?_⟩
+    have reg' : IsRegular M (rs.map (algebraMap R S)) := by
+      refine ⟨(isWeaklyRegular_map_algebraMap_iff S M rs).mpr reg.1, ?_⟩
       apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
       apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       exact IsLocalRing.maximalIdeal_le_jacobson _
@@ -986,30 +984,18 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
         intro r hr
         rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
         simpa [← eq] using mem.2 r' hr'
-      simp [← hn (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))
-        ((RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R))
-          (R ⧸ x • (⊤ : Ideal R)) rs').mpr ((isWeaklyRegular_cons_iff _ x rs').mp reg).2) mem'
-          (by simpa using len)]
+      simp only [← hn (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))
+        ((isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R)) _ rs').mpr
+        ((isWeaklyRegular_cons_iff _ x rs').mp reg).2) mem' (by simpa using len)]
       congr 2
-      let f := (Ideal.Quotient.mk (ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R)))))).comp
-        (Ideal.Quotient.mk (x • (⊤ : Ideal R)))
-      have surj : Function.Surjective f := by
-        simp only [RingHom.coe_comp, f]
-        exact Function.Surjective.comp Ideal.Quotient.mk_surjective Ideal.Quotient.mk_surjective
-      have eq : RingHom.ker f = ofList (x :: rs') := by
-        have := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
-        simp only [smul_eq_mul, mul_top] at this
-        simp only [← RingHom.comap_ker, mk_ker, ofList_cons, this, f, sup_comm]
-        convert Ideal.comap_map_of_surjective' (Ideal.Quotient.mk (x • (⊤ : Ideal R)))
-          Ideal.Quotient.mk_surjective (Ideal.span {r | r ∈ rs'})
-        · simp
-        · exact mk_ker.symm
+      have eq1 : x • (⊤ : Ideal R) = span {x} := by simp [← Submodule.ideal_span_singleton_smul]
+      have eq2 : ofList (rs'.map (Ideal.Quotient.mk (span {x}))) =
+        (ofList rs').map (Ideal.Quotient.mk (span {x})) := by simp
       let e : R ⧸ ofList (x :: rs') ≃+* ((R ⧸ x • (⊤ : Ideal R)) ⧸
-        ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))) :=
-        (Ideal.quotientEquivAlgOfEq R eq).symm.toRingEquiv.trans
-        (RingHom.quotientKerEquivOfSurjective surj)
+        ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))) := by
+        rw [Ideal.ofList_cons, eq1, eq2]
+        exact (DoubleQuot.quotQuotEquivQuotSup _ _).symm
       let _ := RingEquiv.isLocalRing e
-      let _ := isNoetherianRing_of_ringEquiv _ e
       exact IsLocalRing.depth_eq_of_ringEquiv e
 
 end ring
