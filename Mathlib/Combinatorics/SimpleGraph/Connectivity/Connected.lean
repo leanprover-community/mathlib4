@@ -883,6 +883,7 @@ theorem isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet {e : Sym2 V}
   refine ⟨?_, fun h' ↦ h <| reachabilitySet_mono (sdiff_le_iff'.mpr <| le_refl _) h'⟩
   rw [edgeSet_sup, edgeSet_fromEdgeSet]
   refine Or.inr ⟨Set.mem_singleton_iff.mpr rfl, mt ?_ h⟩
+  rw [Sym2.mem_diagSet_iff_isDiag]
   exact e.ind fun u v (hd : u = v) ↦ hd ▸ Reachable.refl _
 
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
