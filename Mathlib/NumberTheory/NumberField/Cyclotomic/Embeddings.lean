@@ -6,7 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
@@ -30,12 +30,16 @@ variable {n : ℕ} [NeZero n] (K : Type u) [Field K] [CharZero K]
 
 /-- If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`, then there are no real places
 of `K`. -/
-theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
-    (hn : 2 < n) :
+theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K] (hn : 2 < n) :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
     nrRealPlaces K = 0 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
+
+theorem isTotallyComplex [IsCyclotomicExtension {n} ℚ K] (hn : 2 < n) :
+    IsTotallyComplex K := by
+  have := IsCyclotomicExtension.numberField {n} ℚ K
+  exact nrRealPlaces_eq_zero_iff.mp <| nrRealPlaces_eq_zero K hn
 
 variable (n)
 

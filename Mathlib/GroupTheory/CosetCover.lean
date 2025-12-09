@@ -12,7 +12,8 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
-of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
+of subgroups $C₁$, $C₂$, ..., $Cₙ$:
+$$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
   at least one subgroup $C_i$ has finite index in $G$.
@@ -196,8 +197,9 @@ Then at least one subgroup `H i` has finite index in `G`. -/
 @[to_additive]
 theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex := by
   classical
-  have ⟨j, hj⟩ : s.Nonempty := Finset.nonempty_iff_ne_empty.mpr fun hempty => by
-    rw [hempty, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
+  have ⟨j, hj⟩ : s.Nonempty := by
+    by_contra! rfl
+    rw [← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
     exact Set.empty_ne_univ hcovers
   by_cases hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) = Set.univ
   · rw [Set.iUnion₂_congr fun i hi => by rw [(Finset.mem_filter.mp hi).right]] at hcovers'
