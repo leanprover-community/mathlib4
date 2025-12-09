@@ -72,7 +72,7 @@ noncomputable def coneOfHasLimitEval : Cone F where
   π :=
     { app := fun j => { f := fun _ => limit.π _ j }
       naturality := fun i j φ => by
-        ext
+        ext n
         dsimp
         simp only [Category.id_comp]
         rw [← eval_map, ← Functor.comp_map, limit.w] }
@@ -149,7 +149,7 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
   ι :=
     { app := fun j => { f := fun n => colimit.ι (F ⋙ eval C c n) j }
       naturality := fun i j φ => by
-        ext
+        ext n
         dsimp
         simp only [Category.comp_id]
         rw [← eval_map, ← Functor.comp_map, colimit.w] }
