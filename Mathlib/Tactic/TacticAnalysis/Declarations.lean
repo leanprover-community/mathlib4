@@ -356,8 +356,15 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
             -- Extract just the tactic name, ignoring trailing comments/whitespace
-            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
-            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
+            let oldTacticPP := (← try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
+            catch _ =>
+              return i.tacI.stx.reprint.getD "???")
+            let newTacticPP ← label.getDM (try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim
+            catch _ =>
+              return tac.raw.reprint.getD "???")
             -- Check if this is a self-replacement (tactic replacing itself)
             if !selfReplacements && oldTacticPP == newTacticPP then
               continue
