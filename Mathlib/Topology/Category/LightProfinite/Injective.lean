@@ -90,7 +90,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
     simp_all
   -- obtain a clopen partition `C` of `Y` such that `Z i ⊆ C i ⊆ D i`.
   obtain ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩ :=
-    exists_clopen_partition_of_closed_partition Z_closed D_clopen Z_subset_D Z_disj
+    exists_clopen_partition_of_clopen_cover Z_closed D_clopen Z_subset_D Z_disj
   have D_cover_univ : univ ⊆ (⋃ i, D i) := by
     intro y _
     simp only [mem_iUnion]

@@ -1764,6 +1764,7 @@ public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
+public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierSchwartz
 public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.TemperateGrowth
@@ -2072,6 +2073,7 @@ public import Mathlib.Analysis.Real.Pi.Leibniz
 public import Mathlib.Analysis.Real.Pi.Wallis
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.SpecialFunctions.Arcosh
 public import Mathlib.Analysis.SpecialFunctions.Arsinh
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy

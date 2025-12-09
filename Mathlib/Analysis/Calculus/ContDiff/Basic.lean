@@ -1351,6 +1351,35 @@ theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (h
   rw [← fderivWithin_univ, ← univ_prod_univ]
   exact contDiffOn_fderivWithin_apply hf uniqueDiffOn_univ hmn
 
+theorem ContDiffWithinAt.continuousWithinAt_fderivWithin
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hn : n ≠ 0) (hx : x ∈ s) :
+    ContinuousWithinAt (fderivWithin 𝕜 f s) s x :=
+  hf.fderivWithin_right (m := 0) hs (by simpa [ENat.one_le_iff_ne_zero_withTop]) hx
+    |>.continuousWithinAt
+
+theorem ContDiffAt.continuousAt_fderiv (hf : ContDiffAt 𝕜 n f x) (hn : n ≠ 0) :
+    ContinuousAt (fderiv 𝕜 f) x :=
+  hf.fderiv_right (m := 0) (by simpa [ENat.one_le_iff_ne_zero_withTop]) |>.continuousAt
+
+theorem ContDiffWithinAt.continuousWithinAt_iteratedFDerivWithin {k : ℕ}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hk : k ≤ n) (hx : x ∈ s) :
+    ContinuousWithinAt (iteratedFDerivWithin 𝕜 k f s) s x :=
+  hf.iteratedFDerivWithin_right (m := 0) hs (by simpa) hx |>.continuousWithinAt
+
+theorem ContinuousOn.continuousOn_iteratedFDerivWithin {k : ℕ}
+    (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hk : k ≤ n) :
+    ContinuousOn (iteratedFDerivWithin 𝕜 k f s) s :=
+  fun _x hx ↦ hf.contDiffWithinAt hx |>.continuousWithinAt_iteratedFDerivWithin hs hk hx
+
+theorem ContDiffAt.continuousAt_iteratedFDeriv {k : ℕ} (hf : ContDiffAt 𝕜 n f x) (hk : k ≤ n) :
+    ContinuousAt (iteratedFDeriv 𝕜 k f) x :=
+  hf.iteratedFDeriv_right (m := 0) (by simpa) |>.continuousAt
+
+theorem ContinuousOn.continuousOn_iteratedFDeriv {k : ℕ}
+    (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hk : k ≤ n) :
+    ContinuousOn (iteratedFDeriv 𝕜 k f) s :=
+  fun _x hx ↦ hf.contDiffAt (hs.mem_nhds hx) |>.continuousAt_iteratedFDeriv hk |>.continuousWithinAt
+
 end bundled
 
 section deriv

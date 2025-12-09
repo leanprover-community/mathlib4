@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
@@ -146,14 +147,14 @@ lemma exists_clopen_of_closed_subset_open {X : Type*}
 
 /-- Let `X` be a totally disconnected compact Hausdorff space, `D i ⊆ X` a finite family of clopens,
 and `Z i ⊆ D i` closed. Assume that the `Z i` are pairwise disjoint. Then there exist clopens
-`Z i ⊆ C i ⊆ D i` with the `C i` disjoint, and such that `∪ C i = ∪ D i`. -/
-lemma exists_clopen_partition_of_closed_partition
+`Z i ⊆ C i ⊆ D i` with the `C i` disjoint, and such that `∪ D i ⊆ ∪ C i`. -/
+lemma exists_clopen_partition_of_clopen_cover
     {X I : Type*} [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
     [Finite I] {Z D : I → Set X}
     (Z_closed : ∀ i, IsClosed (Z i)) (D_clopen : ∀ i, IsClopen (D i))
     (Z_subset_D : ∀ i, Z i ⊆ D i) (Z_disj : univ.PairwiseDisjoint Z) :
     ∃ C : I → Set X, (∀ i, IsClopen (C i)) ∧ (∀ i, Z i ⊆ C i) ∧ (∀ i, C i ⊆ D i) ∧
-    (⋃ i, D i) ⊆ (⋃ i, C i)  ∧ (univ.PairwiseDisjoint C) := by
+    (⋃ i, D i) ⊆ (⋃ i, C i) ∧ (univ.PairwiseDisjoint C) := by
   induction I using Finite.induction_empty_option with
   | of_equiv e IH =>
     obtain ⟨C, h1, h2, h3, h4, h5⟩ := IH (Z := Z ∘ e) (D := D ∘ e)
@@ -169,11 +170,11 @@ lemma exists_clopen_partition_of_closed_partition
     -- let `Z'` be the restriction of `Z` along `some : I → Option I`
     let Z' : I → Set X := fun i ↦ Z (some i)
     have Z'_closed (i : I) : IsClosed (Z (some i)) := Z_closed (some i)
-    have Z'_disj : univ.PairwiseDisjoint (Z ∘ some)  := by
+    have Z'_disj : univ.PairwiseDisjoint (Z ∘ some) := by
       rw [← (Option.some_injective _).injOn.pairwiseDisjoint_image]
       exact PairwiseDisjoint.subset Z_disj (by simp)
     -- find `Z none ⊆ V ⊆ D none \ ⋃ Z'` using `exists_clopen_of_closed_subset_open`
-    let U : Set X  := D none \ ⋃ i, Z (some i)
+    let U : Set X := D none \ ⋃ i, Z (some i)
     have U_open : IsOpen U := IsOpen.sdiff (D_clopen none).2
       (isClosed_iUnion_of_finite (fun i ↦ Z_closed (some i)))
     have Z0_subset_U : Z none ⊆ U := by
