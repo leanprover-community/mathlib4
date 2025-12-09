@@ -85,13 +85,14 @@ lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B :=
     simp only [specialLinearGroup_apply, algebraMap_int_eq, Fin.isValue, eq_intCast, ofReal_intCast,
       UpperHalfPlane.coe_mk]
     rfl
-  field_simp
+  have H (a b c d f e : ℂ) (he : e ≠ 0) : a / b = c / d * (e ^ ( 2 : ℤ))⁻¹ + f / e ↔
+    a * e ^ 2 / b = c / d +  e * f := by field_simp
+  rw [H _ _ _ _ _ _ hde]
   simp only [Fin.isValue, pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero,
     mul_div_mul_right _ _ hde, ← hd, sub_div, Fin.isValue, this, ModularGroup.sl_moeb]
   nth_rw 3 [mul_comm]
-  rw [← mul_assoc, mul_div_cancel_right₀]
-  · ring
-  · exact denom_ne_zero A (B • z)
+  rw [← mul_assoc, mul_div_cancel_right₀ _ (by exact denom_ne_zero A (B • z))]
+  ring
 
 lemma D2_inv (A : SL(2, ℤ)) : (D2 A)∣[(2 : ℤ)] A⁻¹ = - D2 A⁻¹ := by
   have := D2_mul A A⁻¹
