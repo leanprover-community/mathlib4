@@ -293,9 +293,8 @@ lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (
 lemma predAbove_left_injective : Injective (@predAbove n) := by
   intro i j hij
   obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
-  wlog h : i < j generalizing i j
-  · simp only [not_lt] at h
-    obtain h | rfl := h.lt_or_eq
+  wlog! h : i < j generalizing i j
+  · obtain h | rfl := h.lt_or_eq
     · exact (this hij.symm h).symm
     · rfl
   replace hij := congr_fun hij i.succ

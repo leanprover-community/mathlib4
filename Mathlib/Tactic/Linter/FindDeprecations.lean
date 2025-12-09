@@ -19,7 +19,7 @@ ending with `date₂`.
 See the doc-string for the command for more information.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command
 
@@ -153,6 +153,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 * The command makes the assumption that `rgs` is *sorted*.
 * The command removes all consecutive whitespace following the end of each range.
 -/
+public -- for use in unit tests, but perhaps useful more broadly
 def removeRanges (file : String) (rgs : Array Lean.Syntax.Range) : String := Id.run do
   let mut curr : String.Pos.Raw := 0
   let mut fileSubstring := file.toRawSubstring
@@ -186,6 +187,7 @@ It makes the assumption that there is a unique `: [` substring and then retrieve
 Note that this is the output of `Mathlib.Linter.CommandRanges.commandRangesLinter`
 that the script here is parsing.
 -/
+public -- for use in unit tests, but perhaps useful more broadly
 def parseLine (line : String) : Option (List String.Pos.Raw) :=
   match (line.dropEnd 1).copy.splitOn ": [" with
   | [_, rest] =>
