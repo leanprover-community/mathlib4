@@ -903,16 +903,7 @@ lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
   suffices ((2 : ℕ) • (θ + π)).sign = (θ + π).sign ↔ θ + π = π ∨ |(θ + π).toReal| < π / 2 by
     simp only [smul_add, two_nsmul_coe_pi, add_zero, sign_add_pi, add_eq_right] at this
     simp only [this, h, false_or]
-    obtain ⟨ha, hb⟩ := θ.toReal_mem_Ioc
-    rcases le_or_gt θ.toReal 0 with hθ | hθ
-    · nth_rw 1 [← coe_toReal θ]
-      rw [abs_of_nonpos hθ, ← coe_add, toReal_coe_eq_self_iff.2 ⟨by linarith, by linarith⟩,
-        abs_of_nonneg (by linarith)]
-      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
-    · nth_rw 1 [← coe_toReal θ]
-      rw [abs_of_pos hθ, ← coe_add, toReal_coe_eq_self_sub_two_pi_iff.2 ⟨by linarith, by linarith⟩,
-        abs_of_nonpos (by linarith)]
-      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
+    simp [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]
   exact sign_two_nsmul_eq_sign_iff
 
 lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
