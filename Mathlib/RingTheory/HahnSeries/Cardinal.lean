@@ -5,9 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.RingTheory.HahnSeries.Multiplication
-
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-!
 # Cardinality of Hahn series
