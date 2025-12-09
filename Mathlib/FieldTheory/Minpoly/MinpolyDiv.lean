@@ -48,11 +48,11 @@ lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
-  rw [aeval_def, ← eval_map, ← derivative_map, ← minpolyDiv_spec R x]; simp
+  rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
 
 lemma minpolyDiv_eval_eq_zero_of_ne_of_aeval_eq_zero [IsDomain S]
     {y} (hxy : y ≠ x) (hy : aeval y (minpoly R x) = 0) : (minpolyDiv R x).eval y = 0 := by
-  rw [aeval_def, ← eval_map, ← minpolyDiv_spec R x] at hy
+  rw [← eval_map_algebraMap, ← minpolyDiv_spec R x] at hy
   simp only [eval_mul, eval_sub, eval_X, eval_C, mul_eq_zero] at hy
   exact hy.resolve_right (by rwa [sub_eq_zero])
 

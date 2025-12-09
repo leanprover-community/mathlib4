@@ -369,7 +369,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
     · exact natDegree_le_of_dvd this p_irr.ne_zero
     · exact natDegree_le_of_dvd key (minpoly.ne_zero hα)
   apply minpoly.dvd F α
-  rw [aeval_def, ← eval_map, eval_rootOfSplits]
+  rw [← eval_map_algebraMap, eval_rootOfSplits]
 
 end Gal
 
