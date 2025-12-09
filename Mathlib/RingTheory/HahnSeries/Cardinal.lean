@@ -81,7 +81,7 @@ theorem card_sub_le [AddGroup R] (x y : HahnSeries Γ R) : (x - y).card ≤ x.ca
   (mk_le_mk_of_subset (support_sub_subset ..)).trans (mk_union_le ..)
 
 theorem card_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
-    {x y : HahnSeries Γ R} : (x * y).card ≤ x.card * y.card :=
+    (x y : HahnSeries Γ R) : (x * y).card ≤ x.card * y.card :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
 
 end HahnSeries
