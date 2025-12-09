@@ -123,8 +123,7 @@ numbers -/
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
-    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
-      ← (rootsOfUnitytoCircle n).map_one]
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← map_pow, ← (rootsOfUnitytoCircle n).map_one]
     congr
     aesop⟩
   left_inv _ := by aesop

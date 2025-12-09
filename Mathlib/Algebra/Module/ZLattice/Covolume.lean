@@ -237,7 +237,7 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
       exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀
-      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe,
+      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← map_smul, SetLike.mem_coe,
       Basis.mem_span_iff_repr_mem, Pi.basisFun_repr, implies_true]
   · rw [← NormedSpace.isVonNBounded_iff ℝ] at hs₁ ⊢
     exact Bornology.IsVonNBounded.image hs₁ ((b.ofZLatticeBasis ℝ).equivFunL : E →L[ℝ] ι → ℝ)

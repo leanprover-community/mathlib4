@@ -10,107 +10,79 @@ public import Mathlib.Order.Notation
 /-!
 # Order-related type synonyms
 
-In this file we define `WithBot`, `WithTop`, `ENat`, and `PNat`.
-The definitions were moved to this file without any theory
-so that, e.g., `Data/Countable/Basic` can prove `Countable ENat`
-without exploding its imports.
+In this file we define `WithBot` and `WithTop`.
 -/
 
 @[expose] public section
 
 variable {α : Type*}
 
-/-- Attach `⊥` to a type. -/
-inductive WithBot (α : Type*) where
-  | bot : WithBot α
+/-- Somewhat of a hack which makes `WithBot` and `WithTop` def-eq, while both being `def`s. -/
+inductive WithBot' (α : Type*) where
+  | bot : WithBot' α
   /- TODO: rename to `coe`:
   this is only called `some` because of the historical implementation via `Option`. -/
   /-- The canonical map from `α` into `WithBot α` -/
-  | some : α → WithBot α
+  | some : α → WithBot' α
 
-namespace WithBot
+/-- Attach `⊤` to a type. -/
+@[to_dual]
+def WithBot (α : Type*) := WithBot' α
 
-instance [Repr α] : Repr (WithBot α) :=
+instance WithBot.instRepr [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
     | .bot => "⊥"
     | .some a => "↑" ++ repr a⟩
 
-attribute [coe] some
+@[to_dual existing]
+instance WithTop.instRepr [Repr α] : Repr (WithTop α) :=
+  ⟨fun o _ =>
+    match o with
+    | .bot => "⊤"
+    | .some a => "↑" ++ repr a⟩
 
+namespace WithBot
+
+/-- The canonical map from `α` into `WithBot α` -/
+@[to_dual (attr := coe, match_pattern)]
+def some : α → WithBot α :=
+  WithBot'.some
+
+@[to_dual (attr := match_pattern)]
+def bot : WithBot α :=
+  WithBot'.bot
+
+@[to_dual]
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
+@[to_dual]
 instance instBot : Bot (WithBot α) :=
   ⟨bot⟩
 
+@[to_dual]
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
-@[simp, grind _=_] theorem bot_eq : (bot : WithBot α) = ⊥ := rfl
+@[to_dual (attr := simp, grind =)]
+theorem bot_eq : (bot : WithBot α) = ⊥ := rfl
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
+@[to_dual (attr := elab_as_elim, induction_eliminator, cases_eliminator)
+/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
 
 end WithBot
-
---TODO(Mario): Construct using order dual on `WithBot`
-/-- Attach `⊤` to a type. -/
-def WithTop (α : Type*) := WithBot α
-
-namespace WithTop
-
-/-- The canonical map from `α` into `WithTop α` -/
-@[coe, match_pattern] def some : α → WithTop α :=
-  WithBot.some
-
-@[match_pattern] def top : WithTop α :=
-  WithBot.bot
-
-instance [Repr α] : Repr (WithTop α) :=
-  ⟨fun o _ =>
-    match o with
-    | .top => "⊤"
-    | .some a => "↑" ++ repr a⟩
-
-instance coeTC : CoeTC α (WithTop α) :=
-  ⟨some⟩
-
-instance instTop : Top (WithTop α) :=
-  ⟨top⟩
-
-instance inhabited : Inhabited (WithTop α) :=
-  ⟨⊤⟩
-
-@[simp, grind =] theorem top_eq : (top : WithTop α) = ⊤ := rfl
-
-/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-  | .top => top
-  | .some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
-    @recTopCoe _ C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
-    @recTopCoe _ C d f ↑x = f x :=
-  rfl
-
-end WithTop
