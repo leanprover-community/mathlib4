@@ -65,11 +65,11 @@ variable {γ γ' : ℝ → E} {v : E → E} {s s' : Set ℝ} {t₀ : ℝ}
 lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
     IsIntegralCurveOn γ v s := fun t _ ↦ (h t).hasDerivWithinAt
 
-lemma isIntegralCurve_iff_isIntegralCurveOn :
-    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
-  ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ (h t (mem_univ _)).hasDerivAt Filter.univ_mem⟩
+lemma isIntegralCurveOn_univ :
+    IsIntegralCurveOn γ v univ ↔ IsIntegralCurve γ v :=
+  ⟨fun h t ↦ (h t (mem_univ _)).hasDerivAt Filter.univ_mem, fun h ↦ h.isIntegralCurveOn _⟩
 
-lemma isIntegralCurveAt_iff :
+lemma isIntegralCurveAt_iff_exists_mem_nhds :
     IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
   constructor
   · intro h
@@ -89,9 +89,9 @@ lemma isIntegralCurveAt_iff :
 
 /-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
 containing `t₀`. -/
-lemma isIntegralCurveAt_iff' :
+lemma isIntegralCurveAt_iff_exists_pos :
     IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  rw [isIntegralCurveAt_iff]
+  rw [isIntegralCurveAt_iff_exists_mem_nhds]
   constructor
   · intro ⟨s, hs, h⟩
     rw [Metric.mem_nhds_iff] at hs
@@ -104,12 +104,13 @@ lemma isIntegralCurveAt_iff' :
 
 lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
     IsIntegralCurveAt γ v t :=
-  isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ (h t).hasDerivWithinAt⟩
+  isIntegralCurveAt_iff_exists_mem_nhds.mpr
+    ⟨univ, Filter.univ_mem, fun t _ ↦ (h t).hasDerivWithinAt⟩
 
 lemma isIntegralCurve_iff_isIntegralCurveAt :
     IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
   ⟨fun h ↦ h.isIntegralCurveAt, fun h t ↦ by
-    obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t)
+    obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff_exists_mem_nhds.mp (h t)
     exact h t (mem_of_mem_nhds hs) |>.hasDerivAt hs⟩
 
 lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
@@ -117,11 +118,11 @@ lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
 
 lemma IsIntegralCurveAt.hasDerivAt (h : IsIntegralCurveAt γ v t₀) :
     HasDerivAt γ (v (γ t₀)) t₀ :=
-  have ⟨_, hs, h⟩ := isIntegralCurveAt_iff.mp h
+  have ⟨_, hs, h⟩ := isIntegralCurveAt_iff_exists_mem_nhds.mp h
   h t₀ (mem_of_mem_nhds hs) |>.hasDerivAt hs
 
 lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ 𝓝 t₀) :
-    IsIntegralCurveAt γ v t₀ := isIntegralCurveAt_iff.mpr ⟨s, hs, h⟩
+    IsIntegralCurveAt γ v t₀ := isIntegralCurveAt_iff_exists_mem_nhds.mpr ⟨s, hs, h⟩
 
 /-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
 lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ v t) :
@@ -143,7 +144,7 @@ lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
 
 lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
     ContinuousAt γ t₀ :=
-  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
+  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff_exists_mem_nhds.mp hγ
   hγ.continuousWithinAt (mem_of_mem_nhds hs) |>.continuousAt hs
 
 lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
