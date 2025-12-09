@@ -4502,6 +4502,7 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
@@ -4651,6 +4652,9 @@ public import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.DirectSum
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.Projectivization.Action
