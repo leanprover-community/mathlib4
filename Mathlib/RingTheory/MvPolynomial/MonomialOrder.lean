@@ -812,8 +812,8 @@ lemma sPolynomial_self (f : MvPolynomial σ R) : m.sPolynomial f f = 0 := sub_se
 lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
     ((m.degree <| m.sPolynomial f g) ≼[m] m.degree f ⊔ m.degree g) := by
   classical
-  wlog h0 : f ≠ 0 ∧ g ≠ 0
-  · (obtain rfl|rfl : f = 0 ∨ g = 0 := by tauto) <;> simp
+  wlog! +distrib h0 : f ≠ 0 ∧ g ≠ 0
+  · (obtain rfl | rfl := h0) <;> simp
   simp only [sPolynomial_def]
   apply degree_sub_le.trans
   apply (sup_le_sup degree_mul_le degree_mul_le).trans
@@ -859,7 +859,7 @@ lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ 
       m.sPolynomial p₁ p₂ := by
   classical
   simp only [sPolynomial_def]
-  by_cases! H : c₁ = 0 ∨ c₂ = 0 ∨ p₁ = 0 ∨ p₂ = 0
+  wlog! +distrib H : c₁ ≠ 0 ∧ c₂ ≠ 0 ∧ p₁ ≠ 0 ∧ p₂ ≠ 0
   · (obtain rfl | rfl | rfl | rfl := H) <;> simp
   rcases H with ⟨hc1, hc2, hp1, hp2⟩
   have hm1 := (monomial_eq_zero (s := d₁)).not.mpr hc1
