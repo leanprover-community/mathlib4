@@ -18,7 +18,6 @@ the cardinalities of different operations.
 
 ## Todo
 
-- Bound the cardinality of the inverse.
 - Build the subgroups, subrings, etc. of Hahn series with less than a given infinite cardinal.
 -/
 
