@@ -208,7 +208,7 @@ variable (Γ R) in
 /-- The subring of Hahn series with cardinal less than `c`. -/
 @[simps!]
 def cardLTSubfield : Subfield (HahnSeries Γ R) where
-  inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [Fact.out]
+  inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [hc.out]
   __ := have : Fact (ℵ₀ ≤ c) := ⟨hc.out.le⟩; cardLTSubring Γ R c
 
 @[simp]
