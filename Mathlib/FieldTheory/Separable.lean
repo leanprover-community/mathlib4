@@ -489,7 +489,8 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
   have h_ne_zero : h ≠ 0 := by
     rintro rfl
     exact not_separable_zero h_sep
-  apply Polynomial.eq_X_sub_C_of_splits_of_single_root i h_splits
+  suffices (map i h).roots = {i x} from
+    map_injective i i.injective (by simpa using h_splits.eq_X_sub_C_of_single_root this)
   apply Finset.mk.inj
   · change _ = {i x}
     rw [Finset.eq_singleton_iff_unique_mem]
@@ -669,7 +670,7 @@ theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
 
 -- See note [lower instance priority]
 variable (K) in
-/-- A integral field extension in characteristic 0 is separable. -/
+/-- An integral field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
   ⟨_root_.IsSeparable.of_integral _⟩
 
