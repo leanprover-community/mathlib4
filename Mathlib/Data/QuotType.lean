@@ -220,7 +220,7 @@ protected theorem liftQIndepPr1
 
 end
 
-/-- The analogue of `Quot.rec` for `QuotType`. See `Quot.rec`. -/
+/-- The analogue of `Quot.rec` for `QuotType`. -/
 @[inline, elab_as_elim]
 def recQ {motive : Q → Sort*}
     (f : (a : α) → motive ⟦a⟧)
@@ -238,7 +238,7 @@ theorem recQ_mkQ {motive : Q → Sort*}
     QuotType.recQ (motive := motive) f h ⟦a⟧ = f a := by
   rw [QuotType.recQ, ← heq_iff_eq, eqRec_heq_iff_heq, liftQ_mkQ]
 
-/-- The analogue of `Quot.recOn` for `QuotType`. See `Quot.recOn`. -/
+/-- The analogue of `Quot.recOn` for `QuotType`. -/
 @[elab_as_elim]
 abbrev recOnQ {motive : Q → Sort*}
     (q : Q)
@@ -247,7 +247,7 @@ abbrev recOnQ {motive : Q → Sort*}
     motive q :=
   QuotType.recQ f h q
 
-/-- The analogue of `Quot.recOnSubsingleton` for `QuotType`. See `Quot.recOnSubsingleton`. -/
+/-- The analogue of `Quot.recOnSubsingleton` for `QuotType`. -/
 @[elab_as_elim]
 abbrev recOnSubsingletonQ {motive : Q → Sort*}
     [_h : ∀ a, Subsingleton (motive ⟦a⟧)]
@@ -256,7 +256,7 @@ abbrev recOnSubsingletonQ {motive : Q → Sort*}
     motive q :=
   QuotType.recOnQ q f (fun _ _ _ ↦ Subsingleton.elim _ _)
 
-/-- The analogue of `Quot.hrecOn` for `QuotType`. See `Quot.hrecOn`. -/
+/-- The analogue of `Quot.hrecOn` for `QuotType`. -/
 @[elab_as_elim]
 abbrev hrecOnQ {motive : Q → Sort*}
     (q : Q)
@@ -383,7 +383,7 @@ protected theorem inductionOn₂ {motive : Qa → Qb → Prop}
     motive qa qb :=
   QuotType.ind₂ h qa qb
 
-/-- A binary version of `Quot.recOnSubsingleton`. -/
+/-- A binary version of `QuotType.recOnSubsingletonQ`. -/
 @[elab_as_elim]
 def recOnSubsingletonQ₂ {motive : Qa → Qb → Sort*}
     [_h : ∀ a b, Subsingleton (motive ⟦a⟧ ⟦b⟧)]
