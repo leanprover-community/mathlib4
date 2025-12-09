@@ -75,7 +75,7 @@ lemma isIntegralCurveAt_comp_sub {dt : ℝ} :
 
 lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
     IsIntegralCurve (γ ∘ (· + dt)) v := by
-  rw [isIntegralCurveOn_univ] at *
+  rw [← isIntegralCurveOn_univ] at *
   simpa using hγ.comp_add dt
 
 lemma isIntegralCurve_comp_add {dt : ℝ} :
@@ -135,7 +135,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 
 lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
-  rw [isIntegralCurve_iff_isIntegralCurveOn] at *
+  rw [← isIntegralCurveOn_univ] at *
   exact hγ.comp_mul _
 
 lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
