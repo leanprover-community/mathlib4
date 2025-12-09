@@ -53,21 +53,6 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, nofun⟩
 
-/-- Pushforward a `Nontrivial` instance along an injective function. -/
-protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) : Nontrivial β :=
-  let ⟨x, y, h⟩ := exists_pair_ne α
-  ⟨⟨f x, f y, hf.ne h⟩⟩
-
-/-- An injective function from a nontrivial type has an argument at
-which it does not take a given value. -/
-protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
-  rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
-  by_cases h : f x₂ = y
-  · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
-  · exact ⟨x₂, h⟩
-
 instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
   Prod.snd_surjective.nontrivial
 
