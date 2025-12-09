@@ -111,8 +111,8 @@ noncomputable def implicitEquation (hf : ContinuousOn f u) :
   fun ⟨x₀, α⟩ ↦ ⟨implicitEquationAux f u t₀ ⟨x₀, α⟩, continuous_implicitEquationAux t₀ hf x₀ α⟩
 
 set_option linter.unusedVariables false in
-/-- The left (`E`) part of the first derivative of the implicit equation, valid when `x ∈ u` and
-`range α ⊆ u` -/
+/-- The left (`E`) component of the first derivative of the implicit equation, valid when `x ∈ u`
+and `range α ⊆ u` -/
 def implicitEquation.leftDeriv (x : E) (α : C(Icc tmin tmax, E)) :
     E →L[ℝ] C(Icc tmin tmax, E) where
   toFun dx := ContinuousMap.const (Icc tmin tmax) dx
@@ -124,6 +124,21 @@ def implicitEquation.leftDeriv (x : E) (α : C(Icc tmin tmax, E)) :
     simp_rw [ContinuousMap.dist_eq_iSup, ContinuousMap.const_apply, ciSup_const]
     exact fun _ ε hε ↦ ⟨ε, hε, fun _ h ↦ h⟩
 
+/-
+Need to define the right component of the first derivative of `implicitEquation`.
+`implicitEquation : E × F → F`, so this would be `E × F → (F →L[ℝ] F)`.
+At every point `x : E`, `f` has derivative `f'`, so `f' : E → (E →L[ℝ] E)`.
+Since `f` is `C^1`, `f'` is continuous in the first argument.
+At any given point `(x, α) : E × F`, write down the function
+`C(Icc tmin tmax, E) → Icc tmin tmax → E`, and then show it is continuous when evaluated at every
+`α : C(Icc tmin tmax, E)`.
+The function is `∫ τ in t₀ .. t, f' (α τ) (dα τ) - dα t`
+Showing it is continuous will require the compactness of `Icc`
+
+-/
+
+
+
 set_option linter.unusedVariables false in
 noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x : E)
     (α : C(Icc tmin tmax, E)) :
@@ -131,7 +146,9 @@ noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x :
   fun dα ↦ -dα + fun t : Icc tmin tmax ↦ ∫ τ in t₀..t,
     f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))
 
--- need that f' is continuous on u
+/-- The first term of the right (`F`) component of the first derivative of the implicit equation,
+valid when `x ∈ u` and `range α ⊆ u` -/
+-- assume `f'` is continuous on `u` because `f'` is the derivative of a `C^1` function `f`
 lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
     (x : E) (α dα : C(Icc tmin tmax, E)) :
     Continuous (implicitEquation.rightDerivAux t₀ f' x α dα) := by
@@ -147,6 +164,15 @@ lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' 
   nth_rw 14 [← Set.uIcc_of_le (le_of_Icc t₀)]
   apply intervalIntegral.continuousOn_primitive_interval'
   · apply ContinuousOn.intervalIntegrable
+    -- can use `continuousOn_prod_of_continuousOn_lipschitzOnWith` on `f'`
+    -- `hf'` gives continuity in the first component (fixing second component)
+    -- lipschitz in second component comes from `E →L[ℝ] E`, which itself is lipschitz,
+    -- while continuity of `α` and compactness of its domain `Icc` imply the lipschitz constant
+    -- is bounded, which we need for uniform lipschitz
+    -- we probably need to rewrite the definition of `rightDerivAux` to be piecewise,
+    -- conditioned on necessary hypotheses
+
+
     -- use Continuous.comp₂ on the uncurry of f', but need to first show that uncurry f' is cont
     have : (fun x ↦ (f' (α (projIcc tmin tmax (le_of_Icc t₀) x)))
           (dα (projIcc tmin tmax (le_of_Icc t₀) x))) =
