@@ -719,6 +719,28 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 
 end Prod
 
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+
+/-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
+@[simps!]
+def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE ..
+  continuous_toFun := by
+    apply continuous_of_continuousAt_zero (toSpanSingletonLE _ _ _)
+    suffices ∀ s : Set 𝕜, IsVonNBounded 𝕜 s → ∀ U ∈ 𝓝 0, ∀ᶠ (a : E) in 𝓝 0, ∀ x ∈ s, x • a ∈ U by
+      simpa [ContinuousAt, ContinuousLinearMap.nhds_zero_eq, MapsTo]
+    intro s hsb U hU
+    rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
+      with ⟨V, hV, W, hW, hVW⟩
+    rcases (eventually_cobounded_mapsTo <|hsb hV).and (eventually_ne_cobounded 0) |>.exists
+      with ⟨c, hc, hc₀⟩
+    filter_upwards [(set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hW]
+    rintro _ ⟨a, ha, rfl⟩ x hx
+    rw [smul_comm x c⁻¹, ← smul_assoc]
+    exact @hVW (_, _) ⟨hc hx, ha⟩
+  continuous_invFun := continuous_eval_const 1
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap
