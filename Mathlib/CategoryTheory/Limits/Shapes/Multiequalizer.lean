@@ -210,7 +210,7 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
-/-- Construct a natural isomorphism between functors out of a walking multicospan from its
+/-- Construct a natural isomorphism between functors out of a walking multispan from its
 components. -/
 @[simps!]
 def functorExt {C : Type*} [Category C] {F G : WalkingMultispan J ⥤ C}
