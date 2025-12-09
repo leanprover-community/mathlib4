@@ -88,7 +88,7 @@ def privateModule : Linter where run stx := do
           -- Ignore private, reserved, and autoparam names; see implementation notes
           if !isPrivateName decl
               && !isReservedName (← getEnv) decl
-              && !decl.isInternalDetail then
+              && !(`_auto).isPrefixOf decl then
             return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
