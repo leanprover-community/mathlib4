@@ -137,7 +137,6 @@ theorem coe_zero : ((0 : SummableFamily Γ R α) : α → HahnSeries Γ R) = 0 :
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
 
-
 section SMul
 
 variable {M} [SMulZeroClass M R]
@@ -354,7 +353,6 @@ theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
-
 
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
@@ -829,7 +827,7 @@ section IsDomain
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
-theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
+theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit x.leadingCoeff := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine
@@ -854,8 +852,8 @@ variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 @[simps -isSimp inv]
 instance : DivInvMonoid (HahnSeries Γ R) where
   inv x :=
-    single (-x.order) (x.leadingCoeff)⁻¹ *
-      (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
+    single (-x.order) x.leadingCoeff⁻¹ *
+      (SummableFamily.powers <| 1 - single (-x.order) x.leadingCoeff⁻¹ * x).hsum
 
 @[simp]
 theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := by

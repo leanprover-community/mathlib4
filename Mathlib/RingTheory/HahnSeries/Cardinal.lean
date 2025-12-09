@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.RingTheory.HahnSeries.Summable
 
 /-!
 # Cardinality of Hahn series
@@ -26,9 +26,12 @@ open Cardinal
 
 namespace HahnSeries
 
-variable {Γ R S : Type*} [PartialOrder Γ]
+variable {Γ R S α : Type*}
 
 /-! ### Cardinality function -/
+
+section PartialOrder
+variable [PartialOrder Γ]
 
 section Zero
 variable [Zero R]
@@ -81,7 +84,26 @@ theorem card_sub_le [AddGroup R] (x y : HahnSeries Γ R) : (x - y).card ≤ x.ca
   (mk_le_mk_of_subset (support_sub_subset ..)).trans (mk_union_le ..)
 
 theorem card_mul_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [NonUnitalNonAssocSemiring R]
-    {x y : HahnSeries Γ R} : (x * y).card ≤ x.card * y.card :=
+    (x y : HahnSeries Γ R) : (x * y).card ≤ x.card * y.card :=
   (mk_le_mk_of_subset (support_mul_subset ..)).trans mk_add_le
 
+theorem card_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R]
+    (x : HahnSeries Γ R) (n : ℕ) : (x ^ n).card ≤ x.card ^ n := sorry
+
+  #exit
+
+theorem card_hsum_le [AddCommMonoid R] {s : SummableFamily Γ R α} :
+    lift s.hsum.card ≤ sum fun a : α ↦ (s a).card :=
+  (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
+    mk_iUnion_le_sum_mk_lift
+
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder Γ]
+
+theorem card_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
+    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤
+
+end LinearOrder
 end HahnSeries
