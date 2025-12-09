@@ -105,8 +105,8 @@ theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arco
 def coshPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := cosh
   invFun := arcosh
-  source := { r | 0 ≤ r }
-  target := { r | 1 ≤ r }
+  source := Ici 0
+  target := Ici 1
   map_source' r _ := one_le_cosh r
   map_target' _ hr := arcosh_nonneg hr
   left_inv' _ hr := arcosh_cosh hr
