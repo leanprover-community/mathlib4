@@ -274,7 +274,6 @@ theorem reduce_eq_one (e : SpecialLinearGroup K V) :
 abbrev IsExceptional (e : SpecialLinearGroup K V) : Prop :=
   e.reduce ≠ 1 ∧ ∃ a : K, e.reduce = a • (LinearMap.id (M := V ⧸ e.fixedSubmodule) (R := K))
 
-
 theorem _root_.Submodule.eq_top_iff_finrank_eq {W : Submodule K V} :
     W = ⊤ ↔ finrank K W = finrank K V := by
   refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
@@ -412,8 +411,9 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
         mem_transvections_iff_finrank_le_one, h]
     | n + 1 =>
       simp only [add_assoc, Nat.reduceAdd] at h
-      by_cases he' : e.reduce = 1
-      · -- e.reduce = 1
+      simp only [IsExceptional, ne_eq, not_and_or, not_not, not_exists] at he
+      rcases he with (he | he)
+      · -- `e.reduce = 1`
         have : ∃ u : V, u ∉ e.fixedSubmodule := by
           by_contra! he
           rw [← eq_top_iff'] at he
@@ -423,7 +423,7 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
         have hu' : e u - u ∈ e.fixedSubmodule := by
           rw [← e.fixedSubmodule.ker_mkQ, LinearMap.mem_ker,
             map_sub, sub_eq_zero]
-          simp [← reduce_apply, he']
+          simp [← reduce_apply, he]
         simp only at hu'
         have hu'' : e u - u ≠ 0 := by
           rwa [ne_eq, sub_eq_zero, ← mem_fixedSubmodule_iff]
@@ -497,7 +497,15 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
               simp [this]
             rw [← hfu, ← sub_eq_zero, ← map_sub, ← LinearMap.mem_ker]
             exact hf hu'
-        have he'_reduce : e'.reduce = 1 := sorry
+        have he'_reduce : e'.reduce = 1 := by
+          simp only [reduce_eq_one, he'_fixed] at he ⊢
+          intro v
+          simp only [he', ht, coe_mul, LinearEquiv.mul_apply,
+            transvection.apply, add_sub_right_comm]
+          apply Submodule.mem_sup_left
+          apply Submodule.add_mem _ (he v)
+          apply Submodule.smul_mem
+          rwa [← Submodule.neg_mem_iff, neg_sub]
         apply hind
         · simp [IsExceptional, he'_reduce]
         · rw [← Nat.add_left_inj (n := 1), add_assoc]
@@ -506,9 +514,11 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
           rw [← Nat.add_left_inj, add_assoc, Submodule.finrank_quotient_add_finrank, he'_fixed]
           rw [he'_rank, ← h, ← add_assoc]
           rw [Submodule.finrank_quotient_add_finrank, add_comm]
-      · -- e.reduce ≠ 1
+      · -- `e.reduce` is not a homothety
         sorry
 
+example (a b c : V) : a + b - c = a - c + b := by
+  exact add_sub_right_comm a b c
 theorem finrank_lt_transvectionDegree_add_of_isExceptional
     (e : SpecialLinearGroup K V) (he : IsExceptional e) :
     finrank K V < transvectionDegree e +
