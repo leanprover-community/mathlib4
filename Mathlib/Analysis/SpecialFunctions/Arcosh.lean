@@ -105,6 +105,16 @@ theorem arcosh_le_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x ≤ ar
 theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arcosh y ↔ x < y :=
   strictMonoOn_arcosh.lt_iff_lt hx hy
 
+def coshEquiv : PartialEquiv ℝ ℝ where
+  toFun := cosh
+  invFun := arcosh
+  source := { r | 0 ≤ r }
+  target := { r | 1 ≤ r }
+  map_source' r _ := one_le_cosh r
+  map_target' _ hr := arcosh_nonneg hr
+  left_inv' _ hr := arcosh_cosh hr
+  right_inv' _ hr := cosh_arcosh hr
+
 end Real
 
 /-- Real numbers which are at least 1. -/
