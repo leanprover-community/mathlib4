@@ -64,9 +64,9 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.left, by erw [Category.assoc, Over.w h.hom, w]⟩
+        exact ⟨i ≫ h.hom.left, by rw [Category.assoc, MonoOver.w, w]⟩
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.inv.left, by erw [Category.assoc, Over.w h.inv, w]⟩)
+        exact ⟨i ≫ h.inv.left, by rw [Category.assoc, MonoOver.w, w]⟩)
 
 @[simp]
 theorem mk_factors_iff {X Y Z : C} (f : Y ⟶ X) [Mono f] (g : Z ⟶ X) :
