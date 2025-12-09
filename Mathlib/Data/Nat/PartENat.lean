@@ -506,7 +506,7 @@ section WithTop
 
 /-- Computably converts a `PartENat` to a `ℕ∞`. -/
 def toWithTop (x : PartENat) [Decidable x.Dom] : ℕ∞ :=
-  x.toOption
+  if h : Dom x then WithTop.some (x.get h) else ⊤
 
 theorem toWithTop_top :
     have : Decidable (⊤ : PartENat).Dom := Part.noneDecidable
@@ -571,8 +571,8 @@ end WithTop
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
   fun x => match x with
-  | Option.none => none
-  | Option.some n => some n
+  | .top => none
+  | .some n => some n
 
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 

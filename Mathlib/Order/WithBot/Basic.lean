@@ -22,41 +22,53 @@ Adding a `bot` or a `top` to an order.
 ## Main declarations
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
-
+> FIX ^
 -/
 
 @[expose] public section
 
 variable {α β γ δ : Type*}
+variable {a b : α}
+
+attribute [local grind cases] WithBot
 
 namespace WithBot
 
-variable {a b : α}
-
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
+  ⟨⊥, Classical.arbitrary α, by simp⟩
 
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+/-- `WithTop α` is a `Subsingleton` if and only if `α` is empty. -/
+theorem subsingleton_iff_isEmpty {α : Type*} : Subsingleton (WithBot α) ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun x ↦ by simpa using h.elim x ⊥⟩,
+   fun h ↦ ⟨fun x y ↦ by
+     have := IsEmpty.false (α := α)
+     cases x <;> cases y <;> solve_by_elim⟩⟩
+
+instance [IsEmpty α] : Unique (WithBot α) :=
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 open Function
 
-theorem coe_injective : Injective ((↑) : α → WithBot α) :=
-  Option.some_injective _
+/-- Decidable equality with `⊥`. This is not an instance to avoid conflicts with other instances. -/
+def instDecidableEqBot : (x : WithBot α) → Decidable (x = ⊥)
+  | .bot => isTrue rfl
+  | .some _ => isFalse (by simp)
+
+theorem coe_injective : Injective ((↑) : α → WithBot α) := by grind [Injective]
 
 @[simp, norm_cast]
-theorem coe_inj : (a : WithBot α) = b ↔ a = b :=
-  Option.some_inj
+theorem coe_inj : (a : WithBot α) = b ↔ a = b := by grind
 
-protected theorem «forall» {p : WithBot α → Prop} : (∀ x, p x) ↔ p ⊥ ∧ ∀ x : α, p x :=
-  Option.forall
+protected theorem «forall» {p : WithBot α → Prop} : (∀ x, p x) ↔ p ⊥ ∧ ∀ x : α, p x := by grind
 
-protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ ∨ ∃ x : α, p x :=
-  Option.exists
+protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ ∨ ∃ x : α, p x := by grind
 
-theorem none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
+@[deprecated bot_eq (since := "2025-08-04")]
+theorem none_eq_bot : (bot : WithBot α) = (⊥ : WithBot α) :=
   rfl
 
-theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
+@[deprecated "This is now a syntactic identity. " (since := "2025-08-04")]
+theorem some_eq_coe (a : α) : (some a : WithBot α) = (↑a : WithBot α) :=
   rfl
 
 @[simp]
@@ -66,6 +78,8 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
+
+theorem coe_eq_coe : (a : WithBot α) = (b : WithBot α) ↔ a = b := coe_inj
 
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
@@ -80,8 +94,6 @@ theorem unbotD_bot {α} (d : α) : unbotD d ⊥ = d :=
 theorem unbotD_coe {α} (d x : α) : unbotD d x = x :=
   rfl
 
-theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
-
 theorem unbotD_eq_iff {d y : α} {x : WithBot α} : unbotD d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x <;> simp [@eq_comm _ d]
 
@@ -93,71 +105,103 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
     unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
   induction y <;> simp [unbotD_eq_iff, or_comm]
 
-/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
-def map (f : α → β) : WithBot α → WithBot β :=
-  Option.map f
+/-- Apply a function to non-`⊥` elements, and send `⊥` to `d`. -/
+-- (If you think `WithBot` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithBot α → β
+| .bot => d
+| .some a => f a
 
-@[simp]
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊥ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
+
+/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. -/
+def map (f : α → β) : WithBot α → WithBot β
+| .bot => .bot
+| .some a => .some (f a)
+
+@[simp, grind =]
 theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
 @[simp]
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
-    map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none_iff
+    map f a = ⊥ ↔ a = ⊥ := by grind
 
 theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
-    WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some_iff
+    WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by grind
 
 theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
-    .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
-  cases v <;> simp [eq_comm]
+    .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by grind
 
-theorem map_id : map (id : α → α) = id :=
-  Option.map_id
+theorem map_id : map (id : α → α) = id := by grind
 
 @[simp]
-theorem map_map (h : β → γ) (g : α → β) (a : WithBot α) : map h (map g a) = map (h ∘ g) a :=
-  Option.map_map h g a
+theorem map_map (h : β → γ) (g : α → β) (a : WithBot α) : map h (map g a) = map (h ∘ g) a := by
+  grind
 
 theorem comp_map (h : β → γ) (g : α → β) (x : WithBot α) : x.map (h ∘ g) = (x.map g).map h :=
   (map_map ..).symm
 
 @[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
-    WithBot.map g ∘ WithBot.map f = WithBot.map (g ∘ f) :=
-  Option.map_comp_map f g
+    WithBot.map g ∘ WithBot.map f = WithBot.map (g ∘ f) := by
+  funext x; simp [map_map]
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
-    map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
-  Option.map_comm h _
+    map g₁ (map f₁ a) = map g₂ (map f₂ a) := by
+  replace h := congrFun h a
+  grind
 
 theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithBot.map f) :=
-  Option.map_injective Hf
+  fun
+  | .bot, .bot, _
+  | .bot, .some b, _
+  | .some a, .bot, _ => by simp_all
+  | .some a, .some b, h => by simp only [map_coe, some.injEq] at h; specialize Hf h; simpa
 
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
+def map₂ (f : α → β → γ) : WithBot α → WithBot β → WithBot γ
+  | .bot, .bot => .bot
+  | .some _, .bot => .bot
+  | .bot, .some _ => .bot
+  | .some a, .some b => .some (f a b)
 
 lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-@[simp] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
-@[simp] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
-@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
-@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
+@[simp, grind =] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := by cases b <;> rfl
+@[simp, grind =] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
+@[simp, grind =] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) :
+    map₂ f a b = b.map fun b ↦ f a b := by
+  cases b <;> rfl
+@[simp, grind =] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) :
+    map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
-    map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
+    map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by grind
 
-lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
+@[simp] lemma map₂_eq_coe_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} {c : γ} :
+    map₂ f a b = WithBot.some c ↔ ∃ a' b', a = .some a' ∧ b = .some b' ∧ f a' b' = c :=
+  match a, b with
+  | .bot, .bot
+  | .bot, .some b
+  | .some a, .bot
+  | .some a, .some b => by simp
 
-lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x :=
-  Option.eq_none_iff_forall_some_ne
+lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := by grind
+
+lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x := by grind
 
 theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
@@ -196,6 +240,31 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   · simpa using h rfl
   · simp
 
+@[simps]
+def equivOption : WithBot α ≃ Option α where
+  toFun := fun | .bot => none | .some a => Option.some a
+  invFun := fun | none => .bot | .some a => WithBot.some a
+  left_inv := by grind
+  right_inv := by grind
+
+attribute [grind =] equivOption_apply equivOption_symm_apply
+
+theorem equivOption_eq_some {x : WithBot α} {y : α} :
+    equivOption x = Option.some y ↔ x = WithBot.some y := by
+  grind
+
+theorem equivOption_eq_none {x : WithBot α} :
+    equivOption x = none ↔ x = ⊥ := by
+  grind
+
+theorem equivOption_symm_eq_coe {x : Option α} {y : α} :
+    equivOption.symm x = WithBot.some y ↔ x = Option.some y := by
+  grind
+
+theorem equivOption_symm_eq_bot {x : Option α} :
+    equivOption.symm x = ⊥ ↔ x = none := by
+  grind
+
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
   toFun := fun ⟨x,h⟩ => WithBot.unbot x h
@@ -222,8 +291,8 @@ namespace Equiv
 def withBotCongr (e : α ≃ β) : WithBot α ≃ WithBot β where
   toFun := WithBot.map e
   invFun := WithBot.map e.symm
-  left_inv x := by cases x <;> simp
-  right_inv x := by cases x <;> simp
+  left_inv x := by grind
+  right_inv x := by grind
 
 attribute [grind =] withBotCongr_apply
 
@@ -284,7 +353,7 @@ protected theorem le_bot_iff : ∀ {x : WithBot α}, x ≤ ⊥ ↔ x = ⊥
   | (a : α) => by simp [not_coe_le_bot]
   | ⊥ => by simp
 
-theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ o ↔ a ≤ b)
+theorem coe_le : ∀ {o : Option α}, b ∈ o → ((a : WithBot α) ≤ (equivOption.symm o) ↔ a ≤ b)
   | _, rfl => coe_le_coe
 
 theorem coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by simp [le_iff_forall]
@@ -416,12 +485,12 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
 
 lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | a := x
-  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
+  · simpa [WithBot.bot_eq, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
   · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
 
 lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
   obtain _ | y := y
-  · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
+  · simp [eq_bot_iff_forall_le]
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
 end Preorder
@@ -468,8 +537,11 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
     cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
-instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
-  inferInstanceAs <| DecidableEq (Option α)
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α)
+  | ⊥, ⊥ => isTrue rfl
+  | ⊥, (b : α) => isFalse <| by simp
+  | (a : α), ⊥ => isFalse <| by simp
+  | (a : α), (b : α) => decidable_of_iff' _ coe_eq_coe
 
 instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
@@ -556,30 +628,35 @@ namespace WithTop
 
 variable {a b : α}
 
-instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
-  Option.nontrivial
+/-- Decidable equality with `⊤`. This is not an instance to avoid conflicts with other instances. -/
+def instDecidableEqTop : (x : WithTop α) → Decidable (x = ⊤)
+  | .bot => isTrue rfl
+  | .some _ => isFalse (by rintro ⟨⟩)
 
-instance [IsEmpty α] : Unique (WithTop α) := Option.instUniqueOfIsEmpty
+instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
+  WithBot.nontrivial
 
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithTop α) :=
-  Option.some_injective _
+  WithBot.coe_injective
 
 @[norm_cast]
 theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
-  Option.some_inj
+  WithBot.coe_inj
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
-  Option.forall
+  WithBot.forall
 
 protected theorem «exists» {p : WithTop α → Prop} : (∃ x, p x) ↔ p ⊤ ∨ ∃ x : α, p x :=
-  Option.exists
+  WithBot.exists
 
-theorem none_eq_top : (none : WithTop α) = (⊤ : WithTop α) :=
+@[deprecated top_eq (since := "2025-08-04")]
+theorem none_eq_top : (top : WithTop α) = (⊤ : WithTop α) :=
   rfl
 
-theorem some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α) :=
+@[deprecated "This is now a syntactic identity." (since := "2025-08-04")]
+theorem some_eq_coe (a : α) : (WithTop.some a : WithTop α) = (↑a : WithTop α) :=
   rfl
 
 @[simp]
@@ -589,6 +666,16 @@ theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   nofun
+
+/-- `WithTop α` is a `Subsingleton` if and only if `α` is empty. -/
+theorem subsingleton_iff_isEmpty {α : Type*} : Subsingleton (WithTop α) ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun x ↦ by simpa using h.elim x ⊤⟩,
+   fun h ↦ ⟨fun x y ↦ by
+     have := IsEmpty.false (α := α)
+     cases x <;> cases y <;> solve_by_elim⟩⟩
+
+instance [IsEmpty α] : Unique (WithTop α) :=
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso.
@@ -655,7 +742,7 @@ theorem untopD_coe {α} (d x : α) : untopD d x = x :=
 
 @[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
-  Option.some_inj
+  WithBot.coe_eq_coe
 
 theorem untopD_eq_iff {d y : α} {x : WithTop α} : untopD d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_iff
@@ -668,65 +755,84 @@ theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
     untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_unbotD_iff
 
+/-- Apply a function to non-`⊥` elements, and send `⊥` to `d`. -/
+-- (If you think `WithTop` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithTop α → β
+| .top => d
+| .some a => f a
+
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊤ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
+
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
-  Option.map f
+  WithBot.map f
 
-@[simp]
+@[simp, grind =]
 theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
 @[simp]
 lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
-    map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none_iff
+    map f a = ⊤ ↔ a = ⊤ := WithBot.map_eq_bot_iff
 
 theorem map_eq_some_iff {f : α → β} {y : β} {v : WithTop α} :
-    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some_iff
+    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := WithBot.map_eq_some_iff
 
 theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
     .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
 theorem map_id : map (id : α → α) = id :=
-  Option.map_id
+  WithBot.map_id
 
 @[simp]
 theorem map_map (h : β → γ) (g : α → β) (a : WithTop α) : map h (map g a) = map (h ∘ g) a :=
-  Option.map_map h g a
+  WithBot.map_map h g a
 
 theorem comp_map (h : β → γ) (g : α → β) (x : WithTop α) : x.map (h ∘ g) = (x.map g).map h :=
   (map_map ..).symm
 
 @[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
-    WithTop.map g ∘ WithTop.map f = WithTop.map (g ∘ f) :=
-  Option.map_comp_map f g
+    WithTop.map g ∘ WithTop.map f = WithTop.map (g ∘ f) := by
+  funext x; simp [map_map]
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
-  Option.map_comm h _
+  WithBot.map_comm h _
 
 theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithTop.map f) :=
-  Option.map_injective Hf
+  WithBot.map_injective Hf
 
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithTop α → WithTop β → WithTop γ`.
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ : (α → β → γ) → WithTop α → WithTop β → WithTop γ := Option.map₂
+def map₂ : (α → β → γ) → WithTop α → WithTop β → WithTop γ := WithBot.map₂
 
 lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-@[simp] lemma map₂_top_left (f : α → β → γ) (b) : map₂ f ⊤ b = ⊤ := rfl
+@[simp] lemma map₂_top_left (f : α → β → γ) (b) : map₂ f ⊤ b = ⊤ := by cases b <;> rfl
 @[simp] lemma map₂_top_right (f : α → β → γ) (a) : map₂ f a ⊤ = ⊤ := by cases a <;> rfl
-@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
+@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := by
+  cases b <;> rfl
 @[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
 @[simp] lemma map₂_eq_top_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} :
-    map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := Option.map₂_eq_none_iff
+    map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithBot.map₂_eq_bot_iff
+
+@[simp] lemma map₂_eq_coe_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} {c : γ} :
+    map₂ f a b = WithTop.some c ↔ ∃ a' b', a = .some a' ∧ b = .some b' ∧ f a' b' = c :=
+  WithBot.map₂_eq_coe_iff
 
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
@@ -743,10 +849,10 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 
-lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
+lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := WithBot.ne_bot_iff_exists
 
 lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
-  Option.eq_none_iff_forall_some_ne
+  WithBot.eq_bot_iff_forall_ne
 
 theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
   simp [ne_top_iff_exists]
@@ -781,6 +887,31 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
     a = b.untop h ↔ a = b :=
   WithBot.eq_unbot_iff (α := αᵒᵈ) h
 
+@[simps]
+def equivOption : WithTop α ≃ Option α where
+  toFun := fun | .top => none | .some a => Option.some a
+  invFun := fun | none => .top | .some a => WithTop.some a
+  left_inv x := by cases x <;> grind
+  right_inv x := by cases x <;> grind
+
+attribute [grind =] equivOption_apply equivOption_symm_apply
+
+theorem equivOption_eq_none {x : WithTop α} :
+    equivOption x = none ↔ x = ⊤ :=
+  WithBot.equivOption_eq_none
+
+theorem equivOption_eq_some {x : WithTop α} {y : α} :
+    equivOption x = Option.some y ↔ x = WithBot.some y :=
+  WithBot.equivOption_eq_some
+
+theorem equivOption_symm_eq_top {x : Option α} :
+    equivOption.symm x = ⊤ ↔ x = none :=
+  WithBot.equivOption_symm_eq_bot
+
+theorem equivOption_symm_eq_coe {x : Option α} {y : α} :
+    equivOption.symm x = WithBot.some y ↔ x = Option.some y :=
+  WithBot.equivOption_symm_eq_coe
+
 /-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
 @[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
   toFun := fun ⟨x,h⟩ => WithTop.untop x h
@@ -807,14 +938,14 @@ namespace Equiv
 def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
   toFun := WithTop.map e
   invFun := WithTop.map e.symm
-  left_inv x := by cases x <;> simp
-  right_inv x := by cases x <;> simp
+  left_inv x := by cases x <;> grind -- Unfortunately `grind` `cases` doesn't work with synonyms.
+  right_inv x := by cases x <;> grind
 
 attribute [grind =] withTopCongr_apply
 
 @[simp]
 theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
-  Equiv.ext <| congr_fun WithBot.map_id
+  Equiv.ext <| congr_fun WithTop.map_id
 
 @[simp, grind =]
 theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
@@ -867,7 +998,7 @@ protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
   | (a : α) => by simp [not_top_le_coe _]
   | ⊤ => by simp
 
-theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
+theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ (equivOption.symm o) b ↔ a ≤ b)
   | _, rfl => coe_le_coe
 
 theorem le_coe_iff : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b := by simp [le_iff_forall]
@@ -1067,7 +1198,7 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
-  inferInstanceAs <| DecidableEq (Option α)
+  inferInstanceAs <| DecidableEq (WithBot α)
 
 instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
   | _, ⊤ => isTrue <| by simp

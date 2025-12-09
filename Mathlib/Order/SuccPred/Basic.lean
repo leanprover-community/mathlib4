@@ -945,7 +945,7 @@ instance : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
-    | Option.some a => ite (succ a = a) ⊤ (some (succ a))
+    | .some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
     obtain - | a := a
     · exact le_top
@@ -994,11 +994,11 @@ instance : PredOrder (WithTop α) where
   pred a :=
     match a with
     | ⊤ => some ⊤
-    | Option.some a => some (pred a)
+    | .some a => some (pred a)
   pred_le a :=
     match a with
     | ⊤ => le_top
-    | Option.some a => coe_le_coe.2 (pred_le a)
+    | .some a => coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
     cases a
     · exact ((coe_lt_top (⊤ : α)).not_ge ha).elim
@@ -1055,11 +1055,11 @@ instance : SuccOrder (WithBot α) where
   succ a :=
     match a with
     | ⊥ => some ⊥
-    | Option.some a => some (succ a)
+    | .some a => some (succ a)
   le_succ a :=
     match a with
     | ⊥ => bot_le
-    | Option.some a => coe_le_coe.2 (le_succ a)
+    | .some a => coe_le_coe.2 (le_succ a)
   max_of_succ_le {a} ha := by
     cases a
     · exact ((bot_lt_coe (⊥ : α)).not_ge ha).elim
@@ -1094,7 +1094,7 @@ instance : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
-    | Option.some a => ite (pred a = a) ⊥ (some (pred a))
+    | .some a => ite (pred a = a) ⊥ (some (pred a))
   pred_le a := by
     obtain - | a := a
     · exact bot_le

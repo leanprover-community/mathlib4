@@ -65,7 +65,9 @@ theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α →
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
   match a, b with
-  | ⊤, _ => exact tendsto_nhds_top_mono' continuousAt_fst fun p ↦ le_add_right le_rfl
+  | ⊤, _ =>
+    simp only [ContinuousAt, top_add]
+    exact tendsto_nhds_top_mono' continuousAt_fst.tendsto fun p ↦ self_le_add_right _ _
   | (a : ℕ), ⊤ => exact tendsto_nhds_top_mono' continuousAt_snd fun p ↦ le_add_left le_rfl
   | (a : ℕ), (b : ℕ) => simp [ContinuousAt, nhds_prod_eq, tendsto_pure_nhds]
 

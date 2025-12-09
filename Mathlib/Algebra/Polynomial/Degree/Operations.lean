@@ -360,9 +360,8 @@ theorem natDegree_pow' {n : ℕ} (h : leadingCoeff p ^ n ≠ 0) : natDegree (p ^
     have hpn : p ^ n ≠ 0 := fun hpn0 => by
       have h1 := h
       rw [← leadingCoeff_pow' h1, hpn0, leadingCoeff_zero] at h; exact h rfl
-    Option.some_inj.1 <|
-      show (natDegree (p ^ n) : WithBot ℕ) = (n * natDegree p : ℕ) by
-        rw [← degree_eq_natDegree hpn, degree_pow' h, degree_eq_natDegree hp0]; simp
+    Nat.cast_inj.1 <| by
+      rw [← degree_eq_natDegree hpn, degree_pow' h, degree_eq_natDegree hp0]; simp
 
 theorem leadingCoeff_monic_mul {p q : R[X]} (hp : Monic p) :
     leadingCoeff (p * q) = leadingCoeff q := by

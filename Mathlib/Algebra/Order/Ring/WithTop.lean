@@ -61,13 +61,19 @@ lemma mul_def (a b : WithTop α) :
 
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
 
-lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
-  | ⊤ => by simp [top_mul, hb]; rfl
+lemma mul_coe_eq_map {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.map fun a ↦ a * b
+  | ⊤ => by simp [top_mul, hb]
   | (a : α) => rfl
 
-lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
-  | ⊤ => by simp [ha]; rfl
+@[deprecated mul_coe_eq_map (since := "2025-08-22")]
+alias mul_coe_eq_bind := mul_coe_eq_map
+
+lemma coe_mul_eq_map {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.map fun b ↦ a * b
+  | ⊤ => by simp [ha]
   | (b : α) => rfl
+
+@[deprecated coe_mul_eq_map (since := "2025-08-22")]
+alias coe_mul_eq_bind := coe_mul_eq_map
 
 @[simp]
 lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.untopD 0 := by
@@ -85,9 +91,9 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
   exact mul_ne_top ha hb
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
-  refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
+  refine ⟨fun {a b} h₁ => Decidable.byContradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
-  rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
+  rcases WithTop.map₂_eq_coe_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
 variable [Preorder α]
@@ -135,7 +141,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
     toFun := WithTop.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
@@ -197,7 +203,7 @@ end MonoidWithZero
 instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) where
   __ := instMonoidWithZero
-  mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
+  mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (WithTop.map₂_comm mul_comm)
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOrder α]
     [CanonicallyOrderedAdd α] : NonUnitalNonAssocSemiring (WithTop α) where
@@ -208,7 +214,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
     | top => by_cases ha : a = 0 <;> simp [ha]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [mul_coe_eq_bind hc]
+      simp only [mul_coe_eq_map hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (add_mul _ _ _)
   left_distrib c a b := by
@@ -216,7 +222,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
     | top => by_cases ha : a = 0 <;> simp [ha]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
-      simp only [coe_mul_eq_bind hc]
+      simp only [coe_mul_eq_map hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (mul_add _ _ _)
 
@@ -324,13 +330,19 @@ lemma mul_def (a b : WithBot α) :
 
 lemma mul_eq_bot_iff : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 := by rw [mul_def]; aesop
 
-lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithBot α) = a.bind fun a ↦ ↑(a * b)
+lemma mul_coe_eq_map {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithBot α) = a.map fun a ↦ a * b
   | ⊥ => by simp only [ne_eq, coe_eq_zero, hb, not_false_eq_true, bot_mul]; rfl
   | (a : α) => rfl
 
-lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.bind fun b ↦ ↑(a * b)
+@[deprecated mul_coe_eq_map (since := "2025-08-22")]
+alias mul_coe_eq_bind := mul_coe_eq_map
+
+lemma coe_mul_eq_map {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.map fun b ↦ a * b
   | ⊥ => by simp only [ne_eq, coe_eq_zero, ha, not_false_eq_true, mul_bot]; rfl
   | (b : α) => rfl
+
+@[deprecated coe_mul_eq_map (since := "2025-08-22")]
+alias coe_mul_eq_bind := coe_mul_eq_map
 
 @[simp]
 lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unbotD 0 := by

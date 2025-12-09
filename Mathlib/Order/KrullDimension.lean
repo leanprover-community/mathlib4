@@ -463,9 +463,9 @@ lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
-    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
-    rw [hx] at h; norm_cast at h
-    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
+    obtain ⟨m, hx : m = height x⟩ := WithTop.ne_top_iff_exists.mp hfin.ne_top
+    rw [← hx] at h; norm_cast at h
+    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx.symm
     use p ⟨n, by omega⟩
     constructor
     · rw [← hp]
@@ -674,11 +674,10 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   | ⊥, hm => False.elim <| by
     haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
     exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
-  | some ⊤, _ => le_refl _
-  | some (some m), hm => by
+  | .some ⊤, _ => le_refl _
+  | .some (.some m), hm => by
     refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
-      WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
+    rw [← WithBot.coe_natCast, WithBot.coe_lt_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by

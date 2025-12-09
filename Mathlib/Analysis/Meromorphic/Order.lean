@@ -131,8 +131,8 @@ theorem meromorphicOrderAt_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : Merom
     meromorphicOrderAt f z₀ ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
       f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ ((meromorphicOrderAt f z₀).untop₀) • g z :=
   ⟨fun h ↦ (meromorphicOrderAt_eq_int_iff hf).1 (WithTop.coe_untop₀_of_ne_top h).symm,
-    fun h ↦ Option.ne_none_iff_exists'.2
-      ⟨(meromorphicOrderAt f z₀).untopD 0, (meromorphicOrderAt_eq_int_iff hf).2 h⟩⟩
+    fun h ↦ WithTop.ne_top_iff_exists.2
+      ⟨(meromorphicOrderAt f z₀).untopD 0, ((meromorphicOrderAt_eq_int_iff hf).2 h).symm⟩⟩
 
 @[deprecated (since := "2025-05-22")]
 alias MeromorphicAt.order_ne_top_iff := meromorphicOrderAt_ne_top_iff
@@ -304,9 +304,9 @@ theorem meromorphicOrderAt_congr (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
   · rw [h₁f₁, eq_comm]
     rw [meromorphicOrderAt_eq_top_iff] at h₁f₁ ⊢
     exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
-  · obtain ⟨n, hn : meromorphicOrderAt f₁ x = n⟩ := Option.ne_none_iff_exists'.mp h₁f₁
-    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn
-    rw [hn, eq_comm, meromorphicOrderAt_eq_int_iff (hf₁.congr hf₁₂)]
+  · obtain ⟨n, hn : n = meromorphicOrderAt f₁ x⟩ := WithTop.ne_top_iff_exists.mp h₁f₁
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn.symm
+    rw [← hn, eq_comm, meromorphicOrderAt_eq_int_iff (hf₁.congr hf₁₂)]
     use g, h₁g, h₂g
     exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
 

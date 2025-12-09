@@ -130,21 +130,24 @@ meaning in this case `0` will not be mapped to `⊤`.
 @[stacks 02MD]
 noncomputable
 def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
-  toFun x := if x ∈ nonZeroDivisors R
-             then WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x)
-             else 0
+  toFun x :=
+    if x ∈ nonZeroDivisors R then
+      match Ring.ord R x with
+      | ⊤ => 0
+      | (y : ℕ) => (Nat.castAddMonoidHom ℤ).toMultiplicative (.ofAdd y)
+    else 0
   map_zero' := by
     simp [nonZeroDivisors, exists_ne]
   map_one' := by
     simp [nonZeroDivisors, Ring.ord_one]
-    rfl
   map_mul' := by
     intro x y
-    split_ifs with _ _ b
-    · rw [← MonoidWithZeroHom.map_mul]
-      congr
-      exact ord_mul R b
-    all_goals simp_all [mul_mem_nonZeroDivisors]
+    cases hx : ord R x <;> cases hy : ord R y <;>
+      simp +contextual only [mul_mem_nonZeroDivisors, ord_mul, add_top, ite_self, mul_zero, hx, hy,
+        ite_and, top_add, ite_self, AddMonoidHom.toMultiplicative_apply_apply, toAdd_ofAdd,
+        Nat.coe_castAddMonoidHom, mul_ite, zero_mul, mul_zero]
+    rw [← Nat.cast_add, ← ite_and]
+    simp [← ite_and, and_comm]
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
@@ -174,15 +177,9 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
   letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
-    simp only [isUnit_iff_ne_zero, ne_eq]
-    simp [ordMonoidWithZeroHom, ord]
     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
-    have : ∀ k,
-      (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) k = 0 ↔ k = 0 := by
-        intro k
-        cases k
-        all_goals simp
-    simpa [this]
+    obtain ⟨l, hl⟩ := WithBot.ne_bot_iff_exists.mp this
+    simp [ordMonoidWithZeroHom, ord, ← hl]
   f this
 
 lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) :

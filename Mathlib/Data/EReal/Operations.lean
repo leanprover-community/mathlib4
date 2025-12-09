@@ -349,8 +349,8 @@ registered on `EReal`, beyond `SubNegZeroMonoid`, because of this bad behavior.
 -/
 
 @[simp]
-theorem bot_sub (x : EReal) : ⊥ - x = ⊥ :=
-  bot_add x
+theorem bot_sub (x : EReal) : ⊥ - x = ⊥ := by
+  rw [sub_eq_add_neg, bot_add]
 
 @[simp]
 theorem sub_top (x : EReal) : x - ⊤ = ⊥ :=

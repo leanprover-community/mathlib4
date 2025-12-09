@@ -17,41 +17,60 @@ In this file we define `WithBot` and `WithTop`.
 
 variable {α : Type*}
 
-/-- Attach `⊥` to a type. -/
-@[to_dual /-- Attach `⊤` to a type. -/]
-def WithBot (α : Type*) := Option α
+/-- An auxiliary structure, common to `WithBot` and `WithTop`, which guarantees that both are
+def-eq.
+
+In the future, we probably want to get rid of this, and simply use the `to_dual` tactic to dualize
+theorems from one type to the other. -/
+inductive WithBotTop (α : Type*) where
+  | bot : WithBotTop α
+  /- TODO: rename to `coe`:
+  this is only called `some` because of the historical implementation via `Option`. -/
+  /-- The canonical map from `α` into `WithBotTop α` -/
+  | some : α → WithBotTop α
+
+/-- Attach `⊤` to a type. -/
+@[to_dual]
+def WithBot (α : Type*) := WithBotTop α
 
 instance WithBot.instRepr [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
-    | none => "⊥"
-    | some a => "↑" ++ repr a⟩
+    | .bot => "⊥"
+    | .some a => "↑" ++ repr a⟩
 
 @[to_dual existing]
 instance WithTop.instRepr [Repr α] : Repr (WithTop α) :=
   ⟨fun o _ =>
     match o with
-    | none => "⊤"
-    | some a => "↑" ++ repr a⟩
+    | .bot => "⊤"
+    | .some a => "↑" ++ repr a⟩
 
 namespace WithBot
 
 /-- The canonical map from `α` into `WithBot α` -/
-@[to_dual (attr := coe, match_pattern) /-- The canonical map from `α` into `WithTop α` -/]
+@[to_dual (attr := coe, match_pattern)]
 def some : α → WithBot α :=
-  Option.some
+  WithBotTop.some
+
+@[to_dual (attr := match_pattern)]
+def bot : WithBot α :=
+  WithBotTop.bot
 
 @[to_dual]
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
 @[to_dual]
-instance bot : Bot (WithBot α) :=
-  ⟨none⟩
+instance instBot : Bot (WithBot α) :=
+  ⟨bot⟩
 
 @[to_dual]
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+@[to_dual (attr := simp, grind =)]
+theorem bot_eq : (bot : WithBot α) = ⊥ := rfl
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[to_dual (attr := elab_as_elim, induction_eliminator, cases_eliminator)

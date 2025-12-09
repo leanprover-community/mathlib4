@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Data.Finset.WithBot
 public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
@@ -360,18 +361,18 @@ def ofWithBot (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) :
     Prepartition I where
-  boxes := Finset.eraseNone boxes
+  boxes := Finset.eraseBot boxes
   le_of_mem' J hJ := by
-    rw [mem_eraseNone] at hJ
-    simpa only [WithBot.some_eq_coe, WithBot.coe_le_coe] using le_of_mem _ hJ
+    rw [mem_eraseBot] at hJ
+    simpa only [WithBot.coe_le_coe] using le_of_mem _ hJ
   pairwiseDisjoint J₁ h₁ J₂ h₂ hne := by
-    simp only [mem_coe, mem_eraseNone] at h₁ h₂
-    exact Box.disjoint_coe.1 (pairwise_disjoint h₁ h₂ (mt Option.some_inj.1 hne))
+    simp only [mem_coe, mem_eraseBot] at h₁ h₂
+    exact Box.disjoint_coe.1 (pairwise_disjoint h₁ h₂ (mt WithBot.coe_inj.1 hne))
 
 @[simp]
 theorem mem_ofWithBot {boxes : Finset (WithBot (Box ι))} {h₁ h₂} :
     J ∈ (ofWithBot boxes h₁ h₂ : Prepartition I) ↔ (J : WithBot (Box ι)) ∈ boxes :=
-  mem_eraseNone
+  mem_eraseBot
 
 @[simp]
 theorem iUnion_ofWithBot (boxes : Finset (WithBot (Box ι)))
@@ -411,12 +412,36 @@ theorem ofWithBot_mono {boxes₁ : Finset (WithBot (Box ι))}
       ofWithBot boxes₂ le_of_mem₂ pairwise_disjoint₂ :=
   le_ofWithBot _ fun J hJ => H J (mem_ofWithBot.1 hJ) WithBot.coe_ne_bot
 
+namespace Finset
+
+variable {α β : Type*} in
+@[simp]
+theorem image_coe_eraseBot [DecidableEq (WithBot α)] (s : Finset (WithBot α)) :
+    (eraseBot s).image (↑) = s.erase ⊥ := by ext x; cases x <;> simp
+variable {α β : Type*} in
+@[simp]
+theorem map_coe_eraseBot [DecidableEq (WithBot α)] (s : Finset (WithBot α)) :
+    (eraseBot s).map Embedding.withBot = s.erase ⊥ := by
+  rw [map_eq_image, Embedding.withBot_apply, image_coe_eraseBot]
+
+variable {α M : Type*} [CommMonoid M] in
+@[to_additive]
+theorem prod_eraseBot (f : α → M) (s : Finset (WithBot α)) :
+    ∏ x ∈ eraseBot s, f x = ∏ x ∈ s, WithBot.mapD 1 f x := by
+  classical calc
+      ∏ x ∈ eraseBot s, f x = ∏ x ∈ (eraseBot s).map Embedding.withBot, WithBot.mapD 1 f x :=
+        (prod_map (eraseBot s) Embedding.withBot <| WithBot.mapD 1 f).symm
+      _ = ∏ x ∈ s.erase ⊥, WithBot.mapD 1 f x := by rw [map_coe_eraseBot]
+      _ = ∏ x ∈ s, WithBot.mapD 1 f x := prod_erase _ rfl
+
+end Finset
+
 theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
     (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
-      ∑ J ∈ boxes, Option.elim' 0 f J :=
-  Finset.sum_eraseNone _ _
+      ∑ J ∈ boxes, WithBot.mapD 0 f J :=
+  Finset.sum_eraseBot _ _
 
 open scoped Classical in
 /-- Restrict a prepartition to a box. -/
@@ -451,15 +476,46 @@ theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : �
 theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
   fun _ _ => restrict_mono
 
+variable {α : Type*} in
+/-- Construct an empty or singleton finset from an `Option` -/
+def _root_.WithBot.toFinset (o : WithBot α) : Finset α :=
+  o.mapD ∅ singleton
+
+variable {α : Type*} in
+@[simp]
+theorem _root_.WithBot.toFinset_bot : (⊥ : WithBot α).toFinset = (∅ : Finset α) :=
+  rfl
+
+variable {α : Type*} in
+@[simp]
+theorem _root_.WithBot.toFinset_coe {a : α} : (a : WithBot α).toFinset = {a} :=
+  rfl
+
+variable {α : Type*} in
+@[simp]
+theorem _root_.WithBot.mem_toFinset {a : α} {o : WithBot α} : a ∈ o.toFinset ↔ a = o := by
+  cases o <;> simp [eq_comm]
+
+variable {α : Type*} in
+theorem _root_.WithBot.card_toFinset (o : WithBot α) : o.toFinset.card = o.mapD 0 1 := by
+  cases o <;> simp
+
+variable {α : Type*} in
+theorem _root_.Finset.eraseBot_eq_biUnion [DecidableEq α] (s : Finset (WithBot α)) :
+    eraseBot s = s.biUnion WithBot.toFinset := by
+  ext
+  simp
+
+
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
   classical
-  simp only [restrict, ofWithBot, eraseNone_eq_biUnion]
+  simp only [restrict, ofWithBot, eraseBot_eq_biUnion]
   refine Finset.image_biUnion.trans ?_
   refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
   intro J' hJ'
-  rw [inf_of_le_right, ← WithBot.some_eq_coe, Option.toFinset_some]
+  rw [inf_of_le_right, WithBot.toFinset_coe]
   exact WithBot.coe_le_coe.2 ((π.le_of_mem hJ').trans h)
 
 @[simp]

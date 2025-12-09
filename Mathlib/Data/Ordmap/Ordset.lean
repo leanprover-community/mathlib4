@@ -532,13 +532,13 @@ theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableLE α]
 
 theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono f) {t a₁ a₂}
     (h : Valid' a₁ t a₂) :
-    Valid' (Option.map f a₁) (map f t) (Option.map f a₂) ∧ (map f t).size = t.size := by
+    Valid' (WithBot.map f a₁) (map f t) (WithBot.map f a₂) ∧ (map f t).size = t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
     simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp only [Option.map, Bounded]
+    simp only [WithBot.map, Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left

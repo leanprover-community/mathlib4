@@ -9,6 +9,7 @@ public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Logic.Embedding.WithBot
 
 /-!
 # Locally finite orders
@@ -951,28 +952,28 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
 
 variable (a b : α)
 
-theorem Icc_coe_top : Icc (a : WithTop α) ⊤ = insertNone (Ici a) :=
+theorem Icc_coe_top : Icc (a : WithTop α) ⊤ = insertTop (Ici a) :=
   rfl
 
-theorem Icc_coe_coe : Icc (a : WithTop α) b = (Icc a b).map Embedding.some :=
+theorem Icc_coe_coe : Icc (a : WithTop α) b = (Icc a b).map Embedding.withTop :=
   rfl
 
-theorem Ico_coe_top : Ico (a : WithTop α) ⊤ = (Ici a).map Embedding.some :=
+theorem Ico_coe_top : Ico (a : WithTop α) ⊤ = (Ici a).map Embedding.withTop :=
   rfl
 
-theorem Ico_coe_coe : Ico (a : WithTop α) b = (Ico a b).map Embedding.some :=
+theorem Ico_coe_coe : Ico (a : WithTop α) b = (Ico a b).map Embedding.withTop :=
   rfl
 
-theorem Ioc_coe_top : Ioc (a : WithTop α) ⊤ = insertNone (Ioi a) :=
+theorem Ioc_coe_top : Ioc (a : WithTop α) ⊤ = insertTop (Ioi a) :=
   rfl
 
-theorem Ioc_coe_coe : Ioc (a : WithTop α) b = (Ioc a b).map Embedding.some :=
+theorem Ioc_coe_coe : Ioc (a : WithTop α) b = (Ioc a b).map Embedding.withTop :=
   rfl
 
-theorem Ioo_coe_top : Ioo (a : WithTop α) ⊤ = (Ioi a).map Embedding.some :=
+theorem Ioo_coe_top : Ioo (a : WithTop α) ⊤ = (Ioi a).map Embedding.withTop :=
   rfl
 
-theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.some :=
+theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.withTop :=
   rfl
 
 end WithTop
@@ -1001,28 +1002,28 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (WithBot α) :=
 
 variable (a b : α)
 
-theorem Icc_bot_coe : Icc (⊥ : WithBot α) b = insertNone (Iic b) :=
+theorem Icc_bot_coe : Icc (⊥ : WithBot α) b = insertBot (Iic b) :=
   rfl
 
-theorem Icc_coe_coe : Icc (a : WithBot α) b = (Icc a b).map Embedding.some :=
+theorem Icc_coe_coe : Icc (a : WithBot α) b = (Icc a b).map Embedding.withBot :=
   rfl
 
-theorem Ico_bot_coe : Ico (⊥ : WithBot α) b = insertNone (Iio b) :=
+theorem Ico_bot_coe : Ico (⊥ : WithBot α) b = insertBot (Iio b) :=
   rfl
 
-theorem Ico_coe_coe : Ico (a : WithBot α) b = (Ico a b).map Embedding.some :=
+theorem Ico_coe_coe : Ico (a : WithBot α) b = (Ico a b).map Embedding.withBot :=
   rfl
 
-theorem Ioc_bot_coe : Ioc (⊥ : WithBot α) b = (Iic b).map Embedding.some :=
+theorem Ioc_bot_coe : Ioc (⊥ : WithBot α) b = (Iic b).map Embedding.withBot :=
   rfl
 
-theorem Ioc_coe_coe : Ioc (a : WithBot α) b = (Ioc a b).map Embedding.some :=
+theorem Ioc_coe_coe : Ioc (a : WithBot α) b = (Ioc a b).map Embedding.withBot :=
   rfl
 
-theorem Ioo_bot_coe : Ioo (⊥ : WithBot α) b = (Iio b).map Embedding.some :=
+theorem Ioo_bot_coe : Ioo (⊥ : WithBot α) b = (Iio b).map Embedding.withBot :=
   rfl
 
-theorem Ioo_coe_coe : Ioo (a : WithBot α) b = (Ioo a b).map Embedding.some :=
+theorem Ioo_coe_coe : Ioo (a : WithBot α) b = (Ioo a b).map Embedding.withBot :=
   rfl
 
 end WithBot

@@ -29,7 +29,15 @@ public import Mathlib.Topology.Instances.Real.Lemmas
 * `Measurable.ennreal*` : measurability of special cases for arithmetic operations on `ℝ≥0∞`.
 -/
 
+<<<<<<< HEAD
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
+def Equiv.withTopEquivSumPUnit.{v, w} (α : Type w) : WithTop α ≃ α ⊕ PUnit.{v+1} :=
+  ⟨fun o => o.mapD (.inr PUnit.unit) .inl, fun s => s.elim (↑) fun _ => ⊤,
+    fun o => by cases o <;> rfl,
+    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+=======
 @[expose] public section
+>>>>>>> master
 
 open Set Filter MeasureTheory MeasurableSpace
 
@@ -212,7 +220,7 @@ theorem measurable_of_measurable_nnreal {f : ℝ≥0∞ → α} (h : Measurable 
 
 /-- `ℝ≥0∞` is `MeasurableEquiv` to `ℝ≥0 ⊕ Unit`. -/
 def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
-  { Equiv.optionEquivSumPUnit ℝ≥0 with
+  { Equiv.withTopEquivSumPUnit ℝ≥0 with
     measurable_toFun := measurable_of_measurable_nnreal measurable_inl
     measurable_invFun :=
       measurable_fun_sum measurable_coe_nnreal_ennreal (@measurable_const ℝ≥0∞ Unit _ _ ∞) }

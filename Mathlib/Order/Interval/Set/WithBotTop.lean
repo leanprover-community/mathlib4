@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.Image
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBot.Basic
 
 /-!
 # Intervals in `WithTop α` and `WithBot α`
