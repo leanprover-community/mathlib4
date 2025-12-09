@@ -94,11 +94,11 @@ end CochainComplex
 
 section
 
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
+variable {C} {D : Type u'} [Category.{v'} D] [Abelian D]
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 /-- `CochainComplex.singleFunctor` commutes with `F` and `F.mapHomologicalComplex`. -/
-noncomputable def Functor.mapCochainComplexSingleFunctor (n : ℤ) :
+noncomputable def CategoryTheory.Functor.mapCochainComplexSingleFunctor (n : ℤ) :
     CochainComplex.singleFunctor C n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
       F ⋙ CochainComplex.singleFunctor D n :=
   HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n

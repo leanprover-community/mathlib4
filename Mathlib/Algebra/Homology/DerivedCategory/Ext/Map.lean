@@ -29,12 +29,6 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-/-- The commute of `CochainComplex.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
-noncomputable def Functor.mapCochainComplexSingleFunctor (n : ℤ) :
-    CochainComplex.singleFunctor C n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
-      F ⋙ CochainComplex.singleFunctor D n :=
-  HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n
-
 section Ext
 
 open Localization
@@ -44,10 +38,6 @@ instance [h : HasExt.{w'} D] (X Y : C) : HasSmallLocalizedShiftedHom.{w'}
     (((F ⋙ CochainComplex.singleFunctor D 0).obj X))
     (((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) :=
   h (F.obj X) (F.obj Y)
-
-instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ :=
-  inferInstanceAs ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
 
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ}
