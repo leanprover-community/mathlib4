@@ -99,9 +99,9 @@ lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
   letI := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (- (n + 1)) 0
-    (by cutsat)).hom.app _), zero_hom, Limits.zero_comp]
+    (by lia)).hom.app _), zero_hom, Limits.zero_comp]
   apply from_singleFunctor_obj_eq_zero_of_projective
-    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := - (n + 1)) _ (by cutsat)
+    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := - (n + 1)) _ (by lia)
 
 end Abelian.Ext
 
@@ -131,7 +131,7 @@ lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] : H
       { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
     have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
       Ext.contravariant_sequence_exact₃ hS Y x₃
-        (Ext.eq_zero_of_projective _) (by cutsat)
+        (Ext.eq_zero_of_projective _) (by lia)
     exact small_of_surjective.{w} this
 
 end CategoryTheory

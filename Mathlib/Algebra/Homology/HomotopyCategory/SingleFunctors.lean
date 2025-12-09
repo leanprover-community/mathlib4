@@ -79,6 +79,11 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+variable {C} in
+@[simp]
+lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :
+    ((singleFunctor C n).obj X).d p q = 0 := rfl
+
 instance (n : ℤ) : (singleFunctor C n).Full :=
   inferInstanceAs (single _ _ _).Full
 
@@ -89,8 +94,8 @@ end CochainComplex
 
 namespace HomotopyCategory
 
-/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ))`
-for `n : ℤ` along with their compatibilites with shifts. -/
+/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ)`
+for `n : ℤ` along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
   (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _)
 

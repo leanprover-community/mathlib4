@@ -6,23 +6,28 @@ public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
+public import Mathlib.Tactic.Linter.EmptyLine
 public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
--- This linter is disabled by default, but downstream projects may want to enable it:
--- to facilitate this, we import the linter here.
 public import Mathlib.Tactic.Linter.FlexibleLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Linter.PrivateModule
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
+public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+-- This is a redundant import, but it is needed so that
+-- the linter doesn't complain about `ParseCommand` not importing `Header`.
+-- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
+public import Mathlib.Util.ParseCommand
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -65,8 +70,10 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.flexible
   linter.hashCommand
   linter.oldObtain
+  linter.privateModule
   linter.style.cases
   linter.style.induction
   linter.style.refine
@@ -74,8 +81,9 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
-  linter.style.lambdaSyntax
+  linter.style.emptyLine
   linter.style.header
+  linter.style.lambdaSyntax
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
@@ -85,6 +93,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.maxHeartbeats
+  linter.unusedDecidableInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
@@ -102,7 +111,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
