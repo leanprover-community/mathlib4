@@ -13092,6 +13092,7 @@ public import Mathlib.RingTheory.Finiteness.Lattice
 public import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.RingTheory.Finiteness.NilpotentKer
 public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.Finiteness.Quotient
