@@ -60,7 +60,7 @@ lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
   constructor
   · rintro ⟨m', hm', β, hβ⟩
-    obtain rfl : m = m' := by cutsat
+    obtain rfl : m = m' := by lia
     exact ⟨β, hβ⟩
   · rintro ⟨β, hβ⟩
     exact ⟨m, hm, β, hβ⟩
@@ -138,7 +138,7 @@ def toHom :
     simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
       AddEquiv.toAddMonoidHom_eq_coe, Function.comp_apply, Cocycle.equivHomShift_symm_apply,
       Functor.mapAddHom_apply, HomotopyCategory.quotient_map_eq_zero_iff]
-    exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by cutsat),
+    exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by lia),
       by simp [Cochain.δ_rightShift _ _ _ _ _ _ (zero_add n), smul_smul]⟩⟩)
 
 lemma toHom_mk (x : Cocycle K L n) :
@@ -153,7 +153,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
     simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,
       Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.rightShift_coe] at h
-    exact ⟨n - 1, by simp, n.negOnePow • γ.rightUnshift _ (by cutsat),
+    exact ⟨n - 1, by simp, n.negOnePow • γ.rightUnshift _ (by lia),
       by simp [Cochain.δ_rightUnshift _ _ _ _ _ (zero_add n), smul_smul, ← h]⟩
   · rw [← mk_eq_zero_iff] at h
     rw [h, map_zero]
