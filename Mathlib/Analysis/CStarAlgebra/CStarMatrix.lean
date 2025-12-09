@@ -697,7 +697,7 @@ end TopologyAux
 
 namespace CStarMatrix
 
-section non_unital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -774,9 +774,9 @@ noncomputable instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
-end non_unital
+end NonUnital
 
-section unital
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -792,7 +792,7 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
 
-end unital
+end Unital
 
 section
 
