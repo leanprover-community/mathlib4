@@ -3,13 +3,17 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Sums of translates of a continuous function is a period continuous function.
 
 -/
+
+@[expose] public section
 assert_not_exists StoneCech StarModule
 
 namespace ContinuousMap

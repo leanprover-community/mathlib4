@@ -3,16 +3,18 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.ClearExclamation
+module
+
+public meta import Mathlib.Algebra.GroupWithZero.Invertible
+public meta import Mathlib.Algebra.Ring.Int.Defs
+public meta import Mathlib.Data.Nat.Cast.Basic
+public meta import Mathlib.Data.Nat.Cast.Commute
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.HaveI
+public meta import Mathlib.Tactic.ClearExclamation
 
 /-!
-## `norm_num` basic plugins
+# `norm_num` basic plugins
 
 This file adds `norm_num` plugins for
 * constructors and constants
@@ -22,6 +24,8 @@ This file adds `norm_num` plugins for
 
 See other files in this directory for many more plugins.
 -/
+
+public meta section
 
 universe u
 
@@ -34,7 +38,7 @@ open Qq
 
 theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 
-/-! # Constructors and constants -/
+/-! ### Constructors and constants -/
 
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
@@ -81,6 +85,20 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
+theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
+  ⟨congr_arg Int.negOfNat h.1⟩
+
+/-- `norm_num` extension for `Int.negOfNat`.
+
+It's useful for calling `derive` with the numerator of an `.isNegNNRat` branch. -/
+@[norm_num Int.negOfNat _]
+def evalNegOfNat : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℤ), ~q(Int.negOfNat $a) =>
+    let ⟨n, pn⟩ ← deriveNat (u := 0) a q(inferInstance)
+    return .isNegNat q(inferInstance) n q(isInt_negOfNat $a $n $pn)
+  | _ => failure
+
 theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
   | _, _, ⟨rfl⟩ => ⟨rfl⟩
 
@@ -99,7 +117,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
   | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
   | _ => failure
 
-/-! # Casts -/
+/-! ### Casts -/
 
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -135,9 +153,9 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
     return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
-/-! # Arithmetic -/
+/-! ### Arithmetic -/
 
-library_note "norm_num lemma function equality"/--
+library_note2 «norm_num lemma function equality» /--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
@@ -565,7 +583,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     return .isRat dα qa na da q(isRat_div $pa)
 
-/-! # Logic -/
+/-! ### Logic -/
 
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
@@ -585,7 +603,7 @@ such that `norm_num` successfully recognises `a`. -/
   | true => return .isFalse q(not_not_intro $p)
   | false => return .isTrue q($p)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 variable {α : Type u}
 
@@ -612,7 +630,7 @@ theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (·
 theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
 theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
-/-! # Nat operations -/
+/-! ### Nat operations -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
@@ -718,5 +736,3 @@ end NormNum
 end Meta
 
 end Mathlib
-
-open Mathlib.Meta.NormNum

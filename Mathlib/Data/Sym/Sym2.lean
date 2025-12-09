@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Sym.Sym2.Init
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Data.Sym.Sym2.Init
 
 /-!
 # The symmetric square
@@ -42,6 +44,8 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
 symmetric square, unordered pairs, symmetric powers
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -499,16 +503,40 @@ lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
-theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  obtain ⟨x, y⟩ := z
-  rintro (rfl : x = y)
-  exact ⟨_, rfl⟩
+theorem isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag :=
+  z.ind Subsingleton.elim
 
+/-- The set of all `Sym2 α` elements on the diagonal. -/
+def diagSet : Set (Sym2 α) :=
+  Set.range diag
+
+@[simp]
+theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag :=
+  ⟨fun ⟨_, h⟩ ↦ h ▸ rfl, z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩⟩
+
+@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
+
+@[deprecated mem_diagSet_iff_isDiag (since := "2025-11-05")]
 theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
-  ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
+  z.mem_diagSet_iff_isDiag.symm
+
+theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by
+  simp
+
+theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} :=
+  Set.ext mem_diagSet_iff_isDiag
+
+theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
+  congrArg _ diagSet_eq_setOf_isDiag
+
+theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ :=
+  Set.ext fun z ↦ ⟨fun _ ↦ trivial, z.ind fun a b _ ↦ Subsingleton.elim a b ▸ ⟨_, rfl⟩⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+
+instance diagSet_decidablePred (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
+  diagSet_eq_setOf_isDiag ▸ IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -522,7 +550,7 @@ section Relations
 /-! ### Declarations about symmetric relations -/
 
 
-variable {r : α → α → Prop}
+variable {r r₁ r₂ : α → α → Prop}
 
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
@@ -537,6 +565,16 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
+theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
+    fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
+  ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
+
+alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
+
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
@@ -549,6 +587,22 @@ theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ
 
 theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
+
+lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmetric := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq
+
+lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
+  ext z
+  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq.not
+
+theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
+    Reflexive r ↔ diagSet ⊆ fromRel sym :=
+  ⟨fun hr _ ⟨_, hd⟩ ↦ hd ▸ hr _, fun h _ ↦ h ⟨_, rfl⟩⟩
+
+theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
+    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ :=
+  ⟨fun hr _ hz ⟨_, hd⟩ ↦ hr _ <| fromRel_prop.mp <| hd ▸ hz, fun h _ ha ↦ h ha ⟨_, rfl⟩⟩
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
@@ -624,7 +678,7 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
-  ext; simp [←Sym2.mem_toFinset, ←Sym2.mem_iff]
+  ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
 
 /-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
 theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
@@ -839,7 +893,7 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
     lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
-  ext ⟨i,j⟩
+  ext ⟨i, j⟩
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--

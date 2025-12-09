@@ -3,17 +3,21 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Finiteness.Subalgebra
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Finiteness.Subalgebra
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.
 
 We prove basic properties of integral elements in a ring extension.
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -66,7 +70,7 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
   nontriviality A
   have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
   refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
-  · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
+  · rcases Finset.mem_image.1 (SetLike.mem_coe.mp hs) with ⟨k, -, rfl⟩
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
@@ -170,7 +174,7 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
     (h : IsIntegral R x) : IsIntegral R (algebraMap A B x) := by
   rcases h with ⟨f, hf, hx⟩
   use f, hf
-  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, RingHom.map_zero]
+  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
     (hAB : Function.Injective (algebraMap A B)) :

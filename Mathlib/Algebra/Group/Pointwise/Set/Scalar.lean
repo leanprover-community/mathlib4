@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Pointwise scalar operations of sets
@@ -39,7 +41,7 @@ Appropriate definitions and results are also transported to the additive theory 
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the scope to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`.
+  instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -47,19 +49,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
+@[expose] public section
 
-library_note "pointwise nat action"/--
-Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
-`SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
-nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
-`2 • {a, b}` can both be `{2 • a, 2 • b}` (pointwise action, pointwise repeated addition,
-`Set.smulSet`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
-addition, `Set.NSMul`).
-
-Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
-nat and int actions.
--/
+assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 

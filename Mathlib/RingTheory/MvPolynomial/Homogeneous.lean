@@ -3,14 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Homogeneous polynomials
@@ -27,6 +29,8 @@ if all monomials occurring in `φ` have degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -51,7 +55,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
-    id, Algebra.id.smul_eq_mul, mul_one]
+    id, smul_eq_mul, mul_one]
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
@@ -129,7 +133,7 @@ alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomog
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
-  simp only [Finsupp.degree, Finsupp.zero_apply, Finset.sum_const_zero]
+  simp only [degree_apply, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
 
 variable (R)
 
@@ -143,8 +147,8 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  rw [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton]
-  exact Finsupp.single_eq_same
+  simp only [degree_apply, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+    single_eq_same]
 
 end
 
@@ -318,8 +322,8 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
   have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
     intro i hi
     rw [Finset.mem_range] at hi
-    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by cutsat)).coeff_eq_zero
-    simp only [Finsupp.degree_zero]
+    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by lia)).coeff_eq_zero
+    simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
   simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
@@ -368,9 +372,9 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
     · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
-    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by cutsat
+    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by lia
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
-      IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; cutsat) hnR)
+      IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; lia) hnR)
     set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
     have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by
       rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
@@ -378,7 +382,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
       refine lt_of_le_of_lt natDegree_map_le ?_
-      suffices (finSuccEquiv _ _ F).natDegree ≠ n by cutsat
+      suffices (finSuccEquiv _ _ F).natDegree ≠ n by lia
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀

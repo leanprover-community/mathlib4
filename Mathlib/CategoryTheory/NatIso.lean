@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Natural isomorphisms
@@ -29,6 +31,8 @@ Note that `NatIso` is a namespace without a corresponding definition;
 we put some declarations that are specifically about natural isomorphisms in the `Iso`
 namespace so that they are available using dot notation.
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 
@@ -87,14 +91,6 @@ open CategoryTheory.Category CategoryTheory.Functor
 @[simp]
 theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
-  rfl
-
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
-  rfl
-
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
   rfl
 
 variable {F G : C ⥤ D}
@@ -159,12 +155,15 @@ end
 
 variable {X Y : C}
 
+@[reassoc]
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   simp
 
+@[reassoc]
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   simp
 
+@[reassoc]
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 
@@ -184,10 +183,6 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
--- TODO: `hom_inv_id` and `inv_hom_id` are not yet working via `grind`,
--- but they work fine in my minimization in the `grind` test suite.
--- Investigate on nightly-testing / the next release?
-set_option mathlib.tactic.category.grind false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
@@ -238,7 +233,6 @@ namespace Functor
 
 variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
 
-set_option mathlib.tactic.category.grind false in
 /-- Constructor for a functor that is isomorphic to a given functor `F : C ⥤ D`,
 while being definitionally equal on objects to a given map `obj : C → D`
 such that for all `X : C`, we have an isomorphism `F.obj X ≅ obj X`. -/

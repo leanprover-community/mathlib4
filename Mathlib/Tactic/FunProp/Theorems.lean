@@ -3,15 +3,19 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Types
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+module
+
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.Types
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta
@@ -284,7 +288,7 @@ Examples:
   theorem Continuous_add (hf : Continuous f) (hg : Continuous g) :
       Continuous (fun x => (f x) + (g x))
 ```
-- mor - the head of function body has to be ``DFunLike.code
+- mor - the head of function body has to be `DFunLike.coe`
 ```
   theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
       (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :

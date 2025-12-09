@@ -3,8 +3,9 @@ Copyright (c) 2023 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.Tactic.FBinop
+public import Mathlib.Tactic.FBinop
 
 /-!
 # Set Product Notation
@@ -20,6 +21,8 @@ We introduce the notation `x ×ˢ y` for the `sprod` of any `SProd` structure. I
 notation is desirable but this notation is defined in core for `Prod` so replacing `x ×ˢ y` with
 `x × y` seems difficult.
 -/
+
+@[expose] public section
 
 universe u v w
 

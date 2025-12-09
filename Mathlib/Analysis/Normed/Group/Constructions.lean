@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Product of normed groups and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Normed.Group.Basic
 This file constructs the infinity norm on finite products of normed groups and provides instances
 for type synonyms.
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -249,7 +253,7 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
-Earlier, this names was used for the additive version. -/
+Earlier, this name was used for the additive version. -/
 @[to_additive Prod.nnnorm_def]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 

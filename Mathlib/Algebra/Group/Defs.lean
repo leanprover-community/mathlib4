@@ -3,15 +3,16 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Batteries.Logic
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Algebra.Regular.Defs
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.OfNat
-import Mathlib.Tactic.Simps.Basic
+module
+
+public import Batteries.Logic
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Algebra.Regular.Defs
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -26,7 +27,7 @@ The file does not contain any lemmas except for
 * axioms of typeclasses restated in the root namespace;
 * lemmas required for instances.
 
-For basic lemmas about these classes see `Algebra.Group.Basic`.
+For basic lemmas about these classes see `Mathlib/Algebra/Group/Basic.lean`.
 
 We register the following instances:
 
@@ -40,6 +41,8 @@ We register the following instances:
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
 
 universe u v w
@@ -51,20 +54,6 @@ variable {G : Type*}
 section Mul
 
 variable [Mul G]
-
-/-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive /-- `leftAdd g` denotes left addition by `g` -/]
-def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
-
-/-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive /-- `rightAdd g` denotes right addition by `g` -/]
-def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
-
-attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
-attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
-
-attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
-attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
 
 /-- A mixin for left cancellative multiplication. -/
 @[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -205,7 +194,7 @@ end Semigroup
 /-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an commutative additive magma. -/
+  /-- Addition is commutative in a commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
@@ -228,10 +217,18 @@ attribute [to_additive] CommSemigroup
 
 section CommMagma
 
-variable [CommMagma G]
+variable [CommMagma G] {a : G}
 
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
@@ -265,7 +262,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note "lower cancel priority" /--
+library_note2 «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -378,7 +375,7 @@ include hn ha
 
 end
 
-library_note "forgetful inheritance"/--
+library_note2 «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -534,8 +531,8 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by cutsat), mul_assoc]
+    rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by lia), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -1168,6 +1165,7 @@ end Group
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
+-- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 

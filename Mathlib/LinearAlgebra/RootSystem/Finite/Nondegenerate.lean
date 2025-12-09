@@ -3,12 +3,14 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.RootSystem.BaseChange
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Basic
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.RootSystem.BaseChange
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -44,6 +46,8 @@ Weyl group.
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -90,6 +94,45 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
   symm := P.rootForm_symmetric
   ne_zero := IsAnisotropic.rootForm_root_ne_zero
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
+
+lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R N] {i j k : ι}
+    {m n : R} (hk : m • P.root i + n • P.root j = P.root k) :
+    letI Q :=
+      (m * m) * P.pairing i j + (m * n) * (P.pairing i j * P.pairing j i) + (n * n) * P.pairing j i
+    Q • P.coroot k = m • P.pairing i j • P.coroot i + n • P.pairing j i • P.coroot j := by
+  let B := P.toInvariantForm
+  let lsq (i) : R := B.form (P.root i) (P.root i)
+  have hlsq (i : ι) : lsq i = P.RootForm (P.root i) (P.root i) := rfl
+  have h₁ : lsq k • P.coroot k = (m • lsq i) • P.coroot i + (n • lsq j) • P.coroot j := by
+    simp only [hlsq, smul_assoc, P.rootForm_self_smul_coroot, smul_comm _ 2]
+    rw [← map_smul _ m, ← map_smul _ n, ← nsmul_add, ← map_add, hk]
+  have h₂ :
+      lsq k = (m * m) * lsq i + (m * n) * (2 * B.form (P.root i) (P.root j)) + (n * n) * lsq j := by
+    have aux : P.RootForm (P.root j) (P.root i) = B.form (P.root i) (P.root j) :=
+      P.rootForm_symmetric.eq (P.root j) (P.root i)
+    simp [hlsq, ← hk, aux, B]
+    ring
+  have h₃ : 2 * B.form (P.root i) (P.root j) = P.pairing i j * lsq j :=
+    B.two_mul_apply_root_root i j
+  have h₄ : P.pairing j i * lsq i = P.pairing i j * lsq j := B.pairing_mul_eq_pairing_mul_swap i j
+  replace h₁ :
+      (m * m * (P.pairing j i * lsq i)) • P.coroot k +
+      (m * n * (P.pairing j i * P.pairing i j * lsq j)) • P.coroot k +
+      (n * n * (P.pairing j i * lsq j)) • P.coroot k =
+        (m * (P.pairing j i * lsq i)) • P.coroot i +
+        (n * (P.pairing j i * lsq j)) • P.coroot j := by
+    rw [h₂, h₃] at h₁
+    replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
+    simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
+    convert h₁ using 1
+    · module
+    · ring_nf
+  simp only [h₄] at h₁
+  apply smul_right_injective _ (c := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
+  simp only
+  convert h₁ using 1
+  · module
+  · module
 
 section DomainAlg
 

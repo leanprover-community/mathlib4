@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Function field of integral schemes
@@ -16,6 +18,8 @@ This is a field when the scheme is integral.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -73,14 +77,14 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonem
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
 
-theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
-    f.base (genericPoint X) = genericPoint Y := by
+    f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image (show Continuous f.base by fun_prop)
+  convert (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -147,8 +151,8 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
     IsFractionRing Γ(X, U) X.functionField := by
   haveI : IsAffine _ := hU
   haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _
-      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.isOpenEmbedding_obj_top]; infer_instance)
+    @isIntegral_of_isAffine_of_isDomain _ _ _ (by rw [Scheme.Opens.toScheme_presheaf_obj,
+      U.ι.image_top_eq_opensRange, U.opensRange_ι]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1

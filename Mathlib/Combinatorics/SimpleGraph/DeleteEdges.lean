@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Edge deletion
@@ -25,6 +27,8 @@ case.
 * `SimpleGraph.deleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
   `p`, that is, at least `r` edges must be deleted to satisfy `p`.
 -/
+
+@[expose] public section
 
 
 open Finset Fintype
@@ -79,14 +83,21 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
   rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
 
+@[simp]
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
+@[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
   ext e
   simp [edgeSet_deleteEdges]
+
+@[simp] lemma deleteEdges_sup (G H : SimpleGraph V) (s : Set (Sym2 V)) :
+    (G ⊔ H).deleteEdges s = G.deleteEdges s ⊔ H.deleteEdges s := sup_sdiff
+
+@[simp] lemma deleteEdges_fromEdgeSet (s t : Set (Sym2 V)) :
+    (fromEdgeSet s).deleteEdges t = fromEdgeSet (s \ t) := by ext; simp +contextual
 
 end DeleteEdges
 
@@ -106,7 +117,7 @@ lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x
 
 lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
     (fromEdgeSet (G.incidenceSet x)).edgeSet = G.incidenceSet x := by
-  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right, Set.compl_setOf]
+  rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right]
   exact (incidenceSet_subset G x).trans G.edgeSet_subset_setOf_not_isDiag
 
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
