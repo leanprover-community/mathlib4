@@ -375,15 +375,14 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
     simpa using ht x hx
   | @insert b s _ hs hrec =>  -- insert case
     have hb : (b ∈ Y) := hsY (mem_insert b s)
-    let X' := {x ∈ X | f x b ≤ t}
-   -- let X' := leSublevelOn X (fun x ↦ f x b) t
+    let X' := X ∩ (fun x ↦ f x b) ⁻¹' Iic t
     rcases Set.eq_empty_or_nonempty X' with X'_e | X'_ne
-    · simp only [sep_eq_empty_iff_mem_false, not_le, X'] at X'_e
+    · -- When `X'` is empty, we may set `y0 := b`
       use b, hb
+      simpa [X', Set.eq_empty_iff_forall_notMem] using X'_e
     -- the nonempty case
-    have hX'X : X' ⊆ X := sep_subset X _
-    have kX' : IsCompact X' := sorry
-     -- (hfy b hb).isCompact_leSublevelOn kX t
+    have hX'X : X' ⊆ X := inter_subset_left
+    have kX' : IsCompact X' := (hfy b hb).isCompact_inter_preimage_Iic kX t
     have cX' : Convex ℝ X' := hfy' b hb t
     specialize hrec X'_ne kX'
       (fun y hy ↦ LowerSemicontinuousOn.mono (hfy y hy) hX'X)
@@ -392,11 +391,11 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
       (fun x hx' ↦ hfx' x (hX'X hx'))
       cX'
     have ht_lt : ∀ x ∈ X', ∃ y ∈ s, t < f x y := by
-        /- sinon, si  infi x ∈ X', supr y ∈ s f x y ≤ t
-          pour tout t' > t, il existe x ∈ X', supr y ∈ s f x y ≤ t',
-          comme x ∈ X' et t ≤ t', on  a supr y ∈ insert b s f x y  ≤ t',
-          donc infi x ∈ X, supr y ∈ insert b s, f x y ≤ t',
-          donc infi x ∈ X, supr y ∈ insert b s, f x y ≤ t -/
+        /- otherwise, if  infi x ∈ X', supr y ∈ s f x y ≤ t
+          then for every t' > t, there is x ∈ X' such that supr y ∈ s f x y ≤ t',
+          since x ∈ X' and t ≤ t', we have supr y ∈ insert b s f x y  ≤ t',
+          hence infi x ∈ X, supr y ∈ insert b s, f x y ≤ t',
+          so that infi x ∈ X, supr y ∈ insert b s, f x y ≤ t. -/
       intro x hx
       obtain ⟨y, hy, h⟩ := ht x hx.1
       rcases hy with hy | hy
@@ -413,10 +412,6 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
       rw [← not_le]
       exact fun h ↦ hx' ⟨hx, h⟩
 
-    -- hsup_y : ∀ x ∈ X, sup_y x = sup [y ∈ Y] f x y
-    -- hinf_x : ∀ y ∈ Y, inf_x y = inf [x ∈ X] f x y
-    -- hinf_sup : inf_sup = inf [x ∈ X] sup_y x
-    -- hsup_inf : sup_inf = sup [y ∈ Y] inf_x y
 include ne_X cX cY kX hfx hfx' hfy hfy' in
 /-- A minimax theorem without completeness, using `IsGLB` and `IsULB`. -/
 theorem minimax
@@ -457,23 +452,18 @@ theorem minimax
   -- when `Y` is not empty
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, {x ∈ X | f x y ≤ t} = ∅ := by
+  have : ∃ s : Finset Y, ∀ x ∈ X, ∃ i ∈ s, t < f x i := by
+    rw [← LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset kX hfy]
     apply Set.eq_empty_of_forall_notMem
-    intro x hx
-    simp only [mem_iInter, mem_setOf_eq] at hx
+    rintro x ⟨hx, hx'⟩
+    simp only [mem_iInter, mem_preimage, mem_Iic] at hx'
     rw [lt_isGLB_iff hinf_sup] at ht
     obtain ⟨c, hc, htc⟩ := ht
     simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hc
-    have hxX : x ∈ X := by
-      obtain ⟨y, hy⟩ := ne_Y
-      exact (hx y hy).1
-    specialize hc x hxX
-    apply not_le.mpr htc (le_trans hc _)
-    rw [isLUB_le_iff (hsup_y x hxX), mem_upperBounds]
+    apply not_le.mpr htc (le_trans (hc x hx) _)
+    rw [isLUB_le_iff (hsup_y x hx), mem_upperBounds]
     aesop
-  -- rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
-  sorry
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
@@ -555,19 +545,16 @@ theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x ∈ X,
   · simp [biInf_const ne_X]
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, {x ∈ X | f x y ≤ t} = ∅ := by
+  have : ∃ u : Finset Y, ∀ x ∈ X, ∃ i ∈ u, t < f x i := by
+    rw [← LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_finset kX hfy]
     apply Set.eq_empty_of_forall_notMem
-    intro x hx
-    simp only [mem_iInter, mem_setOf_eq] at hx
+    rintro x ⟨hx, hx'⟩
     rw [lt_iInf_iff] at ht
     obtain ⟨c, htc, hc⟩ := ht
     apply not_le.mpr htc
+    simp only [mem_iInter, mem_preimage, mem_Iic] at hx'
     simp only [le_iInf_iff] at hc
-    apply le_trans (hc x ?_) (by aesop)
-    obtain ⟨y, hy⟩ := ne_Y
-    exact (hx y hy).1
-  sorry
-  -- rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
+    apply le_trans (hc x hx) (by aesop)
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
