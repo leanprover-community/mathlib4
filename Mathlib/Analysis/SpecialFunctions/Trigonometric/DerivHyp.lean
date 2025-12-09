@@ -21,7 +21,7 @@ computed.
 
 ## Tags
 
-sinh, cosh, tanh, angle
+sinh, cosh, tanh
 -/
 
 @[expose] public section
