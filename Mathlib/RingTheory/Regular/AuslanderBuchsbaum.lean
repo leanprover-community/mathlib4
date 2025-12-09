@@ -39,7 +39,7 @@ theorem smul_prod_of_smul {ι : Type*} [Finite ι] (x : ι → M)
   exact Submodule.sum_mem _ <| fun i hi ↦
     Submodule.smul_top_le_comap_smul_top I (LinearMap.single R (fun i ↦ M) i) (h i)
 
-variable [Module.Finite R M] [Free R M] (f : M →ₗ[R] N)
+variable [Module.Finite R M] [Module.Free R M] (f : M →ₗ[R] N)
 
 theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤) :
     f ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
@@ -66,11 +66,9 @@ lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat
 omit [Small.{v} R] in
 lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
     [ntr : Nontrivial M] : Nontrivial R := by
-  apply not_subsingleton_iff_nontrivial.mp
-  by_contra h
+  by_contra! h
   absurd ntr
-  apply not_nontrivial_iff_subsingleton.mpr
-  apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
+  apply not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
 namespace AddCommGrpCat
@@ -155,9 +153,9 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   have : Function.Surjective ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap ∘ₗ
     Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap)) := by
-    apply Function.Surjective.comp (LinearEquiv.restrictScalars R b.repr).symm.surjective
+    apply (LinearEquiv.restrictScalars R b.repr).symm.surjective.comp
     apply Finsupp.mapRange_surjective _ (by simp)
-    apply Function.Surjective.comp (Submodule.mkQ_surjective _) (Shrink.linearEquiv R R).surjective
+    apply (Submodule.mkQ_surjective _).comp (Shrink.linearEquiv R R).surjective
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
@@ -188,7 +186,7 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
-    1 + IsLocalRing.depth M = IsLocalRing.depth.{v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
+    1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
   let _ := Quotient.field (maximalIdeal R)
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
@@ -205,10 +203,6 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
   have surjf : Function.Surjective f := basis_lift M ι B
-  have : Module.Finite R (ι →₀ Shrink.{v} R) := by
-    simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
-  have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
-  have free : Module.Free R (ι →₀ Shrink.{v} R) := inferInstance
   let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
   have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
   have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
@@ -223,8 +217,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @(ModuleCat.of R (LinearMap.ker f)).free_of_projective_of_isLocalRing _ _ _ _ _ ?_
     rw [projective_iff_hasProjectiveDimensionLT_one]
-    rcases free with ⟨⟨B⟩⟩
-    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 (ModuleCat.projective_of_free B.2)).mp le1
+    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 inferInstance).mp le1
   have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v} R)) := by
     apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
     rw [hf]
@@ -314,7 +307,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (netop : projectiveDimension M ≠ ⊤) :
     projectiveDimension M + IsLocalRing.depth M =
-    IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
+    IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
     classical
     obtain ⟨n, hn⟩: ∃ n : ℕ, projectiveDimension M = n := by
       generalize hd : projectiveDimension M = d
