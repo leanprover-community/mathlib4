@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Subpresheaf.Image
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 
 /-!
@@ -24,19 +24,11 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-/-- The image of a natural transformation between type-valued functors -/
-@[simps obj map]
-def NatTrans.image {F G : C ⥤ Type u} (f : F ⟶ G) : C ⥤ Type u where
-  obj X := Set.range <| f.app X
-  map g := fun ⟨x, hx⟩ ↦ ⟨G.map g x, by
-    obtain ⟨y, rfl⟩ := hx
-    exact ⟨F.map g y, FunctorToTypes.naturality F G f g y⟩⟩
-
 attribute [local simp] FunctorToTypes.naturality in
 /-- The image of a natural transformation between type-valued functors is a `MonoFactorisation` -/
 @[simps]
 def NatTrans.monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
-  I := f.image
+  I := (Subpresheaf.range f).toPresheaf
   m := { app X := Subtype.val }
   m_mono := by
     rw [NatTrans.mono_iff_mono_app]
@@ -53,14 +45,15 @@ noncomputable def NatTrans.monoFactorisationIsImage {F G : C ⥤ Type u} (f : F 
     naturality X Y g := by
       ext ⟨⟩
       apply show Function.Injective (H.m.app Y) by rw [← mono_iff_injective]; infer_instance
-      simp only [monoFactorisation_I, image_obj, types_comp_apply, image_map,
-        MonoFactorisation.fac_apply, FunctorToTypes.naturality]
+      simp only [monoFactorisation_I, Subpresheaf.toPresheaf_obj, Subpresheaf.range_obj,
+        types_comp_apply, Subpresheaf.toPresheaf_map_coe, MonoFactorisation.fac_apply,
+        FunctorToTypes.naturality]
       generalize_proofs h₁ h₂
       rw [h₁.choose_spec, h₂.choose_spec] }
   lift_fac H := by
     ext
-    simp only [monoFactorisation_I, image_obj, FunctorToTypes.comp, MonoFactorisation.fac_apply,
-      monoFactorisation_m_app]
+    simp only [monoFactorisation_I, Subpresheaf.toPresheaf_obj, Subpresheaf.range_obj,
+      FunctorToTypes.comp, MonoFactorisation.fac_apply, monoFactorisation_m_app]
     generalize_proofs h
     exact h.choose_spec
 
