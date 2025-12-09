@@ -73,7 +73,7 @@ theorem alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (Perm α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (Perm α) s ⊓ alternatingGroup α ≤ G) :
     alternatingGroup α ≤ G := by
-  -- We need to prove that `alternating_group α ≤ ⊤`
+  -- We need to prove that `alternatingGroup α ≤ ⊤`
   -- G contains a three_cycle
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
   -- By Jordan's theorem, it suffices to prove that G acts primitively
@@ -160,9 +160,7 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
     use a, ha
     dsimp [g]
     rw [Equiv.swap_apply_left, Equiv.swap_apply_of_ne_of_ne hac.symm hbc.symm]
-  have hg : g ∈ alternatingGroup α := by
-    rw [← swap_isSwap_iff] at hab hac
-    exact swap_mul_swap_mem_alternatingGroup hab hac
+  have hg : g ∈ alternatingGroup α := by aesop
   rw [← Subgroup.mk_smul g hg, ← MulAction.mem_stabilizer_iff, h]
   apply Subgroup.mem_top
 
@@ -206,11 +204,7 @@ theorem subsingleton_of_stabilizer_alternatingGroup_lt_of_subset
     rcases this with hB' | hB'
     · rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply hB'.image
-    · have hBs' : B = s := by
-        apply antisymm hBs
-        intro x hx
-        rw [show x = Subtype.val (⟨x, hx⟩ : s) from by simp, ← mem_preimage, hB']
-        apply mem_univ
+    · have hBs' : B = s := by aesop
       have : ∃ g' ∈ G, g' • s ≠ s := by
         by_contra! h
         apply ne_of_lt hG
@@ -218,8 +212,7 @@ theorem subsingleton_of_stabilizer_alternatingGroup_lt_of_subset
       obtain ⟨g', hg', hg's⟩ := this
       rcases isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩ with h | h
       · -- case g' • B = B : absurd, since B = s and choice of g'
-        exfalso
-        apply hg's; rw [← hBs']; exact h
+        simp_all
       · -- case g' • B disjoint from B
         suffices (g' • B).Subsingleton by
           apply subsingleton_of_image _ B this
@@ -288,10 +281,10 @@ theorem moves_in (hα : 4 ≤ Nat.card α) {t : Set α} {a b : α}
     (ha : a ∈ t) (hb : b ∈ t) :
     ∃ g ∈ stabilizer (alternatingGroup α) t, g • a = b := by
   by_cases hab : a = b
-  · -- a = b, we take g = 1,
+  · -- If `a = b`, then we take `g = 1`,
     use 1
     simp only [hab, Subgroup.one_mem, one_smul, and_self]
-  -- `a ≠ b`
+  -- If `a ≠ b`, ...
   rcases le_or_gt (ncard t) 2 with ht | ht'
   · -- If `ncard t ≤ 2`, then we take the product of `swap a b` with a swap in `tᶜ`.
     have h : 1 < ncard (tᶜ : Set α) := by
@@ -306,29 +299,13 @@ theorem moves_in (hα : 4 ≤ Nat.card α) {t : Set α} {a b : α}
       rintro _ ⟨x, hx, rfl⟩
       simp only [Subgroup.smul_def, Subgroup.coe_inv, mul_inv_rev, Perm.smul_def, swap_inv,
         Perm.coe_mul, Function.comp_apply]
-      by_cases hxa : x = a
-      · rwa [hxa, Equiv.swap_apply_left, Equiv.swap_apply_of_ne_of_ne]
-        · apply ne_of_mem_of_not_mem hb hc
-        · apply ne_of_mem_of_not_mem hb hd
-      · by_cases hxb : x = b
-        · rwa [hxb, Equiv.swap_apply_right, Equiv.swap_apply_of_ne_of_ne]
-          · apply ne_of_mem_of_not_mem ha hc
-          · apply ne_of_mem_of_not_mem ha hd
-        · rwa [Equiv.swap_apply_of_ne_of_ne hxa hxb, Equiv.swap_apply_of_ne_of_ne]
-          · apply ne_of_mem_of_not_mem hx hc
-          · apply ne_of_mem_of_not_mem hx hd
+      grind
     · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul, Function.comp_apply]
-      rw [mem_compl_iff t] at hc hd
-      have hac : a ≠ c := by intro h; apply hc; rw [← h]; exact ha
-      have had : a ≠ d := by intro h; apply hd; rw [← h]; exact ha
-      rw [swap_apply_of_ne_of_ne hac had, swap_apply_left]
+      grind
   · -- If `card t ≥ 3`, then there is a 3-cycle with support in `t`
     suffices ∃ c ∈ t, c ≠ a ∧ c ≠ b by
       obtain ⟨c, hc, hca, hcb⟩ := this
-      use ⟨swap a c * swap a b, by
-          apply swap_mul_swap_mem_alternatingGroup <;> rw [swap_isSwap_iff]
-          · exact hca.symm
-          · exact hab⟩
+      use ⟨swap a c * swap a b, by aesop⟩
       constructor
       · rw [mem_stabilizer_set_iff_subset_smul_set t.toFinite, subset_smul_set_iff]
         simp only [Subgroup.smul_def, Subgroup.coe_inv, mul_inv_rev, swap_inv]
@@ -450,7 +427,7 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
   calc Nat.card α = s.ncard + sᶜ.ncard := by rw [Set.ncard_add_ncard_compl]
       _ < sᶜ.ncard + sᶜ.ncard := by rwa [Nat.add_lt_add_iff_right]
       _ = 2 * sᶜ.ncard := by rw [two_mul]
-      _ ≤ 2 * B.ncard := by have := Set.ncard_le_ncard hsc_le_B; gcongr
+      _ ≤ 2 * B.ncard := by grw [Set.ncard_le_ncard hsc_le_B]
       _ = _ := by simp only [Set.ncard_smul_set, ← two_mul]
 
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
@@ -463,9 +440,9 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   suffices hα : 4 < Nat.card α by
   -- We start with the case where s is nontrivial
     constructor
-    · -- stabilizer (alternating_group α) s ≠ ⊤
+    · -- `stabilizer (alternatingGroup α) s ≠ ⊤`
       apply stabilizer_ne_top h0'.nonempty h1'
-    · -- ∀ (G : subgroup (alternating_group α)), stabilizer (alternating_group α) s < b) → b = ⊤
+    · -- `∀ (G : Subgroup (alternatingGroup α)), stabilizer (alternatingGroup α) s < b) → b = ⊤`
       intro G hG
       have : IsPreprimitive G α :=
         isPreprimitive_of_stabilizer_lt (Nat.le_of_add_left_le hα) h0' hs hG

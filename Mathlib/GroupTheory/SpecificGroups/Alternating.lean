@@ -90,7 +90,7 @@ namespace Equiv.Perm
 theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
   sign.mem_ker
 
-theorem swap_mul_swap_mem_alternatingGroup {g g' : Perm α} (hg : IsSwap g) (hg' : IsSwap g') :
+theorem mul_mem_alternatingGroup_of_isSwap {g g' : Perm α} (hg : IsSwap g) (hg' : IsSwap g') :
     g * g' ∈ alternatingGroup α := by
   simp [mem_alternatingGroup, map_mul, hg.sign_eq, hg'.sign_eq]
 
