@@ -46,11 +46,11 @@ theorem append_flatten_map_append (L : List (List α)) (x : List α) :
     x ++ (L.map (· ++ x)).flatten = (L.map (x ++ ·)).flatten ++ x := by
   induction L with grind
 
-theorem head_flatten_of_head_ne_nil {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
-    l.flatten.head (flatten_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) = (l.head hl).head hl' := by
+theorem head_head_eq_head_flatten {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
+    (l.head hl).head hl' = l.flatten.head (flatten_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) := by
   cases l with grind
 
-theorem head_flatten_of_flatten_ne_nil {l : List (List α)} (hl : l.flatten ≠ [])
+theorem head_flatten_eq_head_head {l : List (List α)} (hl : l.flatten ≠ [])
     (hl' : l.head (by grind) ≠ []) : l.flatten.head hl = (l.head (by grind)).head hl' :=
   head_flatten_of_head_ne_nil ..
 
