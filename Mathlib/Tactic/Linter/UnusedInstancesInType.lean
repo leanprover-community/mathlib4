@@ -197,7 +197,7 @@ have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := liftTermElabM do
+    CommandElabM Unit := do if decl.type.hasInstanceBinderOf p then liftTermElabM do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxs p
   if let some maxIdx := unusedInstances.back? then
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
