@@ -621,18 +621,10 @@ theorem pi_condition :
   simp
 
 /-- Given a multifork, we may obtain a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
-@[simps pt]
+@[simps! pt]
 def toPiFork (K : Multifork I) :
-    Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
-  pt := K.pt
-  π.app
-    | WalkingParallelPair.zero => Fan.IsLimit.desc hc K.ι
-    | WalkingParallelPair.one => Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd
-  π.naturality := by
-    rintro (_ | _) (_ | _) (_ | _ | _) <;>
-      dsimp <;>
-      simp only [Category.id_comp, Functor.map_id, parallelPair_obj_zero, Category.comp_id,
-        pi_condition, parallelPair_obj_one]
+    Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) :=
+  .ofι (Fan.IsLimit.desc hc K.ι) (by simp)
 
 @[simp]
 theorem toPiFork_π_app_zero :
@@ -875,17 +867,10 @@ theorem sigma_condition :
   simp
 
 /-- Given a multicofork, we may obtain a cofork over `∐ I.left ⇉ ∐ I.right`. -/
-@[simps pt]
+@[simps! pt]
 noncomputable def toSigmaCofork (K : Multicofork I) :
-    Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
-  pt := K.pt
-  ι.app
-    | WalkingParallelPair.zero => I.fstSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π
-    | WalkingParallelPair.one => Cofan.IsColimit.desc hd K.π
-  ι.naturality := by
-    rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
-      simp only [Functor.map_id, parallelPair_obj_zero, parallelPair_obj_one,
-        sigma_condition, Category.id_comp, Category.comp_id]
+    Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) :=
+  .ofπ (Cofan.IsColimit.desc hd K.π) (by simp)
 
 @[simp]
 theorem toSigmaCofork_π :
