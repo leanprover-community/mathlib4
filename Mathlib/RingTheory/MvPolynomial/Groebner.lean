@@ -19,7 +19,7 @@ Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOr
 a monomial ordering on `σ →₀ ℕ`.
 
 Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible leading coefficients
-(with respect to `m`) : we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`).
+(with respect to `m`): we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`.
 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
