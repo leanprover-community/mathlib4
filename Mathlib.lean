@@ -3852,7 +3852,7 @@ public import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 public import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 public import Mathlib.Data.QPF.Univariate.Basic
 public import Mathlib.Data.Quot
-public import Mathlib.Data.QuotLike
+public import Mathlib.Data.QuotType
 public import Mathlib.Data.Rat.BigOperators
 public import Mathlib.Data.Rat.Cardinal
 public import Mathlib.Data.Rat.Cast.CharZero
