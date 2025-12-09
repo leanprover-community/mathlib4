@@ -185,7 +185,7 @@ lemma fromSingleMk_mem_coboundaries_iff {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} 
     (q'' : ℤ) (hq'' : q'' + 1 = q) :
     fromSingleMk f h q' hq' hf ∈ coboundaries _ _ _ ↔
       ∃ (g : X ⟶ K.X q''), g ≫ K.d q'' q = f := by
-  rw [mem_coboundaries_iff _ (n -1) (by simp)]
+  rw [mem_coboundaries_iff _ (n - 1) (by simp)]
   constructor
   · rintro ⟨α, hα⟩
     obtain ⟨g, hg⟩ := Cochain.fromSingleMk_surjective α q'' (by lia)
