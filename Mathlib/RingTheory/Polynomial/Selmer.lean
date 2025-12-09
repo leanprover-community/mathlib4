@@ -499,7 +499,7 @@ theorem X_pow_sub_X_sub_one_gal :
     rw [rootSet_def, aroots_def, Set.ncard_coe_finset]
     rw [Multiset.card_le_card_toFinset_add_one_iff]
     have h : ∀ x : F, 1 < (map (algebraMap ℤ F) (X ^ n - X - 1)).roots.count x →
-        x = n / (1 - n) ∧ x ≠ 0:= by
+        x = n / (1 - n) ∧ x ≠ 0 := by
       intro x hx
       rw [count_roots, one_lt_rootMultiplicity_iff_isRoot_iterate_derivative
         (Monic.map _ (hp ▸ trinomial_monic zero_lt_one hn)).ne_zero] at hx
