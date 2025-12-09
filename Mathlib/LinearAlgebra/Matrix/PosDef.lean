@@ -280,7 +280,7 @@ lemma diag_pos [Nontrivial R] {A : Matrix n n R} (hA : A.PosDef) {i : n} : 0 < A
 end PosDef
 
 /-!
-## Finite Positive semidefinite matrices
+## Finite positive semidefinite matrices
 -/
 
 variable [Fintype n] [Fintype m]
