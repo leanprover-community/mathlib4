@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Order.Restriction
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Order.Restriction
+public import Mathlib.Topology.Constructions
 
 /-!
 # Continuity of the restriction function for functions indexed by a preorder
@@ -12,6 +14,8 @@ import Mathlib.Topology.Constructions
 We prove that the map which restricts a function `f : (i : α) → X i` to elements `≤ a` is
 continuous.
 -/
+
+@[expose] public section
 
 namespace Preorder
 

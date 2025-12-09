@@ -3,7 +3,9 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-! # Mutually singular measures
 
@@ -20,6 +22,8 @@ facts about it.
 
 measure, mutually singular
 -/
+
+@[expose] public section
 
 
 open Set
@@ -242,29 +246,15 @@ lemma MutuallySingular.disjoint_ae (h : μ ⟂ₘ ν) : Disjoint (ae μ) (ae ν)
       ← compl_union, compl_compl, inter_union_compl, compl_compl]
 
 lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν := by
-  rw [disjoint_iff_inf_le] at h ⊢
-  refine Measure.le_intro fun s hs _ ↦ ?_
-  rw [Measure.inf_apply hs]
+  simp_rw [Filter.disjoint_iff, mem_ae_iff] at h
+  obtain ⟨s, hs, t, ht, hst⟩ := h
+  rw [disjoint_iff_inf_le]
   have : (⊥ : Measure α) = 0 := rfl
-  simp only [this, Measure.coe_zero, Pi.zero_apply, nonpos_iff_eq_zero]
-  specialize h (mem_bot (s := sᶜ))
-  rw [mem_inf_iff] at h
-  obtain ⟨t₁, ht₁, t₂, ht₂, h_eq'⟩ := h
-  have h_eq : s = t₁ᶜ ∪ t₂ᶜ := by
-    rw [union_eq_compl_compl_inter_compl, compl_compl, compl_compl, ← h_eq', compl_compl]
-  rw [mem_ae_iff] at ht₁ ht₂
-  refine le_antisymm ?_ zero_le'
-  refine sInf_le_of_le (a := 0) (b := 0) ?_ le_rfl
-  rw [h_eq]
-  refine ⟨t₁ᶜ ∩ t₂, Eq.symm ?_⟩
-  rw [add_eq_zero]
-  constructor
-  · refine measure_inter_null_of_null_left _ ?_
-    exact measure_inter_null_of_null_left _ ht₁
-  · rw [compl_inter, compl_compl, union_eq_compl_compl_inter_compl,
-      union_eq_compl_compl_inter_compl, ← compl_union, compl_compl, compl_compl, inter_comm,
-      inter_comm t₁, union_comm, inter_union_compl]
-    exact ht₂
+  refine Measure.le_intro fun u hu _ ↦ ?_
+  simp only [Measure.inf_apply hu, this, coe_zero, Pi.zero_apply, nonpos_iff_eq_zero]
+  refine csInf_eq_bot_of_bot_mem ⟨t, ?_⟩
+  simp [measure_mono_null (inter_subset_left.trans hst.subset_compl_left) hs,
+    measure_mono_null inter_subset_left ht]
 
 lemma mutuallySingular_tfae : List.TFAE
     [ μ ⟂ₘ ν,

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Tuple.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Lists from functions
@@ -19,6 +21,8 @@ The main statements pertain to lists generated using `List.ofFn`
 - `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -52,8 +56,10 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
   induction n with
-  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]; rfl
-  | succ n IH => rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]; congr
+  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero, Fin.last_zero]
+  | succ n IH =>
+    rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero, Fin.succ_last]
+    simp only [succ_eq_add_one, Fin.castSucc_succ]
 
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
@@ -129,6 +135,9 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
+@[deprecated (since := "2025-10-11")]
+alias sorted_ofFn_iff := pairwise_ofFn
+
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _
@@ -144,7 +153,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
       ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
       ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
-        fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
+        fun j hj ↦ by simpa using h ⟨j, by lia⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :

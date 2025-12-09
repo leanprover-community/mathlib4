@@ -3,14 +3,16 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Torsors of additive group actions
 
 This file defines torsors of additive group actions.
 
-## Notations
+## Notation
 
 The group elements are referred to as acting on points.  This file
 defines the notation `+ᵥ` for adding a group element to a point and
@@ -23,7 +25,7 @@ to refactor in terms of the general definition of group actions, via `to_additiv
 use for multiplicative torsors (currently mathlib only develops the theory of group actions for
 multiplicative group actions).
 
-## Notations
+## Notation
 
 * `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid;
 
@@ -36,6 +38,8 @@ multiplicative group actions).
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

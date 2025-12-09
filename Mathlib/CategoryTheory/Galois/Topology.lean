@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
@@ -21,6 +23,8 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+@[expose] public section
 
 open Topology
 

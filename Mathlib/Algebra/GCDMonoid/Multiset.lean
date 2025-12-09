@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets
@@ -24,6 +26,8 @@ TODO: simplify with a tactic and `Data.Multiset.Lattice`
 
 multiset, gcd
 -/
+
+@[expose] public section
 
 namespace Multiset
 
@@ -69,10 +73,13 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 
 @[simp]
-nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s := by
+nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ 0 ∈ s := by
   induction s using Multiset.induction_on with
   | empty => simp only [lcm_zero, one_ne_zero, notMem_zero]
   | cons a s ihs => simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
+
+theorem lcm_ne_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm ≠ 0 ↔ 0 ∉ s :=
+  not_congr (lcm_eq_zero_iff s)
 
 variable [DecidableEq α]
 
@@ -202,13 +209,12 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by
   classical
-    by_cases h : ∀ x ∈ s, x = (0 : α)
+    by_cases! h : ∀ x ∈ s, x = (0 : α)
     · use replicate (card s) 1
       rw [map_replicate, eq_replicate, mul_one, s.gcd_eq_zero_iff.2 h, ← nsmul_singleton,
     ← gcd_dedup, dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      push_neg at h
       refine ⟨s.pmap @f fun _ ↦ id, ?_, extract_gcd' s _ h ?_⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]

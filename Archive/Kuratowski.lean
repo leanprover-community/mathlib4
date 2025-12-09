@@ -33,7 +33,7 @@ In another file it will be shown that the maximum can be realized in the real nu
   for an arbitrary set `s`, there are at most 14 distinct sets that can be obtained from `s` using
   the closure and complement operations (the **Kuratowski closure-complement theorem**).
 
-## Notations
+## Notation
 
 * `k`: the closure of a set.
 * `i`: the interior of a set.

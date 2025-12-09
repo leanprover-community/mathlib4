@@ -3,14 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Algebra.Order.Interval.Set.Monoid
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # (Pre)images of intervals
@@ -20,6 +22,8 @@ then we get `[a + b, a + c]`”. For the functions `x ↦ x ± a`, `x ↦ a ± x
 lemmas about preimages and images of all intervals. We also prove a few lemmas about images under
 `x ↦ a * x`, `x ↦ x * a` and `x ↦ x⁻¹`.
 -/
+
+@[expose] public section
 
 
 open Interval Pointwise
@@ -127,7 +131,8 @@ lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
   ext x
   constructor
   · rintro ⟨y, ⟨hby, hyc⟩, rfl⟩
-    exact ⟨mul_le_mul_left' hby _, mul_le_mul_left' hyc _⟩
+    dsimp
+    constructor <;> gcongr
   · rintro ⟨habx, hxac⟩
     obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le habx
     refine ⟨b * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩
@@ -849,7 +854,7 @@ theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * 
   if ha : a = 0 then by simp [ha]
   else calc
     (fun x => x * a) '' [[b, c]] = (· * a⁻¹) ⁻¹' [[b, c]] :=
-      (Units.mk0 a ha).mulRight.image_eq_preimage _
+      (Units.mk0 a ha).mulRight.image_eq_preimage_symm _
     _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp only [div_eq_mul_inv]
     _ = [[b * a, c * a]] := preimage_div_const_uIcc ha _ _
 

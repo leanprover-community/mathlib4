@@ -195,7 +195,7 @@
   title  : The Central Limit Theorem
 48:
   title  : Dirichlet’s Theorem
-  decl   : Nat.setOf_prime_and_eq_mod_infinite
+  decl   : Nat.infinite_setOf_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem
@@ -434,6 +434,8 @@
   authors: Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
+  decls  :
+    - Polynomial.roots_countP_pos_le_signVariations
   links  :
     github : https://github.com/Timeroot/lean-descartes-signs/
   authors: Alex Meiburg

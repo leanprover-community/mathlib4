@@ -3,18 +3,22 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory.AsType
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.FinCategory.AsType
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Categories with finite limits.
 
 A typeclass for categories with all finite (co)limits.
 -/
+
+@[expose] public section
 
 
 universe w' w v' u' v u
@@ -211,9 +215,9 @@ instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) w
 
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
-/-- `HasFiniteWidePullbacks` represents a choice of wide pullback
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
+finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same
+codomain. -/
 class HasFiniteWidePullbacks : Prop where
   /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
@@ -223,9 +227,9 @@ instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWide
   haveI := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 
-/-- `HasFiniteWidePushouts` represents a choice of wide pushout
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePushouts` if it has all colimits of shape `WidePushoutShape J` for
+finite `J`, i.e. if it has a wide pushout for every finite collection of morphisms with the same
+domain. -/
 class HasFiniteWidePushouts : Prop where
   /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C
