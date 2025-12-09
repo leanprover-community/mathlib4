@@ -418,8 +418,7 @@ variable {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'}
 /-- Construct an isomorphism of spans from components. -/
 def spanExt (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom) :
     span f g ≅ span f' g' :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iX, iY, iZ])
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp [wf, wg])
+  spanIsoMk iX iY iZ
 
 variable (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom)
 
@@ -455,4 +454,3 @@ end
 end
 
 end CategoryTheory.Limits
-#lint
