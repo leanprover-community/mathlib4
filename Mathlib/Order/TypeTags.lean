@@ -17,17 +17,21 @@ In this file we define `WithBot` and `WithTop`.
 
 variable {α : Type*}
 
-/-- Somewhat of a hack which makes `WithBot` and `WithTop` def-eq, while both being `def`s. -/
-inductive WithBot' (α : Type*) where
-  | bot : WithBot' α
+/-- An auxiliary structure, common to `WithBot` and `WithTop`, which guarantees that both are
+def-eq.
+
+In the future, we probably want to get rid of this, and simply use the `to_dual` tactic to dualize
+theorems from one type to the other. -/
+inductive WithBotTop (α : Type*) where
+  | bot : WithBotTop α
   /- TODO: rename to `coe`:
   this is only called `some` because of the historical implementation via `Option`. -/
-  /-- The canonical map from `α` into `WithBot α` -/
-  | some : α → WithBot' α
+  /-- The canonical map from `α` into `WithBotTop α` -/
+  | some : α → WithBotTop α
 
 /-- Attach `⊤` to a type. -/
 @[to_dual]
-def WithBot (α : Type*) := WithBot' α
+def WithBot (α : Type*) := WithBotTop α
 
 instance WithBot.instRepr [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
@@ -47,11 +51,11 @@ namespace WithBot
 /-- The canonical map from `α` into `WithBot α` -/
 @[to_dual (attr := coe, match_pattern)]
 def some : α → WithBot α :=
-  WithBot'.some
+  WithBotTop.some
 
 @[to_dual (attr := match_pattern)]
 def bot : WithBot α :=
-  WithBot'.bot
+  WithBotTop.bot
 
 @[to_dual]
 instance coe : Coe α (WithBot α) :=
