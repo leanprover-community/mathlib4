@@ -83,10 +83,8 @@ rw [arcosh, ← exp_eq_exp, exp_log (by positivity), ← eq_sub_iff_add_eq', exp
 theorem arcosh_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ arcosh x := by
   apply log_nonneg
   calc
-    1 ≤ x := hx
-    _ ≤ x + √(x ^ 2 - 1) := by
-      apply (le_add_iff_nonneg_right _).mpr
-      apply sqrt_nonneg
+    1 ≤ x + 0 := by simpa
+    _ ≤ x + √(x ^ 2 - 1) := by gcongr; positivity
 
 theorem arcosh_pos {x : ℝ} (hx : 1 < x) : 0 < arcosh x := by
   have hx' := le_of_lt hx
