@@ -610,3 +610,15 @@ lemma WithBot.natCast_add_cancel (a b : WithBot ℕ∞) (c : ℕ) : c + a = c + 
 
 lemma WithBot.one_add_cancel (a b : WithBot ℕ∞) : 1 + a = 1 + b ↔ a = b :=
   WithBot.WithTop.cast_add_cancel a b 1
+
+lemma WithBot.add_le_add_natCast_right_iff (a b : WithBot ℕ∞) (c : ℕ) : a + c ≤ b + c ↔ a ≤ b :=
+  WithBot.WithTop.add_le_add_cast_iff_right a b c
+
+lemma WithBot.add_le_add_one_right_iff (a b : WithBot ℕ∞) : a + 1 ≤ b + 1 ↔ a ≤ b :=
+  WithBot.WithTop.add_le_add_cast_iff_right a b 1
+
+lemma WithBot.add_le_add_natCast_left_iff (a b : WithBot ℕ∞) (c : ℕ) : c + a≤ c + b ↔ a ≤ b :=
+  WithBot.WithTop.add_le_add_cast_iff_left a b c
+
+lemma WithBot.add_le_add_one_left_iff (a b : WithBot ℕ∞) : 1 + a ≤ 1 + b ↔ a ≤ b :=
+  WithBot.WithTop.add_le_add_cast_iff_left a b 1
