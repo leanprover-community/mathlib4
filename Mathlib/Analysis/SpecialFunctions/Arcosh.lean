@@ -68,7 +68,7 @@ theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
   ring
 
 theorem arcosh_eq_zero_iff {x : ℝ} (hx : 1 ≤ x) : arcosh x = 0 ↔ x = 1 := by
-  rw [← exp_injective.eq_iff, exp_arcosh x hx, exp_zero]
+  rw [← exp_injective.eq_iff, exp_arcosh hx, exp_zero]
   grind
 
 theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
@@ -92,15 +92,18 @@ theorem arcosh_pos {x : ℝ} (hx : 1 < x) : 0 < arcosh x := by
     1 < x + 0 := by simpa
     _ ≤ x + √(x ^ 2 - 1) := by gcongr; positivity
 
-theorem arcosh_le_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x ≤ arcosh y ↔ x ≤ y := by
-  rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
-  rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
-  exact cosh_le_cosh.symm
+/-- This holds for `Ioi 0` instead of only `Ici 1` due to junk values. -/
+theorem strictMonoOn_arcosh : StrictMonoOn arcosh (Ioi 0) := by
+  refine strictMonoOn_log.comp ?_ fun x (hx : 0 < x) ↦ show 0 < x + √(x ^ 2 - 1) by positivity
+  exact strictMonoOn_id.add_monotone fun x (hx : 0 < x) y (hy : 0 < y) hxy ↦ by gcongr
 
-theorem arcosh_lt_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x < arcosh y ↔ x < y := by
-  rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
-  rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
-  exact cosh_lt_cosh.symm
+/-- This holds for `0 < x, y ≤ 1` due to junk values. -/
+theorem arcosh_le_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x ≤ arcosh y ↔ x ≤ y :=
+  strictMonoOn_arcosh.le_iff_le hx hy
+
+/-- This holds for `0 < x, y ≤ 1` due to junk values. -/
+theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arcosh y ↔ x < y :=
+  strictMonoOn_arcosh.lt_iff_lt hx hy
 
 end Real
 
