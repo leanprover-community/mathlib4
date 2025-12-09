@@ -361,7 +361,7 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
               return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
             catch _ =>
               return i.tacI.stx.reprint.getD "???")
-            let newTacticPP := (← try
+            let newTacticPP ← label.getDM (try
               return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim
             catch _ =>
               return tac.raw.reprint.getD "???")
