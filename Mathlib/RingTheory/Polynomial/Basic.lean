@@ -683,9 +683,9 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           exact Classical.not_not.1 (Nat.find_min hg hj)
 
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
-theorem isPrime_map_C_of_isPrime {P : Ideal R} (H : IsPrime P) :
+instance isPrime_map_C_of_isPrime {P : Ideal R} [IsPrime P] :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) :=
-  (isPrime_map_C_iff_isPrime P).mpr H
+  (isPrime_map_C_iff_isPrime P).mpr ‹_›
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
@@ -745,7 +745,7 @@ theorem prime_C_iff : Prime (C r) ↔ Prime r :=
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
-      apply Ideal.isPrime_map_C_of_isPrime hr
+      infer_instance
     · intro h; apply (this (C_eq_zero.mp h))
     · assumption⟩
 

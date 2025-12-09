@@ -26,10 +26,9 @@ namespace PiTensorProduct
 
 open LinearMap TensorProduct
 
-variable {R ι M' : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
-variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
-variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
-variable [Π i (j : κ i), Module R (M i j)] [Module R M']
+variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
+  [CommSemiring R] [Π i (j : κ i), AddCommMonoid (M i j)] [Π i (j : κ i), Module R (M i j)]
+  [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
 
 /-- The `ι`-ary tensor product distributes over `κ i`-ary finitely supported functions. -/
 def ofDFinsuppEquiv :
@@ -57,13 +56,8 @@ theorem ofDFinsuppEquiv_symm_single_tprod (p : Π i, κ i) (x : Π i, M i (p i))
 @[simp]
 theorem ofDFinsuppEquiv_tprod_apply (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
     ofDFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
-  haveI := fun i j => Classical.typeDecidableEq (M i j)
-  simp only [ofDFinsuppEquiv, LinearEquiv.ofLinear_apply, lift.tprod,
-    MultilinearMap.fromDFinsuppEquiv_apply, compMultilinearMap_apply, DFinsupp.lsingle_apply,
-    DFinsupp.finset_sum_apply, DFinsupp.single_apply, ne_eq, Finset.sum_dite_eq',
-    Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ite_eq_left_iff, not_forall,
-    Decidable.not_not, forall_exists_index]
-  intro i hi
-  rw [(tprod R).map_coord_zero i hi]
+  classical
+  simpa [ofDFinsuppEquiv, MultilinearMap.fromDFinsuppEquiv_apply] using fun i hi ↦
+    ((tprod R).map_coord_zero (m := fun i ↦ x i (p i)) i hi).symm
 
 end PiTensorProduct

@@ -142,11 +142,11 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
   · rw [← f.toAlgHom.comp_algebraMap]
     exact splits_comp_of_splits _ _ (splits F p)
   · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
-      adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
+      (splits F p).adjoin_rootSet_eq_range, adjoin_rootSet F p]
 
 theorem adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
     Algebra.adjoin K (rootSet f F) = i.range :=
-  (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
+  ((splits L f).adjoin_rootSet_eq_range i).mpr (adjoin_rootSet L f)
 
 end IsSplittingField
 
@@ -187,7 +187,7 @@ theorem IntermediateField.isSplittingField_iff :
     exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
   rw [← toSubalgebra_injective.eq_iff,
       adjoin_toSubalgebra_of_isAlgebraic fun x ↦ isAlgebraic_of_mem_rootSet]
-  refine fun hp ↦ (adjoin_rootSet_eq_range hp F.val).symm.trans ?_
+  refine fun hp ↦ (hp.adjoin_rootSet_eq_range F.val).symm.trans ?_
   rw [← F.range_val, eq_comm]
 
 theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : (p.map (algebraMap K L)).Splits) :

@@ -106,12 +106,7 @@ theorem elementarilyEquivalent (f : M ↪ₑ[L] N) : M ≅[L] N :=
 @[simp]
 theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   intro x y
-  have h :=
-    φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
-  rw [Formula.realize_equal, Formula.realize_equal] at h
-  simp only [Term.realize, Fin.one_eq_zero_iff, if_true,
-    Function.comp_apply] at h
-  exact h.1
+  exact (φ.map_formula ((var 0).equal (var 1)) fun i => if i = 0 then x else y).1
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
   { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
@@ -188,10 +183,7 @@ theorem refl_apply (x : M) : refl L M x = x :=
 @[trans]
 def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
   toFun := hnp ∘ hmn
-  map_formula' n φ x := by
-    obtain ⟨_, hhnp⟩ := hnp
-    obtain ⟨_, hhmn⟩ := hmn
-    erw [hhnp, hhmn]
+  map_formula' n φ x := by simp [Function.comp_assoc]
 
 @[simp]
 theorem comp_apply (g : N ↪ₑ[L] P) (f : M ↪ₑ[L] N) (x : M) : g.comp f x = g (f x) :=

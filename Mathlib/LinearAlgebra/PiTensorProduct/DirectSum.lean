@@ -26,31 +26,39 @@ namespace PiTensorProduct
 
 open PiTensorProduct DirectSum TensorProduct
 
-variable {R ι M' : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
-variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
-variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
-variable [Π i (j : κ i), Module R (M i j)] [Module R M']
+variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
+  [CommSemiring R] [Π i (j : κ i), AddCommMonoid (M i j)] [Π i (j : κ i), Module R (M i j)]
 
+open scoped Classical in
 /-- The n-ary tensor product distributes over m-ary direct sums. -/
-def ofDirectSumEquiv :
+noncomputable def ofDirectSumEquiv [Finite ι] :
     (⨂[R] i, (⨁ j : κ i, M i j)) ≃ₗ[R] ⨁ p : Π i, κ i, ⨂[R] i, M i (p i) :=
+  have : Fintype ι := Fintype.ofFinite ι
   ofDFinsuppEquiv
 
 @[simp]
-theorem ofDirectSumEquiv_tprod_lof (p : Π i, κ i) (x : Π i, M i (p i)) :
+theorem ofDirectSumEquiv_tprod_lof [Fintype ι] [(i : ι) → DecidableEq (κ i)]
+    (p : Π i, κ i) (x : Π i, M i (p i)) :
     ofDirectSumEquiv (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) =
-      DirectSum.lof R _ _ p (⨂ₜ[R] i, x i) :=
-  ofDFinsuppEquiv_tprod_single _ _
+      DirectSum.lof R _ _ p (⨂ₜ[R] i, x i) := by
+  classical
+  rw [ofDirectSumEquiv]
+  convert ofDFinsuppEquiv_tprod_single p x
 
 @[simp]
-theorem ofDirectSumEquiv_symm_lof_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
+theorem ofDirectSumEquiv_symm_lof_tprod [Fintype ι] [(i : ι) → DecidableEq (κ i)]
+    (p : Π i, κ i) (x : Π i, M i (p i)) :
     ofDirectSumEquiv.symm (DirectSum.lof R _ _ p (tprod R x)) =
-      (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) :=
-  ofDFinsuppEquiv_symm_single_tprod _ _
+      (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) := by
+  classical
+  rw [ofDirectSumEquiv]
+  convert ofDFinsuppEquiv_symm_single_tprod p x
 
 @[simp]
-theorem ofDirectSumEquiv_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
-    ofDirectSumEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) :=
-  ofDFinsuppEquiv_tprod_apply _ _
+theorem ofDirectSumEquiv_tprod_apply [Finite ι]
+    (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
+    ofDirectSumEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
+  have : Fintype ι := Fintype.ofFinite ι
+  convert ofDFinsuppEquiv_tprod_apply _ _
 
 end PiTensorProduct
