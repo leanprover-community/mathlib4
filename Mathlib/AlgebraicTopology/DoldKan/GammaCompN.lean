@@ -78,10 +78,8 @@ def N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ) :=
 theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
     N₁Γ₀.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.symm ≪≫
       (toKaroubi _).mapIso (Γ₀NondegComplexIso K) := by
-  ext1
-  dsimp [N₁Γ₀]
-  erw [id_comp, comp_id, comp_id]
-  rfl
+  ext
+  simp [N₁Γ₀, Γ₀'CompNondegComplexFunctor]
 
 theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
     N₁Γ₀.hom.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv ≫

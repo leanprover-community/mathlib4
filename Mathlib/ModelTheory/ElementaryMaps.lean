@@ -183,10 +183,7 @@ theorem refl_apply (x : M) : refl L M x = x :=
 @[trans]
 def comp (hnp : N ↪ₑ[L] P) (hmn : M ↪ₑ[L] N) : M ↪ₑ[L] P where
   toFun := hnp ∘ hmn
-  map_formula' n φ x := by
-    obtain ⟨_, hhnp⟩ := hnp
-    obtain ⟨_, hhmn⟩ := hmn
-    erw [hhnp, hhmn]
+  map_formula' n φ x := by simp [Function.comp_assoc]
 
 @[simp]
 theorem comp_apply (g : N ↪ₑ[L] P) (f : M ↪ₑ[L] N) (x : M) : g.comp f x = g (f x) :=
