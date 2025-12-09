@@ -478,13 +478,11 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
       simp [hx]
   · simp
 
-@[simp]
 theorem coeff_single_mul [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
     [IsOrderedAddMonoid Γ'] {r : R} {x : HahnSeries Γ' R} {a b : Γ'} :
     (single b r * x).coeff a = r * x.coeff (a - b) := by
   simpa using coeff_single_mul_add (a := a - b) (b := b)
 
-@[simp]
 theorem coeff_mul_single [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCommGroup Γ']
     [IsOrderedAddMonoid Γ'] {r : R} {x : HahnSeries Γ' R} {a b : Γ'} :
     (x * single b r).coeff a = x.coeff (a - b) * r := by
@@ -492,7 +490,8 @@ theorem coeff_mul_single [NonUnitalNonAssocSemiring R] [PartialOrder Γ'] [AddCo
 
 @[simp]
 theorem coeff_mul_single_zero [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
-    (x * single 0 r).coeff a = x.coeff a * r := by rw [← add_zero a, coeff_mul_single_add, add_zero]
+    (x * single 0 r).coeff a = x.coeff a * r := by
+  rw [← add_zero a, coeff_mul_single_add, add_zero]
 
 @[simp]
 theorem coeff_single_zero_mul [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ} :
