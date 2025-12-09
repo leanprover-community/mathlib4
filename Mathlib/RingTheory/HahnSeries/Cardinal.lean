@@ -115,7 +115,7 @@ theorem card_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R
     exact (card_mul_le ..).trans <| mul_le_mul_left IH _
 
 theorem card_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
-    lift s.hsum.card ≤ sum fun a : α ↦ (s a).card :=
+    lift s.hsum.card ≤ sum fun a ↦ (s a).card :=
   (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
     mk_iUnion_le_sum_mk_lift
 
