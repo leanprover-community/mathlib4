@@ -5,10 +5,9 @@ Authors: Joseph Myers, Manuel Candales
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in affine spaces
@@ -553,12 +552,12 @@ def orthogonalProjectionSpan {n : ℕ} (s : Simplex 𝕜 P n) :
     P →ᴬ[𝕜] affineSpan 𝕜 (Set.range s.points) :=
   orthogonalProjection (affineSpan 𝕜 (Set.range s.points))
 
-lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ : Simplex ℝ P n}
+lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex 𝕜 P m} {s₂ : Simplex 𝕜 P n}
     {p₁ p₂ : P} (h : Set.range s₁.points = Set.range s₂.points) (hp : p₁ = p₂) :
     (s₁.orthogonalProjectionSpan p₁ : P) = s₂.orthogonalProjectionSpan p₂ :=
   orthogonalProjection_congr (by rw [h]) hp
 
-@[simp] lemma orthogonalProjectionSpan_reindex {m n : ℕ} (s : Simplex ℝ P m)
+@[simp] lemma orthogonalProjectionSpan_reindex {m n : ℕ} (s : Simplex 𝕜 P m)
     (e : Fin (m + 1) ≃ Fin (n + 1)) (p : P) :
     ((s.reindex e).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p :=
   orthogonalProjectionSpan_congr (s.reindex_range_points e) rfl
