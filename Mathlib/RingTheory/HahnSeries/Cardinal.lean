@@ -149,70 +149,70 @@ end LinearOrder
 
 /-! ### Substructures -/
 
-variable (c : Cardinal)
+variable (κ : Cardinal)
 
 section AddMonoid
-variable [PartialOrder Γ] [AddMonoid R] [hc : Fact (ℵ₀ ≤ c)]
+variable [PartialOrder Γ] [AddMonoid R] [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The submonoid of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded submonoid of Hahn series with cardinal less than `κ`. -/
 @[simps!]
 def cardLTAddSubmonoid : AddSubmonoid (HahnSeries Γ R) where
-  carrier := {x | x.card < c}
-  zero_mem' := by simpa using aleph0_pos.trans_le hc.out
-  add_mem' hx hy := (card_add_le ..).trans_lt <| add_lt_of_lt hc.out hx hy
+  carrier := {x | x.card < κ}
+  zero_mem' := by simpa using aleph0_pos.trans_le hκ.out
+  add_mem' hx hy := (card_add_le ..).trans_lt <| add_lt_of_lt hκ.out hx hy
 
 @[simp]
-theorem mem_cardLTAddSubmonoid {x : HahnSeries Γ R} : x ∈ cardLTAddSubmonoid Γ R c ↔ x.card < c :=
+theorem mem_cardLTAddSubmonoid {x : HahnSeries Γ R} : x ∈ cardLTAddSubmonoid Γ R κ ↔ x.card < κ :=
   .rfl
 
 end AddMonoid
 
 section AddGroup
-variable [PartialOrder Γ] [AddGroup R] [hc : Fact (ℵ₀ ≤ c)]
+variable [PartialOrder Γ] [AddGroup R] [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The subgroup of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded subgroup of Hahn series with cardinal less than `κ`. -/
 @[simps!]
 def cardLTAddSubgroup : AddSubgroup (HahnSeries Γ R) where
   neg_mem' := by simp
-  __ := cardLTAddSubmonoid Γ R c
+  __ := cardLTAddSubmonoid Γ R κ
 
 @[simp]
-theorem mem_cardLTAddSubgroup {x : HahnSeries Γ R} : x ∈ cardLTAddSubgroup Γ R c ↔ x.card < c :=
+theorem mem_cardLTAddSubgroup {x : HahnSeries Γ R} : x ∈ cardLTAddSubgroup Γ R κ ↔ x.card < κ :=
   .rfl
 
 end AddGroup
 
 section Subring
 variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Ring R]
-  [hc : Fact (ℵ₀ ≤ c)]
+  [hκ : Fact (ℵ₀ ≤ κ)]
 
 variable (Γ R) in
-/-- The subring of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded subring of Hahn series with cardinal less than `c`. -/
 def cardLTSubring : Subring (HahnSeries Γ R) where
-  one_mem' := card_one_le.trans_lt <| one_lt_aleph0.trans_le hc.out
-  mul_mem' hx hy := (card_mul_le ..).trans_lt <| mul_lt_of_lt hc.out hx hy
-  __ := cardLTAddSubgroup Γ R c
+  one_mem' := card_one_le.trans_lt <| one_lt_aleph0.trans_le hκ.out
+  mul_mem' hx hy := (card_mul_le ..).trans_lt <| mul_lt_of_lt hκ.out hx hy
+  __ := cardLTAddSubgroup Γ R κ
 
 @[simp]
-theorem mem_cardLTSubring {x : HahnSeries Γ R} : x ∈ cardLTSubring Γ R c ↔ x.card < c :=
+theorem mem_cardLTSubring {x : HahnSeries Γ R} : x ∈ cardLTSubring Γ R κ ↔ x.card < κ :=
   .rfl
 
 end Subring
 
 section Subfield
-variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hc : Fact (ℵ₀ < c)]
+variable [LinearOrder Γ] [AddCommGroup Γ] [IsOrderedAddMonoid Γ] [Field R] [hκ : Fact (ℵ₀ < κ)]
 
 variable (Γ R) in
-/-- The subring of Hahn series with cardinal less than `c`. -/
+/-- The `κ`-bounded subfield of Hahn series with cardinal less than `c`. -/
 @[simps!]
 def cardLTSubfield : Subfield (HahnSeries Γ R) where
-  inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [hc.out]
-  __ := have : Fact (ℵ₀ ≤ c) := ⟨hc.out.le⟩; cardLTSubring Γ R c
+  inv_mem' _ _ := (card_inv_le _).trans_lt <| by simpa [hκ.out]
+  __ := have : Fact (ℵ₀ ≤ κ) := ⟨hκ.out.le⟩; cardLTSubring Γ R κ
 
 @[simp]
-theorem mem_cardLTSubfield {x : HahnSeries Γ R} : x ∈ cardLTSubfield Γ R c ↔ x.card < c :=
+theorem mem_cardLTSubfield {x : HahnSeries Γ R} : x ∈ cardLTSubfield Γ R κ ↔ x.card < κ :=
   .rfl
 
 end Subfield
