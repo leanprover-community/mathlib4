@@ -512,27 +512,11 @@ lemma unbotA_lt_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA < a ↔ x < a := b
 
 end LT
 
-end WithBot
-
-instance WithBot.instPreorder [Preorder α] : Preorder (WithBot α) where
+@[to_dual]
+instance [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
   le_refl x := by cases x <;> simp [le_def]
   le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-@[to_dual existing]
-instance WithTop.instPreorder [Preorder α] : Preorder (WithTop α) where
-  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
-  le_refl x := by cases x <;> simp [le_def]
-  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-instance WithBot.instPartialOrder [PartialOrder α] : PartialOrder (WithBot α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
-@[to_dual existing]
-instance WithTop.instPartialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
-namespace WithBot
 
 section Preorder
 
@@ -607,6 +591,10 @@ lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
 end Preorder
+
+@[to_dual]
+instance [PartialOrder α] : PartialOrder (WithBot α) where
+  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
 
 section PartialOrder
 variable [PartialOrder α] {x y : WithBot α} {a b : α}
