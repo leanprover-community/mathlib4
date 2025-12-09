@@ -53,32 +53,31 @@ scoped[SchwartzMap] notation "𝓢'(" E ", " F ")" => TemperedDistribution E F
 
 end definition
 
-namespace TemperedDistribution
-
 /-! ### Embeddings into tempered distributions -/
 
 section Embeddings
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
-section Measure
+namespace MeasureTheory.Measure
 
-variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
-variable [BorelSpace E] [SecondCountableTopology E]
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
-variable (μ) in
 /-- Every temperate growth measure defines a tempered distribution. -/
-def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(E, ℂ) :=
+def toTemperedDistribution : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
 
 @[simp]
-theorem MeasureTheory.Measure.toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
-    Measure.toTemperedDistribution μ g = ∫ (x : E), g x ∂μ := by
+theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
+    μ.toTemperedDistribution g = ∫ (x : E), g x ∂μ := by
   rfl
 
-end Measure
+end MeasureTheory.Measure
 
 end Embeddings
+
+namespace TemperedDistribution
 
 /-! ### Fourier transform -/
 
