@@ -677,7 +677,7 @@ theorem mk_list_eq_max_mk_aleph0 (α : Type u) [Nonempty α] : #(List α) = max 
 
 theorem sum_pow_eq_max_aleph0 {x : Cardinal} (h : x ≠ 0) : sum (fun n ↦ x ^ n) = max ℵ₀ x := by
   have := nonempty_out h
-  conv_lhs => rw [← x.mk_out, ← mk_list_eq_sum_pow, mk_list_eq_max_mk_aleph0, mk_out]
+  conv_lhs => rw [← x.mk_out, ← mk_list_eq_sum_pow, mk_list_eq_max, mk_out]
 
 theorem mk_list_le_max (α : Type u) : #(List α) ≤ max ℵ₀ #α := by
   cases finite_or_infinite α
