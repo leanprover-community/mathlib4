@@ -945,12 +945,8 @@ lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
   rintro e'' ⟨f, hf, f', hf', rfl⟩
   rw [OpenPartialHomeomorph.prod_symm_trans_prod,
     OpenPartialHomeomorph.prod_symm_trans_prod]
-  exact ⟨contDiffGroupoid_prod
-    (compatible_of_mem_maximalAtlas he (subset_maximalAtlas hf))
-    (compatible_of_mem_maximalAtlas he' (subset_maximalAtlas hf')),
-    contDiffGroupoid_prod
-      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf) he)
-      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf') he')⟩
+  constructor <;>
+    apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
 
 end
 
