@@ -106,13 +106,18 @@ lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
   exact hasDerivAt_mul_const _
 
 lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
-  refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
+    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) (a⁻¹ • s) := by
+  have heq : a⁻¹ • s = { t | t * a ∈ s } := by
+    ext t
+    rw [mem_inv_smul_set_iff₀ ha, smul_eq_mul, mul_comm]
+    rfl
+  refine ⟨heq ▸ fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
   · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
+  · simp only [mul_comm _ a⁻¹, ← smul_eq_mul, mem_inv_smul_set_iff₀ ha, smul_inv_smul₀ ha,
+      setOf_mem_eq]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
@@ -129,7 +134,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
   convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
   · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
   · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
 
@@ -143,7 +148,7 @@ lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
   refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
   convert hγ.comp_mul a⁻¹
   · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
+    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
   · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
 
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
