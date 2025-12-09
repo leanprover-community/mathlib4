@@ -19,16 +19,16 @@ directly using `Quot` and `Quotient` APIs.
 
 ## Main definitions
 
-* `QuotType Q α r`      : the type `Q` is canonically isomorphic to `Quot α r`.
-                          used for deriving `QuotType` instances from the output type.
-* `QuotType.HasQuot`    : used for deriving `QuotType` instances from the input type.
-* `mkQ`                 : the quotient map inferred from the output type
+* `QuotType Q α r` : the type `Q` is canonically isomorphic to `Quot α r`.
+                     used for deriving `QuotType` instances from the output type.
+* `QuotTypeOut`    : used for deriving `QuotType` instances from the input type.
+* `mkQ`            : the quotient map inferred from the output type
 
 ## Notations
 
-* `⟦a⟧`                 : the quotient map inferred from the output type
-* `mkQ'` `⟦a⟧'`         : the quotient map inferred from the input type
-                            via typeclass `QuotType.HasQuot`
+* `⟦a⟧`            : the quotient map inferred from the output type
+* `mkQ'` `⟦a⟧'`    : the quotient map inferred from the input type
+                       via typeclass `QuotTypeOut`
 -/
 
 @[expose] public section
@@ -53,6 +53,24 @@ class QuotType (Q : Sort*) (α : outParam Sort*) (r : outParam (α → α → Pr
   sound {a b : α} : r a b → mkQ a = mkQ b := by exact Quot.sound
 
 export QuotType (mkQ)
+
+/--
+`QuotTypeOut` is used for deriving `QuotType` instances from the input type.
+
+The instances of `QuotTypeOut` may be defined for types that have specific uses.
+
+```
+instance : QuotTypeOut ZFSet PSet PSet.Equiv where
+```
+
+They are also usually defined as scoped or local instances.
+
+```
+scoped instance {α} [s : Setoid α] : QuotTypeOut (Quotient s) α (· ≈ ·) where
+```
+-/
+class QuotTypeOut (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
+    [QuotType Q α r] : Prop where
 
 namespace QuotType
 
@@ -87,25 +105,7 @@ meta def delabMkQ : Delab := do
 @[inherit_doc mkQ]
 macro "⟦" a:term " : " α:term "⟧" : term => `(⟦($a : $α)⟧)
 
-/--
-`QuotType.HasQuot` is used for deriving `QuotType` instances from the input type.
-
-The instances of `QuotType.HasQuot` may be defined for types that have specific uses.
-
-```
-instance : QuotType.HasQuot ZFSet PSet PSet.Equiv where
-```
-
-They are also usually defined as scoped or local instances.
-
-```
-scoped instance {α} [s : Setoid α] : QuotType.HasQuot (Quotient s) α (· ≈ ·) where
-```
--/
-class HasQuot (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
-    [QuotType Q α r] : Prop where
-
-/-- The quotient map. Inferred from the input type via typeclass `QuotType.HasQuot`. -/
+/-- The quotient map. Inferred from the input type via typeclass `QuotTypeOut`. -/
 syntax (name := mkQ') "mkQ'" : term
 
 @[term_elab QuotType.mkQ', inherit_doc QuotType.mkQ']
@@ -128,9 +128,9 @@ meta def mkQ'Impl : TermElab := fun stx typ? => do
   have α : Q(Sort u) := α
   let r ← mkFreshExprMVarQ q($α → $α → Prop)
   let inst ← mkFreshExprMVarQ q(QuotType $Q $α $r)
-  let .some _ ← trySynthInstanceQ q(@HasQuot $Q $α $r $inst) |
+  let .some _ ← trySynthInstanceQ q(@QuotTypeOut $Q $α $r $inst) |
     tryPostpone
-    throwError "Cannot find `QuotType.HasQuot` instance for type `{α}`."
+    throwError "Cannot find `QuotTypeOut` instance for type `{α}`."
   pure q(@mkQ $Q $α $r $inst)
 
 /-- The quotient map. Inferred from the input type. -/
@@ -153,7 +153,7 @@ instance instQuotType {α} (s : Setoid α) : QuotType (Quotient s) α (· ≈ ·
   mkQ := Quotient.mk _
 
 @[nolint defLemma docBlame]
-scoped instance instHasQuot {α} [s : Setoid α] : QuotType.HasQuot (Quotient s) α (· ≈ ·) where
+scoped instance instHasQuot {α} [s : Setoid α] : QuotTypeOut (Quotient s) α (· ≈ ·) where
 
 end Quotient
 
