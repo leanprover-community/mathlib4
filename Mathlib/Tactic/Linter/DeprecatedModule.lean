@@ -138,6 +138,10 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- for backwards compatibility
   if (← getFileName).endsWith "Mathlib.lean" then
     return
+  -- Exempt Mathlib/Tactic since deprecated modules may still need to be imported
+  -- for their tactics to work
+  if (← getFileName).containsSubstr "Mathlib/Tactic" then
+    return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
   -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
