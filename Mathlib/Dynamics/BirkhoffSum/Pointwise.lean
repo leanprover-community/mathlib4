@@ -3,19 +3,21 @@ Copyright (c) 2025 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis, Oliver Butterley
 -/
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Algebra.Order.SuccPred.PartialSups
-import Mathlib.Algebra.Order.Group.PartialSups
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.MeasurableSpace.Invariants
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.CompletelyRegular
+module
+
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.Algebra.Order.Group.PartialSups
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+public import Mathlib.Data.Real.StarOrdered
+public import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Pointwise Ergodic Theorem
@@ -70,8 +72,8 @@ theorem birkhoffMaxDiff_aux {f : α → α} {φ n x} :
 lemma birkhoffMaxDiff_antitone {f : α → α} {φ} : Antitone (birkhoffMaxDiff f φ) := by
   intro m n h x
   rw [birkhoffMaxDiff_aux, birkhoffMaxDiff_aux]
-  apply add_le_add_left
-  simp only [neg_le_neg_iff, le_inf_iff, inf_le_left, inf_le_iff, true_and]
+  apply sub_le_sub_left
+  simp only [le_inf_iff, inf_le_left, inf_le_iff, true_and]
   right
   exact (birkhoffMax f φ).monotone' h _
 
@@ -84,7 +86,8 @@ lemma birkhoffSum_measurable [MeasurableSpace α] {f : α → α} (hf : Measurab
 @[measurability]
 lemma birkhoffMax_measurable [MeasurableSpace α] {f : α → α} (hf : Measurable f) {φ : α → ℝ}
     (hφ : Measurable φ) {n} : Measurable (birkhoffMax f φ n) := by
-  induction n <;> unfold birkhoffMax <;> measurability
+  unfold birkhoffMax
+  induction n <;> measurability
 
 end BirkhoffMax
 
