@@ -165,7 +165,7 @@ theorem isAcyclic_iff_forall_adj_isBridge :
         fun ⦃v w : V⦄ => (fun h₂ : G.Adj v w => And.intro h₂ (h₁ h₂)))
       (fun h₃ : ∀ ⦃v w : V⦄, G.Adj v w → G.Adj v w ∧ G.IsBridge s(v, w) =>
         fun ⦃v w : V⦄ => (fun h₄ : G.Adj v w => (h₃ h₄).right))
-  simp_rw [h, adj_and_isBridge_iff_adj_and_forall_cycle_notMem]
+  simp_rw [h, isBridge_iff_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
