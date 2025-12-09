@@ -376,7 +376,7 @@ theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
 
 end Mono
 
-lemma eqOn_iff_prod {a b : α → γ × δ} :
+lemma eqOn_prod_iff {a b : α → γ × δ} :
     EqOn a b s ↔ EqOn (Prod.fst ∘ a) (Prod.fst ∘ b) s ∧ EqOn (Prod.snd ∘ a) (Prod.snd ∘ b) s := by
   grind [EqOn]
 
