@@ -103,8 +103,11 @@ variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : S
   [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
   [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
-def map_free (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-    (hf' : F.obj (unit R) ≅ unit S) (I : Type u') : F.obj (free I) ≅ free (R := S) I :=
+variable {M : SheafOfModules.{u'} R} (P : Presentation M)
+  (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
+  (hf' : F.obj (unit R) ≅ unit S) (I : Type u')
+
+def map_free : F.obj (free I) ≅ free (R := S) I :=
   (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
     (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ hf').symm
 
@@ -112,10 +115,7 @@ def map_free (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesCol
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
-def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
-    (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-    (hf' : F.obj (unit R) ≅ unit S) :
-    Presentation (F.obj M) :=
+def Presentation.map : Presentation (F.obj M) :=
   letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
   letI g := P.generators.π
   have H : f ≫ g = 0 := by simp [f, g]
@@ -123,57 +123,22 @@ def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
   letI g_new := (map_free F hf' P.generators.I).inv ≫ F.map g
   haveI H' : f_new ≫ g_new = 0 := by simp [f_new, g_new, ← Functor.map_comp, H]
   letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
-    refine cokernel.cokernelIso f_new g_new ?_ ?_
-    obtain h := Presentation.isColimit P
-    have aux : cokernel f ≅ M :=
-      Limits.IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h
-    have aux' : (F.mapCocone (CokernelCofork.ofπ
-      (f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))
-      P.generators.π (by simp))).pt = F.obj M := rfl
-    obtain h' := (Limits.isColimitOfPreserves F h)
-    have aux : IsColimit (colimit.cocone (parallelPair f_new 0)) := by
-      exact colimit.isColimit (parallelPair f_new 0)
-    have aux_f : (colimit.cocone (parallelPair f_new 0)).pt = cokernel f_new := by
-      rfl
-    /- here failed-/
-    refine Limits.IsColimit.coconePointUniqueUpToIso aux h'
+    refine cokernel.cokernelIso f_new g_new ((((cokernel.mapIso (F.map f) f_new
+      (map_free F hf' P.relations.I) (map_free F hf' P.generators.I) (by simp [f_new])).symm) ≪≫
+        (Limits.PreservesCokernel.iso F f).symm) ≪≫
+          F.mapIso (Limits.IsColimit.coconePointUniqueUpToIso
+            (colimit.isColimit _) P.isColimit)) ?_
+    simp only [IsColimit.coconePointUniqueUpToIso, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom,
+      cokernel.mapIso_inv, PreservesCokernel.iso_inv, Functor.mapIso_hom,
+      IsColimit.uniqueUpToIso_hom, Cocones.forget_map, IsColimit.descCoconeMorphism_hom,
+      colimit.isColimit_desc, cokernel.π_desc_assoc, Category.assoc,
+      π_comp_cokernelComparison_assoc, ← Functor.map_comp, Iso.cancel_iso_inv_left, g_new]
+    rw [coequalizer.π_desc P.generators.π _]
   presentationOfIsCokernelFree f_new g_new H' h'
-  /-
-  William's work
-  letI f_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map f ≫
-    (PreservesCoproduct.iso F _).hom ≫ (Sigma.mapIso fun b ↦ hf').hom
-  letI g_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map g
-  haveI H' : f_new ≫ g_new = 0 := by
-    simp_rw [f_new, g_new, Category.assoc, Iso.hom_inv_id_assoc,
-      Preadditive.IsIso.comp_left_eq_zero, IsHomLift.eq_of_isHomLift F (F.map f ≫ F.map g) (f ≫ g),
-      H, Functor.map_zero]
-  letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
-    refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv
-      (parallelPair.ext ?_ ?_ ?_ ?_) _).symm (isColimitCoforkMapOfIsColimit' F _ P.isColimit))
-      (Cocones.ext ?_ ?_) <;> dsimp
-    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
-    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
-    · apply Sigma.hom_ext
-      intro i
-      simp [f, f_new, Category.assoc, ← Functor.map_comp_assoc, -Functor.map_comp, -colim_map,
-        -PreservesCoproduct.inv_hom]
-    · simp
-    · exact Iso.refl _
-    · intro j
-      have : (F.map f ≫ F.map g) = 0 := by
-        simp_rw [IsHomLift.eq_of_isHomLift F (F.map f ≫ F.map g) (f ≫ g)]
-        aesop
-      cases j <;> dsimp
-      · aesop
-      · aesop
-  presentationOfIsCokernelFree f_new g_new H' h'
-  -/
 
-
--- theorem map_aux {M : SheafOfModules.{u'} R} (P : Presentation M)
---     (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
---     (hf' : F.obj (unit R) ≅ unit S) :
---      (P.map F hf').generators.π = F.map (P.generators.π) := sorry
+theorem Presentation.map_π_eq :
+    (P.map F hf').generators.π = (map_free F hf' _).inv ≫ F.map (P.generators.π) :=
+  (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end
 
