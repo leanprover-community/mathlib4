@@ -48,7 +48,7 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
                 Finset.prod_ne_zero_iff.2 fun x _ => ?_).2 ?_)
   · exact minpoly.ne_zero (h.isIntegral (s x))
-  rw [IsRoot.def, eval_map, ← aeval_def, map_prod]
+  rw [IsRoot.def, eval_map_algebraMap, map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
 
 section NormalTower
