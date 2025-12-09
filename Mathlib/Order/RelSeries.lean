@@ -453,7 +453,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
   toFun := p ∘ Fin.rev
   step i := by
     rw [Function.comp_apply, Function.comp_apply, SetRel.mem_inv]
-    have hi : i.1 + 1 ≤ p.length := by omega
+    have hi : i.1 + 1 ≤ p.length := by lia
     convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by lia) hi⟩
     · ext; simp
     · ext
@@ -589,7 +589,7 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
 lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
   refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
   · simp
-    cutsat
+    lia
   · simp [Fin.tail]
 
 @[simp]

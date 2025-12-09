@@ -346,8 +346,8 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
             -- Extract just the tactic name, ignoring trailing comments/whitespace
-            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
-            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
+            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy)
             -- Check if this is a self-replacement (tactic replacing itself)
             if !selfReplacements && oldTacticPP == newTacticPP then
               continue
