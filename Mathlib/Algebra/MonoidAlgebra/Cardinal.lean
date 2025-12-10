@@ -19,34 +19,29 @@ public section
 open Cardinal Fintype
 
 universe u v
-variable {R : Type u} {M : Type v} [Semiring R]
+variable (R M : Type u) (M' : Type v) [Semiring R]
 
 namespace MonoidAlgebra
 
-variable (R M) in
 @[to_additive (attr := simp)]
-lemma cardinalMk_lift_of_fintype [Fintype M] : #R[M] = lift.{v} #R ^ card M := by
+lemma cardinalMk_lift_of_fintype [Fintype M'] : #R[M'] = lift.{v} #R ^ card M' := by
   simp [MonoidAlgebra]
 
 @[to_additive]
-lemma cardinalMk_of_fintype (R M : Type u) [Semiring R] [Fintype M] : #R[M] = #R ^ card M := by simp
+lemma cardinalMk_of_fintype [Fintype M] : #R[M] = #R ^ card M := by simp
 
-variable (R M) in
 @[to_additive (attr := simp)]
-lemma cardinalMk_lift_of_infinite [Infinite M] [Nontrivial R] :
-    #R[M] = max (lift.{v} #R) (lift.{u} #M) := by simp [MonoidAlgebra, max_comm]
+lemma cardinalMk_lift_of_infinite [Infinite M'] [Nontrivial R] :
+    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [MonoidAlgebra, max_comm]
 
 @[to_additive]
-lemma cardinalMk_of_infinite (M R : Type u) [Semiring R] [Infinite M] [Nontrivial R] :
-    #R[M] = max #R #M := by simp
+lemma cardinalMk_of_infinite [Infinite M] [Nontrivial R] : #R[M] = max #R #M := by simp
 
-variable (R M) in
 @[to_additive (attr := simp)]
-lemma cardinalMk_lift_of_infinite' [Nonempty M] [Infinite R] :
-    #R[M] = max (lift.{v} #R) (lift.{u} #M) := by simp [MonoidAlgebra, max_comm]
+lemma cardinalMk_lift_of_infinite' [Nonempty M'] [Infinite R] :
+    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [MonoidAlgebra, max_comm]
 
 @[to_additive]
-lemma cardinalMk_of_infinite' (M R : Type u) [Semiring R] [Nonempty M] [Infinite R] :
-    #R[M] = max #R #M := by simp
+lemma cardinalMk_of_infinite' [Nonempty M] [Infinite R] : #R[M] = max #R #M := by simp
 
 end MonoidAlgebra
