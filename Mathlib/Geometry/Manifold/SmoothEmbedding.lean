@@ -57,7 +57,7 @@ and a `C^k` immersion. -/
 @[mk_iff]
 structure IsSmoothEmbedding (f : M → N) where
   isImmersion : IsImmersion I J n f
-  isImbedding : IsEmbedding f
+  isEmbedding : IsEmbedding f
 
 namespace IsSmoothEmbedding
 
