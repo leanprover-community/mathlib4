@@ -35,7 +35,7 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {α : Type*}
 
-open Filter Set Uniformity SetRel
+open Filter Set Uniformity UniformSpace SetRel
 
 section UniformSpace
 variable [UniformSpace α]
@@ -48,8 +48,8 @@ associated to some entourage `uu`, such that `uu` is a thickening of `uc` by som
 in the sense that the composition `s ○ uc ○ s` is contained in `uu`. -/
 def P (c u : Set α) :=
   ∃ (x : α) (uc uu s : SetRel α α),
-    IsOpen uc ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
-    u = .mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 α
+    IsOpen uc ∧ uc ∈ 𝓤 α ∧ c = closure (ball x uc) ∧
+    u = ball x uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 α
 
 /-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
 predicate `P`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
@@ -65,11 +65,10 @@ theorem urysohns_main {c u : Set α} (Pcu : P c u) :
     _ ⊆ s ○ uc ○ s := comp_subset_comp (comp_subset_comp_left hdsd) hdsd
     _ ⊆ uu := hn
   have : ds.IsRefl := id_subset_iff.1 (refl_le_uniformity hdsu)
-  refine ⟨.mk x ⁻¹' (ds ○ uc ○ ds), ho.preimage (.prodMk_right x),
-      ?_, subset_trans ?_ (preimage_mono hsub),
+  refine ⟨ball x (ds ○ uc ○ ds), isOpen_ball x ho, ?_, subset_trans ?_ (ball_mono hsub x),
       ⟨x, uc, ds ○ uc ○ ds, ds, huc, ucu, rfl, rfl, le_rfl, hdsu⟩, x, ds ○ uc ○ ds, uu, ds, ho,
       mem_of_superset ucu (right_subset_comp.trans left_subset_comp), rfl, rfl, hsub, hdsu⟩ <;>
-  · refine ((Continuous.prodMk_right x).closure_preimage_subset _).trans (preimage_mono ?_)
+  · refine closure_ball_subset.trans (ball_mono ?_ x)
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
 
@@ -78,16 +77,18 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace �
     have ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have ⟨(u3 : SetRel α α), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
     have hu3O := ((comp_subset_comp_left (comp_subset_comp_right interior_subset))).trans hu3O
-    let c : Urysohns.CU P :=
-    { C := closure (.mk x ⁻¹' (interior u3))
-      U := .mk x ⁻¹' O
+    let c : Urysohns.CU P := {
+      C := closure (ball x (interior u3))
+      U := ball x O
       closed_C := isClosed_closure
-      open_U := hOo.preimage (.prodMk_right x)
-      subset := ((Continuous.prodMk_right x).closure_preimage_subset _).trans <| preimage_mono <| by
+      open_U := isOpen_ball x hOo
+      subset := closure_ball_subset.trans <| (ball_mono · x) <| by
         simp_rw [closure_eq_inter_uniformity, ← comp_assoc]
         exact (iInter₂_subset u3 hu3u).trans hu3O
       hP _ Pcu _ _ := urysohns_main Pcu
-      P_C_U := ⟨x, _, O, u3, isOpen_interior, interior_mem_uniformity hu3u, rfl, rfl, hu3O, hu3u⟩ }
+      P_C_U := ⟨x, interior u3, O, u3,
+        isOpen_interior, interior_mem_uniformity hu3u, rfl, rfl, hu3O, hu3u⟩
+    }
     ⟨fun x ↦ ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
       Subtype.ext (c.lim_of_mem_C x <| subset_closure (refl_mem_uniformity <|
         interior_mem_uniformity hu3u)), fun y hy ↦ Subtype.ext (c.lim_of_notMem_U y (hbO · hy))⟩
