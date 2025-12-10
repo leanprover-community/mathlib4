@@ -373,7 +373,8 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} : MeromorphicAt f x
 /--
 Derivatives of meromorphic functions are meromorphic.
 -/
-@[fun_prop] theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+@[fun_prop]
+protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
     MeromorphicAt (deriv f) x := by
   rw [MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt] at h
   obtain ⟨n, g, h₁g, h₂g⟩ := h
@@ -396,7 +397,7 @@ theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Meromorphic
     MeromorphicAt (fun z ↦ _root_.deriv f z) x := h.deriv
 
 /--
-Derivatives of meromorphic functions are meromorphic.
+Iterated derivatives of meromorphic functions are meromorphic.
 -/
 @[fun_prop] theorem iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) :
@@ -406,7 +407,7 @@ Derivatives of meromorphic functions are meromorphic.
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
 /--
-Derivatives of meromorphic functions are meromorphic.
+Iterated derivatives of meromorphic functions are meromorphic.
 -/
 @[fun_prop] theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) :
@@ -557,7 +558,7 @@ include hf in
 /--
 Derivatives of meromorphic functions are meromorphic.
 -/
-theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
+protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
 /--
@@ -567,14 +568,14 @@ theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z)
 
 include hf in
 /--
-Derivatives of meromorphic functions are meromorphic.
+Iterated derivatives of meromorphic functions are meromorphic.
 -/
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
 include hf in
 /--
-Derivatives of meromorphic functions are meromorphic.
+Iterated derivatives of meromorphic functions are meromorphic.
 -/
 theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
   MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
