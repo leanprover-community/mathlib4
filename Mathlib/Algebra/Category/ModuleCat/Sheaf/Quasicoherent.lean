@@ -118,24 +118,16 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
   letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
-  letI g := P.generators.π
-  have H : f ≫ g = 0 := by simp [f, g]
-  letI f_new := (map_free F hf' P.relations.I).inv ≫ F.map f ≫ (map_free F hf' P.generators.I).hom
-  letI g_new := (map_free F hf' P.generators.I).inv ≫ F.map g
-  haveI H' : f_new ≫ g_new = 0 := by simp [f_new, g_new, ← Functor.map_comp, H]
-  letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
-    refine cokernel.cokernelIso f_new g_new ((((cokernel.mapIso (F.map f) f_new
-      (map_free F hf' P.relations.I) (map_free F hf' P.generators.I) (by simp [f_new])).symm) ≪≫
-        (Limits.PreservesCokernel.iso F f).symm) ≪≫
-          F.mapIso (Limits.IsColimit.coconePointUniqueUpToIso
-            (colimit.isColimit _) P.isColimit)) ?_
-    simp only [IsColimit.coconePointUniqueUpToIso, Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom,
-      cokernel.mapIso_inv, PreservesCokernel.iso_inv, Functor.mapIso_hom,
-      IsColimit.uniqueUpToIso_hom, Cocones.forget_map, IsColimit.descCoconeMorphism_hom,
-      colimit.isColimit_desc, cokernel.π_desc_assoc, Category.assoc,
-      π_comp_cokernelComparison_assoc, ← Functor.map_comp, Iso.cancel_iso_inv_left, g_new]
-    rw [coequalizer.π_desc P.generators.π _]
-  presentationOfIsCokernelFree f_new g_new H' h'
+  letI f := (map_free F hf' P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (map_free F hf' P.generators.I).hom
+  letI g := (map_free F hf' P.generators.I).inv ≫ F.map (P.generators.π)
+  presentationOfIsCokernelFree f g (by simp [f, g, ← Functor.map_comp]) <|
+    cokernel.cokernelIso f g ((((cokernel.mapIso (F.map
+      ((freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))) f
+        (map_free F hf' P.relations.I) (map_free F hf' P.generators.I) (by simp [f])).symm) ≪≫
+          (Limits.PreservesCokernel.iso F ((freeHomEquiv _).symm P.relations.s ≫
+            (kernel.ι _))).symm) ≪≫ F.mapIso (Limits.IsColimit.coconePointUniqueUpToIso
+              (colimit.isColimit _) P.isColimit)) (by simp [← Functor.map_comp, g])
 
 theorem Presentation.map_π_eq :
     (P.map F hf').generators.π = (map_free F hf' _).inv ≫ F.map (P.generators.π) :=
