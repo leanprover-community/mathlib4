@@ -1034,17 +1034,10 @@ is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   LinearMap.toMatrixAlgEquiv'
 
-variable (R) in
-/-- A linear equivalence of two modules induces an equivalence of algebras of their
-endomorphisms. -/
-@[simps!] def LinearEquiv.algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
-  __ := e.conjRingEquiv
-  commutes' := fun _ ↦ by ext; change e.restrictScalars R _ = _; simp
-
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/
 def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matrix n n R :=
-  (h.equivFun.algConj R).trans algEquivMatrix'
+  (h.equivFun.conjAlgEquiv R).trans algEquivMatrix'
 
 end
 
