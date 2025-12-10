@@ -482,66 +482,51 @@ structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
   isOpenQuotientMap : IsOpenQuotientMap ψ
   exact : φ.range = ψ.ker
 
+
+namespace TopologicalGroup.IsSES
+
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
-  [IsTopologicalGroup A] [IsTopologicalGroup B] [IsTopologicalGroup C]
-  [MeasurableSpace A] [MeasurableSpace B] [MeasurableSpace C]
-  [BorelSpace A] [BorelSpace B] [BorelSpace C]
-  [LocallyCompactSpace B]
+  [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-  (μA : Measure A) (μC : Measure C) [hμA : IsHaarMeasure μA] [hμC : IsHaarMeasure μC]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-noncomputable def twist (f : CompactlySupportedContinuousMap B E) (b : B) :
+/-- Pullback a continuous compactly supported function `f` on `B` to the continuous
+compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
     CompactlySupportedContinuousMap A E where
   toFun a := f (b * φ a)
   hasCompactSupport' := by
-    have h := f.hasCompactSupport
-    rw [← exists_compact_iff_hasCompactSupport] at h ⊢
-    obtain ⟨K, hK, hf⟩ := h
-    refine ⟨φ ⁻¹' (b⁻¹ • K), H.isClosedEmbedding.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
-    contrapose! hx
-    simpa [mem_smul_set_iff_inv_smul_mem]
+    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
+    refine exists_compact_iff_hasCompactSupport.mp ⟨φ ⁻¹' (b⁻¹ • K),
+      H.isClosedEmbedding.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
+    simpa [mem_smul_set_iff_inv_smul_mem] using hx
   continuous_toFun := by
     have : Continuous φ := H.isClosedEmbedding.continuous
     fun_prop
 
-noncomputable def average₀ : CompactlySupportedContinuousMap B E →ₗ[ℝ] (B → E) where
-  toFun f b := ∫ a, twist H f b a ∂μA
-  map_add' f g := by
-    ext b
-    simp only [Pi.add_apply]
-    apply integral_add
-    · exact (twist H f b).integrable
-    · exact (twist H g b).integrable
-  map_smul' x f := by
-    ext b
-    simp only [Pi.smul_apply]
-    apply integral_smul
+variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
+  [NormedSpace ℝ E]
 
-noncomputable def average₀_eq (f : CompactlySupportedContinuousMap B E) {b₁ b₂ : B} (h : ψ b₁ = ψ b₂) :
-    average₀ H μA f b₁ = average₀ H μA f b₂ := by
-  rw [← inv_mul_eq_one, ← map_inv, ← map_mul] at h
-  obtain ⟨a, ha⟩ := H.exact.ge h
-  rw [eq_inv_mul_iff_mul_eq] at ha
-  simp [← ha, average₀, twist, mul_assoc, ← map_mul]
-  exact (integral_mul_left_eq_self _ a).symm
+theorem integral_pullback_invFun (f : CompactlySupportedContinuousMap B E) (b : B) :
+    ∫ a, H.pullback f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, H.pullback f b a ∂μA := by
+  have h : ψ ((Function.invFun ψ (ψ b))⁻¹ * b) = 1 := by simp [Function.apply_invFun_apply]
+  rw [← MonoidHom.mem_ker, ← H.exact] at h
+  obtain ⟨a, ha⟩ := h
+  rw [← integral_mul_left_eq_self _ a]
+  simp [pullback, ha, mul_assoc]
 
-include H in
-theorem average_apply₀ (f : CompactlySupportedContinuousMap B E) (b : B) :
-    ∫ a, twist H f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, twist H f b a ∂μA :=
-  average₀_eq H μA f Function.apply_invFun_apply
+variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
 -- upgrade to linear map?
 noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     CompactlySupportedContinuousMap C E where
-  toFun := fun c ↦ ∫ a, twist H f (Function.invFun ψ c) a ∂μA
+  toFun := fun c ↦ ∫ a, pullback H f (Function.invFun ψ c) a ∂μA
   hasCompactSupport' := by
     have h := f.hasCompactSupport
     rw [← exists_compact_iff_hasCompactSupport] at h ⊢
     obtain ⟨K, hK, hf⟩ := h
     refine ⟨ψ '' K, hK.image H.isOpenQuotientMap.continuous, fun x hx ↦ ?_⟩
-    suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this, twist]
+    suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this, pullback]
     intro a
     apply hf
     contrapose! hx
@@ -553,16 +538,16 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
   continuous_toFun := by
     rw [← H.isOpenQuotientMap.continuous_comp_iff]
     change Continuous fun c ↦ _
-    simp only [Function.comp_apply, average_apply₀]
+    simp only [Function.comp_apply, integral_pullback_invFun]
     let p₀ : B → A → E := fun b a ↦ f (b * φ a)
     have hp₀ (b : B) : MemLp (p₀ b) 1 μA := by
       apply Continuous.memLp_of_hasCompactSupport
-      · exact (twist H f b).continuous
-      · exact (twist H f b).hasCompactSupport
+      · exact (pullback H f b).continuous
+      · exact (pullback H f b).hasCompactSupport
     let p : B → Lp E 1 μA := fun b ↦ MemLp.toLp (p₀ b) (hp₀ b)
     have key (b : B) : ∫ a, p b a ∂μA = ∫ a, f (b * φ a) ∂μA :=
       integral_congr_ae (hp₀ b).coeFn_toLp
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, twist]
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, pullback]
     simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk]
     simp only [← key]
     suffices Continuous p by
@@ -661,21 +646,21 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
 noncomputable def average_zero :
     average H μA (0 : CompactlySupportedContinuousMap B E) = 0 := by
   ext
-  simp [average, average₀, twist]
+  simp [average, pullback]
 
 noncomputable def average_add (f g : CompactlySupportedContinuousMap B E) :
     average H μA (f + g) = average H μA f + average H μA g := by
   ext c
   apply integral_add
-  · exact (twist H f _).integrable
-  · exact (twist H g _).integrable
+  · exact (pullback H f _).integrable
+  · exact (pullback H g _).integrable
 
 noncomputable def average_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
     average H μA f ≤ average H μA g := by
   intro c
   apply integral_mono
-  · exact (twist H f _).integrable
-  · exact (twist H g _).integrable
+  · exact (pullback H f _).integrable
+  · exact (pullback H g _).integrable
   · intro a
     apply h
 
@@ -686,10 +671,12 @@ noncomputable def average_smul (x : ℝ) (f : CompactlySupportedContinuousMap B 
 
 include H in
 theorem average_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
-    average H μA f (ψ b) = average₀ H μA f b :=
-  average_apply₀ H μA f b
+    average H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
+  integral_pullback_invFun H μA f b
 
 open Filter
+
+variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
 -- upgrade to linear map?
 noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E where
@@ -718,7 +705,7 @@ noncomputable def map : CompactlySupportedContinuousMap B ℝ →ₚ[ℝ] ℝ wh
   map_smul' x f := by simp [map_smul]
   monotone' f g h := integrate_mono H μA μC f g h
 
-variable [T2Space B]
+variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
 
 noncomputable def inducedMeasure : Measure B :=
   RealRMK.rieszMeasure (map H μA μC)
@@ -757,7 +744,7 @@ theorem isHaarMeasure_inducedMeasure :
     ext c
     obtain ⟨b', rfl⟩ := H.isOpenQuotientMap.surjective c
     rw [← map_inv, ← map_mul, average_apply, average_apply]
-    simp [average₀, mul_assoc, twist]
+    simp [mul_assoc, pullback]
   open_pos := by
     rintro U hU ⟨b, hb⟩
     obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
@@ -779,10 +766,10 @@ theorem isHaarMeasure_inducedMeasure :
       simp [Function.apply_invFun_apply]
     obtain ⟨a, ha⟩ := this
     apply Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
-      (twist H ⟨f, hf2⟩ _).continuous
-      (twist H ⟨f, hf2⟩ _).hasCompactSupport
+      (pullback H ⟨f, hf2⟩ _).continuous
+      (pullback H ⟨f, hf2⟩ _).hasCompactSupport
       (fun x ↦ (hf4 _).1)
-    simp only [twist, CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk, ne_eq]
+    simp only [pullback, CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk, ne_eq]
     rw [ha]
     simp [hf1 hb]
 
@@ -821,7 +808,7 @@ theorem main₀ (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
   obtain ⟨c, hc⟩ := this
   contrapose! hc
   by_cases h : ∀ a, f (Function.invFun ψ c * φ a) = 0
-  · simp [average, average₀, h, twist]
+  · simp [average, h, pullback]
   push_neg at h
   obtain ⟨a₀, ha₀⟩ := h
   replace hc : Function.support (fun a ↦ f (Function.invFun ψ c * φ a)) = {a₀} := by
@@ -836,11 +823,13 @@ theorem main₀ (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
       exact ⟨a, rfl⟩
     have key := hc ha ha₀ (by simp [this])
     simpa [H.isClosedEmbedding.injective.eq_iff] using key
-  simp only [average, average₀, twist]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, CompactlySupportedContinuousMap.coe_mk,
+  simp only [average, pullback]
+  simp only [CompactlySupportedContinuousMap.coe_mk,
     ContinuousMap.coe_mk, ge_iff_le]
   rw [← MeasureTheory.setIntegral_support, hc, integral_singleton, smul_eq_mul,
     real_def, haar_singleton]
   rw [mul_le_iff_le_one_right]
   · exact (hf4 _).2
   · apply ENNReal.toReal_pos ho.ne' ht.ne
+
+end TopologicalGroup.IsSES
