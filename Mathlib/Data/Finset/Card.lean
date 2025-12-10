@@ -569,7 +569,7 @@ omit [DecidableEq α] in
 theorem card_filter_add_card_filter_not (p : α → Prop) [DecidablePred p] :
     #(s.filter p) + #(s.filter (fun a => ¬p a)) = #s := by
   classical
-  rw [←  card_union_of_disjoint (disjoint_filter_filter_not s s p)]
+  rw [← card_union_of_disjoint (disjoint_filter_filter_not s s p)]
   congr
   grind
 
