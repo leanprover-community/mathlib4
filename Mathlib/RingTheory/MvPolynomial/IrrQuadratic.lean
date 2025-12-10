@@ -552,6 +552,18 @@ lemma sum_smul_X_mul_Y_eq :
     sum_smul_X_mul_Y c = c.sum fun i a ↦ a • X (.inl i) * X (.inr i) := by
   simp [sum_smul_X_mul_Y, Finsupp.linearCombination_apply]
 
+lemma sum_smul_X_mul_Y_eq' :
+    sum_smul_X_mul_Y c = c.embDomain
+    ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
+     fun i j ↦ by
+       classical simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩ := by
+  classical
+  ext i
+  simp only [sum_smul_X_mul_Y, X, monomial_mul, mul_one, Finsupp.linearCombination_apply]
+  simp [Finsupp.sum, coeff_sum, coeff_monomial]
+  simp [coeff, Finsupp.embDomain]
+  sorry
+
 theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
