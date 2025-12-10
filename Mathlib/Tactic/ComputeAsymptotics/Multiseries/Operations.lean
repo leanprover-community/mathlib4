@@ -6,10 +6,10 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
--- import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
--- import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
--- import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Log
--- import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Exp
+import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
+import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
+import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Log
+import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Exp
 
 /-!
 # Operations for multiseries
