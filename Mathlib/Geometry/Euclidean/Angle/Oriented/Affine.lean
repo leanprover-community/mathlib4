@@ -366,25 +366,6 @@ theorem oangle_eq_or_eq_neg_of_angle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h :
   · left
     rw [h₁, h₂, h]
 
-/-- If two oriented angles have the same sign and the second triple of points is not collinear,
-then their difference cannot be equal to `π`. -/
-theorem oangle_sub_oangle_ne_pi_of_not_collinear {a b c a' b' c' : P}
-  (h_not_col' : ¬ Collinear ℝ ({a', b', c'} : Set P))
-  (h_sign : (∡ a b c).sign = (∡ a' b' c').sign) :
-  ∡ a b c - ∡ a' b' c' ≠ π := by
-  intro h
-  have h' : ∡ a b c = ∡ a' b' c' + π := by
-    simp [← h]
-  have h_sign' := h_sign
-  rw [h', Real.Angle.sign_add_pi] at h_sign'
-  have angle_neq_zero : ∡ a' b' c' ≠ 0 ∧ ∡ a' b' c' ≠ π := by
-    rw [oangle_ne_zero_and_ne_pi_iff_not_collinear]
-    exact h_not_col'
-  have angle_eq_zero : ∡ a' b' c' = 0 ∨ ∡ a' b' c' = ↑π  := by
-    simp at h_sign'
-    simp_rw [Real.Angle.sign_eq_zero_iff] at h_sign'
-    exact h_sign'
-  aesop
 /-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
 negations of each other, then the oriented angles are negations of each other (even in degenerate
 cases). -/
