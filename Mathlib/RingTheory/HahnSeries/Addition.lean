@@ -501,8 +501,8 @@ def coeff.linearMap (g : Γ) : V⟦Γ⟧ →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 
 @[simp]
-protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
-    {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : V⟦Γ⟧) := by
+protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R} {x : U⟦Γ⟧} :
+    (r • x).map f = r • (x.map f : V⟦Γ⟧) := by
   ext; simp
 
 section Finsupp

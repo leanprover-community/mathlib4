@@ -914,7 +914,7 @@ section Algebra
 
 variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
-instance : Algebra R (HahnSeries Γ A) where
+instance : Algebra R A⟦Γ⟧ where
   algebraMap := C.comp (algebraMap R A)
   smul_def' r x := by
     ext
@@ -928,7 +928,7 @@ instance : Algebra R (HahnSeries Γ A) where
 theorem C_eq_algebraMap : C = algebraMap R R⟦Γ⟧ :=
   rfl
 
-theorem algebraMap_apply {r : R} : algebraMap R (HahnSeries Γ A) r = C (algebraMap R A r) :=
+theorem algebraMap_apply {r : R} : algebraMap R A⟦Γ⟧ r = C (algebraMap R A r) :=
   rfl
 
 instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R R⟦Γ⟧) :=
@@ -950,7 +950,7 @@ variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAd
 /-- Extending the domain of Hahn series is an algebra homomorphism. -/
 @[simps!]
 def embDomainAlgHom (f : Γ →+ Γ') (hfi : Function.Injective f)
-    (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') : HahnSeries Γ A →ₐ[R] HahnSeries Γ' A :=
+    (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') : A⟦Γ⟧ →ₐ[R] A⟦Γ'⟧ :=
   { embDomainRingHom f hfi hf with commutes' := fun _ => embDomainRingHom_C (hf := hf) }
 
 end Domain

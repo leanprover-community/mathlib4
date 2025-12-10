@@ -140,7 +140,7 @@ def map [Zero S] (x : R⟦Γ⟧) {F : Type*} [FunLike F R S] [ZeroHomClass F R S
 protected lemma map_zero [Zero S] (f : ZeroHom R S) : (0 : R⟦Γ⟧).map f = 0 := by
   ext; simp
 
-/-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
+/-- Change a `HahnSeries` with coefficients in a `HahnSeries` to a `HahnSeries` on a Lex product. -/
 def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
@@ -154,7 +154,7 @@ def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ 
 lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
   simp_rw [HahnSeries.ext_iff, funext_iff, coeff_zero, Pi.zero_apply]
 
-/-- Change a `HahnSeries` on a lex product to a `HahnSeries` with coefficients in a `HahnSeries`. -/
+/-- Change a `HahnSeries` on a Lex product to a `HahnSeries` with coefficients in a `HahnSeries`. -/
 def toIterate [PartialOrder Γ'] (x : R⟦Γ ×ₗ Γ'⟧) : R⟦Γ'⟧⟦Γ⟧ where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
