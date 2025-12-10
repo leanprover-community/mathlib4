@@ -437,10 +437,10 @@ theorem coeff_mul_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {
   HahnModule.coeff_smul_right hs hys
 
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) where
-  left_distrib := fun x y z => by
+  left_distrib x y z := by
     simp only [← of_symm_smul_of_eq_mul]
     exact HahnModule.smul_add x y z
-  right_distrib := fun x y z => by
+  right_distrib x y z := by
     simp only [← of_symm_smul_of_eq_mul]
     refine HahnModule.add_smul ?_
     simp only [smul_eq_mul]
