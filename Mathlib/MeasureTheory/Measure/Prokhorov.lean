@@ -16,7 +16,9 @@ public import Mathlib
 
 open scoped ENNReal NNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
-  TopologicalSpace MeasureTheory BoundedContinuousFunction
+  TopologicalSpace MeasureTheory BoundedContinuousFunction MeasureTheory.FiniteMeasure
+
+
 
 @[simps] def CompactlySupportedContinuousMap.toBoundedContinuousFunction {α β : Type*}
     [TopologicalSpace α] [PseudoMetricSpace β] [Zero β]
@@ -27,7 +29,8 @@ open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topo
     rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
     exact ⟨C, by grind⟩
 
-lemma isCompact_setOf_finiteMeasure_le_of_compactSpace (E : Type*) [MeasurableSpace E]
+/-- In a compact space, the set of finite measures with mass at most `C` is compact. -/
+theorem isCompact_setOf_finiteMeasure_le_of_compactSpace (E : Type*) [MeasurableSpace E]
     [TopologicalSpace E] [T2Space E] [CompactSpace E] [BorelSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C} := by
   /- To prove the compactness, we will show that any sequence has a converging subsequence, in
@@ -118,6 +121,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_compactSpace (E : Type*) [MeasurableSp
   simp only [FiniteMeasure.toMeasure_mk, RealRMK.integral_rieszMeasure, μlim', μlim]
   rfl
 
+/-- In a compact space, the set of finite measures with mass `C` is compact. -/
 lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace (E : Type*) [MeasurableSpace E]
     [TopologicalSpace E] [T2Space E] [CompactSpace E] [BorelSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C} := by
@@ -134,9 +138,8 @@ instance {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [Compa
   simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
   apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
 
-open MeasureTheory.FiniteMeasure
-
-
+/-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
+compact. -/
 lemma isCompact_setOf_finiteMeasure_le_of_isCompact
     {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [NormalSpace E] [T2Space E] [BorelSpace E]
     (C : ℝ≥0) {K : Set E} (hK : IsCompact K) :
@@ -145,9 +148,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have hf : IsClosedEmbedding f := IsClosedEmbedding.subtypeVal hK.isClosed
   have rf : range f = K := Subtype.range_val
   let F : FiniteMeasure K → FiniteMeasure E := fun μ ↦ μ.map f
-  have hF : IsEmbedding F := by
-    apply Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure
-    exact hK.isClosed.isClosedEmbedding_subtypeVal
+  have hF : IsEmbedding F := hK.isClosed.isClosedEmbedding_subtypeVal.isEmbedding_map_finiteMeasure
   let T : Set (FiniteMeasure K) := {μ | μ.mass ≤ C}
   have : {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ Kᶜ = 0} = F '' T := by
     apply Subset.antisymm
@@ -157,7 +158,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
       ext s hs
       simp only [toMeasure_map, F]
       rw [Measure.map_apply measurable_subtype_coe hs]
-      simp only [coe_comap_apply]
+      simp only [toMeasure_comap]
       rw [Measure.comap_apply _ (Subtype.val_injective), image_preimage_eq_inter_range]
       · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
         apply (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp
@@ -173,20 +174,6 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   rw [this, ← hF.isCompact_iff]
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
-
-lemma partialSups_add_one_eq_sup_disjointed {α ι : Type*} [GeneralizedBooleanAlgebra α]
-    [LinearOrder ι] [Add ι] [One ι] [LocallyFiniteOrderBot ι] [SuccAddOrder ι]
-    (f : ι → α) (i : ι) : partialSups f (i + 1) = partialSups f i ⊔ disjointed f (i + 1) := by
-  by_cases hi : IsMax i
-  · have : i + 1 = i := by
-      have h : i ≤ i + 1 := by
-        rw [← Order.succ_eq_add_one]
-        apply Order.le_succ
-      exact le_antisymm (hi h) h
-    simp only [this, left_eq_sup, ge_iff_le, disjointed, sdiff_le_iff]
-    apply le_trans (le_partialSups _ _) le_sup_right
-  · rw [← Order.succ_eq_add_one, disjointed_succ _ hi]
-    simp
 
 lemma partialSups_eq_accumulate
     {α : Type*} (f : ℕ → Set α) (n : ℕ) : partialSups f n = Accumulate f n := by
