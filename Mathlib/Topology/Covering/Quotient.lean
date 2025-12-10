@@ -11,12 +11,7 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Covering.Basic
 
 /-!
-# Galois Covering Maps
-
-This file constructs of them from free and properly discontinuous group actions.
-
-TODO: show the construction yields Galois covering maps (to be defined) when the action is
-on a path-connected space.
+# Covering maps to quotients by free and properly discontinuous group actions
 -/
 
 @[expose] public section
@@ -40,10 +35,9 @@ include hfG
 other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
 `Trivialization` over the base set `p(U)`. -/]
 noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTopology G]
-    (U : Set E) (open_U : IsOpen U) (disjoint : ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) :
+    (U : Set E) (open_U : IsOpen U) (disjoint : ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1) :
     Trivialization G f := by
-  have pGE : ∀ (g : G) e, f (g • e) = f e := fun g e ↦ hfG.mpr ⟨g, rfl⟩
-  simp_rw [← Set.nonempty_iff_ne_empty] at disjoint
+  have pGE (g : G) e : f (g • e) = f e := hfG.mpr ⟨g, rfl⟩
   have preim_im : f ⁻¹' (f '' U) = ⋃ g : G, (g • ·) ⁻¹' U := by
     ext e; refine ⟨fun ⟨e', heU, he⟩ ↦ ?_, ?_⟩
     · obtain ⟨g, rfl⟩ := hfG.mp he; exact ⟨_, ⟨g, rfl⟩, heU⟩
@@ -61,15 +55,15 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
       obtain ⟨g', rfl⟩ := hfG.mp hfe
       refine ⟨_, ⟨g⁻¹ * g', rfl⟩, ?_, ?_⟩
       · apply Set.mem_of_eq_of_mem (pGE _ e) hW
-      · apply Set.mem_of_eq_of_mem _ he'; dsimp only; rw [mul_smul, smul_inv_smul]
+      · apply Set.mem_of_eq_of_mem _ he'; simp_rw [mul_smul, smul_inv_smul]
     · rintro ⟨_, ⟨g, rfl⟩, hW, -⟩; apply Set.mem_of_eq_of_mem (pGE _ e).symm hW
   · rw [← pGE g, ← pGE g e₂] at he; obtain ⟨g', he⟩ := hfG.mp he
     rw [← smul_left_cancel_iff g, ← he, disjoint g' ⟨_, ⟨_, h₂, he⟩, h₁⟩]; apply one_smul
-  · rintro g x ⟨e, hU, rfl⟩; refine ⟨g⁻¹ • e, ?_, pGE _ e⟩; apply (smul_inv_smul g e).symm ▸ hU
-  · dsimp only; rw [mul_smul, inv_smul_smul]
+  · rintro g x ⟨e, hU, rfl⟩; exact ⟨g⁻¹ • e, by apply (smul_inv_smul g e).symm ▸ hU, pGE _ e⟩
+  · simp_rw [mul_smul, inv_smul_smul]
 
 @[to_additive] lemma isCoveringMapOn_of_smul_disjoint
-    (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g • e = e) :
+    (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g • e = e) :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
   letI : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
   suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
@@ -78,19 +72,19 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
   obtain ⟨U, heU, hU⟩ := disjoint e
   refine ⟨hf.trivializationOfSMulDisjoint hfG (interior U) isOpen_interior
     fun g hg ↦ ?_, e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩
-  rw [← Subgroup.mem_bot, ← he]; apply hU; contrapose! hg; exact Set.subset_eq_empty
-    (Set.inter_subset_inter (Set.image_mono interior_subset) interior_subset) hg
+  rw [← Subgroup.mem_bot, ← he]
+  exact hU _ (hg.mono (by grw [interior_subset]))
 
 @[to_additive] lemma isCoveringMap_of_smul_disjoint
-    (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) : IsCoveringMap f :=
+    (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1) :
+    IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
     convert ← hf.isCoveringMapOn_of_smul_disjoint hfG fun e ↦ ?_
     · refine Set.eq_univ_of_forall fun x ↦ ?_
       obtain ⟨e, rfl⟩ := hf.surjective x
       obtain ⟨U, hU, hGU⟩ := disjoint e
       replace hU := mem_of_mem_nhds hU
-      exact ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦
-        hGU g (Set.nonempty_iff_ne_empty.mp ⟨e, ⟨e, hU, hg⟩, hU⟩), rfl⟩
+      exact ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦ hGU g (⟨e, ⟨e, hU, hg⟩, hU⟩), rfl⟩
     · obtain ⟨U, hU, hGU⟩ := disjoint e
       refine ⟨U, hU, fun g hg ↦ ?_⟩; rw [hGU g hg, one_smul]
 
@@ -134,7 +128,6 @@ end MulAction
   · rw [hfG, ← QuotientGroup.leftRel_apply]; rfl
   refine ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
     MulOpposite.unop_injective <| disj _ hS <| Or.inr ?_⟩
-  simp_rw [← Set.nonempty_iff_ne_empty] at hs ⊢
   obtain ⟨_, ⟨_, ⟨_, rfl, x, hx, rfl⟩, rfl⟩, g, rfl, y, hy, he⟩ := hs
   exact ⟨y, ⟨x, hx, mul_left_cancel (he.trans <| mul_assoc _ _ _).symm⟩, hy⟩
 

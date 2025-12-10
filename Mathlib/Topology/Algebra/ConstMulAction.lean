@@ -442,7 +442,6 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -451,7 +450,7 @@ class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [S
     Prop where
   /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·) '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | ((γ • ·) '' K ∩ L).Nonempty }
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
@@ -461,7 +460,7 @@ class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [V
   Prop where
   /-- Given two compact sets `K` and `L`, `γ +ᵥ K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ +ᵥ ·) '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | ((γ +ᵥ ·) '' K ∩ L).Nonempty }
 
 attribute [to_additive] ProperlyDiscontinuousSMul
 
@@ -473,23 +472,22 @@ section
 variable (Γ T : Type*) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
-  simp_rw [←mem_singleton_iff, ←singleton_inter_nonempty, ←image_singleton, nonempty_iff_ne_empty]
+  simp_rw [←mem_singleton_iff, ←singleton_inter_nonempty, ←image_singleton]
   exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.disjoint_image_nhds
     [T2Space T] [WeaklyLocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T) :
-    ∃ U ∈ 𝓝 x, ∀ γ : Γ, (γ • ·) '' U ∩ U ≠ ∅ → γ • x = x := by
+    ∃ U ∈ 𝓝 x, ∀ γ : Γ, ((γ • ·) '' U ∩ U).Nonempty → γ • x = x := by
   obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
-  let Γ₀ := {γ : Γ | (γ • ·) '' V ∩ V ≠ ∅ ∧ γ • x ≠ x}
-  have : Finite Γ₀ := finite_coe_iff.mpr
-    ((finite_disjoint_inter_image V_cpt V_cpt).subset fun _ ↦ And.left)
+  let Γ₀ := {γ : Γ | ((γ • ·) '' V ∩ V).Nonempty ∧ γ • x ≠ x}
+  have : Finite Γ₀ := (finite_disjoint_inter_image V_cpt V_cpt).subset fun _ ↦ And.left
   choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.2.2
   refine ⟨V ∩ ⋂ γ : Γ₀, (γ.1 • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
     inter_mem ((continuous_const_smul _).continuousAt <| hu γ) (hv γ)), fun γ hγ ↦ ?_⟩
-  obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := nonempty_iff_ne_empty.mpr hγ
+  obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := hγ
   by_contra h
   rw [mem_inter_iff, mem_iInter] at hz hγz
-  let γ : Γ₀ := ⟨γ, nonempty_iff_ne_empty.mp ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
+  let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
   exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
 
 end
@@ -524,7 +522,7 @@ theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
 @[to_additive /-- The quotient by a discontinuous group action of a locally compact t2
 space is t2. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
-    [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
+    [WeaklyLocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
   letI := MulAction.orbitRel Γ T
   set Q := Quotient (MulAction.orbitRel Γ T)
@@ -536,7 +534,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm :)
   obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
   obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
-  let bad_Γ_set := { γ : Γ | (γ • ·) '' K₀ ∩ L₀ ≠ ∅ }
+  let bad_Γ_set := { γ : Γ | ((γ • ·) '' K₀ ∩ L₀).Nonempty }
   have bad_Γ_finite : bad_Γ_set.Finite := finite_disjoint_inter_image (Γ := Γ) hK₀ hL₀
   choose u v hu hv u_v_disjoint using fun γ => t2_separation_nhds (hγx₀y₀ γ)
   let U₀₀ := ⋂ γ ∈ bad_Γ_set, (γ • ·) ⁻¹' u γ
@@ -553,7 +551,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
+    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_setOf_eq] at H
     exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/
