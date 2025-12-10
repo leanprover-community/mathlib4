@@ -769,8 +769,8 @@ theorem isHaarMeasure_inducedMeasure :
     intro K hK
     let U : Set B := Set.univ
     have hU : IsOpen U := isOpen_univ
-    have hU' : K ⊆ U := K.subset_univ
-    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hU'
+    have hKU : K ⊆ U := K.subset_univ
+    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
     exact lt_of_le_of_lt (RealRMK.rieszMeasure_le_of_eq_one (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
       (f := ⟨f, hf2⟩) (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)) ENNReal.ofReal_lt_top
   map_mul_left_eq_self := by
@@ -791,9 +791,9 @@ theorem isHaarMeasure_inducedMeasure :
       Function.rightInverse_invFun h4.surjective]
   open_pos := by
     rintro U hU ⟨b, hb⟩
-    obtain ⟨K, hK, hb, hK'⟩ := exists_compact_subset hU hb
+    obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
     replace hb : b ∈ K := interior_subset hb
-    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hK'
+    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
     have hf0 : 0 ≤ f := fun x ↦ (hf4 x).1
     have hf0' := average_mono φ ψ h1 μA hμA 0 ⟨f, hf2⟩ hf0
     rw [CompactlySupportedContinuousMap.coe_zero, average_zero] at hf0'
@@ -817,8 +817,56 @@ theorem isHaarMeasure_inducedMeasure :
     rw [ha]
     simp [hf1 hb]
 
-#check Measure.haar
-
--- theorem tada (A B C : Type*)
---     [Group A] [Group B] [Group C] [MeasurableSpace ] (φ : A →* B) (ψ : B →* C)
---     (h1 : Function.Injective φ) (h2 : φ.range = ψ.ker) (h3 : Function.Surjective ψ) :
+theorem main₀ (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
+    (h : μC Set.univ * μA {1} < inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC U) :
+    ¬ U.InjOn ψ := by
+  have ho : 0 < μA {1} := (isOpen_discrete {1}).measure_pos _ (singleton_nonempty 1)
+  have ht : μA {1} < ⊤ := isCompact_singleton.measure_lt_top
+  obtain ⟨K, hKU, hK, h⟩ := Regular.innerRegular hU _ h
+  obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
+  have : μC Set.univ * μA {1} < ENNReal.ofReal (∫ c : C, average φ ψ μA f c ∂μC) :=
+    lt_of_lt_of_le h
+      ((RealRMK.rieszMeasure_le_of_eq_one (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
+        (f := ⟨f, hf2⟩) (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)))
+  have : ∃ c : C, (μA {1}).toReal < average φ ψ μA f c := by
+    contrapose! this
+    rcases eq_top_or_lt_top (μC Set.univ) with h | h
+    · rw [h, ENNReal.top_mul ho.ne']
+      exact le_top
+    have hC : IsFiniteMeasure μC := ⟨h⟩
+    rw [← ENNReal.ofReal_toReal h.ne, ← ENNReal.ofReal_toReal ht.ne, ← ENNReal.ofReal_mul]
+    apply ENNReal.ofReal_le_ofReal
+    rw [← Measure.real_def, ← smul_eq_mul, ← integral_indicator_const, indicator_univ]
+    apply integral_mono_of_nonneg
+    · apply Filter.Eventually.of_forall
+      have key := average_mono φ ψ h1 μA hμA 0 ⟨f, hf2⟩ (fun x ↦ (hf4 x).1)
+      rwa [CompactlySupportedContinuousMap.coe_zero, average_zero] at key
+    · apply MeasureTheory.integrable_const
+    · apply Filter.Eventually.of_forall
+      exact this
+    · exact MeasurableSet.univ
+    · exact ENNReal.toReal_nonneg
+  obtain ⟨c, hc⟩ := this
+  contrapose! hc
+  by_cases h : ∀ a, f (Function.invFun ψ c * φ a) = 0
+  · simp [average, average₀, h]
+  push_neg at h
+  obtain ⟨a₀, ha₀⟩ := h
+  replace hc : Function.support (fun a ↦ f (Function.invFun ψ c * φ a)) = {a₀} := by
+    rw [Set.eq_singleton_iff_unique_mem]
+    use ha₀
+    intro a ha
+    replace ha := hf3 (subset_tsupport _ ha)
+    replace ha₀ := hf3 (subset_tsupport _ ha₀)
+    have : ∀ a, ψ (φ a) = 1 := by
+      intro a
+      apply h3
+      exact ⟨a, rfl⟩
+    have key := hc ha ha₀ (by simp [this])
+    simpa [h1.injective.eq_iff] using key
+  simp only [average, average₀]
+  rw [← MeasureTheory.setIntegral_support, hc, integral_singleton, smul_eq_mul,
+    real_def, haar_singleton]
+  rw [mul_le_iff_le_one_right]
+  · exact (hf4 _).2
+  · apply ENNReal.toReal_pos ho.ne' ht.ne
