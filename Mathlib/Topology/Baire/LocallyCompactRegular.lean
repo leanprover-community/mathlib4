@@ -64,46 +64,13 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
 theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) [R1Space X] [LocallyCompactSpace X] :
     BaireSpace s := by
-  have h_closure_baire : BaireSpace (closure s) := by
+  have : BaireSpace (closure s) := by
     convert BaireSpace.of_t2Space_locallyCompactSpace using 1
     · infer_instance
     · exact IsClosed.locallyCompactSpace isClosed_closure
-  have h_s_baire : BaireSpace ((↑) ⁻¹' s : Set (closure s)) := IsGδ.baireSpace_of_dense
+  have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) := IsGδ.baireSpace_of_dense
     (isGδ_induced continuous_subtype_val hG)
     (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])
-  -- Since `s` is homeomorphic to `s'`, we can conclude that `s` is a Baire space.
-  have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := by
-    refine' ⟨ _, _, _ ⟩;
-    refine' ⟨ fun x => ⟨ x.1, _ ⟩, fun x => ⟨ ⟨ x.1, _ ⟩, _ ⟩, fun x => _, fun x => _ ⟩;
-    exact x.2;
-    exact subset_closure x.2;
-    · grind
-    · grind
-    · grind
-    · fun_prop
-    · fun_prop
-  -- Since `h_homeo` is a homeomorphism, we can conclude that `s` is a Baire space.
-  have h_baire : BaireSpace s := by
-    have := h_s_baire
-    exact (by
-    rcases this with ⟨ this ⟩;
-    constructor;
-    intro f hf hf';
-    convert this ( fun n => h_homeo ⁻¹' f n ) ( fun n => ?_ ) ( fun n => ?_ ) using 1;
-    · constructor <;> intro h <;> rw [ dense_iff_inter_open ] at * <;> aesop;
-      · specialize h ( h_homeo '' U ) ; aesop;
-        simpa only [ Set.preimage_iInter ] using h;
-      · specialize h ( h_homeo ⁻¹' U ) ( h_homeo.isOpen_preimage.mpr a );
-        obtain ⟨ x, hx ⟩ := h ( by rcases a_1 with ⟨ x, hx ⟩ ; exact ⟨ h_homeo.symm x, by simpa using hx ⟩ ) ; use h_homeo x; aesop;
-    · exact h_homeo.continuous.isOpen_preimage _ ( hf n );
-    · rw [ dense_iff_inter_open ] at *;
-      intro U hU hU';
-      have := hf' n;
-      rw [ dense_iff_inter_open ] at this;
-      contrapose! this;
-      refine' ⟨ h_homeo '' U, _, _, _ ⟩;
-      · exact h_homeo.isOpenMap U hU;
-      · exact hU'.image _;
-      · simp_all +decide [ Set.ext_iff ];
-        grind);
-  exact h_baire
+  have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := ⟨⟨fun x => ⟨x, x.2⟩,
+    fun x => ⟨⟨x, subset_closure x.2⟩, x.2⟩, by grind, by grind⟩, by fun_prop, by fun_prop⟩
+  exact h_homeo.baireSpace
