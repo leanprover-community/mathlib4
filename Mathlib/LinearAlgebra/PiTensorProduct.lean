@@ -824,7 +824,6 @@ def subsingletonEquivDep : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
 theorem subsingletonEquivDep_apply_tprod (f : (i : ι) → s i) :
     subsingletonEquivDep i₀ (⨂ₜ[R] i, f i) = f i₀ := lift.tprod _
 
-@[simp]
 theorem subsingletonEquivDep_symm_apply (x : s i₀) :
     (subsingletonEquivDep i₀).symm x = (⨂ₜ[R] i, update ↑0 i₀ x i) := rfl
 
