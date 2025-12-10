@@ -3,10 +3,12 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations
@@ -46,6 +48,8 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -103,11 +107,17 @@ namespace Con
 
 section
 
-variable [Mul M] [Mul N] [Mul P] (c : Con M)
+variable [Mul M] [Mul N] [Mul P] {c d : Con M}
 
 @[to_additive]
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
+
+@[to_additive] lemma toSetoid_injective : Injective (toSetoid (M := M)) :=
+  fun c d ↦ by cases c; congr!
+
+@[to_additive (attr := simp)] lemma toSetoid_inj : c.toSetoid = d.toSetoid ↔ c = d :=
+  toSetoid_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive
@@ -119,6 +129,8 @@ instance : FunLike (Con M) M (M → Prop) where
     rcases y with ⟨⟨y, _⟩, _⟩
     have : x = y := h
     subst x; rfl
+
+variable (c)
 
 @[to_additive (attr := simp)]
 theorem rel_eq_coe (c : Con M) : c.r = c :=
@@ -164,12 +176,6 @@ theorem ext' {c d : Con M} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 @[to_additive (attr := ext) /-- Extensionality rule for additive congruence relations. -/]
 theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
-
-/-- The map sending a congruence relation to its underlying equivalence relation is injective. -/
-@[to_additive /-- The map sending an additive congruence relation to its underlying equivalence
-relation is injective. -/]
-theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
-  ext <| Setoid.ext_iff.1 H
 
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive /-- Two additive congruence relations are equal iff their underlying binary relations
@@ -372,6 +378,15 @@ operations. -/
 theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
 
+@[to_additive (attr := simp)] lemma toSetoid_top : (⊤ : Con M).toSetoid = ⊤ := rfl
+@[to_additive (attr := simp)] lemma toSetoid_bot : (⊥ : Con M).toSetoid = ⊥ := rfl
+
+@[to_additive (attr := simp)]
+lemma toSetoid_eq_top : c.toSetoid = ⊤ ↔ c = ⊤ := by rw [← toSetoid_top, toSetoid_inj]
+
+@[to_additive (attr := simp)]
+lemma toSetoid_eq_bot : c.toSetoid = ⊥ ↔ c = ⊥ := by rw [← toSetoid_bot, toSetoid_inj]
+
 /-- Definition of the infimum of two congruence relations. -/
 @[to_additive /-- Definition of the infimum of two additive congruence relations. -/]
 theorem inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
@@ -537,7 +552,7 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 
 @[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
+instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   -- Using Quotient.mk'' here instead of c.toQuotient
   -- since c.toQuotient is not reducible.
   -- This would lead to non-defeq diamonds since this instance ends up in
@@ -558,6 +573,12 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
   Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+
+/-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
+@[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
+an `AddCommMagma`. -/]
+instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
+  Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
@@ -619,7 +640,7 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive /-- Additive congruence relations preserve integer scaling. -/]
 protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
-  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
+  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_natCast] using c.pow n h
   | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
 
 /-- The inversion induced on the quotient by a congruence relation on a type with an

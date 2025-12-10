@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Fractions
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 /-!
 # The canonical t-structure on the derived category
@@ -15,6 +17,8 @@ In this file, we introduce the canonical t-structure on the
 derived category of an abelian category.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
@@ -177,5 +181,12 @@ lemma exists_iso_Q_obj_of_isGE_of_isLE (X : DerivedCategory C) (a b : ℤ) [X.Is
     rw [← isGE_Q_obj_iff]
     exact TStructure.t.isGE_of_iso e a
   exact ⟨K.truncGE a, inferInstance, inferInstance, ⟨e ≪≫ asIso (Q.map (K.πTruncGE a))⟩⟩
+
+lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
+    (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
+    ∃ (Y : C), Nonempty (X ≅ (singleFunctor C n).obj Y) := by
+  obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
+  obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
+  exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
 
 end DerivedCategory

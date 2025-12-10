@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Normed.Operator.Mul
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Bounded linear maps
@@ -38,7 +40,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 ## Notes
 
 The main use of this file is `IsBoundedBilinearMap`.
-The file `Analysis.NormedSpace.Multilinear.Basic`
+The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`
 already expounds the theory of multilinear maps,
 but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
@@ -48,6 +50,8 @@ in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 `ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -306,6 +310,10 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
   LinearMap.mkContinuousOfExistsBound₂
     (LinearMap.mk₂ _ f.curry hf.add_left hf.smul_left hf.add_right hf.smul_right) <|
     hf.bound.imp fun _ ↦ And.right
+
+@[simp]
+lemma IsBoundedBilinearMap.toContinuousLinearMap_apply (hf : IsBoundedBilinearMap 𝕜 f)
+    (x : E) (y : F) : hf.toContinuousLinearMap x y = f (x, y) := rfl
 
 protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=

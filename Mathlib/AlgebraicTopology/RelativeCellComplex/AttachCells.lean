@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Attaching cells
@@ -25,6 +27,8 @@ See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for tran
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
+
+@[expose] public section
 
 universe w' w t t' v u
 

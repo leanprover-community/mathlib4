@@ -3,11 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.GroupTheory.OreLocalization.OreSet
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ a denominator `s : S`.
 localization, Ore, non-commutative
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
@@ -436,7 +440,7 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
-@[to_additive /-- The difference `s -ₒ 0` as a an additive unit. -/]
+@[to_additive /-- The difference `s -ₒ 0` as an additive unit. -/]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
   val := (s : R) /ₒ 1
   inv := (1 : R) /ₒ s
@@ -474,9 +478,9 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, MonoidHom.map_mul]
+        simp only [← hf, map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
+        rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
@@ -529,7 +533,7 @@ protected def hsmul (c : R) :
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
-/- Warning: This gives an diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+/- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/

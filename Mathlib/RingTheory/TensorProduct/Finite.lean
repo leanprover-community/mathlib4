@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Bilinear
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Bilinear
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Finiteness of the tensor product of (sub)modules
@@ -16,6 +18,8 @@ In this file we show that the supremum of two subalgebras that are finitely gene
 is again finitely generated.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -129,8 +133,7 @@ lemma Module.exists_surjective_quotient_of_finite :
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
   obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
-  rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,
-    not_not] at hN
+  have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 
 open TensorProduct
@@ -138,8 +141,7 @@ instance : Nontrivial (M ⊗[R] M) := by
   obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
   let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
     (LinearMap.mul' R (R ⧸ I)).comp (TensorProduct.map ϕ ϕ)
-  have : Nontrivial (R ⧸ I) := by
-    rwa [← not_subsingleton_iff_nontrivial, Submodule.subsingleton_quotient_iff_eq_top]
+  have : Nontrivial (R ⧸ I) := by rwa [Submodule.Quotient.nontrivial_iff]
   have : Function.Surjective ψ := by
     intro x; obtain ⟨x, rfl⟩ := hϕ x; obtain ⟨y, hy⟩ := hϕ 1; exact ⟨x ⊗ₜ y, by simp [ψ, hy]⟩
   exact this.nontrivial
@@ -158,7 +160,7 @@ lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
     (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
   let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
   rcases subsingleton_or_nontrivial (S ⧸ R') with h | _
-  · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
+  · rwa [Submodule.Quotient.subsingleton_iff, LinearMap.range_eq_top] at h
   have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_
     induction y with

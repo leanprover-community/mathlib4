@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
-import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
@@ -18,6 +20,8 @@ Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -102,10 +106,7 @@ lemma subcomplex_injective_iff {x y : X.N} :
 
 lemma eq_iff {x y : X.N} :
     x = y ↔ x.subcomplex = y.subcomplex :=
-  ⟨by rintro rfl; rfl, fun h ↦ by
-    apply le_antisymm
-    all_goals
-    · rw [le_iff, h]⟩
+  ⟨by rintro rfl; rfl, fun h ↦ by simp [le_antisymm_iff, le_iff, h]⟩
 
 section
 

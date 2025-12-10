@@ -3,12 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorial.SuperFactorial
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Pochhammer
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorial.SuperFactorial
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Vandermonde matrix
@@ -48,7 +50,7 @@ coding theory, and representations of uniform matroids over finite fields.
 ## Implementation notes
 
 We derive the `det_vandermonde` formula from `det_projVandermonde`,
-which is proved using an induction argument involving row operations and division.
+which is proved using an induction argument involving row operations and division.
 To circumvent issues with non-invertible elements while still maintaining the generality of rings,
 we first prove it for fields using the private lemma `det_projVandermonde_of_field`,
 and then use an algebraic workaround to generalize to the ring case,
@@ -58,6 +60,8 @@ stating the strictly more general form as `det_projVandermonde`.
 
 Characterize when `rectVandermonde v w n` has linearly independent rows.
 -/
+
+@[expose] public section
 
 variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
 

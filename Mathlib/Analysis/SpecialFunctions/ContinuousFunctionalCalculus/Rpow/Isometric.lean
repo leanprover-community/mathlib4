@@ -3,9 +3,10 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Properties of `rpow` and `sqrt` over an algebra with an isometric CFC
 
@@ -20,6 +21,8 @@ rely on an isometric continuous functional calculus.
 
 continuous functional calculus, rpow, sqrt
 -/
+
+@[expose] public section
 
 open scoped NNReal
 
