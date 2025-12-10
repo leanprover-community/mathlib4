@@ -94,25 +94,6 @@ theorem IsOpen.baireSpace (hO : IsOpen s) : BaireSpace s := by
     · exact (hg2 i).subset (imp_iff_or_not.mpr (h i) (subset_closure x.2))
   exact c_inter_eq ▸ Dense.preimage c_inter_dense (hO.isOpenMap_subtype_val)
 
-/-- A dense Gδ subset of a Baire space is Baire. -/
-theorem IsGδ.baireSpace_of_dense (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
-  constructor
-  intro f hof hdf
-  obtain ⟨V, hV⟩ : ∃ V : ℕ → Set X, (∀ n, IsOpen (V n)) ∧ s = ⋂ n, V n := eq_iInter_nat hG
-  obtain ⟨g, hg1, hg2, hg3⟩ : ∃ g : ℕ → Set X, (∀ n, IsOpen (g n)) ∧ (∀ n, Dense (g n)) ∧
-    ∀ n, f n = Subtype.val ⁻¹' g n := by
-    choose g hg1 hg2 hg3 using fun n => exists_open_dense_of_open_dense_subtype hd (hof n) (hdf n)
-    exact ⟨g, hg1, hg2, fun n => (hg3 n).symm⟩
-  have h_inter_dense : Dense (⋂ n, g n ∩ V n) := by
-    exact BaireSpace.baire_property (fun n ↦ g n ∩ V n) (fun n => IsOpen.inter (hg1 n) (hV.1 n))
-      (fun n => (hg2 n).inter_of_isOpen_left (Dense.mono (by simp [hV.2, iInter_subset]) hd)
-      (hg1 n))
-  have h_inter_eq : ⋂ n, g n ∩ V n = ⋂ n, f n := by
-    ext
-    simpa [hg3, hV] using ⟨fun h => ⟨fun i => (h i).1, fun i => (h i).2⟩, fun h n => ⟨h.1 n, h.2 n⟩⟩
-  rw [h_inter_eq] at h_inter_dense
-  exact Subtype.dense_iff.mpr fun a _ ↦ h_inter_dense a
-
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
     (hd : ∀ s ∈ S, Dense s) : Dense (⋂₀ S) := by
