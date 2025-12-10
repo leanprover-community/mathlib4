@@ -755,6 +755,14 @@ instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f 
 def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 
+/-- Any isomorphism is the projection from a single object product. -/
+def Fan.isLimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
+    IsLimit (Fan.mk X fun _ : J ↦ e.hom) := by
+  refine mkFanLimit _ (fun s ↦ s.proj default ≫ e.inv) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  · obtain rfl : j = default := Subsingleton.elim _ _
+    simp
+  · simpa [← cancel_mono e.hom] using hm default
+
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
 def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.functor f) where
@@ -782,6 +790,14 @@ instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (
 @[simps!]
 def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
+
+/-- Any isomorphism is the projection from a single object product. -/
+def Cofan.isColimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
+    IsColimit (Cofan.mk Y fun _ : J ↦ e.hom) := by
+  refine mkCofanColimit _ (fun s ↦ e.inv ≫ s.inj default) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  · obtain rfl : j = default := Subsingleton.elim _ _
+    simp
+  · simpa [← cancel_epi e.hom] using hm default
 
 end Unique
 
