@@ -64,7 +64,7 @@ theorem carmichael_eq_exponent (n : ℕ) [NeZero n] : Carmichael n = exponent (Z
   grind
 
 @[simp]
-theorem pow_carmichael (n : ℕ) (a : (ZMod n)ˣ) : a ^ Carmichael n = 1 := by
+theorem pow_carmichael {n : ℕ} (a : (ZMod n)ˣ) : a ^ Carmichael n = 1 := by
   cases n
   · rw [map_zero, pow_zero]
   rw [carmichael_eq_exponent]
@@ -77,7 +77,7 @@ theorem carmichael_dvd_totient (n : ℕ) : Carmichael n ∣ n.totient := by
   rw [← ZMod.card_units_eq_totient, carmichael_eq_exponent]
   exact Group.exponent_dvd_card
 
-theorem carmichael_dvd (a b : ℕ) (h : a ∣ b) : Carmichael a ∣ Carmichael b := by
+theorem carmichael_dvd {a b : ℕ} (h : a ∣ b) : Carmichael a ∣ Carmichael b := by
   by_cases hb : b = 0
   · rw [hb, map_zero]
     exact dvd_zero ..
@@ -98,11 +98,11 @@ theorem carmichael_lcm (a b : ℕ) :
     rw [carmichael_eq_exponent, carmichael_eq_exponent, carmichael_eq_exponent,
       ← lcm_eq_nat_lcm <| exponent _, ← exponent_prod, ← exponent_eq_of_mulEquiv .prodUnits]
     exact exponent_dvd_of_monoidHom _ <| Units.map_injective <| ZMod.castHom_injective _
-  · have ha := carmichael_dvd _ _ <| Nat.dvd_lcm_left a b
-    have hb := carmichael_dvd _ _ <| Nat.dvd_lcm_right a b
+  · have ha := carmichael_dvd <| Nat.dvd_lcm_left a b
+    have hb := carmichael_dvd <| Nat.dvd_lcm_right a b
     exact Nat.lcm_dvd ha hb
 
-theorem carmichael_mul (a b : ℕ) (h : Coprime a b) :
+theorem carmichael_mul {a b : ℕ} (h : Coprime a b) :
     Carmichael (a * b) = Nat.lcm (Carmichael a) (Carmichael b) :=
   h.lcm_eq_mul ▸ carmichael_lcm ..
 
@@ -114,24 +114,24 @@ theorem carmichael_finset_lcm {α : Type*} (s : Finset α) (f : α → ℕ) :
   rw [Finset.lcm_insert, Finset.lcm_insert, ← ih]
   exact carmichael_lcm ..
 
-theorem carmichael_finset_prod {α : Type*} (s : Finset α) (f : α → ℕ)
+theorem carmichael_finset_prod {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : Carmichael (s.prod f) = s.lcm (Carmichael ∘ f) :=
-  s.lcm_eq_prod _ h ▸ carmichael_finset_lcm ..
+  s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
 
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     Carmichael n = n.primeFactors.lcm fun p ↦ Carmichael (p ^ n.factorization p) := by
   nth_rw 1 [← n.factorization_prod_pow_eq_self <| NeZero.ne _]
-  exact carmichael_finset_prod _ _ pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
+  exact carmichael_finset_prod pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
 
-theorem carmichael_two_pow_of_le_two_eq_totient (n : ℕ) (hn : n ≤ 2) :
+theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = (2 ^ n).totient := by
   rw [carmichael_eq_exponent, ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
   exact IsCyclic.iff_exponent_eq_card.mp <| ZMod.isCyclic_units_two_pow_iff n |>.mpr hn
 
 @[simp]
-theorem carmichael_two_pow_of_le_two (n : ℕ) (hn : n ≤ 2) :
+theorem carmichael_two_pow_of_le_two {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 1) := by
-  rw [carmichael_two_pow_of_le_two_eq_totient _ hn]
+  rw [carmichael_two_pow_of_le_two_eq_totient hn]
   interval_cases n
   · simp
   · simp
@@ -139,7 +139,7 @@ theorem carmichael_two_pow_of_le_two (n : ℕ) (hn : n ≤ 2) :
     simp
 
 @[simp]
-theorem carmichael_two_pow_of_ne_two (n : ℕ) (hn : n ≠ 2) :
+theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 2) := by
   by_cases hn' : n ≤ 2
   · grind [carmichael_two_pow_of_le_two]
@@ -156,13 +156,13 @@ theorem carmichael_two_pow_of_ne_two (n : ℕ) (hn : n ≠ 2) :
       show (5 : ZMod (2 ^ (n))) = five by rfl, orderOf_units]
     exact orderOf_le_exponent .of_finite _
 
-theorem two_mul_carmichael_two_pow_of_three_le_eq_totient (n : ℕ) (hn : 3 ≤ n) :
+theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * Carmichael (2 ^ n) = (2 ^ n).totient := by
-  rw [carmichael_two_pow_of_ne_two n <| by lia, ← pow_succ', totient_prime_pow prime_two <| by lia]
-  lia
+  rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two]
+  all_goals lia
 
 @[simp]
-theorem carmichael_pow_of_prime_ne_two (p n : ℕ) (hp : p.Prime) (hp₂ : p ≠ 2) :
+theorem carmichael_pow_of_prime_ne_two {p : ℕ} (n : ℕ) (hp : p.Prime) (hp₂ : p ≠ 2) :
     Carmichael (p ^ n) = (p ^ n).totient := by
   have : NeZero p := ⟨hp.ne_zero⟩
   rw [carmichael_eq_exponent, ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
