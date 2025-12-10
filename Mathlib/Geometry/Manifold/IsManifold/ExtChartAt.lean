@@ -319,6 +319,9 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
 
+lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
+
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
 theorem extend_coord_change_source :
