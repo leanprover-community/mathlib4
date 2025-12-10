@@ -230,6 +230,11 @@ theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.firstDart hnil = p.darts.head (darts_eq_nil.not.mpr hnil) :=
   head_darts_eq_firstDart _ |>.symm
 
+@[deprecated "Use `head_darts_eq_firstDart`" (since := "2025-12-10")]
+theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).fst = a := by
+  simp
+
 @[simp]
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
   p.firstDart_eq_head_darts _ ▸ List.head_mem _
@@ -242,6 +247,11 @@ theorem getLast_darts_eq_lastDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.lastDart hnil = p.darts.getLast (darts_eq_nil.not.mpr hnil) := by
   grind [lastDart_eq, not_nil_iff_lt_length]
+
+@[deprecated "Use `getLast_darts_eq_lastDart`" (since := "2025-12-10")]
+theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.getLast hp).snd = b := by
+  simp
 
 @[simp]
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=

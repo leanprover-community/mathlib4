@@ -239,17 +239,6 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 
-theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.head hp).fst = a := by
-  cases p
-  · contradiction
-  · simp
-
-theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.getLast hp).snd = b := by
-  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd) (by simpa)]
-  simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
-
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 
