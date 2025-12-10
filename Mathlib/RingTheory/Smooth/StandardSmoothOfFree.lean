@@ -25,6 +25,13 @@ From this we deduce relations of standard smooth with other local properties.
 - `Etale.iff_isStandardSmoothOfRelativeDimension_zero`: An `R`-algebra `S` is
   étale if and only if it is standard smooth of relative dimension zero.
 
+## Notes
+
+For an example of an algebra with `H¹(S/R) = 0` and `Ω[S⁄R]` finite and free, but
+`S` not standard smooth over `R`, consider `R = ℝ` and `S = R[x,y]/(x² + y² - 1)` the
+coordinate ring of the circle. One can show that then `Ω[S⁄R]` is `S`-free on `ω = xdy - ydx`,
+but there are no `f g : S` such that `ω = g df`.
+
 ## TODOs
 
 - Deduce from this that smooth is equivalent to locally standard smooth (TODO @chrisflav).
@@ -45,15 +52,18 @@ theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
     {I : Type*} (b : Module.Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
     IsStandardSmooth R S := by
   nontriviality S
-  obtain ⟨σ, P, hfin, hb⟩ := Generators.exists_of_basis_kaehlerDifferential b hb
+  obtain ⟨n, ⟨P⟩⟩ := (FiniteType.iff_exists_generators (R := R) (S := S)).mp inferInstance
+  choose f' hf' using hb
+  let P := P.extend fun i ↦ f' ⟨i, rfl⟩
+  have hb (i : I) : b i = D R S (P.val (Sum.inr i)) := by simp [P, hf']
   have : Function.Bijective (P.cotangentRestrict _) :=
     P.cotangentRestrict_bijective_of_basis_kaehlerDifferential Sum.inl_injective
       Set.isCompl_range_inl_range_inr.symm b hb
-  let bcot' : Module.Basis σ S P.toExtension.Cotangent :=
+  let bcot' : Module.Basis (Fin n) S P.toExtension.Cotangent :=
     .ofRepr (.ofBijective (P.cotangentRestrict _) this)
   have : Finite I := Module.Finite.finite_basis b
   obtain ⟨Q, bcot, hcomp, hbcot⟩ := P.exists_presentation_of_basis_cotangent bcot'
-  let P' : PreSubmersivePresentation R S (Unit ⊕ σ ⊕ I) (Unit ⊕ σ) :=
+  let P' : PreSubmersivePresentation R S (Unit ⊕ Fin n ⊕ I) (Unit ⊕ Fin n) :=
     { __ := Q
       map := Sum.map _root_.id Sum.inl
       map_inj := Sum.map_injective.mpr ⟨fun _ _ h ↦ h, Sum.inl_injective⟩ }

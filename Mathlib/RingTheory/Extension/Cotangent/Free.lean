@@ -132,23 +132,4 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
 
 end PreSubmersivePresentation
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
-
-/-- If `Ω[S⁄R]` has a basis of the form `{d sᵢ}` where `sᵢ : S`, there exist
-generators `P` such that `Ω[S⁄R]` is free on `{d xᵢ}` for some of the generators `xᵢ`. -/
-lemma Generators.exists_of_basis_kaehlerDifferential [Algebra.FiniteType R S]
-    {I : Type*} (b : Module.Basis I S (Ω[S⁄R]))
-    (hb : Set.range b ⊆ Set.range (D R S)) :
-    ∃ (α : Type) (P : Generators R S (α ⊕ I)) (_ : Finite α),
-      ∀ k, b k = D R S (P.val (Sum.inr k)) := by
-  obtain ⟨n, ⟨P⟩⟩ := FiniteType.iff_exists_generators.mp ‹FiniteType R S›
-  choose f' hf' using hb
-  let f (i : I) : S := f' ⟨i, rfl⟩
-  have hf (i : I) : D R S (f i) = b i := by simp [f, hf']
-  let g (i : I) : P.Ring := P.σ (f i)
-  let P' : Generators R S (Fin n ⊕ I) := .ofSurjective (aeval P.val ∘ Sum.elim X g) <| fun s ↦ by
-    use rename Sum.inl (P.σ s)
-    simp [aeval_rename, Function.comp_assoc, ← aeval_unique]
-  exact ⟨Fin n, P', inferInstance, fun k ↦ by simp [← hf, P', g]⟩
-
 end Algebra
