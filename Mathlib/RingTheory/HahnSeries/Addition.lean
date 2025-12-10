@@ -129,7 +129,7 @@ Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒ
 and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
 @[simps -isSimp]
-def addOppositeEquiv : R⟦Γ⟧ᵃᵒᵖ ≃+ R⟦Γ⟧ᵃᵒᵖ where
+def addOppositeEquiv : Rᵃᵒᵖ⟦Γ⟧ ≃+ R⟦Γ⟧ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
   left_inv x := by simp
@@ -142,7 +142,7 @@ def addOppositeEquiv : R⟦Γ⟧ᵃᵒᵖ ≃+ R⟦Γ⟧ᵃᵒᵖ where
     simp
 
 @[simp]
-lemma addOppositeEquiv_support (x : R⟦Γ⟧ᵃᵒᵖ) :
+lemma addOppositeEquiv_support (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.support = x.support := by
   ext
   simp [addOppositeEquiv_apply]
@@ -153,7 +153,7 @@ lemma addOppositeEquiv_symm_support (x : R⟦Γ⟧ᵃᵒᵖ) :
   rw [← addOppositeEquiv_support, AddEquiv.apply_symm_apply]
 
 @[simp]
-lemma addOppositeEquiv_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
+lemma addOppositeEquiv_orderTop (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
   classical
   simp only [orderTop,
@@ -168,7 +168,7 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
   rw [← addOppositeEquiv_orderTop, AddEquiv.apply_symm_apply]
 
 @[simp]
-lemma addOppositeEquiv_leadingCoeff (x : R⟦Γ⟧ᵃᵒᵖ) :
+lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
   classical
   obtain rfl | hx := eq_or_ne x 0
