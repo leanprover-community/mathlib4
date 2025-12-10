@@ -698,7 +698,7 @@ theorem eventually_nhdsWithin_eventually_nhds_iff_of_isOpen {s : Set X} {a : X} 
     exact eventually_nhdsWithin_of_eventually_nhds hy
   · intro h
     filter_upwards [h, eventually_nhdsWithin_of_forall fun _ a ↦ a] with _ _ _
-    simp_all [IsOpen.nhdsWithin_eq] 
+    simp_all [IsOpen.nhdsWithin_eq]
 
 @[simp]
 theorem eventually_nhdsNE_eventually_nhds_iff [T1Space X] {a : X} {p : X → Prop} :
