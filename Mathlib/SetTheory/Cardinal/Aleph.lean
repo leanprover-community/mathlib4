@@ -586,12 +586,6 @@ theorem card_le_preBeth (o : Ordinal) : o.card ≤ preBeth o :=
 theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
   simpa using card_le_preBeth c.ord
 
-theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
-  refine (isNormal_iff_strictMono_limit _).2
-    ⟨ord_strictMono.comp preBeth_strictMono, fun o ho a ha ↦ ?_⟩
-  rw [comp_apply, preBeth_limit ho.isSuccPrelimit, ord_le]
-  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
-
 @[simp]
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
   simpa using preBeth_inj (o₂ := 0)
@@ -675,9 +669,6 @@ theorem card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
 
 theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
   simpa using card_le_beth c.ord
-
-theorem isNormal_beth : IsNormal (ord ∘ beth) :=
-  isNormal_preBeth.trans (isNormal_add_right ω)
 
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
