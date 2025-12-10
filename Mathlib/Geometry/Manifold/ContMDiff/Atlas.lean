@@ -315,33 +315,61 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
       ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  · have h1 := contMDiffOn_extend_symm hψ
-    --have h1' := h1 (ψ (f y)) hgy
-    have h2 := contMDiffAt_extend hφ hy (I := I) (n := n)
-    --have aux2 := h.comp y h1 (t := Set.univ)
-    -- apply (h1'.comp _ h).comp _ aux2 does it, morally
-
-    have : (φ.extend I) '' s ⊆ I '' φ.target := by
-      rw [φ.extend_coe, ← φ.image_source_eq_target, image_comp]; gcongr -- seems to need hs!
-      -- TODO: don't need this for the actual proofs below; remove once done!
-    have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
-      rintro x ⟨x', hx', rfl⟩
-      rwa [mem_preimage, φ.extend_left_inv (hs hx')]
-
-    have h0 := contMDiffOn_extend hψ|>.contMDiffAt (ψ.open_source.mem_nhds hgy)
-    have h1 : ContMDiffWithinAt I 𝓘(𝕜, F) n ((ψ.extend J) ∘ f) s y :=
-      h0.contMDiffWithinAt.comp _ h (mapsTo_image f s)
-
-    have h2' := (contMDiffOn_extend_symm hφ).mono this
-    have h2 : ContMDiffWithinAt 𝓘(𝕜, E) I
-        n ((φ.extend I).symm) ((φ.extend I) '' s) ((φ.extend I) y) := by
-      apply h2' ((φ.extend I) y)
-      apply mem_image_of_mem
-      sorry -- need a stronger lemma on extend's differentiability here!
-    clear h0 h2'
-    --have aux := ContMDiffWithinAt.comp (φ.extend I y) h2--1 --_ h2 aux
-    sorry
+  · -- Backward direction: from smoothness in coordinates to smoothness on manifold
+    -- Strategy: decompose f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I)
+    -- where f' is the coordinate expression
+    set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
+    -- Use the characterization with the given charts
+    rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy]
+    refine ⟨?_, ?_⟩
+    · -- Continuity part
+      -- Decompose: f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I) on s
+      have eq1 : EqOn (f' ∘ φ.extend I) (ψ.extend J ∘ f) s := by
+        intro x hx
+        simp only [f', Function.comp_apply]
+        rw [φ.extend_left_inv (hs hx)]
+      -- Step 1: f' ∘ (φ.extend I) is continuous at y within s
+      have step1 : ContinuousWithinAt (f' ∘ (φ.extend I)) s y := by
+        refine h.continuousWithinAt.comp (((contMDiffOn_extend hφ).continuousOn y hy).mono hs) ?_
+        intro x hx
+        constructor
+        · rw [mem_preimage, φ.extend_left_inv (hs hx)]
+          exact hx
+        · exact mem_range_self _
+      -- Step 2: (ψ.extend J).symm ∘ f' ∘ (φ.extend I) is continuous at y within s
+      have step2 : ContinuousWithinAt ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s y := by
+        -- TODO: same hold proven three times!
+        refine ContinuousWithinAt.comp (t := J '' ψ.target) ?_ step1 (fun x hx ↦ ?_)
+        · refine (contMDiffOn_extend_symm hψ).continuousOn ?_ ?_
+          all_goals
+            simp only [Function.comp_apply, f', φ.extend_left_inv hy]
+            exact mem_image_of_mem J (ψ.mapsTo hgy)
+        · simp only [Function.comp_apply, f', φ.extend_left_inv (hs hx)]
+          exact mem_image_of_mem J (ψ.mapsTo (hmaps hx))
+      -- Step 3: this equals f on s
+      have eq2 : EqOn f ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
+        intro x hx
+        simp only [Function.comp_apply, f']
+        rw [φ.extend_left_inv (hs hx), ψ.extend_left_inv (hmaps hx)]
+      -- Also need the equality at y
+      have eq_at_y : f y = ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) y := by
+        simp only [Function.comp_apply, f']
+        rw [φ.extend_left_inv hy, ψ.extend_left_inv hgy]
+      exact step2.congr_of_eventuallyEq (eventually_nhdsWithin_of_forall eq2) eq_at_y
+    · -- ContDiffWithinAt part
+      simp only [ContMDiffWithinAt, liftPropWithinAt_iff', ContDiffWithinAtProp, mfld_simps] at h
+      exact h.2
+  · -- Forward direction: from smoothness on manifold to smoothness in coordinates
+    -- Apply the characterization to h
+    rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy] at h
+    -- XXX: proof has a code smell!
+    -- Now h : ContinuousWithinAt f s y ∧
+    --   ContDiffWithinAt 𝕜 n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
+    --     ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y)
+    -- For model spaces 𝓘(𝕜, E) and 𝓘(𝕜, F), ContMDiffWithinAt is equivalent to ContDiffWithinAt
+    -- We prove this directly by unfolding definitions
+    simp only [ContMDiffWithinAt, liftPropWithinAt_iff', ContDiffWithinAtProp, mfld_simps]
+    exact ⟨h.2.continuousWithinAt, h.2⟩
 
 /-- If `s ⊆ φ.source` and `f x ∈ ψ.source` whenever `x ∈ s`, then `f` is `C^n` on `s` if and
 only if `f` written in charts `φ.extend I` and `ψ.extend I'` is `C^n` on `φ.extend I '' s`.
@@ -353,7 +381,7 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
     ContMDiffOn I J n f s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (contMDiffWithinAt_congr_set ?_).trans
-    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) sorry hmaps)
+    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hs hmaps)
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
     ← φ.map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
