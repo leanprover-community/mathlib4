@@ -208,10 +208,9 @@ namespace Hom
 @[simp] lemma hom_one : (1 : G ⟶ H).hom = 1 := rfl
 @[simp] lemma hom_mul (f g : G ⟶ H) : (f * g).hom = f.hom * g.hom := rfl
 @[simp] lemma hom_pow (f : G ⟶ H) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
-  ext : 1
-  dsimp
-  have := Mon.Hom.hom_pow f.hom n
-  sorry
+  induction n with
+  | zero => simp
+  | succ n hn => simp [pow_succ, hn]
 
 end Hom
 
