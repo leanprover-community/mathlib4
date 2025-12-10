@@ -8,10 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
-public import Mathlib.CategoryTheory.Localization.Quotient
-public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Homotopies in model categories
