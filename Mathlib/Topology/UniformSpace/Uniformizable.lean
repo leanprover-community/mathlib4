@@ -16,8 +16,6 @@ import Mathlib.Topology.UrysohnsLemma
 A topological space is uniformizable (there exists a uniformity that
 generates the same topology) iff it is completely regular.
 
-TODO: Explain proofs
-
 ## Main Results
 
 * `UniformSpace.toCompletelyRegularSpace`: Uniform spaces are completely regular
@@ -42,11 +40,21 @@ open Filter Set Uniformity SetRel
 section UniformSpace
 variable [UniformSpace α]
 
+/-- To construct a real-valued function separating a point `x` from a closed set in a uniform
+space, we recursively construct pairs of a closed set `c` contained in an open set `u`
+satisfying the following predicate: the closed set is the closure of the ball centered
+at `x` associated to some open entourage `uc`, the open set is the ball centered at `x`
+associated to some entourage `uu`, such that `uc` and `uu` are separated by some entourage `s`
+in the sense that the composition `s ○ uc ○ s` is contained in `uu`. -/
 def P (c : Set α) (u : Set α) :=
   ∃ (x : α) (uc uu s : SetRel α α),
     IsOpen uc ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
     u = .mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 α
 
+/-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
+predicate `P`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
+satisfying `P`. We can then use the general `Urysohns.CU` construction to obtain the
+desired real-valued function. -/
 theorem urysohns_main {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, ucu, rfl, rfl, hn, hs⟩ := Pcu
