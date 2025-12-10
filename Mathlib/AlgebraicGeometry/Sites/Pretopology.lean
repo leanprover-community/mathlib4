@@ -119,7 +119,7 @@ variable (P)
 
 /--
 The pretopology defined by `P`-covers agrees with the
-the intersection of the pretopology of surjective families with the pretopology defined by `P`.
+intersection of the pretopology of surjective families with the pretopology defined by `P`.
 -/
 lemma pretopology_eq_inf : pretopology P = jointlySurjectivePretopology ⊓ P.pretopology := rfl
 
