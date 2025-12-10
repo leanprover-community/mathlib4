@@ -253,7 +253,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
 
 /-- Extend generators by more variables. -/
 noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
-  .ofSurjective (Sum.elim P.val b) <| fun s ↦ by
+  .ofSurjective (Sum.elim P.val b) fun s ↦ by
     use rename Sum.inl (P.σ s)
     simp [aeval_rename]
 
