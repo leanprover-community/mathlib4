@@ -107,7 +107,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
+  simp only [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
@@ -296,8 +296,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  set_option push_neg.use_distrib true in
-  by_cases! h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
+  by_cases! +distrib h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
