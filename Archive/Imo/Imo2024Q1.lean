@@ -127,7 +127,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       gcongr
     have hk' : ⌊(k + 1 : ℕ) * α⌋ = 2 * k + 1 := by
       by_contra
-      rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by omega] at hc
+      rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
         convert hc using 1
         push_cast
@@ -149,7 +149,7 @@ end Condition
 lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition α := by
   intro hc
   let n : ℕ := ⌊(2 - α)⁻¹⌋₊ + 1
-  have hn : 0 < n := by omega
+  have hn : 0 < n := by lia
   have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by

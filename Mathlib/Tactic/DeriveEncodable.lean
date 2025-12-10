@@ -127,7 +127,7 @@ private def S_equiv : S ≃ ℕ where
       · exact nat_unpair_lt_2 h
       · obtain _ | n' := n
         · exact False.elim (h rfl)
-        · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
+        · have := Nat.unpair_lt (by lia : 1 ≤ n' + 1)
           omega
 
 private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv

@@ -356,7 +356,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [Fintype.card_fin] at this; convert this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
-      have n'r : n = n' + r := by omega
+      have n'r : n = n' + r := by lia
       rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
         add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
       congr 1

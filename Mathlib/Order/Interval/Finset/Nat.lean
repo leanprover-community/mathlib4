@@ -185,7 +185,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   | succ n ih =>
     rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-      Ico_succ_right_eq_insert_Ico (by omega)]
+      Ico_succ_right_eq_insert_Ico (by lia)]
     rintro k hk l hl (hkl : k % a = l % a)
     have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
     simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl

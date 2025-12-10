@@ -227,7 +227,7 @@ lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c
   rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
+def incl (n m : ℕ) (h : n ≤ m := by lia) : Truncated n ⥤ Truncated m where
   obj a := ⟨a.1, a.2.trans h⟩
   map := id
 

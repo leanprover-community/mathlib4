@@ -110,7 +110,7 @@ lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
 
 lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
   obtain ⟨k, rfl⟩ := odd
-  replace h : 1 ≤ k := by omega
+  replace h : 1 ≤ k := by lia
   induction k, h using Nat.le_induction with
   | base => rfl
   | succ j _ _ =>
@@ -644,7 +644,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   have h1 := calc
     4 = 2 ^ 2 := by simp
     _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by omega
+  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
   | zero =>
     rw [sModNat, sMod, Int.natCast_emod]

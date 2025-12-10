@@ -130,36 +130,36 @@ painfully slow to compile.
 -/
 lemma HollomOrder.trans :
     (x y z : ℕ × ℕ × ℕ) → (h₁ : HollomOrder x y) → (h₂ : HollomOrder y z) → HollomOrder x z
-  | _, _, _, .twice _, .twice _ => .twice (by omega)
-  | _, _, _, .twice _, .within _ _ => .twice (by omega)
-  | _, _, _, .twice _, .next_min _ => .twice (by omega)
-  | _, _, _, .twice _, .next_add _ => .twice (by omega)
-  | _, _, _, .within _ _, .twice _ => .twice (by omega)
-  | _, _, _, .within _ _, .within _ _ => .within (by omega) (by omega)
+  | _, _, _, .twice _, .twice _ => .twice (by lia)
+  | _, _, _, .twice _, .within _ _ => .twice (by lia)
+  | _, _, _, .twice _, .next_min _ => .twice (by lia)
+  | _, _, _, .twice _, .next_add _ => .twice (by lia)
+  | _, _, _, .within _ _, .twice _ => .twice (by lia)
+  | _, _, _, .within _ _, .within _ _ => .within (by lia) (by lia)
   | _, _, _, .within _ _, .next_min _ => .next_min (by omega)
-  | _, _, _, .within _ _, .next_add _ => .next_add (by omega)
-  | _, _, _, .next_min _, .twice _ => .twice (by omega)
+  | _, _, _, .within _ _, .next_add _ => .next_add (by lia)
+  | _, _, _, .next_min _, .twice _ => .twice (by lia)
   | _, _, _, .next_min _, .within _ _ => .next_min (by omega)
-  | _, _, _, .next_min _, .next_min _ => .twice (by omega)
-  | _, _, _, .next_min _, .next_add _ => .twice (by omega)
-  | _, _, _, .next_add _, .twice _ => .twice (by omega)
-  | _, _, _, .next_add _, .within _ _ => .next_add (by omega)
-  | _, _, _, .next_add _, .next_min _ => .twice (by omega)
-  | _, _, _, .next_add _, .next_add _ => .twice (by omega)
+  | _, _, _, .next_min _, .next_min _ => .twice (by lia)
+  | _, _, _, .next_min _, .next_add _ => .twice (by lia)
+  | _, _, _, .next_add _, .twice _ => .twice (by lia)
+  | _, _, _, .next_add _, .within _ _ => .next_add (by lia)
+  | _, _, _, .next_add _, .next_min _ => .twice (by lia)
+  | _, _, _, .next_add _, .next_add _ => .twice (by lia)
 
 instance : PartialOrder Hollom where
   le x y := HollomOrder (ofHollom x) (ofHollom y)
   le_refl _ := .within le_rfl le_rfl
   le_trans := «forall₃».2 HollomOrder.trans
   le_antisymm := «forall₂».2 fun
-  | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
-  | _, _, .twice _, .next_min _ => by omega
-  | _, _, .twice _, .next_add _ => by omega
-  | _, _, .within _ _, .twice _ => by omega
+  | _, _, .twice _, .twice _ => by lia
+  | _, (_, _, _), .twice _, .within _ _ => by lia -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
+  | _, _, .twice _, .next_min _ => by lia
+  | _, _, .twice _, .next_add _ => by lia
+  | _, _, .within _ _, .twice _ => by lia
   | _, _, .within _ _, .within _ _ => by congr 3 <;> omega
-  | _, _, .next_min _, .twice _ => by omega
-  | _, _, .next_add _, .twice _ => by omega
+  | _, _, .next_min _, .twice _ => by lia
+  | _, _, .next_add _, .twice _ => by lia
 
 @[simp] lemma toHollom_le_toHollom_iff_fixed_right {a b c d n : ℕ} :
     h(a, b, n) ≤ h(c, d, n) ↔ a ≤ c ∧ b ≤ d := by
@@ -172,17 +172,17 @@ instance : PartialOrder Hollom where
 
 lemma le_of_toHollom_le_toHollom {a b c d e f : ℕ} :
     h(a, b, c) ≤ h(d, e, f) → f ≤ c
-  | .twice _ => by omega
-  | .within _ _ => by omega
-  | .next_add _ => by omega
-  | .next_min _ => by omega
+  | .twice _ => by lia
+  | .within _ _ => by lia
+  | .next_add _ => by lia
+  | .next_min _ => by lia
 
 lemma toHollom_le_toHollom {a b c d e f : ℕ} (h : (a, b) ≤ (d, e)) (hcf : f ≤ c) :
     h(a, b, c) ≤ h(d, e, f) := by
   simp only [Prod.mk_le_mk] at h
-  obtain rfl | rfl | hc : f = c ∨ f + 1 = c ∨ f + 2 ≤ c := by omega
+  obtain rfl | rfl | hc : f = c ∨ f + 1 = c ∨ f + 2 ≤ c := by lia
   · simpa using h
-  · exact .next_add (by omega)
+  · exact .next_add (by lia)
   · exact .twice hc
 
 /--
@@ -407,7 +407,7 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       refine .subset (.image (embed (n + 1)) (triangle_finite (2 * (u + v)))) ?_
       simp +contextual [Set.subset_def, D, embed_apply]
     -- ...and `C ∩ level (n + 1)` is infinite (by assumption).
-    specialize hC' (n + 1) (by omega)
+    specialize hC' (n + 1) (by lia)
     rw [← (C ∩ level (n + 1)).inter_union_diff D, Set.infinite_union] at hC'
     refine hC'.resolve_left ?_
     simpa using this
@@ -794,7 +794,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
   simp only [] at hxy
   simp only [line_toHollom] at h
   obtain ⟨k, rfl⟩ := exists_add_of_le hxy
-  obtain rfl : y₂ = y₁ + k := by omega
+  obtain rfl : y₂ = y₁ + k := by lia
   induction hlo.2 using induction_on_level with | h xlo ylo =>
   induction hhi.2 using induction_on_level with | h xhi yhi =>
   exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 (by simp_all) (by simp_all) h₁l h₂l h₁h h₂h
@@ -1150,7 +1150,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- ...and it has length `2a+1`.
   have card_F : #F = 2 * a + 1 := by
     rw [Finset.card_image_of_injective _ (embed n).injective,
-      card_chainBetween (by omega) (by simp)]
+      card_chainBetween (by lia) (by simp)]
     omega
   let T := {x ∈ C ∩ level (n - 1) | line x < 2 * a}
   -- Therefore, the image of `F` is within `C ∩ level (n - 1)`, and each of its points must be
@@ -1161,7 +1161,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     set c := f x with hc
     have hc' : c ∈ C ∩ level (n - 1) := h _ (F_subs hx)
     clear_value c
-    rw [coe_image, chainBetween, Ico_self, if_pos (by omega), empty_union, ← Icc_map_sectL] at hx
+    rw [coe_image, chainBetween, Ico_self, if_pos (by lia), empty_union, ← Icc_map_sectL] at hx
     simp only [embed_apply, coe_map, Function.Embedding.sectL_apply, coe_Icc,
       Set.mem_image, Set.mem_Icc, exists_exists_and_eq_and] at hx
     obtain ⟨b, ⟨hab, hba⟩, rfl⟩ := hx
@@ -1172,7 +1172,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
       match n, hn with
       | n + 1, _ =>
           simp only [add_tsub_cancel_right]
-          apply HollomOrder.next_add (by omega)
+          apply HollomOrder.next_add (by lia)
     have : f h(u, v, n - 1) = f h(b, a, n) := by rw [f.eq_self_of_mem hc'.1, hc]
     have := le_of_toHollom_le_toHollom (f.eq_of_le this.symm le).ge
     omega
@@ -1198,7 +1198,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
 theorem no_spinalMap (hC : IsChain (· ≤ ·) C) (f : SpinalMap C) : False := by
   obtain ⟨n, hn, hn'⟩ : ∃ n, n ≠ 0 ∧ (C ∩ Hollom.level n).Finite := by
     obtain ⟨n, hn, hn'⟩ := Filter.frequently_atTop.1 (Hollom.exists_finite_intersection hC) 1
-    exact ⟨n, by omega, hn'⟩
+    exact ⟨n, by lia, hn'⟩
   exact Hollom.not_S_mapsTo_previous hC hn' hn (Hollom.S_mapsTo_previous f hC hn)
 
 end Hollom

@@ -84,7 +84,7 @@ theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.g
     (Int.emod_nonneg _ <| by lia), Int.natCast_toNat_eq_self.mpr, this]
   -- show b ≥ 0 by contradiction
   by_contra hb
-  replace hb : b ≤ -1 := by omega
+  replace hb : b ≤ -1 := by lia
   apply lt_irrefl (n : ℤ)
   have ha := Int.emod_lt a_n (by lia : (q.succ : ℤ) ≠ 0)
   rw [p.pred_succ, q.pred_succ] at le

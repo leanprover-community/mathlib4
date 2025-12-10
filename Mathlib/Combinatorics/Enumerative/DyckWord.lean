@@ -216,7 +216,7 @@ def denest (hn : p.IsNested) : DyckWord where
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, head_eq_U] at eq
+      min_eq_left (by lia), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true] at eq
     omega
 

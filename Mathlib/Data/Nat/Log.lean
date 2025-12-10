@@ -36,7 +36,7 @@ Note a tail-recursive version of `Nat.log` is also possible:
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
   decreasing_by
-    have : n / b < n := Nat.div_lt_self (by omega) h.2
+    have : n / b < n := Nat.div_lt_self (by lia) h.2
     decreasing_trivial
   go n 0
 ```

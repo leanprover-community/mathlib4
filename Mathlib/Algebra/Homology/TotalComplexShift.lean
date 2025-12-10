@@ -132,7 +132,7 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     ext p q h
     dsimp
     simp only [ι_totalDesc_assoc, CochainComplex.shiftFunctor_obj_X', ι_totalDesc, comp_id]
-    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by omega) rfl _ _
+    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by lia) rfl _ _
   inv_hom_id := by
     ext
     dsimp
@@ -234,7 +234,7 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
     dsimp
     simp only [ι_totalDesc_assoc, Linear.units_smul_comp, ι_totalDesc, smul_smul,
       Int.units_mul_self, one_smul, comp_id]
-    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by omega) _ _
+    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by lia) _ _
   inv_hom_id := by
     ext
     dsimp

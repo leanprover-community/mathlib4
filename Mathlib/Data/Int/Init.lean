@@ -124,7 +124,7 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
   rw [hn]
   obtain _ | n := n
   · change _ = -1 at hn
-    have : z = b := by omega
+    have : z = b := by lia
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
   · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
     subst this

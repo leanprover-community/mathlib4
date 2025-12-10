@@ -76,7 +76,7 @@ variable {n : ℕ} (S : ComposableArrows C n)
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
   /-- the composition of two consecutive arrows is zero -/
-  zero (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+  zero (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     S.map' i (i + 1) ≫ S.map' (i + 1) (i + 2) = 0
 
 attribute [reassoc] IsComplex.zero
@@ -84,8 +84,8 @@ attribute [reassoc] IsComplex.zero
 variable {S}
 
 @[reassoc]
-lemma IsComplex.zero' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+lemma IsComplex.zero' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     S.map' i j ≫ S.map' j k = 0 := by
   subst hij hjk
   exact hS.zero i hk
@@ -105,32 +105,32 @@ lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by omega
+  zero i hi := by lia
 
 variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     ShortComplex C :=
   S.sc' hS i (i + 1) (i + 2)
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
 complexes consisting of two consecutive arrows are exact. -/
 structure Exact : Prop extends S.IsComplex where
-  exact (i : ℕ) (hi : i + 2 ≤ n := by omega) : (S.sc toIsComplex i).Exact
+  exact (i : ℕ) (hi : i + 2 ≤ n := by lia) : (S.sc toIsComplex i).Exact
 
 variable {S}
 
-lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     (S.sc' hS.toIsComplex i j k).Exact := by
   subst hij hjk
   exact hS.exact i hk
@@ -138,8 +138,8 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
 def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+    (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     S₁.sc' h₁ i j k ⟶ S₂.sc' h₂ i j k where
   τ₁ := φ.app _
   τ₂ := φ.app _
@@ -148,7 +148,7 @@ def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.
 /-- Functoriality maps for `ComposableArrows.sc`. -/
 @[simps!]
 def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+    (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     S₁.sc h₁ i ⟶ S₂.sc h₂ i :=
   sc'Map φ h₁ h₂ i (i + 1) (i + 2)
 
@@ -156,8 +156,8 @@ def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.I
 in `ComposableArrows C n`. -/
 @[simps]
 def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
-    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
   hom := sc'Map e.hom h₁ h₂ i j k
   inv := sc'Map e.inv h₂ h₁ i j k
@@ -169,7 +169,7 @@ in `ComposableArrows C n`. -/
 @[simps]
 def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+    (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     S₁.sc h₁ i ≅ S₂.sc h₂ i where
   hom := scMap e.hom h₁ h₂ i
   inv := scMap e.inv h₂ h₁ i

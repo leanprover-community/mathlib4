@@ -252,12 +252,12 @@ lemma pderiv_inl_universalFactorizationMap_X (i j) :
     · rw [Finset.sum_eq_zero, if_pos h]
       simp only [Finset.mem_antidiagonal, Prod.forall]
       intro a b hab
-      simp [show a ≠ i by omega]
+      simp [show a ≠ i by lia]
     rw [Finset.sum_eq_single ⟨i.1, j.1 - i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
       intro a b e h
-      simp [show a ≠ i by omega]
+      simp [show a ≠ i by lia]
     · simp [h]
 
 lemma pderiv_inr_universalFactorizationMap_X (i j) :
@@ -275,12 +275,12 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
     · rw [Finset.sum_eq_zero, if_pos h]
       simp only [Finset.mem_antidiagonal, Prod.forall]
       intro a b hab
-      simp [show b ≠ i by omega]
+      simp [show b ≠ i by lia]
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
       intro a b _ _ _
-      simp [show b ≠ i by omega]
+      simp [show b ≠ i by lia]
     · simp [h]
 
 lemma universalFactorizationMapPresentation_jacobiMatrix :
@@ -289,7 +289,7 @@ lemma universalFactorizationMapPresentation_jacobiMatrix :
     -((Polynomial.sylvester
       ((freeMonic R m).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inl)).toRingHom))
       ((freeMonic R k).map (((mapAlgHom (Algebra.ofId _ _)).comp (rename Sum.inr)).toRingHom))
-      m k).reindex (finCongr (by omega)) (finCongr (by omega))).transpose := by
+      m k).reindex (finCongr (by lia)) (finCongr (by lia))).transpose := by
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   subst hn
   ext i j : 1

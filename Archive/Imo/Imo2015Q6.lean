@@ -140,7 +140,7 @@ lemma b_pos : 0 < b := by
 include ht in
 lemma zero_mem_pool : 0 ∈ pool a t := by
   have := card_pool_succ (t := t) ha
-  have := hbN (t + 1) (by omega)
+  have := hbN (t + 1) (by lia)
   simp_all
 
 include ht in
