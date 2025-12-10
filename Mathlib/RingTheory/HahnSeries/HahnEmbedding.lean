@@ -28,7 +28,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 @[expose] public section
 
-open ArchimedeanClass
+open ArchimedeanClass HahnSeries
 
 variable (M : Type*) [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
