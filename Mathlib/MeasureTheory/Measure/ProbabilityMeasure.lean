@@ -180,6 +180,15 @@ theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
 theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     ν.toFiniteMeasure s = ν s := rfl
 
+@[simp] lemma range_toFiniteMeasure :
+    range (toFiniteMeasure (Ω := Ω)) = {μ | μ.mass = 1} := by
+  ext μ
+  simp only [mem_range, mem_setOf_eq]
+  refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
+  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
+  ext s hs
+  rfl
+
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s := by
