@@ -696,46 +696,31 @@ theorem average_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
 
 open Filter
 
-include H in
-theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
-    Integrable (average H μA f) μC := by
-  change Integrable (fun c ↦ average H μA f c) μC
-  have hc : Continuous (fun c ↦ average H μA f c) := (average H μA f).continuous
-  have hs : HasCompactSupport (fun c ↦ average H μA f c) :=
-    (average H μA f).hasCompactSupport
-  exact hc.integrable_of_hasCompactSupport hs
-
 -- upgrade to linear map?
-noncomputable def integrate (f : CompactlySupportedContinuousMap B E) : E :=
-  ∫ c, average H μA f c ∂μC
-
-include H in
-theorem integrate_add (f g : CompactlySupportedContinuousMap B E) :
-    integrate H μA μC (f + g) =
-      integrate H μA μC f + integrate H μA μC g := by
-  simp only [integrate, average_add H]
-  apply integral_add
-  · exact average_integrable H μA μC f
-  · exact average_integrable H μA μC g
-
-theorem integrate_smul (x : ℝ) (f : CompactlySupportedContinuousMap B E) :
-    integrate H μA μC (x • f) = x • integrate H μA μC f := by
-  simp only [integrate, Pi.smul_apply, average_smul]
-  apply integral_smul
+noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E where
+  toFun f := ∫ c, average H μA f c ∂μC
+  map_add' f g := by
+    simp only [average_add H]
+    apply integral_add
+    · exact (average H μA f).integrable
+    · exact (average H μA g).integrable
+  map_smul' x f := by
+    simp only [average_smul]
+    apply integral_smul
 
 include H in
 theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
     integrate H μA μC f ≤ integrate H μA μC g := by
   simp only [integrate]
   apply integral_mono
-  · exact average_integrable H μA μC f
-  · exact average_integrable H μA μC g
+  · exact (average H μA f).integrable
+  · exact (average H μA g).integrable
   · exact average_mono H μA f g h
 
 noncomputable def map : CompactlySupportedContinuousMap B ℝ →ₚ[ℝ] ℝ where
   toFun f := integrate H μA μC f
-  map_add' f g := integrate_add H μA μC f g
-  map_smul' x f := integrate_smul H μA μC x f
+  map_add' f g := by rw [map_add]
+  map_smul' x f := by simp [map_smul]
   monotone' f g h := integrate_mono H μA μC f g h
 
 variable [T2Space B]
@@ -771,6 +756,7 @@ theorem isHaarMeasure_inducedMeasure :
     rw [integral_map (by fun_prop) (by fun_prop)]
     have key : ∀ x : B, f (b * x) = f.comp (Homeomorph.mulLeft b).toCocompactMap x := by simp
     simp only [integral_inducedMeasure, key, integrate]
+    simp only [LinearMap.coe_mk, AddHom.coe_mk]
     rw [← integral_mul_left_eq_self _ (ψ b)⁻¹]
     congr
     ext c
