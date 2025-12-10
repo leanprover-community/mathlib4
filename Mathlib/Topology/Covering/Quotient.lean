@@ -3,10 +3,12 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Covering.Basic
+module
+
+public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Covering.Basic
 
 /-!
 # Galois Covering Maps
@@ -16,6 +18,8 @@ This file constructs of them from free and properly discontinuous group actions.
 TODO: show the construction yields Galois covering maps (to be defined) when the action is
 on a path-connected space.
 -/
+
+@[expose] public section
 
 namespace Topology.IsQuotientMap
 

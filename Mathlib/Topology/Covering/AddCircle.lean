@@ -3,14 +3,18 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.Covering.Quotient
-import Mathlib.Topology.Instances.AddCircle.Defs
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.Covering.Quotient
+public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Covering maps involving `AddCircle`
 
 -/
+
+@[expose] public section
 
 namespace AddCircle
 
