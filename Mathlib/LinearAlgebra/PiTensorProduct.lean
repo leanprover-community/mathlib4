@@ -810,7 +810,7 @@ def subsingletonEquivDep : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
       { toFun f := f i₀
         map_update_add' m i := by rw [Subsingleton.elim i i₀]; simp
         map_update_smul' m i := by rw [Subsingleton.elim i i₀]; simp })
-    ({ toFun x := tprod R (update ↑0 i₀ x)
+    ({ toFun x := tprod R (update (0 : (j : ι) → s j) i₀ x)
        map_add' := by simp
        map_smul' := by simp })
     (by ext _; simp)
