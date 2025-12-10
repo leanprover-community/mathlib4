@@ -47,124 +47,99 @@ open Module
 
 section
 
-open scoped NNReal
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-theorem Complex.one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
-      (.ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
-  have H : ((binomialSeries ℂ (-a)).compContinuousLinearMap (-1)) =
-      .ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n := by
-    ext n; simp [FormalMultilinearSeries.compContinuousLinearMap, binomialSeries, Ring.choose_neg,
-      Units.smul_def, Int.coe_negOnePow_natCast, ← pow_add, ← mul_assoc]
-  have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (-a)) (binomialSeries ℂ (-a : ℂ)) (-0) 1 := by
-    simpa using one_add_cpow_hasFPowerSeriesOnBall_zero
-  simpa [Complex.cpow_neg, Function.comp_def, ← sub_eq_add_neg, H] using
-    this.compContinuousLinearMap (u := -1) (x := (0 : ℂ))
+lemma Metric.cthickening_sphere [Nontrivial E] {x : E} (r s : ℝ) (hr : 0 ≤ r) (hs : 0 ≤ s) :
+    Metric.cthickening s (Metric.sphere x r) = dist x ⁻¹' Metric.closedBall r s := by
+  ext a
+  constructor
+  · intro hb
+    simp only [Set.mem_preimage, mem_closedBall]
+    refine le_of_forall_gt fun c hc ↦ ?_
+    have := lt_of_le_of_lt (mem_cthickening_iff.mp hb)
+      ((ENNReal.ofReal_lt_ofReal_iff (hs.trans_lt hc)).mpr hc)
+    obtain ⟨y, hy, hyc⟩ := EMetric.infEdist_lt_iff.mp this
+    replace hyc : dist a y < c := by
+      simpa [edist_dist, ENNReal.ofReal_lt_iff_lt_toReal, hs.trans hc.le] using hyc
+    refine lt_of_le_of_lt ?_ hyc
+    simpa [← show dist y x = r by simpa [SeminormedAddCommGroup.dist_eq] using hy, dist_comm x]
+      using dist_dist_dist_le_left a y x
+  · intro H
+    obtain rfl | hax := eq_or_ne a x
+    · replace H : |r| ≤ s := by simpa [SeminormedAddCommGroup.dist_eq] using H
+      obtain ⟨b, hb⟩ := (NormedSpace.sphere_nonempty (x := a) (r := r)).mpr hr
+      exact Metric.mem_cthickening_of_dist_le _ b _ _ hb (.trans
+        (by simp_all [SeminormedAddCommGroup.dist_eq, norm_sub_rev, le_abs_self]) H)
+    refine Metric.mem_cthickening_of_dist_le _ (x + (r / ‖a - x‖) • (a - x)) _ _ ?_ ?_
+    · simpa [norm_smul, hax, sub_eq_zero]
+    · trans ‖1 - r / ‖a - x‖‖ * ‖a - x‖
+      · rw [← norm_smul, sub_smul, one_smul, sub_sub, SeminormedAddCommGroup.dist_eq]
+      · rw [Real.norm_eq_abs, ← abs_norm, ← abs_mul, sub_mul]
+        simpa [hax, SeminormedAddCommGroup.dist_eq, norm_sub_rev x, sub_eq_zero] using H
 
-theorem Complex.one_div_one_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ (a + 1))
-      (.ofScalars ℂ (𝕜 := ℂ) fun n ↦ ↑(Nat.choose (a + n) a)) 0 1 := by
-  convert one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) using 3 with z n
-  · norm_cast
-  · rw [eq_comm, add_right_comm, add_sub_cancel_right, ← Nat.cast_add,
-      Ring.choose_natCast, Nat.choose_symm_add]
+lemma isClosedMap_nndist [ProperSpace E] (x : E) : IsClosedMap (nndist x) := by
+  cases subsingleton_or_nontrivial E
+  · exact fun _ _ ↦ (Set.subsingleton_of_subsingleton.image _).isClosed
+  intro s hs
+  rw [← isOpen_compl_iff, Metric.isOpen_iff]
+  simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
+  intro r hr
+  simp only [gt_iff_lt, Set.subset_def, Metric.mem_ball, Set.mem_compl_iff, Set.mem_image,
+    not_exists, not_and]
+  obtain ⟨δ, hδ, h⟩ := Disjoint.exists_cthickenings (by
+    simpa [Set.disjoint_iff_inter_eq_empty, Set.ext_iff, norm_sub_rev, ← NNReal.coe_inj,
+      SeminormedAddCommGroup.dist_eq, imp_not_comm (a := _ = _)] using hr) (isCompact_sphere x r) hs
+  refine ⟨δ, hδ, fun y hy l hls hd ↦ ?_⟩
+  refine Set.subset_compl_iff_disjoint_left.mpr h (Metric.self_subset_cthickening _ hls) ?_
+  rw [← NNReal.coe_inj, coe_nndist] at hd
+  simpa [-Metric.mem_cthickening_iff, Metric.cthickening_sphere, hδ.le, hd] using hy.le
 
-theorem Complex.one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (z - x) ^ (a + 1))
-      (.ofScalars ℂ (𝕜 := ℂ) fun n ↦ (z ^ (n + a + 1))⁻¹ * ↑(Nat.choose (a + n) a)) 0 ‖z‖ₑ := by
-  have := one_div_one_sub_pow_hasFPowerSeriesOnBall_zero a
-  rw [← map_zero (z⁻¹ • 1 : ℂ →L[ℂ] ℂ)] at this
-  have := this.compContinuousLinearMap
-  have H : 1 / ‖(z⁻¹ • 1 : ℂ →L[ℂ] ℂ)‖ₑ = ‖z‖ₑ := by simp [enorm_smul, enorm_inv, hz]
-  simp only [one_div, ContinuousLinearMap.coe_smul', H, Function.comp_def] at this
-  convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_ using 2
-  · ext n
-    simp only [FormalMultilinearSeries.smul_apply, ContinuousMultilinearMap.smul_apply,
-      FormalMultilinearSeries.compContinuousLinearMap_apply]
-    simp [add_assoc, pow_add _ _ (a + 1), mul_assoc]
-  · intro w hw
-    simp [← mul_inv_rev, ← mul_pow, sub_mul, mul_right_comm _ w, hz]
+lemma isClosedMap_dist [ProperSpace E] (x : E) :
+    IsClosedMap (dist x) :=
+  (PseudoEMetricSpace.isometry_induced NNReal.toReal).isClosedEmbedding.isClosedMap.comp
+    (isClosedMap_nndist x)
 
-theorem Complex.one_div_sub_hasFPowerSeriesOnBall_zero {z : ℂ} (hz : z ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (z - x)) (.ofScalars ℂ fun n ↦ (z ^ (n + 1))⁻¹) 0 ‖z‖ₑ := by
-  simpa using one_div_sub_pow_hasFPowerSeriesOnBall_zero (a := 0) hz
+-- move me
+def _root_.optionProdEquiv {α β : Type*} : Option α × β ≃ β ⊕ α × β where
+  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
+  invFun x := x.casesOn (Prod.mk none) (Prod.map some id)
+  left_inv
+  | (none, _) => rfl
+  | (some _, _) => rfl
+  right_inv
+  | .inl _ => rfl
+  | .inr (_, _) => rfl
 
-theorem Complex.one_div_sub_sq_hasFPowerSeriesOnBall_zero {z : ℂ} (hz : z ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (z - x) ^ 2)
-      (.ofScalars ℂ fun n ↦ (z ^ (n + 2))⁻¹ * (n + 1)) 0 ‖z‖ₑ := by
-  simpa [add_comm 1] using one_div_sub_pow_hasFPowerSeriesOnBall_zero 1 hz
+@[simp] lemma _root_.optionProdEquiv_mk_none {α β : Type*} (b : β) :
+    optionProdEquiv (α := α) (.none, b) = .inl b := rfl
 
-theorem Complex.one_div_one_sub_hasFPowerSeriesOnBall_zero :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ)) (.ofScalars (𝕜 := ℂ) ℂ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (z := 1)
+@[simp] lemma _root_.optionProdEquiv_mk_some {α β : Type*} (a : α) (b : β) :
+    optionProdEquiv (.some a, b) = .inr (a, b) := rfl
 
-theorem Complex.one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x : ℂ) ^ 2) (.ofScalars ℂ fun n ↦ (n + 1 : ℂ)) 0 1 := by
-  simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (z := 1)
+@[simp] lemma _root_.optionProdEquiv_symm_inl {α β : Type*} (b : β) :
+    optionProdEquiv (α := α).symm (.inl b) = (.none, b) := rfl
 
-/-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem Complex.hasFPowerSeriesOnBall_linear_zero (a b : ℂ) :
-    HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
-      (.ofScalars ℂ (a * · + b)) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-    (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
-  · simp [div_eq_mul_inv]
-  · ext; simp; ring
+@[simp] lemma _root_.optionProdEquiv_symm_inr {α β : Type*} (p : α × β) :
+    optionProdEquiv.symm (.inr p) = p.map .some id := rfl
 
-theorem Real.one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x) ^ (a + 1))
-      (.ofScalars ℝ (𝕜 := ℝ) fun n ↦ (r ^ (n + a + 1))⁻¹ * ↑(Nat.choose (a + n) a)) 0 ‖r‖ₑ := by
-  have := (Complex.one_div_sub_pow_hasFPowerSeriesOnBall_zero a (z := r)
-    (by simpa)).restrictScalars (𝕜 := ℝ)
-  rw [← Complex.ofRealCLM.map_zero] at this
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap) using 2
-  · simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv, ← Complex.ofReal_sub]
-  · ext n
-    simp [Function.comp_def, -FormalMultilinearSeries.apply_eq_prod_smul_coeff]
-    simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv]
-  · simp [enorm_eq_nnnorm]
+@[simp] lemma Equiv.fst_prodCongrLeft {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) (p) :
+    (Equiv.prodCongrLeft e p).1 = e p.2 p.1 := rfl
 
-theorem Real.one_div_sub_hasFPowerSeriesOnBall_zero {r : ℝ} (hr : r ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x)) (.ofScalars ℝ fun n ↦ (r ^ (n + 1))⁻¹) 0 ‖r‖ₑ := by
-  simpa using one_div_sub_pow_hasFPowerSeriesOnBall_zero (a := 0) hr
+@[simp] lemma Equiv.snd_prodCongrLeft {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) (p) :
+    (Equiv.prodCongrLeft e p).2 = p.2 := rfl
 
-theorem Real.one_div_sub_sq_hasFPowerSeriesOnBall_zero {r : ℝ} (hr : r ≠ 0) :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x) ^ 2)
-      (.ofScalars ℝ fun n ↦ (r ^ (n + 2))⁻¹ * (n + 1)) 0 ‖r‖ₑ := by
-  simpa [add_comm 1] using one_div_sub_pow_hasFPowerSeriesOnBall_zero 1 hr
+@[simp] lemma Equiv.prodCongrLeft_symm {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) :
+    (Equiv.prodCongrLeft e).symm = Equiv.prodCongrLeft (Equiv.symm ∘ e) := rfl
 
-theorem Real.one_div_one_sub_hasFPowerSeriesOnBall_zero :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x)) (.ofScalars (𝕜 := ℝ) ℝ 1) 0 1 := by
-  simpa using one_div_sub_hasFPowerSeriesOnBall_zero (r := 1)
-
-theorem Real.one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
-    HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ 2) (.ofScalars ℝ fun n ↦ (n + 1 : ℝ)) 0 1 := by
-  simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (r := 1)
-
-/-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem Real.hasFPowerSeriesOnBall_linear_zero (a b : ℝ) :
-    HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
-      (.ofScalars ℝ (a * · + b)) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-    (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
-  · simp [div_eq_mul_inv]
-  · ext; simp; ring
-
-lemma FormalMultilinearSeries.ofScalars_sub {𝕜 : Type*} (E : Type*) [Field 𝕜] [Ring E] [Algebra 𝕜 E]
-    [TopologicalSpace E] [IsTopologicalRing E] (c c' : ℕ → 𝕜) :
-    ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by ext; simp [ofScalars, sub_smul]
-
-lemma Complex.one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw : w ≠ x) :
-    HasFPowerSeriesOnBall (fun z ↦ 1 / (z - w) ^ 2 - 1 / w ^ 2) (.ofScalars ℂ
-      fun i ↦ (i + 1) * (w - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
-  rw [← Pi.sub_def, ← Pi.sub_def, FormalMultilinearSeries.ofScalars_sub]
-  refine .sub ?_ ?_
-  · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
-      using (Complex.one_div_sub_sq_hasFPowerSeriesOnBall_zero
-        (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
-  · convert hasFPowerSeriesOnBall_const.mono _ le_top
-    · ext (_|_) <;> simp [zpow_ofNat]
-    · simpa [sub_eq_zero]
+lemma isOpen_setOf_forall_mem_lt (s : Set ℝ) (hs : IsClosed s) :
+    IsOpen { a | ∀ l ∈ s, a < l } := by
+  obtain rfl | h₁ := s.eq_empty_or_nonempty
+  · simp
+  by_cases h₂ : BddBelow s
+  · convert isOpen_Iio (a := sInf s)
+    exact Set.ext fun x ↦ ⟨(· _ (hs.csInf_mem h₁ h₂)), fun h _ ↦ (h.trans_le <| csInf_le h₂ ·)⟩
+  · convert isOpen_empty
+    exact Set.ext fun x ↦ ⟨fun h ↦ h₂ ⟨x, fun a ha ↦ (h a ha).le⟩, fun h ↦ h.elim⟩
 
 end
 
@@ -706,11 +681,25 @@ lemma derivWeierstrassP_sub_coe (z : ℂ) (l : L.lattice) :
 end derivWeierstrassP
 
 section AnalyticweierstrassPExcept
+
+/-- The sum `∑ (l - x)⁻ʳ` over `l ∈ L`. This converges when `2 < r`, see `hasSum_sumInvPow`. -/
 def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻¹
 
+lemma hasSum_sumInvPow (x : ℂ) {r : ℕ} (hr : 2 < r) :
+    HasSum (fun l : L.lattice ↦ ((l - x) ^ r)⁻¹) (L.sumInvPow x r) := by
+  refine Summable.hasSum (.of_norm_bounded (ZLattice.summable_norm_sub_zpow _
+    (-r) (by simpa) x) fun l ↦ ?_)
+  rw [← zpow_natCast, ← zpow_neg, ← norm_zpow]
+
+/-- In the power series expansion of `℘(z) = ∑ aᵢzⁱ` at some `x ∉ L`,
+each `aᵢ` can be written as an infinite sum over `l ∈ L`.
+This is the summand of this infinite sum with the `l₀`-th term omitted.
+See `PeriodPair.coeff_weierstrassPExceptSeries`. -/
 def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   if l.1 = l₀ then 0 else ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
+/-- The power series exansion of `℘[L - l₀]` at `x`.
+See `PeriodPair.hasFPowerSeriesOnBall_weierstrassPExcept`. -/
 def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
   .ofScalars _ fun i ↦ i.casesOn (℘[L - l₀] x) fun i ↦ (i + 2) *
@@ -719,105 +708,70 @@ def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ �
 lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.weierstrassPExceptSeries l₀ x).coeff i =
       ∑' l : L.lattice, L.weierstrassPExceptSummand l₀ x i l := by
-  delta weierstrassPExceptSummand
-  rw [weierstrassPExceptSeries, FormalMultilinearSeries.coeff_ofScalars]
+  delta weierstrassPExceptSummand weierstrassPExceptSeries
   cases i with
   | zero => simp [weierstrassPExcept, sub_sq_comm x, zpow_ofNat]
   | succ i =>
-    dsimp
     split_ifs with hl₀
     · trans (i + 2) * (L.sumInvPow x (i + 3) -
         ∑' l : L.lattice, if l = ⟨l₀, hl₀⟩ then (l₀ - x) ^ (-↑(i + 3) : ℤ) else 0)
-      · congr 2
-        rw [tsum_ite_eq, zpow_neg, zpow_natCast]
-      · rw [sumInvPow, ← Summable.tsum_sub]
-        · rw [← tsum_mul_left]
-          simp_rw [Subtype.ext_iff, zpow_neg]
+      · rw [FormalMultilinearSeries.coeff_ofScalars, tsum_ite_eq, zpow_neg, zpow_natCast]
+      · rw [sumInvPow, ← (hasSum_sumInvPow _ _ (by linarith)).summable.tsum_sub, ← tsum_mul_left]
+        · simp_rw [Subtype.ext_iff, zpow_neg]
           congr with l
           split_ifs with e
           · simp only [e, zpow_natCast, sub_self, mul_zero]
-          · norm_cast; ring
-        · refine .of_norm_bounded (ZLattice.summable_norm_sub_zpow _ (-↑(i + 3)) ?_ x) fun l ↦ ?_
-          · simp; linarith
-          · rw [← zpow_natCast, ← zpow_neg, ← norm_zpow]
+          · dsimp; norm_cast; ring
         · exact summable_of_finite_support ((Set.finite_singleton ⟨l₀, hl₀⟩).subset (by simp_all))
-    · have (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
-      simp only [this, if_false, sub_zero, tsum_mul_left, sumInvPow]
-      congr 1
-      simp [add_assoc, one_add_one_eq_two]
-
-def _root_.optionProdEquiv {α β : Type*} : Option α × β ≃ β ⊕ α × β where
-  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
-  invFun x := x.casesOn (Prod.mk none) (Prod.map some id)
-  left_inv
-  | (none, _) => rfl
-  | (some _, _) => rfl
-  right_inv
-  | .inl _ => rfl
-  | .inr (_, _) => rfl
+    · have h₁ (l : L.lattice) : l.1 ≠ l₀ := fun e ↦ hl₀ (e ▸ l.2)
+      simp [h₁, tsum_mul_left, sumInvPow, add_assoc,
+        one_add_one_eq_two, ← zpow_natCast, - neg_add_rev]
 
 lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
     Summable (Function.uncurry fun b c ↦ L.weierstrassPExceptSummand l₀ x b c * (z - x) ^ b) := by
   obtain ⟨ε, hε, hε'⟩ : ∃ ε : ℝ, 1 < ε ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * ε < ‖l - x‖ := by
-    obtain ⟨δ, hδ, h⟩ := Disjoint.exists_cthickenings (by
-      simp only [Set.disjoint_iff_inter_eq_empty, Set.mem_diff, Set.mem_inter_iff, not_lt, not_and,
-        Metric.mem_closedBall, Complex.dist_eq, Set.ext_iff, SetLike.mem_coe, Set.mem_singleton_iff,
-        Set.mem_empty_iff_false, iff_false, Decidable.not_not, not_imp_comm (a := _ = _)] at hx ⊢
-      exact fun x h₁ h₂ ↦ hx ⟨x, h₂⟩ h₁) (isCompact_closedBall x ‖z - x‖)
-      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))
-    by_cases hz : z = x
-    · refine ⟨2, one_lt_two, fun l hl ↦ by simpa [hz] using hx l hl⟩
-    have : 0 < ‖z - x‖ := by simp [sub_eq_zero, hz]
-    refine ⟨δ / ‖z - x‖ + 1, by simpa using show 0 < δ / ‖z - x‖ by positivity, fun l hl ↦ ?_⟩
-    rw [mul_add, mul_one, mul_div, mul_div_cancel_left₀ _ this.ne']
-    rw [cthickening_closedBall hδ.le (by positivity)] at h
-    have := Set.subset_compl_iff_disjoint_left.mpr h (Metric.self_subset_cthickening _ ⟨l.2, hl⟩)
-    simpa [Complex.dist_eq] using this
+    obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp ((continuous_mul_right ‖z - x‖).isOpen_preimage _
+      (isOpen_setOf_forall_mem_lt _ (isClosedMap_dist x _
+      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))))) 1
+      (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
+    refine ⟨ε / 2 + 1, by simpa, fun l hl ↦ ?_⟩
+    simpa only [Complex.dist_eq, norm_sub_rev x, mul_comm] using @hε' (ε / 2 + 1)
+      (by simp [div_lt_iff₀, abs_eq_self.mpr hε.le, hε]) _ ⟨_, ⟨l.2, hl⟩, rfl⟩
   let e : ℕ × L.lattice ≃ L.lattice ⊕ (ℕ × L.lattice) :=
     (Equiv.prodCongrLeft fun _ ↦ (Denumerable.eqv (Option ℕ)).symm).trans optionProdEquiv
-  have he₁ : e.symm ∘ Sum.inl = Prod.mk 0 := rfl
-  have he₂ : e.symm ∘ Sum.inr = Prod.map Nat.succ id := rfl
   rw [← e.symm.summable_iff]
   apply Summable.sum
-  · simp only [Function.comp_assoc, he₁, weierstrassPExceptSummand]
-    simpa [Function.comp_def, sub_sq_comm x] using (L.hasSum_weierstrassPExcept l₀ x).summable
-  · simp only [Function.comp_assoc, he₂, Function.uncurry_def]
-    simp only [Function.comp_def, Prod.map_fst, Nat.succ_eq_add_one, Prod.map_snd, id_eq]
-    refine Summable.of_norm_bounded (g := fun p : ℕ × L.lattice ↦
-        ((p.1 + 2) * ε ^ (- p.1 : ℤ)) * (‖p.2 - x‖ ^ (-3 : ℤ) * ‖z - x‖)) ?_ ?_
-    · refine Summable.mul_of_nonneg (f := fun p : ℕ ↦ ((p + 2) * ε ^ (- p : ℤ)))
-        (g := fun p : L.lattice ↦ ‖p - x‖ ^ (-3 : ℤ) * ‖z - x‖) ?_ ?_ ?_ ?_
-      · have : |ε⁻¹| < 1 := by
-          rw [abs_inv, abs_eq_self.mpr (by positivity), inv_lt_one_iff₀]; exact .inr hε
-        convert ((Real.hasFPowerSeriesOnBall_linear_zero 1 2).hasSum (y := ε⁻¹)
-          (by simpa [enorm_eq_nnnorm])).summable
-        simp [mul_comm]
-      · apply Summable.mul_right
-        apply ZLattice.summable_norm_sub_zpow
-        simp
-      · intro; positivity
-      · intro; positivity
-    · intro p
-      simp only [weierstrassPExceptSummand]
-      split_ifs with hp
-      · simp only [zero_mul, norm_zero, zpow_neg, zpow_natCast, Int.reduceNeg]; positivity
-      simp only [zpow_neg, zpow_natCast, add_assoc]
-      norm_num
-      simp only [mul_assoc, add_assoc, one_add_one_eq_two]
-      rw [pow_succ (n := p.1)]
-      refine mul_le_mul ?_ ?_ (by positivity) (by positivity)
-      · norm_cast
-      · simp only [← mul_assoc]
-        refine mul_le_mul ?_ le_rfl (by positivity) (by positivity)
-        rw [pow_add, mul_inv_rev, mul_assoc, mul_comm ((ε ^ p.1)⁻¹)]
-        refine mul_le_mul le_rfl ?_ (by positivity) (by positivity)
-        rw [← inv_pow, ← inv_pow, ← mul_pow]
+  · simpa [weierstrassPExceptSummand, e, Function.comp_def, Function.uncurry, sub_sq_comm x,
+      Denumerable.eqv] using (L.hasSum_weierstrassPExcept l₀ x).summable
+  · dsimp [e, Function.comp_def, Function.uncurry_def, Denumerable.eqv, weierstrassPExceptSummand]
+    have H₁ : Summable fun p : ℕ ↦ ((p + 2) * ε ^ (-p : ℤ)) := by
+      have : |ε⁻¹| < 1 := by
+        rw [abs_inv, abs_eq_self.mpr (by positivity), inv_lt_one_iff₀]; exact .inr hε
+      convert ((Real.hasFPowerSeriesOnBall_linear_zero 1 2).hasSum (y := ε⁻¹) -- fix name
+        (by simpa [enorm_eq_nnnorm])).summable
+      simp [mul_comm]
+    have H₂ : Summable fun p : L.lattice ↦ ‖p - x‖ ^ (-3 : ℤ) * ‖z - x‖ :=
+      (ZLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
+    refine (Summable.mul_of_nonneg H₁ H₂
+      (by intro; positivity) (by intro; positivity)).of_norm_bounded fun p ↦ ?_
+    split_ifs with hp
+    · simp only [zero_mul, norm_zero, zpow_neg, zpow_natCast, Int.reduceNeg]; positivity
+    have hpx : ‖p.2 - x‖ ≠ 0 := fun h ↦ by
+      obtain rfl : p.2 = x := by simpa [sub_eq_zero] using h
+      simpa [(norm_nonneg _).not_gt] using hx p.2 hp
+    obtain rfl | hxz := eq_or_ne z x
+    · simp
+    calc
+      _ = ‖(p.1 + 2 : ℂ)‖ * ‖p.2 - x‖ ^ (-3 - p.1 : ℤ) * ‖z - x‖ ^ (p.1 + 1) := by
+        norm_num; ring_nf; simp
+      _ = ‖(p.1 + 2 : ℂ)‖ * ((‖↑p.2 - x‖ / ‖z - x‖) ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
+        simp [hpx, zpow_sub₀, div_pow]; field
+      _ ≤ (p.1 + 2) * (ε ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
         gcongr
-        have : ‖z - x‖ * ε < ‖p.2 - x‖ := hε' p.2 hp
-        have h : 0 < ‖p.2 - x‖ := (show 0 ≤ ‖z - x‖ * ε by positivity).trans_lt this
-        rw [inv_mul_le_iff₀ h, le_mul_inv_iff₀ (by positivity)]
-        exact this.le
+        · norm_cast
+        · exact (le_div_iff₀ (by simpa [sub_eq_zero])).mpr ((mul_comm _ _).trans_le (hε' p.2 hp).le)
+      _ = _ := by simp [zpow_ofNat]
 
 lemma weierstrassPExcept_eq_tsum (l₀ z x : ℂ)
     (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
@@ -1008,3 +962,5 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
   · norm_num
 
 end Analytic
+
+end PeriodPair
