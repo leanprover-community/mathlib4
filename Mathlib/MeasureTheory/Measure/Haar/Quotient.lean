@@ -574,21 +574,6 @@ theorem average_apply (f : B → E) (b : B) : average φ ψ μA f (ψ b) = avera
 
 open Filter
 
--- might not be necessary
-def IsTopologicalGroup.leftUniformSpace (G : Type*) [Group G] [TopologicalSpace G]
-    [IsTopologicalGroup G] : UniformSpace G where
-  uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (nhds 1)
-  symm :=
-    have : Tendsto (fun p : G × G ↦ (p.1⁻¹ * p.2)⁻¹) (comap (fun p : G × G ↦ p.1⁻¹ * p.2) (nhds 1))
-      (nhds 1⁻¹) := tendsto_id.inv.comp tendsto_comap
-    by simpa [tendsto_comap_iff]
-  comp := Tendsto.le_comap fun U H ↦ by
-    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
-    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
-    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
-    simpa using V_mul _ hz₂ _ hz₁
-  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
-
 include hμA hμC h1 h2 h3 h4 in
 theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
     Integrable (average φ ψ μA f) μC := by
@@ -623,14 +608,15 @@ theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
     let preim : Set A := φ ⁻¹' prod
     have hpreim : IsCompact preim := h1.isCompact_preimage (hU₀.inv.mul hK)
     let V₀ := μA preim
-    have hV₀ : 0 < V₀ := by
-      -- doesn't actually matter, since otherwise ε / V is infinite
-      sorry
     have hV₀' : V₀ < ⊤ := hpreim.measure_lt_top
-    let V : ℝ := ENNReal.toReal (μA preim)
-    have hV : 0 < V := ENNReal.toReal_pos hV₀.ne' hV₀'.ne
+    let v : ℝ := if V₀ = 0 then 1 else (ε / ENNReal.toReal (μA preim)) / 2
+    have hv : 0 < v := by
+      simp only [v]
+      split_ifs with h
+      · exact one_pos
+      · exact div_pos (div_pos hε (ENNReal.toReal_pos h hV₀'.ne)) two_pos
     simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
-    specialize ha _ (Metric.dist_mem_uniformity (div_pos hε hV))
+    specialize ha _ (Metric.dist_mem_uniformity hv)
     simp only [Filter.eventually_iff] at ha ⊢
     change _ ∈ Filter.comap _ _ at ha
     rw [Filter.mem_comap] at ha
@@ -638,16 +624,66 @@ theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
     simp [Set.subset_def] at hf
     replace hU := inv_mem_nhds_one B hU
     have hU' := mul_singleton_mem_nhds_of_nhds_one b hU
+    replace hU' := Filter.inter_mem hU' hb
     refine Filter.mem_of_superset hU' ?_
-    rintro - ⟨c, d, e, rfl, g, rfl⟩
-    have : ∀ a : A, dist (f (c * e * φ a)) (f (e * φ a)) < ε / V := by
+    rintro - ⟨⟨c, d, e, rfl, g, rfl⟩, hm⟩
+    have : ∀ a : A, dist (f (c * e * φ a)) (f (e * φ a)) < v := by
       intro a
       simp only [Set.mem_inv] at d
       specialize hf (c * e * φ a) (e * φ a)
       simpa [d] using hf
     dsimp
-    -- sort of need a uniform bound on how much supp f (b * φ a) meets A
-    sorry
+    apply ENNReal.toReal_lt_of_lt_ofReal
+    rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm]
+    rw [← MeasureTheory.setLIntegral_eq_of_support_subset (s := preim)]
+    · have : ∀ x : A, ‖((fun a ↦ f (c * e * φ a)) - fun a ↦ f (e * φ a)) x‖ₑ ≤ ENNReal.ofReal v := by
+        intro x
+        simp only [dist_eq_norm_sub] at this
+        simp
+        rw [← ofReal_norm_eq_enorm]
+        apply ENNReal.ofReal_le_ofReal
+        exact (this x).le
+      refine (MeasureTheory.lintegral_mono (g := fun _ ↦ ENNReal.ofReal v) ?_).trans_lt ?_
+      · intro x
+        exact this x
+      · rw [lintegral_const]
+        simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+        simp only [v]
+        split_ifs with h
+        · simp only [V₀] at h
+          simpa [h]
+        · change _ * V₀ < _
+          rw [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul (by positivity)]
+          rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
+          simp only [V₀]
+          field_simp
+          grw [div_self_le_one]
+          norm_num
+    · intro x hx
+      have : f (c * e * φ x) ≠ 0 ∨ f (e * φ x) ≠ 0 := by
+        contrapose! hx
+        simp [hx.1, hx.2]
+      rcases this with h | h
+      · have : c * e * φ x ∈ K := by
+          contrapose! h
+          apply hf₀ _ h
+        -- c * e * φ x ∈ K
+        change φ x ∈ U₀⁻¹ * K
+        have h : φ x = (c * e)⁻¹ * (c * e * φ x) := by group
+        rw [h]
+        apply Set.mul_mem_mul
+        · rwa [Set.inv_mem_inv]
+        · exact this
+      · have : e * φ x ∈ K := by
+          contrapose! h
+          apply hf₀ _ h
+        change φ x ∈ U₀⁻¹ * K
+        have h : φ x = e⁻¹ * (e * φ x) := by simp
+        rw [h]
+        apply Set.mul_mem_mul
+        · rw [Set.inv_mem_inv]
+          exact mem_of_mem_nhds hb
+        · exact this
   have hs : HasCompactSupport (fun c ↦ average φ ψ μA f c) := by
     have h := f.hasCompactSupport
     rw [← exists_compact_iff_hasCompactSupport] at h ⊢
