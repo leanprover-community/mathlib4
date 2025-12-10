@@ -308,10 +308,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
 
-/- The following proof is a warm-up for the real case; it should contain the main idea.
--- TODO: complete the proof, and refactor the proof
--- to prove ContMDiffWithinAt and ContMDiffAt versions first.
--- More bare hands proof, but actually clearer. -/
+-- TODO: prove the analogous statement for `ContMDiffWithinAt`, and deduce a `ContMDiffAt` version
+-- and this statement from it
 theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
@@ -345,67 +343,6 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
     have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
       rintro x ⟨x', hx', rfl⟩
       rwa [mem_preimage, φ.extend_left_inv (hs hx')]
-    --
     have h1 := (contMDiffOn_extend hψ).comp h hmaps
     have h2 := (contMDiffOn_extend_symm hφ).mono this
     exact ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
-
-/-- This is a smooth analogue of `continuousWithinAt_writtenInExtend_iff`. -/
-theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
-    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
-    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
-    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
-      ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  · have h1 := contMDiffOn_extend_symm hψ
-    --have h1' := h1 (ψ (f y)) hgy
-    have h2 := contMDiffAt_extend hφ hy (I := I) (n := n)
-    --have aux2 := h.comp y h1 (t := Set.univ)
-    -- apply (h1'.comp _ h).comp _ aux2 does it, morally
-
-    have : (φ.extend I) '' s ⊆ I '' φ.target := by
-      rw [φ.extend_coe, ← φ.image_source_eq_target, image_comp]; gcongr -- seems to need hs!
-      -- TODO: don't need this for the actual proofs below; remove once done!
-    have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
-      rintro x ⟨x', hx', rfl⟩
-      rwa [mem_preimage, φ.extend_left_inv (hs hx')]
-
-    have h0 := contMDiffOn_extend hψ|>.contMDiffAt (ψ.open_source.mem_nhds hgy)
-    have h1 : ContMDiffWithinAt I 𝓘(𝕜, F) n ((ψ.extend J) ∘ f) s y :=
-      h0.contMDiffWithinAt.comp _ h (mapsTo_image f s)
-
-    have h2' := (contMDiffOn_extend_symm hφ).mono this
-    have h2 : ContMDiffWithinAt 𝓘(𝕜, E) I
-        n ((φ.extend I).symm) ((φ.extend I) '' s) ((φ.extend I) y) := by
-      apply h2' ((φ.extend I) y)
-      apply mem_image_of_mem
-      sorry -- need a stronger lemma on extend's differentiability here!
-    clear h0 h2'
-    --have aux := ContMDiffWithinAt.comp (φ.extend I y) h2--1 --_ h2 aux
-    sorry
-
-theorem contMDiffAt_writtenInExtend_iff {y : M}
-    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
-    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
-    ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
-      (φ.extend I y) ↔ ContMDiffAt I J n f y := by
-  sorry /- TODO: can this be deduced from the withinAt version?
-  nth_rw 2 [← contMDiffWithinAt_univ]
-  rw [← contMDiffWithinAt_writtenInExtend_iff hφ hψ hy hgy]
-  simp only [preimage_univ, univ_inter] -- two goals left, which might be unprovable -/
-
-/-- If `s ⊆ φ.source` and `f x ∈ ψ.source` whenever `x ∈ s`, then `f` is `C^n` on `s` if and
-only if `f` written in charts `φ.extend I` and `ψ.extend I'` is `C^n` on `φ.extend I '' s`.
-This is a smooth analogue of `continuousOn_writtenInExtend_iff`. -/
--- same result, but a shorter, golfed proof
-theorem contMDiffOn_writtenInExtend_iff' (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
-    (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
-    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
-    ContMDiffOn I J n f s := by
-  refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
-  refine (contMDiffWithinAt_congr_set ?_).trans
-    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) sorry hmaps)
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
-    ← φ.map_extend_nhdsWithin]
-  exacts [hs hx, hs hx, hs]
