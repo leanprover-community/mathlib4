@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.81" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.82" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -138,7 +138,7 @@ lean_exe «check_title_labels» where
   srcDir := "scripts"
 
 /--
-`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+`lake exe pole` queries radar for build times for the current commit,
 and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
@@ -186,9 +186,12 @@ post_update pkg do
     let toolchainVersion := match toolchainContent.trim.splitOn ":" with
       | [_, version] => version
       | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := toolchainVersion.stripPrefix "v"
     if Lean.versionString ≠ toolchainVersion then
-      IO.println s!"Not running `lake exe cache get` yet, \
-        as the `lake` version does not match the toolchain version in the project.\n\
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
         You should run `lake exe cache get` manually."
       return
     let exeFile ← runBuild cache.fetch

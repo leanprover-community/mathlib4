@@ -635,7 +635,7 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
-/-- The `a`-torsion submodule as an `(R ⧸ R∙a)`-module. -/
+/-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
@@ -851,7 +851,7 @@ theorem exists_isTorsionBy {p : R} (hM : IsTorsion' M <| Submonoid.powers p) (d 
   let oj := List.argmax (fun i => pOrder hM <| s i) (List.finRange d)
   have hoj : oj.isSome :=
     Option.ne_none_iff_isSome.mp fun eq_none =>
-      hd <| List.finRange_eq_nil.mp <| List.argmax_eq_none.mp eq_none
+      hd <| List.finRange_eq_nil_iff.mp <| List.argmax_eq_none.mp eq_none
   use Option.get _ hoj
   rw [isTorsionBy_iff_torsionBy_eq_top, eq_top_iff, ← hs, Submodule.span_le,
     Set.range_subset_iff]
