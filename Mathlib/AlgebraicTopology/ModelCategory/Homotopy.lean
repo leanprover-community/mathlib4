@@ -357,7 +357,7 @@ noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.
 
 lemma rightHomotopyRel (h : LeftHomotopyRel f g) : RightHomotopyRel f g := by
   obtain ⟨P, _⟩ := PathObject.exists_very_good Y
-  exact ⟨P, ⟨h.rightHomotopy P⟩⟩
+  exact ⟨_, ⟨h.rightHomotopy P⟩⟩
 
 end LeftHomotopyRel
 
