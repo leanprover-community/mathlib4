@@ -578,34 +578,8 @@ theorem eq_of_bisim_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
       ∃ (c x' y' : PreMS (basis_hd :: basis_tl)),
       x = cons exp coef (c + x') ∧ y = cons exp coef (c + y') ∧ motive x' y') :
-    x = y := by
-  let motive' (x y : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ (x' y' c : PreMS (basis_hd :: basis_tl)),
-      x = c + x' ∧ y = c + y' ∧ motive x' y'
-  apply eq_of_bisim_strong motive'
-  · simp only [motive']
-    use x, y, 0
-    simpa
-  · intro x y ih
-    simp only [motive'] at ih
-    obtain ⟨x', y', c, rfl, rfl, ih⟩ := ih
-    specialize step x' y' ih
-    obtain step | ⟨exp, coef, c', x_tl, y_tl, rfl, rfl, h_tl⟩  := step
-    · simp [step]
-    right
-    cases c with
-    | nil =>
-      simp [motive']
-      grind
-    | cons c_exp c_coef c_tl =>
-      rw [add_cons_cons, add_cons_cons]
-      split_ifs with h1 h2
-      · simp [motive']
-        use ?_, ?_, ?_
-      · simp [motive', add_assoc']
-        use ?_, ?_, ?_
-      · simp [motive', add_assoc']
-        use ?_, ?_, ?_
+    x = y :=
+  eq_of_bisim_friend (op := add (basis := basis_hd :: basis_tl)) motive base step
 
 theorem eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {x y : PreMS (basis_hd :: basis_tl)}
@@ -658,53 +632,55 @@ theorem WellOrdered.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)),
         motive (PreMS.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < ↑exp ∧
         ∃ A B, tl = A + B ∧ A.WellOrdered ∧ motive B) :
-    ms.WellOrdered := by
-  let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ A B, ms = A + B ∧ A.WellOrdered ∧ motive B
-  apply WellOrdered.coind motive'
-  · simp [motive']
-    use PreMS.nil, ms
-    simp [WellOrdered.nil, h_base]
-  intro exp coef tl ih
-  simp [motive'] at ih
-  obtain ⟨A, B, h_eq, hA_wo, hB⟩ := ih
-  simp [motive']
-  cases A with
-  | nil =>
-    simp at h_eq
-    subst h_eq
-    specialize h_step _ _ _ hB
-    obtain ⟨h_coef_wo, h_comp, X, Y, h_tl, hX, hY⟩ := h_step
-    simp [h_coef_wo, h_comp]
-    use X, Y
-  | cons A_exp A_coef A_tl =>
-  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
-  cases B with
-  | nil =>
-    simp at h_eq
-    simp [h_eq, hA_coef_wo, hA_comp]
-    use A_tl, PreMS.nil
-    simp [hA_tl, hB]
-  | cons B_exp B_coef B_tl =>
-  specialize h_step _ _ _ hB
-  obtain ⟨hB_coef_wo, hB_comp, X, Y, hB_tl, hX, hY⟩ := h_step
-  rw [add_cons_cons] at h_eq
-  split_ifs at h_eq with h1 h2
-  · simp at h_eq
-    simp [h_eq, hA_coef_wo, hA_comp, h1]
-    use A_tl, PreMS.cons B_exp B_coef B_tl
-  · simp at h_eq
-    simp [h_eq, hB_coef_wo, hB_comp, h2]
-    use PreMS.cons A_exp A_coef A_tl + X, Y
-    simp [hB_tl, add_WellOrdered hA_wo hX, hY]
-    abel
-  · have : A_exp = B_exp := by linarith
-    subst this
-    simp at h_eq
-    simp [h_eq, hA_comp, hB_comp, add_WellOrdered hA_coef_wo hB_coef_wo]
-    use A_tl + X, Y
-    simp [hB_tl, add_WellOrdered hA_tl hX, hY]
-    abel
+    ms.WellOrdered :=
+  WellOrdered.coind_friend' PreMS.add motive PreMS.WellOrdered
+    (by apply add_WellOrdered) h_base h_step
+  -- let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
+  --   ∃ A B, ms = A + B ∧ A.WellOrdered ∧ motive B
+  -- apply WellOrdered.coind motive'
+  -- · simp [motive']
+  --   use PreMS.nil, ms
+  --   simp [WellOrdered.nil, h_base]
+  -- intro exp coef tl ih
+  -- simp [motive'] at ih
+  -- obtain ⟨A, B, h_eq, hA_wo, hB⟩ := ih
+  -- simp [motive']
+  -- cases A with
+  -- | nil =>
+  --   simp at h_eq
+  --   subst h_eq
+  --   specialize h_step _ _ _ hB
+  --   obtain ⟨h_coef_wo, h_comp, X, Y, h_tl, hX, hY⟩ := h_step
+  --   simp [h_coef_wo, h_comp]
+  --   use X, Y
+  -- | cons A_exp A_coef A_tl =>
+  -- obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
+  -- cases B with
+  -- | nil =>
+  --   simp at h_eq
+  --   simp [h_eq, hA_coef_wo, hA_comp]
+  --   use A_tl, PreMS.nil
+  --   simp [hA_tl, hB]
+  -- | cons B_exp B_coef B_tl =>
+  -- specialize h_step _ _ _ hB
+  -- obtain ⟨hB_coef_wo, hB_comp, X, Y, hB_tl, hX, hY⟩ := h_step
+  -- rw [add_cons_cons] at h_eq
+  -- split_ifs at h_eq with h1 h2
+  -- · simp at h_eq
+  --   simp [h_eq, hA_coef_wo, hA_comp, h1]
+  --   use A_tl, PreMS.cons B_exp B_coef B_tl
+  -- · simp at h_eq
+  --   simp [h_eq, hB_coef_wo, hB_comp, h2]
+  --   use PreMS.cons A_exp A_coef A_tl + X, Y
+  --   simp [hB_tl, add_WellOrdered hA_wo hX, hY]
+  --   abel
+  -- · have : A_exp = B_exp := by linarith
+  --   subst this
+  --   simp at h_eq
+  --   simp [h_eq, hA_comp, hB_comp, add_WellOrdered hA_coef_wo hB_coef_wo]
+  --   use A_tl + X, Y
+  --   simp [hB_tl, add_WellOrdered hA_tl hX, hY]
+  --   abel
 
 theorem WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}
@@ -840,44 +816,6 @@ theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
       ext t
       simp
       ring
-
--- theorem Approximates.add_coind' {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {ms : PreMS (basis_hd :: basis_tl)}
---     (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop) (h_base : motive ms f)
---     (h_step :
---       ∀ ms f, motive ms f → (ms = PreMS.nil ∧ f =ᶠ[atTop] 0) ∨ ∃ A B fA fB, ms = A + B ∧ B.leadingExp < A.leadingExp ∧
---       A.Approximates fA ∧ f =ᶠ[atTop] fA + fB ∧ motive B fB) :
---     ms.Approximates f := by
---   apply Approximates.add_coind motive h_base
---   intro ms f ih
---   specialize h_step _ _ ih
---   obtain ⟨rfl, hfB⟩ | ⟨A, B, fA, fB, rfl, hBA, hA, hf_eq, hB⟩ := h_step
---   · simpa
---   right
---   cases A with
---   | nil => simp at hBA
---   | cons A_exp A_coef A_tl =>
---   obtain ⟨fAC, hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
---   cases B with
---   | nil =>
---     simp
---     use fAC, A_tl, PreMS.nil
---     simp [hA_coef]
---     constructor
---     · apply majorated_of_EventuallyEq _ hA_maj
---       grw [hf_eq]
---       simp
---     use fAC, hA_tl, fun t ↦ fB t - basis_hd t ^ A_exp * fAC t
---     simp [hA_tl]
---     push fun _ ↦ _
---     grw [hf_eq, hfB]
---     convert EventuallyEq.refl _ _ using 1
-
-
-
-
-
-
 
 end PreMS
 

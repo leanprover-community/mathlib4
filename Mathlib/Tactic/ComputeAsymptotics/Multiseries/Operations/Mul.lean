@@ -35,7 +35,7 @@ mutual
   /-- Multiplication by monomial, i.e. `M_coef * basis_hd ^ M_exp * B`. -/
   noncomputable def mulMonomial {basis_hd} {basis_tl} (B : PreMS (basis_hd :: basis_tl))
       (M_coef : PreMS basis_tl) (M_exp : ℝ) : PreMS (basis_hd :: basis_tl) :=
-    B.map (fun exp _ => M_exp + exp) (fun _ coef => M_coef.mul coef)
+    B.map (fun exp => M_exp + exp) (fun coef => M_coef.mul coef)
 end
 
 --theorems
@@ -398,7 +398,6 @@ mutual
 end
 
 mutual
-  @[simp]
   theorem add_mulMonomial_left {basis_hd} {basis_tl} {A B : PreMS (basis_hd :: basis_tl)}
       {M_coef : PreMS basis_tl} {M_exp : ℝ}
       (m_wo : M_coef.WellOrdered) :
@@ -438,7 +437,6 @@ mutual
 
   -- Note: `Z.WellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
-  @[simp]
   theorem add_mul_left' {basis : Basis} {X Y Z : PreMS basis}
       (hZ_wo : Z.WellOrdered) :
       Z.mul (X + Y) = (Z.mul X) + (Z.mul Y) := by
@@ -489,15 +487,13 @@ mutual
       (h_coef2_wo : M_coef2.WellOrdered) :
       (B.mulMonomial M_coef1 M_exp1).mulMonomial M_coef2 M_exp2 =
       B.mulMonomial (M_coef2.mul M_coef1) (M_exp2 + M_exp1) := by
-    simp only [mulMonomial, map, ← Stream'.Seq.map_comp]
-    congr
+    simp [mulMonomial]
+    congr 1
     eta_expand
     simp
-    ext p <;> (obtain ⟨exp, coef⟩ := p; simp)
-    · ring
-    · symm
-      apply mul_assoc'
-      exact h_coef2_wo
+    ext coef
+    rw [mul_assoc']
+    exact h_coef2_wo
 
   theorem mul_mulMonomial {basis_hd} {basis_tl} {A B : PreMS (basis_hd :: basis_tl)}
       {M_coef : PreMS basis_tl} {M_exp : ℝ}
@@ -760,6 +756,35 @@ mutual
       ring_nf
 
 end
+
+instance {basis_hd basis_tl} : Stream'.Seq.FriendOperation (mul (basis := basis_hd :: basis_tl)) :=
+  sorry
+
+theorem WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → Prop) (h_base : motive ms)
+    (h_step :
+      ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)),
+        motive (PreMS.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < ↑exp ∧
+        ∃ (A B : PreMS (basis_hd :: basis_tl)), tl = A.mul B ∧ A.WellOrdered ∧ motive B) :
+    ms.WellOrdered :=
+  WellOrdered.coind_friend' PreMS.mul motive PreMS.WellOrdered
+    (by apply mul_WellOrdered) h_base h_step
+
+theorem Approximates.mul_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop) (h_base : motive ms f)
+    (h_step :
+      ∀ (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ),
+        motive ms f →
+        ms = PreMS.nil ∧ f =ᶠ[atTop] 0 ∨
+        ∃ exp coef tl fC,
+          ms = PreMS.cons exp coef tl ∧ coef.Approximates fC ∧ majorated f basis_hd exp ∧
+          ∃ (A B : PreMS (basis_hd :: basis_tl)) (fA fB : ℝ → ℝ), tl = A.mul B ∧
+          f =ᶠ[atTop] (fun t ↦ basis_hd t ^ exp * fC t + fA t * fB t) ∧
+          A.Approximates fA ∧ motive B fB) :
+    ms.Approximates f := by
+  sorry
 
 end PreMS
 

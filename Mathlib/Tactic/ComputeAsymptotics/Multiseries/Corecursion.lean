@@ -1,13 +1,25 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.MetricSpace.Contracting
 import Mathlib.Data.Seq.Basic
 
+/-!
+# Non-primitive corecursion for sequences
+
+https://arxiv.org/pdf/1501.05425
+-/
+
+
 namespace Stream'.Seq
 
 open scoped UniformConvergence
 
-variable {α β γ : Type*}
+variable {α β γ γ' : Type*}
 
 noncomputable local instance : MetricSpace (Stream' α) :=
   @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
@@ -32,15 +44,21 @@ local instance : CompleteSpace (Seq α) := by
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn
 
--- TODO: upstream to PiNat
-local instance : BoundedSpace (Stream' α) := by
-  rw [Metric.boundedSpace_iff]
-  use 1
-  intro s t
+theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   by_cases h : s = t
   · simp [h]
   rw [PiNat.dist_eq_of_ne h]
   bound
+
+theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := by
+  rw [Subtype.dist_eq]
+  apply Stream'.dist_le_one
+
+-- TODO: upstream to PiNat
+local instance : BoundedSpace (Stream' α) := by
+  rw [Metric.boundedSpace_iff]
+  use 1
+  apply Stream'.dist_le_one
 
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
@@ -71,6 +89,17 @@ theorem dist_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ 
 
 class FriendOperation (f : γ → Seq α → Seq α) : Prop where
   lipschitz : ∀ c : γ, LipschitzWith 1 (f c)
+
+theorem FriendOperation.comp (f : γ → Seq α → Seq α) (g : γ' → γ)
+    [h : FriendOperation f] : FriendOperation (fun c ↦ f (g c)) := by
+  grind [FriendOperation]
+
+theorem FriendOperation.dist_le {op : γ → Seq α → Seq α} [h : FriendOperation op]
+    {c : γ} {s t : Seq α} : dist (op c s) (op c t) ≤ dist s t := by
+  have := h.lipschitz c
+  rw [lipschitzWith_iff_dist_le_mul] at this
+  specialize this s t
+  simpa using this
 
 theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →ᵤ Seq α))
     (h : LipschitzWith 2⁻¹ F) :
@@ -163,5 +192,35 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
 --     (h_tail : ∀ op, M op → ∃ op', M op' ∧ ∀ c s, tail (op c s) = op' c (tail s))
 --     : FriendOperation op := by
 --   sorry
+
+theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α} [FriendOperation op]
+    (motive : Seq α → Seq α → Prop)
+    (base : motive s t)
+    (step : ∀ s t, motive s t → (s = t) ∨
+      ∃ hd s' t' c, s = cons hd (op c s') ∧ t = cons hd (op c t') ∧
+        motive s' t') :
+    s = t := by
+  suffices dist s t = 0 by simpa using this
+  suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n by
+    apply eq_of_le_of_ge
+    · apply ge_of_tendsto' (x := Filter.atTop) _ this
+      rw [tendsto_pow_atTop_nhds_zero_iff]
+      norm_num
+    · simp
+  intro n
+  induction n generalizing s t with
+  | zero => simpa using dist_le_one s t
+  | succ n ih =>
+    specialize step s t base
+    obtain step | ⟨hd, s', t', c, rfl, rfl, h_next⟩ := step
+    · simp [step]
+    simp only [dist_cons]
+    specialize ih h_next
+    calc
+      _ ≤ 2⁻¹ * dist s' t' := by
+        gcongr
+        apply FriendOperation.dist_le
+      _ ≤ _ := by
+        grw [ih, pow_succ']
 
 end Stream'.Seq

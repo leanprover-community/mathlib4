@@ -21,7 +21,7 @@ def mulConst {basis : Basis} (c : ℝ) (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms.toReal * c
   | List.cons _ _ =>
-    map (fun exp _ => exp) (fun _ coef => coef.mulConst c) ms
+    map id (fun coef => coef.mulConst c) ms
 
 /-- Negates all coefficient of the multiseries. -/
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
@@ -83,8 +83,8 @@ theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, mul_assoc]
   | cons =>
-    simp only [mulConst, map, ← Stream'.Seq.map_comp]
-    congr
+    simp [mulConst]
+    congr 1
     ext1
     simp [mulConst_mulConst]
 

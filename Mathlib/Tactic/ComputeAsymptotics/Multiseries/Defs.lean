@@ -89,11 +89,11 @@ def destruct {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
 def head {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : Option (ℝ × PreMS basis_tl) :=
   Seq.head ms
 
-def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
-    (g : ℝ → PreMS basis_tl → PreMS basis_tl')
+def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
+    (g : PreMS basis_tl → PreMS basis_tl')
     (ms : PreMS (basis_hd :: basis_tl)) :
     PreMS (basis_hd' :: basis_tl') :=
-  Seq.map (fun (exp, coef) ↦ (f exp coef, g exp coef)) ms
+  Seq.map (fun (exp, coef) ↦ (f exp, g coef)) ms
 
 instance (basis : Basis) : Inhabited (PreMS basis) where
   default := match basis with
@@ -119,6 +119,24 @@ theorem eq_of_bisim_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       ∃ (x' y' : PreMS (basis_hd :: basis_tl)),
       x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
     x = y := Seq.eq_of_bisim_strong motive base (by grind [nil, cons])
+
+theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    [Stream'.Seq.FriendOperation op]
+    {x y : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+    (base : motive x y)
+    (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
+      ∃ (c : γ) (x' y' : PreMS (basis_hd :: basis_tl)),
+      x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
+    x = y := by
+  apply Stream'.Seq.FriendOperation.eq_of_bisim (op := op) motive base
+  peel step with x y ih h
+  obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
+  · simp [h]
+  right
+  use (exp, coef), x', y', c
+  simpa [cons]
 
 section simp
 
@@ -203,32 +221,33 @@ theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef 
   simp [head, cons]
 
 @[simp]
-theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
-    (g : ℝ → PreMS basis_tl → PreMS basis_tl') :
+theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
+    (g : PreMS basis_tl → PreMS basis_tl') :
     map f g (nil : PreMS (basis_hd :: basis_tl)) = (nil : PreMS (basis_hd' :: basis_tl')) := by
   simp [map, nil]
 
 @[simp]
-theorem map_cons {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
-    (g : ℝ → PreMS basis_tl → PreMS basis_tl') {exp : ℝ}
+theorem map_cons {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
+    (g : PreMS basis_tl → PreMS basis_tl') {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
     map f g (cons exp coef tl) = cons (basis_hd := basis_hd')
-      (f exp coef) (g exp coef) (map f g tl) := by
+      (f exp) (g coef) (map f g tl) := by
   simp [map, cons]
 
 @[simp]
 theorem map_id {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
-    ms.map (fun exp _ => exp) (fun _ coef => coef) = ms :=
+    ms.map (fun exp => exp) (fun coef => coef) = ms :=
   Stream'.Seq.map_id ms
 
--- #check Stream'.Seq.map_comp
-
--- @[simp]
--- theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃} (f₁ : ℝ → PreMS b₁ → ℝ)
---     (g₁ : ℝ → PreMS b₁ → PreMS b₂) (f₂ : ℝ → PreMS b₂ → ℝ) (g₂ : ℝ → PreMS b₂ → PreMS b₃)
---     (ms : PreMS (b₁ :: bs₁)) :
---     ms.map () := by
---   simp [map, Stream'.Seq.map_comp]
+@[simp← ]
+theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃}
+    (f₁ : ℝ → ℝ) (g₁ : PreMS bs₁ → PreMS bs₂)
+    (f₂ : ℝ → ℝ) (g₂ : PreMS bs₂ → PreMS bs₃)
+    (ms : PreMS (List.cons b₁ bs₁)) :
+    (ms.map (f₂ ∘ f₁) (g₂ ∘ g₁) : PreMS (List.cons b₃ bs₃)) =
+    (ms.map f₁ g₁ : PreMS (List.cons b₂ bs₂)).map f₂ g₂ := by
+  simp [map, ← Stream'.Seq.map_comp]
+  rfl
 
 @[simp]
 theorem notMem_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : ℝ × PreMS basis_tl} :
@@ -398,6 +417,37 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
         cases tl <;> simp [leadingExp, head] at h_tl h_step; grind
       · specialize h_step exp coef tl h
         grind
+
+theorem WellOrdered.coind_friend {ms : PreMS (basis_hd :: basis_tl)}
+    {γ : Type*} (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+    [FriendOperation op]
+    (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_op : ∀ c x, PreMS.WellOrdered x → (op c x).WellOrdered)
+    (h_base : motive ms)
+    (h_step : ∀ exp coef tl, motive (PreMS.cons exp coef tl) →
+        coef.WellOrdered ∧
+        tl.leadingExp < exp ∧
+        ∃ c x, tl = op c x ∧ motive x) :
+    ms.WellOrdered := by
+  sorry
+
+theorem WellOrdered.coind_friend' {ms : PreMS (basis_hd :: basis_tl)}
+    {γ : Type*} (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+    [FriendOperation op]
+    (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
+    (C : γ → Prop)
+    (h_op : ∀ c x, C c → PreMS.WellOrdered x → (op c x).WellOrdered)
+    (h_base : motive ms)
+    (h_step : ∀ exp coef tl, motive (PreMS.cons exp coef tl) →
+        coef.WellOrdered ∧
+        tl.leadingExp < exp ∧
+        ∃ c x, tl = op c x ∧ C c ∧ motive x) :
+    ms.WellOrdered := by
+  let γ' := Subtype C
+  let op' (c : γ') := op c.val
+  have : FriendOperation op' := FriendOperation.comp _ _
+  apply WellOrdered.coind_friend op' motive _ h_base
+  all_goals (simp [γ']; grind)
 
 end WellOrdered
 
@@ -592,6 +642,17 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
   have := OrderHom.le_gfp _ this
   unfold Approximates
   aesop
+
+-- theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
+--     (motive : (ms : PreMS (basis_hd :: basis_tl)) → (f : ℝ → ℝ) → Prop)
+--     (h_base : motive ms f)
+--     (h_step : ∀ ms f, motive ms f →
+--       (ms = .nil ∧ f =ᶠ[atTop] 0) ∨
+--       (∃ exp coef tl fC, ms = PreMS.cons exp coef tl ∧
+--         (coef.Approximates fC) ∧
+--         majorated f basis_hd exp ∧
+--         ∃ c x , tl = op c x ∧ motive tl (fun t ↦ f t - (basis_hd t) ^ exp * (fC t))))) :
+--     ms.Approximates f := by
 
 @[simp]
 theorem Approximates_const_iff {ms : PreMS []} {f : ℝ → ℝ} :
