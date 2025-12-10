@@ -372,6 +372,8 @@ Analysis:
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
     First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
+    meromorphic functions: 'Meromorphic'
+    local identity theorem for meromorphic functions: 'MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
