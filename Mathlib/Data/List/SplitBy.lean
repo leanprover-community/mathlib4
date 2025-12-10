@@ -91,12 +91,12 @@ theorem ne_nil_of_mem_splitBy {r : α → α → Bool} {l : List α} (h : m ∈ 
 theorem head_head_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
     ((l.splitBy r).head (splitBy_ne_nil.2 hn)).head
       (ne_nil_of_mem_splitBy (head_mem _)) = l.head hn := by
-  simp_all [← head_flatten_eq_head_head]
+  simp [head_head_eq_head_flatten]
 
 theorem getLast_getLast_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
     ((l.splitBy r).getLast (splitBy_ne_nil.2 hn)).getLast
       (ne_nil_of_mem_splitBy (getLast_mem _)) = l.getLast hn := by
-  simp_rw [← getLast_flatten_of_getLast_ne_nil, flatten_splitBy]
+  simp [getLast_getLast_eq_getLast_flatten]
 
 private theorem isChain_of_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.IsChain fun y x ↦ r x y)
@@ -141,8 +141,7 @@ private theorem isChain_getLast_head_splitByLoop {r : α → α → Bool} (l : L
   | cons b l IH =>
     rw [splitBy.loop]
     split
-    · apply IH hgs' hgs
-      intro m hm
+    · refine IH hgs' hgs fun m hm ↦ ?_
       obtain ⟨ha, _, H⟩ := hga m hm
       refine ⟨ha, append_ne_nil_of_right_ne_nil _ (cons_ne_nil _ _), ?_⟩
       rwa [reverse_cons, head_append_of_ne_nil]
@@ -222,13 +221,10 @@ theorem splitBy_eq_iff {r : α → α → Bool} {l : List (List α)} :
 theorem splitBy_append {r : α → α → Bool} {l : List α}
     (ha : ∀ x ∈ l.getLast?, ∀ y ∈ m.head?, r x y = false) :
     (l ++ m).splitBy r = l.splitBy r ++ m.splitBy r := by
-  obtain rfl | hl := eq_or_ne l []
-  · simp
-  obtain rfl | hm := eq_or_ne m []
-  · simp
+  obtain rfl | hl := eq_or_ne l []; · simp
+  obtain rfl | hm := eq_or_ne m []; · simp
   rw [splitBy_eq_iff]
-  refine ⟨by simp, by simp, ?_, ?_⟩
-  · aesop (add apply unsafe isChain_of_mem_splitBy)
+  refine ⟨by simp, by simp, ?_, ?_⟩; · aesop (add apply unsafe isChain_of_mem_splitBy)
   rw [isChain_append]
   refine ⟨isChain_getLast_head_splitBy _ _, isChain_getLast_head_splitBy _ _, fun x hx y hy ↦ ?_⟩
   use ne_nil_of_mem_splitBy (mem_of_mem_getLast? hx), ne_nil_of_mem_splitBy (mem_of_mem_head? hy)
