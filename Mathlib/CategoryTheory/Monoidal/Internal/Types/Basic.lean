@@ -103,7 +103,7 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
         { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
-  map f := CommMon_.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f))
+  map f := CommMon.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f))
 
 end CommMonTypeEquivalenceCommMon
 

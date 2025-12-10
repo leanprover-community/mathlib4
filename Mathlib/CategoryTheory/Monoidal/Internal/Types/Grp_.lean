@@ -34,15 +34,9 @@ instance grpGroup (A : Type u) [GrpObj A] : Group A :=
     inv_mul_cancel a := congr_fun (GrpObj.left_inv A) a }
 
 /-- Converting a group object in `Type u` into a group. -/
-<<<<<<< HEAD
-noncomputable def functor : Grp_ (Type u) ⥤ Grp.{u} where
-  obj A := Grp.of A.X
-  map f := Grp.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
-=======
 noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where
   obj A := GrpCat.of A.X
-  map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
->>>>>>> origin/master
+  map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
 noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
@@ -56,11 +50,7 @@ noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
           right_inv := by
             ext x
             exact mul_inv_cancel (G := A) x } }
-<<<<<<< HEAD
-  map f := Grp_.homMk' (MonTypeEquivalenceMon.inverse.map ((forget₂ Grp MonCat).map f))
-=======
-  map f := MonTypeEquivalenceMon.inverse.map ((forget₂ GrpCat MonCat).map f)
->>>>>>> origin/master
+  map f := Grp.homMk' (MonTypeEquivalenceMon.inverse.map ((forget₂ GrpCat MonCat).map f))
 
 end GrpTypeEquivalenceGrp
 

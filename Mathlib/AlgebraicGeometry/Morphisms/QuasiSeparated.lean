@@ -95,27 +95,15 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
     haveI : IsAffine _ := U.2
     haveI : IsAffine _ := V.2
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
-<<<<<<< HEAD
-    have : IsOpenImmersion g := inferInstance
-    have e := this.base_open.isEmbedding.toHomeomorph
-    rw [InducedCategory.homMk_hom, IsOpenImmersion.range_pullback_to_base_of_left] at e
-=======
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
->>>>>>> origin/master
     erw [Subtype.range_coe, Subtype.range_coe] at e
     rw [isCompact_iff_compactSpace]
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
     let g : pullback f₁ f₂ ⟶ X := pullback.fst _ _ ≫ f₁
-<<<<<<< HEAD
-    have : IsOpenImmersion g := inferInstance
-    have e := this.base_open.isEmbedding.toHomeomorph
-    rw [InducedCategory.homMk_hom, IsOpenImmersion.range_pullback_to_base_of_left] at e
-=======
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
->>>>>>> origin/master
     simp_rw [isCompact_iff_compactSpace] at H
     exact @Homeomorph.compactSpace _ _ _ _
         (H ⟨_, isAffineOpen_opensRange f₁⟩ ⟨_, isAffineOpen_opensRange f₂⟩) e.symm

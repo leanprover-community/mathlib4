@@ -84,13 +84,8 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
   convert (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-<<<<<<< HEAD
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
-  · simp
-=======
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
->>>>>>> origin/master
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 

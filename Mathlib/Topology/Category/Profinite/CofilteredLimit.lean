@@ -87,12 +87,8 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-<<<<<<< HEAD
     exact ⟨(hV s).1.1.preimage (F.map _).hom.hom.continuous,
       (hV s).1.2.preimage (F.map _).hom.hom.continuous⟩
-=======
-    refine ⟨(hV s).1.1.preimage ?_, (hV s).1.2.preimage ?_⟩ <;> fun_prop
->>>>>>> origin/master
   · ext x
     constructor
     · intro hx

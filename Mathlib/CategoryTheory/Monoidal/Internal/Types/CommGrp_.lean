@@ -32,15 +32,9 @@ instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A
     mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
-<<<<<<< HEAD
-noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where
-  obj A := CommGrp.of A.X
-  map f := CommGrp.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
-=======
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
   obj A := CommGrpCat.of A.X
-  map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f).hom
->>>>>>> origin/master
+  map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
 noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
@@ -50,12 +44,8 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
         { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
-<<<<<<< HEAD
-  map f :=
-    InducedCategory.homMk (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrp Grp).map f))
-=======
-  map f := GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f)
->>>>>>> origin/master
+  map f := InducedCategory.homMk
+    (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f))
 
 @[simp]
 theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = A := rfl

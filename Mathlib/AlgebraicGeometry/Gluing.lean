@@ -132,15 +132,9 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.f j).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-<<<<<<< HEAD
   · simp only [LocallyRingedSpace.comp_toHom, PresheafedSpace.comp_base,
       TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
-    exact Set.mem_image_of_mem _ ((D.U i).affineCover.covers y)
-=======
-  · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp, Set.range_comp]
     exact Set.mem_image_of_mem _ ⟨z, hz⟩
->>>>>>> origin/master
   · infer_instance
 
 instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
