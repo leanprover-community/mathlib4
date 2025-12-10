@@ -37,7 +37,7 @@ protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.isInducing.secondCountableTopology
 
-protecte theorem baireSpace [BaireSpace Y] (f : X ≃ₜ Y) : BaireSpace Y :=
+protected theorem baireSpace [BaireSpace X] (f : X ≃ₜ Y) : BaireSpace Y :=
   f.isOpenQuotientMap.baireSpace
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
