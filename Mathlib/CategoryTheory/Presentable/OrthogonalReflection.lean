@@ -431,7 +431,9 @@ as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
   (W.isLocal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
     ⟨_, isLocal_reflectionObj Z hW⟩ where
-  homEquiv {A} := Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2)
+  homEquiv {A} :=
+    (ObjectProperty.fullyFaithfulι _).homEquiv.trans
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
 
 variable (W κ)
 
