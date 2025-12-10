@@ -21,7 +21,7 @@ such that for any function `f : T → E`:
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 
-When applying the chaining technique for bounding the supremum of the incremements of stochastic
+When applying the chaining technique for bounding the supremum of the increments of stochastic
 processes, `pair_reduction` is used to reduce the order of the dependence of the bound on the
 covering numbers of the pseudometric space. As a simple example of how it could be used, suppose
 `T` has an `ε`-covering number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`.
@@ -42,7 +42,7 @@ but applying `pair_reduction` with `n = log |J|` we get
     ≤ 2 a c N log N
 ```
 `pair_reduction` is used in [kratschmer_urusov2023] to prove a form of the Kolmogorov-Chentsov
-theorem that applies to stochastic processses which satisfy the Kolmogorov condition but works
+theorem that applies to stochastic processes which satisfy the Kolmogorov condition but works
 on very general metric spaces.
 
 ## Implementation
@@ -57,8 +57,8 @@ natural number `k` greater than zero such that `|{x ∈ V | d(t, x) ≤ kc}| ≤
 We construct a sequence `Vᵢ` of subsets of `J`, a sequence `tᵢ ∈ Vᵢ` and a sequence of `rᵢ : ℕ`
 inductively as follows (see `logSizeBallSeq`):
 
-* `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitarily in
+* `V₀ = J`, `tₒ` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+* `Vᵢ₊ᵢ = Vᵢ \ Bᵢ` where `Bᵢ := {x ∈ V | d(t, x) ≤ (rᵢ - 1) c}`, `tᵢ₊₁` is chosen arbitrarily in
   `Vᵢ₊₁` (if it is nonempty), `rᵢ₊₁` is the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`.
 
 Then `Vᵢ` is a strictly decreasing sequence (see `card_finset_logSizeBallSeq_add_one_lt`) until
@@ -176,8 +176,8 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
 variable [DecidableEq T]
 
 /-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
-  * `V₀ = J`, `tₒ` is chosen arbitarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitarily in `Vᵢ₊₁, rᵢ₊₁` is
+  * `V₀ = J`, `tₒ` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+  * `Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁, rᵢ₊₁` is
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊ᵢ`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
