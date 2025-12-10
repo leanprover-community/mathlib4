@@ -49,7 +49,7 @@ protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
 @[to_additive (attr := simp)]
 theorem mem_unop {x : M} {S : Submonoid Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
 
-@[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Submonoid Mᵐᵒᵖ) :
+@[to_additive (attr := simp)] lemma unop_toSubsemigroup (H : Submonoid Mᵐᵒᵖ) :
     H.unop.toSubsemigroup = H.toSubsemigroup.unop :=
   rfl
 
