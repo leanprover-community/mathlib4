@@ -253,7 +253,6 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     rwa [← D.map_comp, Over.w f] at h₁
 
 include hc in
-@[stacks 01Z4 "(2)"]
 lemma exists_map_preimage_le_map_preimage
     [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -273,6 +272,22 @@ lemma exists_map_preimage_le_map_preimage
     simpa [← Scheme.Hom.comp_preimage, -Scheme.Hom.comp_base] using hj
   replace hj : (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ D.map fji.left ⁻¹ᵁ V := Set.image_subset_iff.mpr hj.ge
   simpa [show fji.left = j.hom by simpa using fji.w] using hj
+
+include hc in
+@[stacks 01Z4 "(2)"]
+lemma exists_map_preimage_eq_map_preimage
+    [IsCofiltered I]
+    [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
+    {i : I} {U V : (D.obj i).Opens} (hU : IsCompact (U : Set (D.obj i)))
+    (hV : IsCompact (V : Set (D.obj i))) (H : c.π.app i ⁻¹ᵁ U = c.π.app i ⁻¹ᵁ V) :
+    ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U = D.map fji ⁻¹ᵁ V := by
+  obtain ⟨j₁, fj₁i, e₁⟩ := exists_map_preimage_le_map_preimage D c hc hU H.le
+  obtain ⟨j₂, fj₂i, e₂⟩ := exists_map_preimage_le_map_preimage D c hc hV H.ge
+  obtain ⟨k, fkj₁, fkj₂, e⟩ := IsCofiltered.cospan fj₁i fj₂i
+  refine ⟨k, fkj₁ ≫ fj₁i, le_antisymm ?_ ?_⟩
+  · simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₁
+  · rw [e]
+    simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
 open Scheme.Opens in
 include hc in
@@ -301,17 +316,6 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
 
-open Scheme.Opens in
-include hc in
-lemma isBasis_range_preimage_isAffineOpen
-    [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] :
-    TopologicalSpace.IsTopologicalBasis (α := c.pt) <| Set.range
-      fun (V : Σ' (i : I) (V : (D.obj i).Opens), IsAffineOpen V) ↦
-        (c.π.app V.1 ⁻¹ᵁ V.2.1 : c.pt.Opens) := by
-  refine (isBasis_preimage_isAffineOpen D c hc).of_isOpen_of_subset ?_ ?_
-  · rintro _ ⟨V, rfl⟩; exact (c.π.app V.1 ⁻¹ᵁ V.2.1).2
-  · rintro _ ⟨_, ⟨i, V, hV, rfl⟩, rfl⟩; exact ⟨⟨i, V, hV⟩, rfl⟩
-
 include hc in
 @[stacks 01Z4 "(1)"]
 lemma exists_preimage_eq
@@ -319,19 +323,18 @@ lemma exists_preimage_eq
     (U : c.pt.Opens) (hU : IsCompact (U : Set c.pt)) :
     ∃ (i : I) (V : (D.obj i).Opens), IsCompact (V : Set (D.obj i)) ∧ c.π.app i ⁻¹ᵁ V = U := by
   classical
-  obtain ⟨s, hs, hU⟩ := eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _
-    (isBasis_range_preimage_isAffineOpen D c hc) _ hU U.2
-  obtain ⟨i, fi⟩ := IsCofiltered.inf_objs_exists (hs.toFinset.image (·.1))
-  replace fi {x} (h) := (@fi x h).some
-  refine ⟨i, ⨆ (V : s), D.map (fi ((Finset.mem_image_of_mem _ (by simp)))) ⁻¹ᵁ V.1.2.1, ?_, ?_⟩
+  obtain ⟨s, hs, hsf, rfl⟩ := (isBasis_preimage_isAffineOpen D c hc).exists_finite_of_isCompact hU
+  have : Finite s := hsf
+  choose i V hV hVi using fun x : s ↦ hs x.2
+  obtain ⟨j, fj⟩ := IsCofiltered.inf_objs_exists (hsf.toFinset.attach.image
+    fun x ↦ i ⟨x.1, (by simpa only [Set.Finite.mem_toFinset] using x.2)⟩:)
+  replace fj : ∀ b : s, j ⟶ i b := fun b ↦ (@fj (i b) (by simpa using ⟨b.1, b.2, rfl⟩)).some
+  refine ⟨j, ⨆ (k : s), D.map (fj _) ⁻¹ᵁ V k, ?_, ?_⟩
   · simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
       TopologicalSpace.Opens.map_coe, TopologicalSpace.Opens.coe_mk]
-    have : Finite s := hs
-    exact isCompact_iUnion fun V ↦ (V.1.2.2.preimage _).isCompact
-  · ext1
-    simpa [← Set.preimage_comp, ← ContinuousMap.coe_comp,
-      ← TopCat.hom_comp, ← Scheme.Hom.comp_base, c.w] using hU.symm
-
+    exact isCompact_iUnion fun i ↦ ((hV i).preimage _).isCompact
+  · simp [-TopologicalSpace.Opens.iSup_mk, Scheme.Hom.preimage_iSup,
+      ← Scheme.Hom.comp_preimage, c.w, hVi, sSup_eq_iSup']
 
 end Opens
 
@@ -982,7 +985,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is affine, then some `Xᵢ` is affine. -/
-@[stacks 01Z5]
+@[stacks 01Z6]
 lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ (i : I), CompactSpace (D.obj i)]
@@ -1025,7 +1028,6 @@ open TopologicalSpace in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 Then any affine open cover of `lim Xᵢ` comes from a finite level. -/
-@[stacks 01Z5]
 lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ (i : I), CompactSpace (D.obj i)]

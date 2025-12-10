@@ -564,6 +564,7 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
+-- TODO: generalize to covers in subcanonical topologies
 open pullback in
 attribute [local simp] condition condition_assoc in
 lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
