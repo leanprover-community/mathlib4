@@ -33,7 +33,7 @@ theorem associated_lcm_prod (s : Finset ι) (f : ι → α) (h : Set.Pairwise s 
 
 theorem lcm_eq_prod (s : Finset ι) (f : ι → ℕ) (h : Set.Pairwise s <| Nat.Coprime.onFun f) :
     s.lcm f = s.prod f := by
-  have : Nat.Coprime = IsRelPrime := funext₂ fun _ _ ↦ propext Nat.coprime_iff_isRelPrime
-  exact (associated_lcm_prod s f <| this ▸ h).eq_of_normalized (normalize_eq _) (normalize_eq _)
+  rw [show Nat.Coprime = IsRelPrime by ext; exact Nat.coprime_iff_isRelPrime] at h
+  exact (associated_lcm_prod s f h).eq_of_normalized (normalize_eq _) (normalize_eq _)
 
 end Finset
