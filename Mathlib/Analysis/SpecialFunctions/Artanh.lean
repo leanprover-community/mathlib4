@@ -10,11 +10,11 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 /-!
 # Inverse of the tanh function
 
-In this file we define an inverse of tanh as a function from (-1, 1) to ℝ.
+In this file we define an inverse of tanh as a function from ℝ to (-1, 1).
 
 ## Main definitions
 
-- `Real.artanh`: An inverse function of `Real.tanh` as a function from (-1, 1) to ℝ.
+- `Real.artanh`: An inverse function of `Real.tanh` as a function from ℝ to (-1, 1).
 
 - `Real.tanhPartialEquiv`: `Real.tanh` as a `PartialEquiv`.
 
