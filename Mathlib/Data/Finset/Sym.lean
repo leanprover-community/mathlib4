@@ -45,7 +45,7 @@ variable {s t : Finset α} {a b : α}
 theorem mk_mem_sym2_iff : s(a, b) ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 
-@[simp]
+@[simp, grind =]
 theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
@@ -138,7 +138,6 @@ variable [DecidableEq α]
 theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
   refine z.ind fun x y ↦ ?_
-  simp only [mem_sym2_iff, Sym2.mem_iff, mem_image, Sym2.eq, Sym2.rel_iff']
   grind
 
 theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
