@@ -330,7 +330,6 @@ theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw
   linarith [angle_add_angle_eq_pi_of_angle_eq_pi p₃ h.angle₁₂₃_eq_pi,
   angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
 
-
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
