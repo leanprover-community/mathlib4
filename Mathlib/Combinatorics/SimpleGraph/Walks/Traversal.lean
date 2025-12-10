@@ -247,32 +247,33 @@ theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
   p.lastDart_eq_getLast_darts _ ▸ List.getLast_mem _
 
-/-- Use `snd_eq_head_edges` to rewrite in the reverse direction. -/
+/-- Use `mk_start_snd_eq_head_edges` to rewrite in the reverse direction. -/
 @[simp]
-theorem head_edges_eq_snd {p : G.Walk v w} (hp) : p.edges.head hp = s(v, p.snd) := by
+theorem head_edges_eq_mk_start_snd {p : G.Walk v w} (hp) : p.edges.head hp = s(v, p.snd) := by
   simp [p.edge_firstDart, Walk.edges]
 
-/-- Use `head_edges_eq_snd` to rewrite in the reverse direction. -/
-theorem snd_eq_head_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
+/-- Use `head_edges_eq_mk_start_snd` to rewrite in the reverse direction. -/
+theorem mk_start_snd_eq_head_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
     s(v, p.snd) = p.edges.head (edges_eq_nil.not.mpr hnil) :=
-  head_edges_eq_snd _ |>.symm
+  head_edges_eq_mk_start_snd _ |>.symm
 
-theorem snd_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) ∈ p.edges :=
-  p.snd_eq_head_edges hnil ▸ List.head_mem _
+theorem mk_start_snd_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) ∈ p.edges :=
+  p.mk_start_snd_eq_head_edges hnil ▸ List.head_mem _
 
-/-- Use `penultimate_eq_getLast_edges` to rewrite in the reverse direction. -/
+/-- Use `mk_penultimate_end_eq_getLast_edges` to rewrite in the reverse direction. -/
 @[simp]
-theorem getLast_edges_eq_penultimate {p : G.Walk v w} (hp) :
+theorem getLast_edges_eq_mk_penultimate_end {p : G.Walk v w} (hp) :
     p.edges.getLast hp = s(p.penultimate, w) := by
   simp [p.edge_lastDart, Walk.edges]
 
-/-- Use `getLast_edges_eq_penultimate` to rewrite in the reverse direction. -/
-theorem penultimate_eq_getLast_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
+/-- Use `getLast_edges_eq_mk_penultimate_end` to rewrite in the reverse direction. -/
+theorem mk_penultimate_end_eq_getLast_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
     s(p.penultimate, w) = p.edges.getLast (edges_eq_nil.not.mpr hnil) :=
-  getLast_edges_eq_penultimate _ |>.symm
+  getLast_edges_eq_mk_penultimate_end _ |>.symm
 
-theorem penultimate_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(p.penultimate, w) ∈ p.edges :=
-  p.penultimate_eq_getLast_edges hnil ▸ List.getLast_mem _
+theorem mk_penultimate_end_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
+    s(p.penultimate, w) ∈ p.edges :=
+  p.mk_penultimate_end_eq_getLast_edges hnil ▸ List.getLast_mem _
 
 end Walk
 
