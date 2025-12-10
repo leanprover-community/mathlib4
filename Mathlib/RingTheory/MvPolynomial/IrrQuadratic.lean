@@ -198,9 +198,11 @@ lemma irreducible_mul_X_add [IsDomain R]
 
 lemma irreducible_of_pairwise_disjoint [IsDomain R]
     (f : MvPolynomial n R) (h0 : f.support.Nontrivial)
-    (h1 : Set.PairwiseDisjoint (f.support : Set (n →₀ ℕ)) (fun d ↦ d.support))
-    (h2 : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
+    (h1 : ∀ d ∈ f.support, ∀ i ∈ d.support, d i ≤ 1)
+    (h2 : ∀ d₁ ∈ f.support, ∀ d₂ ∈ f.support, ∀ i, i ∈ d₁.support → i ∈ d₂.support → d₁ = d₂)
+    (h3 : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
     Irreducible f := by
+  classical
   obtain ⟨d, hd, hd0⟩ := h0.exists_ne 0
   rw [ne_eq, ← Finsupp.support_eq_empty, ← ne_eq, ← Finset.nonempty_iff_ne_empty] at hd0
   rcases hd0 with ⟨i, hi⟩
@@ -211,15 +213,45 @@ lemma irreducible_of_pairwise_disjoint [IsDomain R]
   rw [hf]
   apply irreducible_mul_X_add
   · simp [φ, monomial_eq_zero, hfd]
-  · sorry
-  · sorry
+  · simp [φ, hfd, h1 d hd i hi]
+  · simp_rw [mem_vars, not_exists, not_and]
+    intro k hk hik
+    obtain rfl : d = k := by
+      by_contra! hdk
+      have hkf : k ∈ f.support := by
+        rw [mem_support_iff] at hk ⊢
+        rw [hf, coeff_add, coeff_mul_X', if_pos hik]
+        dsimp only [φ]
+        rwa [coeff_monomial, if_neg, zero_add]
+        contrapose! hdk
+        apply tsub_inj_left _ _ hdk
+        · simp only [Finsupp.mem_support_iff, ne_eq, Finsupp.single_le_iff] at hi ⊢
+          grind
+        · simp only [Finsupp.mem_support_iff, ne_eq, Finsupp.single_le_iff] at hik ⊢
+          grind
+      have := h2 _ hd _ hkf i hi hik
+      contradiction
+    rw [mem_support_iff] at hk
+    apply hk
+    rw [Finsupp.mem_support_iff] at hi
+    simp [ψ, coeff_mul_X', hi, φ]
   · intro p hpφ hpψ
     simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
     obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
-    obtain rfl : m = 0 := by sorry
+    obtain rfl : m = 0 := by
+      obtain ⟨d₂, hd₂, H⟩ := h0.exists_ne d
+      ext j
+      contrapose! H
+      rw [Finsupp.zero_apply] at H
+      apply h2 d₂ hd₂ d hd j
+      · sorry
+      · rw [Finsupp.mem_support_iff]
+        specialize hm j
+        simp only [Finsupp.coe_tsub, Pi.sub_apply] at hm
+        grind
     simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
     refine ⟨b, ?_, rfl⟩
-    apply h2
+    apply h3
     intro k
     obtain rfl | hk := eq_or_ne k d
     · exact hb
@@ -229,12 +261,11 @@ lemma irreducible_of_pairwise_disjoint [IsDomain R]
       rw [hf, coeff_add, this, zero_add]
       rw [← C_apply, C_dvd_iff_dvd_coeff] at hpψ
       apply hpψ
-    classical
     rw [coeff_mul_X', ite_eq_right_iff]
     intro hik
     rw [← ne_eq, ← mem_support_iff] at hkf
-    have := h1 hkf hd hk
-    simp_all [Function.onFun, disjoint_iff, Finset.eq_empty_iff_forall_notMem]
+    have := h2 _ hkf _ hd i hik hi
+    contradiction
 
 lemma irreducible_mul_X_add' [IsDomain R]
     (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars) :
