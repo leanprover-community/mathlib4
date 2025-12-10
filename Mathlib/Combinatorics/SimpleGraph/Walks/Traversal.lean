@@ -142,7 +142,7 @@ lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ 
 
 @[simp]
 lemma support_getElem_one {p : G.Walk u v} (hp) : p.support[1]'hp = p.snd := by
-  grind [getVert_eq_support_getElem, length_support, not_nil_iff_lt_length]
+  grind [getVert_eq_support_getElem]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -174,7 +174,7 @@ lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
   grind [getVert_mem_support, List.dropLast_concat_getLast, getLast_support]
 
 lemma support_getElem_length_sub_one_eq_penultimate {p : G.Walk u v} :
-    p.support[p.length - 1]'(by grind [length_support]) = p.penultimate := by
+    p.support[p.length - 1]'(by grind) = p.penultimate := by
   grind [getVert_eq_support_getElem]
 
 /-- The first dart of a walk. -/
@@ -221,11 +221,11 @@ theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil
 @[simp]
 theorem getLast_darts_eq_lastDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
     p.darts.getLast hnil = p.lastDart (darts_eq_nil.not.mp hnil) := by
-  grind [lastDart_eq, length_darts, not_nil_iff_lt_length]
+  grind [lastDart_eq, not_nil_iff_lt_length]
 
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
     p.lastDart hnil = p.darts.getLast (darts_eq_nil.not.mpr hnil) := by
-  grind [lastDart_eq, length_darts, not_nil_iff_lt_length]
+  grind [lastDart_eq, not_nil_iff_lt_length]
 
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
   p.lastDart_eq_getLast_darts _ ▸ List.getLast_mem _
