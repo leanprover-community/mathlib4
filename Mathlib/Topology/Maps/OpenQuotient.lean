@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Open quotient maps
@@ -65,7 +66,7 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
     fun hs ↦ hs.preimage h.isOpenMap⟩
 
 /-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
-theorem IsOpenQuotientMap.baireSpace {f : X → Y} (hf : IsOpenQuotientMap f) :
+theorem baireSpace {f : X → Y} [BaireSpace X] (hf : IsOpenQuotientMap f) :
     BaireSpace Y := by
   constructor
   intro u hou hdu
