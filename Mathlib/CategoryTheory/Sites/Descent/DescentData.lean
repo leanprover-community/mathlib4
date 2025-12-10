@@ -28,17 +28,10 @@ when `F` also has a covariant functoriality, etc.).
 -/
 
 @[expose] public section
+
 universe t t' t'' v' v u' u
 
-
 namespace CategoryTheory
-
--- to be moved
-lemma CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ : C}
-    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
-    (h : CommSq t l r b) :
-    CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
-  ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
 
 open Opposite
 
@@ -270,7 +263,8 @@ def toDescentDataCompPullFunctorIso :
             (f' i₁).op.toLoc f₁.op.toLoc _ q.op.toLoc (p.op.toLoc ≫ q.op.toLoc) rfl
             (by grind) (by grind) M,
           pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' i₁) (f₂ ≫ p' i₂),
-          ← cancel_mono ((F.mapComp' (f' i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by grind)).inv.app _)]
+          ← cancel_mono ((F.mapComp' (f' i₂).op.toLoc f₂.op.toLoc q.op.toLoc
+            (by grind)).inv.app _)]
         dsimp
         simp only [Category.assoc,
           ← F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app p.op.toLoc
