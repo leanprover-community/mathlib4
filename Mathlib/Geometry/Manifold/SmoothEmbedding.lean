@@ -54,18 +54,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I J n) in
 /-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
 and a `C^k` immersion. -/
-def IsSmoothEmbedding (f : M → N) : Prop := IsImmersion I J n f ∧ IsEmbedding f
-
-lemma isSmoothEmbedding_iff {f : M → N} :
-  IsSmoothEmbedding I J n f ↔ IsImmersion I J n f ∧ IsEmbedding f := by rfl
+@[mk_iff]
+structure IsSmoothEmbedding (f : M → N) where
+  isImmersion : IsImmersion I J n f
+  isImbedding : IsEmbedding f
 
 namespace IsSmoothEmbedding
 
 variable {f g : M → N}
-
-lemma isImmersion (hf : IsSmoothEmbedding I J n f) : IsImmersion I J n f := hf.1
-
-lemma isEmbedding (hf : IsSmoothEmbedding I J n f) : IsEmbedding f := hf.2
 
 -- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
 proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : ContMDiff I J n f
@@ -80,13 +76,11 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsSmoothEmbedding (I.prod I') (J.prod J') n (Prod.map f g) :=
   ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
 
-/- follows from IsImmersion.comp, once proven
+-- use IsImmersion.comp and IsEmbedding.comp
 /-- The composition of two smooth embeddings is a smooth embedding. -/
-lemma comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
+proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
     {g : N → N'} (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
-    IsSmoothEmbedding I J' n (g ∘ f) :=
-  ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
--/
+    IsSmoothEmbedding I J' n (g ∘ f)
 
 end IsSmoothEmbedding
 
