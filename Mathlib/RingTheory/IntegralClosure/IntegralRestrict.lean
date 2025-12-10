@@ -519,7 +519,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
   rw [← isIntegral_algHom_iff (toAlgHom A L E)
     (FaithfulSMul.algebraMap_injective L E), coe_toAlgHom', map_mul, map_inv₀,
     algebraMap_apply A K L, algebraMap_intNorm (L := L), ← algebraMap_apply, ← algebraMap_apply,
-    norm_eq_prod_roots _ (IsAlgClosed.splits_codomain _), ← Multiset.prod_erase
+    norm_eq_prod_roots _ (IsAlgClosed.splits _), ← Multiset.prod_erase
     (a := algebraMap B E x)]
   · have := NoZeroSMulDivisors.trans_faithfulSMul B L E
     rw [mul_pow, ← mul_pow_sub_one (Nat.pos_iff_ne_zero.1 Module.finrank_pos) (algebraMap B E x),
