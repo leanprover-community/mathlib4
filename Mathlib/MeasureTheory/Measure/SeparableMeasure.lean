@@ -36,7 +36,7 @@ of separability in the metric space made by constant indicators equipped with th
 
 * `MeasureTheory.Measure.MeasureDense μ 𝒜`: `𝒜` is a measure-dense family if it only contains
   measurable sets and if the following condition is satisfied: if `s` is measurable with finite
-  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε `.
+  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε`.
 * `MeasureTheory.IsSeparable`: A measure is separable if there exists a countable and
   measure-dense family.
 

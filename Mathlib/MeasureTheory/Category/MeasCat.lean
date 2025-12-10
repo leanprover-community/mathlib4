@@ -80,7 +80,7 @@ the pure values are the Dirac measure, and the bind operation maps to the integr
 `(μ >>= ν) s = ∫ x. (ν x) s dμ`.
 
 In probability theory, the `MeasCat`-morphisms `X → Prob X` are (sub-)Markov kernels (here `Prob` is
-the restriction of `Measure` to (sub-)probability space.)
+the restriction of `Measure` to (sub-)probability spaces.)
 -/
 def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.1 X.2)
