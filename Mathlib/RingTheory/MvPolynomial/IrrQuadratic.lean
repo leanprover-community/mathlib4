@@ -564,23 +564,18 @@ theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
     simp [sum_smul_X_mul_Y, ι, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum,
       coeff_X_mul', Finsupp.single_apply, eq_comm]
   have hsupp : (sum_smul_X_mul_Y c).support = c.support.map ι := by
-    ext d
-    simp only [mem_support_iff, ne_eq, Finset.mem_map, Finsupp.mem_support_iff]
-    constructor
-    · have aux (d : n ⊕ n →₀ ℕ) (i : n) :
-          ¬d (Sum.inl i) = 0 ∧ Finsupp.single (Sum.inr i) 1 = d - Finsupp.single (Sum.inl i) 1 ↔
-          d = ι i := by
-        constructor <;> simp +contextual [ι, add_comm (Finsupp.single (Sum.inl i) 1),
-          Finsupp.sub_add_single_one_cancel]
-      intro H
-      obtain ⟨i, hi1, hi2⟩ : ∃ a ∈ {a ∈ c.support | d = ι a}, c a ≠ 0 := by
-        apply Finset.exists_ne_zero_of_sum_ne_zero
-        simpa [sum_smul_X_mul_Y, ι, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum,
-          coeff_X_mul', Finset.sum_ite, coeff_X', Finset.filter_filter, aux] using H
-      simp only [eq_comm (a := d), Finset.mem_filter, Finsupp.mem_support_iff] at hi1
-      exact ⟨i, hi1⟩
-    · rintro ⟨i, hi, rfl⟩
-      simpa [hcoeff] using hi
+    apply le_antisymm _ (fun d ↦ by simp +contextual [eq_comm (b := d), hcoeff])
+    apply le_trans Finsupp.support_sum
+    intro d
+    simp only [Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, Finset.mem_map,
+      forall_exists_index, and_imp, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
+    intro i hci (hi : coeff d _ ≠ 0)
+    refine ⟨i, hci, ?_⟩ 
+    simp only [coeff_smul, coeff_X_mul', Finsupp.mem_support_iff, ne_eq, coeff_X', ite_not,
+      smul_eq_mul, mul_ite, mul_zero, mul_one, ite_eq_left_iff, ite_eq_right_iff,
+      Classical.not_imp] at hi
+    simp [ι, hi.2.1, add_comm (Finsupp.single (Sum.inl i) 1),
+      Finsupp.sub_add_single_one_cancel hi.1]
   apply irreducible_of_pairwise_disjoint
   · rwa [hsupp, Finset.map_nontrivial]
   · simp [hsupp, ι, Finsupp.single_apply]
