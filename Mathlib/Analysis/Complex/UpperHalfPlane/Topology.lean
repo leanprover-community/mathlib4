@@ -11,7 +11,7 @@ public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
 # Topology on the upper half plane

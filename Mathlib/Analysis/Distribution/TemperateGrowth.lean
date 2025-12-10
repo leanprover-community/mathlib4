@@ -76,34 +76,6 @@ theorem HasTemperateGrowth.isBigO_uniform {f : E → F}
   · simp
   · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
 
-theorem HasTemperateGrowth.bound_uniform {f : E → F}
-    (hf_temperate : f.HasTemperateGrowth) (N : ℕ) :
-    ∃ k C, ∀ n ≤ N, ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C h using hf_temperate.2
-  use (Finset.range (N + 1)).sup k, (Finset.range (N + 1)).sum (max 0 C)
-  intro n hn x
-  apply (h n x).trans
-  have sum_pos : 0 ≤ (Finset.range (N + 1)).sum (0 ⊔ C) := by
-    apply Finset.sum_nonneg
-    intro x hx
-    apply le_max_left
-  gcongr
-  · by_cases! h : 0 ≤ C n
-    · have hn' : n ∈ Finset.range (N + 1) := by
-        grind
-      set f' := fun k ↦ if k = n then C n else 0
-      have : C n = (Finset.range (N + 1)).sum f' := by
-        simp [f', hn']
-      rw [this]
-      apply Finset.sum_le_sum
-      intro i hi
-      by_cases! hi' : i = n
-      all_goals
-      simp [hi']
-    · exact (lt_of_lt_of_le h sum_pos).le
-  · simp
-  · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
-
 theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
@@ -150,20 +122,13 @@ Version where the outer function `g` is only of temperate growth on the image of
 `f`. -/
 theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
-    (hg₂ : ∀ N, ∃ k C, ∀ n ≤ N, ∀ x ∈ t, ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
+    (hg₂ : ∀ N, ∃ k C, ∃ (_hC : 0 ≤ C), ∀ n ≤ N, ∀ x ∈ t,
+    ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
     (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   refine ⟨hg₁.comp_contDiff hf.1 (ht ⟨·, rfl⟩), fun n ↦ ?_⟩
-  obtain ⟨k₁, C₁, h₁⟩ := hf.bound_uniform n
-  obtain ⟨k₂, C₂, h₂⟩ := hg₂ n
+  obtain ⟨k₁, C₁, hC₁, h₁⟩ := hf.norm_iteratedFDeriv_le_uniform n
+  obtain ⟨k₂, C₂, hC₂, h₂⟩ := hg₂ n
   have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0 (zero_le _)
-  have hC₁ : 0 ≤ C₁ := by simpa using (norm_nonneg _).trans (h₁' 0)
-  have hC₂ : 0 ≤ C₂ := by
-    obtain ⟨y, hy⟩ := Set.range_nonempty f
-    have := (norm_nonneg _).trans (h₂ 0 (zero_le _) y (ht hy))
-    rw [mul_nonneg_iff] at this
-    rcases this with ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩
-    · exact h₁
-    · simpa only using not_le.mpr (by positivity) h₂
   set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
   use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
   intro x
@@ -182,8 +147,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
         gcongr
         · simp
         · grind
-      _ = _ := by
-        simp [C₃, Finset.sum_mul]
+      _ = _ := by simp [C₃, Finset.sum_mul]
   have hf' : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv ℝ i f x‖ ≤ ((1 + C₁) * (1 + ‖x‖) ^ k₁) ^ i := by
     intro i hi hi'
     calc _ ≤ C₁ * (1 + ‖x‖) ^ k₁ := h₁ i hi' x
@@ -204,7 +168,7 @@ theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : 
   · simp
   · rw [contDiffOn_univ]
     exact hg.1
-  · simpa [iteratedFDerivWithin_univ] using hg.bound_uniform
+  · simpa [iteratedFDerivWithin_univ] using hg.norm_iteratedFDeriv_le_uniform
 
 section Addition
 
@@ -322,7 +286,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+    convert (2 • innerSL ℝ).hasTemperateGrowth
   · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]

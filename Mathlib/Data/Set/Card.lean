@@ -845,6 +845,9 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 
+theorem ncard_congr' {S : Set α} {T : Set β} (f : S ≃ T) : Set.ncard S = Set.ncard T :=
+  Cardinal.toNat_congr f
+
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
@@ -1179,7 +1182,7 @@ lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s 
     (he : Even (s.ncard)) : 1 < s.ncard := by
   rw [← Set.ncard_pos hs] at hn
   have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
-  cutsat
+  lia
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
