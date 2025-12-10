@@ -65,7 +65,7 @@ structure SimplicialComplex where
   /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
   /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
-  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ≠ ∅ → t ∈ faces
+  down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t.Nonempty → t ∈ faces
   inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
 

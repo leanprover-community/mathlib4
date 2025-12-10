@@ -633,7 +633,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- Then the open set `Gs JB` approximates `B` rather well:
   -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
   -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
-  set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
+  set JB := {i | (B ∩ Es i).Nonempty ∧ i ∈ Iio N}
   have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
     suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
       refine this.trans <| union_subset_union le_rfl ?_
