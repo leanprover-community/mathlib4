@@ -31,6 +31,10 @@ as the variation of `f` on the closed interval `[a, b]`. Equals zero when `b ≤
 noncomputable def arcLength (a b : α) : ℝ≥0∞ :=
   eVariationOn f (Set.Icc a b)
 
+theorem arcLength_eq : arcLength f a b = eVariationOn f (Set.Icc a b) := rfl
+
+theorem arcLength_ne_iff : (arcLength f a b ≠ ∞) ↔ BoundedVariationOn f (Set.Icc a b) := by rfl
+
 /-- `arcLength f a b` is the supremum of finite sums of `edist (f <| u i) (f <| u <| i+1)` for `u`
 satisfying the same conditions as for `eVariationOn` with the addition of:
 * `u 0` is `a`.
@@ -187,7 +191,8 @@ theorem continuous_right_self_arcLength
     refine Filter.eventually_of_mem (Iio_mem_nhds hab) (fun x hb ha ↦ ?_)
     exact ((arcLength_mono f a hb.le).trans_eq hlab).trans (zero_le ε)
   · have hε2 : 0 < ε / 2 := ENNReal.half_pos hε.ne'
-    rw [arcLength_eq_iSup f hab.le] at hrect hlab
+    rw [← arcLength_ne_iff, arcLength_eq_iSup] at hrect <;> try exact hab.le
+    rw [arcLength_eq_iSup] at hlab <;> try exact hab.le
     obtain ⟨⟨n, u, hu, hmem, hea, hal⟩, hl⟩ :=
       lt_iSup_iff.1 (ENNReal.sub_lt_self hrect hlab hε2.ne')
     simp_rw [← arcLength_eq_iSup f hab.le, edist_comm] at hl
@@ -251,7 +256,7 @@ theorem continuous_right_arcLength_right
 theorem continuous_left_arcLength_left
     (cont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
     ContinuousWithinAt (arcLength f · c) (Set.Iic b) b := by
-  rw [← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
+  rw [← arcLength_ne_iff, ← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
   refine ContinuousWithinAt.comp (t := Set.Ici (toDual b)) ?_ ?_ fun x hx ↦ ?_
   · exact continuous_right_arcLength_right (f ∘ ofDual) (by simpa) hrect (by simpa)
   · exact continuous_toDual.continuousWithinAt
@@ -274,7 +279,7 @@ theorem continuous_left_arcLength_right
 theorem continuous_right_arcLength_left
     (cont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
     ContinuousWithinAt (arcLength f · b) (Set.Ici a) a := by
-  rw [← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
+  rw [←arcLength_ne_iff, ← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
   exact (continuous_left_arcLength_right (f ∘ ofDual) hrect <| by simpa).comp
     continuous_toDual.continuousWithinAt fun x ↦ id
 
@@ -296,7 +301,7 @@ theorem continuousOn_Iic_arcLength_right (cont : ContinuousOn f (Set.Icc a b)) :
 
 theorem continuousOn_Ici_arcLength_left (cont : ContinuousOn f (Set.Icc a b)) :
     ContinuousOn (arcLength f · b) (Set.Ici a) := by
-  rw [← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
+  rw [← arcLength_ne_iff, ← arcLength_comp_ofDual] at hrect; rw [arcLength_left_eq]
   exact (continuousOn_Iic_arcLength_right _ hrect <| by simpa).comp
     continuous_toDual.continuousOn fun x ↦ id
 
