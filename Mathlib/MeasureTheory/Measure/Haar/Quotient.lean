@@ -566,56 +566,44 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
     rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
     obtain ⟨U, hU, hf⟩ := ha _ (Metric.dist_mem_uniformity hv0)
-    simp [Set.subset_def] at hf
-    replace hU := inv_mem_nhds_one B hU
-    have hU' := mul_singleton_mem_nhds_of_nhds_one b hU
-    replace hU' := Filter.inter_mem hU' hb
-    refine Filter.mem_of_superset hU' ?_
-    rintro - ⟨⟨c, d, e, rfl, g, rfl⟩, hm⟩
-    have : ∀ a : A, dist (f (c * e * φ a)) (f (e * φ a)) < v := by
-      intro a
-      simp only [Set.mem_inv] at d
-      specialize hf (c * e * φ a) (e * φ a)
-      simpa [d] using hf
-    dsimp
+    refine Filter.mem_of_superset (Filter.inter_mem
+      (mul_singleton_mem_nhds_of_nhds_one b (inv_mem_nhds_one B hU)) hb) ?_
+    rintro - ⟨⟨t, ht, b, rfl, -, rfl⟩, htb⟩
+    have hd (a : A) : dist (f (t * b * φ a)) (f (b * φ a)) < v := by
+      simpa using @hf ⟨t * b * φ a, b * φ a⟩ (by simpa)
+    replace hd (a : A) : ‖f (t * b * φ a) - f (b * φ a)‖ₑ ≤ ENNReal.ofReal v := by
+      rw [← ofReal_norm_eq_enorm, ← dist_eq_norm_sub]
+      exact ENNReal.ofReal_le_ofReal (hd a).le
     apply ENNReal.toReal_lt_of_lt_ofReal
-    rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm]
-    rw [← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
-    · have : ∀ x : A, ‖((fun a ↦ f (c * e * φ a)) - fun a ↦ f (e * φ a)) x‖ₑ ≤ ENNReal.ofReal v := by
-        intro x
-        simp only [dist_eq_norm_sub] at this
-        simp
-        rw [← ofReal_norm_eq_enorm]
-        apply ENNReal.ofReal_le_ofReal
-        exact (this x).le
-      refine (MeasureTheory.lintegral_mono (g := fun _ ↦ ENNReal.ofReal v) ?_).trans_lt ?_
-      · intro x
-        exact this x
-      · rw [lintegral_const]
-        simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-        change _ * V₀ < _
-        rwa [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
-          ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
+    rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm,
+      ← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
+    · apply (MeasureTheory.lintegral_mono hd).trans_lt
+      -- up to here
+      rw [lintegral_const]
+      simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+      change _ * V₀ < _
+      rwa [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
+        ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
     · intro x hx
-      have : f (c * e * φ x) ≠ 0 ∨ f (e * φ x) ≠ 0 := by
+      have : f (t * b * φ x) ≠ 0 ∨ f (b * φ x) ≠ 0 := by
         contrapose! hx
         simp [hx.1, hx.2]
       rcases this with h | h
-      · have : c * e * φ x ∈ K := by
+      · have : t * b * φ x ∈ K := by
           contrapose! h
           apply hf₀ _ h
         -- c * e * φ x ∈ K
         change φ x ∈ U₀⁻¹ * K
-        have h : φ x = (c * e)⁻¹ * (c * e * φ x) := by group
+        have h : φ x = (t * b)⁻¹ * (t * b * φ x) := by group
         rw [h]
         apply Set.mul_mem_mul
         · rwa [Set.inv_mem_inv]
         · exact this
-      · have : e * φ x ∈ K := by
+      · have : b * φ x ∈ K := by
           contrapose! h
           apply hf₀ _ h
         change φ x ∈ U₀⁻¹ * K
-        have h : φ x = e⁻¹ * (e * φ x) := by simp
+        have h : φ x = b⁻¹ * (b * φ x) := by simp
         rw [h]
         apply Set.mul_mem_mul
         · rw [Set.inv_mem_inv]
