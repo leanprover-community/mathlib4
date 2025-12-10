@@ -235,9 +235,9 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
     (mem_closure_ne_iff_frequently_within.mp hfz₀)
 
-/-- The *identity principle* for analytic functions, global version: if two functions are
-analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
-they coincide globally in `U`.
+/-- The **identity principle**/**identity theorem** for analytic functions, global version:
+if two functions are analytic on a connected set `U` and coincide at points which accumulate to a
+point `z₀ ∈ U`, then they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`. -/
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
@@ -258,9 +258,9 @@ theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hg : 
     EqOn f g U :=
   hf.eqOn_of_preconnected_of_frequently_eq hg hU h₀ (mem_closure_ne_iff_frequently_within.mp hfg)
 
-/-- The *identity principle* for analytic functions, global version: if two functions on a normed
-field `𝕜` are analytic everywhere and coincide at points which accumulate to a point `z₀`, then
-they coincide globally.
+/-- The **identity principle**/**identity theorem** for analytic functions, global version:
+if two functions on a normed field `𝕜` are analytic everywhere and coincide at points which
+accumulate to a point `z₀`, then they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOnNhd.eq_of_eventuallyEq`. -/
 theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f univ)
