@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
@@ -472,3 +475,320 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   apply QuotientAddGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 
 end
+
+/-
+QuotientGroup.integral_eq_integral_automorphize.{u_1, u_2} {G : Type u_1} [Group G] [MeasurableSpace G]
+  [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] {μ : Measure G} {Γ : Subgroup G} {𝓕 : Set G}
+  (h𝓕 : IsFundamentalDomain (↥Γ.op) 𝓕 μ) [Countable ↥Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] {E : Type u_2}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E} (hf₁ : Integrable f μ)
+  (hf₂ : AEStronglyMeasurable (automorphize f) (Measure.map mk (μ.restrict 𝓕))) :
+  ∫ (x : G), f x ∂μ = ∫ (x : G ⧸ Γ), automorphize f x ∂Measure.map mk (μ.restrict 𝓕)
+-/
+
+-- look into dropping assumptions
+
+variable {A B C E : Type*} [Group A] [Group B] [Group C]
+  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [IsTopologicalGroup A] [IsTopologicalGroup B] [IsTopologicalGroup C]
+  [MeasurableSpace A] [MeasurableSpace B] [MeasurableSpace C]
+  [BorelSpace A] [BorelSpace B] [BorelSpace C]
+  [LocallyCompactSpace A] [LocallyCompactSpace B] [LocallyCompactSpace C]
+  (φ : A →* B) (ψ : B →* C) (hψ : Continuous ψ)
+  (h1 : Topology.IsClosedEmbedding φ) (h2 : ψ.ker ≤ φ.range) (h3 : φ.range ≤ ψ.ker)
+  (h4 : IsOpenQuotientMap ψ)
+  (μA : Measure A) (μC : Measure C) (hμA : IsHaarMeasure μA) (hμC : IsHaarMeasure μC)
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+noncomputable def twist (f : CompactlySupportedContinuousMap B E) (b : B) :
+    CompactlySupportedContinuousMap A E where
+  toFun a := f (b * φ a)
+  hasCompactSupport' := by
+    have h := f.hasCompactSupport
+    rw [← exists_compact_iff_hasCompactSupport] at h ⊢
+    obtain ⟨K, hK, hf⟩ := h
+    refine ⟨φ ⁻¹' (b⁻¹ • K), h1.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
+    contrapose! hx
+    simpa [mem_smul_set_iff_inv_smul_mem]
+  continuous_toFun := by
+    fun_prop
+
+noncomputable def average₀ (f : B → E) (b : B) : E :=
+  ∫ a, f (b * φ a) ∂μA
+
+include h2 in
+noncomputable def average₀_eq (f : B → E) {b₁ b₂ : B} (h : ψ b₁ = ψ b₂) :
+    average₀ φ μA f b₁ = average₀ φ μA f b₂ := by
+  rw [← inv_mul_eq_one, ← map_inv, ← map_mul] at h
+  obtain ⟨a, ha⟩ := h2 h
+  rw [eq_inv_mul_iff_mul_eq] at ha
+  simp_rw [← ha, average₀, mul_assoc, ← map_mul]
+  exact (integral_mul_left_eq_self _ a).symm
+
+noncomputable def average₀_add (f g : CompactlySupportedContinuousMap B E) :
+    average₀ φ μA (f + g) = average₀ φ μA f + average₀ φ μA g := by
+  ext b
+  simp only [average₀, Pi.add_apply]
+  apply integral_add
+  · exact (twist φ h1 f b).integrable
+  · exact (twist φ h1 g b).integrable
+
+noncomputable def average₀_smul (x : ℝ) (f : B → E) :
+    average₀ φ μA (x • f) = x • average₀ φ μA f := by
+  ext b
+  simp only [average₀, Pi.smul_apply]
+  apply integral_smul
+
+noncomputable def average₀_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
+    average₀ φ μA f ≤ average₀ φ μA g := by
+  rw [Pi.le_def]
+  intro b
+  simp only [average₀]
+  apply integral_mono
+  · exact (twist φ h1 f b).integrable
+  · exact (twist φ h1 g b).integrable
+  · rw [Pi.le_def]
+    intro a
+    apply h
+
+noncomputable def average (f : B → E) (c : C) : E :=
+  average₀ φ μA f (Function.invFun ψ c)
+
+noncomputable def average_zero :
+    average φ ψ μA (0 : B → E) = 0 := by
+  ext
+  simp [average, average₀]
+
+noncomputable def average_add (f g : CompactlySupportedContinuousMap B E) :
+    average φ ψ μA (f + g) = average φ ψ μA f + average φ ψ μA g := by
+  ext c
+  simp only [average, Pi.add_apply, average₀_add φ h1]
+
+noncomputable def average_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
+    average φ ψ μA f ≤ average φ ψ μA g := by
+  rw [Pi.le_def]
+  exact fun _ ↦ average₀_mono φ h1 μA hμA f g h _
+
+noncomputable def average_smul (x : ℝ) (f : B → E) :
+    average φ ψ μA (x • f) = x • average φ ψ μA f := by
+  ext c
+  simp only [average, Pi.smul_apply, average₀_smul]
+
+include h2 hμA in
+theorem average_apply (f : B → E) (b : B) : average φ ψ μA f (ψ b) = average₀ φ μA f b :=
+  average₀_eq φ ψ h2 μA hμA f Function.apply_invFun_apply
+
+open Filter
+
+include h1 h2 h4 hμA in
+theorem average_continuous (f : CompactlySupportedContinuousMap B E) :
+    Continuous (average φ ψ μA f) := by
+  rw [← h4.continuous_comp_iff]
+  change Continuous fun c ↦ _
+  simp only [Function.comp_apply, average_apply φ ψ h2 μA]
+  simp only [average₀]
+  let p₀ : B → A → E := fun b a ↦ f (b * φ a)
+  have hp₀ (b : B) : MemLp (p₀ b) 1 μA := by
+    apply Continuous.memLp_of_hasCompactSupport
+    · exact (twist φ h1 f b).continuous
+    · exact (twist φ h1 f b).hasCompactSupport
+  let p : B → Lp E 1 μA := fun b ↦ MemLp.toLp (p₀ b) (hp₀ b)
+  have key (b : B) : ∫ a, p b a ∂μA = ∫ a, f (b * φ a) ∂μA :=
+    integral_congr_ae (hp₀ b).coeFn_toLp
+  simp only [← key]
+  suffices Continuous p by
+    exact continuous_integral.comp this
+  simp only [p, p₀]
+  let := IsTopologicalGroup.rightUniformSpace B -- or perhaps left
+  have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
+  rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
+  rw [Metric.continuous_iff']
+  intro b ε hε
+  obtain ⟨U₀, hU₀, hb⟩ := exists_compact_mem_nhds b
+  have hf₀ := f.hasCompactSupport
+  rw [← exists_compact_iff_hasCompactSupport] at hf₀
+  obtain ⟨K, hK, hf₀⟩ := hf₀
+  let prod : Set B := U₀⁻¹ * K
+  let preim : Set A := φ ⁻¹' prod
+  have hpreim : IsCompact preim := h1.isCompact_preimage (hU₀.inv.mul hK)
+  let V₀ := μA preim
+  have hV₀' : V₀ < ⊤ := hpreim.measure_lt_top
+  let v : ℝ := if V₀ = 0 then 1 else (ε / ENNReal.toReal (μA preim)) / 2
+  have hv : 0 < v := by
+    simp only [v]
+    split_ifs with h
+    · exact one_pos
+    · exact div_pos (div_pos hε (ENNReal.toReal_pos h hV₀'.ne)) two_pos
+  simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
+  specialize ha _ (Metric.dist_mem_uniformity hv)
+  simp only [Filter.eventually_iff] at ha ⊢
+  change _ ∈ Filter.comap _ _ at ha
+  rw [Filter.mem_comap] at ha
+  obtain ⟨U, hU, hf⟩ := ha
+  simp [Set.subset_def] at hf
+  replace hU := inv_mem_nhds_one B hU
+  have hU' := mul_singleton_mem_nhds_of_nhds_one b hU
+  replace hU' := Filter.inter_mem hU' hb
+  refine Filter.mem_of_superset hU' ?_
+  rintro - ⟨⟨c, d, e, rfl, g, rfl⟩, hm⟩
+  have : ∀ a : A, dist (f (c * e * φ a)) (f (e * φ a)) < v := by
+    intro a
+    simp only [Set.mem_inv] at d
+    specialize hf (c * e * φ a) (e * φ a)
+    simpa [d] using hf
+  dsimp
+  apply ENNReal.toReal_lt_of_lt_ofReal
+  rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm]
+  rw [← MeasureTheory.setLIntegral_eq_of_support_subset (s := preim)]
+  · have : ∀ x : A, ‖((fun a ↦ f (c * e * φ a)) - fun a ↦ f (e * φ a)) x‖ₑ ≤ ENNReal.ofReal v := by
+      intro x
+      simp only [dist_eq_norm_sub] at this
+      simp
+      rw [← ofReal_norm_eq_enorm]
+      apply ENNReal.ofReal_le_ofReal
+      exact (this x).le
+    refine (MeasureTheory.lintegral_mono (g := fun _ ↦ ENNReal.ofReal v) ?_).trans_lt ?_
+    · intro x
+      exact this x
+    · rw [lintegral_const]
+      simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+      simp only [v]
+      split_ifs with h
+      · simp only [V₀] at h
+        simpa [h]
+      · change _ * V₀ < _
+        rw [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul (by positivity)]
+        rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
+        simp only [V₀]
+        field_simp
+        grw [div_self_le_one]
+        norm_num
+  · intro x hx
+    have : f (c * e * φ x) ≠ 0 ∨ f (e * φ x) ≠ 0 := by
+      contrapose! hx
+      simp [hx.1, hx.2]
+    rcases this with h | h
+    · have : c * e * φ x ∈ K := by
+        contrapose! h
+        apply hf₀ _ h
+      -- c * e * φ x ∈ K
+      change φ x ∈ U₀⁻¹ * K
+      have h : φ x = (c * e)⁻¹ * (c * e * φ x) := by group
+      rw [h]
+      apply Set.mul_mem_mul
+      · rwa [Set.inv_mem_inv]
+      · exact this
+    · have : e * φ x ∈ K := by
+        contrapose! h
+        apply hf₀ _ h
+      change φ x ∈ U₀⁻¹ * K
+      have h : φ x = e⁻¹ * (e * φ x) := by simp
+      rw [h]
+      apply Set.mul_mem_mul
+      · rw [Set.inv_mem_inv]
+        exact mem_of_mem_nhds hb
+      · exact this
+
+include h3 h4 hμA in
+theorem average_hasCompactSupport (f : CompactlySupportedContinuousMap B E) :
+    HasCompactSupport (average φ ψ μA f) := by
+  have h := f.hasCompactSupport
+  rw [← exists_compact_iff_hasCompactSupport] at h ⊢
+  obtain ⟨K, hK, hf⟩ := h
+  refine ⟨ψ '' K, hK.image h4.continuous, fun x hx ↦ ?_⟩
+  simp only [average, average₀]
+  suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this]
+  intro a
+  apply hf
+  contrapose! hx
+  refine ⟨_, hx, ?_⟩
+  rw [map_mul]
+  rw [Function.rightInverse_invFun h4.surjective, mul_eq_left]
+  apply h3
+  use a
+
+include hμA hμC h1 h2 h3 h4 in
+theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
+    Integrable (average φ ψ μA f) μC := by
+  change Integrable (fun c ↦ average φ ψ μA f c) μC
+  have hc : Continuous (fun c ↦ average φ ψ μA f c) :=
+    average_continuous φ ψ h1 h2 h4 μA hμA f
+  have hs : HasCompactSupport (fun c ↦ average φ ψ μA f c) :=
+    average_hasCompactSupport φ ψ h3 h4 μA hμA f
+  exact hc.integrable_of_hasCompactSupport hs
+
+noncomputable def integrate (f : B → E) : E :=
+  ∫ c, average φ ψ μA f c ∂μC
+
+include h1 h2 h3 h4 hμA hμC in
+theorem integrate_add (f g : CompactlySupportedContinuousMap B E) :
+    integrate φ ψ μA μC (f + g) = integrate φ ψ μA μC f + integrate φ ψ μA μC g := by
+  simp only [integrate, average_add φ ψ h1, Pi.add_apply]
+  apply integral_add
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC f
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC g
+
+theorem integrate_smul (x : ℝ) (f : B → E) :
+    integrate φ ψ μA μC (x • f) = x • integrate φ ψ μA μC f := by
+  simp only [integrate, Pi.smul_apply, average_smul]
+  apply integral_smul
+
+include h1 h2 h3 h4 hμA hμC in
+theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
+    integrate φ ψ μA μC f ≤ integrate φ ψ μA μC g := by
+  simp only [integrate]
+  apply integral_mono
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC f
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC g
+  · exact average_mono φ ψ h1 μA hμA f g h
+
+noncomputable def map : CompactlySupportedContinuousMap B ℝ →ₚ[ℝ] ℝ where
+  toFun f := integrate φ ψ μA μC f
+  map_add' f g := integrate_add φ ψ h1 h2 h3 h4 μA μC hμA hμC f g
+  map_smul' x f := integrate_smul φ ψ μA μC x f
+  monotone' f g h := integrate_mono φ ψ h1 h2 h3 h4 μA μC hμA hμC f g h
+
+variable [T2Space B]
+
+noncomputable def inducedMeasure : Measure B :=
+  RealRMK.rieszMeasure (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
+
+theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
+    ∫ b : B, f b ∂(inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC) = integrate φ ψ μA μC f := by
+  apply RealRMK.integral_rieszMeasure
+
+-- Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+
+theorem isHaarMeasure_inducedMeasure :
+    IsHaarMeasure (inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC) where
+  lt_top_of_isCompact := by
+    intro K hK
+    let U : Set B := Set.univ
+    have hU : IsOpen U := isOpen_univ
+    have hU' : K ⊆ U := K.subset_univ
+    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hU'
+    exact lt_of_le_of_lt (RealRMK.rieszMeasure_le_of_eq_one (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
+      (f := ⟨f, hf2⟩) (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)) ENNReal.ofReal_lt_top
+  map_mul_left_eq_self := by
+    sorry
+  open_pos := by
+    rintro U hU ⟨b, hb⟩
+    obtain ⟨K, hK, hb, hK'⟩ := exists_compact_subset hU hb
+    replace hb : b ∈ K := interior_subset hb
+    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hK'
+    have : 0 ≤ f := fun x ↦ (hf4 x).1
+    refine (lt_of_lt_of_le ?_ (RealRMK.le_rieszMeasure_tsupport_subset
+      (map φ ψ h1 h2 h3 h4 μA μC hμA hμC) (f := ⟨f, hf2⟩) hf4 hf3)).ne'
+    rw [ENNReal.ofReal_pos]
+    simp [_root_.map, integrate]
+    apply Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+      (average_continuous φ ψ h1 h2 h4 μA hμA ⟨f, hf2⟩)
+      (average_hasCompactSupport φ ψ h3 h4 μA hμA ⟨f, hf2⟩)
+
+
+    sorry
+
+#check Measure.haar
+
+-- theorem tada (A B C : Type*)
+--     [Group A] [Group B] [Group C] [MeasurableSpace ] (φ : A →* B) (ψ : B →* C)
+--     (h1 : Function.Injective φ) (h2 : φ.range = ψ.ker) (h3 : Function.Surjective ψ) :
