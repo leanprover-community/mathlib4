@@ -183,15 +183,13 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
   have := (FriendOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
 
--- TODO
--- theorem FriendOperation.coind (M : (γ → Seq α → Seq α) → Prop)
---     (hM : ∀ op, M op → ∃ T : γ → Option α → Option ()
-
---     )
---     (h_head : ∀ op, M op → ∃ H : γ → Option α → Option α, ∀ c s, head (op c s) = H c (head s))
---     (h_tail : ∀ op, M op → ∃ op', M op' ∧ ∀ c s, tail (op c s) = op' c (tail s))
---     : FriendOperation op := by
---   sorry
+theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
+    (h_step : ∀ op, motive op → ∃ (H : Option α → Option α) (op' : Seq α → Seq α),
+      motive op' ∧ ∀ s, head (op s) = H (head s) ∧
+      tail (op s) = op' (tail s)) (op : γ → Seq α → Seq α)
+    (h_base : ∀ c, motive (op c)) :
+    FriendOperation op := by
+  sorry
 
 theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α} [FriendOperation op]
     (motive : Seq α → Seq α → Prop)
