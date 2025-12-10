@@ -476,7 +476,7 @@ variable (Γ T : Type*) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinu
   exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.disjoint_image_nhds
-    [T2Space T] [WeaklyLocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T) :
+    [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T) :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, ((γ • ·) '' U ∩ U).Nonempty → γ • x = x := by
   obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
   let Γ₀ := {γ : Γ | ((γ • ·) '' V ∩ V).Nonempty ∧ γ • x ≠ x}
