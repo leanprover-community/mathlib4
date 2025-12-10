@@ -168,7 +168,7 @@ theorem comparisonAdjunction_counit_f
 variable (adj)
 
 /-- The fork which describes the unit of the adjunction: the morphism from this fork to the
-the equalizer of this pair is the unit.
+equalizer of this pair is the unit.
 -/
 @[simps!]
 def unitFork (B : C) :
