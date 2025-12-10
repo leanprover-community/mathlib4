@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.SetSemiring
-import Mathlib.MeasureTheory.Measure.AddContent
-import Mathlib.MeasureTheory.Measure.Trim
+module
+
+public import Mathlib.MeasureTheory.SetSemiring
+public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.Trim
 
 /-!
 # Carathéodory's extension theorem
@@ -38,6 +40,8 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
   content on a semiring coincides with the content on the semiring.
 -/
 
+@[expose] public section
+
 open Set
 
 open scoped ENNReal
@@ -46,7 +50,7 @@ namespace MeasureTheory.AddContent
 
 variable {α : Type*} {C : Set (Set α)} {s : Set α}
 
-/-- For `m : AddContent C` sigma-sub-aditive, finite on `C`, the `OuterMeasure` given by `m`
+/-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `OuterMeasure` given by `m`
 coincides with `m` on `C`. -/
 theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
     (m_sigma_subadd : m.IsSigmaSubadditive) (m_top : ∀ s ∉ C, m s = ∞) (hs : s ∈ C) :
@@ -60,7 +64,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent C)
       refine m_sigma_subadd (fun i ↦ hC.inter_mem _ hs _ (hf i)) ?_
       rwa [← inter_iUnion, inter_eq_self_of_subset_left hs_subset]
     _ ≤ ∑' i, m (f i) := by
-      refine  ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
+      refine ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
       exact addContent_mono hC (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`

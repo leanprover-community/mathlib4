@@ -3,14 +3,18 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.ContinuousMap.Star
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Star structures on bounded continuous functions
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

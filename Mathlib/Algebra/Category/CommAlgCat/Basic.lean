@@ -3,8 +3,12 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.Ring.Under.Basic
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # The category of commutative algebras over a commutative ring
@@ -13,11 +17,11 @@ This file defines the bundled category `CommAlgCat` of commutative algebras over
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
-namespace CategoryTheory
+@[expose] public section
 
-open Limits
+open CategoryTheory Limits
 
-universe v u
+universe w v u
 
 variable {R : Type u} [CommRing R]
 
@@ -146,17 +150,19 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ 
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]
-def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
+def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
 
+@[deprecated (since := "2025-08-22")] alias ofIso := algEquivOfIso
+
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
-  toFun := ofIso
+  toFun := algEquivOfIso
   invFun := isoMk
 
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
@@ -164,6 +170,25 @@ instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomo
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact (isoMk e).isIso_hom
+
+variable (R)
+
+/-- Universe lift functor for commutative algebras. -/
+def uliftFunctor : CommAlgCat.{v} R ⥤ CommAlgCat.{max v w} R where
+  obj A := .of R <| ULift A
+  map {A B} f := CommAlgCat.ofHom <|
+    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
+
+/-- The universe lift functor for commutative algebras is fully faithful. -/
+def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
+  preimage {A B} f :=
+    CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
+
+instance : (uliftFunctor R).Full :=
+  (fullyFaithfulUliftFunctor R).full
+
+instance : (uliftFunctor R).Faithful :=
+  (fullyFaithfulUliftFunctor R).faithful
 
 end CommAlgCat
 
@@ -179,4 +204,10 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
     CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
   counitIso := .refl _
 
-end CategoryTheory
+-- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
+instance : HasColimits (CommAlgCat.{u} R) :=
+  Adjunction.has_colimits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
+
+-- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
+instance : HasLimits (CommAlgCat.{u} R) :=
+  Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor

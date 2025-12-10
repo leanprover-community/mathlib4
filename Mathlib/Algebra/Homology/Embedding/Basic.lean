@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
 
@@ -50,6 +52,8 @@ in degrees in the image of `e.f` (TODO);
 
 -/
 
+@[expose] public section
+
 assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 
 variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
@@ -57,7 +61,7 @@ variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
 namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
-`c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
+`c' : ComplexShape ι'` consists of an injective map `f : ι → ι'` which satisfies
 a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
 structure Embedding where
   /-- the map between the underlying types of indices -/
@@ -202,7 +206,7 @@ end
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; lia)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
 
@@ -214,7 +218,7 @@ instance : embeddingUpNat.IsTruncGE where
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => -n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; lia)
 
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
@@ -227,8 +231,8 @@ variable (p : ℤ)
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
@@ -239,8 +243,8 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
@@ -252,10 +256,10 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (p - n).natAbs (by simp; omega)
+    exact h (p - n).natAbs (by simp; lia)
   · intros
     dsimp
-    omega
+    lia
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
@@ -265,10 +269,10 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (n - p).natAbs (by simp; omega)
+    exact h (n - p).natAbs (by simp; lia)
   · intros
     dsimp
-    omega
+    lia
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff

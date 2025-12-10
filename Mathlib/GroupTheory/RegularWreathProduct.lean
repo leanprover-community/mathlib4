@@ -3,11 +3,12 @@ Copyright (c) 2025 Francisco Silva. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Francisco Silva
 -/
+module
 
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Data.Finite.Perm
-import Mathlib.Algebra.Group.End
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Data.Finite.Perm
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Regular wreath product
@@ -33,6 +34,8 @@ This file introduces the global notation `D ≀ᵣ Q` for `RegularWreathProduct 
 ## Tags
 group, regular wreath product, sylow p-subgroup
 -/
+
+@[expose] public section
 
 variable (D Q : Type*) [Group D] [Group Q]
 
@@ -220,7 +223,7 @@ def iteratedWreathToPermHom (G : Type*) [Group G] :
   | 0 => 1
   | n + 1 => by
       let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
-      exact (Equiv.Perm.permCongrHom (Fin.succFunEquiv G n).symm).toMonoidHom.comp
+      exact (Fin.succFunEquiv G n).symm.permCongrHom.toMonoidHom.comp
         (RegularWreathProduct.toPerm (IteratedWreathProduct G n) G (Fin n → G))
 
 lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
@@ -232,7 +235,7 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
       let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
       have : FaithfulSMul (IteratedWreathProduct G n) (Fin n → G) :=
         ⟨fun h ↦ iteratedWreathToPermHomInj G n (Equiv.ext h)⟩
-      exact ((Equiv.Perm.permCongrHom (Fin.succFunEquiv G n).symm).toEquiv.comp_injective _).mpr
+      exact ((Fin.succFunEquiv G n).symm.permCongrHom.toEquiv.comp_injective _).mpr
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 
 /-- The encoding of the Sylow `p`-subgroups of `Perm α` as an iterated wreath product. -/
@@ -243,9 +246,9 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct (p : ℕ) [hp : Fact (Nat.
     P ≃* IteratedWreathProduct G n := by
   let e1 : α ≃ (Fin n → G) := (Finite.equivFinOfCardEq hα).trans
     (Finite.equivFinOfCardEq (by rw [Nat.card_fun, Nat.card_fin, hG])).symm
-  let f := (Equiv.Perm.permCongrHom e1.symm).toMonoidHom.comp (iteratedWreathToPermHom G n)
+  let f := e1.symm.permCongrHom.toMonoidHom.comp (iteratedWreathToPermHom G n)
   have hf : Function.Injective f :=
-    ((Equiv.Perm.permCongrHom e1.symm).comp_injective _).mpr (iteratedWreathToPermHomInj G n)
+    (e1.symm.permCongrHom.comp_injective _).mpr (iteratedWreathToPermHomInj G n)
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
     rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα,

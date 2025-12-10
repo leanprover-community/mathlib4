@@ -3,8 +3,10 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+module
+
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Lift of `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`
@@ -13,6 +15,8 @@ In this file we define the lift of a continuous monoid homomorphism `f` from `M`
 `SeparationQuotient M`, assuming that `f` maps two inseparable elements to the same element.
 -/
 
+@[expose] public section
+
 namespace SeparationQuotient
 
 section Monoid
@@ -20,8 +24,8 @@ section Monoid
 variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
 
 /-- The lift of a monoid hom from `M` to a monoid hom from `SeparationQuotient M`. -/
-@[to_additive "The lift of an additive monoid hom from `M` to an additive monoid hom from
-`SeparationQuotient M`."]
+@[to_additive /-- The lift of an additive monoid hom from `M` to an additive monoid hom from
+`SeparationQuotient M`. -/]
 noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
     (f : ContinuousMonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     ContinuousMonoidHom (SeparationQuotient M) N where

@@ -3,9 +3,11 @@ Copyright (c) 2024 Salvatore Mercuri, María Inés de Frutos-Fernández. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.Completion
-import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
 # The adele ring of a number field
@@ -33,6 +35,8 @@ direct product of the infinite adele ring and the finite adele ring.
 ## Tags
 infinite adele ring, adele ring, number field
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -102,16 +106,17 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 `(r₁, r₂)` is the signature of `K` and `φᵢ` are the complex embeddings of `K`. -/
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
-  ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
-    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
-  · rw [UniformSpace.Completion.extension_coe
-      (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_isReal _ _ _
-  · rw [UniformSpace.Completion.extension_coe
-      (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_eq).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_isComplex _ _ _
+  ext v <;> simp
+
+/--
+*Weak approximation for the infinite adele ring*
+
+The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
+-/
+theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K (InfiniteAdeleRing K) :=
+  (DenseRange.piMap fun _ => UniformSpace.Completion.denseRange_coe).comp
+    (InfinitePlace.denseRange_algebraMap_pi K)
+      (.piMap fun _ => UniformSpace.Completion.continuous_coe _)
 
 end InfiniteAdeleRing
 
@@ -126,7 +131,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
-  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+    [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 

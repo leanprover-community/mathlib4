@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
@@ -12,6 +14,8 @@ import Mathlib.Data.Matrix.Basic
 Showing this for the more general case of `TrivSqZeroExt R M` would require an action between
 `Matrix n n R` and `Matrix n n M`, which would risk causing diamonds.
 -/
+
+@[expose] public section
 
 
 variable {R n : Type} [CommSemiring R] [Fintype n] [DecidableEq n]
@@ -34,6 +38,6 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
   map_add' _ _ := TrivSqZeroExt.ext rfl rfl
   commutes' r := by
     simp_rw [algebraMap_eq_inl', algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.id.map_eq_self, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply, fst_inl,
-      snd_inl]
+      Algebra.algebraMap_self_apply, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply,
+      fst_inl, snd_inl]
     rfl

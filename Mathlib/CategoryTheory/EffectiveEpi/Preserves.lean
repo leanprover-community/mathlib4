@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Comp
+public import Mathlib.Data.Fintype.EquivFin
 /-!
 
 # Functors preserving effective epimorphisms
@@ -16,6 +18,8 @@ epimorphic families.
 - Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
   effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -172,7 +176,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsEffectiveEpiFamilies.reflects X π h
 
@@ -190,7 +194,7 @@ class ReflectsFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F]
     {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
@@ -205,9 +209,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     rw [effectiveEpi_iff_effectiveEpiFamily] at h
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
-
-instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
-  preserves _ _ := inferInstance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by

@@ -3,8 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.Basic
-import Mathlib.Order.Filter.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Order.Filter.Basic
 
 /-!
 # The `peel` tactic
@@ -20,6 +22,8 @@ In addition, the user may supply a term `e` via `... using e` in order to close 
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
 may be paired with any of the other features of `peel`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Peel
 open Lean Expr Meta Elab Tactic
