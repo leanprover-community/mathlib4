@@ -116,7 +116,7 @@ theorem arclength_sub₀ (hba : b ≤ a) : arclength f a b = arclength f a c - a
   exact tsub_eq_zero_of_le (arclength_anti f c hba)
 
 theorem arclength_sub' (hbc : b ≤ c) (hac : arclength f b c ≠ ∞) :
-    arclength f a b =  arclength f a c - arclength f b c := by
+    arclength f a b = arclength f a c - arclength f b c := by
   rcases le_total a b with (hab | hba)
   · exact ENNReal.eq_sub_of_add_eq hac (arclength_add f hab hbc)
   · exact arclength_sub₀ f hba
