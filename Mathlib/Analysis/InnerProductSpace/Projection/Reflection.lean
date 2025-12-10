@@ -150,7 +150,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
-  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
+  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ (v - w))ᗮ
   suffices R v + R v = w + w by
     apply smul_right_injective F (by simp : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this

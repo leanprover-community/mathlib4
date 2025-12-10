@@ -333,10 +333,10 @@ theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
 /-- A non-constant polynomial has non-zero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
   rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
-  use rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)
+  use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
-  exact ⟨ne_of_apply_ne _ h, map_rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)⟩
+  exact ⟨ne_of_apply_ne _ h, by simp only [← eval_map_algebraMap, eval_rootOfSplits]⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
@@ -371,7 +371,7 @@ theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    roots_map _ ((splits_id_iff_splits _).mpr <| SplittingField.splits f),
+    (SplittingField.splits f).map_roots,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
@@ -556,11 +556,11 @@ alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_
 /-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
 some non-zero natural number `m` and some element `y` of `F`. -/
 theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
-    (hs : (f.map (RingHom.id F)).Splits)
+    (hs : f.Splits)
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
   classical
-  have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
-  have h2 := (natSepDegree_eq_of_splits f hs).symm
+  have h1 := hs.eq_prod_roots_of_monic hm
+  have h2 := (natSepDegree_eq_of_splits f (hs.map <| .id F)).symm
   rw [h, aroots_def, Algebra.algebraMap_self, map_id, Multiset.toFinset_card_eq_one_iff] at h2
   obtain ⟨h2, y, h3⟩ := h2
   exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
@@ -850,14 +850,11 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
 
 namespace Field
 
-variable {F}
-
 /-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-theorem isSeparable_algebraMap (x : F) : IsSeparable F ((algebraMap F E) x) := by
-  rw [IsSeparable, minpoly.algebraMap_eq (algebraMap F E).injective]
-  exact Algebra.IsSeparable.isSeparable F x
+@[deprecated (since := "2025-11-21")]
+protected alias isSeparable_algebraMap := _root_.isSeparable_algebraMap
 
-variable {E}
+variable {F E}
 
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
 theorem isSeparable_mul {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :

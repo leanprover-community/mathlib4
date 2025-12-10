@@ -314,7 +314,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
   · refine fun a ha hne => if_neg (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
-    exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
+    exact (add_lt_add_right (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
   · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
@@ -434,11 +434,11 @@ lemma supDegree_leadingCoeff_sum_eq
     (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D := by
   classical
   rw [← s.add_sum_erase _ hi]
-  by_cases hs : s.erase i = ∅
+  by_cases! hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
   suffices _ from ⟨supDegree_add_eq_left this, leadingCoeff_add_eq_left this⟩
   refine supDegree_sum_lt ?_ (fun j hj => ?_)
-  · rw [Finset.nonempty_iff_ne_empty]; exact hs
+  · exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
 
 open Finset in

@@ -69,8 +69,7 @@ theorem isTightMeasureSet_singleton_of_innerRegularWRT [OpensMeasurableSpace �
   let r := μ Set.univ
   cases lt_or_ge ε r with
   | inl hεr =>
-    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) (zero_le'.trans_lt hεr).ne'
-      hε.ne'
+    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) hεr.ne_bot hε.ne'
     obtain ⟨K, _, ⟨hK_compact, hK_closed⟩, hKμ⟩ := h .univ (r - ε) hεr'
     refine ⟨K, hK_compact, ?_⟩
     simp only [mem_singleton_iff, forall_eq]

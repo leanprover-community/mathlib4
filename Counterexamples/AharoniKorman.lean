@@ -322,9 +322,8 @@ theorem scattered {f : ℚ → Hollom} (hf : StrictMono f) : False := by
   -- Take `x ≠ y` with `g x = g y`
   obtain ⟨x, y, hgxy, hxy'⟩ : ∃ x y, g x = g y ∧ x ≠ y := by simpa [Function.Injective] using hg''
   -- and wlog `x < y`
-  wlog hxy : x < y generalizing x y
-  · simp only [not_lt] at hxy
-    exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
+  wlog! hxy : x < y generalizing x y
+  · exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
   -- Now `f '' [x, y]` is infinite, as it is the image of an infinite set of rationals,
   have h₁ : (f '' Set.Icc x y).Infinite := (Set.Icc_infinite hxy).image hf.injective.injOn
   -- but it is contained in `[f x, f y]` by monotonicity
@@ -354,8 +353,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     intro x hx
     exact no_infinite_antichain_level (this _) (hC.subset Set.inter_subset_left)
   case himage =>
-    rw [← Set.not_infinite]
-    intro h
+    by_contra! h
     obtain ⟨n, hn⟩ := h.nonempty
     suffices f '' A ⊆ Set.Iio (n + 2) from h ((Set.finite_Iio _).subset this)
     intro m
@@ -385,7 +383,6 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   rw [frequently_atTop]
   intro n₀
   by_contra! hC'
-  simp only [← Set.not_infinite, not_not] at hC'
   -- Define `m n` to be the smallest value of `min x y` as `(x, y, n)` ranges over `C`.
   let m (n : ℕ) : ℕ := sInf {min (ofHollom x).1 (ofHollom x).2.1 | x ∈ C ∩ level n}
   -- `m n` is well-defined above `n₀`, since the set in question is nonempty (it's infinite).
@@ -1005,8 +1002,7 @@ lemma left_or_right_bias {n : ℕ} (a b : ℕ)
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(a, i, n) ≤ j) ∨
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(i, b, n) ≤ j) := by
   -- Suppose otherwise, and take `c` and `d` counterexamples to both alternatives
-  by_contra! h
-  obtain ⟨⟨c, hc⟩, d, hd⟩ := h
+  by_contra! ⟨⟨c, hc⟩, d, hd⟩
   -- Observe the set of points in `C ∩ level n` below `(d, c, n)` is finite, and aim to show that
   -- `C ∩ level n` is contained in this set, for a contradiction
   refine hCn (((Set.finite_Iic (d, c)).image (embed n)).subset ?_)

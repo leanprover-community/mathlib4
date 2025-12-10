@@ -315,7 +315,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
           (by
-            rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
+            rw [hn, pow_zero, ← C_1, ← map_sub]
             exact degree_C_le))
   else by
     rw [← Nat.cast_le (α := WithBot ℕ)]
@@ -574,6 +574,10 @@ theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
+
+theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [CommRing S] [IsDomain S]
+    [Algebra T S] {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 := by
+  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
 theorem rootSet_maps_to' {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] (hp : p.map (algebraMap T S') = 0 → p.map (algebraMap T S) = 0)

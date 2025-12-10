@@ -293,19 +293,19 @@ finset. -/
 def Ioo (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoo a b
 
-@[simp]
+@[simp, grind =]
 theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
   LocallyFiniteOrder.finset_mem_Icc a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ico a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
   LocallyFiniteOrder.finset_mem_Ioc a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ioo a b x
 
@@ -359,11 +359,11 @@ def Ici (a : α) : Finset α :=
 def Ioi (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIoi a
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ici : x ∈ Ici a ↔ a ≤ x :=
   LocallyFiniteOrderTop.finset_mem_Ici _ _
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
   LocallyFiniteOrderTop.finset_mem_Ioi _ _
 
@@ -399,11 +399,11 @@ def Iic (b : α) : Finset α :=
 def Iio (b : α) : Finset α :=
   LocallyFiniteOrderBot.finsetIio b
 
-@[simp]
+@[simp, grind =]
 theorem mem_Iic : x ∈ Iic a ↔ x ≤ a :=
   LocallyFiniteOrderBot.finset_mem_Iic _ _
 
-@[simp]
+@[simp, grind =]
 theorem mem_Iio : x ∈ Iio a ↔ x < a :=
   LocallyFiniteOrderBot.finset_mem_Iio _ _
 
