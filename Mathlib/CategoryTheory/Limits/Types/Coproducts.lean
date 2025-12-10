@@ -50,7 +50,7 @@ def sigma : CofanTypes F where
   ι_naturality := by
     rintro ⟨i⟩ ⟨j⟩ f
     obtain rfl : i = j := by simpa using Discrete.eq_of_hom f
-    aesop
+    rfl
 
 @[simp]
 lemma sigma_inj (i : C) (x : F i) :
@@ -149,7 +149,7 @@ def cofanTypes :
   ι_naturality := by
     rintro ⟨i⟩ ⟨j⟩ f
     obtain rfl : i = j := by simpa using Discrete.eq_of_hom f
-    aesop
+    rfl
 
 lemma isColimit_cofanTypes_iff :
     c.cofanTypes.IsColimit ↔ Nonempty (IsColimit c) :=
