@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Functoriality of the prime spectrum
@@ -18,6 +20,8 @@ In this file we define the induced map on prime spectra induced by a ring homomo
   continuous version is `PrimeSpectrum.comap` in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -241,7 +245,7 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f)
     simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
     exact (p.comap_map_of_surjective f hf).trans <| sup_eq_left.mpr (hI.trans_le hp)
   map_rel_iff' {a b} := by
-    show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
+    change a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
     rw [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective f hf,
       PrimeSpectrum.asIdeal_le_asIdeal]
 
@@ -275,9 +279,13 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     simp [Ideal.eq_bot_of_prime, k, ← RingHom.ker_eq_comap_bot]
   · obtain ⟨q, rfl⟩ := h
     let f : k ⊗[R] S →ₐ[R] q.asIdeal.ResidueField :=
-      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ rfl)
+      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
     exact RingHom.domain_nontrivial f.toRingHom
+
+lemma RingHom.strictMono_specComap_of_surjective {S : Type*} [CommRing S]
+    {f : R →+* S} (hf : Function.Surjective f) : StrictMono f.specComap :=
+  fun _ _ h ↦ (Ideal.relIsoOfSurjective _ hf).strictMono h
 
 end SpecOfSurjective
 
@@ -291,3 +299,13 @@ lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
   exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
 
 end ResidueField
+
+variable {R S} in
+theorem IsLocalHom.of_specComap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
+    (hf : Function.Surjective f.specComap) : IsLocalHom f where
+  map_nonunit x hfx := by
+    by_contra hx
+    obtain ⟨p, hp, _⟩ := exists_max_ideal_of_mem_nonunits hx
+    obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
+    simp only [PrimeSpectrum.mk.injEq] at hq
+    exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)

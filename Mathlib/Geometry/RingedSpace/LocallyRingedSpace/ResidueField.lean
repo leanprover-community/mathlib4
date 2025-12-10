@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -25,6 +27,8 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   residue fields.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -116,7 +120,7 @@ lemma residueFieldMap_id (x : X) :
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   ext : 1
-  simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap,
+  simp only [comp_toShHom, SheafedSpace.comp_base, residueFieldMap,
     CommRingCat.hom_comp, TopCat.comp_app]
   simp_rw [stalkMap_comp]
   apply IsLocalRing.ResidueField.map_comp (Hom.stalkMap g (f.base x)).hom (Hom.stalkMap f x).hom

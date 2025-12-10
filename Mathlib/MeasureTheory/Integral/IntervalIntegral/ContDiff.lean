@@ -3,14 +3,18 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-! # Fundamental theorem of calculus for `C^1` functions
 
 We give versions of the second fundamental theorem of calculus under the strong assumption
 that the function is `C^1` on the interval. This is restrictive, but satisfied in many situations.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -37,7 +41,7 @@ theorem integral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b)) (hab
     apply ((h x ⟨hx.1.le, hx.2.le⟩).differentiableWithinAt le_rfl).differentiableAt
     exact Icc_mem_nhds hx.1 hx.2
   · have := (h.derivWithin (m := 0) (uniqueDiffOn_Icc h'ab) (by simp)).continuousOn
-    apply (this.intervalIntegrable_of_Icc (μ := volume) hab).congr
+    apply (this.intervalIntegrable_of_Icc (μ := volume) hab).congr_ae
     simp only [hab, uIoc_of_le]
     rw [← restrict_Ioo_eq_restrict_Ioc]
     filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
 # Consequences of model category axioms
@@ -13,6 +15,8 @@ In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
 
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -42,19 +46,16 @@ section IsStableUnderComposition
 variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 instance [CategoryWithCofibrations C] [(cofibrations C).IsStableUnderComposition]
-    [hf : Cofibration f] [hg : Cofibration g] : Cofibration (f ≫ g) := by
-  rw [cofibration_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
+    [hf : Cofibration f] [hg : Cofibration g] : Cofibration (f ≫ g) :=
+  (cofibration_iff _).2 ((cofibrations C).comp_mem _ _ hf.mem hg.mem)
 
 instance [CategoryWithFibrations C] [(fibrations C).IsStableUnderComposition]
-    [hf : Fibration f] [hg : Fibration g] : Fibration (f ≫ g) := by
-  rw [fibration_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
+    [hf : Fibration f] [hg : Fibration g] : Fibration (f ≫ g) :=
+  (fibration_iff _).2 ((fibrations C).comp_mem _ _ hf.mem hg.mem)
 
 instance [CategoryWithWeakEquivalences C] [(weakEquivalences C).IsStableUnderComposition]
-    [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f ≫ g) := by
-  rw [weakEquivalence_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
+    [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f ≫ g) :=
+  (weakEquivalence_iff _).2 ((weakEquivalences C).comp_mem _ _ hf.mem hg.mem)
 
 end IsStableUnderComposition
 
@@ -78,12 +79,12 @@ lemma weakEquivalence_of_precomp
   exact of_precomp _ _ _ hf hfg
 
 lemma weakEquivalence_postcomp_iff [WeakEquivalence g] :
-    WeakEquivalence (f ≫ g) ↔ WeakEquivalence f := by
-  exact ⟨fun _ ↦ weakEquivalence_of_postcomp f g, fun _ ↦ inferInstance⟩
+    WeakEquivalence (f ≫ g) ↔ WeakEquivalence f :=
+  ⟨fun _ ↦ weakEquivalence_of_postcomp f g, fun _ ↦ inferInstance⟩
 
 lemma weakEquivalence_precomp_iff [WeakEquivalence f] :
-    WeakEquivalence (f ≫ g) ↔ WeakEquivalence g := by
-  exact ⟨fun _ ↦ weakEquivalence_of_precomp f g, fun _ ↦ inferInstance⟩
+    WeakEquivalence (f ≫ g) ↔ WeakEquivalence g :=
+  ⟨fun _ ↦ weakEquivalence_of_precomp f g, fun _ ↦ inferInstance⟩
 
 variable {f g} {fg : X ⟶ Z}
 
@@ -108,12 +109,12 @@ section
 variable [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
 
 lemma fibrations_llp :
-    (fibrations C).llp = trivialCofibrations C := by
-  apply llp_eq_of_wfs
+    (fibrations C).llp = trivialCofibrations C :=
+  llp_eq_of_wfs _ _
 
 lemma trivialCofibrations_rlp :
-    (trivialCofibrations C).rlp = fibrations C := by
-  apply rlp_eq_of_wfs
+    (trivialCofibrations C).rlp = fibrations C :=
+  rlp_eq_of_wfs _ _
 
 instance : (trivialCofibrations C).IsStableUnderCobaseChange := by
   rw [← fibrations_llp]
@@ -150,12 +151,12 @@ section
 variable [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
 
 lemma trivialFibrations_llp :
-    (trivialFibrations C).llp = cofibrations C := by
-  apply llp_eq_of_wfs
+    (trivialFibrations C).llp = cofibrations C :=
+  llp_eq_of_wfs _ _
 
 lemma cofibrations_rlp :
-    (cofibrations C).rlp = trivialFibrations C := by
-  apply rlp_eq_of_wfs
+    (cofibrations C).rlp = trivialFibrations C :=
+  rlp_eq_of_wfs _ _
 
 instance : (cofibrations C).IsStableUnderCobaseChange := by
   rw [← trivialFibrations_llp]

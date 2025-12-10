@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.Spectral.Hom
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Spectral.Hom
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Topology.Spectral.Hom
 In this file, we define prespectral spaces as spaces whose lattice of compact opens forms a basis.
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -37,7 +41,7 @@ This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
-  .of_isTopologicalBasis basis (by aesop)
+  .of_isTopologicalBasis basis (by simp_all)
 
 instance (priority := low) [NoetherianSpace X] : PrespectralSpace X :=
   .of_isTopologicalBasis isTopologicalBasis_opens fun _ _ ↦ NoetherianSpace.isCompact _
@@ -73,6 +77,21 @@ lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
 
+/-- Let `f : X → Y` be an open embedding of topological spaces.
+If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
+then `X` is also a prespectral space. -/
+lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
+    {f : X → Y} (hf : IsOpenEmbedding f) :
+    PrespectralSpace X where
+  isTopologicalBasis := by
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
+      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
+        (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
+    refine ⟨f ⁻¹' V, ⟨hoV.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+    · exact hf.toIsInducing.isCompact_preimage' hcV <| Set.SurjOn.subset_range hVf
+    · exact hf.injective.mem_set_image.mp (hVf hy)
+
 instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
     [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=
   .of_isTopologicalBasis (IsTopologicalBasis.sigma fun i ↦ isTopologicalBasis) fun U hU ↦ by
@@ -96,8 +115,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   invFun I := ⨆ U ∈ I, U.toOpens
   left_inv U := by
     apply le_antisymm
-    · simp only [Set.mem_setOf_eq, LowerSet.carrier_eq_coe, LowerSet.coe_mk,
-        CompactOpens.coe_sup, id_eq, iSup_le_iff]
+    · simp only [iSup_le_iff]
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
@@ -106,13 +124,13 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   right_inv I := by
     ext U
     dsimp
-    show U.toOpens ≤ _ ↔ _
+    change U.toOpens ≤ _ ↔ _
     refine ⟨fun H ↦ ?_, fun h ↦ le_iSup₂ (f := fun U (h : U ∈ I) ↦ U.toOpens) U h⟩
     simp only [← SetLike.coe_subset_coe, Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk] at H
     obtain ⟨s, hsI, hs, hU⟩ := U.isCompact.elim_finite_subcover_image (fun U _ ↦ U.2) H
     exact I.lower (a := hs.toFinset.sup fun i ↦ i) (by simpa [← SetLike.coe_subset_coe]) (by simpa)
   map_rel_iff' {U V} := by
-    show (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
+    change (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
     refine ⟨?_, fun H W ↦ (le_trans · H)⟩
     intro H x hxU
     obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
@@ -136,7 +154,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
     exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
     convert_to ⋃ i ∈ t, f '' i.1 = U
-    · aesop
+    · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]
       rintro ⟨i, hi, x, hx, rfl⟩

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 /-!
 # Constructor for derivability structures
@@ -12,8 +14,8 @@ In this file, we provide a constructor for right derivability structures.
 Assume that `W₁` and `W₂` are classes of morphisms in categories `C₁` and `C₂`,
 and that we have a localizer morphism `Φ : LocalizerMorphism W₁ W₂` that is
 a localized equivalence, i.e. `Φ.functor` induces an equivalence of categories
-between the localized categories. Assume moreover that `W₁` is multiplicative
-and `W₂` contains identities. Then, `Φ` is a right derivability structure
+between the localized categories. Assume moreover that `W₂` contains identities.
+Then, `Φ` is a right derivability structure
 (`LocalizerMorphism.IsRightDerivabilityStructure.mk'`) if it satisfies the
 two following conditions:
 * for any `X₂ : C₂`, the category `Φ.RightResolution X₂` of resolutions of `X₂` is connected
@@ -29,6 +31,8 @@ This statement is essentially Lemme 6.5 in
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Localization
@@ -42,7 +46,7 @@ namespace IsRightDerivabilityStructure
 section
 
 variable (Φ : LocalizerMorphism W₁ W₂)
-  [W₁.IsMultiplicative] [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [Φ.arrow.HasRightResolutions] [W₂.ContainsIdentities]
 
 namespace Constructor

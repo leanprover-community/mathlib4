@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 
 /-!
 # The fundamental lemma of homotopical algebra
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -69,7 +73,7 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ E) :
       homRel C f g → F.map f = F.map g := by
   constructor
   · intro H K L f g h
-    obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+    obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
     have := isCofibrant_of_cofibration P.ι
     let γ : K ⟶ mk P.P := h.h
     let p₀ : mk P.P ⟶ L := P.p₀
@@ -88,7 +92,7 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ E) :
   · intro h X Y f hf
     rw [← weakEquivalence_iff, weakEquivalence_iff_ι_map] at hf
     let f' := (bifibrantObjects C).ι.map f
-    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.exists_homotopy_inverse f'
+    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.whitehead f'
     refine ⟨F.map g', ?_, ?_⟩
     all_goals
     · rw [← F.map_comp, ← F.map_id]
@@ -281,7 +285,7 @@ lemma bifibrantResolutionObj_hom_ext
   rw [BifibrantObject.toπ_map_eq_iff,
     BifibrantObject.homRel_iff_rightHomotopyRel,
     ← RightHomotopyClass.mk_eq_mk_iff]
-  apply (RightHomotopyClass.bijective_precomp_of_cofibration_of_weakEquivalence
+  apply (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence
     _ (ι.map (iBifibrantResolutionObj X))).1
   simpa only [ObjectProperty.ι_obj, ObjectProperty.ιOfLE_obj_obj, ObjectProperty.ι_map,
     RightHomotopyClass.precomp_mk] using h
@@ -451,12 +455,13 @@ def ιFibrantObjectLocalizerMorphism :
   functor := ιFibrantObject
   map _ _ _ h := h
 
+open Functor in
 instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := by
   have : CatCommSq (ιCofibrantObjectLocalizerMorphism C).functor toπ
       (CofibrantObject.toπ ⋙ CofibrantObject.π.bifibrantResolution) (𝟭 _) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫
+    ⟨(associator _ _ _).symm ≪≫
       isoWhiskerRight π.toπCompιCofibrantObject.symm _ ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso CofibrantObject.π.adj.counit)⟩
+      associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso CofibrantObject.π.adj.counit)⟩
   exact LocalizerMorphism.IsLocalizedEquivalence.mk'
     (ιCofibrantObjectLocalizerMorphism C) BifibrantObject.toπ
     (CofibrantObject.toπ ⋙ CofibrantObject.π.bifibrantResolution) (𝟭 _)

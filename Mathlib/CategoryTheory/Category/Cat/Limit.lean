@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # The category of small categories has all small limits.
@@ -18,6 +20,8 @@ which are carried to one another by the action on morphisms of the functors in t
 ## Future work
 Can the indexing category live in a lower universe?
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -131,7 +135,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
     · intro X
       apply Types.limit_ext.{v, v}
       intro j
-      simp [Types.Limit.lift_π_apply', ← w j]
+      simp [← w j]
     · intro X Y f
       simp [fun j => Functor.congr_hom (w j).symm f]
 
@@ -147,7 +151,7 @@ instance : PreservesLimits Cat.objects.{v, v} where
     { preservesLimit := fun {F} =>
         preservesLimit_of_preserves_limit_cone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
-            (Cones.ext (by rfl) (by aesop_cat))) }
+            (Cones.ext (by rfl) (by cat_disch))) }
 
 end Cat
 

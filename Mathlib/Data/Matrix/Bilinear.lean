@@ -3,10 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Algebra.Algebra.Bilinear
+module
+
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # Bundled versions of multiplication for matrices
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 This file provides versions of `LinearMap.mulLeft` and `LinearMap.mulRight` which work for the
 heterogeneous multiplication of matrices.
 -/
+
+@[expose] public section
 
 variable {l m n o : Type*} {R A : Type*}
 
@@ -36,12 +40,12 @@ def mulLeftLinearMap (X : Matrix l m A) :
 
 /-- On square matrices, `Matrix.mulLeftLinearMap` and `LinearMap.mulLeft` coincide. -/
 theorem mulLeftLinearMap_eq_mulLeft :
-  mulLeftLinearMap m R = LinearMap.mulLeft R (A := Matrix m m A) := rfl
+    mulLeftLinearMap m R = LinearMap.mulLeft R (A := Matrix m m A) := rfl
 
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
-theorem mulLeftLinearMap_zero_eq_zero :
-  mulLeftLinearMap n R (0 : Matrix l m A) = 0 := LinearMap.ext fun _ => Matrix.zero_mul _
+theorem mulLeftLinearMap_zero_eq_zero : mulLeftLinearMap n R (0 : Matrix l m A) = 0 :=
+  LinearMap.ext fun _ => Matrix.zero_mul _
 
 end left
 
@@ -58,12 +62,12 @@ def mulRightLinearMap (Y : Matrix m n A) :
 
 /-- On square matrices, `Matrix.mulRightLinearMap` and `LinearMap.mulRight` coincide. -/
 theorem mulRightLinearMap_eq_mulRight :
-  mulRightLinearMap m R = LinearMap.mulRight R (A := Matrix m m A) := rfl
+    mulRightLinearMap m R = LinearMap.mulRight R (A := Matrix m m A) := rfl
 
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
-theorem mulRightLinearMap_zero_eq_zero :
-  mulRightLinearMap l R (0 : Matrix m n A) = 0 := LinearMap.ext fun _ => Matrix.mul_zero _
+theorem mulRightLinearMap_zero_eq_zero : mulRightLinearMap l R (0 : Matrix m n A) = 0 :=
+  LinearMap.ext fun _ => Matrix.mul_zero _
 
 end right
 
@@ -81,7 +85,7 @@ def mulLinearMap : Matrix l m A →ₗ[R] Matrix m n A →ₗ[R] Matrix l n A wh
 
 /-- On square matrices, `Matrix.mulLinearMap` and `LinearMap.mul` coincide. -/
 theorem mulLinearMap_eq_mul :
-  mulLinearMap R = LinearMap.mul R (A := Matrix m m A) := rfl
+    mulLinearMap R = LinearMap.mul R (A := Matrix m m A) := rfl
 
 end NonUnitalNonAssocSemiring
 

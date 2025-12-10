@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.Quotient
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Classes of morphisms induced on quotient categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -24,7 +28,7 @@ class HasQuotient (W : MorphismProperty C) (homRel : HomRel C) : Prop where
 variable (W : MorphismProperty C) {homRel : HomRel C}
 
 lemma HasQuotient.iff_of_eqvGen [W.HasQuotient homRel] {X Y : C} {f g : X ⟶ Y}
-    (h : Relation.EqvGen (@homRel _ _) f g ) : W f ↔ W g := by
+    (h : Relation.EqvGen (@homRel _ _) f g) : W f ↔ W g := by
   induction h with
   | rel _ _ h => exact iff W h
   | refl => rfl

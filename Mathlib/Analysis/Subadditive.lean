@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.AtTopBot.Finite
-import Mathlib.Order.Filter.AtTopBot.Prod
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Order.Filter.AtTopBot.Prod
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Convergence of subadditive sequences
@@ -20,6 +22,8 @@ convenience). This result is known as Fekete's lemma in the literature.
 
 Define a bundled `SubadditiveHom`, use it.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -53,7 +57,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
     calc
       u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring
       _ ≤ u n + u (k * n + r) := h _ _
-      _ ≤ u n + (k * u n + u r) := add_le_add_left IH _
+      _ ≤ u n + (k * u n + u r) := by grw [IH]
       _ = (k + 1 : ℕ) * u n + u r := by simp; ring
 
 include h in
@@ -69,7 +73,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   have B : Tendsto (fun x => (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
     rw [add_zero, add_zero] at A
     refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
-    simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]
+    simp only [add_div' _ _ _ hx, div_div_div_cancel_right₀ hx, mul_comm]
   refine ((B.comp tendsto_natCast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
   /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
   `u (k * n + r) / (k * n + r)`. -/

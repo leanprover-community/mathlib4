@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -15,6 +17,8 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 (Fibrant objects are defined similarly.)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -72,7 +76,7 @@ lemma isCofibrant_iff (X : C) :
 lemma isCofibrant_iff_of_isInitial [(cofibrations C).RespectsIso]
     {A X : C} (i : A ⟶ X) (hA : IsInitial A) :
     IsCofibrant X ↔ Cofibration i := by
-  simp only [isCofibrant_iff, cofibration_iff]
+  simp only [cofibration_iff]
   apply (cofibrations C).arrow_mk_iso_iff
   exact Arrow.isoMk (IsInitial.uniqueUpToIso initialIsInitial hA) (Iso.refl _)
 
@@ -93,16 +97,16 @@ instance [hY : IsCofibrant Y] :
   rw [isCofibrant_iff] at hY
   rw [cofibration_iff] at hY ⊢
   exact MorphismProperty.of_isPushout
-    ((isPushout_of_isColimit_binaryCofan_of_isInitial
-    (colimit.isColimit (pair X Y)) initialIsInitial)) hY
+    ((IsPushout.of_isColimit_binaryCofan_of_isInitial
+    (colimit.isColimit (pair X Y)) initialIsInitial).flip) hY
 
 instance [HasInitial C] [HasBinaryCoproduct X Y] [hX : IsCofibrant X] :
     Cofibration (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [isCofibrant_iff] at hX
   rw [cofibration_iff] at hX ⊢
   exact MorphismProperty.of_isPushout
-    (isPushout_of_isColimit_binaryCofan_of_isInitial
-    (colimit.isColimit (pair X Y)) initialIsInitial).flip hX
+    (IsPushout.of_isColimit_binaryCofan_of_isInitial
+    (colimit.isColimit (pair X Y)) initialIsInitial) hX
 
 end
 
@@ -121,7 +125,7 @@ lemma isFibrant_iff (X : C) :
 lemma isFibrant_iff_of_isTerminal [(fibrations C).RespectsIso]
     {X Y : C} (p : X ⟶ Y) (hY : IsTerminal Y) :
     IsFibrant X ↔ Fibration p := by
-  simp only [isFibrant_iff, fibration_iff]
+  simp only [fibration_iff]
   symm
   apply (fibrations C).arrow_mk_iso_iff
   exact Arrow.isoMk (Iso.refl _) (IsTerminal.uniqueUpToIso hY terminalIsTerminal)
@@ -143,16 +147,16 @@ instance [hY : IsFibrant Y] :
   rw [isFibrant_iff] at hY
   rw [fibration_iff] at hY ⊢
   exact MorphismProperty.of_isPullback
-    ((isPullback_of_isLimit_binaryFan_of_isTerminal
-    (limit.isLimit (pair X Y)) terminalIsTerminal)).flip hY
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal).flip hY
 
-instance [hX : IsFibrant X] :
+instance [HasTerminal C] [HasBinaryProduct X Y] [hX : IsFibrant X] :
     Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
   rw [isFibrant_iff] at hX
   rw [fibration_iff] at hX ⊢
   exact MorphismProperty.of_isPullback
-    ((isPullback_of_isLimit_binaryFan_of_isTerminal
-    (limit.isLimit (pair X Y)) terminalIsTerminal)) hX
+    (IsPullback.of_isLimit_binaryFan_of_isTerminal
+      (limit.isLimit (pair X Y)) terminalIsTerminal) hX
 
 end
 

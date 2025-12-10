@@ -3,7 +3,9 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 
 # Uniqueness of adjoints
@@ -20,7 +22,9 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 -/
 
-open CategoryTheory
+@[expose] public section
+
+open CategoryTheory Functor
 
 variable {C D : Type*} [Category C] [Category D]
 
@@ -41,7 +45,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
     adj1.unit ≫ whiskerRight (leftAdjointUniq adj1 adj2).hom G = adj2.unit := by
   ext x
   rw [NatTrans.comp_app, ← homEquiv_leftAdjointUniq_hom_app adj1 adj2]
-  simp [← G.map_comp]
+  simp
 
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app

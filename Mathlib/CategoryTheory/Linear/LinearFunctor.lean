@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Module.LinearMap.Rat
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Linear Functors
@@ -13,13 +15,15 @@ import Mathlib.Algebra.Module.LinearMap.Rat
 An additive functor between two `R`-linear categories is called *linear*
 if the induced map on hom types is a morphism of `R`-modules.
 
-# Implementation details
+## Implementation details
 
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -31,7 +35,7 @@ variable (R : Type*) [Semiring R] {C D : Type*} [Category C] [Category D]
 /-- An additive functor `F` is `R`-linear provided `F.map` is an `R`-module morphism. -/
 class Functor.Linear : Prop where
   /-- the functor induces a linear map on morphisms -/
-  map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by aesop_cat
+  map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by cat_disch
 
 lemma Functor.linear_iff (F : C ⥤ D) :
     Functor.Linear R F ↔ ∀ (X : C) (r : R), F.map (r • 𝟙 X) = r • 𝟙 (F.obj X) := by
@@ -111,11 +115,10 @@ end Functor
 
 namespace Equivalence
 
-instance inverseLinear (e : C ≌ D) [e.functor.Linear R] :
-  e.inverse.Linear R where
-    map_smul r f := by
-      apply e.functor.map_injective
-      simp
+instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
+  map_smul r f := by
+    apply e.functor.map_injective
+    simp
 
 end Equivalence
 

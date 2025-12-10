@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
-import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
-import Mathlib.CategoryTheory.MorphismProperty.Quotient
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
+public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -16,6 +18,8 @@ respect to weak equivalences identifies to the localization of `C` with
 respect to weak equivalences.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -134,7 +138,7 @@ def toπLocalizerMorphism :
 lemma factorsThroughLocalization :
     (homRel C).FactorsThroughLocalization (weakEquivalences (CofibrantObject C)) := by
   rintro X Y f g h
-  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
   let L := (weakEquivalences (CofibrantObject C)).Q
   rw [areEqualizedByLocalization_iff L]
   suffices L.map (homMk P.p₀) = L.map (homMk P.p₁) by
@@ -222,7 +226,7 @@ lemma π.resolutionObj_hom_ext {X : CofibrantObject C} {Y : C} {f g : X ⟶ reso
   rw [homRel_iff_rightHomotopyRel]
   apply LeftHomotopyRel.rightHomotopyRel
   rw [← LeftHomotopyClass.mk_eq_mk_iff] at h ⊢
-  exact (LeftHomotopyClass.bijective_postcomp_of_fibration_of_weakEquivalence
+  exact (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence
     (X := X.obj) (g := pResolutionObj Y)).1 h
 
 noncomputable def π.resolution : C ⥤ CofibrantObject.π C where
@@ -263,7 +267,7 @@ instance π.weakEquivalence_ιCompResolutionNatTrans_app (X : CofibrantObject C)
 
 instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
-    IsIso (whiskerRight π.ιCompResolutionNatTrans L) := by
+    IsIso (Functor.whiskerRight π.ιCompResolutionNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   apply Localization.inverts L (weakEquivalences _)
@@ -276,7 +280,7 @@ variable {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalen
 
 def π.toLocalization : π C ⥤ D :=
   CategoryTheory.Quotient.lift _ (ι ⋙ L)
-    (fun _ _ _ _ h ↦ (factorsThroughLocalization C h).map_eq_of_inverts _
+    (fun _ _ _ _ h ↦ (factorsThroughLocalization C h).map_eq_of_isInvertedBy _
       (fun _ _ _ ↦ Localization.inverts L (weakEquivalences _) _))
 
 def π.toπCompToLocalizationIso : toπ ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
@@ -312,6 +316,7 @@ def localizerMorphism : LocalizerMorphism (weakEquivalences (CofibrantObject C))
   functor := ι
   map := by rfl
 
+open Functor in
 instance : (localizerMorphism C).IsLocalizedEquivalence := by
   let Hcof := (weakEquivalences (π C)).Localization
   let Lcofπ : π C ⥤ Hcof := (weakEquivalences (CofibrantObject.π C)).Q
@@ -322,22 +327,22 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   let eF : ι ⋙ L ≅ Lcof ⋙ F := CatCommSq.iso (localizerMorphism C).functor Lcof L F
   let eF' : π.toLocalization L ≅ Lcofπ ⋙ F :=
     CategoryTheory.Quotient.natIsoLift _
-      (π.toπCompToLocalizationIso L ≪≫ eF ≪≫ Functor.associator _ _ _)
+      (π.toπCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
   let G : H ⥤ Hcof := (π.localizerMorphismResolution C).localizedFunctor L Lcofπ
   let eG : π.resolution ⋙ Lcofπ ≅ L ⋙ G :=
     CatCommSq.iso (π.localizerMorphismResolution C).functor L Lcofπ G
   have : Localization.Lifting L (weakEquivalences C)
       (π.resolution ⋙ π.toLocalization L) (G ⋙ F) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eG.symm _ ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ eF'.symm⟩
+    ⟨(associator _ _ _).symm ≪≫ isoWhiskerRight eG.symm _ ≪≫
+      associator _ _ _ ≪≫ isoWhiskerLeft _ eF'.symm⟩
   have : Localization.Lifting Lcof (weakEquivalences (CofibrantObject C))
         (ι ⋙ π.resolution ⋙ Lcofπ) (F ⋙ G) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eF.symm G ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ eG.symm⟩
+    ⟨(associator _ _ _).symm ≪≫ isoWhiskerRight eF.symm G ≪≫
+      associator _ _ _ ≪≫ isoWhiskerLeft _ eG.symm⟩
   let E : Hcof ≌ H := CategoryTheory.Equivalence.mk F G
     (Localization.liftNatIso Lcof (weakEquivalences _) Lcof (ι ⋙ π.resolution ⋙ Lcofπ) _ _
       ((asIso (whiskerRight π.ιCompResolutionNatTrans Lcofπ)).symm ≪≫
-          Functor.associator _ _ _))
+          associator _ _ _))
     (Localization.liftNatIso L (weakEquivalences _) (π.resolution ⋙ π.toLocalization L) L _ _
       (asIso (π.resolutionCompToLocalizationNatTrans L)))
   have : F.IsEquivalence := E.isEquivalence_functor

@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
 
 /-!
 # The fundamental lemma of homotopical algebra
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -19,14 +23,14 @@ variable {C : Type*} [Category C] [ModelCategory C] {H : Type*} [Category H]
   {X Y : C}
 
 def leftHomotopyClassToHom : LeftHomotopyClass X Y → (L.obj X ⟶ L.obj Y) :=
-  Quot.lift L.map (fun _ _ h ↦ (factorsThroughLocalization_leftHomotopyRel h).map_eq _)
+  Quot.lift L.map (fun _ _ h ↦ h.factorsThroughLocalization.map_eq _)
 
 @[simp]
 lemma leftHomotopyClassToHom_mk (f : X ⟶ Y) :
     leftHomotopyClassToHom L (.mk f) = L.map f := rfl
 
 def rightHomotopyClassToHom : RightHomotopyClass X Y → (L.obj X ⟶ L.obj Y) :=
-  Quot.lift L.map (fun _ _ h ↦ (factorsThroughLocalization_rightHomotopyRel h).map_eq _)
+  Quot.lift L.map (fun _ _ h ↦ h.factorsThroughLocalization.map_eq _)
 
 @[simp]
 lemma rightHomotopyClassToHom_mk (f : X ⟶ Y) :
@@ -54,7 +58,7 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
     have := Localization.inverts L (weakEquivalences _) p
       (by rwa [← weakEquivalence_iff])
     rw [← Function.Bijective.of_comp_iff _
-      (LeftHomotopyClass.bijective_postcomp_of_fibration_of_weakEquivalence _ p)]
+      (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence _ p)]
     convert (Iso.homCongr (Iso.refl (L.obj X)) (asIso (L.map p))).bijective.comp hY'
     ext f
     obtain ⟨f, rfl⟩ := f.mk_surjective
@@ -70,7 +74,7 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
     have := Localization.inverts L (weakEquivalences _) i
       (by rwa [← weakEquivalence_iff])
     rw [← Function.Bijective.of_comp_iff _
-      (RightHomotopyClass.bijective_precomp_of_cofibration_of_weakEquivalence Y i)]
+      (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence Y i)]
     convert (Iso.homCongr (asIso (L.map i)) (Iso.refl (L.obj Y))).symm.bijective.comp hX'
     ext f
     obtain ⟨f, rfl⟩ := f.mk_surjective
