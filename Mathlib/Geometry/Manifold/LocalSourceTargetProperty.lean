@@ -33,7 +33,7 @@ local property of this form.
   `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
 * `Manifold.LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
-* `isOpen_liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
+* `IsOpen.liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
   holds is open
 
 -/
@@ -51,7 +51,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace M'] [ChartedSpace H' M']
+  [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞}
 
@@ -198,15 +198,8 @@ lemma congr_iff_of_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =�
     LiftSourceTargetPropertyAt I J n f x P ↔ LiftSourceTargetPropertyAt I J n g x P :=
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
-/-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
-and `f` and `g` are eventually equal near `x`,
-then `f` has property `P` at `x` if and only if `g` has property `P` at `x`. -/
-lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
-    LiftSourceTargetPropertyAt I J n f x P ↔ LiftSourceTargetPropertyAt I J n g x P :=
-  ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
-
 /- The set of points where `LiftSourceTargetPropertyAt` holds is open. -/
-lemma _root_.isOpen_liftSourceTargetPropertyAt :
+lemma _root_.IsOpen.liftSourceTargetPropertyAt :
     IsOpen {x | LiftSourceTargetPropertyAt I J n g x P} := by
   rw [isOpen_iff_forall_mem_open]
   intro x hx

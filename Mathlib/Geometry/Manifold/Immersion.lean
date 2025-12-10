@@ -47,12 +47,13 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersionAtOfComplement.congr_F`, `IsImmersionOfComplement.congr_F`:
   being an immersion (at `x`) w.r.t. `F` is stable under
   replacing the complement `F` by an isomorphic copy
-* `isOpen_isImmersionAtOfComplement` and `isOpen_isImmersionAt`:
+* `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
+
 
 ## Implementation notes
 
@@ -151,7 +152,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
-While the particular choice of complement is often not important, chosing a complement is useful
+While the particular choice of complement is often not important, choosing a complement is useful
 in some settings, such as proving that embedded submanifolds are locally given either by an
 immersion or a submersion.
 Unless you have a particular reason, prefer to use `IsImmersionAt` instead.
@@ -361,42 +362,10 @@ lemma congr_F (e : F ≃L[𝕜] F') :
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
-lemma _root_.isOpen_isImmersionAtOfComplement :
+lemma _root_.IsOpen.isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
   simp_rw [IsImmersionAtOfComplement_def]
-  exact isOpen_liftSourceTargetPropertyAt
-
--- Can grind prove the next two lemmas, after sufficient future tagging?
--- Which of these two proofs is better?
-lemma _root_.aux1 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) :
-    EqOn f f' s := by
-  choose x0 hx0 using ht
-  have a : f = (Prod.fst) ∘ (Prod.map f g) ∘ (·, x0) := by ext x; simp
-  have b : f' = Prod.fst ∘ (Prod.map f' g') ∘ (·, x0) := by ext x; simp
-  rw [a, b]
-  exact (eqOn_comp_right_iff.mpr <| h.mono (image_prodMk_subset_prod_left hx0)).comp_left
-
-lemma _root_.aux2 {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) :
-    EqOn g g' t := by
-  choose xs hxs using hs
-  intro x hx
-  have h' := h <| mk_mem_prod hxs hx
-  simp only [Prod.map_apply, Prod.mk.injEq] at h'
-  exact h'.2
-
--- TODO: move to Data.Set.Operations
-lemma _root_.Set.EqOn.prodMap {α β γ δ : Type*}
-    {f f' : α → γ} {g g' : β → δ} {s : Set α} {t : Set β}
-    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
-  rintro ⟨x, x'⟩ ⟨hx, hx'⟩
-  simp [hf hx, hg hx']
-
-lemma aux {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
-    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
-    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
-  ⟨fun h ↦ ⟨aux1 h ht, aux2 h hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+  exact .liftSourceTargetPropertyAt
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
@@ -404,28 +373,12 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsImmersionAtOfComplement F I J n f x) (hg : IsImmersionAtOfComplement F' I' J' n g x') :
     IsImmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
-  let P := ImmersionAtProp F I J M N
-  let Q := ImmersionAtProp F' I' J' M' N'
-  let R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
-  -- This is the key proof: immersions are stable under products.
-  have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
-      ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
-      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
-    rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
-    use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
-    rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
-    set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
-      Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
-    have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
-        ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
-      ext x <;> simp [C]
-    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
-      (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
-    have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
-    rw [hC, hΦ]
-    exact hfprop.prodMap hgprop
   rw [IsImmersionAtOfComplement_def]
-  exact LiftSourceTargetPropertyAt.prodMap hf.property hg.property key
+  apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
+  rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+  use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
+  exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
@@ -626,12 +579,12 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
 /- The set of points where `IsImmersionAt` holds is open. -/
-lemma _root_.isOpen_isImmersionAt :
+lemma _root_.IsOpen.isImmersionAt :
     IsOpen {x | IsImmersionAt I J n f x} := by
   rw [isOpen_iff_forall_mem_open]
   exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
-    fun y hy ↦ hy.isImmersionAt,
-    isOpen_isImmersionAtOfComplement, by simp [hx.isImmersionAtOfComplement_complement]⟩
+    fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
+    by simp [hx.isImmersionAtOfComplement_complement]⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
