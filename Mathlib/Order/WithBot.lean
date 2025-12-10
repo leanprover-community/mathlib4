@@ -425,13 +425,13 @@ lemma le_unbot_iff (hx : x ≠ ⊥) : a ≤ unbot x hx ↔ a ≤ x := by lift x 
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ a ↔ x ≤ a := by lift x to α using hx; simp
 
 @[to_dual (reorder := hx hy)]
-lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x ≤ y ↔ x.unbot hx ≤ y.unbot hy := by
+lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.unbot hy ↔ x ≤ y := by
   lift x to α using hx
   lift y to α using hy
   simp
 
 @[to_dual]
-alias ⟨unbot_mono, _⟩ := unbot_le_unbot_iff
+alias ⟨_, unbot_mono⟩ := unbot_le_unbot_iff
 
 @[deprecated (since := "2025-12-05")]
 alias unbot_le_unbot := unbot_le_unbot_iff
