@@ -314,7 +314,7 @@ lemma add_modEq_left : n + a ≡ a [MOD n] := by simp
 
 lemma add_modEq_right : a + n ≡ a [MOD n] := by simp
 
-theorem modEq_iff_add_fac (h : a ≤ b) : a ≡ b [MOD n] ↔ ∃ (t : ℕ), b = a + n * t := by
+theorem modEq_iff_exists_eq_add (h : a ≤ b) : a ≡ b [MOD n] ↔ ∃ (t : ℕ), b = a + n * t := by
   rw [modEq_iff_dvd' h, dvd_def]
   exact exists_congr (fun _ => Nat.sub_eq_iff_eq_add' h)
 
