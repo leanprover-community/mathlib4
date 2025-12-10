@@ -360,9 +360,9 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
   inverse := pullFunctor F w'
   unitIso :=
     (pullFunctorIdIso F S).symm ≪≫ pullFunctorIso _ _ _ ≪≫
-      (pullFunctorCompIso _ _ _ (hr := e.inv_hom_id) (hr' := fun _ ↦ rfl)).symm
+      (pullFunctorCompIso _ _ _ _ (e.inv_hom_id) (fun _ ↦ rfl)).symm
   counitIso :=
-    (pullFunctorCompIso _ _ _ (hr := e.hom_inv_id) (hr' := fun _ ↦ rfl)) ≪≫
+    pullFunctorCompIso _ _ _ _ (e.hom_inv_id) (fun _ ↦ rfl) ≪≫
       pullFunctorIso _ _ _ ≪≫ pullFunctorIdIso F S'
   functor_unitIso_comp D := by
     ext j
