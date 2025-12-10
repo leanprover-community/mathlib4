@@ -17,7 +17,7 @@ times.
 
 ## Main declarations
 * `Nat.Partition.card_restricted_eq_card_countRestricted`: Glaisher's theorem.
-* `Nat.Partition.card_odds_eq_card_dinstincts`: Euler's partition theorem, a special case
+* `Nat.Partition.card_odds_eq_card_distincts`: Euler's partition theorem, a special case
   of Glaisher's theorem when `m = 2`. This is also Theorem 45 from the
   [100 Theorems List](https://www.cs.ru.nl/~freek/100/).
 
@@ -155,7 +155,7 @@ theorem card_restricted_eq_card_countRestricted (n : ℕ) {m : ℕ} (hm : 0 < m)
   simpa using PowerSeries.ext_iff.mp
     (powerSeriesMk_card_restricted_eq_powerSeriesMk_card_countRestricted ℤ hm) n
 
-theorem card_odds_eq_card_dinstincts (n : ℕ) : #(odds n) = #(distincts n) := by
+theorem card_odds_eq_card_distincts (n : ℕ) : #(odds n) = #(distincts n) := by
   simp_rw [← countRestricted_two, odds, even_iff_two_dvd]
   exact card_restricted_eq_card_countRestricted n (by norm_num)
 
