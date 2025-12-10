@@ -384,5 +384,3 @@ instance {X : C} (f : Over X) :
   inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
 
 end CategoryTheory
-
-#min_imports
