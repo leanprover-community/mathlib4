@@ -58,6 +58,9 @@ lemma Module.FaithfullyFlat.of_comap_surjective [Flat A B]
   exact (Submodule.restrictScalars_eq_top_iff _ _ _).ne.mpr
     fun top ↦ m'.isPrime.ne_top <| top_le_iff.mp <| top ▸ Ideal.map_comap_le
 
+@[deprecated (since := "2025-12-10")]
+alias Module.FaithfullyFlat.of_specComap_surjective := Module.FaithfullyFlat.of_comap_surjective
+
 /-- If `A` is local and `B` is a local and flat `A`-algebra, then `B` is faithfully flat. -/
 lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B] [Flat A B]
     [IsLocalHom (algebraMap A B)] : Module.FaithfullyFlat A B := by
@@ -133,3 +136,7 @@ lemma PrimeSpectrum.comap_surjective_of_faithfullyFlat :
     Function.Surjective (comap (algebraMap A B)) := fun I ↦
   (PrimeSpectrum.mem_range_comap_iff (algebraMap A B)).mpr
     I.asIdeal.comap_map_eq_self_of_faithfullyFlat
+
+@[deprecated (since := "2025-12-10")]
+alias PrimeSpectrum.specComap_surjective_of_faithfullyFlat :=
+  PrimeSpectrum.comap_surjective_of_faithfullyFlat
