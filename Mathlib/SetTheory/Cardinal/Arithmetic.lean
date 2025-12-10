@@ -465,7 +465,7 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
   exact ⟨by grw [h.1], mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
 lemma add_lt_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
-  α + γ < β + γ ↔ α < β := by
+    α + γ < β + γ ↔ α < β := by
   constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 γ₀]
 
 @[simp]
