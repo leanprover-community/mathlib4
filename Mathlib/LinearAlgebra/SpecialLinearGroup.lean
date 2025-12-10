@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -373,7 +373,7 @@ theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
 /- TODO : delete this auxiliary definition
 and put it in the definition of `centerEquivRootsOfUnity.
 How can one access to the definition of one already defined term in a structure
-while one is still definining it? -/
+while one is still defining it? -/
 /-- The inverse map for the equivalence `SpecialLinearGroup.centerEquivRootsOfUnity`. -/
 noncomputable def centerEquivRootsOfUnity_invFun
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
