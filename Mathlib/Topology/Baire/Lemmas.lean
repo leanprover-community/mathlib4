@@ -233,5 +233,3 @@ theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
   exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
 
 end BaireTheorem
-
-#min_imports
