@@ -104,6 +104,7 @@ theorem iterate_le_of_le {g : α → α} (hf : Monotone f) (h : f ≤ g) (n : �
   hf.iterate_comp_le_of_le h n
 
 /-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/
+@[to_dual existing iterate_le_of_le]
 theorem le_iterate_of_le {g : α → α} (hg : Monotone g) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   hg.dual.iterate_le_of_le h n
 
@@ -125,11 +126,9 @@ variable {α : Type*} [Preorder α] {f : α → α}
 
 /-- If $x ≤ f x$ for all $x$ (we write this as `id ≤ f`), then the same is true for any iterate
 `f^[n]` of `f`. -/
+@[to_dual iterate_le_id_of_le_id]
 theorem id_le_iterate_of_id_le (h : id ≤ f) (n : ℕ) : id ≤ f^[n] := by
   simpa only [iterate_id] using monotone_id.iterate_le_of_le h n
-
-theorem iterate_le_id_of_le_id (h : f ≤ id) (n : ℕ) : f^[n] ≤ id :=
-  @id_le_iterate_of_id_le αᵒᵈ _ f h n
 
 theorem monotone_iterate_of_id_le (h : id ≤ f) : Monotone fun m => f^[m] :=
   monotone_nat_of_le_succ fun n x => by
