@@ -30,11 +30,7 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [A
 
 variable (R) in
 /-- We say that an `R`-algebra `A` is etale at a prime `q` of `A`
-if `A_q` is formally etale over `R`.
-
-If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
-`κ(q)/κ(p)` being separable and `pA_q = qA_q`.
-See `Algebra.isEtaleAt_iff_map_eq` in `RingTheory.Etale.LocalRing` -/
+if `A_q` is formally etale over `R`. -/
 abbrev IsEtaleAt (q : Ideal A) [q.IsPrime] : Prop :=
   FormallyEtale R (Localization.AtPrime q)
 
