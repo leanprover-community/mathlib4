@@ -99,7 +99,7 @@ instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
 
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
-    fourierTransformCLM E F f = 𝓕 f := rfl
+  fourierTransformCLM E F f = 𝓕 f := rfl
 
 @[simp]
 theorem fourierTransform_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
