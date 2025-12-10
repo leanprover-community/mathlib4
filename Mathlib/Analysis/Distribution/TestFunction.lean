@@ -80,7 +80,7 @@ scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
 open Distributions
 
-/-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continously
+/-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
     {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)

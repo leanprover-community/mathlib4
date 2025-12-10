@@ -58,7 +58,7 @@ For example, `"findEq: path for a conjunction should be nonempty"`. -/
 private def assertUnreachable {α : Type} (context : String) : MetaM α := do
   let e := s!"existsAndEq: internal error, unreachable case has occurred:\n{context}."
   logError e
-  -- the following error will be caught by `simp` so we additionaly log it above
+  -- the following error will be caught by `simp` so we additionally log it above
   throwError e
 
 /-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
@@ -125,7 +125,7 @@ where
       "findEq: some side of equality must be `a`, and the other must not depend on `a`"
   | ~q($L ∧ $R) =>
     match (generalizing := false) path with
-    | [] => assertUnreachable "findEq: P is conjuction but path is empty"
+    | [] => assertUnreachable "findEq: P is conjunction but path is empty"
     | .left :: tl =>
       let (fvars, lctx, P', a') ← go a q($L) tl
       return (fvars, lctx, q($P' ∧ $R), a')
@@ -412,7 +412,7 @@ where
 /-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
 for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
-It looks through nested quantifiers and conjuctions searching for a `a = a'`
+It looks through nested quantifiers and conjunctions searching for a `a = a'`
 or `a' = a` subexpression. -/
 simproc ↓ existsAndEq (Exists _) := fun e => do
   let_expr f@Exists α p := e | return .continue

@@ -34,7 +34,7 @@ namespace Mathlib.Tactic.Order.ToInt
 variable {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
 
 /-- The main theorem asserting the existence of a translation.
-We use `Classical.chooose` to turn this into a value for use in the `order` tactic,
+We use `Classical.choose` to turn this into a value for use in the `order` tactic,
 see `toInt`.
 -/
 theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
