@@ -5,9 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.GDelta.Basic
-public import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Topology.Constructions
 
 /-!
 # Baire spaces
@@ -35,33 +34,21 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 
 noncomputable section
 
-open Filter Function Set Topology
+open Topology Filter Set TopologicalSpace
 
 variable {X Y α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [BaireSpace X] {s : Set X}
+variable [TopologicalSpace X] [TopologicalSpace Y] [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
     (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
 
-/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
-theorem IsOpenQuotientMap.baireSpace {f : X → Y} (hf : IsOpenQuotientMap f) :
-    BaireSpace Y := by
-  constructor
-  intro u hou hdu
-  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
-    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
-  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
-
-/-- A homeomorphism maps a Baire space to a Baire space. -/
-theorem Homeomorph.baireSpace (f : X ≃ₜ Y) : BaireSpace Y := f.isOpenQuotientMap.baireSpace
-
 /-- An open subset of a Baire space is Baire. -/
-theorem IsOpen.baireSpace (hO : IsOpen s) : BaireSpace s := by
+theorem IsOpen.baireSpace {s : Set X} (hO : IsOpen s) : BaireSpace s := by
   constructor
   intro f hof hdf
   obtain ⟨g, hg1, hg2, hg3⟩ : ∃ g : ℕ → Set X,
@@ -246,3 +233,5 @@ theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
   exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
 
 end BaireTheorem
+
+#min_imports

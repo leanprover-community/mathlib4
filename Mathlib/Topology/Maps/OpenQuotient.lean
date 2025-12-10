@@ -64,6 +64,15 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
     fun hs ↦ hs.preimage h.isOpenMap⟩
 
+/-- If `f` is an open quotient map and `X` is Baire, then `Y` is Baire. -/
+theorem IsOpenQuotientMap.baireSpace {f : X → Y} (hf : IsOpenQuotientMap f) :
+    BaireSpace Y := by
+  constructor
+  intro u hou hdu
+  have := dense_iInter_of_isOpen_nat (fun n => hf.continuous.isOpen_preimage (u n) (hou n))
+    (fun n => (IsOpenQuotientMap.dense_preimage_iff hf).mpr (hdu n))
+  simp_all [← preimage_iInter, IsOpenQuotientMap.dense_preimage_iff]
+
 end IsOpenQuotientMap
 
 theorem Topology.IsInducing.isOpenQuotientMap_of_surjective (ind : IsInducing f)
