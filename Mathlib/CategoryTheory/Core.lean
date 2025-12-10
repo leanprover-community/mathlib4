@@ -211,8 +211,14 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
 def inclusionCompFunctorToCoreIdIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+@[deprecated (since := "2025-12-10")] alias inclusionCompFunctorToCoreIso :=
+  inclusionCompFunctorToCoreIdIso
+
 theorem inclusion_comp_functorToCore_id : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
   Functor.ext_of_iso inclusionCompFunctorToCoreIdIso (by cat_disch)
+
+@[deprecated (since := "2025-12-10")] alias inclusion_comp_functorToCore :=
+  inclusion_comp_functorToCore_id
 
 /-- The functor `functorToCore (inclusion C)` is isomorphic to the identity on `Core C`. -/
 def functorToCoreInclusionIso : functorToCore (inclusion C) ≅ 𝟭 (Core C) :=
