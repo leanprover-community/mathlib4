@@ -227,10 +227,8 @@ noncomputable def normalAutEquivQuotient [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] :
     Gal(K/k) ⧸ H.1 ≃* Gal(fixedField H.1/k) :=
   (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-  (fixedField H.1).restrictNormalHom_ker.symm)).trans <|
-  QuotientGroup.quotientKerEquivOfSurjective
-    (restrictNormalHom (fixedField H.1)) <|
-    restrictNormalHom_surjective K
+    (fixedField H.1).restrictNormalHom_ker.symm)).trans <|
+      QuotientGroup.quotientKerEquivOfSurjective _ <| restrictNormalHom_surjective K
 
 open IntermediateField in
 lemma normalAutEquivQuotient_apply [IsGalois k K]
