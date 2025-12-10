@@ -210,6 +210,10 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
+@[deprecated (since := "2025-12-09")] alias degree_add := map_add
+
+@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
+
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
