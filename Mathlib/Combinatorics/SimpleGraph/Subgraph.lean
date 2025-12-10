@@ -614,8 +614,7 @@ lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
     · exact ⟨(hdisj hsub₀ hsub₁ <| M'.edge_vert · :), False.elim⟩
   · intro hdisj S h₀ h₁ v hvS
     let M' : Subgraph G := {verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp}
-    have hle : ∀ {M : SimpleGraph.Subgraph G}, v ∈ M.verts → M' ≤ M := by
-      intro M h; constructor <;> simp [h, M']
+    have hle {M} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
     exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton v
 
 section map
