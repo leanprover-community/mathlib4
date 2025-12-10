@@ -56,12 +56,10 @@ theorem coeff_smul' (r : R) (x : HahnSeries Γ V) : (r • x).coeff = r • x.co
 theorem coeff_smul {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
 
-instance : SMulZeroClass R (HahnSeries Γ V) :=
-  { inferInstanceAs (SMul R (HahnSeries Γ V)) with
-    smul_zero := by
-      intro
-      ext
-      simp only [coeff_smul, coeff_zero, smul_zero]}
+instance : SMulZeroClass R (HahnSeries Γ V) where
+  smul_zero _ := by
+    ext
+    simp only [coeff_smul, coeff_zero, smul_zero]
 
 theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0
@@ -320,11 +318,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid R]
 
-instance : AddCommMonoid (HahnSeries Γ R) :=
-  { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
-    add_comm := fun x y => by
-      ext
-      apply add_comm }
+instance : AddCommMonoid (HahnSeries Γ R) where
+  add_comm x y := by
+    ext
+    apply add_comm
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → HahnSeries Γ R} (g : Γ) :
@@ -442,9 +439,7 @@ theorem le_orderTop_of_leadingCoeff_eq {Γ} [LinearOrder Γ] {x y : HahnSeries �
 
 end AddGroup
 
-instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
-  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
-    inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
+instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) where
 
 end Addition
 
@@ -484,14 +479,13 @@ section Module
 
 variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
-instance : Module R (HahnSeries Γ V) :=
-  { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
-    zero_smul := fun _ => by
-      ext
-      simp
-    add_smul := fun _ _ _ => by
-      ext
-      simp [add_smul] }
+instance : Module R (HahnSeries Γ V) where
+  zero_smul _ := by
+    ext
+    simp
+  add_smul _ _ _ := by
+    ext
+    simp [add_smul]
 
 /-- `single` as a linear map -/
 @[simps]
