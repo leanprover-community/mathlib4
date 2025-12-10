@@ -118,6 +118,13 @@ def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := 
 lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     P.inverseImage F f ↔ P (F.map f) := by rfl
 
+/-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
+inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
+  | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
+
+lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    (P.strictMap F) (F.map f) := ⟨hf⟩
+
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
@@ -146,6 +153,16 @@ variable (P : MorphismProperty C)
 
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+
+lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
+
+lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
+    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+  ext
+  simp [mem_toSet_iff]
+
+lemma toSet_max (W₁ W₂ : MorphismProperty C) :
+    (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
 
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/

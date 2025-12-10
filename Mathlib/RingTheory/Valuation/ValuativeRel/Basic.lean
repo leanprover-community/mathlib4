@@ -485,7 +485,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
     conv_lhs => apply mul_mul_mul_comm
     conv_rhs => apply mul_mul_mul_comm
-    exact rel_mul_left _ hab
+    exact rel_mul_right _ hab
 
 instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
@@ -558,6 +558,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
+set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -675,16 +676,8 @@ def supp : Ideal R where
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
 
 lemma supp_eq_valuation_supp : supp R = (valuation R).supp := by
-  ext x
-  constructor
-  · intro h
-    simp only [supp_def, Valuation.mem_supp_iff] at h ⊢
-    apply ValueGroupWithZero.sound
-    · simpa
-    · simp
-  · intro h
-    have := ValueGroupWithZero.exact h
-    simpa using this.left
+  ext
+  simpa using valuation_eq_zero_iff.symm
 
 instance : (supp R).IsPrime := by
   rw [supp_eq_valuation_supp]
@@ -1043,8 +1036,8 @@ lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) 
 
 variable (B) in
 lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by
-    obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
-    exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
+  exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
 
