@@ -30,11 +30,11 @@ variable [MulAction G E] [ContinuousConstSMul G E]
 include hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
-  `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-  `Trivialization` over the base set `p(U)`. -/
-@[to_additive "If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
-  other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-  `Trivialization` over the base set `p(U)`."]
+`G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
+`Trivialization` over the base set `p(U)`. -/
+@[to_additive /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
+other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
+`Trivialization` over the base set `p(U)`. -/]
 noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTopology G]
     (U : Set E) (open_U : IsOpen U) (disjoint : ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) :
     Trivialization G f := by
@@ -69,13 +69,13 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
   letI : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
   suffices ∀ x ∈ f '' {e | MulAction.stabilizer G e = ⊥}, ∃ t : Trivialization G f, x ∈ t.baseSet by
-    choose t ht using this; exact IsCoveringMapOn.mk _ _ (fun _ ↦ G) t ht
+    choose t ht using this; exact IsCoveringMapOn.mk _ _ _ _ fun x ↦ ht x x.2
   rintro x ⟨e, he, rfl⟩
   obtain ⟨U, heU, hU⟩ := disjoint e
   refine ⟨hf.trivializationOfSMulDisjoint hfG (interior U) isOpen_interior
     fun g hg ↦ ?_, e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩
   rw [← Subgroup.mem_bot, ← he]; apply hU; contrapose! hg; exact Set.subset_eq_empty
-    (Set.inter_subset_inter (Set.image_subset _ interior_subset) interior_subset) hg
+    (Set.inter_subset_inter (Set.image_mono interior_subset) interior_subset) hg
 
 @[to_additive] lemma isCoveringMap_of_smul_disjoint
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) : IsCoveringMap f :=
@@ -123,9 +123,9 @@ end ProperlyDiscontinuousSMul
 end MulAction
 
 @[to_additive] lemma isCoveringMap_of_subgroup [Group E] [IsTopologicalGroup E] (G : Subgroup E)
-    [DiscreteTopology G] (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁⁻¹ * e₂ ∈ G) :
+    (hG : IsDiscrete (G : Set E)) (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁⁻¹ * e₂ ∈ G) :
     IsCoveringMap f := by
-  obtain ⟨U, hU, disj⟩ := G.disjoint_nhds_of_discrete
+  obtain ⟨U, hU, disj⟩ := G.disjoint_nhds_of_isDiscrete hG
   refine hf.isCoveringMap_of_smul_disjoint (G := G.op) (fun {_ _} ↦ ?_) fun e ↦ ?_
   · rw [hfG, ← QuotientGroup.leftRel_apply]; rfl
   refine ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
@@ -135,14 +135,16 @@ end MulAction
   exact ⟨y, ⟨x, hx, mul_left_cancel (he.trans <| mul_assoc _ _ _).symm⟩, hy⟩
 
 omit hf in
-@[to_additive] lemma isCoveringMap_of_discrete_ker_monoidHom [Group E] [IsTopologicalGroup E]
-    [Group X] {f : E →* X} (hf : IsQuotientMap f) (d : DiscreteTopology f.ker) : IsCoveringMap f :=
-  hf.isCoveringMap_of_subgroup f.ker fun {_ _} ↦ by rw [← inv_mul_eq_one, ← map_inv, ← map_mul]; rfl
+@[to_additive] lemma isCoveringMap_of_isDiscrete_ker_monoidHom [Group E] [IsTopologicalGroup E]
+    [Group X] {f : E →* X} (hf : IsQuotientMap f) (disc : IsDiscrete (f.ker : Set E)) :
+    IsCoveringMap f :=
+  hf.isCoveringMap_of_subgroup f.ker disc fun {_ _} ↦ by
+    rw [← inv_mul_eq_one, ← map_inv, ← map_mul]; rfl
 
 end Topology.IsQuotientMap
 
 @[to_additive] lemma Subgroup.isCoveringMap {G} [Group G] [TopologicalSpace G]
-    [IsTopologicalGroup G] (S : Subgroup G) [DiscreteTopology S] :
+    [IsTopologicalGroup G] (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
     IsCoveringMap (QuotientGroup.mk (s := S)) :=
-  isQuotientMap_quotient_mk'.isCoveringMap_of_subgroup S fun {_ _} ↦
+  isQuotientMap_quotient_mk'.isCoveringMap_of_subgroup S hS fun {_ _} ↦
     Quotient.eq''.trans QuotientGroup.leftRel_apply
