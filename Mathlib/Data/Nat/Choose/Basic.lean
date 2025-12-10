@@ -125,16 +125,18 @@ theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
 lemma choose_ne_zero {n k : ℕ} (h : k ≤ n) : n.choose k ≠ 0 :=
   (choose_pos h).ne'
 
-theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
+theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (k + 1) * (k + 1)
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]
   | n + 1, 0 => by simp [choose, mul_succ, Nat.add_comm]
   | n + 1, k + 1 => by
-    rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
-      succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
+    rw [choose_succ_succ' (n + 1) (k + 1), Nat.add_mul _ _ (k + 1 + 1), ← add_one_mul_choose_eq n,
+      mul_add_one, ← add_one_mul_choose_eq n, Nat.add_right_comm _ _ (_ * _), ← Nat.mul_add,
+      ← choose_succ_succ', ← add_one_mul]
 
-theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (k + 1) * (k + 1) :=
-  succ_mul_choose_eq
+@[deprecated add_one_mul_choose_eq (since := "2025-12-09")]
+theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k :=
+  add_one_mul_choose_eq
 
 theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
@@ -214,7 +216,7 @@ theorem choose_symm_half (m : ℕ) : choose (2 * m + 1) (m + 1) = choose (2 * m 
 
 theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n k * (n - k) := by
   have e : (n + 1) * choose n k = choose n (k + 1) * (k + 1) + choose n k * (k + 1) := by
-    rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, succ_mul_choose_eq]
+    rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, add_one_mul_choose_eq]
   rw [← Nat.sub_eq_of_eq_add e, Nat.mul_comm, ← Nat.mul_sub_left_distrib, Nat.add_sub_add_right]
 
 @[simp]

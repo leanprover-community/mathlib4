@@ -221,7 +221,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | n + 1, k + 1 => by
     rw [← hp.emultiplicity_mul]
     refine emultiplicity_le_emultiplicity_of_dvd_right ?_
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
