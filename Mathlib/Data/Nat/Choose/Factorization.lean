@@ -149,7 +149,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
       (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
