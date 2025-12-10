@@ -137,6 +137,10 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
+@[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
+
+@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_one
+
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
@@ -226,7 +230,7 @@ end Semigroup
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
     [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
 variable [Monoid α]
