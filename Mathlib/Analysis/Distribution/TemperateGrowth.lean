@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Tactic.MoveAdd
-
+public import Mathlib.Tactic.ToFun
 
 /-! # Functions and measures of temperate growth -/
 
@@ -160,7 +160,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
     _ = _ := by rw [mul_pow, ← pow_mul, pow_add]; ring
 
 /-- Composition of two temperate growth functions is of temperate growth. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   apply hf.comp' (t := Set.univ)
@@ -174,12 +174,13 @@ section Addition
 
 variable {f g : E → F}
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGrowth := by
   refine ⟨hf.1.neg, fun n ↦ ?_⟩
   obtain ⟨k, C, h⟩ := hf.2 n
   exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
 
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
   rw [hasTemperateGrowth_iff_isBigO] at *
@@ -193,11 +194,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
     (h₂.trans (IsBigO.pow_of_le_right this (k₁.le_max_right k₂)))
 
-@[fun_prop]
-theorem HasTemperateGrowth.fun_add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
-    (fun x ↦ f x + g x).HasTemperateGrowth := hf.add hg
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
   convert hf.add hg.neg using 1
@@ -249,7 +246,7 @@ lemma HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for scalar multiplication. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
   (ContinuousLinearMap.lsmul ℝ 𝕜).bilinear_hasTemperateGrowth hf hg
@@ -257,12 +254,12 @@ theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemper
 variable [NormedRing R] [NormedAlgebra ℝ R]
 
 /-- The product of two functions of temperate growth is again of temperate growth. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth :=
   (ContinuousLinearMap.mul ℝ R).bilinear_hasTemperateGrowth hf hg
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
@@ -316,7 +313,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
     field_simp at this
     nth_rewrite 1 [mul_comm] at this
     exact this
-  use k, ∑ k ∈ Finset.range (N + 1), ‖Polynomial.eval r (descPochhammer ℝ k)‖
+  use k, ∑ k ∈ Finset.range (N + 1), ‖Polynomial.eval r (descPochhammer ℝ k)‖, by positivity
   intro n hn x hx
   have : ContDiffAt ℝ n (fun x ↦ x ^ r) x :=
     Real.contDiffAt_rpow_const <| Or.inl (lt_trans (by norm_num) hx).ne'
