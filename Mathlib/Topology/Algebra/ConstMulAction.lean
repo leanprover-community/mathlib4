@@ -493,7 +493,7 @@ theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
 @[to_additive /-- The quotient by a discontinuous group action of a locally compact t2
 space is t2. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
-    [WeaklyLocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
+    [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
   letI := MulAction.orbitRel Γ T
   set Q := Quotient (MulAction.orbitRel Γ T)
