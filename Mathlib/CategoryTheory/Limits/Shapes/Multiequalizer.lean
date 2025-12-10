@@ -155,9 +155,9 @@ def functorExt {C : Type*} [Category C] {F G : WalkingMulticospan J ⥤ C}
     (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
     (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
     (wl : ∀ i, F.map (WalkingMulticospan.Hom.fst i) ≫ (right i).hom =
-      (left _).hom ≫ G.map (WalkingMulticospan.Hom.fst i))
+      (left _).hom ≫ G.map (WalkingMulticospan.Hom.fst i) := by cat_disch)
     (wr : ∀ i, F.map (WalkingMulticospan.Hom.snd i) ≫ (right i).hom =
-      (left _).hom ≫ G.map (WalkingMulticospan.Hom.snd i)) :
+      (left _).hom ≫ G.map (WalkingMulticospan.Hom.snd i) := by cat_disch) :
     F ≅ G :=
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
@@ -217,9 +217,9 @@ def functorExt {C : Type*} [Category C] {F G : WalkingMultispan J ⥤ C}
     (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
     (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
     (wl : ∀ i, F.map (WalkingMultispan.Hom.fst i) ≫ (right _).hom =
-      (left i).hom ≫ G.map (WalkingMultispan.Hom.fst _))
+      (left i).hom ≫ G.map (WalkingMultispan.Hom.fst _) := by cat_disch)
     (wr : ∀ i, F.map (WalkingMultispan.Hom.snd i) ≫ (right _).hom =
-      (left i).hom ≫ G.map (WalkingMultispan.Hom.snd _)) :
+      (left i).hom ≫ G.map (WalkingMultispan.Hom.snd _) := by cat_disch) :
     F ≅ G :=
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
