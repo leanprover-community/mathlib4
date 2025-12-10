@@ -172,7 +172,7 @@ theorem continuousAt_arclength_left (h : b < a) : ContinuousAt (arclength f · b
   continuousAt_const.congr <| Filter.eventuallyEq_of_mem (Ioi_mem_nhds h)
     fun x hx ↦ (arclength_eq_zero _ (le_of_lt <| by simpa)).symm
 
-variable (hab : a < b) (hrect : arclength f a b ≠ ∞) /- f is rectifiable on [a,b] -/
+variable (hab : a < b) (hrect : BoundedVariationOn f (Icc a b)) /- f is rectifiable on [a,b] -/
 include hab hrect
 
 theorem continuous_right_self_arclength
