@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # Derivability structures attached to model categories
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -33,10 +37,7 @@ instance (X : C) : IsConnected ((localizerMorphism C).LeftResolution X) := by
   have hR₀ (R) : Nonempty (Zigzag R R₀) := by
     have sq : CommSq (initial.to _) (initial.to _) R₀.w R.w := ⟨by simp⟩
     exact ⟨Zigzag.of_hom
-      { f := sq.lift
-        hf := by
-          rw [← weakEquivalence_iff, weakEquivalence_iff_ι_map]
-          exact weakEquivalence_of_postcomp_of_fac sq.fac_right }⟩
+      { f := sq.lift }⟩
   have : Nonempty ((localizerMorphism C).LeftResolution X) := ⟨R₀⟩
   exact zigzag_isConnected (fun R₁ R₂ ↦ (hR₀ R₁).some.trans (hR₀ R₂).some.symm)
 
