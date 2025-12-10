@@ -27,25 +27,15 @@ matrix, module
 
 @[expose] public section
 
-variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGroup M] [Module R M]
+variable {ι R M N P : Type*} [Ring R] [Fintype ι] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 
 namespace Matrix.Module
 
 /-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
   `M` is `R`. -/
-scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
+scoped instance matrixSMul : SMul (Matrix ι ι R) (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
-  one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
-  mul_smul N₁ N₂ v := funext fun i ↦ show ∑ _, _ = ∑ _, _ • (∑ _, _) by
-    simp_rw [mul_apply, Finset.smul_sum, Finset.sum_smul, SemigroupAction.mul_smul]
-    rw [Finset.sum_comm]
-  smul_zero v := funext fun i ↦ show ∑ _, _ = _ by simp
-  smul_add N v₁ v₂ := funext fun i ↦ show ∑ j : ι, N i j • (v₁ + v₂) j = (∑ _, _) + (∑ _, _) by
-    simp [smul_add, Finset.sum_add_distrib]
-  add_smul N₁ N₂ v := funext fun i ↦ show ∑ j : ι, (N₁ + N₂) i j • v j = (∑ _, _) + (∑ _, _) by
-    simp [add_smul, Finset.sum_add_distrib]
-  zero_smul v := funext fun i ↦ show ∑ _, _ = _ by simp
 
 lemma smul_def (N : Matrix ι ι R) (v : ι → M) :
     N • v = fun i ↦ ∑ j : ι, N i j • v j := rfl
@@ -57,11 +47,27 @@ lemma smul_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun 
 lemma smul_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
     (N • v) i = ∑ j : ι, N i j • v j := rfl
 
+variable [DecidableEq ι]
+
+/-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
+  `M` is `R`. -/
+scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
+  one_smul v := funext fun i ↦ by simp [one_apply]
+  mul_smul N₁ N₂ v := funext fun i => by
+    simp_rw [smul_apply, mul_apply, Finset.smul_sum, Finset.sum_smul, SemigroupAction.mul_smul]
+    rw [Finset.sum_comm]
+  smul_zero v := funext fun i ↦ by simp
+  smul_add N v₁ v₂ := funext fun i ↦ by simp [smul_add, Finset.sum_add_distrib]
+  add_smul N₁ N₂ v := funext fun i ↦ by simp [add_smul, Finset.sum_add_distrib]
+  zero_smul v := funext fun i ↦ by simp
+
 scoped instance (S : Type*) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     IsScalarTower R (Matrix ι ι S) (ι → M) where
   smul_assoc _ _ _ := by ext; simp [Finset.smul_sum]
 
 end Matrix.Module
+
+variable [DecidableEq ι]
 
 namespace LinearMap
 
