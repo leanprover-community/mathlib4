@@ -32,7 +32,7 @@ noncomputable def arclength (a b : α) : ℝ≥0∞ :=
   eVariationOn f (Set.Icc a b)
 
 /-- `arclength f a b` is the supremum of finite sums of `edist (f <| u i) (f <| u <| i+1)` for `u`
-satisfying the same conditions as for `evariation_on` with the addition of:
+satisfying the same conditions as for `eVariationOn` with the addition of:
 * `u 0` is `a`.
 * `u 1` is **not** `a`. -/
 theorem arclength_eq_iSup (hab : a ≤ b) : arclength f a b =
