@@ -131,11 +131,7 @@ theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :
 theorem carmichael_two_pow_of_le_two {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 1) := by
   rw [carmichael_two_pow_of_le_two_eq_totient hn]
-  interval_cases n
-  · simp
-  · simp
-  · rw [totient_prime_pow prime_two <| by lia]
-    simp
+  interval_cases n <;> decide
 
 /-- Note that `2 ^ (n - 2) = 1` when `n ≤ 1`. -/
 @[simp]
