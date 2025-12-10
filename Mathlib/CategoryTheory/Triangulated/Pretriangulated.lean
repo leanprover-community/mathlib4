@@ -420,7 +420,7 @@ instance : SplitMonoCategory C where
     exact ⟨r, hr.symm⟩
 
 /-- If the first and third components of a morphism of distinguished triangles are
-isomorphisms, the the second component is as well. This can be thought of as a
+isomorphisms, the second component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
@@ -455,7 +455,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 
 /-- If the first and second components of a morphism of distinguished triangles are
-isomorphisms, the the third component is as well. This can be thought of as a
+isomorphisms, the third component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
@@ -463,7 +463,7 @@ lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     (rot_of_distTriang _ hT') h₂ (by dsimp; infer_instance)
 
 /-- If the second and third components of a morphism of distinguished triangles are
-isomorphisms, the the first component is as well. This can be thought of as a
+isomorphisms, the first component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=

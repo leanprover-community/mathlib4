@@ -706,7 +706,6 @@ lemma derivWeierstrassP_sub_coe (z : ℂ) (l : L.lattice) :
 end derivWeierstrassP
 
 section AnalyticweierstrassPExcept
-
 def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻¹
 
 def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
@@ -1009,5 +1008,3 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
   · norm_num
 
 end Analytic
-
-end PeriodPair
