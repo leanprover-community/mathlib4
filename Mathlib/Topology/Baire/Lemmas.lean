@@ -40,7 +40,7 @@ variable {X Y α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [BaireSpace X]
+variable [TopologicalSpace X] [BaireSpace X]
 
 /-- Definition of a Baire space. -/
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
