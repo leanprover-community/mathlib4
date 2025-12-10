@@ -24,7 +24,12 @@ This will be useful to define embedded submanifolds.
 * Unlike immersions, being an embedding is a global notion: this is why we have no definition
 `IsSmoothEmbeddingAt`. (Besides, it would be equivalent to being an immersion at `x`.)
 * Note that being a smooth embedding is a stronger condition than being a smooth map
-  which is a topological embedding. TODO give example!
+  which is a topological embedding.
+
+## TODO
+* `IsSmoothEmbedding.contMDiff`: if `f` is a smooth embedding, it is `C^n`.
+* `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
+  is a smooth embedding
 
 -/
 
@@ -66,8 +71,6 @@ variable {f g : M → N}
 -- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
 proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : ContMDiff I J n f
 
-lemma congr (hf : IsSmoothEmbedding I J n f) (hfg : f = g) : IsSmoothEmbedding I J n g := hfg ▸ hf
-
 /-- If `f: M → N` and `g: M' × N'` are smooth embeddings, respectively,
 then so is `f × g: M × M' → N × N'`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
@@ -77,7 +80,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
   ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
 
 -- use IsImmersion.comp and IsEmbedding.comp
-/-- The composition of two smooth embeddings is a smooth embedding. -/
+/-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
 proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
     {g : N → N'} (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
     IsSmoothEmbedding I J' n (g ∘ f)
