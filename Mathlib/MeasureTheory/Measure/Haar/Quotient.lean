@@ -752,6 +752,11 @@ variable [T2Space B]
 noncomputable def inducedMeasure : Measure B :=
   RealRMK.rieszMeasure (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
 
+instance inducedMeasure_regular :
+    (inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC).Regular :=
+  RealRMK.regular_rieszMeasure (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
+
+
 theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
     ∫ b : B, f b ∂(inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC) = integrate φ ψ μA μC f := by
   apply RealRMK.integral_rieszMeasure
@@ -769,23 +774,48 @@ theorem isHaarMeasure_inducedMeasure :
     exact lt_of_le_of_lt (RealRMK.rieszMeasure_le_of_eq_one (map φ ψ h1 h2 h3 h4 μA μC hμA hμC)
       (f := ⟨f, hf2⟩) (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)) ENNReal.ofReal_lt_top
   map_mul_left_eq_self := by
-    sorry
+    intro b
+    have : ((inducedMeasure φ ψ h1 h2 h3 h4 μA μC hμA hμC).map (fun x ↦ b * x)).Regular :=
+      Regular.map (Homeomorph.mulLeft b)
+    apply MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported
+    intro f
+    rw [integral_map (by fun_prop) (by fun_prop)]
+    have key : ∀ x : B, f (b * x) = f.comp (Homeomorph.mulLeft b).toCocompactMap x := by simp
+    simp only [integral_inducedMeasure, key, integrate]
+    rw [← integral_mul_left_eq_self _ (ψ b)⁻¹]
+    congr
+    ext c
+    simp [average, average₀, ← mul_assoc]
+    apply average₀_eq φ ψ h2 μA hμA
+    rw [map_mul, Function.rightInverse_invFun h4.surjective, mul_inv_cancel_left,
+      Function.rightInverse_invFun h4.surjective]
   open_pos := by
     rintro U hU ⟨b, hb⟩
     obtain ⟨K, hK, hb, hK'⟩ := exists_compact_subset hU hb
     replace hb : b ∈ K := interior_subset hb
     obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hK'
-    have : 0 ≤ f := fun x ↦ (hf4 x).1
+    have hf0 : 0 ≤ f := fun x ↦ (hf4 x).1
+    have hf0' := average_mono φ ψ h1 μA hμA 0 ⟨f, hf2⟩ hf0
+    rw [CompactlySupportedContinuousMap.coe_zero, average_zero] at hf0'
     refine (lt_of_lt_of_le ?_ (RealRMK.le_rieszMeasure_tsupport_subset
       (map φ ψ h1 h2 h3 h4 μA μC hμA hμC) (f := ⟨f, hf2⟩) hf4 hf3)).ne'
     rw [ENNReal.ofReal_pos]
-    simp [_root_.map, integrate]
+    suffices 0 < average φ ψ μA f (ψ b) from
+      Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+        (average_continuous φ ψ h1 h2 h4 μA hμA ⟨f, hf2⟩)
+        (average_hasCompactSupport φ ψ h3 h4 μA hμA ⟨f, hf2⟩)
+        hf0' this.ne'
+    have : (Function.invFun ψ (ψ b))⁻¹ * b ∈ φ.range := by
+      apply h2
+      simp [Function.apply_invFun_apply]
+    obtain ⟨a, ha⟩ := this
     apply Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
-      (average_continuous φ ψ h1 h2 h4 μA hμA ⟨f, hf2⟩)
-      (average_hasCompactSupport φ ψ h3 h4 μA hμA ⟨f, hf2⟩)
-
-
-    sorry
+      (twist φ h1 ⟨f, hf2⟩ _).continuous
+      (twist φ h1 ⟨f, hf2⟩ _).hasCompactSupport
+      (fun x ↦ (hf4 _).1)
+    simp only [twist, CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk, ne_eq]
+    rw [ha]
+    simp [hf1 hb]
 
 #check Measure.haar
 
