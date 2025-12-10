@@ -53,6 +53,7 @@ lemma exists_root_in_Ioo :
 noncomputable def root : ℝ :=
   exists_root_in_Ioo.choose
 
+@[inherit_doc]
 scoped notation "c" => root
 
 lemma root_bounds : c ∈ Set.Ioo (-1 / 3) (-5 / 16) :=
@@ -63,6 +64,7 @@ lemma root_equation : 2 * c ^ 3 + 3 * c + 1 = 0 :=
 
 /-! ### The embedding proper -/
 
+/-- An abbreviation for the Euclidean plane. -/
 notation "E2" => EuclideanSpace ℝ (Fin 2)
 
 lemma dist_eq_one_iff {x₀ y₀ x₁ y₁ : ℝ} :
