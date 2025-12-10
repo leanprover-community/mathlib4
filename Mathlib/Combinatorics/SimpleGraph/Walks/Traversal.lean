@@ -128,7 +128,9 @@ theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p
   ext
   · simp only [p.getVert_eq_support_getElem (le_of_lt h)]
     by_cases h' : n = 0
-    · simp [h', List.getElem_zero, head_darts_fst]
+    · cases p
+      · contradiction
+      · simp [h']
     · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
       grind [DartAdj, =_ cons_map_snd_darts]
   · simp [p.getVert_eq_support_getElem h, ← p.cons_map_snd_darts]
