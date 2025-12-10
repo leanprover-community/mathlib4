@@ -361,6 +361,8 @@ lemma partialSups_eq_accumulate
     {α : Type*} (f : ℕ → Set α) (n : ℕ) : partialSups f n = Accumulate f n := by
   simp [partialSups_eq_sup_range, Accumulate, Nat.lt_succ_iff]
 
+#check Metric.tendsto_nhds
+
 lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     [TopologicalSpace E] [T2Space E] [NormalSpace E] [BorelSpace E] {u : ℕ → ℝ≥0} {K : ℕ → Set E}
     (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
@@ -417,10 +419,40 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     filter_upwards [hf] with μ hμ
     rw [I, restrict_mass]
     exact le_trans (apply_mono _ (subset_univ _)) hμ.1
-  refine ⟨⟨Measure.sum (fun n ↦ (ν n : Measure E)), ⟨B.trans_lt (by simp)⟩⟩, ⟨?_, ?_⟩, ?_⟩
-  · simp only [mass, mk_apply]
+  let μ : FiniteMeasure E := ⟨Measure.sum (fun n ↦ (ν n : Measure E)), ⟨B.trans_lt (by simp)⟩⟩
+  refine ⟨μ, ⟨?_, ?_⟩, ?_⟩
+  · simp only [mass, mk_apply, μ]
     rw [show C = (C : ℝ≥0∞).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) B
+  · sorry
+  · change Tendsto id f (𝓝 μ)
+    apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
+    rw [Metric.tendsto_nhds]
+    intro ε εpos
+    have A : Tendsto (fun n ↦ ∫ x, g x ∂(∑ i ∈ Finset.range n, ν i)) atTop (𝓝 (∫ x, g x ∂μ)) := by
+      simp only [FiniteMeasure.toMeasure_mk, μ]
+      rw [integral_sum_measure (g.integrable (μ := μ))]
+      simp_rw [integral_finset_sum_measure (fun i hi ↦ g.integrable (μ := ν i))]
+      apply Summable.tendsto_sum_tsum_nat
+      apply (hasSum_integral_measure _).summable
+      exact g.integrable (μ := μ)
+    have I1 : ∀ᶠ n in atTop, dist (∫ x, g x ∂(∑ i ∈ Finset.range n, ν i)) (∫ x, g x ∂μ) < ε / 3 :=
+      Metric.tendsto_nhds.1 A _ (by positivity)
+    have I2 : ∀ᶠ n in atTop, ‖g‖ * u n < ε / 3 := by
+      have := (NNReal.tendsto_coe.2 hu).const_mul (‖g‖)
+      simp only [NNReal.coe_zero, mul_zero] at this
+      exact (tendsto_order.1 this).2 (ε / 3) (by positivity)
+    rcases (I1.and I2).exists with ⟨n, hn⟩
+    have : Tendsto (fun (ρ : FiniteMeasure E) ↦
+        ∫ x, g x ∂(∑ i ∈ Finset.range n, ρ.restrict (disjointed K i) : FiniteMeasure E)) f
+        (𝓝 (∫ x, g x ∂(∑ i ∈ Finset.range n, ν i : FiniteMeasure E))) := by
+      apply tendsto_iff_forall_integral_tendsto.1 _ g
+      apply tendsto_finset_sum _ (fun i hi ↦ hν i)
+    filter_upwards [Metric.tendsto_nhds.1 this (ε / 3) (by positivity)] with ρ hρ
+
+
+
+
 
 
 
