@@ -45,7 +45,7 @@ instance : Nonempty (HahnEmbedding.Seed ℚ M ℝ) := by
 
 theorem hahnEmbedding_isOrderedModule_rat :
     ∃ f : M →ₗ[ℚ] Lex ℝ⟦FiniteArchimedeanClass M⟧, StrictMono f ∧
-      ∀ a, mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   apply hahnEmbedding_isOrderedModule
 
 end Module
@@ -59,7 +59,7 @@ of the Hahn series.
 -/
 theorem hahnEmbedding_isOrderedAddMonoid :
     ∃ f : M →+o Lex ℝ⟦FiniteArchimedeanClass M⟧, Function.Injective f ∧
-      ∀ a, mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   /-
   The desired embedding is the composition of three functions:
 
