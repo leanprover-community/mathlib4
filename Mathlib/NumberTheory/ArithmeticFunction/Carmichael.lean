@@ -139,18 +139,17 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 2) := by
   by_cases hn' : n ≤ 2
   · grind [carmichael_two_pow_of_le_two]
-  refine carmichael_eq_exponent' _ |>.trans <| le_antisymm ?_ ?_
+  refine carmichael_eq_exponent' _ |>.trans <| dvd_antisymm ?_ ?_
   · have hcard : Nat.card (ZMod (2 ^ n))ˣ = 2 ^ (n - 1) := by
       rw [card_eq_fintype_card, ZMod.card_units_eq_totient, totient_prime_pow prime_two <| by lia,
         Nat.add_one_sub_one, mul_one]
     have ⟨k, hk, h⟩ := dvd_prime_pow prime_two |>.mp <| hcard ▸ Group.exponent_dvd_nat_card
-    refine h ▸ (Nat.pow_le_pow_iff_right one_lt_two).mpr ?_
     have := IsCyclic.iff_exponent_eq_card.not.mp <| ZMod.isCyclic_units_two_pow_iff n |>.not.mpr hn'
-    lia
+    exact h ▸ Nat.pow_dvd_pow 2 (by grind)
   · let five : (ZMod (2 ^ n))ˣ := ZMod.unitOfCoprime 5 <| gcd_pow_right_of_gcd_eq_one rfl
     rw [← ZMod.orderOf_five (n - 2), show n - 2 + 2 = n by lia,
-      show (5 : ZMod (2 ^ (n))) = five by rfl, orderOf_units]
-    exact orderOf_le_exponent .of_finite _
+      show (5 : ZMod (2 ^ n)) = five by rfl, orderOf_units]
+    exact order_dvd_exponent five
 
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * Carmichael (2 ^ n) = (2 ^ n).totient := by
