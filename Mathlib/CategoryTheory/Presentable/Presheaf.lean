@@ -53,14 +53,14 @@ lemma isStrongGenerator
   refine ⟨Presheaf.isSeparating (C := C) (ι := Subtype P) (S := Subtype.val)
     (by simpa using hP₁),
     fun P₁ P₂ i _ hi ↦ ?_⟩
-  · rw [NatTrans.isIso_iff_isIso_app]
-    rintro ⟨X⟩
-    refine hP₂ _ (fun G hG f ↦ ?_)
-    obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
-    obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
-      (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
-        freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
-    exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
+  rw [NatTrans.isIso_iff_isIso_app]
+  rintro ⟨X⟩
+  refine hP₂ _ (fun G hG f ↦ ?_)
+  obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
+  obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
+    (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
+      freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
+  exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
 
 instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalLocallyPresentable A κ] [HasPullbacks A]
