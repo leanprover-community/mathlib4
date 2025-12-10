@@ -177,7 +177,7 @@ update its toolchain to match Mathlib's and fetch the new cache.
 -/
 post_update pkg do
   let rootPkg ← getRootPackage
-  if rootPkg.name = pkg.name then
+  if rootPkg.baseName = pkg.baseName then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
     -- Check if Lake version matches toolchain version
@@ -204,4 +204,4 @@ post_update pkg do
     finally
       IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
-      error s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.baseName}: failed to fetch cache"

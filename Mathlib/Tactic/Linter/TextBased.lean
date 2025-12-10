@@ -262,7 +262,7 @@ def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   for h : idx in [:lines.size] do
     let line := lines[idx]
     let pos := line.find (· == ' ')
-    if pos != line.rawEndPos then
+    if pos != line.endPos then
       errors := errors.push (StyleError.nonbreakingSpace, idx + 1)
   return (errors, none)
 
