@@ -60,7 +60,7 @@ variable (J : GrothendieckTopology C)
 
 /-- Given `J` a Grothendieck topology on a category `C`, a point of the site `(C, J)`
 consists of a functor `fiber : C ⥤ Type w` such that the category `fiber.Elements`
-is initally small (which allows defining the fiber functor on presheaves by
+is initially small (which allows defining the fiber functor on presheaves by
 taking colimits) and cofiltered (so that the fiber functor on presheaves is exact),
 and such that covering sieves induce jointly surjective maps on fibers (which
 allows to show that the fibers of a presheaf and its associated sheaf are isomorphic). -/

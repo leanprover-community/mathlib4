@@ -19,7 +19,7 @@ Known limitations:
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
-  are dual to eachother. Currently, this requires writing
+  are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
 

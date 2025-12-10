@@ -101,7 +101,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
   abel!
 
 -- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
--- but require some simplication first.
+-- but require some simplification first.
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
