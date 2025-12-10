@@ -27,5 +27,5 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
   {n : ℕ∞}
 
 -- We might want to let `g` be a distr on some `Ω' ≠ Ω`. And do we want to define iterated Weak der?
-def HasWeakDeriv (f : 𝓓^{n + 1}(Ω, F) →L[ℝ] F) (g : 𝓓^{n}(Ω, E [×1]→L[ℝ] F) →L[ℝ] F) : Prop :=
-  ∀ φ : 𝓓^{n + 1}(Ω, F), f φ = - g (iteratedFDerivWithOrderLM 𝕜 (n+1) n 1 φ)
+-- def HasWeakDeriv (f : 𝓓^{n + 1}(Ω, F) →L[ℝ] F) (g : 𝓓^{n}(Ω, E [×1]→L[ℝ] F) →L[ℝ] F) : Prop :=
+--   ∀ φ : 𝓓^{n + 1}(Ω, F), f φ = - g (iteratedFDerivWithOrderLM 𝕜 (n+1) n 1 φ)
