@@ -693,7 +693,7 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
-/-- A `C^k` immersion is `C^k` -/
+/-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersionOfComplement F I J n f) : ContMDiff I J n f :=
   fun x ↦ (h x).contMDiffAt
@@ -745,7 +745,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
 
-/-- A `C^k` immersion is `C^k` -/
+/-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersion I J n f) : ContMDiff I J n f :=
   h.isImmersionOfComplement_complement.contMDiff
