@@ -64,9 +64,8 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf
   [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
   [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
 
-/-- Given two morphism of sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
-satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, then this sequence defines
-a `Presentation M`. -/
+/-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
+satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain a `Presentation M`. -/
 def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M :=
