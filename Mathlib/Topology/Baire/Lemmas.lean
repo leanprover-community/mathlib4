@@ -34,9 +34,10 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 
 noncomputable section
 
-open Topology Filter Set TopologicalSpace
+open scoped Topology
+open Filter Set TopologicalSpace
 
-variable {X Y α : Type*} {ι : Sort*}
+variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
 
