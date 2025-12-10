@@ -88,8 +88,8 @@ def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
           rw [← comp_aux, Equiv.symm_apply_apply]
           infer_instance }}
 
-/-- Given a sheaf of `R`-module `M` and a `Presentation M`, there is two morphism of
-sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`  satisfying `H : f ≫ g = 0`
+/-- Given a sheaf of `R`-modules `M` and a `Presentation M`, there is two morphism of
+sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`  satisfying `H : f ≫ g = 0`
 and `IsColimit (CokernelCofork.ofπ g H)`. -/
 def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
     IsColimit (CokernelCofork.ofπ
