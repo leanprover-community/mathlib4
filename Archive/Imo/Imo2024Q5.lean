@@ -109,7 +109,7 @@ def row1 (hN : 2 ≤ N) : InteriorRow N :=
   ⟨1, ⟨by lia, by
     rw [Fin.le_def]
     simp
-    omega⟩⟩
+    lia⟩⟩
 
 lemma coe_coe_row1 (hN : 2 ≤ N) : (((row1 hN) : Fin (N + 2)) : ℕ) = 1 :=
   rfl
@@ -118,9 +118,9 @@ lemma coe_coe_row1 (hN : 2 ≤ N) : (((row1 hN) : Fin (N + 2)) : ℕ) = 1 :=
 def row2 (hN : 2 ≤ N) : InteriorRow N :=
   ⟨⟨2, by lia⟩, ⟨by
     simp only [Fin.le_def, Fin.val_one]
-    omega, by
+    lia, by
     simp only [Fin.le_def]
-    omega⟩⟩
+    lia⟩⟩
 
 /-- Reflecting monster data. -/
 def MonsterData.reflect (m : MonsterData N) : MonsterData N where
@@ -175,7 +175,7 @@ lemma MonsterData.mk_mem_monsterCells_iff {m : MonsterData N} {r : Fin (N + 2)}
 lemma Adjacent.le_of_lt {x y : Cell N} (ha : Adjacent x y) {r : Fin (N + 2)} (hr : r < y.1) :
     r ≤ x.1 := by
   rw [Adjacent, Nat.dist] at ha
-  omega
+  lia
 
 /-! ### API definitions and lemmas about `Path` -/
 
@@ -199,7 +199,7 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
     have ha : Adjacent p.cells[i - 1] p.cells[i] := by
       convert List.isChain_iff_getElem.1 p.valid_move_seq (i - 1) ?_
       · simp [Nat.sub_add_cancel hi]
-      · omega
+      · lia
     exact ha.le_of_lt h
 
 lemma Path.exists_mem_le_fst (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells, r ≤ c.1 := by
@@ -240,7 +240,7 @@ lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ []
         simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.head_cons, ha2, true_implies] at hi
         refine hi ?_
         simp only [Adjacent, Nat.dist] at ha1
-        omega
+        lia
 
 lemma Path.findFstEq_eq_find?_le (p : Path N) (r : Fin (N + 2)) : p.findFstEq r =
     (p.cells.find? (fun c ↦ r ≤ c.1)).get
@@ -399,7 +399,7 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
   simp only [Adjacent, Nat.dist] at ha
   have hrm : N + 1 + (r : ℕ) = N + 2 + (r - 1) := by lia
   simp only [Prod.ext_iff, Fin.ext_iff]
-  omega
+  lia
 
 lemma Path.mem_of_firstMonster_eq_some {p : Path N} {m : MonsterData N} {c : Cell N}
     (h : p.firstMonster m = some c) : c ∈ p.cells ∧ c ∈ m.monsterCells := by
@@ -450,7 +450,7 @@ def Path.reflect (p : Path N) : Path N where
     refine List.isChain_map_of_isChain _ ?_ p.valid_move_seq
     intro x y h
     simp_rw [Adjacent, Nat.dist, Cell.reflect, Fin.rev] at h ⊢
-    omega
+    lia
 
 lemma Path.firstMonster_reflect (p : Path N) (m : MonsterData N) :
     p.reflect.firstMonster m.reflect = (p.firstMonster m).map Cell.reflect := by
@@ -548,7 +548,7 @@ lemma monsterData12_apply_row2 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c�
   · exact Function.Embedding.setValue_eq _ _ _
   · simp only [row1, row2, ne_eq, Subtype.mk.injEq]
     simp only [Fin.ext_iff, Fin.val_one]
-    omega
+    lia
   · rw [Function.Embedding.setValue_eq]
     exact h.symm
 
@@ -608,15 +608,15 @@ def fn0 (N : ℕ) : Fin (2 * N + 2) → Cell N :=
 lemma injective_fn0 (N : ℕ) : Function.Injective (fn0 N) := by
   intro ⟨a₁, _⟩ ⟨a₂, _⟩
   simp_rw [fn0]
-  split_ifs <;> simp [Prod.ext_iff] at * <;> omega
+  split_ifs <;> simp [Prod.ext_iff] at * <;> lia
 
 /-- The first attempt in a winning strategy, as a `Path`. -/
 def path0 (hN : 2 ≤ N) : Path N := Path.ofFn (fn0 N) (by lia) (by simp [fn0])
-  (by simp only [fn0]; split_ifs with h <;> simp at h ⊢ <;> omega)
+  (by simp only [fn0]; split_ifs with h <;> simp at h ⊢ <;> lia)
   (by
     simp only [fn0]
     intro i hi
-    split_ifs <;> simp [Adjacent, Nat.dist] at * <;> omega)
+    split_ifs <;> simp [Adjacent, Nat.dist] at * <;> lia)
 
 /-- The second attempt in a winning strategy, as a function, if the monster in the second row
 is not at an edge: pass to the left of that monster then along its column. -/
@@ -628,13 +628,13 @@ def fn1OfNotEdge {c₁ : Fin (N + 1)} (hc₁ : c₁ ≠ 0) : Fin (N + 3) → Cel
 is not at an edge. -/
 def path1OfNotEdge {c₁ : Fin (N + 1)} (hc₁ : c₁ ≠ 0) : Path N := Path.ofFn (fn1OfNotEdge hc₁)
     (by lia) (by simp [fn1OfNotEdge])
-    (by simp only [fn1OfNotEdge]; split_ifs <;> simp; omega)
+    (by simp only [fn1OfNotEdge]; split_ifs <;> simp; lia)
     (by
       simp only [fn1OfNotEdge]
       intro i hi
       rcases c₁ with ⟨c₁, hc₁N⟩
       rw [← Fin.val_ne_iff] at hc₁
-      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> omega)
+      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> lia)
 
 /-- The third attempt in a winning strategy, as a function, if the monster in the second row
 is not at an edge: pass to the right of that monster then along its column. -/
@@ -646,11 +646,11 @@ def fn2OfNotEdge {c₁ : Fin (N + 1)} (hc₁ : (c₁ : ℕ) ≠ N) : Fin (N + 3)
 is not at an edge. -/
 def path2OfNotEdge {c₁ : Fin (N + 1)} (hc₁ : (c₁ : ℕ) ≠ N) : Path N := Path.ofFn (fn2OfNotEdge hc₁)
     (by lia) (by simp [fn2OfNotEdge])
-    (by simp only [fn2OfNotEdge]; split_ifs <;> simp; omega)
+    (by simp only [fn2OfNotEdge]; split_ifs <;> simp; lia)
     (by
       simp only [fn2OfNotEdge]
       intro i hi
-      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> omega)
+      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> lia)
 
 /-- The second attempt in a winning strategy, as a function, if the monster in the second row
 is at the left edge: zigzag across the board so that, if we encounter a monster, we have a third
@@ -662,12 +662,12 @@ def fn1OfEdge0 (N : ℕ) : Fin (2 * N + 1) → Cell N :=
 /-- The second attempt in a winning strategy, as a `Path`, if the monster in the second row
 is at the left edge. -/
 def path1OfEdge0 (hN : 2 ≤ N) : Path N := Path.ofFn (fn1OfEdge0 N) (by lia)
-    (by simp only [fn1OfEdge0]; split_ifs <;> simp; omega)
+    (by simp only [fn1OfEdge0]; split_ifs <;> simp; lia)
     (by simp [fn1OfEdge0])
     (by
       simp only [fn1OfEdge0]
       intro i hi
-      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> omega)
+      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> lia)
 
 /-- The second attempt in a winning strategy, as a `Path`, if the monster in the second row
 is at the right edge. -/
@@ -686,18 +686,18 @@ def fn2OfEdge0 {r : Fin (N + 2)} (hr : (r : ℕ) ≤ N) : Fin (N + 2 * r - 1) �
 lemma fn2OfEdge0_apply_eq_fn1OfEdge0_apply_of_lt {r : Fin (N + 2)} (hr : (r : ℕ) ≤ N) {i : ℕ}
     (h : i + 2 < 2 * (r : ℕ)) : fn2OfEdge0 hr ⟨i, by lia⟩ = fn1OfEdge0 N ⟨i, by lia⟩ := by
   rw [fn1OfEdge0, fn2OfEdge0]
-  split_ifs with h₁ h₂ <;> simp [Prod.ext_iff] at * <;> omega
+  split_ifs with h₁ h₂ <;> simp [Prod.ext_iff] at * <;> lia
 
 /-- The third attempt in a winning strategy, as a `Path`, if the monster in the second row
 is at the left edge and the second (zigzag) attempt encountered a monster. -/
 def path2OfEdge0 (hN : 2 ≤ N) {r : Fin (N + 2)} (hr2 : 2 ≤ (r : ℕ)) (hrN : (r : ℕ) ≤ N) : Path N :=
   Path.ofFn (fn2OfEdge0 hrN) (by lia)
-    (by simp only [fn2OfEdge0]; split_ifs <;> simp <;> omega)
-    (by simp only [fn2OfEdge0]; split_ifs <;> simp <;> omega)
+    (by simp only [fn2OfEdge0]; split_ifs <;> simp <;> lia)
+    (by simp only [fn2OfEdge0]; split_ifs <;> simp <;> lia)
     (by
       simp only [fn2OfEdge0]
       intro i hi
-      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> omega)
+      split_ifs <;> simp [Adjacent, Nat.dist] at * <;> lia)
 
 /-- The third attempt in a winning strategy, as a `Path`, if the monster in the second row
 is at the left edge and the second (zigzag) attempt encountered a monster, version that works
@@ -737,7 +737,7 @@ lemma path0_firstMonster_eq_apply_row1 (hN : 2 ≤ N) (m : MonsterData N) :
   simp_rw [path0, Path.firstMonster, Path.ofFn]
   have h : (1, m (row1 hN)) = fn0 N ⟨(m (row1 hN) : ℕ) + 1, by lia⟩ := by
     simp_rw [fn0]
-    split_ifs <;> simp [Prod.ext_iff] at *; omega
+    split_ifs <;> simp [Prod.ext_iff] at *; lia
   rw [h, List.find?_ofFn_eq_some_of_injective (injective_fn0 N)]
   refine ⟨?_, fun j hj ↦ ?_⟩
   · rw [fn0]
@@ -814,7 +814,7 @@ lemma path1_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
   · refine .inl ?_
     simp only [MonsterData.monsterCells, Set.mem_range, Prod.mk.injEq, Fin.ext_iff,
       EmbeddingLike.apply_eq_iff_eq, exists_eq_right, coe_coe_row1]
-    omega
+    lia
 
 lemma path2_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 : m (row1 hN) ≠ 0)
     (hc₁N : (m (row1 hN) : ℕ) ≠ N) (r : Fin (N + 2)) :
@@ -852,7 +852,7 @@ lemma path2_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
   · refine .inl ?_
     simp only [MonsterData.monsterCells, Set.mem_range, Prod.mk.injEq, Fin.ext_iff,
       EmbeddingLike.apply_eq_iff_eq, exists_eq_right, coe_coe_row1]
-    omega
+    lia
 
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_not_edge (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁0 : m (row1 hN) ≠ 0) (hc₁N : (m (row1 hN) : ℕ) ≠ N) :
@@ -885,7 +885,7 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
   rcases hx with ⟨hx, i, hix, hnm⟩
   have hi : (x.1 : ℕ) = ((i : ℕ) + 1) / 2 := by
     rw [fn1OfEdge0] at hix
-    split_ifs at hix <;> simp [Prod.ext_iff, Fin.ext_iff] at hix <;> omega
+    split_ifs at hix <;> simp [Prod.ext_iff, Fin.ext_iff] at hix <;> lia
   have hi' : (i : ℕ) ≠ 2 * N := by
     intro h
     rw [← hix, fn1OfEdge0, dif_pos h] at hx
@@ -897,16 +897,16 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
     simp_rw [Fin.lt_def] at hnm
     refine hnm _ ?_
     simp only
-    omega
+    lia
   · rw [fn2OfEdge0, dif_neg h]
     split_ifs with h'
     · have hx1 : 1 ≤ x.1 := by
         rw [Fin.le_def, Fin.val_one]
-        omega
+        lia
       rw [MonsterData.mk_mem_monsterCells_iff_of_le hx1 hxN]
       rw [MonsterData.mem_monsterCells_iff_of_le hx1 hxN] at hx
       simp_rw [hx, ← hix, fn1OfEdge0]
-      split_ifs <;> simp <;> omega
+      split_ifs <;> simp <;> lia
     · rw [MonsterData.mk_mem_monsterCells_iff]
       simp only [not_exists]
       intro h1 hN'
@@ -914,7 +914,7 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
       refine m.injective.ne ?_
       rw [← Subtype.coe_ne_coe, ← Fin.val_ne_iff, coe_coe_row1]
       simp only
-      omega
+      lia
 
 set_option linter.flexible false in
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 ≤ N)
@@ -938,18 +938,18 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
       by_contra hi
       interval_cases i <;> rw [fn1OfEdge0] at hm <;> split_ifs at hm with h
       · simp at h
-        omega
+        lia
       · simp at hm
         exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
       · simp at h
-        omega
+        lia
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
         have h1N : 1 ≤ N := by lia
         rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
         rw [row1, hm, Fin.ext_iff] at hc₁0
         simp at hc₁0
       · simp at h
-        omega
+        lia
       · simp only at hm
         norm_num at hm
         have h1N : 1 ≤ N := by lia
@@ -957,7 +957,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
         rw [row1, hm] at hc₁0
         simp at hc₁0
     rw [fn1OfEdge0]
-    split_ifs <;> simp <;> omega
+    split_ifs <;> simp <;> lia
   rw [path2, if_pos hc₁0, path2OfEdge0Def, dif_pos hx2N]
   exact path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some hN hx2N.1
     hx2N.2 hc₁0 hx.symm
@@ -967,7 +967,7 @@ lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
       ((winningStrategy hN).play m.reflect 3 ⟨1, by simp⟩).map Cell.reflect := by
   have hc₁0 : m (row1 hN) ≠ 0 := by
     rw [← Fin.val_ne_iff, hc₁N, Fin.val_zero]
-    omega
+    lia
   have hc₁r0 : m.reflect (row1 hN) = 0 := by
     simp only [MonsterData.reflect, Function.Embedding.coeFn_mk, Function.comp_apply,
       ← Fin.rev_last, Fin.rev_inj]
@@ -981,7 +981,7 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
       ((winningStrategy hN).play m.reflect 3 ⟨2, by simp⟩).map Cell.reflect := by
   have hc₁0 : m (row1 hN) ≠ 0 := by
     rw [← Fin.val_ne_iff, hc₁N, Fin.val_zero]
-    omega
+    lia
   have hc₁r0 : m.reflect (row1 hN) = 0 := by
     simp only [MonsterData.reflect, Function.Embedding.coeFn_mk, Function.comp_apply,
       ← Fin.rev_last, Fin.rev_inj]

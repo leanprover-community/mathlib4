@@ -45,14 +45,14 @@ theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
     rw [← h1.left]
     refine Nat.base_pow_length_digits_le 10 n ?_ (not_zero h1)
     simp
-  omega
+  lia
 
 theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 := by
   have h2 : n < 10 ^ 3 := by
     rw [← h1.left]
     refine Nat.lt_base_pow_length_digits ?_
     simp
-  omega
+  lia
 
 /-
 We do an exhaustive search to show that all results are covered by `SolutionPredicate`.

@@ -144,7 +144,7 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
   rw [factorial_succ (i + _), Nat.add_mul, Nat.one_mul]
   have := (i + n).self_le_factorial
   refine Nat.add_lt_add_of_lt_of_le (Nat.lt_of_le_of_lt ?_ ((Nat.lt_mul_iff_one_lt_right ?_).2 ?_))
-    (factorial_le ?_) <;> omega
+    (factorial_le ?_) <;> lia
 
 theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) :
     i + n ! < (i + n)! := by

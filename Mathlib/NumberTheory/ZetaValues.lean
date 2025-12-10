@@ -447,7 +447,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
       · skip
       · rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
-    omega
+    lia
   rw [this, mul_pow]
   ring
 

@@ -111,7 +111,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
          ⌊(k + 1 : ℕ) * α⌋ + ((k : ℕ) : ℤ) ^ 2 := by
       have hn11 : k + 1 ∉ Finset.Icc 1 k := by
         rw [Finset.mem_Icc]
-        omega
+        lia
       rw [← insert_Icc_right_eq_Icc_add_one (Nat.le_add_left 1 k), sum_insert hn11, hks]
     specialize hc (k + 1) k.succ_pos
     rw [hs] at hc ⊢
@@ -133,13 +133,13 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
         push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
-      omega
+      lia
     rw [hk']
     refine ⟨?_, ?_, h.2⟩
     · push_cast
       ring
     · rw [Int.floor_eq_iff] at hk'
-      rw [div_le_iff₀ (by norm_cast; omega), mul_comm α]
+      rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
       convert hk'.1
       push_cast
       ring

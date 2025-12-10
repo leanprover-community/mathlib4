@@ -154,7 +154,7 @@ lemma pow_inter_pow_covBySMul_sq_inter_sq
       _ ≤ K ^ (m - 1) * L ^ (n - 1) := by gcongr
   · calc
       A ^ m ∩ B ^ n ⊆ (F₁ ^ (m - 1) * A) ∩ (F₂ ^ (n - 1) * B) := by
-        gcongr <;> apply pow_subset_pow_mul_of_sq_subset_mul <;> norm_cast <;> omega
+        gcongr <;> apply pow_subset_pow_mul_of_sq_subset_mul <;> norm_cast <;> lia
       _ = ⋃ (a ∈ F₁ ^ (m - 1)) (b ∈ F₂ ^ (n - 1)), a • A ∩ b • B := by
         simp_rw [← smul_eq_mul, ← iUnion_smul_set, iUnion₂_inter_iUnion₂]; norm_cast
       _ ⊆ ⋃ (a ∈ F₁ ^ (m - 1)) (b ∈ F₂ ^ (n - 1)), f a b • (A⁻¹ * A ∩ (B⁻¹ * B)) := by

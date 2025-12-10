@@ -535,7 +535,7 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
     letI := P.indexNeg
     replace contra : i = -j := by rw [eq_comm, neg_eq_iff_eq_neg]; simpa using contra
     rw [contra, isPos_iff, height_reflectionPerm_self, height_one_of_mem_support hj] at hi
-    omega
+    lia
   induction z generalizing i k with
   | zero => simp_all
   | succ w hw =>
@@ -575,8 +575,8 @@ lemma IsPos.induction_on_add
     rw [P.zero_lt_pairingIn_iff'] at hj'
     rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
     obtain ⟨k, hk⟩ := P.root_sub_root_mem_of_pairingIn_pos hj' hij
-    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; omega
-    have hkpos : b.IsPos k := by rw [isPos_iff']; omega
+    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; lia
+    have hkpos : b.IsPos k := by rw [isPos_iff']; lia
     exact h₂ k j i (by rw [hk]; module) (ih hkpos hkn) hj
   | pred n ih =>
     rw [isPos_iff] at h₀

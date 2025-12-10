@@ -285,7 +285,7 @@ lemma card_finset_logSizeBallSeq_le (hJ : J.Nonempty) (i : ℕ) :
   | succ i ih =>
     by_cases h : (logSizeBallSeq J hJ a c i).finset.Nonempty
     · have := card_finset_logSizeBallSeq_add_one_lt hJ i h
-      omega
+      lia
     apply le_trans <| Finset.card_le_card (finset_logSizeBallSeq_add_one_subset hJ i)
     suffices #(logSizeBallSeq J hJ a c i).finset = 0 by simp [this]
     rwa [← not_ne_iff, Finset.card_ne_zero.not]

@@ -203,7 +203,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
   have hi_bsquared : 0 < b ^ 2 - 1 := by
     have := Nat.pow_le_pow_left b_ge_two 2
-    omega
+    lia
   have hi_bpowtwop : 1 ≤ b ^ (2 * p) := Nat.one_le_pow (2 * p) b hi_b
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts

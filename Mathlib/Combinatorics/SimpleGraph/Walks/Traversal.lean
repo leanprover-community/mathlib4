@@ -162,7 +162,7 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj p.penultimate w := by
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
-  convert adj_getVert_succ _ _ <;> omega
+  convert adj_getVert_succ _ _ <;> lia
 
 /-- The first dart of a walk. -/
 @[simps]

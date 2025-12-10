@@ -126,7 +126,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
         Fin.castSucc (⟨a, by lia⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
-      omega
+      lia
     generalize_proofs
     rw [← Fin.succ_mk (n + 1) a ‹_›, ← Fin.castSucc_mk (n + 2) i ‹_›,
       δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]

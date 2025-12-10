@@ -55,7 +55,7 @@ lemma coeff_freeMonic :
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
       Fin.ext_iff, @eq_comm _ k, h, h.ne']
-  ·rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; omega), add_zero, dif_neg h]
+  ·rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; lia), add_zero, dif_neg h]
 
 lemma degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
   Polynomial.degree_eq_of_le_of_coeff_ne_zero ((Polynomial.degree_le_iff_coeff_zero _ _).mpr

@@ -193,7 +193,7 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 
 /-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 scoped macro "trunc" : tactic =>
-  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> lia)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The

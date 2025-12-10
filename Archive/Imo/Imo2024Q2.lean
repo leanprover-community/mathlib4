@@ -172,7 +172,7 @@ lemma a_eq_one : a = 1 := by
   rw [add_le_add_iff_right] at hle
   suffices a ≤ 1 by
     have hp := h.a_pos
-    omega
+    lia
   have hle' : a * b ≤ 1 * b := by
     simpa using hle
   exact Nat.le_of_mul_le_mul_right hle' h.b_pos

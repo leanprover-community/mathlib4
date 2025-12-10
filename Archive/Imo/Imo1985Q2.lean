@@ -52,12 +52,12 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
       by_contra! h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
       replace h : (k + 1) % n = 1 % n := Nat.ModEq.cancel_right_of_coprime cpj h
       rw [Nat.mod_eq_of_lt hk.2, Nat.mod_eq_of_lt (by lia)] at h
-      omega
+      lia
     have b₁ : (k + 1) * j % n ∈ Set.Ico 1 n := by
       refine ⟨?_, Nat.mod_lt _ (by lia)⟩
       by_contra! h; rw [Nat.lt_one_iff, ← Nat.dvd_iff_mod_eq_zero] at h
       have ek := Nat.eq_zero_of_dvd_of_lt (cpj.dvd_of_dvd_mul_right h) hk.2
-      omega
+      lia
     rw [← ih ⟨hk₁, Nat.lt_of_succ_lt hk.2⟩, hC.2 _ b₁ nej]
     rcases nej.lt_or_gt with h | h
     · rw [Int.natAbs_natCast_sub_natCast_of_ge h.le]

@@ -352,7 +352,7 @@ lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
   convert append_apply_right p q connect (Fin.last _)
   ext1
   dsimp
-  omega
+  lia
 
 lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.last ~[r] w.head) :
     (p.append q hpq).append w (by simpa) = p.append (q.append w hqw) (by simpa) := by
@@ -439,7 +439,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap
-          · change i.1 + 1 < m.1 + 1; omega
+          · change i.1 + 1 < m.1 + 1; lia
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
@@ -458,7 +458,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
     · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.coe_castSucc, Fin.val_succ]
-      omega
+      lia
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
@@ -770,7 +770,7 @@ def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
   step := fun ⟨j, h⟩ => by
     convert p.step ⟨j+i.1, by lia⟩
-    simp only [Fin.succ_mk]; omega
+    simp only [Fin.succ_mk]; lia
 
 @[simp]
 lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by

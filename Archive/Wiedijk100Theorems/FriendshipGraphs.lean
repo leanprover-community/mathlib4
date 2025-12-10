@@ -267,7 +267,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
     of_apply, Ne]
   rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_eq_zero_iff,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
-  omega
+  lia
 
 open scoped Classical in
 include hG in
@@ -281,7 +281,7 @@ theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d 
   have : Fintype.card V ≤ 1 := by
     cases hn : Fintype.card V with
     | zero => exact zero_le _
-    | succ n => omega
+    | succ n => lia
   use Classical.arbitrary V
   intro w h; exfalso
   apply h
@@ -301,7 +301,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd
-      omega
+      lia
     · exact Finset.card_erase_of_mem (Finset.mem_univ _)
   · dsimp only [IsRegularOfDegree, degree] at hd
     rw [hd]

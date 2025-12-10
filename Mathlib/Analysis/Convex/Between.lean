@@ -665,10 +665,10 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
   congr 2
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 /-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
 weakly between its vertices. -/
@@ -719,10 +719,10 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
   congr! 4
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 end Simplex
 

@@ -535,7 +535,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
       convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
-      omega
+      lia
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
@@ -947,7 +947,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
     generalize a_tl.length' = u at ha'
     enat_to_nat
-    omega
+    lia
 
 instance : Functor Seq where map := @map
 

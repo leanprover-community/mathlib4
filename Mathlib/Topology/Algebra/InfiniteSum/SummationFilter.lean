@@ -253,7 +253,7 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
       simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
       rintro s ⟨a, ha⟩
   · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by lia)⟩
-  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); omega⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); lia⟩
 
 end conditionalTop
 

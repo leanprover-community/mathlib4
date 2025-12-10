@@ -52,7 +52,7 @@ lemma exists_numbers_in_interval {n : ℕ} (hn : 100 ≤ n) :
   have h₂ := Nat.succ_le_succ_sqrt' (n + 1)
   have h₃ : 10 ≤ (n + 1).sqrt := by
     rw [Nat.le_sqrt]
-    omega
+    lia
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1
   refine ⟨l, ?_, ?_⟩

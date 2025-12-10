@@ -157,7 +157,7 @@ instance : PartialOrder Hollom where
   | _, _, .twice _, .next_min _ => by lia
   | _, _, .twice _, .next_add _ => by lia
   | _, _, .within _ _, .twice _ => by lia
-  | _, _, .within _ _, .within _ _ => by congr 3 <;> omega
+  | _, _, .within _ _, .within _ _ => by congr 3 <;> lia
   | _, _, .next_min _, .twice _ => by lia
   | _, _, .next_add _, .twice _ => by lia
 
@@ -165,8 +165,8 @@ instance : PartialOrder Hollom where
     h(a, b, n) ≤ h(c, d, n) ↔ a ≤ c ∧ b ≤ d := by
   refine ⟨?_, ?_⟩
   · rintro (_ | _)
-    · omega
-    · omega
+    · lia
+    · lia
   · rintro ⟨h₁, h₂⟩
     exact .within h₁ h₂
 
@@ -279,7 +279,7 @@ lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
   rintro p q r h₁ h₂ rfl
   obtain rfl := (le_of_toHollom_le_toHollom h₁).antisymm (le_of_toHollom_le_toHollom h₂)
   simp only [toHollom_le_toHollom_iff_fixed_right] at h₁ h₂
-  omega
+  lia
 
 lemma embed_image_Icc {a b c d n : ℕ} :
     embed n '' Set.Icc (a, b) (c, d) = Set.Icc h(a, b, n) h(c, d, n) := by
@@ -363,7 +363,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     obtain ⟨a, b, hab⟩ := hn
     intro c d hcd
     by_contra!
-    exact hC hcd hab (by simp; omega) (HollomOrder.twice this)
+    exact hC hcd hab (by simp; lia) (HollomOrder.twice this)
 
 private lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
   (Set.finite_Iic (n, n)).subset <| by aesop
@@ -424,8 +424,8 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   -- Whereas if `(x, y, n + 1) ≤ (u, v, n)`, as `2 * (u + v) < x + y`, we must have
   -- `min x y + 1 ≤ min u v`, which finishes the proof.
   · cases h3
-    case twice => omega
-    case next_add => omega
+    case twice => lia
+    case next_add => lia
     case next_min h3 =>
       rw [← Nat.add_one_le_iff]
       refine h3.trans' ?_
@@ -571,7 +571,7 @@ lemma chainBetween_isChain {a b c d : ℕ} :
   split_ifs
   · rintro ⟨v, w⟩ hvw ⟨x, y⟩ hxy
     simp_all
-    omega
+    lia
   · simp
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
@@ -586,10 +586,10 @@ lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
   rw [chainBetween, if_pos ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
   · simp only [Icc_self, card_singleton, Nat.card_Icc]
     rw [← Finset.Ico_map_sectR, card_map, Nat.card_Ico]
-    omega
+    lia
   · rw [disjoint_left]
     simp
-    omega
+    lia
 
 lemma chainBetween_subset {a b c d : ℕ} :
     chainBetween a b c d ⊆ Finset.Icc (a, b) (c, d) := by
@@ -696,9 +696,9 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
   have cB : #B = xh + yh - (xl + yl) := by
     rw [card_image_of_injective _ (embed n).injective, card_union_of_disjoint,
       card_chainBetween h₂l.1 h₁l.2, card_chainBetween h₁h.1 h₂h.2]
-    · omega
+    · lia
     · simp [disjoint_left, chainBetween, *]
-      omega
+      lia
   -- It is easy to see that our chain `B` lives entirely within `int`
   have hB : B ⊆ int := by
     refine Finset.image_subset_image ?_
@@ -719,11 +719,11 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     rw [coe_union, isChain_union]
     refine ⟨chainBetween_isChain, chainBetween_isChain, ?_⟩
     simp [chainBetween, *]
-    omega
+    lia
   -- Thus the image of `B` under `f` is all of `I`, except for exactly one element.
   have card_eq : (I \ B.image f).card = 1 := by
     rw [card_sdiff_of_subset, cI, card_image_of_injOn f_inj, cB]
-    · omega
+    · lia
     · rw [← coe_subset, coe_image]
       exact f_maps.image_subset
   -- After applying `f`, both `(x + 1, y, n)` and `(x, y + 1, n)` are omitted from the image of `B`
@@ -770,11 +770,11 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
         refine apply_eq_of_line_eq_step f hC hlo hhi hx hy h₁l ?_ h₁h ?_
         all_goals
           simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
-          omega
+          lia
       rw [this, ih, add_right_comm, add_assoc]
       all_goals
         simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
-        omega
+        lia
 
 /--
 For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, n)` between them,
@@ -847,10 +847,10 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   constructor
   · rintro c d n hcd rfl
     specialize hab c d hcd
-    omega
+    lia
   · intro hfg
     specialize hab _ _ hfg
-    omega
+    lia
 
 lemma square_subset_R (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ R n C \ (C ∩ level n) := by
@@ -963,7 +963,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     apply toHollom_le_toHollom _ (by simp)
     have := hab _ _ hgh
     simp only [Prod.mk_le_mk] at this ⊢
-    omega
+    lia
   -- Combined with the fact that sufficiently large `a` have
   -- `{(x, y, n) | x ≥ a ∧ y ≥ a} ⊆ R \ (C ∩ level n)`, we can easily finish.
   filter_upwards [square_subset_R h, this] with a h₁ h₂
@@ -1055,13 +1055,13 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
-        omega
+        lia
       -- ...and `(x0, y0, n + 1) ≤ j`.
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
-      have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; omega
+      have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; lia
       -- Then we have `f(a, b, n + 1) = f(x0, a + b - x0, n + 1)` since they are at the same line
       have : f h(a, b, n + 1) = f h(x0 n C, a + b - x0 n C, n + 1) := apply_eq_of_line_eq f hC
-        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; omega) hj' hj
+        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       -- so `f(x, y, n) = (a, b, n + 1) = f(a, b, n + 1) = f(x0, a + b - x0, n + 1)`
       have : f h(x, y, n) = f h(x0 n C, a + b - x0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
@@ -1076,11 +1076,11 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
-        omega
+        lia
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
-      have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; omega
+      have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; lia
       have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this
-        (x0_y0_min hC hp.1) (by simp; omega) hj' hj
+        (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       have : f h(x, y, n) = f h(a + b - y0 n C, y0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
       exact f.not_le_of_eq this.symm (by simp) (.next_min (hx.2.trans' (by simp)))
@@ -1118,15 +1118,15 @@ lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n �
     intro h
     have := f.eq_of_le hp'.symm (.twice h)
     simp only [Prod.mk.injEq, Hollom.ext_iff] at this
-    omega
+    lia
   -- and `(a, b, m) ≤ (x, y, n)` if `n + 2 ≤ m`, so this cannot hold either
   have : ¬ n + 2 ≤ m := by
     intro h
     have := f.eq_of_le hp' (.twice h)
     simp only [Prod.mk.injEq, Hollom.ext_iff] at this
-    omega
+    lia
   -- So the only remaining option is that `m = n - 1`.
-  omega
+  lia
 
 open Finset in
 /--
@@ -1151,7 +1151,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   have card_F : #F = 2 * a + 1 := by
     rw [Finset.card_image_of_injective _ (embed n).injective,
       card_chainBetween (by lia) (by simp)]
-    omega
+    lia
   let T := {x ∈ C ∩ level (n - 1) | line x < 2 * a}
   -- Therefore, the image of `F` is within `C ∩ level (n - 1)`, and each of its points must be
   -- within `{(x, y, n - 1) | x + y < 2 * a}`. That is, the image of `F` under `f` is within `T`.
@@ -1175,7 +1175,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
           apply HollomOrder.next_add (by lia)
     have : f h(u, v, n - 1) = f h(b, a, n) := by rw [f.eq_self_of_mem hc'.1, hc]
     have := le_of_toHollom_le_toHollom (f.eq_of_le this.symm le).ge
-    omega
+    lia
   -- And `f` acts injectively on `F`, as it is a chain.
   have F_inj : Set.InjOn f F := f.injOn_of_isChain image_chainBetween_isChain
   -- By definition of `T`, the `line` map sends it to the interval `[0, 2a)`
@@ -1192,7 +1192,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- which is a contradiction by cardinality arguments.
   have := card_le_card_of_injOn _ line_F_mapsTo (line_inj.comp F_inj F_mapsTo)
   simp only [Finset.card_range] at this
-  omega
+  lia
 
 /-- The Hollom partial order has no spinal maps. -/
 theorem no_spinalMap (hC : IsChain (· ≤ ·) C) (f : SpinalMap C) : False := by
