@@ -433,17 +433,15 @@ theorem coeff_mul_right' [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} {a : Γ
       ∑ ij ∈ addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd :=
   HahnModule.coeff_smul_right hs hys
 
-instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ :=
-  { inferInstanceAs (Mul R⟦Γ⟧),
-    inferInstanceAs (Add R⟦Γ⟧) with
-    left_distrib := fun x y z => by
-      simp only [← of_symm_smul_of_eq_mul]
-      exact HahnModule.smul_add x y z
-    right_distrib := fun x y z => by
-      simp only [← of_symm_smul_of_eq_mul]
-      refine HahnModule.add_smul ?_
-      simp only [smul_eq_mul]
-      exact add_mul }
+instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
+  left_distrib x y z := by
+    simp only [← of_symm_smul_of_eq_mul]
+    exact HahnModule.smul_add x y z
+  right_distrib x y z := by
+    simp only [← of_symm_smul_of_eq_mul]
+    refine HahnModule.add_smul ?_
+    simp only [smul_eq_mul]
+    exact add_mul
 
 theorem coeff_single_mul_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ⟧} {a : Γ}
     {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
@@ -556,7 +554,7 @@ theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
 
 end orderLemmas
 
-section ring
+section Ring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
@@ -589,36 +587,15 @@ instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
     simp_rw [coeff_mul, mul_comm]
     exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) <| by simp
 
-instance [CommSemiring R] : CommSemiring R⟦Γ⟧ :=
-  { inferInstanceAs (NonUnitalCommSemiring R⟦Γ⟧),
-    inferInstanceAs (Semiring R⟦Γ⟧) with }
+instance [CommSemiring R] : CommSemiring R⟦Γ⟧ where
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ where
+instance [NonUnitalRing R] : NonUnitalRing R⟦Γ⟧ where
+instance [NonAssocRing R] : NonAssocRing R⟦Γ⟧ where
+instance [Ring R] : Ring R⟦Γ⟧ where
+instance [NonUnitalCommRing R] : NonUnitalCommRing R⟦Γ⟧ where
+instance [CommRing R] : CommRing R⟦Γ⟧ where
 
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ :=
-  { inferInstanceAs (NonUnitalNonAssocSemiring R⟦Γ⟧),
-    inferInstanceAs (AddGroup R⟦Γ⟧) with }
-
-instance [NonUnitalRing R] : NonUnitalRing R⟦Γ⟧ :=
-  { inferInstanceAs (NonUnitalNonAssocRing R⟦Γ⟧),
-    inferInstanceAs (NonUnitalSemiring R⟦Γ⟧) with }
-
-instance [NonAssocRing R] : NonAssocRing R⟦Γ⟧ :=
-  { inferInstanceAs (NonUnitalNonAssocRing R⟦Γ⟧),
-    inferInstanceAs (NonAssocSemiring R⟦Γ⟧),
-    inferInstanceAs (AddGroupWithOne R⟦Γ⟧) with }
-
-instance [Ring R] : Ring R⟦Γ⟧ :=
-  { inferInstanceAs (Semiring R⟦Γ⟧),
-    inferInstanceAs (AddCommGroupWithOne R⟦Γ⟧) with }
-
-instance [NonUnitalCommRing R] : NonUnitalCommRing R⟦Γ⟧ :=
-  { inferInstanceAs (NonUnitalCommSemiring R⟦Γ⟧),
-    inferInstanceAs (NonUnitalRing R⟦Γ⟧) with }
-
-instance [CommRing R] : CommRing R⟦Γ⟧ :=
-  { inferInstanceAs (CommSemiring R⟦Γ⟧),
-    inferInstanceAs (Ring R⟦Γ⟧) with }
-
-end ring
+end Ring
 
 theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
     [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :

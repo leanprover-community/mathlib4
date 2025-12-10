@@ -56,12 +56,10 @@ theorem coeff_smul' (r : R) (x : V⟦Γ⟧) : (r • x).coeff = r • x.coeff :=
 theorem coeff_smul {r : R} {x : V⟦Γ⟧} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
 
-instance : SMulZeroClass R V⟦Γ⟧ :=
-  { inferInstanceAs (SMul R V⟦Γ⟧) with
-    smul_zero := by
-      intro
-      ext
-      simp only [coeff_smul, coeff_zero, smul_zero]}
+instance : SMulZeroClass R V⟦Γ⟧ where
+  smul_zero _ := by
+    ext
+    simp only [coeff_smul, coeff_zero, smul_zero]
 
 theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x.orderTop := by
   by_cases hrx : r • x = 0
@@ -320,11 +318,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid R]
 
-instance : AddCommMonoid R⟦Γ⟧ :=
-  { inferInstanceAs (AddMonoid R⟦Γ⟧) with
-    add_comm := fun x y => by
-      ext
-      apply add_comm }
+instance : AddCommMonoid R⟦Γ⟧ where
+  add_comm x y := by
+    ext
+    apply add_comm
 
 @[simp]
 theorem coeff_sum {s : Finset α} {x : α → R⟦Γ⟧} (g : Γ) :
@@ -482,14 +479,13 @@ section Module
 
 variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
-instance : Module R V⟦Γ⟧ :=
-  { inferInstanceAs (DistribMulAction R V⟦Γ⟧) with
-    zero_smul := fun _ => by
-      ext
-      simp
-    add_smul := fun _ _ _ => by
-      ext
-      simp [add_smul] }
+instance : Module R V⟦Γ⟧ where
+  zero_smul _ := by
+    ext
+    simp
+  add_smul _ _ _ := by
+    ext
+    simp [add_smul]
 
 /-- `single` as a linear map -/
 @[simps]
