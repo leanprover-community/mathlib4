@@ -91,7 +91,7 @@ theorem ne_nil_of_mem_splitBy {r : α → α → Bool} {l : List α} (h : m ∈ 
 theorem head_head_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
     ((l.splitBy r).head (splitBy_ne_nil.2 hn)).head
       (ne_nil_of_mem_splitBy (head_mem _)) = l.head hn := by
-  simp_rw [← head_flatten_of_head_ne_nil, flatten_splitBy]
+  simp_rw [← head_head_eq_head_flatten, flatten_splitBy]
 
 theorem getLast_getLast_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
     ((l.splitBy r).getLast (splitBy_ne_nil.2 hn)).getLast
@@ -200,7 +200,7 @@ theorem splitBy_flatten {r : α → α → Bool} {l : List (List α)} (hn : [] �
     rw [isChain_cons] at hc'
     obtain ⟨x, hx, _⟩ := flatten_ne_nil_iff.1 (ne_nil_of_mem (mem_of_mem_head? hy))
     obtain ⟨_, _, H⟩ := hc'.1 (l.head (ne_nil_of_mem hx)) (head_mem_head? _)
-    rwa [head_flatten_of_head_ne_nil]
+    rwa [head_head_eq_head_flatten]
 
 /-- A characterization of `splitBy m r` as the unique list `l` such that:
 
