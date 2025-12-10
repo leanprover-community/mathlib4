@@ -207,13 +207,17 @@ lemma irreducible_of_pairwise_disjoint [IsDomain R]
   rw [ne_eq, ← Finsupp.support_eq_empty, ← ne_eq, ← Finset.nonempty_iff_ne_empty] at hd0
   rcases hd0 with ⟨i, hi⟩
   have hfd : f.coeff d ≠ 0 := by simpa [mem_support_iff] using hd
-  let φ : MvPolynomial n R := monomial (d - .single i 1) (f.coeff d)
+  let d₀ := d - .single i 1
+  have hd₀ : d = d₀ + .single i 1 := by
+    rw [Finsupp.mem_support_iff] at hi
+    rw [Finsupp.sub_add_single_one_cancel hi]
+  let φ : MvPolynomial n R := monomial d₀ (f.coeff d)
   let ψ : MvPolynomial n R := f - φ * X i
   have hf : f = φ * X i + ψ := by grind
   rw [hf]
   apply irreducible_mul_X_add
   · simp [φ, monomial_eq_zero, hfd]
-  · simp [φ, hfd, h1 d hd i hi]
+  · simp [φ, hfd, h1 d hd i hi, d₀]
   · simp_rw [mem_vars, not_exists, not_and]
     intro k hk hik
     obtain rfl : d = k := by
@@ -234,20 +238,30 @@ lemma irreducible_of_pairwise_disjoint [IsDomain R]
     rw [mem_support_iff] at hk
     apply hk
     rw [Finsupp.mem_support_iff] at hi
-    simp [ψ, coeff_mul_X', hi, φ]
+    simp [ψ, coeff_mul_X', hi, φ, d₀]
   · intro p hpφ hpψ
     simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
     obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
     obtain rfl : m = 0 := by
       obtain ⟨d₂, hd₂, H⟩ := h0.exists_ne d
       ext j
+      have hne := H
       contrapose! H
       rw [Finsupp.zero_apply] at H
       apply h2 d₂ hd₂ d hd j
-      · sorry
+      · have := support_add (p := φ * X i) (q := ψ)
+        rw [← hf] at this
+        specialize this hd₂
+        have : coeff d₂ ψ ≠ 0 := by
+          simpa [φ, hfd, ← hd₀, hne.symm] using this
+        obtain ⟨q, hq⟩ := hpψ
+        simp only [hq, coeff_monomial_mul', ne_eq, ite_eq_right_iff, Classical.not_imp] at this
+        replace this := this.1 j
+        rw [Finsupp.mem_support_iff]
+        grind
       · rw [Finsupp.mem_support_iff]
         specialize hm j
-        simp only [Finsupp.coe_tsub, Pi.sub_apply] at hm
+        simp only [Finsupp.coe_tsub, Pi.sub_apply, d₀] at hm
         grind
     simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
     refine ⟨b, ?_, rfl⟩
@@ -369,7 +383,7 @@ theorem sum_smul_X_eq :
   rw [sum_smul_X_eq, ← lcoeff_apply, map_finsuppSum]
   aesop
 
-@[simp]
+-- @[simp]
 theorem coeff_single_sum_smul_X (i : n) :
     coeff (Finsupp.single i 1) (sum_smul_X c) = c i := by
   classical
@@ -458,7 +472,7 @@ theorem X_dvd_sum_smul_X_iff (i : n) :
     rw [φ_sum_smul_X_eq c, φ_X_self] at this
     rw [← algebraMap_smul (MvPolynomial {x // x ≠ i} R) (c i), Polynomial.smul_eq_C_mul,
         dvd_add_right (dvd_mul_left ..), Polynomial.X_dvd_iff, Polynomial.coeff_C_zero] at this
-    simpa using congr(coeff (Finsupp.single ⟨j, hji⟩ 1) $this)
+    simpa [coeff_single_sum_smul_X] using congr(coeff (Finsupp.single ⟨j, hji⟩ 1) $this)
   · rw [sum_smul_X_eq, Finsupp.sum_eq_single i]
     · rw [smul_eq_C_mul]
       exact dvd_mul_left (X i) (C (c i))
@@ -470,6 +484,35 @@ theorem X_dvd_sum_smul_X_iff (i : n) :
     · simp
 
 theorem irreducible_sum_smul_X [IsDomain R]
+    (hc_nontrivial : c.support.Nontrivial)
+    (hc_gcd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
+    Irreducible (sum_smul_X c) := by
+  -- Using `classical` causes havoc later on in the proof
+  have : DecidableEq n := Classical.typeDecidableEq n
+  have aux (d : n →₀ ℕ) :
+      (∑ x ∈ c.support with .single x 1 = d, c x) =
+        by classical exact if h : ∃ i, d = .single i 1 then c h.choose else 0 := by
+    split_ifs with h
+    · rcases h with ⟨i, rfl⟩
+      simp [Finsupp.single_eq_single_iff, Finset.filter_eq', Finset.sum_ite_index]
+    · simp_rw [eq_comm (a := d), not_exists] at h
+      simp [h]
+  simp only [sum_smul_X, Finsupp.linearCombination_apply, Finsupp.sum]
+  apply irreducible_of_pairwise_disjoint
+  · obtain ⟨i, hi, j, hj, h⟩ := hc_nontrivial
+    refine ⟨.single i 1, ?_, .single j 1, ?_, ?_⟩ <;>
+      simp_all [Finsupp.single_eq_single_iff, coeff_sum]
+  on_goal 3 =>
+    intro r hr
+    apply hc_gcd
+    intro i
+    specialize hr (.single i 1)
+    revert hr
+  all_goals
+    simp +contextual [coeff_sum, coeff_X', Finset.sum_ite, aux, Finsupp.single_eq_single_iff,
+      Finsupp.single_apply]
+
+theorem irreducible_sum_smul_X' [IsDomain R]
     (hc_nontrivial : c.support.Nontrivial)
     (hc_gcd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
     Irreducible (sum_smul_X c) where
@@ -510,6 +553,44 @@ lemma sum_smul_X_mul_Y_eq :
   simp [sum_smul_X_mul_Y, Finsupp.linearCombination_apply]
 
 theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
+    (hc : c.support.Nontrivial)
+    (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
+    Irreducible (sum_smul_X_mul_Y c) := by
+  classical
+  let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
+    ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
+     fun i j ↦ by classical simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
+  have hcoeff (i : n) : coeff (ι i) (sum_smul_X_mul_Y c) = c i := by
+    simp [sum_smul_X_mul_Y, ι, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum,
+      coeff_X_mul', Finsupp.single_apply, eq_comm]
+  have hsupp : (sum_smul_X_mul_Y c).support = c.support.map ι := by
+    ext d
+    simp only [mem_support_iff, ne_eq, Finset.mem_map, Finsupp.mem_support_iff]
+    constructor
+    · have aux (d : n ⊕ n →₀ ℕ) (i : n) :
+          ¬d (Sum.inl i) = 0 ∧ Finsupp.single (Sum.inr i) 1 = d - Finsupp.single (Sum.inl i) 1 ↔
+          d = ι i := by
+        constructor <;> simp +contextual [ι, add_comm (Finsupp.single (Sum.inl i) 1),
+          Finsupp.sub_add_single_one_cancel]
+      intro H
+      obtain ⟨i, hi1, hi2⟩ : ∃ a ∈ {a ∈ c.support | d = ι a}, c a ≠ 0 := by
+        apply Finset.exists_ne_zero_of_sum_ne_zero
+        simpa [sum_smul_X_mul_Y, ι, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum,
+          coeff_X_mul', Finset.sum_ite, coeff_X', Finset.filter_filter, aux] using H
+      simp only [eq_comm (a := d), Finset.mem_filter, Finsupp.mem_support_iff] at hi1
+      exact ⟨i, hi1⟩
+    · rintro ⟨i, hi, rfl⟩
+      simpa [hcoeff] using hi
+  apply irreducible_of_pairwise_disjoint
+  · rwa [hsupp, Finset.map_nontrivial]
+  · simp [hsupp, ι, Finsupp.single_apply]
+  · simp +contextual [hsupp, ι, Finsupp.single_apply]
+  · intro r hr
+    apply h_dvd
+    intro i
+    simpa [hcoeff] using hr (ι i)
+
+theorem irreducible_sum_smul_X_mul_Y' [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
     Irreducible (sum_smul_X_mul_Y c) := by
