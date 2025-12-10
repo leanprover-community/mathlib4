@@ -3,14 +3,16 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Order
-import Mathlib.Algebra.Order.Module.Archimedean
-import Mathlib.Algebra.Order.Module.Equiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.RingTheory.HahnSeries.Lex
+module
+
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Order
+public import Mathlib.Algebra.Order.Module.Archimedean
+public import Mathlib.Algebra.Order.Module.Equiv
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.RingTheory.HahnSeries.Lex
 
 /-!
 # Hahn embedding theorem on ordered modules
@@ -41,6 +43,8 @@ to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedA
 
 * [M. Hausner, J.G. Wendel, *Ordered vector spaces*][hausnerwendel1952]
 -/
+
+@[expose] public section
 
 /-! ### Step 1: base embedding
 
@@ -135,7 +139,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
   obtain hf' := congrArg ArchimedeanClass.mk hf
   contrapose! hf' with h0
   rw [← hab, DFinsupp.sum]
-  by_cases hnonempty : f.support.Nonempty
+  by_cases! hnonempty : f.support.Nonempty
   · have hmem (x : ArchimedeanClass M) : (f x).val ∈ u.stratum x :=
       Set.mem_of_mem_of_subset (f x).prop (by simp)
     have hmono : StrictMonoOn (fun i ↦ ArchimedeanClass.mk (f i).val) f.support := by
@@ -152,7 +156,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
     contrapose! h
     rw [DFinsupp.notMem_support_iff, u.archimedeanClassMk_of_mem_stratum ha h0]
     simpa using (f c).prop
-  · rw [Finset.not_nonempty_iff_eq_empty.mp hnonempty]
+  · rw [hnonempty]
     symm
     simpa using h0
 
@@ -221,7 +225,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
   let f' : ⨁ c, seed.stratum' c :=
     f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
   have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
-    apply Subtype.eq
+    apply Subtype.ext
     simp [f']
   have hx : x = (decompose seed.stratum').symm f' := by
     change x = f'.coeAddMonoidHom _
@@ -289,7 +293,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! hne with hempty
     apply DFinsupp.sum_eq_zero
     intro c
-    simpa using DFinsupp.notMem_support_iff.mp (forall_not_of_not_exists hempty c)
+    simpa using DFinsupp.notMem_support_iff.mp (Finset.eq_empty_iff_forall_notMem.mp hempty c)
   have htop : f.support.min' hsupport ≠ ⊤ := by
     by_contra! h
     have h : ⊤ ∈ f.support := h ▸ f.support.min'_mem hsupport
@@ -334,16 +338,14 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
   rw [DFinsupp.sum, mk_sum hsupport hmono]
   rw [seed.archimedeanClassMk_of_mem_stratum (f _).prop
     (by simpa using f.support.min'_mem hsupport)]
-  by_cases hsupport' : (f.support.erase (f.support.min' hsupport)).Nonempty
+  by_cases! hsupport' : (f.support.erase (f.support.min' hsupport)).Nonempty
   · rw [mk_sum hsupport' (hmono.mono (by simp))]
     rw [seed.archimedeanClassMk_of_mem_stratum (f _).prop (by
       simpa using (Finset.mem_erase.mp <| (f.support.erase _).min'_mem hsupport').2)]
     apply Finset.min'_lt_of_mem_erase_min'
     apply Finset.min'_mem _ _
   · -- special case: `f` has a single term, and becomes 0 after removing it
-    have : f.support.erase (f.support.min' hsupport) = ∅ :=
-      Finset.not_nonempty_iff_eq_empty.mp hsupport'
-    simpa [this] using lt_top_iff_ne_top.mpr htop
+    simpa [hsupport'] using lt_top_iff_ne_top.mpr htop
 
 theorem baseEmbedding_strictMono [IsOrderedAddMonoid R] : StrictMono seed.baseEmbedding := by
   intro x y h
@@ -450,7 +452,7 @@ theorem archimedeanClassMk_eq_iff [IsOrderedAddMonoid R] (x y : f.val.domain) :
 theorem orderTop_eq_iff [IsOrderedAddMonoid R] [Archimedean R] (x y : f.val.domain) :
     (ofLex (f.val x)).orderTop = (ofLex (f.val y)).orderTop ↔ mk x.val = mk y.val := by
   obtain hsubsingleton | hnontrivial := subsingleton_or_nontrivial M
-  · have : y = x := Subtype.eq <| hsubsingleton.allEq _ _
+  · have : y = x := Subtype.ext <| hsubsingleton.allEq _ _
     simp [this]
   have hnonempty : Nonempty (FiniteArchimedeanClass M) := inferInstance
   obtain c := hnonempty.some
@@ -564,8 +566,7 @@ theorem evalCoeff_eq_zero {x : M} {c : FiniteArchimedeanClass M}
 theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
     (evalCoeff f x).support.IsWF := by
   rw [Set.isWF_iff_no_descending_seq]
-  by_contra!
-  obtain ⟨seq, ⟨hanti, hmem⟩⟩ := this
+  by_contra! ⟨seq, ⟨hanti, hmem⟩⟩
   have hnonempty : ∃ y : f.val.domain, y.val - x ∈ ball K (seq 0) := by
     specialize hmem 0
     contrapose hmem with hempty
@@ -744,7 +745,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
     simpa using hzy.ne
   have hzyclass : FiniteArchimedeanClass.mk (y.val - x) hxy0 =
       FiniteArchimedeanClass.mk (z.val - y.val) hzyne := by
-    suffices mk (y.val - x) = mk (z.val - y.val) by simpa [Subtype.eq_iff] using this
+    suffices mk (y.val - x) = mk (z.val - y.val) by simpa [Subtype.ext_iff] using this
     have : y.val - z.val = y.val - x + (x - z.val) := by abel
     rw [mk_sub_comm z.val y.val, this]
     refine (mk_add_eq_mk_left ?_).symm

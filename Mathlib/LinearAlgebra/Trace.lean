@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Finiteness.Prod
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Trace of a linear map
@@ -20,6 +22,8 @@ See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 linear_map, trace, diagonal
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -130,7 +134,7 @@ variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable {ι : Type*}
 
-/-- The trace of a linear map correspond to the contraction pairing under the isomorphism
+/-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
 `End(M) ≃ M* ⊗ M` -/
 theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     LinearMap.trace R M ∘ₗ dualTensorHom R M M = contractLeft R M := by
@@ -223,7 +227,7 @@ variable (R M N P)
 
 open TensorProduct Function
 
-theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N)) =
+theorem trace_tensorProduct : compr₂ (mapBilinear (.id R) M N M N) (trace R (M ⊗ N)) =
     compl₁₂ (lsmul R R : R →ₗ[R] R →ₗ[R] R) (trace R M) (trace R N) := by
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
@@ -231,7 +235,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
   ext f m g n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
-    trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
+    trace_eq_contract_apply, contractLeft_apply, lsmul_apply, smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
 
 theorem trace_comp_comm :
@@ -256,7 +260,7 @@ theorem trace_tensorProduct' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M ⊗ N) (map f g) = trace R M f * trace R N g := by
   have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_tensorProduct R M N) f) g
   simp only [compr₂_apply, mapBilinear_apply, compl₁₂_apply, lsmul_apply,
-    Algebra.id.smul_eq_mul] at h
+    smul_eq_mul] at h
   exact h
 
 theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
@@ -328,7 +332,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
-  rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
+  rw [hμ, comp_add, map_add, hg, add_zero, this, map_smul, smul_eq_mul]
 
 -- This result requires `Mathlib/RingTheory/TensorProduct/Free.lean`.
 -- Maybe it should move elsewhere?

@@ -3,15 +3,19 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Open immersions of schemes
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -162,7 +166,7 @@ lemma id_image {X : Scheme} (U : X.Opens) : 𝟙 X ''ᵁ U = U :=
 
 @[simp]
 lemma inv_image {X Y : Scheme} (e : X ≅ Y) (U : Y.Opens) : e.inv ''ᵁ U = e.hom ⁻¹ᵁ U :=
-  TopologicalSpace.Opens.ext (Set.image_equiv_eq_preimage_symm _ (Scheme.homeoOfIso e.symm).toEquiv)
+  TopologicalSpace.Opens.ext <| (Scheme.homeoOfIso e.symm).toEquiv.image_eq_preimage_symm _
 
 @[simp]
 lemma apply_mem_image_iff {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
@@ -618,17 +622,8 @@ lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
   ext x
   by_cases hx : x ∈ Set.range iU
   · obtain ⟨x, rfl⟩ := hx
-<<<<<<< HEAD
-    --simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
-    --  iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
-    --  ← Scheme.comp_base_apply, ← H.w]
-    --simp only [Scheme.comp_coeBase, TopCat.comp_app,
-    --  iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
-    sorry
-=======
     simp only [SetLike.mem_coe, Opens.map_coe, Set.mem_preimage, ← Scheme.Hom.comp_apply, ← H.w]
     simp
->>>>>>> origin/master
   · constructor
     · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
     · rintro ⟨y, hy, e : iV y = f x⟩
@@ -805,14 +800,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   ext x
   by_cases hx : x ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hx
-<<<<<<< HEAD
-    simp only [f.isOpenEmbedding.injective.mem_set_image, Scheme.mem_zeroLocus_iff,
-      ← SetLike.mem_coe, Set.mem_inter_iff, Set.forall_mem_image, ← Scheme.image_basicOpen,
-      IsOpenMap.coe_functor_obj, Set.mem_range, exists_apply_eq_apply, and_true]
-    sorry
-=======
     simp [f.isOpenEmbedding.injective.mem_set_image, ← Scheme.image_basicOpen]
->>>>>>> origin/master
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 

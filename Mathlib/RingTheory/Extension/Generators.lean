@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Extension.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ by unbundling the `vars` field or making the field globally reducible in constru
 unification hints.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -105,6 +109,9 @@ lemma σ_smul (x y) : P.σ x • y = x * y := by
 lemma σ_injective : P.σ.Injective := by
   intro x y e
   rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
+
+lemma aeval_val_surjective : Function.Surjective (aeval (R := R) P.val) :=
+  fun x ↦ ⟨P.σ x, by simp⟩
 
 lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
   (⟨_, P.algebraMap_apply _ ▸ P.aeval_val_σ ·⟩)
@@ -286,6 +293,15 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
 @[simp] lemma naive_σ : (Generators.naive s hs).σ = s := rfl
 
 end
+
+lemma finiteType {α : Type*} [Finite α] (P : Generators R S α) : FiniteType R S :=
+  .of_surjective (IsScalarTower.toAlgHom R P.Ring S) P.algebraMap_surjective
+
+lemma _root_.Algebra.FiniteType.iff_exists_generators :
+    FiniteType R S ↔ ∃ (n : ℕ), Nonempty (Generators R S (Fin n)) := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, ⟨P⟩⟩ ↦ P.finiteType⟩
+  obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
+  exact ⟨n, ⟨.ofSurjective (fun i ↦ f (X i)) <| by rwa [aeval_unique f] at hf⟩⟩
 
 end Construction
 
@@ -530,6 +546,13 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+@[simp]
+lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
+    (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
+  change RingHom.ker _ = _
+  congr
+  exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
+
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
@@ -661,6 +684,11 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
   rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
     ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+
+lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
+    ((localizationAway T g).ofComp P).toAlgHom
+      (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
+  simp [Generators.Hom.toAlgHom, Generators.ofComp, aeval_rename]
 
 end Hom
 

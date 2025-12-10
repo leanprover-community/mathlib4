@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
-import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.Topology.Sheaves.Functors
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Sheafed spaces
@@ -16,6 +18,8 @@ arbitrary target category `C`.)
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
 -/
+
+@[expose] public section
 
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor Topology
@@ -275,17 +279,18 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
-    (h₁ : Function.Surjective f.base)
-    (h₂ : ∀ x, Mono (f.stalkMap x)) : Epi f := by
+    (h₁ : Function.Surjective f.hom.base)
+    (h₂ : ∀ x, Mono (f.hom.stalkMap x)) : Epi f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  rw [InducedCategory.hom_ext_iff] at e
   obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
     rw [← (h₁ y).choose_spec]
     simpa using congr(($e).base.hom (h₁ y).choose)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun y ↦ ?_
-  rw [← (h₁ y).choose_spec, ← cancel_mono (f.stalkMap (h₁ y).choose), stalkCongr_hom,
-    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f ⟨g, gc⟩,
-    ← PresheafedSpace.stalkMap.comp f ⟨g, hc⟩]
+  rw [← (h₁ y).choose_spec, ← cancel_mono (f.hom.stalkMap (h₁ y).choose), stalkCongr_hom,
+    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f.hom ⟨g, gc⟩,
+    ← PresheafedSpace.stalkMap.comp f.hom ⟨g, hc⟩]
   congr 1
 
 end ConcreteCategory

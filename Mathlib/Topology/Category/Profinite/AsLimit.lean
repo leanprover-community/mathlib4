@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.DiscreteQuotient
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Profinite sets as limits of finite sets.
@@ -27,6 +29,8 @@ There are a handful of definitions in this file, given `X : Profinite`:
 7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

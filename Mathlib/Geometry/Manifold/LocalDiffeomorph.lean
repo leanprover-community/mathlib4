@@ -3,9 +3,10 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -55,6 +56,8 @@ practice.
 local diffeomorphism, manifold
 
 -/
+
+@[expose] public section
 
 open Manifold Set TopologicalSpace
 
@@ -252,7 +255,7 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! # Basic properties of local diffeomorphisms -/
+/-! ### Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}
@@ -356,9 +359,6 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
-@[deprecated (since := "2025-03-24")] alias
-IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of_bijective
-
 end Basic
 
 section Differential
@@ -390,7 +390,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       hf.localInverse_left_inv hf.localInverse_mem_target]
   continuous_toFun := (mfderiv I J f x).cont
   continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
-  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_add' := fun x_1 y ↦ map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]

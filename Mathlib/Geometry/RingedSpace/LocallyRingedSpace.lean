@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Geometry.RingedSpace.Basic
-import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Geometry.RingedSpace.Basic
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -15,6 +17,8 @@ We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
 `IsLocalHom` on the stalk maps).
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -79,21 +83,12 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-<<<<<<< HEAD
   X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
 
 @[simp, nolint simpVarHead]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.toShHom ⟨f, hf⟩ = InducedCategory.homMk f := rfl
-=======
-    X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
-
-@[simp, nolint simpVarHead]
-lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
-    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) : Hom.toShHom ⟨f, hf⟩ = f :=
-  rfl
->>>>>>> origin/master
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩

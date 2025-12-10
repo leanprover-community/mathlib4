@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Properties of morphisms in the simplex category
@@ -18,16 +20,12 @@ the category `SimplexCategory.Truncated d`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 namespace SimplexCategory
 
-#check Truncated
-#check Truncated.δ
-#check Truncated.Hom.tr
-    --W (Hom.tr (n := d) (SimplexCategory.δ i)))
-    --(σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
-    --  W (Hom.tr (n := d) (SimplexCategory.σ i))) :
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
     (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
@@ -43,8 +41,8 @@ lemma Truncated.morphismProperty_eq_top
   generalize h : a + b = c
   induction c generalizing a b with
   | zero =>
-    obtain rfl : a = 0 := by cutsat
-    obtain rfl : b = 0 := by cutsat
+    obtain rfl : a = 0 := by lia
+    obtain rfl : b = 0 := by lia
     obtain rfl : f = 𝟙 _ := by
       ext i : 3
       apply Subsingleton.elim (α := Fin 1)

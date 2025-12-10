@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # The monoidal category structure on R-modules
@@ -27,6 +29,8 @@ We construct the monoidal closed structure on `ModuleCat R` in
 If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
+
+@[expose] public section
 
 universe v w x u
 
@@ -128,22 +132,16 @@ theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
-  rw [LinearMap.map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, leftUnitor]
 
 theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (SemimoduleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
-  ext x
-  dsimp
-  erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
-  rw [LinearMap.map_smul]
-  rfl
+  ext
+  simp [tensorHom, tensorObj, rightUnitor]
 
 theorem triangle (M N : SemimoduleCat.{u} R) :
     (associator M (SemimoduleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
@@ -363,6 +361,9 @@ theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
 
 namespace MonoidalCategory
 
+@[deprecated (since := "2025-10-29")] alias tensorObj := tensorObj_carrier
+@[deprecated (since := "2025-10-29")] alias tensorObj_def := tensorObj_carrier
+
 @[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
@@ -455,21 +456,21 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply]
     simp
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply, ]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply, ]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply]
     simp
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     erw [MonoidalCategory.whiskerLeft_apply]
@@ -477,7 +478,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     erw [MonoidalCategory.whiskerRight_apply]
@@ -488,14 +489,14 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     simp
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
+    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_smul, LinearMap.smul_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     simp [TensorProduct.smul_tmul, TensorProduct.tmul_smul]

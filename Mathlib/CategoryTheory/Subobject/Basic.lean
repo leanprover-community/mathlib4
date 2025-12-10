@@ -3,13 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Skeleton
-import Mathlib.CategoryTheory.Subobject.MonoOver
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Skeleton
+public import Mathlib.CategoryTheory.Subobject.MonoOver
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Subobjects
@@ -70,6 +71,8 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 
 -/
 
+@[expose] public section
+
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -102,6 +105,8 @@ instance (X : C) : PartialOrder (Subobject X) :=
   inferInstanceAs <| PartialOrder (ThinSkeleton (MonoOver X))
 
 namespace Subobject
+
+lemma skeletal (X : C) : Skeletal (Subobject X) := ThinSkeleton.skeletal
 
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=

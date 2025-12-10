@@ -3,10 +3,12 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Profinite
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -36,6 +38,8 @@ The category `Profinite` is defined using the structure `CompHausLike`. See the 
 profinite
 
 -/
+
+@[expose] public section
 
 universe v u
 

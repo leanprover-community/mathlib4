@@ -3,11 +3,13 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.CubicDiscriminant
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CubicDiscriminant
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Weierstrass equations of elliptic curves
@@ -61,6 +63,8 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 elliptic curve, weierstrass equation, j invariant
 -/
+
+@[expose] public section
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])

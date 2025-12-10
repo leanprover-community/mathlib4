@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
@@ -29,6 +31,8 @@ consistency of notation.
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
+
+@[expose] public section
 open Topology Filter Function
 
 /-!
@@ -147,6 +151,8 @@ noncomputable def unitsHomeomorphNeZero : G₀ˣ ≃ₜ {g : G₀ // g ≠ 0} :=
 end GroupWithZero
 
 section NhdsInv
+
+open scoped Pointwise
 
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {x : G₀}
 
@@ -328,7 +334,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [C
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   rcases m with m | m
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
+  · simpa only [Int.ofNat_eq_natCast, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_ge
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)

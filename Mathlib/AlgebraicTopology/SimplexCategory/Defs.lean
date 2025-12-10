@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Order.Fin.Basic
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
@@ -36,6 +38,8 @@ We provide the following functions to work with these objects:
   The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
   This notation is available with `open SimplexCategory.Truncated`.
 -/
+
+@[expose] public section
 
 universe v
 
@@ -208,6 +212,10 @@ abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
   ObjectProperty.homMk f
+
+@[simp]
+lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
+    Hom.tr (𝟙 a) ha = 𝟙 _ := rfl
 
 @[reassoc]
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)

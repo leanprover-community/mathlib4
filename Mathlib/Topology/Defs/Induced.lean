@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -41,6 +43,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology
@@ -95,8 +99,6 @@ if either of the following equivalent conditions hold:
 -/
 structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
-
-@[deprecated (since := "2025-04-08")] alias RestrictGenTopology := Topology.IsCoherentWith
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage

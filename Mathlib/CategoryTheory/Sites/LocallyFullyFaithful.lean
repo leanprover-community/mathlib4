@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # Locally fully faithful functors into sites
@@ -24,6 +26,8 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 * [caramello2020]: Olivia Caramello, *Denseness conditions, morphisms and equivalences of toposes*
 
 -/
+
+@[expose] public section
 
 universe w vC vD uC uD
 

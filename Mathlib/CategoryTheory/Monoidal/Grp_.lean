@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -18,13 +20,14 @@ morphisms of group objects commute with taking inverses.
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
-
-section
 
 /-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp`. -/
 class GrpObj (X : C) extends MonObj X where
@@ -52,8 +55,6 @@ instance : GrpObj (𝟙_ C) where
 
 end GrpObj
 
-end
-
 variable (C) in
 /-- A group object in a Cartesian monoidal category. -/
 structure Grp where
@@ -68,8 +69,8 @@ attribute [instance] Grp.grp
 namespace Grp
 
 /-- A group object is a monoid object. -/
-@[simps X]
-def toMon (A : Grp C) : Mon C := ⟨A.X⟩
+@[simps -isSimp X]
+abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
@@ -472,7 +473,6 @@ instance instBraidedCategory : BraidedCategory (Grp C) :=
 
 end Grp
 
-namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
@@ -495,7 +495,7 @@ abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
       Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
 
-scoped[Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
+scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
 
 @[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] =  F.map ι := rfl
 

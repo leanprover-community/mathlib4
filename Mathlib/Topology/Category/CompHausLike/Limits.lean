@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Topology.Category.CompHausLike.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.Topology.Category.CompHausLike.Basic
 /-!
 
 # Explicit limits and colimits
@@ -33,6 +35,8 @@ which may be useful due to their definitional properties.
 * Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Topology
 
@@ -165,12 +169,11 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
-  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun n ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
-  apply preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
-  sorry
-  --exact TopCat.sigmaCofanIsColimit _
+  refine preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
+    ((isColimitMapCoconeCofanMkEquiv _ _ _).2 (TopCat.sigmaCofanIsColimit _))
 
 /-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable instance {P' : TopCat.{u} → Prop}

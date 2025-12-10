@@ -3,18 +3,23 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Grp_
-import Mathlib.CategoryTheory.Monoidal.CommMon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!
 # The category of commutative groups in a Cartesian monoidal category
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon Grp CommMon
 open MonObj
 
+namespace CategoryTheory
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 
 /-- A commutative group object internal to a Cartesian monoidal category. -/
@@ -33,8 +38,8 @@ namespace CommGrp
 variable {C}
 
 /-- A commutative group object is a group object. -/
-@[simps X]
-def toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
+@[simps -isSimp X]
+abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 
 @[deprecated (since := "2025-10-13")] alias toGrp_ := toGrp
 
@@ -193,7 +198,6 @@ instance : HasInitial (CommGrp C) :=
 
 end CommGrp
 
-namespace CategoryTheory
 variable {C}
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E] [BraidedCategory E]
