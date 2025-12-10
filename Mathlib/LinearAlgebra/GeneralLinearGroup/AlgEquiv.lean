@@ -21,7 +21,7 @@ from `GeneralLinearGroup K V` to `End K V ≃ₐ[K] End K V` is surjective.
 
 open Module LinearMap LinearEquiv
 
-variable {S K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
+variable {K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
   [AddCommMonoid W] [Module K W] [Projective K W]
 
 /-- Given an algebra isomorphism `f : End K V ≃ₐ[K] End K W`, there exists a linear isomorphism `T`
