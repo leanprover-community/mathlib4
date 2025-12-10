@@ -17,7 +17,8 @@ equipped with a descent data relative to the morphisms `f i : X i ⟶ S`.
 
 We show that up to an equivalence, the category `F.DescentData f` is unchanged
 when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
-by another family which generates the same sieve (see `Pseudofunctor.pullFunctorEquivalence`).
+by another family which generates the same sieve
+(see `Pseudofunctor.DescentData.pullFunctorEquivalence`).
 
 ## TODO (@joelriou, @chrisflav)
 * Relate the prestack condition to the fully faithfullness of `Pseudofunctor.toDescentData`.
