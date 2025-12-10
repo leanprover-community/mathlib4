@@ -531,9 +531,8 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 omit [Fact (0 < p)]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite := by
-  wlog hp : 0 < p generalizing p
-  on_goal 2 =>
-    have := Fact.mk hp
+  wlog hp : 0 < p generalizing p; swap
+  · have := Fact.mk hp
     convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
     simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
   obtain rfl | hp := eq_or_lt_of_not_gt hp
@@ -543,10 +542,9 @@ theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 
     rw [Set.mem_singleton_iff]
     rw [QuotientAddGroup.eq_zero_iff, zmultiples_zero_eq_bot] at hu ⊢
     exact (_root_.nsmul_eq_zero_iff hn.ne').mp hu
-  dsimp only [AddCircle] at this ⊢
   convert ← this (-p) (neg_pos.mpr hp) using 1
-  · rw [zmultiples_neg]
-  exact congr_arg_heq (fun H ↦ {u : 𝕜 ⧸ H | n • u = 0}) zmultiples_neg
+  · rw [AddCircle, zmultiples_neg]
+  exact congr_arg_heq ({u : 𝕜 ⧸ · | n • u = 0}) zmultiples_neg
 
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
