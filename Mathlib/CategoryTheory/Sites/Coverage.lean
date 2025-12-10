@@ -226,35 +226,29 @@ lemma saturate_of_superset (K : Coverage C) {X : C} {S T : Sieve X} (h : S ≤ T
   · apply Saturate.top
   · assumption
 
+@[grind .]
+lemma Saturate.pullback (K : Coverage C) {X Y : C} (f : Y ⟶ X) {S : Sieve X}
+    (h : Saturate K X S) : Saturate K Y (S.pullback f) := by
+  induction h with
+  | of X S hS =>
+    obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
+    suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
+      saturate_of_superset _ this (Saturate.of _ _ hR1)
+    intro Z g ⟨W, i, e, h1, h2⟩
+    obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
+    refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
+    simp [hh2, reassoc_of% h2]
+  | top X => exact .top _
+  | transitive X R S _ hS H1 _ =>
+    refine (H1 f).transitive _ _ _ fun Z g hg ↦ ?_
+    rw [← Sieve.pullback_comp]
+    exact hS hg
+
 lemma saturate_iff_saturate_toPrecoverage (K : Coverage C) {X : C} {S : Sieve X} :
     K.Saturate X S ↔ K.toPrecoverage.Saturate X S := by
   constructor <;> intro hS
-  · induction hS with
-    | of _ _ hS => exact .of _ _ hS
-    | top => exact .top _
-    | transitive _ _ _ _ _ ih1 ih2 => exact .transitive _ _ _ ih1 ih2
-  · induction hS with
-    | of _ _ hS => exact .of _ _ hS
-    | top => exact .top _
-    | pullback _ R hR Y f ih =>
-      clear hR
-      induction ih generalizing Y with
-      | of X S hS =>
-        obtain ⟨R,hR1,hR2⟩ := K.pullback f S hS
-        suffices Sieve.generate R ≤ (Sieve.generate S).pullback f from
-          saturate_of_superset _ this (Saturate.of _ _ hR1)
-        rintro Z g ⟨W, i, e, h1, h2⟩
-        obtain ⟨WW, ii, ee, hh1, hh2⟩ := hR2 h1
-        refine ⟨WW, i ≫ ii, ee, hh1, ?_⟩
-        simp only [hh2, reassoc_of% h2, Category.assoc]
-      | top X => apply Saturate.top
-      | transitive X R S _ hS H1 _ =>
-        apply Saturate.transitive
-        · apply H1 _ f
-        intro Z g hg
-        rw [← Sieve.pullback_comp]
-        exact hS hg
-    | transitive _ _ _ _ _ ih1 ih2 => exact .transitive _ _ _ ih1 ih2
+  · induction hS <;> grind [Precoverage.Saturate]
+  · induction hS <;> grind [Saturate]
 
 /--
 The Grothendieck topology associated to a coverage `K`.
