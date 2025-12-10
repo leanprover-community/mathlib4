@@ -492,9 +492,6 @@ variable {A B C E : Type*} [Group A] [Group B] [Group C]
   (μA : Measure A) (μC : Measure C) (hμA : IsHaarMeasure μA) (hμC : IsHaarMeasure μC)
   [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-noncomputable def average₀ (f : B → E) (b : B) : E :=
-  ∫ a, f (b * φ a) ∂μA
-
 variable {φ ψ}
 
 noncomputable def twist (f : CompactlySupportedContinuousMap B E) (b : B) :
@@ -511,30 +508,29 @@ noncomputable def twist (f : CompactlySupportedContinuousMap B E) (b : B) :
     have : Continuous φ := H.isClosedEmbedding.continuous
     fun_prop
 
-noncomputable def average₀_eq (f : B → E) {b₁ b₂ : B} (h : ψ b₁ = ψ b₂) :
-    average₀ φ μA f b₁ = average₀ φ μA f b₂ := by
+noncomputable def average₀ : CompactlySupportedContinuousMap B E →ₗ[ℝ] (B → E) where
+  toFun f b := ∫ a, f (b * φ a) ∂μA
+  map_add' f g := by
+    ext b
+    simp only [Pi.add_apply]
+    apply integral_add
+    · exact (twist H f b).integrable
+    · exact (twist H g b).integrable
+  map_smul' x f := by
+    ext b
+    simp only [Pi.smul_apply]
+    apply integral_smul
+
+noncomputable def average₀_eq (f : CompactlySupportedContinuousMap B E) {b₁ b₂ : B} (h : ψ b₁ = ψ b₂) :
+    average₀ H μA hμA f b₁ = average₀ H μA hμA f b₂ := by
   rw [← inv_mul_eq_one, ← map_inv, ← map_mul] at h
   obtain ⟨a, ha⟩ := H.exact.ge h
   rw [eq_inv_mul_iff_mul_eq] at ha
-  simp_rw [← ha, average₀, mul_assoc, ← map_mul]
+  simp [← ha, average₀, mul_assoc, ← map_mul]
   exact (integral_mul_left_eq_self _ a).symm
 
-noncomputable def average₀_add (f g : CompactlySupportedContinuousMap B E) :
-    average₀ φ μA (f + g) = average₀ φ μA f + average₀ φ μA g := by
-  ext b
-  simp only [average₀, Pi.add_apply]
-  apply integral_add
-  · exact (twist H f b).integrable
-  · exact (twist H g b).integrable
-
-noncomputable def average₀_smul (x : ℝ) (f : B → E) :
-    average₀ φ μA (x • f) = x • average₀ φ μA f := by
-  ext b
-  simp only [average₀, Pi.smul_apply]
-  apply integral_smul
-
 noncomputable def average₀_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
-    average₀ φ μA f ≤ average₀ φ μA g := by
+    average₀ H μA hμA f ≤ average₀ H μA hμA g := by
   rw [Pi.le_def]
   intro b
   simp only [average₀]
@@ -548,7 +544,7 @@ noncomputable def average₀_mono (f g : CompactlySupportedContinuousMap B ℝ) 
 -- upgrade to linear map?
 noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     CompactlySupportedContinuousMap C E where
-  toFun := fun c ↦ average₀ φ μA f (Function.invFun ψ c)
+  toFun := fun c ↦ average₀ H μA hμA f (Function.invFun ψ c)
   hasCompactSupport' := by
     have h := f.hasCompactSupport
     rw [← exists_compact_iff_hasCompactSupport] at h ⊢
@@ -565,8 +561,8 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     apply H.exact.le
     use a
   continuous_toFun := by
-    have average_apply (f : B → E) (b : B) :
-        average₀ φ μA f (Function.invFun ψ (ψ b)) = average₀ φ μA f b :=
+    have average_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
+        average₀ H μA hμA f (Function.invFun ψ (ψ b)) = average₀ H μA hμA f b :=
       average₀_eq H μA hμA f Function.apply_invFun_apply
     rw [← H.isOpenQuotientMap.continuous_comp_iff]
     change Continuous fun c ↦ _
@@ -580,6 +576,7 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     let p : B → Lp E 1 μA := fun b ↦ MemLp.toLp (p₀ b) (hp₀ b)
     have key (b : B) : ∫ a, p b a ∂μA = ∫ a, f (b * φ a) ∂μA :=
       integral_congr_ae (hp₀ b).coeFn_toLp
+    simp only [LinearMap.coe_mk, AddHom.coe_mk]
     simp only [← key]
     suffices Continuous p by
       exact continuous_integral.comp this
@@ -682,7 +679,7 @@ noncomputable def average_zero :
 noncomputable def average_add (f g : CompactlySupportedContinuousMap B E) :
     average H μA hμA (f + g) = average H μA hμA f + average H μA hμA g := by
   ext c
-  simp only [average, Pi.add_apply, average₀_add H]
+  simp only [average, Pi.add_apply, map_add]
   simp
 
 noncomputable def average_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
@@ -692,11 +689,11 @@ noncomputable def average_mono (f g : CompactlySupportedContinuousMap B ℝ) (h 
 noncomputable def average_smul (x : ℝ) (f : CompactlySupportedContinuousMap B E) :
     average H μA hμA (x • f) = x • average H μA hμA f := by
   ext c
-  simp [average, average₀_smul]
+  simp [average, map_smul]
 
 include H hμA in
 theorem average_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
-    average H μA hμA f (ψ b) = average₀ φ μA f b :=
+    average H μA hμA f (ψ b) = average₀ H μA hμA f b :=
   average₀_eq H μA hμA f Function.apply_invFun_apply
 
 open Filter
@@ -862,7 +859,8 @@ theorem main₀ (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
     have key := hc ha ha₀ (by simp [this])
     simpa [H.isClosedEmbedding.injective.eq_iff] using key
   simp only [average, average₀]
-  simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk, ge_iff_le]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, CompactlySupportedContinuousMap.coe_mk,
+    ContinuousMap.coe_mk, ge_iff_le]
   rw [← MeasureTheory.setIntegral_support, hc, integral_singleton, smul_eq_mul,
     real_def, haar_singleton]
   rw [mul_le_iff_le_one_right]
