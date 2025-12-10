@@ -507,10 +507,10 @@ noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
 variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
   [NormedSpace ℝ E]
 
-theorem integral_pullback_invFun (f : CompactlySupportedContinuousMap B E) (b : B) :
+theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     ∫ a, H.pullback f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, H.pullback f b a ∂μA := by
   have h : ψ ((Function.invFun ψ (ψ b))⁻¹ * b) = 1 := by simp [Function.apply_invFun_apply]
-  rw [← MonoidHom.mem_ker, ← H.exact] at h
+  rw [← ψ.mem_ker, ← H.exact] at h
   obtain ⟨a, ha⟩ := h
   rw [← integral_mul_left_eq_self _ a]
   simp [pullback, ha, mul_assoc]
@@ -522,63 +522,50 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     CompactlySupportedContinuousMap C E where
   toFun := fun c ↦ ∫ a, pullback H f (Function.invFun ψ c) a ∂μA
   hasCompactSupport' := by
-    have h := f.hasCompactSupport
-    rw [← exists_compact_iff_hasCompactSupport] at h ⊢
-    obtain ⟨K, hK, hf⟩ := h
-    refine ⟨ψ '' K, hK.image H.isOpenQuotientMap.continuous, fun x hx ↦ ?_⟩
+    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
+    refine exists_compact_iff_hasCompactSupport.mp
+      ⟨ψ '' K, hK.image H.isOpenQuotientMap.continuous, fun x hx ↦ ?_⟩
     suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this, pullback]
     intro a
     apply hf
     contrapose! hx
     refine ⟨_, hx, ?_⟩
-    rw [map_mul]
-    rw [Function.rightInverse_invFun H.isOpenQuotientMap.surjective, mul_eq_left]
-    apply H.exact.le
+    rw [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective, mul_eq_left,
+      ← ψ.mem_ker, ← H.exact]
     use a
   continuous_toFun := by
-    rw [← H.isOpenQuotientMap.continuous_comp_iff]
-    change Continuous fun c ↦ _
-    simp only [Function.comp_apply, integral_pullback_invFun]
-    let p₀ : B → A → E := fun b a ↦ f (b * φ a)
-    have hp₀ (b : B) : MemLp (p₀ b) 1 μA := by
-      apply Continuous.memLp_of_hasCompactSupport
-      · exact (pullback H f b).continuous
-      · exact (pullback H f b).hasCompactSupport
-    let p : B → Lp E 1 μA := fun b ↦ MemLp.toLp (p₀ b) (hp₀ b)
-    have key (b : B) : ∫ a, p b a ∂μA = ∫ a, f (b * φ a) ∂μA :=
-      integral_congr_ae (hp₀ b).coeFn_toLp
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, pullback]
-    simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.coe_mk]
-    simp only [← key]
-    suffices Continuous p by
+    rw [← H.isOpenQuotientMap.continuous_comp_iff, Function.comp_def]
+    simp only [integral_pullback_invFun_apply]
+    let p : B → A → E := fun b a ↦ f (b * φ a)
+    have hp (b : B) : MemLp (p b) 1 μA :=
+      (pullback H f b).continuous.memLp_of_hasCompactSupport (pullback H f b).hasCompactSupport
+    suffices Continuous (fun b ↦ MemLp.toLp (p b) (hp b)) from by
+      refine (continuous_congr (fun b ↦ integral_congr_ae (hp b).coeFn_toLp)).mp ?_
       exact continuous_integral.comp this
-    simp only [p, p₀]
-    let := IsTopologicalGroup.rightUniformSpace B -- or perhaps left
-    have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
-    rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
+    simp only [p]
+    let := IsTopologicalGroup.rightUniformSpace B
     rw [Metric.continuous_iff']
     intro b ε hε
     obtain ⟨U₀, hU₀, hb⟩ := exists_compact_mem_nhds b
     have hf₀ := f.hasCompactSupport
     rw [← exists_compact_iff_hasCompactSupport] at hf₀
     obtain ⟨K, hK, hf₀⟩ := hf₀
-    let prod : Set B := U₀⁻¹ * K
-    let preim : Set A := φ ⁻¹' prod
-    have hpreim : IsCompact preim := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
-    let V₀ := μA preim
-    have hV₀' : V₀ < ⊤ := hpreim.measure_lt_top
-    let v : ℝ := if V₀ = 0 then 1 else (ε / ENNReal.toReal (μA preim)) / 2
-    have hv : 0 < v := by
-      simp only [v]
-      split_ifs with h
-      · exact one_pos
-      · exact div_pos (div_pos hε (ENNReal.toReal_pos h hV₀'.ne)) two_pos
+    let S : Set A := φ ⁻¹' (U₀⁻¹ * K)
+    have hS : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
+    let V₀ := μA S
+    have hV₀' : V₀ < ⊤ := hS.measure_lt_top
+    have : ∃ v : ℝ, 0 < v ∧ v * ENNReal.toReal V₀ < ε := by
+      by_cases h : V₀ = 0
+      · exact ⟨1, one_pos, by simpa [h]⟩
+      · replace h := ENNReal.toReal_pos h hV₀'.ne
+        refine ⟨(ε / 2) / ENNReal.toReal (μA S), div_pos (div_pos hε two_pos) h, ?_⟩
+        rw [div_mul_cancel₀ _ h.ne']
+        exact half_lt_self hε
+    obtain ⟨v, hv0, hv⟩ := this
     simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
-    specialize ha _ (Metric.dist_mem_uniformity hv)
-    simp only [Filter.eventually_iff] at ha ⊢
-    change _ ∈ Filter.comap _ _ at ha
-    rw [Filter.mem_comap] at ha
-    obtain ⟨U, hU, hf⟩ := ha
+    have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
+    rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
+    obtain ⟨U, hU, hf⟩ := ha _ (Metric.dist_mem_uniformity hv0)
     simp [Set.subset_def] at hf
     replace hU := inv_mem_nhds_one B hU
     have hU' := mul_singleton_mem_nhds_of_nhds_one b hU
@@ -593,7 +580,7 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     dsimp
     apply ENNReal.toReal_lt_of_lt_ofReal
     rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm]
-    rw [← MeasureTheory.setLIntegral_eq_of_support_subset (s := preim)]
+    rw [← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
     · have : ∀ x : A, ‖((fun a ↦ f (c * e * φ a)) - fun a ↦ f (e * φ a)) x‖ₑ ≤ ENNReal.ofReal v := by
         intro x
         simp only [dist_eq_norm_sub] at this
@@ -606,17 +593,9 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
         exact this x
       · rw [lintegral_const]
         simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-        simp only [v]
-        split_ifs with h
-        · simp only [V₀] at h
-          simpa [h]
-        · change _ * V₀ < _
-          rw [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul (by positivity)]
-          rw [ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
-          simp only [V₀]
-          field_simp
-          grw [div_self_le_one]
-          norm_num
+        change _ * V₀ < _
+        rwa [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
+          ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
     · intro x hx
       have : f (c * e * φ x) ≠ 0 ∨ f (e * φ x) ≠ 0 := by
         contrapose! hx
@@ -672,7 +651,7 @@ noncomputable def average_smul (x : ℝ) (f : CompactlySupportedContinuousMap B 
 include H in
 theorem average_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     average H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
-  integral_pullback_invFun H μA f b
+  integral_pullback_invFun_apply H μA f b
 
 open Filter
 
