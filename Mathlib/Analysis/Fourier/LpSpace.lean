@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 
-# The Fourier transform on L^2
+# The Fourier transform on L^p
 
 In this file we define the Fourier transform on `L2` as a linear isometry equivalence.
 
@@ -31,8 +31,7 @@ noncomputable section
 
 section FourierTransform
 
-variable
-  {E F : Type*}
+variable {E F : Type*}
   [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
