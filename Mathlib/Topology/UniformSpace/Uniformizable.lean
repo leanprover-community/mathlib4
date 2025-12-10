@@ -44,7 +44,7 @@ variable [UniformSpace α]
 space, we recursively construct pairs of a closed set `c` contained in an open set `u`
 satisfying the following predicate: the closed set is the closure of the ball centered
 at `x` associated to some open entourage `uc`, the open set is the ball centered at `x`
-associated to some entourage `uu`, such that `uc` and `uu` are separated by some entourage `s`
+associated to some entourage `uu`, such that `uu` is a thickening of `uc` by some entourage `s`
 in the sense that the composition `s ○ uc ○ s` is contained in `uu`. -/
 def P (c : Set α) (u : Set α) :=
   ∃ (x : α) (uc uu s : SetRel α α),
