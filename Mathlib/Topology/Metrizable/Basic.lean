@@ -22,7 +22,7 @@ assert_not_exists AddMonoidWithOne
 
 @[expose] public section
 
-open Filter Set Topology
+open Filter Set Topology Uniformity
 
 namespace TopologicalSpace
 
@@ -30,7 +30,10 @@ variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSp
   [∀ i, TopologicalSpace (A i)]
 
 /-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
-compatible with the topology. To endow such a space with a compatible uniformity, use
+compatible with the topology. To minimize imports, we implement this class in terms of the
+existence of a countably generated unifomity inducing the topology, which is mathematically
+equivalent.
+To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
 To endow such a space with a compatible distance, use
 `letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`. -/
@@ -46,15 +49,20 @@ instance (priority := 100) _root_.UniformSpace.pseudoMetrizableSpace {X : Type*}
 /-- Construct on a pseudometrizable space a countably generated uniformity
 compatible with the topology. Use `pseudoMetrizableSpaceUniformity_countably_generated` for a proof
 that this uniformity is countably generated. -/
-noncomputable def pseudoMetrizableSpaceUniformity (X : Type*) [TopologicalSpace X]
+-- see note [reducible non-instances]
+noncomputable abbrev pseudoMetrizableSpaceUniformity (X : Type*) [TopologicalSpace X]
     [h : PseudoMetrizableSpace X] : UniformSpace X :=
   h.exists_countably_generated.choose.replaceTopology
     h.exists_countably_generated.choose_spec.1.symm
 
+example {X : Type*} [t : TopologicalSpace X] [PseudoMetrizableSpace X] :
+    (pseudoMetrizableSpaceUniformity X).toTopologicalSpace = t := by
+  with_reducible_and_instances rfl
+
 /-- The uniformity coming from `pseudoMetrizableSpaceUniformity` is countably generated.. -/
 theorem pseudoMetrizableSpaceUniformity_countably_generated
     (X : Type*) [TopologicalSpace X] [h : PseudoMetrizableSpace X] :
-    (@uniformity X (pseudoMetrizableSpaceUniformity X)).IsCountablyGenerated :=
+    𝓤[pseudoMetrizableSpaceUniformity X].IsCountablyGenerated :=
   h.exists_countably_generated.choose_spec.2
 
 instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableSpace Y] :
@@ -100,7 +108,10 @@ instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularS
   inferInstance
 
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
-topology. To endow such a space with a compatible uniformity, use
+topology. To minimize imports, we implement this class in terms of the existence of a
+countably generated unifomity inducing the topology, which is mathematically
+equivalent.
+To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
 To endow such a space with a compatible distance, use
 `letI : MetricSpace X := TopologicalSpace.metrizableSpaceMetric X`. -/
