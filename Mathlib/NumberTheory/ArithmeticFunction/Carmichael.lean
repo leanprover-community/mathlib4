@@ -126,6 +126,7 @@ theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :
   rw [carmichael_eq_exponent', ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
   exact IsCyclic.iff_exponent_eq_card.mp <| ZMod.isCyclic_units_two_pow_iff n |>.mpr hn
 
+/-- Note that `2 ^ (n - 1) = 1` when `n = 0`. -/
 @[simp]
 theorem carmichael_two_pow_of_le_two {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 1) := by
@@ -136,6 +137,7 @@ theorem carmichael_two_pow_of_le_two {n : ℕ} (hn : n ≤ 2) :
   · rw [totient_prime_pow prime_two <| by lia]
     simp
 
+/-- Note that `2 ^ (n - 2) = 1` when `n ≤ 1`. -/
 @[simp]
 theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
     Carmichael (2 ^ n) = 2 ^ (n - 2) := by
