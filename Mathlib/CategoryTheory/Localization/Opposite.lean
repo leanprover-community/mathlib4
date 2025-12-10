@@ -77,6 +77,8 @@ lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
 
+@[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
+
 end Functor
 
 namespace Localization
