@@ -476,23 +476,12 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
 
 end
 
-/-
-QuotientGroup.integral_eq_integral_automorphize.{u_1, u_2} {G : Type u_1} [Group G] [MeasurableSpace G]
-  [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] {μ : Measure G} {Γ : Subgroup G} {𝓕 : Set G}
-  (h𝓕 : IsFundamentalDomain (↥Γ.op) 𝓕 μ) [Countable ↥Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] {E : Type u_2}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E} (hf₁ : Integrable f μ)
-  (hf₂ : AEStronglyMeasurable (automorphize f) (Measure.map mk (μ.restrict 𝓕))) :
-  ∫ (x : G), f x ∂μ = ∫ (x : G ⧸ Γ), automorphize f x ∂Measure.map mk (μ.restrict 𝓕)
--/
-
--- look into dropping assumptions
-
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [IsTopologicalGroup A] [IsTopologicalGroup B] [IsTopologicalGroup C]
   [MeasurableSpace A] [MeasurableSpace B] [MeasurableSpace C]
   [BorelSpace A] [BorelSpace B] [BorelSpace C]
-  [LocallyCompactSpace A] [LocallyCompactSpace B] [LocallyCompactSpace C]
+  [LocallyCompactSpace B]
   (φ : A →* B) (ψ : B →* C) (hψ : Continuous ψ)
   (h1 : Topology.IsClosedEmbedding φ) (h2 : ψ.ker ≤ φ.range) (h3 : φ.range ≤ ψ.ker)
   (h4 : IsOpenQuotientMap ψ)
