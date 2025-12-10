@@ -7,20 +7,6 @@ module
 
 public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
-/-!
-# Second-countability of pseudometrizable Lindelöf spaces
-
-Factored out from `Mathlib/Topology/Compactness/Lindelof.lean`
-to avoid circular dependencies.
--/
-
-@[expose] public section
-
-variable {X : Type*} [TopologicalSpace X]
-
-open Set Filter Topology TopologicalSpace
-
-instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
-    [LindelofSpace X] : SecondCountableTopology X :=
-  inferInstance
+deprecated_module (since := "2025-12-10")
