@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
@@ -571,7 +572,24 @@ include h2 hμA in
 theorem average_apply (f : B → E) (b : B) : average φ ψ μA f (ψ b) = average₀ φ μA f b :=
   average₀_eq φ ψ h2 μA hμA f Function.apply_invFun_apply
 
-include hμA hμC h2 h3 h4 in
+open Filter
+
+-- might not be necessary
+def IsTopologicalGroup.leftUniformSpace (G : Type*) [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] : UniformSpace G where
+  uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (nhds 1)
+  symm :=
+    have : Tendsto (fun p : G × G ↦ (p.1⁻¹ * p.2)⁻¹) (comap (fun p : G × G ↦ p.1⁻¹ * p.2) (nhds 1))
+      (nhds 1⁻¹) := tendsto_id.inv.comp tendsto_comap
+    by simpa [tendsto_comap_iff]
+  comp := Tendsto.le_comap fun U H ↦ by
+    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
+    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
+    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
+    simpa using V_mul _ hz₂ _ hz₁
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
+
+include hμA hμC h1 h2 h3 h4 in
 theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
     Integrable (average φ ψ μA f) μC := by
   change Integrable (fun c ↦ average φ ψ μA f c) μC
@@ -581,13 +599,54 @@ theorem average_integrable (f : CompactlySupportedContinuousMap B E) :
     simp only [Function.comp_apply, average_apply φ ψ h2 μA]
     simp only [average₀]
     let p₀ : B → A → E := fun b a ↦ f (b * φ a)
-    have hp₀ : ∀ b : B, MemLp (p₀ b) 1 μA := sorry
+    have hp₀ (b : B) : MemLp (p₀ b) 1 μA := by
+      apply Continuous.memLp_of_hasCompactSupport
+      · exact (twist φ h1 f b).continuous
+      · exact (twist φ h1 f b).hasCompactSupport
     let p : B → Lp E 1 μA := fun b ↦ MemLp.toLp (p₀ b) (hp₀ b)
     have key (b : B) : ∫ a, p b a ∂μA = ∫ a, f (b * φ a) ∂μA :=
       integral_congr_ae (hp₀ b).coeFn_toLp
     simp only [← key]
     suffices Continuous p by
       exact continuous_integral.comp this
+    simp only [p, p₀]
+    let := IsTopologicalGroup.rightUniformSpace B -- or perhaps left
+    have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
+    rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
+    rw [Metric.continuous_iff']
+    intro b ε hε
+    obtain ⟨U₀, hU₀, hb⟩ := exists_compact_mem_nhds b
+    have hf₀ := f.hasCompactSupport
+    rw [← exists_compact_iff_hasCompactSupport] at hf₀
+    obtain ⟨K, hK, hf₀⟩ := hf₀
+    let prod : Set B := U₀⁻¹ * K
+    let preim : Set A := φ ⁻¹' prod
+    have hpreim : IsCompact preim := h1.isCompact_preimage (hU₀.inv.mul hK)
+    let V₀ := μA preim
+    have hV₀ : 0 < V₀ := by
+      -- doesn't actually matter, since otherwise ε / V is infinite
+      sorry
+    have hV₀' : V₀ < ⊤ := hpreim.measure_lt_top
+    let V : ℝ := ENNReal.toReal (μA preim)
+    have hV : 0 < V := ENNReal.toReal_pos hV₀.ne' hV₀'.ne
+    simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
+    specialize ha _ (Metric.dist_mem_uniformity (div_pos hε hV))
+    simp only [Filter.eventually_iff] at ha ⊢
+    change _ ∈ Filter.comap _ _ at ha
+    rw [Filter.mem_comap] at ha
+    obtain ⟨U, hU, hf⟩ := ha
+    simp [Set.subset_def] at hf
+    replace hU := inv_mem_nhds_one B hU
+    have hU' := mul_singleton_mem_nhds_of_nhds_one b hU
+    refine Filter.mem_of_superset hU' ?_
+    rintro - ⟨c, d, e, rfl, g, rfl⟩
+    have : ∀ a : A, dist (f (c * e * φ a)) (f (e * φ a)) < ε / V := by
+      intro a
+      simp only [Set.mem_inv] at d
+      specialize hf (c * e * φ a) (e * φ a)
+      simpa [d] using hf
+    dsimp
+    -- sort of need a uniform bound on how much supp f (b * φ a) meets A
     sorry
   have hs : HasCompactSupport (fun c ↦ average φ ψ μA f c) := by
     have h := f.hasCompactSupport
@@ -614,8 +673,8 @@ theorem integrate_add (f g : CompactlySupportedContinuousMap B E) :
     integrate φ ψ μA μC (f + g) = integrate φ ψ μA μC f + integrate φ ψ μA μC g := by
   simp only [integrate, average_add φ ψ h1, Pi.add_apply]
   apply integral_add
-  · exact average_integrable φ ψ h2 h3 h4 μA μC hμA hμC f
-  · exact average_integrable φ ψ h2 h3 h4 μA μC hμA hμC g
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC f
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC g
 
 theorem integrate_smul (x : ℝ) (f : B → E) :
     integrate φ ψ μA μC (x • f) = x • integrate φ ψ μA μC f := by
@@ -627,11 +686,10 @@ theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ 
     integrate φ ψ μA μC f ≤ integrate φ ψ μA μC g := by
   simp only [integrate]
   apply integral_mono
-  · exact average_integrable φ ψ h2 h3 h4 μA μC hμA hμC f
-  · exact average_integrable φ ψ h2 h3 h4 μA μC hμA hμC g
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC f
+  · exact average_integrable φ ψ h1 h2 h3 h4 μA μC hμA hμC g
   · exact average_mono φ ψ h1 μA hμA f g h
 
-include h2 h3 h4 in
 noncomputable def map : CompactlySupportedContinuousMap B ℝ →ₚ[ℝ] ℝ where
   toFun f := integrate φ ψ μA μC f
   map_add' f g := integrate_add φ ψ h1 h2 h3 h4 μA μC hμA hμC f g
