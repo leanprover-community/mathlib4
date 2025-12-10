@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Completely (pseudo)metrizable spaces
@@ -142,6 +143,34 @@ theorem _root_.IsClosed.isCompletelyPseudoMetrizableSpace
     [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
     {s : Set X} (hs : IsClosed s) : IsCompletelyPseudoMetrizableSpace s :=
   hs.isClosedEmbedding_subtypeVal.IsCompletelyPseudoMetrizableSpace
+
+/-- An open subset of a completely pseudometrizable space is also completely pseudometrizable. -/
+theorem _root_.IsOpen.isCompletelyPseudoMetrizableSpace
+    [hX : TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
+    {s : Set X} (hs : IsOpen s) : IsCompletelyPseudoMetrizableSpace s := by
+  letI := upgradeIsCompletelyPseudoMetrizable X
+  let ms : PseudoMetricSpace s := by sorry
+  let cs : @CompleteSpace s ms.toUniformSpace := by sorry
+  have eq : instTopologicalSpaceSubtype (p := s) = ms.toUniformSpace.toTopologicalSpace := by sorry
+  convert @PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace s ms cs
+
+/-- An Gδ subset of a completely pseudometrizable space is also completely pseudometrizable. -/
+theorem _root_.IsGδ.isCompletelyPseudoMetrizableSpace
+    [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
+    {s : Set X} (hs : IsGδ s) : IsCompletelyPseudoMetrizableSpace s :=
+  sorry
+
+lemma extend_to_Gδ [TopologicalSpace X] [TopologicalSpace.PseudoMetrizableSpace X] {A : Set X}
+    {f : X → Y} [TopologicalSpace Y] [IsCompletelyPseudoMetrizableSpace Y]
+    (hf : ContinuousOn f A) :
+    ∃ (g : X → Y) (A' : Set X), ContinuousOn g A' ∧
+    ∀ a ∈ A, f a = g a ∧ IsGδ A' ∧ A ⊆ A' ∧ A' ⊆ closure A := by
+  sorry
+
+/-- A completely pseudometrizable set in a metric space is Gδ. -/
+theorem isGδ [TopologicalSpace X] [TopologicalSpace.PseudoMetrizableSpace X]
+    {s : Set X} (hs : IsCompletelyPseudoMetrizableSpace s) : IsGδ s :=
+  sorry
 
 end IsCompletelyPseudoMetrizableSpace
 
