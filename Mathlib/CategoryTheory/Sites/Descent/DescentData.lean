@@ -295,7 +295,6 @@ def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
       pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) _ _ rfl (by aesop) (by aesop),
       map_eq_pullHom_assoc _ _ (f₁ ≫ p' j₁) (f₁ ≫ p'' j₁) (by aesop) (by aesop),
       map_eq_pullHom _ _ (f₂ ≫ p' j₂) (f₂ ≫ p'' j₂) (by aesop) (by aesop)]
-    dsimp
     simp only [Iso.hom_inv_id_app_assoc, Category.assoc, NatIso.cancel_natIso_inv_left,
       NatIso.cancel_natIso_hom_right_assoc, op_comp, Quiver.Hom.comp_toLoc]
     rw [pullHom_hom _ _ _ (q ≫ p) (by rw [w, reassoc_of% hf₁]) _ _
