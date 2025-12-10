@@ -34,8 +34,8 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
   locallyIntegrable : LocallyIntegrableOn f Ω μ
   eq_ofFun : T = ofFun Ω f μ
 
-lemma isRepresentedBy_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') (hf : IsRepresentedBy T f μ) :
-    IsRepresentedBy T f' μ := by
+lemma isRepresentedBy_of_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f')
+    (hf : IsRepresentedBy T f μ) : IsRepresentedBy T f' μ := by
   rcases hf with ⟨h1, h2⟩
   refine ⟨fun x hx ↦ ?_, by rwa [h2, ofFun_ae_congr]⟩
   obtain ⟨s, hs, hsf⟩ := h1 x hx
@@ -48,7 +48,7 @@ lemma isRepresentedBy_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') (hf 
 
 lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (hf : f =ᵐ[μ.restrict Ω] f') :
     IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ :=
-  ⟨isRepresentedBy_ae T hf, isRepresentedBy_ae T hf.symm⟩
+  ⟨isRepresentedBy_of_ae T hf, isRepresentedBy_of_ae T hf.symm⟩
 
 lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ where
   locallyIntegrable := locallyIntegrable_zero.locallyIntegrableOn _
@@ -91,6 +91,11 @@ variable (Ω) in
 this is 0 if the function is not locally integrable -/
 def weakDeriv (f : E → F) (μ : Measure E) : 𝓓'(Ω, E →L[ℝ] F) :=
   fderivCLM (ofFun Ω f μ)
+
+lemma weakDeriv_congr_ae /- (f f' : E → F) -/ (μ : Measure E) (h : f =ᵐ[μ] f') :
+    weakDeriv Ω f μ = weakDeriv Ω f' μ :=
+  sorry
+
 
 -- useful on its own?
 lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrableOn f Ω μ) :
@@ -139,6 +144,7 @@ lemma weakDeriv_const (a : F) : weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
   -- now integrate by parts...
   sorry
 
+
 -- /-- `g` represents distribution `f` and is in `L^p`. -/
 -- structure Distribution.MemLpWith (f : 𝓓'(Ω, F)) (g : E → F) (p : ℝ≥0∞) (μ : Measure E) :
 --     Prop where
@@ -157,9 +163,13 @@ variable (Ω) in
 def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop :=
   IsRepresentedBy (weakDeriv Ω f μ) g μ
 
-lemma hasWeakDeriv_congr_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F) (μ : Measure E) :
-    HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g μ := by
+lemma hasWeakDeriv_of_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F)
+    (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω f' g μ := by
   sorry
+
+lemma hasWeakDeriv_congr_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F) :
+    HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g μ :=
+  ⟨fun hf ↦ hasWeakDeriv_of_ae h g hf, fun hf ↦ hasWeakDeriv_of_ae h.symm g hf⟩
 
 @[simp]
 lemma hasWeakDeriv_zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by

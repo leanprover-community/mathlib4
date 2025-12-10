@@ -60,7 +60,6 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
   {n k : ℕ∞}
 
 variable (Ω F n) in
@@ -456,7 +455,9 @@ end Topology
 
 section postcomp
 
-variable [SMulCommClass ℝ 𝕜 F] [SMulCommClass ℝ 𝕜 F']
+variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+  [NormedSpace 𝕂 F'] [SMulCommClass ℝ 𝕜 F']
+variable [SMulCommClass ℝ 𝕜 F]
 
 -- Note: generalizing this to a semilinear setting would require a semilinear version of
 -- `CompatibleSMul`.
