@@ -12,8 +12,8 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 /-!
 # Goursat's lemma for submodules
 
-Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully on
-to both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
+Let `M, N` be modules over a ring `R`. If `L` is a submodule of `M × N` which projects fully onto
+both factors, then there exist submodules `M' ≤ M` and `N' ≤ N` such that `M' × N' ≤ L` and the
 image of `L` in `(M ⧸ M') × (N ⧸ N')` is the graph of an isomorphism `M ⧸ M' ≃ₗ[R] N ⧸ N'`.
 Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isomorphism
 `M ⧸ M' ≃ₗ[R] N ⧸ N'`.

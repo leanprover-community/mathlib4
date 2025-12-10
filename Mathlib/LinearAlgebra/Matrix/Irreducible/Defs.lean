@@ -17,7 +17,7 @@ matrices.
 
 We associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j` exists if and only
 if the entry `A i j` is strictly positive. This allows translating algebraic properties of the
-matrix (like powers) into graph-theoretic properties of its quiver (like theexistence of paths).
+matrix (like powers) into graph-theoretic properties of its quiver (like the existence of paths).
 
 ## Main definitions
 

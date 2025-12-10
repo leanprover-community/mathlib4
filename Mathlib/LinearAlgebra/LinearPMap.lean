@@ -23,7 +23,7 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
 
-Partially defined maps are currently used in `Mathlib` to prove Hahn-Banach theorem
+Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.

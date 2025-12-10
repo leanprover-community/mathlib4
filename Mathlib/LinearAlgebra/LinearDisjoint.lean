@@ -103,7 +103,7 @@ The following is the second equivalent characterization of linear disjointness:
   their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
 
-  These results are stated using bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a not bundled
+  These results are stated using a bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a non-bundled
   version (i.e. `a : S` with `ha : a ∈ M ⊓ N`), you may use `LinearIndependent.of_comp` and
   `FinVec.map_eq` (in `Mathlib/Data/Fin/Tuple/Reflection.lean`),
   see the following code snippet:
