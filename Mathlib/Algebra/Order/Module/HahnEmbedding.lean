@@ -58,7 +58,7 @@ If `ArchimedeanClass M` is finite, the direct sum is the entire `M` and we are d
 following steps.
 -/
 
-open ArchimedeanClass DirectSum
+open ArchimedeanClass DirectSum HahnSeries
 
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]

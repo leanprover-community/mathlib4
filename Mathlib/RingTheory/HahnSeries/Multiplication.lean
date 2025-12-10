@@ -51,7 +51,7 @@ The following may be useful for composing vertex operators, but they seem to tak
 
 @[expose] public section
 
-open Finset Function Pointwise
+open Finset Function HahnSeries Pointwise
 
 noncomputable section
 
