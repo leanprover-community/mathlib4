@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
 
 /-!
-# Commutation to shifts of functors in two variables
+# Commutation with shifts of functors in two variables
 
 We introduce a typeclass `Functor.CommShift₂Int` for a bifunctor `G : C₁ ⥤ C₂ ⥤ D`
 (with `D` a preadditive category) as the two variable analogue of `Functor.CommShift`.
