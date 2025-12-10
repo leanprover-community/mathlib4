@@ -136,12 +136,6 @@ namespace Polynomial
 
 section Moore
 
--- #32616
-theorem aeval_smul {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (f : R[X])
-    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G) (x : S) :
-    aeval (g • x) f = g • (aeval x f) := by
-  rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
-
 instance temp {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] (f : R[X])
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] :
@@ -157,11 +151,6 @@ theorem rootSet.coe_smul
     [NoZeroSMulDivisors R S] {f : R[X]}
     {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
-
--- #32615
-theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
-    [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
-  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
 theorem Function.Surjective.card_le_card_add_one_iff
     {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
