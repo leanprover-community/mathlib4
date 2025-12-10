@@ -97,8 +97,8 @@ sieves of presieves in `J`.
 -/
 theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
     Presieve.IsSheaf J.toGrothendieck P ↔
-    (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
-      Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
+      (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
+        Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
   · refine fun H _ _ _ _ hR => H.isSheafFor _ _ ?_
     rw [Sieve.generate_sieve]
