@@ -63,8 +63,14 @@ see `IsAlgClosed.splits_domain`.
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
 
-@[deprecated (since := "2025-12-09")]
-alias IsAlgClosed.splits_codomain := IsAlgClosed.splits
+/-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
+
+See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
+-/
+@[deprecated "This is a special case of `IsAlgClosed.splits`." (since := "2025-12-09")]
+theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
+    {f : K →+* k} (p : K[X]) : (p.map f).Splits :=
+  IsAlgClosed.splits (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed. -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
