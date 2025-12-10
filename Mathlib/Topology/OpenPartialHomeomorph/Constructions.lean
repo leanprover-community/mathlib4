@@ -37,7 +37,7 @@ namespace OpenPartialHomeomorph
 variable (e : OpenPartialHomeomorph X Y)
 
 /-!
-## Constants
+## Constants
 
 `PartialEquiv.const` as an open partial homeomorphism
 -/
@@ -118,6 +118,11 @@ theorem prod_eq_prod_of_nonempty'
     {eX eX' : OpenPartialHomeomorph X X'} {eY eY' : OpenPartialHomeomorph Y Y'}
     (h : (eX'.prod eY').source.Nonempty) : eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
   rw [eq_comm, prod_eq_prod_of_nonempty h, eq_comm, @eq_comm _ eY']
+
+theorem prod_symm_trans_prod
+    (e f : OpenPartialHomeomorph X Y) (e' f' : OpenPartialHomeomorph X' Y') :
+    (e.prod e').symm.trans (f.prod f') = (e.symm.trans f).prod (e'.symm.trans f') := by
+  simp
 
 end Prod
 
