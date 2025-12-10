@@ -5,6 +5,7 @@ Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
@@ -54,12 +55,13 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
-  {n : ℕ∞}
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
+  {n k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -126,6 +128,16 @@ protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f 
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
 
+@[fun_prop]
+protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
+  f.contDiff.continuous
+
+theorem differentiable_withOrder (f : 𝓓^{n}(Ω, F)) (hn : 1 ≤ n) : Differentiable ℝ f :=
+  f.contDiff.differentiable (mod_cast hn)
+
+theorem differentiable (f : 𝓓(Ω, F)) : Differentiable ℝ f :=
+  f.contDiff.differentiable (by decide)
+
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
@@ -157,6 +169,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+
+@[simp]
+theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
+    {tsupport_subset : tsupport f ⊆ Ω} :
+    TestFunction.mk f contDiff hasCompactSupport tsupport_subset = f :=
+  rfl
 
 section AddCommGroup
 
@@ -366,3 +384,5 @@ instance : T3Space 𝓓^{n}(Ω, F) :=
 end ToBoundedContinuousFunctionCLM
 
 end TestFunction
+
+end

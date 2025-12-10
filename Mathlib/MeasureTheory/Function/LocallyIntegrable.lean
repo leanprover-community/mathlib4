@@ -175,6 +175,25 @@ protected theorem LocallyIntegrableOn.sub
 protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (-f) s μ := fun x hx ↦ (hf x hx).neg
 
+@[simp] theorem _root_.locallyIntegrableOn_neg_iff {f : X → E} :
+    LocallyIntegrableOn (-f) s μ ↔ LocallyIntegrableOn f s μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
+  convert h.neg; simp
+
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (hf : LocallyIntegrableOn f s μ) (c : 𝕜) :
+    LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
+
+-- See `locallyIntegrableOn_smul_iff` below for the fully general version.
+-- It is placed below to make use of `locallyIntegrableOn_zero`.
+theorem _root_.locallyIntegrableOn_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} {c : 𝕜} (hc : c ≠ 0) :
+    LocallyIntegrableOn (c • f) s μ ↔ LocallyIntegrableOn f s μ := by
+  refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
+  convert hf.smul c⁻¹
+  simp [← smul_assoc, inv_mul_cancel₀ hc]
+
 end LocallyIntegrableOn
 
 /-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
@@ -308,6 +327,14 @@ theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : ε'')) μ :=
 
 theorem locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : ε'')) s μ :=
   locallyIntegrable_zero.locallyIntegrableOn s
+
+@[simp]
+theorem _root_.locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (c : 𝕜) :
+    LocallyIntegrableOn (c • f) s μ ↔ c = 0 ∨ LocallyIntegrableOn f s μ := by
+  by_cases hc : c = 0
+  · simpa [hc] using locallyIntegrableOn_zero
+  · simpa [hc] using locallyIntegrableOn_smul_iff' hc
 
 theorem LocallyIntegrable.indicator {f : X → ε''} (hf : LocallyIntegrable f μ) {s : Set X}
     (hs : MeasurableSet s) : LocallyIntegrable (s.indicator f) μ := by
