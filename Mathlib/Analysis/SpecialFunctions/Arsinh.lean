@@ -79,6 +79,10 @@ theorem sinh_arsinh (x : ℝ) : sinh (arsinh x) = x := by
 theorem cosh_arsinh (x : ℝ) : cosh (arsinh x) = √(1 + x ^ 2) := by
   rw [← sqrt_sq (cosh_pos _).le, cosh_sq', sinh_arsinh]
 
+@[simp]
+theorem tanh_arsinh (x : ℝ) : tanh (arsinh x) = x / √(1 + x ^ 2) := by
+  rw [tanh_eq_sinh_div_cosh, sinh_arsinh, cosh_arsinh]
+
 /-- `sinh` is surjective, `∀ b, ∃ a, sinh a = b`. In this case, we use `a = arsinh b`. -/
 theorem sinh_surjective : Surjective sinh :=
   LeftInverse.surjective sinh_arsinh
