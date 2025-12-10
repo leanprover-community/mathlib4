@@ -816,8 +816,7 @@ def subsingletonEquivDep : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
     (by ext _; simp)
     (by
       ext f
-      have h : update ↑0 i₀ (f i₀) = f := by
-        ext i; rw [Subsingleton.elim i i₀]; simp
+      have h : update (0 : (j : ι) → s j) i₀ (f i₀) = f := update_eq_self i₀ f
       simp [h])
 
 @[simp]
