@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 /-!
-# Algebra isomorphisms in endomorphisms of projective modules are inner
+# Algebra isomorphisms between endomorphisms of projective modules are inner
 
 This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K W`,
 there exists a linear equivalence `T : V ≃ₗ[K] W` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
