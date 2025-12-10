@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Second Baire theorem
@@ -60,25 +61,6 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
       (K 0).isCompact.closure fun n => isClosed_closure
   exact hK_nonempty.mono hK_subset
 
-/-- A dense Gδ subset of a Baire space is Baire. -/
-theorem IsGδ.baireSpace_of_dense [BaireSpace X] (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
-  constructor
-  intro f hof hdf
-  obtain ⟨V, hV⟩ : ∃ V : ℕ → Set X, (∀ n, IsOpen (V n)) ∧ s = ⋂ n, V n := eq_iInter_nat hG
-  obtain ⟨g, hg1, hg2, hg3⟩ : ∃ g : ℕ → Set X, (∀ n, IsOpen (g n)) ∧ (∀ n, Dense (g n)) ∧
-    ∀ n, f n = Subtype.val ⁻¹' g n := by
-    choose g hg1 hg2 hg3 using fun n => exists_open_dense_of_open_dense_subtype hd (hof n) (hdf n)
-    exact ⟨g, hg1, hg2, fun n => (hg3 n).symm⟩
-  have h_inter_dense : Dense (⋂ n, g n ∩ V n) := by
-    exact BaireSpace.baire_property (fun n ↦ g n ∩ V n) (fun n => IsOpen.inter (hg1 n) (hV.1 n))
-      (fun n => (hg2 n).inter_of_isOpen_left (Dense.mono (by simp [hV.2, iInter_subset]) hd)
-      (hg1 n))
-  have h_inter_eq : ⋂ n, g n ∩ V n = ⋂ n, f n := by
-    ext
-    simpa [hg3, hV] using ⟨fun h => ⟨fun i => (h i).1, fun i => (h i).2⟩, fun h n => ⟨h.1 n, h.2 n⟩⟩
-  rw [h_inter_eq] at h_inter_dense
-  exact Subtype.dense_iff.mpr fun a _ ↦ h_inter_dense a
-
 /-- A Gδ subset of a locally compact R₁ space is Baire. -/
 theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) [R1Space X] [LocallyCompactSpace X] :
     BaireSpace s := by
@@ -87,7 +69,8 @@ theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) [R1Space X] [Locally
     · infer_instance
     · exact IsClosed.locallyCompactSpace isClosed_closure
   have h_s_baire : BaireSpace ((↑) ⁻¹' s : Set (closure s)) := IsGδ.baireSpace_of_dense
-    (isGδ_induced continuous_subtype_val hG) (dense_in_closure s)
+    (isGδ_induced continuous_subtype_val hG)
+    (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])
   -- Since `s` is homeomorphic to `s'`, we can conclude that `s` is a Baire space.
   have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := by
     refine' ⟨ _, _, _ ⟩;
