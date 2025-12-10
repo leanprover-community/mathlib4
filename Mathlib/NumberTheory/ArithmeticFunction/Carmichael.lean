@@ -86,7 +86,6 @@ theorem carmichael_dvd {a b : ℕ} (h : a ∣ b) : Carmichael a ∣ Carmichael b
   have : NeZero b := ⟨hb⟩
   exact MonoidHom.exponent_dvd <| ZMod.unitsMap_surjective h
 
-@[simp]
 theorem carmichael_lcm (a b : ℕ) :
     Carmichael (Nat.lcm a b) = Nat.lcm (Carmichael a) (Carmichael b) := by
   by_cases! h₀ : a = 0 ∨ b = 0
