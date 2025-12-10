@@ -331,14 +331,8 @@ noncomputable def postcompEquiv {X Y Z : C}
     SmallShiftedHom.{w} W X Y a ≃ SmallShiftedHom.{w} W X Z a where
   toFun α := α.comp (mk₀ _ _ rfl f) (zero_add _)
   invFun β := β.comp (mk₀Inv _ rfl _ hf) (zero_add _)
-  left_inv α := by
-    dsimp
-    rw [comp_assoc _ _ _ _ _ (zero_add 0) (by simp)]
-    simp
-  right_inv β := by
-    dsimp
-    rw [comp_assoc _ _ _ _ _ (zero_add 0) (by simp)]
-    simp
+  left_inv α := by simp [comp_assoc]
+  right_inv β := by simp [comp_assoc]
 
 variable {W} in
 /-- The precomposition on the types `SmallShiftedHom W` with a morphism
@@ -357,14 +351,8 @@ noncomputable def precompEquiv {X Y Z : C}
     SmallShiftedHom.{w} W Y Z a ≃ SmallShiftedHom.{w} W X Z a where
   toFun α := (mk₀ _ _ rfl f).comp α (add_zero _)
   invFun β := (mk₀Inv _ rfl _ hf).comp β (add_zero _)
-  left_inv α := by
-    dsimp
-    rw [← comp_assoc _ _ _ _ (add_zero 0) _ (by simp)]
-    simp
-  right_inv β  := by
-    dsimp
-    rw [← comp_assoc _ _ _ _ (add_zero 0) _ (by simp)]
-    simp
+  left_inv α := by simp [← comp_assoc]
+  right_inv β  := by simp [← comp_assoc]
 
 section ChangeOfUniverse
 
