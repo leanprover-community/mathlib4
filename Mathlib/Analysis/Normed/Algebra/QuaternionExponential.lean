@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Quaternion
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+module
+
+public import Mathlib.Analysis.Quaternion
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
 # Lemmas about `NormedSpace.exp` on `Quaternion`s
@@ -21,6 +23,8 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
   the real part.
 
 -/
+
+@[expose] public section
 
 open scoped Quaternion Nat
 

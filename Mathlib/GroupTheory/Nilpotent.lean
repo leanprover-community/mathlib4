@@ -3,10 +3,12 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -73,6 +75,8 @@ are actually central series. Note that the fact that the upper and lower central
 are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
+
+@[expose] public section
 
 
 open Subgroup
@@ -496,7 +500,7 @@ theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
   | succ d hd =>
     rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
     refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
+      (fun y z _ _ hy hz => by simp [map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr

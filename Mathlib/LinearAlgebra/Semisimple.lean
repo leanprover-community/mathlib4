@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.RingTheory.Artinian.Instances
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.RingTheory.Artinian.Instances
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms
@@ -39,6 +41,8 @@ In finite dimensions over a field:
 * Triangularizable iff diagonalisable for semisimple endomorphisms
 
 -/
+
+@[expose] public section
 
 open Set Function Polynomial
 

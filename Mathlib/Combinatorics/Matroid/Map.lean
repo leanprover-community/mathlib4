@@ -3,8 +3,10 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Constructions
-import Mathlib.Data.Set.Notation
+module
+
+public import Mathlib.Combinatorics.Matroid.Constructions
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Maps between matroids
@@ -100,6 +102,8 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 * [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

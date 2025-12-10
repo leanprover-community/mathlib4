@@ -3,13 +3,17 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
 # The category of bimodule objects over a pair of monoid objects.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -719,19 +723,13 @@ theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerLeft M (𝟙 N) = 𝟙 (M.tensorBimod N) := by
   ext
   apply Limits.coequalizer.hom_ext
-  dsimp only [tensorBimod_X, whiskerLeft_hom, id_hom']
-  simp only [whiskerLeft_id, ι_colimMap, parallelPair_obj_one,
-    parallelPairHom_app_one, Category.id_comp]
-  erw [Category.comp_id]
+  simp [TensorBimod.X]
 
 theorem id_whiskerRight_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerRight (𝟙 M) N = 𝟙 (M.tensorBimod N) := by
   ext
   apply Limits.coequalizer.hom_ext
-  dsimp only [tensorBimod_X, whiskerRight_hom, id_hom']
-  simp only [id_whiskerRight, ι_colimMap, parallelPair_obj_one,
-    parallelPairHom_app_one, Category.id_comp]
-  erw [Category.comp_id]
+  simp [TensorBimod.X]
 
 theorem whiskerLeft_comp_bimod {X Y Z : Mon C} (M : Bimod X Y) {N P Q : Bimod Y Z} (f : N ⟶ P)
     (g : P ⟶ Q) : whiskerLeft M (f ≫ g) = whiskerLeft M f ≫ whiskerLeft M g := by

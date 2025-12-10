@@ -3,13 +3,14 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Init
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -19,6 +20,8 @@ depending on Mathlib definitions.
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -55,6 +58,9 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 /-! ### `div` -/
 
+protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
+  rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
+
 /-!
 ### `pow`
 -/
@@ -65,6 +71,9 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
+protected theorem pow_sub_one {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
+    x ^ (a - 1) = x ^ a / x := by
+  rw [← Nat.pow_div (one_le_iff_ne_zero.mpr ha) (Nat.pos_iff_ne_zero.mpr hx), Nat.pow_one]
 
 /-!
 ### Recursion and induction principles

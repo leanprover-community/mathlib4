@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The `#find_syntax` command
@@ -16,6 +17,8 @@ all the candidates for `syntax` terms that contain the string `str`.
 It also makes a very crude effort at regenerating what the syntax looks like, by inspecting the
 `Expr`ession tree of the corresponding parser.
 -/
+
+public meta section
 
 namespace Mathlib.FindSyntax
 

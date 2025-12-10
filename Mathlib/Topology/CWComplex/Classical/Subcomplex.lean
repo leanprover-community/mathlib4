@@ -3,15 +3,16 @@ Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Topology.CWComplex.Classical.Finite
-import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Topology.CWComplex.Classical.Finite
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Subcomplexes
 
 In this file we discuss subcomplexes of CW complexes.
-The definintion of subcomplexes is in the file `Topology.CWComplex.Classical.Basic`.
+The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
@@ -20,6 +21,8 @@ The definintion of subcomplexes is in the file `Topology.CWComplex.Classical.Bas
 ## References
 * [K. Jänich, *Topology*][Janich1984]
 -/
+
+@[expose] public section
 
 noncomputable section
 

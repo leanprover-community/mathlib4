@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Zorn
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.Order.Zorn
+public import Mathlib.Order.Atoms
 
 /-!
 # Zorn lemma for (co)atoms
@@ -13,6 +15,8 @@ In this file we use Zorn's lemma to prove that a partial order is atomic if ever
 `c`, `⊥ ∉ c`, has a lower bound not equal to `⊥`. We also prove the order dual version of this
 statement.
 -/
+
+@[expose] public section
 
 
 open Set

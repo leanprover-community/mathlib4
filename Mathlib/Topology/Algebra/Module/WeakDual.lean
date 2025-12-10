@@ -3,9 +3,11 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Module.WeakBilin
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Weak dual topology
@@ -42,6 +44,8 @@ with the respective topology instances on it.
 weak-star, weak dual, duality
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
