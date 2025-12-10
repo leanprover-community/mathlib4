@@ -11,27 +11,34 @@ public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 /-!
-# Algebra automorphisms in `End K V` are inner
+# Algebra isomorphisms in endomorphisms of projective modules are inner
 
-This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K V`,
-there exists a linear equivalence `T : V ≃ₗ[K] V` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
-In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup K V` to
-`End K V ≃ₐ[K] End K V` is surjective.
+This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K W`,
+there exists a linear equivalence `T : V ≃ₗ[K] W` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
+This means that, when `V = W`, the map `MulSemiringAction.toAlgEquiv`
+from `GeneralLinearGroup K V` to `End K V ≃ₐ[K] End K V` is surjective.
 -/
 
 open Module LinearMap LinearEquiv
 
-variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
+variable {S K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
+  [AddCommMonoid W] [Module K W] [Projective K W]
 
-/-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
+/-- Given an algebra isomorphism `f : End K V ≃ₐ[K] End K W`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
-public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K V) :
-    ∃ T : V ≃ₗ[K] V, f = T.conjAlgEquiv K := by
-  nontriviality V
+public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W) :
+    ∃ T : V ≃ₗ[K] W, f = T.conjAlgEquiv K := by
+  by_cases hV : Subsingleton V
+  · have : Subsingleton W := by
+      by_contra!
+      have : f 0 = f 1 := congr(f $(Subsingleton.allEq _ _))
+      simp at this
+    exact ⟨0, Subsingleton.allEq _ _⟩
+  rw [not_subsingleton_iff_nontrivial] at hV
   simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := Projective.exists_dual_ne_zero K hu
-  obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
+  obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : End K W) z := by
     rw [← not_forall, ← LinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := applyₗ z ∘ₗ f.toLinearMap ∘ₗ smulRightₗ v
@@ -50,7 +57,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
-/-- Alternate statement of `eq_linearEquivAlgConj`. -/
+/-- Alternate statement of `eq_linearEquivConjAlgEquiv`. -/
 public theorem Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
