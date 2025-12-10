@@ -250,9 +250,7 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsC
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
         ext _ i; exact dif_pos i.prop
-      simp
-      erw [← this]
-      rfl)))
+      exact congr_fun this.symm _)))
 
 end Projections
 

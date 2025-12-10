@@ -92,14 +92,15 @@ def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
       (OpensLeCover (X := .of X) Us)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
-  map e := .op <| LE.le.hom <| principalOpen_le <| e.right.le
+  map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
 variable {F} in
 /-- This is an auxiliary definition which is only meant to be used in `isLimit` below. -/
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((OpensLeCover.incl (X := .of X) Us).op ⋙ principalsKanExtension F)) :
+    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := .of X) Us ⥤ _).op ⋙
+      principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
@@ -145,7 +146,7 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     have e : principalOpen x ≤ V := f.unop.le
     let VV : OpensLeCover Us := ⟨V, i, hV⟩
     let xx : OpensLeCover Us := ⟨principalOpen x, i, le_trans e hV⟩
-    let ee : xx ⟶ VV := e.hom
+    let ee : xx ⟶ VV := ObjectProperty.homMk e.hom
     rw [← S.w ee.op, Category.assoc]
     congr 1
     exact (limit.lift_π _ _).trans (by aesop)
