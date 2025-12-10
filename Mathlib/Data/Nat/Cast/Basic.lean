@@ -166,7 +166,7 @@ theorem eq_natCast' {R} [NonAssocSemiring R] (f : ℕ →+* R) : f = Nat.castRin
 
 end RingHom
 
-@[simp, norm_cast]
+@[simp, norm_cast, grind =]
 theorem Nat.cast_id (n : ℕ) : n.cast = n :=
   rfl
 
