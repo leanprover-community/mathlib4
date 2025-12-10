@@ -268,10 +268,10 @@ The pullback compatibility condition for a coverage ensures that the
 associated Grothendieck topology is pullback stable, and so an additional constructor
 in the inductive construction is not needed.
 -/
-def toGrothendieck (K : Coverage C) : GrothendieckTopology C := by
-  apply K.toPrecoverage.toGrothendieck.copy K.Saturate
-  ext
-  exact K.saturate_iff_saturate_toPrecoverage.symm
+def toGrothendieck (K : Coverage C) : GrothendieckTopology C :=
+  K.toPrecoverage.toGrothendieck.copy K.Saturate <| by
+    ext
+    exact K.saturate_iff_saturate_toPrecoverage.symm
 
 lemma mem_toGrothendieck {K : Coverage C} {X : C} {S : Sieve X} :
     S ∈ K.toGrothendieck X ↔ Saturate K X S := .rfl
