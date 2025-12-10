@@ -189,7 +189,7 @@ leaves and nodes of the tree of constructors.
 With `use!` one can feed in each `42` one at a time:
 
 ```lean
-example : ∃ n : {n : Nat // n%2 = 0}, n.val > 10 := by use! 20; simp
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use! (42, 42)
 ```

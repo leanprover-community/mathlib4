@@ -73,7 +73,7 @@ example : Nonempty (PNat ≃ Nat) := by
   · exact PNat.succPNat_natPred
   · intro; rfl
 
-example : ∃ n : {n : Nat // n%2 = 0}, n.val > 10 := by use! 20; simp
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 -- This example is why `use` always tries applying the constructor before refining.
 example : ∃ x : Nat, x = x := by
