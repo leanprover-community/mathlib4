@@ -363,7 +363,7 @@ theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
 @[simp]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E :=
-  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
+  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits _)
 
 section iff
 
