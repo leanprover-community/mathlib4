@@ -583,7 +583,7 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
-/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+/-! Sometimes it takes iterated alternation between `ring_nf` and `field_simp` in order to
 normalize properly.
 
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization

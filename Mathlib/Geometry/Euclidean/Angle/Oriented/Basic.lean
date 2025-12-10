@@ -19,7 +19,7 @@ This file defines oriented angles in real inner product spaces.
 
 ## Implementation notes
 
-The definitions here use the `Real.angle` type, angles modulo `2 * π`. For some purposes,
+The definitions here use the `Real.Angle` type, angles modulo `2 * π`. For some purposes,
 angles modulo `π` are more convenient, because results are true for such angles with less
 configuration dependence. Results that are only equalities modulo `π` can be represented
 modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
