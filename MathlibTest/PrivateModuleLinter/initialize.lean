@@ -7,7 +7,7 @@ set_option linter.privateModule true
 open Lean
 
 -- Should not fire, since `initialize` creates a genuinely public declaration.
-initialize addLinter { run := fun _ => pure () }
+initialize pure ()
 
 /- Check that we have indeed created a declaration, and aren't not linting just due to being an
 empty file: -/
