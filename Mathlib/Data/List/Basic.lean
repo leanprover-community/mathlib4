@@ -153,11 +153,11 @@ theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (
     ∀ x ∈ l, p x := (forall_mem_cons.1 h).2
 
 theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) : ∃ x ∈ a :: l, p x :=
-  ⟨a, mem_cons_self, h⟩
+  by aesop
 
 theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ l, p x) →
     ∃ x ∈ a :: l, p x :=
-  fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
+  by aesop
 
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x := by grind
@@ -168,12 +168,12 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 /-! ### list subset -/
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
-    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
-  cons_subset.2 ⟨ainm, lsubm⟩
+    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m := by
+  aesop
 
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
     l₁ ++ l₂ ⊆ l :=
-  fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+  by aesop
 
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
@@ -1014,13 +1014,13 @@ The prime should be removed at nightly-2024-07-27. -/
 theorem filter_subset' (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
 
-theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
+theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := by aesop
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset' l h
+ by aesop
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
-  mem_filter.2 ⟨h₁, h₂⟩
+  by aesop
 
 variable (p)
 
