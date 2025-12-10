@@ -5,10 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.GDelta.Basic
-public import Mathlib.Topology.Maps.OpenQuotient
-public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.Topology.Constructions
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.GDelta.Basic
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Baire spaces
