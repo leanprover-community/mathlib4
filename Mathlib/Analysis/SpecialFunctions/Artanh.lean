@@ -101,7 +101,7 @@ def tanhPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := tanh
   invFun := artanh
   source := univ
-  target := Ioo (-1 : ℝ) 1
+  target := Ioo (-1) 1
   map_source' r _ := mem_Ioo.mpr ⟨neg_one_lt_tanh r, tanh_lt_one r⟩
   map_target' _ _ := trivial
   left_inv' r _ := artanh_tanh r
