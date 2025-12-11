@@ -249,7 +249,7 @@ lemma genEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
   · intro h
     exact h _ le_rfl
   · rintro ⟨x, rfl⟩ i hi
-    have : k = i + (k - i) := by omega
+    have : k = i + (k - i) := by lia
     rw [this, pow_add]
     exact ⟨_, rfl⟩
 
