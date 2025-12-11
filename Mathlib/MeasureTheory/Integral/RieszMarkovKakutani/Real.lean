@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -439,9 +440,7 @@ end integralPositiveLinearMap
 
 section Compact
 
-variable [CompactSpace X]
-
-instance (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : IsFiniteMeasure (rieszMeasure Λ) := by
+instance [CompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : IsFiniteMeasure (rieszMeasure Λ) := by
   constructor
   let o : C_c(X, ℝ) := ⟨1, HasCompactSupport.of_compactSpace 1⟩
   calc rieszMeasure Λ univ
@@ -451,8 +450,8 @@ instance (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : IsFiniteMeasure (rieszMeasure Λ) 
 
 /-- Given a finite measure on a compact space, there exists another finite measure which
 integrates in the same way bounded continuous functions, and is regular. -/
-lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace
-    (μ : Measure X) (hμ : IsFiniteMeasure μ) :
+lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpace X]
+    (μ : Measure X) [IsFiniteMeasure μ] :
     ∃ (ν : Measure X), ν.Regular ∧ IsFiniteMeasure ν ∧
       ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
   let Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
@@ -465,6 +464,29 @@ lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace
   { toFun := g
     hasCompactSupport' := HasCompactSupport.of_compactSpace _ }
   exact (integral_rieszMeasure Λ g').symm
+
+/-- Given a finite measure supported on a compact set, there exists another finite measure which
+integrates in the same way bounded continuous functions, and is regular. -/
+lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
+    (μ : Measure X) [IsFiniteMeasure μ] {K : Set X} (hK : IsCompact K) (h : μ Kᶜ = 0) :
+    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧
+      ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
+  let μ' : Measure K := μ.comap Subtype.val
+  obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ (ν : Measure K), ν.Regular ∧ IsFiniteMeasure ν ∧
+      ∀ g : K →ᵇ ℝ, ∫ x, g x ∂μ' = ∫ x, g x ∂ν := by
+    have : CompactSpace K := isCompact_iff_compactSpace.mp hK
+    exact Measure.exists_regular_eq_of_compactSpace μ'
+  refine ⟨ν'.map Subtype.val, Measure.InnerRegular.map_of_continuous (by fun_prop),
+    by infer_instance, fun g ↦ ?_⟩
+  let g' : K →ᵇ ℝ := g.compContinuous ⟨Subtype.val, by fun_prop⟩
+  convert hν' g'
+  · change _ = ∫ x, g (Subtype.val x) ∂μ'
+    rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
+    congr
+    simp only [map_comap_subtype_coe hK.measurableSet, μ']
+    exact (Measure.restrict_eq_self_of_ae_mem h).symm
+  · rw [integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
+    rfl
 
 end Compact
 
