@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Evaluating polynomials and scalar multiplication
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Eval.Defs
 * `Polynomial.leval`: `Polynomial.eval` as linear map
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -53,7 +57,7 @@ variable {x : R}
 @[simp]
 theorem eval_smul [SMulZeroClass S R] [IsScalarTower S R R] (s : S) (p : R[X])
     (x : R) : (s • p).eval x = s • p.eval x := by
-  rw [← smul_one_smul R s p, eval, eval₂_smul, RingHom.id_apply, smul_one_mul]
+  rw [← smul_one_smul R s p, eval, eval₂_smul, RingHom.id_apply, smul_one_mul, eval₂_id]
 
 /-- `Polynomial.eval` as linear map -/
 @[simps]

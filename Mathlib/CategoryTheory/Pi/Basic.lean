@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -14,6 +16,8 @@ We define the pointwise category structure on indexed families of objects in a c
 (and also the dependent generalization).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -24,7 +28,7 @@ universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
 
-/-- `pi C` gives the cartesian product of an indexed family of categories.
+/-- `pi C` gives the Cartesian product of an indexed family of categories.
 -/
 instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i

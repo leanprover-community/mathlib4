@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Topology.Algebra.NonUnitalAlgebra
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Topology.Algebra.NonUnitalAlgebra
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # Non-unital topological star (sub)algebras
@@ -21,6 +23,8 @@ Any non-unital star subalgebra of a non-unital topological star algebra is itsel
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
 
 -/
+
+@[expose] public section
 
 namespace NonUnitalStarSubalgebra
 
@@ -139,7 +143,7 @@ theorem le_iff_mem {x : A} {s : NonUnitalStarSubalgebra R A} (hs : IsClosed (s :
     elemental R x ≤ s ↔ x ∈ s :=
   ⟨fun h ↦ h (self_mem R x), fun h ↦ le_of_mem hs h⟩
 
-instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
+theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
 instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=

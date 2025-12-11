@@ -3,15 +3,19 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Data.Multiset.Bind
 
 /-!
-# The cartesian product of multisets
+# The Cartesian product of multisets
 
 ## Main definitions
 
 * `Multiset.pi`: Cartesian product of multisets indexed by a multiset.
 -/
+
+@[expose] public section
 
 
 namespace Multiset

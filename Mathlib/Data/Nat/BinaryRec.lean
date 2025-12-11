@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Init
+module
+
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`
@@ -17,6 +19,8 @@ This file defines binary recursion on `Nat`.
   the bit being appended is `true`.
 * `Nat.binaryRecFromOne`: The same as `binaryRec`, but special casing both 0 and 1 as base cases.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -148,5 +152,38 @@ theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit 
     generalize congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
+
+@[simp] theorem binaryRec'_zero (zero : motive 0)
+    (bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)) :
+    binaryRec' zero bit 0 = zero := by
+  rw [binaryRec', Nat.binaryRec_zero]
+
+@[simp] theorem binaryRec'_one (zero : motive 0)
+    (bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)) :
+    binaryRec' (motive := motive) zero bit 1 = bit true 0 (by simp) zero := by
+  rw [binaryRec', Nat.binaryRec_one, dif_pos]
+
+theorem binaryRec'_eq {zero : motive 0}
+    {bit : (b : Bool) → (n : Nat) → (n = 0 → b = true) → motive n → motive (n.bit b)}
+    (b n) (h : n = 0 → b = true) :
+    binaryRec' zero bit (n.bit b) = bit b n h (binaryRec' zero bit n) := by
+  rw [binaryRec', binaryRec_eq _ _ (by simp), dif_pos h, binaryRec']
+
+@[simp] theorem binaryRecFromOne_zero (zero : motive 0) (one : motive 1)
+    (bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)) :
+    binaryRecFromOne zero one bit 0 = zero :=
+  binaryRec'_zero _ _
+
+@[simp] theorem binaryRecFromOne_one {zero : motive 0} {one : motive 1}
+    (bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)) :
+    binaryRecFromOne zero one bit 1 = one := by
+  rw [binaryRecFromOne, binaryRec'_one, dif_pos rfl]
+
+theorem binaryRecFromOne_eq {zero : motive 0} {one : motive 1}
+    {bit : (b : Bool) → (n : Nat) → n ≠ 0 → motive n → motive (n.bit b)}
+    (b n) (h) :
+    binaryRecFromOne zero one bit (Nat.bit b n) =
+      bit b n h (binaryRecFromOne zero one bit n) := by
+  rw [binaryRecFromOne, binaryRec'_eq _ _ (by simp [h]), dif_neg h, binaryRecFromOne]
 
 end Nat

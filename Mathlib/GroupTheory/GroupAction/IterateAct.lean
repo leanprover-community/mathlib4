@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Data.Countable.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Data.Countable.Defs
 
 /-!
 # Monoid action by iterates of a map
@@ -14,6 +16,8 @@ that acts on `α` by iterates of `f`, `⟨n⟩ • x = f^[n] x`.
 
 It is useful to convert between definitions and theorems about maps and monoid actions.
 -/
+
+@[expose] public section
 
 /-- A structure with a single field `val : ℕ`
 that additively acts on `α` by `⟨n⟩ +ᵥ x = f^[n] x`. -/

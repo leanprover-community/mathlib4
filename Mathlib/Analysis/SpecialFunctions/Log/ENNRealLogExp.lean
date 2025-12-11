@@ -3,10 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Polish
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Properties of the extended logarithm and exponential
@@ -29,6 +31,8 @@ and `exp (x * y) = (exp x) ^ y`.
 ## Tags
 ENNReal, EReal, logarithm, exponential
 -/
+
+@[expose] public section
 
 open EReal ENNReal Topology
 section LogExp
@@ -159,18 +163,18 @@ end Continuity
 
 section Measurability
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_log : Measurable log := continuous_log.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ennreal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
     {f : α → EReal} (hf : Measurable f) :
     Measurable fun x ↦ exp (f x) := measurable_exp.comp hf

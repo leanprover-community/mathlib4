@@ -3,10 +3,12 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -35,6 +37,8 @@ holomorphic and meromorphic functions on a complex manifold and proving algebrai
 stalks, such as the Weierstrass preparation theorem.
 
 -/
+
+@[expose] public section
 
 open scoped Manifold Topology Filter
 open Function Set Filter Complex

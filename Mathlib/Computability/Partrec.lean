@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Primrec
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Primrec
+public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.PFun
 
 /-!
 # The partial recursive functions
@@ -26,6 +28,11 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
+
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
+
+@[expose] public section
 
 open List (Vector)
 open Encodable Denumerable Part
@@ -148,7 +155,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
     simp at this; simp [this, get_mem]⟩
 
-/-- `Partrec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
+/-- `Partrec f` means that the partial function `f : ℕ →. ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ

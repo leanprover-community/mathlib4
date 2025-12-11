@@ -23,7 +23,7 @@ We prove that this line is a completely normal Hausdorff space but its product w
 normal space. In particular, this implies that the topology on `ℝₗ` is neither metrizable, nor
 second countable.
 
-## Notations
+## Notation
 
 - `ℝₗ`: Sorgenfrey line.
 
@@ -120,7 +120,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
-  simpa only [toReal.image_eq_preimage] using nhdsGE_basis_Ico (toReal a)
+  simpa only [toReal.image_eq_preimage_symm] using nhdsGE_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
@@ -231,8 +231,8 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
 
 open Subtype in
 instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
-  forall_open_iff_discrete.1 fun U ↦ isClosed_compl_iff.1 <| isClosed_induced_iff.2
-    ⟨val '' Uᶜ, isClosed_of_subset_antidiagonal <| coe_image_subset _ Uᶜ,
+  discreteTopology_iff_forall_isClosed.2 fun C ↦ isClosed_induced_iff.2
+    ⟨val '' C, isClosed_of_subset_antidiagonal <| coe_image_subset _ C,
       preimage_image_eq _ val_injective⟩
 
 /-- The Sorgenfrey plane `ℝₗ × ℝₗ` is not a normal space. -/

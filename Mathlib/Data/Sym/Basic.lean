@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Symmetric powers
@@ -27,6 +29,8 @@ needs a fleshed-out interface.
 symmetric powers
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 open List (Vector)
@@ -195,7 +199,7 @@ theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) =
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
-  multiplicity of `a` if a is present in the sym. -/
+  multiplicity of `a` if `a` is present in the sym. -/
 def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α n :=
   ⟨s.val.erase a, (Multiset.card_erase_of_mem h).trans <| s.property.symm ▸ n.pred_succ⟩
 
@@ -477,7 +481,7 @@ def oneEquiv : α ≃ Sym α 1 where
     (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
-      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+      exact List.eq_of_mem_singleton (List.Perm.mem_iff perm |>.mp <| List.head_mem _)
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
