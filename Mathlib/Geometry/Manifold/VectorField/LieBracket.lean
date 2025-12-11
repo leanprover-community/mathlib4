@@ -299,19 +299,18 @@ variable [IsManifold I 2 M]
 
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vectorField
     [CompleteSpace E]
-    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x) :
+    (hV : MDiffAt[s] (fun x ↦ (V x : TangentBundle I M)) x) :
     DifferentiableWithinAt 𝕜 (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I))
-    ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
   apply MDifferentiableWithinAt.differentiableWithinAt
   have := MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq hV
     (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target x))
     (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)) (mem_range_self _)
     I.uniqueMDiffOn le_rfl (extChartAt_to_inv x).symm
   rw [inter_comm]
-  exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
-    le_rfl).comp_mdifferentiableWithinAt _ this
+  exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt le_rfl
+    |>.comp_mdifferentiableWithinAt _ this
 
--- (dφ)⁻¹∘d(φ⁻¹)⁻¹ Y = Y
 lemma aux_computation (Y : TangentSpace I x) :
     letI φ := extChartAt I x
     ((mfderiv% φ x).inverse.comp ((mfderiv[range I] φ.symm (φ x)).inverse) Y) = Y := by
@@ -332,7 +331,7 @@ lemma aux_computation' :
 omit [IsManifold I 2 M] in
 /-- The round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm` is eventually equal
 to the identity in a neighborhood within `range I` of the chart point. -/
-lemma _root_.eventuallyEq_extChartAt_comp_extChartAt_symm_nhdsWithin_range :
+lemma _root_.extChartAt_comp_extChartAt_symm_eventuallyEq :
     ((extChartAt I x) ∘ (extChartAt I x).symm) =ᶠ[𝓝[range I] (extChartAt I x x)] id := by
   set φ := extChartAt I x
   rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
@@ -348,7 +347,7 @@ lemma _root_.fderivWithin_extChartAt_comp_extChartAt_symm_range :
     fderivWithin 𝕜 ((extChartAt I x) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
-  have eq_nhd := eventuallyEq_extChartAt_comp_extChartAt_symm_nhdsWithin_range (I := I) (x := x)
+  have eq_nhd := extChartAt_comp_extChartAt_symm_eventuallyEq (I := I) (x := x)
   have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
     rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
   rw [eq_nhd.fderivWithin_eq hx]
@@ -356,8 +355,7 @@ lemma _root_.fderivWithin_extChartAt_comp_extChartAt_symm_range :
 
 -- TODO: clean up this proof (and add the version for `extChartAt`)
 lemma _root_.mfderivWithin_range_extChartAt_symm :
-    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) =
-      ContinuousLinearMap.id 𝕜 _ := by
+    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) = ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
   have : MDiffAt[range I] φ.symm (φ x) :=
     mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
@@ -371,7 +369,7 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
 -- TODO: add pre-composition version also and move to the right location
 omit [IsManifold I 2 M] in
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
-    {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) :
+    {f : M → 𝕜} (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
     DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
   obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
@@ -388,13 +386,13 @@ lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
 lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) f s x) :
+    (hf : MDiffAt[s] f x) :
     let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
     let W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
     letI s' : Set E := (extChartAt I x).symm ⁻¹' s ∩ range I
     mpullback I 𝓘(𝕜, E) (extChartAt I x)
         (fun x₀ ↦ (fderivWithin 𝕜 (f ∘ (extChartAt I x).symm) s' x₀) (V' x₀) • W' x₀) x =
-      (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
+      (mfderiv[s] f x) (V x) • W x := by
   simp only [mpullback, mfderivWithin, hf, map_smul, ← aux_computation' x W, mpullbackWithin]
   congr 2
   rw [extChartAt_to_inv]
