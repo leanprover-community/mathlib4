@@ -326,14 +326,14 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
     intro hp
     rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
       dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
-        (left_mem_affineSpan_pair _ _ p₃),
+        (left_mem_affineSpan_pair ℝ _ p₃),
       add_eq_right, mul_eq_zero, dist_eq_zero, or_self] at h
     grind
   have hp₂ : orthogonalProjection line[ℝ, p₁, p₃] p ≠ p₁ := by
     intro hp
     rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
       dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
-        (left_mem_affineSpan_pair _ _ p₂),
+        (left_mem_affineSpan_pair ℝ _ p₂),
       right_eq_add, mul_eq_zero, dist_eq_zero, or_self] at h
     grind
   rw [← (collinear_insert_of_mem_affineSpan_pair
