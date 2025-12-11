@@ -140,13 +140,6 @@ We isolate the contributions of different prime powers to `ψ` and use this to s
 are close.
 -/
 
-lemma Nat.Prime.pow_inj'
-    {p q m n : ℕ} (hp : Nat.Prime p) (hq : Nat.Prime q) (hm : m ≠ 0) (hn : n ≠ 0)
-    (h : p ^ m = q ^ n) : p = q ∧ m = n := by
-  obtain ⟨m, rfl⟩ := exists_eq_add_one_of_ne_zero hm
-  obtain ⟨n, rfl⟩ := exists_eq_add_one_of_ne_zero hn
-  simpa using hp.pow_inj hq h
-
 /-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
