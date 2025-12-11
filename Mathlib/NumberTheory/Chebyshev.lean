@@ -147,7 +147,7 @@ lemma Nat.Prime.pow_inj'
   obtain (_ | n) := n; · simp_all
   simpa using hp.pow_inj hq h
 
-/-- A sum over prime powers may be written as a double sum over powers and then primes. -/
+/-- A sum over prime powers may be written as a double sum over exponents and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
