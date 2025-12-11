@@ -153,7 +153,8 @@ variable
 
 -- TODO: def or abbrev?
 variable (Ω F n) in
-abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
+-- abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
+abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L[ℝ] F
 
 -- TODO: I'm not sure these notations are good
 /-- Notation for the space of distributions of order less than `n`. -/
