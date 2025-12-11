@@ -262,4 +262,16 @@ theorem galgebra_toFun_def (r : R) :
 
 example : Algebra R (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
+/-! `TensorPower` of a `Dual` space. -/
+
+/-- A version of `tprod` specific to constructing elements of the dual space of a `TensorPower`. -/
+noncomputable def dprod {n : ℕ} :
+    MultilinearMap R (fun (_ : Fin n) => Module.Dual R M) (Module.Dual R (⨂[R]^n M)) :=
+  dualDistrib.compMultilinearMap (tprod R)
+
+@[simp]
+lemma dprod_apply {n : ℕ} (f : Fin n → Module.Dual R M) (x : Fin n → M) :
+    dprod f (tprod R x) = ∏ i, (f i) (x i) := by
+  simp [dprod]
+
 end TensorPower
