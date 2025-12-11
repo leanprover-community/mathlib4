@@ -18,11 +18,12 @@ jobs:
       with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
+        token: ${{ secrets.NIGHTLY_TESTING }}
 
     - name: Set up Git
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        git config --global user.name "leanprover-community-mathlib4-bot"
+        git config --global user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
 
     - name: Configure Lean
       uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
