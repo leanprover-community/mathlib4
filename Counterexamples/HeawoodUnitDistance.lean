@@ -3,19 +3,28 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 
 /-!
-# A unit-distance embedding of the Heawood graph into the Euclidean plane
+# A simple planar unit-distance embedding of the Heawood graph
 
-This module defines the Heawood graph and a unit-distance embedding of it into the Euclidean plane.
+The Heawood graph on 14 vertices is the point-line incidence graph of the Fano plane.
+Besides being 3-regular and symmetric it has a number of interesting properties:
+it is the unique (3,6)-cage, it can be embedded on the torus with dual `K₇` and so on.
+
+In 1972 Chvátal wrote of a "suspicion" that the Heawood graph was not unit-distance embeddable
+into the Euclidean plane (Problem 21 in [chvatal1972]). In 2009 Gerbracht disproved the suspicion
+by presenting an explicit embedding [gerbracht2009], but the embeddings presented there are
+very hard to describe: the minimal polynomials of their vertex coordinates go up to degree 79.
+Other embeddings found since then, such as the one in [hong2014], suffer from the same
+complexity issue.
+
+This file formalises a much simpler embedding, found by this file's author in August 2025
+(see [this commit](https://github.com/Parcly-Taxel/Shibuya/commit/b5c86cbf1c8b2e1211b160f266480e7115a7e43a)).
+Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
-
-@[expose] public section
 
 namespace SimpleGraph
 
@@ -44,7 +53,7 @@ lemma card_heawoodGraph_edgeFinset : #heawoodGraph.edgeFinset = 21 := by
 namespace Heawood
 
 /-- `2c^3+3c+1` has a root in `(-1/3, -5/16)`. This root, which turns out to be unique
-(we do not need uniqueness), underpins the unit-distance embedding's coordinates. -/
+(we do not need uniqueness), underpins our unit-distance embedding's coordinates. -/
 lemma exists_root_in_Ioo :
     ∃ c ∈ Set.Ioo (-1 / 3 : ℝ) (-5 / 16), 2 * c ^ 3 + 3 * c + 1 = 0 :=
   intermediate_value_Ioo (by norm_num) (by fun_prop) (by norm_num)
