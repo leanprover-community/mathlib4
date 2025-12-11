@@ -1191,11 +1191,11 @@ theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 
 @[to_additive]
-theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
+theorem IsOfFinOrder.fst (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
   hx.mono orderOf_fst_dvd_orderOf
 
 @[to_additive]
-theorem IsOfFinOrder.snd {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
+theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
   hx.mono orderOf_snd_dvd_orderOf
 
 @[to_additive IsOfFinAddOrder.prod_mk]
@@ -1208,7 +1208,29 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
 
 end Prod
 
--- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
+
+@[to_additive]
+lemma Pi.orderOf_eq_sInf (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
+  minimalPeriod_piMap
+
+@[to_additive]
+protected lemma Pi.orderOf [Fintype ι] (x : ∀ i, α i) :
+    orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
+  minimalPeriod_piMap_fintype
+
+@[to_additive]
+theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
+  minimalPeriod_single_dvd_minimalPeriod_piMap
+
+@[to_additive]
+protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+  simp only [← orderOf_ne_zero_iff, Pi.orderOf]
+  simp [Finset.lcm_eq_zero_iff]
+
+end Pi
 
 @[simp]
 lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
