@@ -595,7 +595,7 @@ theorem support_truncLT_subset [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : 
 
 @[simp]
 protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
-    (c : Γ) (x : R⟦Γ⟧) (i : Γ) : (truncLT c x).coeff i = if i < c then x.coeff i else 0 := 
+    (c : Γ) (x : R⟦Γ⟧) (i : Γ) : (truncLT c x).coeff i = if i < c then x.coeff i else 0 :=
   rfl
 
 theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ] {c i : Γ} (h : i < c) (x : R⟦Γ⟧) :
