@@ -71,7 +71,7 @@ section SMul
 variable [SMul M X] [ContinuousSMul M X]
 
 lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
-    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [MonoidAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
     [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
   { continuous_smul := by
       suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
@@ -166,7 +166,7 @@ Suppose that `g : Y → X` is an action homomorphism in the following sense:
 there exists a continuous function `f : N → M` such that `g (c • x) = f c • g x`.
 Then the action of `N` on `X` is continuous as well.
 
-In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MonoidActionHom`.
 However, this version also works for semilinear maps and `f = Units.val`. -/
 @[to_additive
   /-- Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
@@ -192,7 +192,7 @@ end SMul
 
 section Monoid
 
-variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
+variable [Monoid M] [MonoidAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 instance Units.continuousSMul : ContinuousSMul Mˣ X :=
@@ -201,11 +201,11 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X :=
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
 @[to_additive]
-theorem MulAction.continuousSMul_compHom
+theorem MonoidAction.continuousSMul_compHom
     {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
-    letI : MulAction N X := MulAction.compHom _ f
+    letI : MonoidAction N X := MonoidAction.compHom _ f
     ContinuousSMul N X := by
-  let _ : MulAction N X := MulAction.compHom _ f
+  let _ : MonoidAction N X := MonoidAction.compHom _ f
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
 @[to_additive]
@@ -216,7 +216,7 @@ end Monoid
 
 section Group
 
-variable [Group M] [MulAction M X] [ContinuousSMul M X]
+variable [Group M] [MonoidAction M X] [ContinuousSMul M X]
 
 @[to_additive]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=

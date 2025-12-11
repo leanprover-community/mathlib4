@@ -84,10 +84,10 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-    AddHom M M₂, MulActionHom σ M M₂
+    AddHom M M₂, MonoidActionHom σ M M₂
 
-/-- The `MulActionHom` underlying a `LinearMap`. -/
-add_decl_doc LinearMap.toMulActionHom
+/-- The `MonoidActionHom` underlying a `LinearMap`. -/
+add_decl_doc LinearMap.toMonoidActionHom
 
 /-- The `AddHom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
@@ -108,7 +108,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
+    extends AddHomClass F M M₂, MonoidActionSemiHomClass F σ M M₂
 
 end
 
@@ -595,7 +595,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
     | succ n ih => simp [add_smul]
     | pred n ih => simp [sub_smul]⟩
 
-instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
+instance CompatibleSMul.units {R S : Type*} [Monoid R] [MonoidAction R M] [MonoidAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
   ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x :)⟩
 

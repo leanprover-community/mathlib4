@@ -82,7 +82,7 @@ namespace IsScalarTower
 section Module
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-variable [MulAction A M]
+variable [MonoidAction A M]
 variable {R} {M}
 
 theorem algebraMap_smul [SMul R M] [IsScalarTower R A M] (r : R) (x : M) :
@@ -95,8 +95,8 @@ theorem of_algebraMap_smul [SMul R M] (h : ∀ (r : R) (x : M), algebraMap R A r
   smul_assoc r a x := by rw [Algebra.smul_def, mul_smul, h]
 
 variable (R M) in
-theorem of_compHom : letI := MulAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
-  letI := MulAction.compHom M (algebraMap R A : R →* A); of_algebraMap_smul fun _ _ ↦ rfl
+theorem of_compHom : letI := MonoidAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
+  letI := MonoidAction.compHom M (algebraMap R A : R →* A); of_algebraMap_smul fun _ _ ↦ rfl
 
 end Module
 

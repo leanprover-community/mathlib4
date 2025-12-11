@@ -109,9 +109,9 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
     (Q : Ideal B)
     {N N' : OpenNormalSubgroup G} (e : N ≤ N')
     (x : G ⧸ N.1.1)
-    (hx : x ∈ MulAction.stabilizer (G ⧸ N.1.1) (Q.under (FixedPoints.subalgebra A B N.1.1))) :
+    (hx : x ∈ MonoidAction.stabilizer (G ⧸ N.1.1) (Q.under (FixedPoints.subalgebra A B N.1.1))) :
     QuotientGroup.map _ _ (.id _) e x ∈
-      MulAction.stabilizer (G ⧸ N'.1.1) (Q.under (FixedPoints.subalgebra A B N'.1.1)) := by
+      MonoidAction.stabilizer (G ⧸ N'.1.1) (Q.under (FixedPoints.subalgebra A B N'.1.1)) := by
   change _ = _
   have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=
     fun x hx n ↦ hx ⟨_, e n.2⟩

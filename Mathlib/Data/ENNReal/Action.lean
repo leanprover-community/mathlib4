@@ -11,7 +11,7 @@ public import Mathlib.Data.ENNReal.Operations
 # Scalar multiplication on `ℝ≥0∞`.
 
 This file defines basic scalar actions on extended nonnegative reals, showing that
-`MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
+`MonoidAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
 
 @[expose] public section
@@ -25,20 +25,20 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 -- TODO: generalize some of these to `WithTop α`
 section Actions
 
-/-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M ofNNRealHom.toMonoidHom
+/-- A `MonoidAction` over `ℝ≥0∞` restricts to a `MonoidAction` over `ℝ≥0`. -/
+noncomputable instance {M : Type*} [MonoidAction ℝ≥0∞ M] : MonoidAction ℝ≥0 M :=
+  MonoidAction.compHom M ofNNRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
+theorem smul_def {M : Type*} [MonoidAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 
-instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
-instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ≥0∞)
 
-instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ≥0∞)
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/

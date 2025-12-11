@@ -282,7 +282,7 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 
 open Subgroup.IsComplement
 
-instance baseAction : MulAction H (NormalWord d) :=
+instance baseAction : MonoidAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
@@ -435,7 +435,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
-noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
+noncomputable instance summandAction (i : ι) : MonoidAction (G i) (NormalWord d) :=
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
@@ -452,13 +452,13 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
-noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
-  MulAction.ofEndHom <|
+noncomputable instance mulAction : MonoidAction (PushoutI φ) (NormalWord d) :=
+  MonoidAction.ofEndHom <|
     lift
-      (fun _ => MulAction.toEndHom)
-      MulAction.toEndHom <| by
+      (fun _ => MonoidAction.toEndHom)
+      MonoidAction.toEndHom <| by
     intro i
-    simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
+    simp only [MonoidAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
       OneHom.coe_mk, comp_apply]
     intro h
     funext w

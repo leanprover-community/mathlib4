@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Spread
 This file defines a hierarchy of group action type-classes on top of the previously defined
 notation classes `SMul` and its additive version `VAdd`:
 
-* `MulAction M α` and its additive version `AddAction G P` are typeclasses used for
+* `MonoidAction M α` and its additive version `AddAction G P` are typeclasses used for
   actions of multiplicative and additive monoids and groups; they extend notation classes
   `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
@@ -55,13 +55,13 @@ variable {M N G H α β γ δ : Type*}
 attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
 -- see Note [lower instance priority]
-/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+/-- See also `Monoid.toMonoidAction` and `MulZeroClass.toSMulWithZero`. -/
 @[deprecated instSMulOfMul (since := "2025-10-18")]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
-See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+See also `Monoid.toOppositeMonoidAction` and `MonoidWithZero.toOppositeMonoidActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.toOppositeAddAction`. -/]
@@ -121,7 +121,7 @@ class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction
 /--
 Type class for monoid actions on types, with notation `g • p`.
 
-The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
+The `MonoidAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
 More precisely this means that the action satisfies the two axioms `1 • p = p` and
 `(g₁ * g₂) • p = g₁ • (g₂ • p)`. A mathematician might simply say that the monoid `G`
 acts on `P`.
@@ -130,7 +130,7 @@ For example, if `G` is a group and `X` is a type, if a mathematician says
 say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
 -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
+class MonoidAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
 
@@ -192,7 +192,7 @@ lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMu
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α where
+instance smulCommClass_self (M α : Type*) [CommMonoid M] [MonoidAction M α] : SMulCommClass M M α where
   smul_comm a a' b := by rw [← mul_smul, mul_comm, mul_smul]
 
 /-- An instance of `VAddAssocClass M N α` states that the additive action of `M` on `α` is
@@ -280,7 +280,7 @@ instance (priority := 50) IsScalarTower.op_right [SMul M α] [SMul M N] [SMul N 
 namespace SMul
 variable [SMul M α]
 
-/-- Auxiliary definition for `SMul.comp`, `MulAction.compHom`,
+/-- Auxiliary definition for `SMul.comp`, `MonoidAction.compHom`,
 `DistribMulAction.compHom`, `Module.compHom`, etc. -/
 @[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
 def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
@@ -393,7 +393,7 @@ lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α]
 end
 
 section
-variable [Monoid M] [MulAction M α] {a : M}
+variable [Monoid M] [MonoidAction M α] {a : M}
 
 @[to_additive]
 lemma smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) • b := (mul_smul _ _ _).symm
@@ -401,7 +401,7 @@ lemma smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) �
 variable (M)
 
 @[to_additive (attr := simp)]
-lemma one_smul (b : α) : (1 : M) • b = b := MulAction.one_smul _
+lemma one_smul (b : α) : (1 : M) • b = b := MonoidAction.one_smul _
 
 /-- `SMul` version of `one_mul_eq_id` -/
 @[to_additive /-- `VAdd` version of `zero_add_eq_id` -/]
@@ -428,7 +428,7 @@ See note [reducible non-instances]. -/
 @[to_additive
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
-    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
+    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MonoidAction M β where
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
@@ -437,7 +437,7 @@ See note [reducible non-instances]. -/
 @[to_additive
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
-    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
+    (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MonoidAction M β where
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
 
@@ -452,7 +452,7 @@ This is promoted to a module by `Semiring.toModule`. -/
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 910) Monoid.toMulAction : MulAction M M where
+instance (priority := 910) Monoid.toMonoidAction : MonoidAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
@@ -464,7 +464,7 @@ instance IsScalarTower.left : IsScalarTower M M α where
 variable {M}
 
 section Monoid
-variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
+variable [Monoid N] [MonoidAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
 
 lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
   | 0 => by simp
@@ -473,7 +473,7 @@ lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
 end Monoid
 
 section Group
-variable [Group G] [MulAction G α] {g : G} {a b : α}
+variable [Group G] [MonoidAction G α] {g : G} {a b : α}
 
 @[to_additive (attr := simp)]
 lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, inv_mul_cancel, one_smul]
@@ -488,7 +488,7 @@ lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smu
   ⟨fun h ↦ by rw [h, smul_inv_smul], fun h ↦ by rw [← h, inv_smul_smul]⟩
 
 section Mul
-variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a b : H}
+variable [Mul H] [MonoidAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a b : H}
 
 @[simp] lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
   ⟨fun h ↦ inv_smul_smul g b ▸ h.smul_right g⁻¹, fun h ↦ h.smul_right g⟩
@@ -498,7 +498,7 @@ variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a 
 
 end Mul
 
-variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
+variable [Group H] [MonoidAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
   inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul_comm, mul_inv_cancel, mul_inv_cancel, one_smul]
@@ -518,12 +518,12 @@ lemma SMulCommClass.of_commMonoid
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
 lemma IsScalarTower.of_commMonoid (R₁ R : Type*)
-    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
+    [Monoid R₁] [CommMonoid R] [MonoidAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
   smul_assoc x₁ y z := by rw [smul_eq_mul, mul_comm, ← smul_eq_mul, ← smul_comm, smul_eq_mul,
     mul_comm, ← smul_eq_mul]
 
 lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
-    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] :
+    [Monoid R₁] [CommMonoid R] [MonoidAction R₁ R] :
     SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
   ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
 
@@ -532,7 +532,7 @@ end
 section CompatibleScalar
 
 @[to_additive]
-lemma smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
+lemma smul_one_smul {M} (N) [Monoid N] [SMul M N] [MonoidAction N α] [SMul M α]
     [IsScalarTower M N α] (x : M) (y : α) : (x • (1 : N)) • y = x • y := by
   rw [smul_assoc, one_smul]
 
@@ -559,7 +559,7 @@ Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
 scalar towers, then `Q / N / M` is also a scalar tower.
 -/
 @[to_additive] lemma IsScalarTower.to₁₂₄ (M N P Q)
-    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MonoidAction P Q]
     [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
   smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
 
@@ -568,7 +568,7 @@ Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
 scalar towers, then `Q / P / M` is also a scalar tower.
 -/
 @[to_additive] lemma IsScalarTower.to₁₃₄ (M N P Q)
-    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MonoidAction N P] [MonoidAction N Q]
     [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
   smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
 
@@ -577,7 +577,7 @@ Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
 scalar towers, then `Q / P / N` is also a scalar tower.
 -/
 @[to_additive] lemma IsScalarTower.to₂₃₄ (M N P Q)
-    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MonoidAction N P] [MonoidAction N Q]
     [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower M P Q]
     (h : Function.Surjective fun m : M ↦ m • (1 : N)) : IsScalarTower N P Q where
   smul_assoc n p q := by obtain ⟨m, rfl⟩ := h n; simp_rw [smul_one_smul, smul_assoc]
@@ -594,7 +594,7 @@ The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`
 but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
-class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MonoidAction M N where
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
@@ -655,7 +655,7 @@ lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c
     a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
 
 @[to_additive]
-lemma IsCancelSMul.eq_one_of_smul {G P} [Monoid G] [MulAction G P] [IsCancelSMul G P] {g : G}
+lemma IsCancelSMul.eq_one_of_smul {G P} [Monoid G] [MonoidAction G P] [IsCancelSMul G P] {g : G}
     {x : P} (h : g • x = x) : g = 1 :=
   IsCancelSMul.right_cancel g 1 x ((one_smul G x).symm ▸ h)
 
@@ -665,7 +665,7 @@ instance [CancelMonoid G] : IsCancelSMul G G where
   right_cancel' _ _ _ := mul_right_cancel
 
 @[to_additive]
-instance [Group G] [MulAction G P] : IsLeftCancelSMul G P where
+instance [Group G] [MonoidAction G P] : IsLeftCancelSMul G P where
   left_cancel' a b c h := by rw [← inv_smul_smul a b, h, inv_smul_smul]
 
 end IsCancelSMul

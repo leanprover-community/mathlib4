@@ -190,7 +190,7 @@ variable {C : Type u₁} [Category.{u₂, u₁} C]
   (F : C ⥤ FintypeCat.{w})
 
 /-- The canonical action of `Aut F` on the fiber of each object. -/
-instance (X : C) : MulAction (Aut F) (F.obj X) where
+instance (X : C) : MonoidAction (Aut F) (F.obj X) where
   smul σ x := σ.hom.app X x
   one_smul _ := rfl
   mul_smul _ _ _ := rfl

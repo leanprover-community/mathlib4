@@ -209,7 +209,7 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
   p.toSubMulAction.smul_of_tower_mem r h
 
 @[simp]
-theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
+theorem smul_mem_iff' [Group G] [MonoidAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
 
@@ -288,7 +288,7 @@ instance addCommMonoid : AddCommMonoid p := fast_instance%
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
-  { (show MulAction S p from p.toSubMulAction.mulAction') with
+  { (show MonoidAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]

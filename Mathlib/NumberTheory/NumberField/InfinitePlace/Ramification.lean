@@ -110,7 +110,7 @@ variable {k K}
 
 /-- The action of the Galois group on infinite places. -/
 @[simps! smul_coe_apply]
-instance : MulAction Gal(K/k) (InfinitePlace K) where
+instance : MonoidAction Gal(K/k) (InfinitePlace K) where
   smul := fun σ w ↦ w.comap σ.symm
   one_smul := fun _ ↦ rfl
   mul_smul := fun _ _ _ ↦ rfl
@@ -151,7 +151,7 @@ lemma exists_smul_eq_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
     exact Or.inr hσ
 
 lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
-    w' ∈ MulAction.orbit Gal(K/k) w ↔ w.comap (algebraMap k K) = w'.comap (algebraMap k K) := by
+    w' ∈ MonoidAction.orbit Gal(K/k) w ↔ w.comap (algebraMap k K) = w'.comap (algebraMap k K) := by
   refine ⟨?_, exists_smul_eq_of_comap_eq⟩
   rintro ⟨σ, rfl : σ • w = w'⟩
   rw [← mk_embedding w, comap_mk, smul_mk, comap_mk]
@@ -336,11 +336,11 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)
 
-local notation "Stab" => MulAction.stabilizer Gal(K/k)
+local notation "Stab" => MonoidAction.stabilizer Gal(K/k)
 
 lemma mem_stabilizer_mk_iff (φ : K →+* ℂ) (σ : Gal(K/k)) :
     σ ∈ Stab (mk φ) ↔ σ = 1 ∨ ComplexEmbedding.IsConj φ σ := by
-  simp only [MulAction.mem_stabilizer_iff, smul_mk, mk_eq_iff]
+  simp only [MonoidAction.mem_stabilizer_iff, smul_mk, mk_eq_iff]
   rw [← ComplexEmbedding.isConj_symm, ComplexEmbedding.conjugate, star_eq_iff_star_eq]
   refine or_congr ⟨fun H ↦ ?_, fun H ↦ H ▸ rfl⟩ Iff.rfl
   exact congr_arg AlgEquiv.symm
@@ -488,7 +488,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
         and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
-        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+        ← MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
@@ -512,7 +512,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
         mem_orbit_iff, and_iff_right_iff_imp]
       intro e; rwa [← isUnramifiedIn_comap, ← e]
     · rw [Nat.card_eq_fintype_card,
-        ← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+        ← MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]

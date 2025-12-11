@@ -71,10 +71,10 @@ open UniformSpace
 
 section Zero
 
-instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
-    [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
-  { (inferInstance : MulAction M <| Completion α) with
-    smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
+instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MonoidActionWithZero M α]
+    [UniformContinuousConstSMul M α] : MonoidActionWithZero M (Completion α) :=
+  { (inferInstance : MonoidAction M <| Completion α) with
+    smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MonoidActionWithZero.smul_zero r]
     zero_smul :=
       ext' (continuous_const_smul _) continuous_const fun a ↦ by
         rw [← coe_smul, zero_smul, coe_zero] }
@@ -169,7 +169,7 @@ instance isUniformAddGroup : IsUniformAddGroup (Completion α) :=
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
-  { (inferInstance : MulAction M <| Completion α) with
+  { (inferInstance : MonoidAction M <| Completion α) with
     smul_add := fun r x y ↦
       induction_on₂ x y
         (isClosed_eq ((continuous_fst.add continuous_snd).const_smul _)
@@ -210,7 +210,7 @@ instance instAddCommGroup : AddCommGroup (Completion α) :=
 instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
     Module R (Completion α) :=
   { (inferInstance : DistribMulAction R <| Completion α),
-    (inferInstance : MulActionWithZero R <| Completion α) with
+    (inferInstance : MonoidActionWithZero R <| Completion α) with
     add_smul := fun a b ↦
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by

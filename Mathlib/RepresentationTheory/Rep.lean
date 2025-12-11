@@ -323,16 +323,16 @@ def linearizationTrivialIso (X : Type u) :
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
-  of <| Representation.ofMulAction k G H
+abbrev ofMonoidAction (H : Type u) [MonoidAction G H] : Rep k G :=
+  of <| Representation.ofMonoidAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
 abbrev leftRegular : Rep k G :=
-  ofMulAction k G G
+  ofMonoidAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
 abbrev diagonal (n : ℕ) : Rep k G :=
-  ofMulAction k G (Fin n → G)
+  ofMonoidAction k G (Fin n → G)
 
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
 multiplication in `G`. -/
@@ -345,9 +345,9 @@ def diagonalOneIsoLeftRegular :
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
 @[simps! hom_hom inv_hom]
-def ofMulActionSubsingletonIsoTrivial
-    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
-    ofMulAction k G H ≅ trivial k G k :=
+def ofMonoidActionSubsingletonIsoTrivial
+    (H : Type u) [Subsingleton H] [MulOneClass H] [MonoidAction G H] :
+    ofMonoidAction k G H ≅ trivial k G k :=
   letI : Unique H := uniqueOfSubsingleton 1
   Action.mkIso (Finsupp.LinearEquiv.finsuppUnique _ _ _).toModuleIso fun _ =>
     ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by
@@ -355,8 +355,8 @@ def ofMulActionSubsingletonIsoTrivial
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
-    (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
+def linearizationOfMonoidActionIso (H : Type u) [MonoidAction G H] :
+    (linearization k G).obj (Action.ofMonoidAction G H) ≅ ofMonoidAction k G H :=
   Iso.refl _
 
 section
@@ -567,14 +567,14 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   simp [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_carrier,
     types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
-    ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
+    ModuleCat.hom_id (M := .of _ _), Action.ofMonoidAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
       single (g • Fin.partialProd f) (a * b) := by
   have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
   simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
-    tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
+    tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _), Action.ofMonoidAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =
@@ -958,7 +958,7 @@ instance leftRegular_projective :
 
 instance trivial_projective_of_subsingleton [Subsingleton G] :
     Projective (trivial k G k) :=
-  Projective.of_iso (ofMulActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
+  Projective.of_iso (ofMonoidActionSubsingletonIsoTrivial _ _ (Fin 1 → G)) diagonal_succ_projective
 
 end
 end Rep

@@ -45,7 +45,7 @@ def ConjAct : Type _ :=
 
 namespace ConjAct
 
-open MulAction Subgroup
+open MonoidAction Subgroup
 
 variable {M G}
 
@@ -274,7 +274,7 @@ variable [Monoid M]
 units of the centralizer of `x : M`. -/
 @[simps! apply_coe_val symm_apply_val_coe]
 def unitsCentralizerEquiv (x : Mˣ) :
-    (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
+    (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MonoidAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
   { toFun := MonoidHom.toHomUnits <|
       { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by

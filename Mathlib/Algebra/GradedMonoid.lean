@@ -138,8 +138,8 @@ instance [SMul α β] [∀ i, SMul α (A i)] [∀ i, SMul β (A i)]
     IsScalarTower α β (GradedMonoid A) where
   smul_assoc a b g := Sigma.ext rfl <| heq_of_eq <| smul_assoc a b g.2
 
-instance [Monoid α] [∀ i, MulAction α (A i)] :
-    MulAction α (GradedMonoid A) where
+instance [Monoid α] [∀ i, MonoidAction α (A i)] :
+    MonoidAction α (GradedMonoid A) where
   one_smul g := Sigma.ext rfl <| heq_of_eq <| one_smul _ g.2
   mul_smul r₁ r₂ g := Sigma.ext rfl <| heq_of_eq <| mul_smul r₁ r₂ g.2
 
@@ -340,7 +340,7 @@ instance GradeZero.commMonoid : CommMonoid (A 0) :=
 
 end Monoid
 
-section MulAction
+section MonoidAction
 
 variable [AddMonoid ι] [GMonoid A]
 
@@ -352,11 +352,11 @@ def mkZeroMonoidHom : A 0 →* GradedMonoid A where
   map_mul' := mk_zero_smul
 
 /-- Each grade `A i` derives an `A 0`-action structure from `GMonoid A`. -/
-instance GradeZero.mulAction {i} : MulAction (A 0) (A i) :=
-  letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
+instance GradeZero.mulAction {i} : MonoidAction (A 0) (A i) :=
+  letI := MonoidAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
   Function.Injective.mulAction (mk i) sigma_mk_injective mk_zero_smul
 
-end MulAction
+end MonoidAction
 
 end GradeZero
 

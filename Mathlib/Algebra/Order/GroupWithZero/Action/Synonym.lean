@@ -45,11 +45,11 @@ instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [DistribMulAction G
 instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
     DistribMulAction G₀ M₀ᵒᵈ := ‹DistribMulAction G₀ M₀›
 
-instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ᵒᵈ M₀ := ‹MulActionWithZero G₀ M₀›
+instance instMonoidActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MonoidActionWithZero G₀ M₀] :
+    MonoidActionWithZero G₀ᵒᵈ M₀ := ‹MonoidActionWithZero G₀ M₀›
 
-instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ M₀ᵒᵈ := ‹MulActionWithZero G₀ M₀›
+instance instMonoidActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MonoidActionWithZero G₀ M₀] :
+    MonoidActionWithZero G₀ M₀ᵒᵈ := ‹MonoidActionWithZero G₀ M₀›
 
 end OrderDual
 
@@ -73,10 +73,10 @@ instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [DistribMulAction G
 instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
     DistribMulAction G₀ (Lex M₀) := ‹DistribMulAction G₀ M₀›
 
-instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero (Lex G₀) M₀ := ‹MulActionWithZero G₀ M₀›
+instance instMonoidActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MonoidActionWithZero G₀ M₀] :
+    MonoidActionWithZero (Lex G₀) M₀ := ‹MonoidActionWithZero G₀ M₀›
 
-instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ (Lex M₀) := ‹MulActionWithZero G₀ M₀›
+instance instMonoidActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MonoidActionWithZero G₀ M₀] :
+    MonoidActionWithZero G₀ (Lex M₀) := ‹MonoidActionWithZero G₀ M₀›
 
 end Lex

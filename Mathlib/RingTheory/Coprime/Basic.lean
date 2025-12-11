@@ -236,7 +236,7 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [CommSemiring R] [Group G] [MonoidAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=

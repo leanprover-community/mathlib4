@@ -36,7 +36,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relIndex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
-- `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
+- `MonoidAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
 @[expose] public section
@@ -617,16 +617,16 @@ theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
 
 @[to_additive]
-lemma finite_quotient_of_finite_quotient_of_index_ne_zero {X : Type*} [MulAction G X]
-    [Finite <| MulAction.orbitRel.Quotient G X] (hi : H.index ≠ 0) :
-    Finite <| MulAction.orbitRel.Quotient H X := by
+lemma finite_quotient_of_finite_quotient_of_index_ne_zero {X : Type*} [MonoidAction G X]
+    [Finite <| MonoidAction.orbitRel.Quotient G X] (hi : H.index ≠ 0) :
+    Finite <| MonoidAction.orbitRel.Quotient H X := by
   have := fintypeOfIndexNeZero hi
-  exact MulAction.finite_quotient_of_finite_quotient_of_finite_quotient
+  exact MonoidAction.finite_quotient_of_finite_quotient_of_finite_quotient
 
 @[to_additive]
-lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MulAction G X]
-    [MulAction.IsPretransitive G X] (hi : H.index ≠ 0) :
-    Finite <| MulAction.orbitRel.Quotient H X := by
+lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MonoidAction G X]
+    [MonoidAction.IsPretransitive G X] (hi : H.index ≠ 0) :
+    Finite <| MonoidAction.orbitRel.Quotient H X := by
   have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
   exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
 
@@ -890,9 +890,9 @@ alias AddSubgroup.relindex_pointwise_smul := AddSubgroup.relIndex_pointwise_smul
 
 end Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
-variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
+variable (G : Type*) {X : Type*} [Group G] [MonoidAction G X] (x : X)
 
 @[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
@@ -903,7 +903,7 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 
-end MulAction
+end MonoidAction
 
 namespace MonoidHom
 

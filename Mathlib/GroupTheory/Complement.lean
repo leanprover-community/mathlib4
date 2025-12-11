@@ -559,7 +559,7 @@ end IsComplement
 
 section Action
 
-open Pointwise MulAction
+open Pointwise MonoidAction
 
 /-- The collection of left transversals of a subgroup -/
 @[to_additive /-- The collection of left transversals of a subgroup. -/]
@@ -569,10 +569,10 @@ abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 @[to_additive /-- The collection of right transversals of a subgroup. -/]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 
-variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
+variable {F : Type*} [Group F] [MonoidAction F G] [QuotientAction F H]
 
 @[to_additive]
-noncomputable instance : MulAction F H.LeftTransversal where
+noncomputable instance : MonoidAction F H.LeftTransversal where
   smul f T :=
     ⟨f • (T : Set G), by
       refine isComplement_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
@@ -673,7 +673,7 @@ theorem isComplement'_of_coprime [Finite G]
     (h2 : Nat.Coprime (Nat.card H) (Nat.card K)) : IsComplement' H K :=
   isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
 
-theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
+theorem isComplement'_stabilizer {α : Type*} [MonoidAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by
   refine isComplement_iff_existsUnique.mpr fun g => ?_

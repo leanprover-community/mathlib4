@@ -37,7 +37,7 @@ open GradedMonoid
 
 /-- A graded version of `DistribMulAction`. -/
 class GdistribMulAction [AddMonoid ιA] [VAdd ιA ιB] [GMonoid A] [∀ i, AddMonoid (M i)]
-    extends GMulAction A M where
+    extends GMonoidAction A M where
   smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c
   smul_zero {i j} (a : A i) : smul a (0 : M j) = 0
 
@@ -50,7 +50,7 @@ class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, Ad
 /-- A graded version of `Semiring.toModule`. -/
 instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
     [h : GSemiring A] : Gmodule A A :=
-  { GMonoid.toGMulAction A with
+  { GMonoid.toGMonoidAction A with
     smul_add := fun _ _ _ => h.mul_add _ _ _
     smul_zero := fun _ => h.mul_zero _
     add_smul := fun _ _ => h.add_mul _ _
@@ -162,7 +162,7 @@ variable (𝓜 : ιM → σ)
 namespace SetLike
 
 instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
-    [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
+    [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMonoidAction (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.toGSMul 𝓐 𝓜 with
     one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
     mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ =>

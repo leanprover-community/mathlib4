@@ -68,12 +68,12 @@ noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
   if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.inertiaDeg h.choose else 0
 
-section MulAction
+section MonoidAction
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] {p : Ideal A}
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-instance : MulAction G (primesOver p B) where
+instance : MonoidAction G (primesOver p B) where
   smul σ Q := primesOver.mk p (σ • Q.1)
   one_smul Q := Subtype.ext (one_smul G Q.1)
   mul_smul σ τ Q := Subtype.ext (mul_smul σ τ Q.1)
@@ -91,7 +91,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
+noncomputable instance : MonoidAction Gal(L/K) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
@@ -111,7 +111,7 @@ theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : Gal(L/K)) (P : Ideal B) 
     [P.LiesOver p] : (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
-end MulAction
+end MonoidAction
 
 section RamificationInertia
 
@@ -131,7 +131,7 @@ theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
 @[deprecated (since := "2025-10-26")]
 alias exists_map_eq_of_isGalois := exists_smul_eq_of_isGaloisGroup
 
-instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesOver p B) where
+instance isPretransitive_of_isGaloisGroup : MonoidAction.IsPretransitive G (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩

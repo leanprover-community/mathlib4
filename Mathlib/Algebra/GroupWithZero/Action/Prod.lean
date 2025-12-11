@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.End
 /-!
 # Prod instances for multiplicative actions with zero
 
-This file defines instances for `MulActionWithZero` and related structures on `α × β`
+This file defines instances for `MonoidActionWithZero` and related structures on `α × β`
 
 ## See also
 
@@ -60,8 +60,8 @@ instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] 
     SMulWithZero R (M × N) where
   zero_smul _ := by ext <;> exact zero_smul ..
 
-instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
-    [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
+instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MonoidActionWithZero R M]
+    [MonoidActionWithZero R N] : MonoidActionWithZero R (M × N) :=
   { Prod.mulAction, Prod.smulWithZero with }
 
 end Prod
@@ -75,7 +75,7 @@ variable (M N α) [Monoid M] [Monoid N] [AddMonoid α]
 /-- Construct a `DistribMulAction` by a product monoid from `DistribMulAction`s by the factors. -/
 abbrev DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulAction N α]
     [SMulCommClass M N α] : DistribMulAction (M × N) α where
-  __ := MulAction.prodOfSMulCommClass M N α
+  __ := MonoidAction.prodOfSMulCommClass M N α
   smul_zero mn := by change mn.1 • mn.2 • 0 = (0 : α); rw [smul_zero, smul_zero]
   smul_add mn a a' := by change mn.1 • mn.2 • _ = (_ : α); rw [smul_add, smul_add]; rfl
 

@@ -27,7 +27,7 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M]
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/
 instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐᵒᵖ R :=
-  { MonoidWithZero.toOppositeMulActionWithZero R with
+  { MonoidWithZero.toOppositeMonoidActionWithZero R with
     smul_add := fun _ _ _ => add_mul _ _ _
     add_smul := fun _ _ _ => mul_add _ _ _ }
 

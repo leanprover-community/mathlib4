@@ -134,7 +134,7 @@ namespace Subsemiring
 instance topologicalSemiring (S : Subsemiring R) : IsTopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
-instance continuousSMul (s : Subsemiring R) (X) [TopologicalSpace X] [MulAction R X]
+instance continuousSMul (s : Subsemiring R) (X) [TopologicalSpace X] [MonoidAction R X]
     [ContinuousSMul R X] : ContinuousSMul s X :=
   Submonoid.continuousSMul
 
@@ -317,7 +317,7 @@ variable [Ring R] [IsTopologicalRing R]
 instance Subring.instIsTopologicalRing (S : Subring R) : IsTopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup) with }
 
-instance Subring.continuousSMul (s : Subring R) (X) [TopologicalSpace X] [MulAction R X]
+instance Subring.continuousSMul (s : Subring R) (X) [TopologicalSpace X] [MonoidAction R X]
     [ContinuousSMul R X] : ContinuousSMul s X :=
   Subsemiring.continuousSMul s.toSubsemiring X
 

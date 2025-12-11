@@ -16,10 +16,10 @@ public import Mathlib.Tactic.IntervalCases
 
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
-- the predicate `MulAction.IsBlock G B` states that `B : Set X` is a block,
+- the predicate `MonoidAction.IsBlock G B` states that `B : Set X` is a block,
   which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
-  Under `Group G` and `MulAction G X`, this is equivalent to the classical
-  definition `MulAction.IsBlock.def_one`
+  Under `Group G` and `MonoidAction G X`, this is equivalent to the classical
+  definition `MonoidAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
   and non-trivial blocks: orbit of the group, orbit of a normal subgroup…
@@ -28,19 +28,19 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## Results for actions on finite sets
 
-- `MulAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
+- `MonoidAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
   multiplied by the number of its translates is the cardinal of the ambient type
 
-- `MulAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
+- `MonoidAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `MulAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
+- `MonoidAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
-- `MulAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
+- `MonoidAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
-- `MulAction.BlockMem` : the type of blocks containing a given element
+- `MonoidAction.BlockMem` : the type of blocks containing a given element
 
-- `MulAction.BlockMem.instBoundedOrder` :
+- `MonoidAction.BlockMem.instBoundedOrder` :
   the type of blocks containing a given element is a bounded order.
 
 ## References
@@ -54,11 +54,11 @@ We follow [Wielandt-1964].
 open Set
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 section orbits
 
-variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
+variable {G : Type*} [Group G] {X : Type*} [MonoidAction G X]
 
 @[to_additive]
 theorem orbit.eq_or_disjoint (a b : X) :
@@ -119,7 +119,7 @@ variable {M α N β : Type*}
 
 section monoid
 
-variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
+variable [Monoid M] [MonoidAction M α] [Monoid N] [MonoidAction N β]
 
 @[to_additive]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
@@ -140,7 +140,7 @@ theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
 
 end monoid
 
-variable [Group M] [MulAction M α] [Monoid N] [MulAction N β]
+variable [Group M] [MonoidAction M α] [Monoid N] [MonoidAction N β]
 
 @[to_additive]
 theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
@@ -239,7 +239,7 @@ lemma IsFixedBlock.isInvariantBlock (hB : IsFixedBlock G B) : IsInvariantBlock G
 end SMul
 
 section Monoid
-variable {M X : Type*} [Monoid M] [MulAction M X] {B : Set X} {s : Set M}
+variable {M X : Type*} [Monoid M] [MonoidAction M X] {B : Set X} {s : Set M}
 
 @[to_additive]
 lemma IsBlock.disjoint_smul_right (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint B (s • B) := by
@@ -253,7 +253,7 @@ end Monoid
 
 section Group
 
-variable {G : Type*} [Group G] {X : Type*} [MulAction G X] {B : Set X}
+variable {G : Type*} [Group G] {X : Type*} [MonoidAction G X] {B : Set X}
 
 @[to_additive]
 lemma isBlock_iff_disjoint_smul_of_ne :
@@ -345,7 +345,7 @@ lemma isBlock_top : IsBlock (⊤ : Subgroup G) B ↔ IsBlock G B :=
   Subgroup.topEquiv.toEquiv.forall_congr fun _ ↦ Subgroup.topEquiv.toEquiv.forall_congr_left
 
 @[to_additive]
-lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
+lemma IsBlock.preimage {H Y : Type*} [Group H] [MonoidAction H Y]
     {φ : H → G} (j : Y →ₑ[φ] X) (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
   rintro g₁ g₂ hg
@@ -434,7 +434,7 @@ def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄,
 
 /-- Translates of a block form a block system -/
 @[to_additive /-- Translates of a block form a block system -/]
-theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
+theorem IsBlock.isBlockSystem [hGX : MonoidAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
   refine ⟨⟨?nonempty, ?cover⟩, ?mem_blocks⟩
@@ -496,9 +496,9 @@ Annoyingly, it seems like the following two lemmas cannot be unified.
 -/
 
 section Left
-variable [MulAction G H] [IsScalarTower G H H]
+variable [MonoidAction G H] [IsScalarTower G H H]
 
-/-- See `MulAction.isBlock_subgroup'` for a version that works for the right action of a group on
+/-- See `MonoidAction.isBlock_subgroup'` for a version that works for the right action of a group on
 itself. -/
 @[to_additive /-- See `AddAction.isBlock_subgroup'` for a version that works for the right action
 of a group on itself. -/]
@@ -511,11 +511,11 @@ lemma isBlock_subgroup : IsBlock G (s : Set H) := by
 end Left
 
 section Right
-variable [MulAction G H] [IsScalarTower G Hᵐᵒᵖ H]
+variable [MonoidAction G H] [IsScalarTower G Hᵐᵒᵖ H]
 
 open MulOpposite
 
-/-- See `MulAction.isBlock_subgroup` for a version that works for the left action of a group on
+/-- See `MonoidAction.isBlock_subgroup` for a version that works for the left action of a group on
 itself. -/
 @[to_additive /-- See `AddAction.isBlock_subgroup` for a version that works for the left action
 of a group on itself. -/]
@@ -535,7 +535,7 @@ section Stabilizer
 
 /- For transitive actions, construction of the lattice equivalence
   `block_stabilizerOrderIso` between
-  - blocks of `MulAction G X` containing a point `a ∈ X`,
+  - blocks of `MonoidAction G X` containing a point `a ∈ X`,
   and
   - subgroups of G containing `stabilizer G a`.
   (Wielandt, th. 7.5) -/
@@ -562,7 +562,7 @@ theorem IsBlock.stabilizer_le (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
 @[to_additive /-- A block containing `a` is the orbit of `a` under its stabilizer -/]
 theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
-    MulAction.orbit (stabilizer G B) a = B := by
+    MonoidAction.orbit (stabilizer G B) a = B := by
   ext x
   constructor
   · rintro ⟨⟨k, k_mem⟩, rfl⟩
@@ -601,7 +601,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
   invFun := fun ⟨H, hH⟩ =>
-    ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
+    ⟨MonoidAction.orbit H a, MonoidAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
   left_inv := fun ⟨_, ha, hB⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨_, hH⟩ =>
@@ -781,4 +781,4 @@ end Finite
 
 end Group
 
-end MulAction
+end MonoidAction

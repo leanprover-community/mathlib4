@@ -74,7 +74,7 @@ Q174955:
 
 Q179208:
   title: Cayley's theorem
-  decl: Equiv.Perm.subgroupOfMulAction
+  decl: Equiv.Perm.subgroupOfMonoidAction
   authors: Eric Wieser
   date: 2021
 
@@ -340,7 +340,7 @@ Q287347:
 
 Q288465:
   title: Orbit-stabilizer theorem
-  decl: MulAction.orbitEquivQuotientStabilizer
+  decl: MonoidAction.orbitEquivQuotientStabilizer
 
 Q303402:
   title: Rank–nullity theorem

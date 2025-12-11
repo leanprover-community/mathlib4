@@ -645,9 +645,9 @@ theorem smeval_C (r : R) : (C r).smeval x = r • 1 := by
 
 end SMulWithZero
 
-section MulActionWithZero
+section MonoidActionWithZero
 
-variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+variable [Semiring R] [AddCommMonoid S] [MonoidActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
   (x y : Sˣ)
 
 @[simp]
@@ -658,7 +658,7 @@ theorem smeval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).smeval x = (x ^ n
 theorem smeval_one : (1 : R[T;T⁻¹]).smeval x = 1 := by
   rw [← T_zero, smeval_T_pow 0 x, zpow_zero, Units.val_eq_one]
 
-end MulActionWithZero
+end MonoidActionWithZero
 
 section Module
 

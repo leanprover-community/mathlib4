@@ -31,7 +31,7 @@ open Cardinal Function
 namespace OreLocalization
 
 variable {R : Type u} [Monoid R] (S : Submonoid R) [OreLocalization.OreSet S]
-  (X : Type v) [MulAction R X]
+  (X : Type v) [MonoidAction R X]
 
 @[to_additive]
 theorem oreDiv_one_surjective_of_finite_left [Finite S] :

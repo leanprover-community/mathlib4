@@ -179,7 +179,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
 open Pointwise
 
 @[to_additive]
-theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : MeasurableSpace α}
+theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MonoidAction G α] {_ : MeasurableSpace α}
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
     (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
@@ -192,7 +192,7 @@ section Pointwise
 open Pointwise
 
 @[to_additive]
-theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MulAction G α]
+theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MonoidAction G α]
     {_ : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • ·) μ μ) :

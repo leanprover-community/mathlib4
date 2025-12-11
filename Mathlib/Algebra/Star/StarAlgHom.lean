@@ -252,7 +252,7 @@ end Zero
 section RestrictScalars
 
 variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S] [Star A] [Star B]
-    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MonoidAction R S]
     [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
@@ -643,7 +643,7 @@ which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
-  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
+  extends RingEquivClass F A B, MonoidActionSemiHomClass F (@id R) A B where
 
 -- See note [lower instance priority]
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]

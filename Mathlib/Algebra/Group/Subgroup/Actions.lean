@@ -24,39 +24,39 @@ subgroup, subgroups
 namespace Subgroup
 variable {G α β : Type*} [Group G]
 
-section MulAction
-variable [MulAction G α] {S : Subgroup G}
+section MonoidAction
+variable [MonoidAction G α] {S : Subgroup G}
 
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive
 /-- The additive action by an add_subgroup is the action by the underlying `AddGroup`. -/]
-instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+instance instMonoidAction : MonoidAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
 @[to_additive (attr := simp)]
 lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
 
-end MulAction
+end MonoidAction
 
 @[to_additive]
-instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
+instance smulCommClass_left [MonoidAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
     SMulCommClass S α β :=
   S.toSubmonoid.smulCommClass_left
 
 @[to_additive]
-instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G β] (S : Subgroup G) :
+instance smulCommClass_right [SMul α β] [MonoidAction G β] [SMulCommClass α G β] (S : Subgroup G) :
     SMulCommClass α S β :=
   S.toSubmonoid.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
 @[to_additive]
-instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
+instance [SMul α β] [MonoidAction G α] [MonoidAction G β] [IsScalarTower G α β] (S : Subgroup G) :
     IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubmonoid α β)
 
 @[to_additive]
-instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
+instance [MonoidAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/

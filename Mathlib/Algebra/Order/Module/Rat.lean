@@ -17,14 +17,14 @@ public import Mathlib.Data.Rat.Cast.Order
 
 variable {α : Type*}
 
-instance PosSMulMono.nnrat_of_rat [Preorder α] [MulAction ℚ α] [MulAction ℚ≥0 α]
+instance PosSMulMono.nnrat_of_rat [Preorder α] [MonoidAction ℚ α] [MonoidAction ℚ≥0 α]
     [IsScalarTower ℚ≥0 ℚ α] [PosSMulMono ℚ α] :
     PosSMulMono ℚ≥0 α where
   smul_le_smul_of_nonneg_left _q hq _a₁ _a₂ ha := by
     rw [← NNRat.cast_smul_eq_nnqsmul ℚ, ← NNRat.cast_smul_eq_nnqsmul ℚ]
     exact smul_le_smul_of_nonneg_left (α := ℚ) ha hq
 
-instance PosSMulStrictMono.nnrat_of_rat [Preorder α] [MulAction ℚ≥0 α] [MulAction ℚ α]
+instance PosSMulStrictMono.nnrat_of_rat [Preorder α] [MonoidAction ℚ≥0 α] [MonoidAction ℚ α]
     [IsScalarTower ℚ≥0 ℚ α] [PosSMulStrictMono ℚ α] :
     PosSMulStrictMono ℚ≥0 α where
   smul_lt_smul_of_pos_left _q hq _a₁ _a₂ ha := by

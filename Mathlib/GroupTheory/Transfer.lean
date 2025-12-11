@@ -35,7 +35,7 @@ namespace Subgroup
 
 namespace leftTransversals
 
-open Finset MulAction
+open Finset MonoidAction
 
 open scoped Pointwise
 
@@ -77,7 +77,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
-open Equiv Function MulAction ZMod
+open Equiv Function MonoidAction ZMod
 
 variable (g : G)
 
@@ -138,7 +138,7 @@ end Subgroup
 
 namespace MonoidHom
 
-open MulAction Subgroup Subgroup.leftTransversals
+open MonoidAction Subgroup Subgroup.leftTransversals
 
 /-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/

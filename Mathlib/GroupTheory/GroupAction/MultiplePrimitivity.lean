@@ -12,24 +12,24 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 Let `G` be a group acting on a type `α`.
 
-* `MulAction.IsMultiplyPreprimitive` :
+* `MonoidAction.IsMultiplyPreprimitive` :
 The action is said to be `n`-primitive if, for every subset `s :
 Set α` with `n` elements, the actions f `stabilizer G s` on the
 complement of `s` is primitive.
 
-* `MulAction.is_zero_preprimitive` : any action is 0-primitive
+* `MonoidAction.is_zero_preprimitive` : any action is 0-primitive
 
-* `MulAction.is_one_preprimitive_iff` : an action is 1-primitive if and only if it is primitive
+* `MonoidAction.is_one_preprimitive_iff` : an action is 1-primitive if and only if it is primitive
 
-* `MulAction.isMultiplyPreprimitive_ofStabilizer`: if an action is `n + 1`-primitive,
+* `MonoidAction.isMultiplyPreprimitive_ofStabilizer`: if an action is `n + 1`-primitive,
   then the action of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
 
-* `MulAction.isMultiplyPreprimitive_succ_iff_ofStabilizer` :
+* `MonoidAction.isMultiplyPreprimitive_succ_iff_ofStabilizer` :
   for `1 ≤ n`, an action is `n + 1`-primitive, then the action
   of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
-* `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
+* `MonoidAction.ofFixingSubgroup.isMultiplyPreprimitive`:
 If an action is `s.ncard + m`-primitive, then
 the action of `FixingSubgroup G s` on the complement of `s`
 is `m`-primitive.
@@ -40,13 +40,13 @@ is `m`-primitive.
 
 open scoped BigOperators Pointwise Cardinal
 
-namespace MulAction
+namespace MonoidAction
 
 open SubMulAction
 
 section Preprimitive
 
-variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+variable {G : Type*} [Group G] {α : Type*} [MonoidAction G α]
 
 -- Rewriting lemmas for transitivity or primitivity
 @[to_additive]
@@ -94,7 +94,7 @@ transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 n - 1, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
 @[mk_iff, to_additive existing]
-class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ) where
+class IsMultiplyPreprimitive (M α : Type*) [Group M] [MonoidAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive -/
   isMultiplyPretransitive (M α n) : IsMultiplyPretransitive M α n
   /-- In an `n`-preprimitive action, the action of `fixingSubgroup M s` on `ofFixingSubgroup M s`
@@ -102,7 +102,7 @@ class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ)
   isPreprimitive_ofFixingSubgroup (M n) {s : Set α} (hs : s.encard + 1 = n) :
     IsPreprimitive (fixingSubgroup M s) (ofFixingSubgroup M s)
 
-variable (M α : Type*) [Group M] [MulAction M α]
+variable (M α : Type*) [Group M] [MonoidAction M α]
 
 @[to_additive]
 instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
@@ -112,7 +112,7 @@ instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
 /-- Any action is `0`-preprimitive -/
 @[to_additive]
 theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
-  isMultiplyPretransitive := MulAction.is_zero_pretransitive
+  isMultiplyPretransitive := MonoidAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
 /-- An action is preprimitive iff it is `1`-preprimitive -/
@@ -269,7 +269,7 @@ variable {M α}
 
 @[to_additive]
 theorem IsMultiplyPreprimitive.of_bijective_map
-    {N β : Type*} [Group N] [MulAction N β] {φ : M → N}
+    {N β : Type*} [Group N] [MonoidAction N β] {φ : M → N}
     {f : α →ₑ[φ] β} (hf : Function.Bijective f) {n : ℕ}
     (h : IsMultiplyPreprimitive M α n) :
     IsMultiplyPreprimitive N β n where
@@ -308,7 +308,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
 
 @[to_additive]
 theorem isMultiplyPreprimitive_congr
-    {N β : Type*} [Group N] [MulAction N β] {φ : M → N} (hφ : Function.Surjective φ)
+    {N β : Type*} [Group N] [MonoidAction N β] {φ : M → N} (hφ : Function.Surjective φ)
     {f : α →ₑ[φ] β} (hf : Function.Bijective f) {n : ℕ} :
     IsMultiplyPreprimitive M α n ↔ IsMultiplyPreprimitive N β n := by
   refine ⟨IsMultiplyPreprimitive.of_bijective_map hf, ?_⟩
@@ -355,4 +355,4 @@ theorem isMultiplyPreprimitive_congr
         simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t] at hx ⊢
         exact fun hy ↦ hx y hy rfl
 
-end MulAction
+end MonoidAction

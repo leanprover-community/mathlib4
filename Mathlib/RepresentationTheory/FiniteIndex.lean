@@ -127,7 +127,7 @@ noncomputable def coindToInd : coind S.subtype A →ₗ[k] ind S.subtype A where
 
 omit [DecidableRel (QuotientGroup.rightRel S)] in
 lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
-    (hx : f.1.support ⊆ MulAction.orbit S g) :
+    (hx : f.1.support ⊆ MonoidAction.orbit S g) :
     coindToInd A f = IndV.mk S.subtype _ g (f.1 g) := by
   rw [coindToInd_apply, Finset.sum_eq_single ⟦g⟧]
   · simp

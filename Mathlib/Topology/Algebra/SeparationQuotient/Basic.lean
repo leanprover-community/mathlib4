@@ -46,8 +46,8 @@ instance instContinuousConstSMul : ContinuousConstSMul M (SeparationQuotient X) 
     continuous_mk.comp <| continuous_const_smul c
 
 @[to_additive]
-instance instIsPretransitiveSMul [MulAction.IsPretransitive M X] :
-    MulAction.IsPretransitive M (SeparationQuotient X) where
+instance instIsPretransitiveSMul [MonoidAction.IsPretransitive M X] :
+    MonoidAction.IsPretransitive M (SeparationQuotient X) where
   exists_smul_eq := surjective_mk.forall₂.2 fun x y ↦
     (MulAction.exists_smul_eq M x y).imp fun _ ↦ congr_arg mk
 
@@ -81,8 +81,8 @@ instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [Topologic
   ZeroHom.smulZeroClass ⟨mk, mk_zero⟩ mk_smul
 
 @[to_additive]
-instance instMulAction {M X : Type*} [Monoid M] [MulAction M X] [TopologicalSpace X]
-    [ContinuousConstSMul M X] : MulAction M (SeparationQuotient X) :=
+instance instMonoidAction {M X : Type*} [Monoid M] [MonoidAction M X] [TopologicalSpace X]
+    [ContinuousConstSMul M X] : MonoidAction M (SeparationQuotient X) :=
   surjective_mk.mulAction mk mk_smul
 
 section Monoid

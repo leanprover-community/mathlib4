@@ -544,7 +544,7 @@ instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
   fast_instance% Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one
     coe_mul coe_inv coe_div coe_pow coe_zpow
 
-instance [Monoid K] [MulAction K β] : MulAction K (α →ₛ β) :=
+instance [Monoid K] [MonoidAction K β] : MonoidAction K (α →ₛ β) :=
   fast_instance% Function.Injective.mulAction (fun f => show α → β from f) coe_injective coe_smul
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=

@@ -512,7 +512,7 @@ theorem single_isCycle₁_iff (g : G) (a : A) :
   simp [IsCycle₁, eq_comm]
 
 theorem single_isCycle₁_of_mem_fixedPoints
-    (g : G) (a : A) (ha : a ∈ MulAction.fixedPoints G A) :
+    (g : G) (a : A) (ha : a ∈ MonoidAction.fixedPoints G A) :
     IsCycle₁ (single g a) := by
   simp_all [IsCycle₁]
 

@@ -33,9 +33,9 @@ open Pointwise
 
 variable {ι : Sort*} {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
-section MulActionWithZero
+section MonoidActionWithZero
 
-variable [MulActionWithZero α ℝ] [IsOrderedModule α ℝ] {a : α}
+variable [MonoidActionWithZero α ℝ] [IsOrderedModule α ℝ] {a : α}
 
 theorem Real.sInf_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : sInf (a • s) = a • sInf s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
@@ -65,7 +65,7 @@ theorem Real.sSup_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : sSup (a • s) =
 theorem Real.smul_iSup_of_nonneg (ha : 0 ≤ a) (f : ι → ℝ) : (a • ⨆ i, f i) = ⨆ i, a • f i :=
   (Real.sSup_smul_of_nonneg ha _).symm.trans <| congr_arg sSup <| (range_comp _ _).symm
 
-end MulActionWithZero
+end MonoidActionWithZero
 
 section Module
 

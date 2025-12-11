@@ -201,7 +201,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
 
 /-- Action of `GL (Fin 2) ℝ` on the upper half-plane, with `GL(2, ℝ)⁺` acting by Moebius
 transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using complex conjugation. -/
-instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
+instance glAction : MonoidAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
     change smulAux 1 z = z
@@ -258,14 +258,14 @@ lemma denom_one : denom 1 z = 1 := by
 
 section SLAction
 
-noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
+noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MonoidAction SL(2, R) ℍ :=
+  MonoidAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ))) := by
-  rw [MulAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
+  rw [MonoidAction.compHom_smul_def, coe_smul_of_det_pos (by simp)]
   rfl
 
 theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :

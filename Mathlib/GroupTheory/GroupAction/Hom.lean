@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Ring.Action.Basic
 
 ## Main definitions
 
-* `MulActionHom φ X Y`, the type of equivariant functions from `X` to `Y`,
+* `MonoidActionHom φ X Y`, the type of equivariant functions from `X` to `Y`,
   where `φ : M → N` is a map, `M` acting on the type `X` and `N` acting on the type of `Y`.
   `AddActionHom φ X Y` is its additive version.
 * `DistribMulActionHom φ A B`,
@@ -28,7 +28,7 @@ public import Mathlib.Algebra.Ring.Action.Basic
   `M` acting on the ring `R` and `N` acting on the ring `S`.
 
 The above types have corresponding classes:
-* `MulActionHomClass F φ X Y` states that `F` is a type of bundled `X → Y` homs
+* `MonoidActionHomClass F φ X Y` states that `F` is a type of bundled `X → Y` homs
   which are `φ`-equivariant;
   `AddActionHomClass F φ X Y` is its additive version.
 * `DistribMulActionHomClass F φ A B` states that `F` is a type of bundled `A → B` homs
@@ -40,16 +40,16 @@ The above types have corresponding classes:
 
 We introduce the following notation to code equivariant maps
 (the subscript index `ₑ` is for *equivariant*) :
-* `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `AddActionHom φ X Y`
+* `X →ₑ[φ] Y` is `MonoidActionHom φ X Y` and `AddActionHom φ X Y`
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
-* `X →[M] Y` is `MulActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
+* `X →[M] Y` is `MonoidActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
 * `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
 * `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
 
-The notation for `MulActionHom` and `AddActionHom` is the same, because it is unlikely
+The notation for `MonoidActionHom` and `AddActionHom` is the same, because it is unlikely
 that it could lead to confusion — unless one needs types `M` and `X` with simultaneous
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 
@@ -59,7 +59,7 @@ instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 
 assert_not_exists Submonoid
 
-section MulActionHom
+section MonoidActionHom
 
 variable {M' : Type*}
 variable {M : Type*} {N : Type*} {P : Type*}
@@ -81,7 +81,7 @@ structure AddActionHom {M N : Type*} (φ : M → N) (X : Type*) [VAdd M X] (Y : 
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
 a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
 @[to_additive]
-structure MulActionHom where
+structure MonoidActionHom where
   /-- The underlying function. -/
   protected toFun : X → Y
   /-- The proposition that the function commutes with the actions. -/
@@ -89,11 +89,11 @@ structure MulActionHom where
 
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
-notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
+notation:25 (name := «MonoidActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MonoidActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the action of `M`.
 This is the same as `X →ₑ[@id M] Y`. -/
-notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
+notation:25 (name := «MonoidActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MonoidActionHom (@id M) X Y
 
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively
@@ -117,75 +117,75 @@ class AddActionSemiHomClass (F : Type*)
   /-- The proposition that the function preserves the action. -/
   map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
 
-/-- `MulActionSemiHomClass F φ X Y` states that
+/-- `MonoidActionSemiHomClass F φ X Y` states that
   `F` is a type of morphisms which are `φ`-equivariant.
 
-You should extend this class when you extend `MulActionHom`. -/
+You should extend this class when you extend `MonoidActionHom`. -/
 @[to_additive]
-class MulActionSemiHomClass (F : Type*)
+class MonoidActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
     (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 
-export MulActionSemiHomClass (map_smulₛₗ)
+export MonoidActionSemiHomClass (map_smulₛₗ)
 export AddActionSemiHomClass (map_vaddₛₗ)
 
-/-- `MulActionHomClass F M X Y` states that `F` is a type of
+/-- `MonoidActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
-This is an abbreviation of `MulActionSemiHomClass`. -/
-@[to_additive /-- `MulActionHomClass F M X Y` states that `F` is a type of
+This is an abbreviation of `MonoidActionSemiHomClass`. -/
+@[to_additive /-- `MonoidActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
-This is an abbreviation of `MulActionSemiHomClass`. -/]
-abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
+This is an abbreviation of `MonoidActionSemiHomClass`. -/]
+abbrev MonoidActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
-  MulActionSemiHomClass F (@id M) X Y
+  MonoidActionSemiHomClass F (@id M) X Y
 
 @[to_additive] instance : FunLike (MulActionHom φ X Y) X Y where
-  coe := MulActionHom.toFun
+  coe := MonoidActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 @[to_additive (attr := simp)]
 theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
-    [FunLike F X Y] [MulActionHomClass F M X Y]
+    [FunLike F X Y] [MonoidActionHomClass F M X Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x
 
 @[to_additive]
-instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y where
-  map_smulₛₗ := MulActionHom.map_smul'
+instance : MonoidActionSemiHomClass (X →ₑ[φ] Y) φ X Y where
+  map_smulₛₗ := MonoidActionHom.map_smul'
 
-initialize_simps_projections MulActionHom (toFun → apply)
+initialize_simps_projections MonoidActionHom (toFun → apply)
 initialize_simps_projections AddActionHom (toFun → apply)
 
-namespace MulActionHom
+namespace MonoidActionHom
 
 variable {φ X Y}
 variable {F : Type*} [FunLike F X Y]
 
-/-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ X Y`
-  into an actual `MulActionHom`.
-  This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
+/-- Turn an element of a type `F` satisfying `MonoidActionSemiHomClass F φ X Y`
+  into an actual `MonoidActionHom`.
+  This is declared as the default coercion from `F` to `MonoidActionSemiHom φ X Y`. -/
 @[to_additive (attr := coe)
   /-- Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
   into an actual `AddActionHom`.
   This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`. -/]
-def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
+def _root_.MulActionSemiHomClass.toMonoidActionHom [MonoidActionSemiHomClass F φ X Y] (f : F) :
     X →ₑ[φ] Y where
   toFun := DFunLike.coe f
   map_smul' := map_smulₛₗ f
 
-/-- Any type satisfying `MulActionSemiHomClass` can be cast into `MulActionHom` via
-  `MulActionHomSemiClass.toMulActionHom`. -/
+/-- Any type satisfying `MonoidActionSemiHomClass` can be cast into `MonoidActionHom` via
+  `MonoidActionHomSemiClass.toMonoidActionHom`. -/
 @[to_additive]
-instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
-  ⟨MulActionSemiHomClass.toMulActionHom⟩
+instance [MonoidActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
+  ⟨MonoidActionSemiHomClass.toMonoidActionHom⟩
 
 variable (M' X Y F) in
 /-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
 @[to_additive]
 theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
-    [MulActionHomClass F X X Y] : MulActionHomClass F M' X Y where
+    [MonoidActionHomClass F X X Y] : MonoidActionHomClass F M' X Y where
   map_smulₛₗ f m x := by
     rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul,
       smul_eq_mul, mul_one, id_eq]
@@ -220,7 +220,7 @@ theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
   rfl
 
 lemma _root_.FaithfulSMul.of_injective
-    [FaithfulSMul M' X] [MulActionHomClass F M' X Y] (f : F)
+    [FaithfulSMul M' X] [MonoidActionHomClass F M' X Y] (f : F)
     (hf : Function.Injective f) :
     FaithfulSMul M' Y where
   eq_of_smul_eq_smul {_ _} h := eq_of_smul_eq_smul fun m ↦ hf <| by simp_rw [map_smul, h]
@@ -236,13 +236,13 @@ variable {M N Z}
 
 @[to_additive (attr := simp)]
 theorem id_apply (x : X) :
-    MulActionHom.id M x = x :=
+    MonoidActionHom.id M x = x :=
   rfl
 
-end MulActionHom
+end MonoidActionHom
 
-namespace MulActionHom
-open MulActionHom
+namespace MonoidActionHom
+open MonoidActionHom
 
 variable {φ ψ χ X Y Z}
 
@@ -329,8 +329,8 @@ theorem inverse'_inverse'
 theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MulActionHom.id M := by
-  rw [MulActionHom.ext_iff]
+    (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MonoidActionHom.id M := by
+  rw [MonoidActionHom.ext_iff]
   intro x
   simp only [comp_apply, id_apply]
   exact h₁ x
@@ -339,8 +339,8 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
 theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
-    f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
-  rw [MulActionHom.ext_iff]
+    f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MonoidActionHom.id N := by
+  rw [MonoidActionHom.ext_iff]
   intro x
   simp only [comp_apply, id_apply]
   exact h₂ x
@@ -349,38 +349,38 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
 @[to_additive (attr := simps) /-- If additive actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-additive action homomorphism. -/]
-def _root_.SMulCommClass.toMulActionHom {M} (N α : Type*)
+def _root_.SMulCommClass.toMonoidActionHom {M} (N α : Type*)
     [SMul M α] [SMul N α] [SMulCommClass M N α] (c : M) :
     α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
 
-end MulActionHom
+end MonoidActionHom
 
-end MulActionHom
+end MonoidActionHom
 
-/-- Evaluation at a point as a `MulActionHom`. -/
+/-- Evaluation at a point as a `MonoidActionHom`. -/
 @[to_additive (attr := simps) /-- Evaluation at a point as an `AddActionHom`. -/]
-def Pi.evalMulActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
+def Pi.evalMonoidActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
     (∀ i, X i) →[M] X i where
   toFun := Function.eval i
   map_smul' _ _ := rfl
 
-namespace MulActionHom
+namespace MonoidActionHom
 
 section FstSnd
 
 variable {M α β : Type*} [SMul M α] [SMul M β]
 
 variable (M α β) in
-/-- `Prod.fst` as a bundled `MulActionHom`. -/
+/-- `Prod.fst` as a bundled `MonoidActionHom`. -/
 @[to_additive (attr := simps -fullyApplied) /-- `Prod.fst` as a bundled `AddActionHom`. -/]
 def fst : α × β →[M] α where
   toFun := Prod.fst
   map_smul' _ _ := rfl
 
 variable (M α β) in
-/-- `Prod.snd` as a bundled `MulActionHom`. -/
+/-- `Prod.snd` as a bundled `MonoidActionHom`. -/
 @[to_additive (attr := simps -fullyApplied) /-- `Prod.snd` as a bundled `AddActionHom`. -/]
 def snd : α × β →[M] β where
   toFun := Prod.snd
@@ -413,9 +413,9 @@ def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] 
   toFun := Prod.map f g
   __ := (f.comp (fst ..)).prod (g.comp (snd ..))
 
-end MulActionHom
+end MonoidActionHom
 
-namespace MulActionHom
+namespace MonoidActionHom
 
 section
 
@@ -461,8 +461,8 @@ instance [SMul M X] [AddCommMonoid Y] [DistribSMul N Y] :
   add_comm _ _ := ext fun _ ↦ add_comm _ _
 
 @[to_additive]
-instance [SMul M X] [SMul N Y] [Monoid R] [MulAction R Y] [SMulCommClass N R Y] :
-    MulAction R (X →ₑ[σ] Y) where
+instance [SMul M X] [SMul N Y] [Monoid R] [MonoidAction R Y] [SMulCommClass N R Y] :
+    MonoidAction R (X →ₑ[σ] Y) where
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
 
@@ -543,7 +543,7 @@ instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
 
 end
 
-end MulActionHom
+end MonoidActionHom
 
 section DistribMulAction
 
@@ -566,7 +566,7 @@ structure DistribMulActionHom extends A →ₑ[φ] B, A →+ B
 add_decl_doc DistribMulActionHom.toAddMonoidHom
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
-add_decl_doc DistribMulActionHom.toMulActionHom
+add_decl_doc DistribMulActionHom.toMonoidActionHom
 
 @[inherit_doc]
 notation:25 (name := «DistribMulActionHomLocal≺»)
@@ -587,7 +587,7 @@ class DistribMulActionSemiHomClass (F : Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B] : Prop
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
+    extends MonoidActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
@@ -614,16 +614,16 @@ instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
 variable {φ φ' A B B₁}
 variable {F : Type*} [FunLike F A B]
 
-/-- Turn an element of a type `F` satisfying `MulActionHomClass F M X Y` into an actual
-`MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
+/-- Turn an element of a type `F` satisfying `MonoidActionHomClass F M X Y` into an actual
+`MonoidActionHom`. This is declared as the default coercion from `F` to `MonoidActionHom M X Y`. -/
 @[coe]
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     [DistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ+[φ] B :=
   { (f : A →+ B), (f : A →ₑ[φ] B) with }
 
-/-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
-via `MulActionHomClass.toMulActionHom`. -/
+/-- Any type satisfying `MonoidActionHomClass` can be cast into `MonoidActionHom`
+via `MonoidActionHomClass.toMonoidActionHom`. -/
 instance [DistribMulActionSemiHomClass F φ A B] : CoeTC F (A →ₑ+[φ] B) :=
   ⟨DistribMulActionSemiHomClass.toDistribMulActionHom⟩
 
@@ -632,7 +632,7 @@ then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
 @[simps]
 def _root_.SMulCommClass.toDistribMulActionHom {M} (N A : Type*) [Monoid N] [AddMonoid A]
     [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
-  { SMulCommClass.toMulActionHom N A c,
+  { SMulCommClass.toMonoidActionHom N A c,
     DistribSMul.toAddMonoidHom _ c with
     toFun := (c • ·) }
 
@@ -654,10 +654,10 @@ theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
 protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
   DFunLike.congr_fun h _
 
-theorem toMulActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
+theorem toMonoidActionHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →ₑ[φ] B) = (g : A →ₑ[φ] B)) :
     f = g := by
   ext a
-  exact MulActionHom.congr_fun h a
+  exact MonoidActionHom.congr_fun h a
 
 theorem toAddMonoidHom_injective {f g : A →ₑ+[φ] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
@@ -682,7 +682,7 @@ variable (M)
 
 /-- The identity map as an equivariant additive monoid homomorphism. -/
 protected def id : A →+[M] A :=
-  ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
+  ⟨MonoidActionHom.id _, rfl, fun _ _ => rfl⟩
 
 @[simp]
 theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
@@ -716,7 +716,7 @@ instance : Inhabited (A →ₑ+[φ] B) :=
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₑ+[χ] C :=
-  { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
+  { MonoidActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 
 @[simp]
@@ -745,7 +745,7 @@ theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
 @[simps]
 def inverse (f : A →+[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : B₁ →+[M] A :=
-  { (f : A →+ B₁).inverse g h₁ h₂, f.toMulActionHom.inverse g h₁ h₂ with toFun := g }
+  { (f : A →+ B₁).inverse g h₁ h₂, f.toMonoidActionHom.inverse g h₁ h₂ with toFun := g }
 
 section Semiring
 
@@ -939,7 +939,7 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
     S₁ →+*[M] R :=
   { (f : R →+ S₁).inverse g h₁ h₂,
     (f : R →* S₁).inverse g h₁ h₂,
-    f.toMulActionHom.inverse g h₁ h₂ with
+    f.toMonoidActionHom.inverse g h₁ h₂ with
     toFun := g }
 
 end MulSemiringActionHom
@@ -947,7 +947,7 @@ end MulSemiringActionHom
 end DistribMulAction
 
 lemma IsSMulRegular.of_injective {R M : Type*} [SMul R M]
-    {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
+    {N F} [SMul R N] [FunLike F M N] [MonoidActionHomClass F R M N]
     (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
     IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
   (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))

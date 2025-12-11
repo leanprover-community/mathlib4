@@ -56,7 +56,7 @@ theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
-theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MonoidAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
   rw [smul_apply]
@@ -68,7 +68,7 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
 
 /-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
 @[simp]
-theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MonoidAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
       ∑ i ∈ divisors x, f i := by

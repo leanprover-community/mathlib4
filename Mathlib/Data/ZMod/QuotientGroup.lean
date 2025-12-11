@@ -81,11 +81,11 @@ theorem zmultiplesQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a
 
 end AddAction
 
-namespace MulAction
+namespace MonoidAction
 
 open AddAction Subgroup AddSubgroup Function
 
-variable {α β : Type*} [Group α] (a : α) [MulAction α β] (b : β)
+variable {α β : Type*} [Group α] (a : α) [MonoidAction α β] (b : β)
 
 /-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
@@ -147,7 +147,7 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
-end MulAction
+end MonoidAction
 
 section Group
 
@@ -179,7 +179,7 @@ end Group
 namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G) (g : G)
 
-open Equiv Function MulAction
+open Equiv Function MonoidAction
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :

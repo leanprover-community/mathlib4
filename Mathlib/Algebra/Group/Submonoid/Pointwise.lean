@@ -20,7 +20,7 @@ This file provides:
 
 and the actions
 
-* `Submonoid.pointwiseMulAction`
+* `Submonoid.pointwiseMonoidAction`
 * `AddSubmonoid.pointwiseAddAction`
 
 which matches the action of `Set.mulActionSet`.
@@ -108,7 +108,7 @@ theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
   simp [mem_sup, Set.mem_mul]
 
 @[to_additive]
-theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
+theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MonoidAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
   | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
@@ -209,7 +209,7 @@ variable [Monoid α] [MulDistribMulAction α M]
 /-- The action on a submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction α (Submonoid M) where
+protected def pointwiseMonoidAction : MonoidAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
     change S.map _ = S
@@ -218,7 +218,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
     (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
-scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
+scoped[Pointwise] attribute [instance] Submonoid.pointwiseMonoidAction
 
 @[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=

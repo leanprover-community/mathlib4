@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
 
-This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
+This file provides the action `Ideal.pointwiseMonoidAction` which morally matches the action of
 `mulActionSet` (though here an extra `Ideal.span` is inserted).
 
 This action is available in the `Pointwise` locale.
@@ -151,7 +151,7 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+    P.toAddSubgroup.inertia M ≤ MonoidAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
   rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]

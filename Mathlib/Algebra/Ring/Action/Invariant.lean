@@ -25,7 +25,7 @@ section Ring
 variable (M R : Type*) [Monoid M] [Ring R] [MulSemiringAction M R]
 variable (S : Subring R)
 
-open MulAction
+open MonoidAction
 
 variable {R}
 

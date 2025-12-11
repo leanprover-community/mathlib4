@@ -34,7 +34,7 @@ an action of a monoid object `M` in `C` on an object `X` in `D` is the data of a
 map `smul : M ⊙ₗ X ⟶ X` that satisfies unitality and associativity with
 multiplication.
 
-See `MulAction` for the non-categorical version. -/
+See `MonoidAction` for the non-categorical version. -/
 class ModObj (X : D) where
   /-- The action map -/
   smul : M ⊙ₗ X ⟶ X

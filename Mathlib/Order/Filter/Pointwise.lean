@@ -1051,7 +1051,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 `Filter α` on `Filter β`. -/
 @[to_additive /-- An additive action of an additive monoid `α` on a type `β` gives an additive
 action of `Filter α` on `Filter β`. -/]
-protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
+protected def mulAction [Monoid α] [MonoidAction α β] : MonoidAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul
 
@@ -1059,7 +1059,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 -/
 @[to_additive /-- An additive action of an additive monoid on a type `β` gives an additive action on
 `Filter β`. -/]
-protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
+protected def mulActionFilter [Monoid α] [MonoidAction α β] : MonoidAction α (Filter β) where
   mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
@@ -1118,7 +1118,7 @@ end SMulWithZero
 section Cancel
 
 @[to_additive]
-theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : α → β} {c : γ}
+theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MonoidAction γ β] {m : α → β} {c : γ}
     {f : Filter α} {g : Filter β} (hc : IsUnit c) :
     Tendsto (c • m) f (c • g) ↔ Tendsto m f g := by
   rcases hc.exists_left_inv with ⟨d, hd⟩
@@ -1126,11 +1126,11 @@ theorem _root_.IsUnit.smul_tendsto_smul_iff [Monoid γ] [MulAction γ β] {m : �
   simpa [Function.comp_def, smul_smul, hd] using (tendsto_map (f := (d • ·))).comp H
 
 @[to_additive (attr := simp)]
-theorem smul_tendsto_smul_iff [Group γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+theorem smul_tendsto_smul_iff [Group γ] [MonoidAction γ β] {m : α → β} {c : γ} {f : Filter α}
     {g : Filter β} : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   Group.isUnit _ |>.smul_tendsto_smul_iff
 
-theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MulAction γ β] {m : α → β} {c : γ} {f : Filter α}
+theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MonoidAction γ β] {m : α → β} {c : γ} {f : Filter α}
     {g : Filter β} (hc : c ≠ 0) : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   hc.isUnit.smul_tendsto_smul_iff
 

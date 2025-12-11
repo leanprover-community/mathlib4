@@ -181,7 +181,7 @@ instance instIsCentralScalar [SMul R A] [SMul Rᵐᵒᵖ A] [IsCentralScalar R A
     IsCentralScalar R (CStarMatrix m n A) :=
   Pi.isCentralScalar
 
-instance instMulAction [Monoid R] [MulAction R A] : MulAction R (CStarMatrix m n A) :=
+instance instMonoidAction [Monoid R] [MonoidAction R A] : MonoidAction R (CStarMatrix m n A) :=
   Pi.mulAction _
 
 instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :

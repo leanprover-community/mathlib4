@@ -55,12 +55,12 @@ export FaithfulVAdd (eq_of_vadd_eq_vadd)
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 
-/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
+/-- `Monoid.toMonoidAction` is faithful on cancellative monoids. -/
 @[to_additive /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h ↦ mul_right_cancel (h 1)⟩
 
-/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
+/-- `Monoid.toOppositeMonoidAction` is faithful on cancellative monoids. -/
 @[to_additive /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
 instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
@@ -79,7 +79,7 @@ lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
   · simpa using hr 1
 
 @[to_additive]
-theorem faithfulSMul_iff [Group G] [MulAction G α] :
+theorem faithfulSMul_iff [Group G] [MonoidAction G α] :
     FaithfulSMul G α ↔ (∀ g : G, (∀ a : α, g • a = a) → g = 1) := by
   refine ⟨fun h a ha ↦ h.eq_of_smul_eq_smul ?_, fun h ↦ ⟨fun {a₁ a₂} h' ↦ ?_⟩⟩
   · simpa only [one_smul]

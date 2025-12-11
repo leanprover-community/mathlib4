@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 These instances transfer the action by an element `m : M` of a monoid `M` written as `m • a` onto
 the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s • a = (s : M) • a`.
 
-These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
+These instances work particularly well in conjunction with `Monoid.toMonoidAction`, enabling
 `s • m` as an alias for `↑s * m`.
 -/
 
@@ -56,7 +56,7 @@ end MulOneClass
 variable [Monoid M'] [SubmonoidClass S' M']
 
 @[to_additive]
-instance (priority := low) [MulAction M' α] : MulAction s α where
+instance (priority := low) [MonoidAction M' α] : MonoidAction s α where
   one_smul := one_smul M'
   mul_smul m₁ m₂ := mul_smul (m₁ : M') m₂
 
@@ -103,7 +103,7 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
+instance mulAction [MonoidAction M' α] (S : Submonoid M') : MonoidAction S α :=
   inferInstance
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance

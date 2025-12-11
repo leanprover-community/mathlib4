@@ -41,7 +41,7 @@ namespace SingleObj
 variable {M G : Type v} [Monoid M] [Group G]
 
 /-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
-instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
+instance (J : SingleObj M ⥤ Type u) : MonoidAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
     change J.map (𝟙 _) x = x
@@ -60,7 +60,7 @@ variable (J : SingleObj M ⥤ Type u)
 induced action on `J.obj (SingleObj.star M)`. -/
 @[simps]
 def Types.sections.equivFixedPoints :
-    J.sections ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) where
+    J.sections ≃ MonoidAction.fixedPoints M (J.obj (SingleObj.star M)) where
   toFun s := ⟨s.val _, s.property⟩
   invFun p := ⟨fun _ ↦ p.val, p.property⟩
 
@@ -68,7 +68,7 @@ def Types.sections.equivFixedPoints :
 induced action on `J.obj (SingleObj.star M)`. -/
 @[simps!]
 noncomputable def Types.limitEquivFixedPoints :
-    limit J ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) :=
+    limit J ≃ MonoidAction.fixedPoints M (J.obj (SingleObj.star M)) :=
   (Types.limitEquivSections J).trans (Types.sections.equivFixedPoints J)
 
 end Limits
@@ -78,10 +78,10 @@ section Colimits
 variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 
 /-- The relation used to construct colimits in types for `J : SingleObj G ⥤ Type u` is
-equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
+equivalent to the `MonoidAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
 lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     J.ColimitTypeRel ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩ ↔
-      MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
+      MonoidAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   conv => rhs; rw [Setoid.comm']
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   grind
@@ -93,7 +93,7 @@ lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps]
 def colimitTypeRelEquivOrbitRelQuotient :
-    J.ColimitType ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
+    J.ColimitType ≃ MonoidAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
   toFun := Quot.lift (fun p => ⟦p.2⟧) <| fun a b h => Quotient.sound <|
     (colimitTypeRel_iff_orbitRel J a.2 b.2).mp h
   invFun := Quot.lift (fun x => Quot.mk _ ⟨SingleObj.star G, x⟩) <| fun a b h =>
@@ -108,7 +108,7 @@ def colimitTypeRelEquivOrbitRelQuotient :
 `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps!]
 noncomputable def Types.colimitEquivQuotient :
-    colimit J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) :=
+    colimit J ≃ MonoidAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) :=
   (Types.colimitEquivColimitType J).trans (colimitTypeRelEquivOrbitRelQuotient J)
 
 end Colimits

@@ -27,7 +27,7 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
 * `minimalPeriod f x` : the minimal period of a point `x` under an endomorphism `f` or zero
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
-* `MulAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
+* `MonoidAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
   an equivalent `AddAction.period g x` is defined for additive actions.
 
 ## Main statements
@@ -554,14 +554,14 @@ end Pi
 
 end Function
 
-namespace MulAction
+namespace MonoidAction
 
 open Function
 
 universe u v
 variable {α : Type v}
-variable {G : Type u} [Group G] [MulAction G α]
-variable {M : Type u} [Monoid M] [MulAction M α]
+variable {G : Type u} [Group G] [MonoidAction G α]
+variable {M : Type u} [Monoid M] [MonoidAction M α]
 
 /--
 The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
@@ -571,11 +571,11 @@ The period of a multiplicative action of `g` on `a` is the smallest positive `n`
 such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
-/-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
+/-- `MonoidAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
 @[to_additive /-- `AddAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
-    MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
+    MonoidAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
 @[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
@@ -587,7 +587,7 @@ lemma isPeriodicPt_smul_iff {m : M} {a : α} {n : ℕ} :
     IsPeriodicPt (m • ·) n a ↔ m ^ n • a = a := by
   rw [← smul_iterate_apply, IsPeriodicPt, IsFixedPt]
 
-/-! ### Multiples of `MulAction.period`
+/-! ### Multiples of `MonoidAction.period`
 
 It is easy to convince oneself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
 then `n` must be a multiple of `period g a`.
@@ -665,4 +665,4 @@ theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, zpow_mod_period_smul]
 
-end MulAction
+end MonoidAction

@@ -29,7 +29,7 @@ namespace Subgroup
 
 section SchurZassenhausAbelian
 
-open MulOpposite MulAction Subgroup.leftTransversals
+open MulOpposite MonoidAction Subgroup.leftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
@@ -63,7 +63,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
 variable {H}
 variable [Normal H]
 
-noncomputable instance : MulAction G H.QuotientDiff where
+noncomputable instance : MonoidAction G H.QuotientDiff where
   smul g :=
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext

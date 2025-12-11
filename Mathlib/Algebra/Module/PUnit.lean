@@ -46,7 +46,7 @@ instance smulWithZero [Zero R] : SMulWithZero R PUnit where
   smul_zero := by subsingleton
   zero_smul := by subsingleton
 
-instance mulAction [Monoid R] : MulAction R PUnit where
+instance mulAction [Monoid R] : MonoidAction R PUnit where
   __ := PUnit.smul
   one_smul := by subsingleton
   mul_smul := by subsingleton
@@ -64,7 +64,7 @@ instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
-instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
+instance mulActionWithZero [MonoidWithZero R] : MonoidActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
 instance module [Semiring R] : Module R PUnit where
@@ -82,7 +82,7 @@ lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
 @[to_additive] instance [SMul R S] : SMulCommClass PUnit R S := ⟨by simp⟩
 instance [SMul R S] : IsScalarTower PUnit R S := ⟨by simp⟩
 
-instance : MulAction PUnit R where
+instance : MonoidAction PUnit R where
   __ := inferInstanceAs (SMul PUnit R)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl

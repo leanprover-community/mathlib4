@@ -12,22 +12,22 @@ public import Mathlib.GroupTheory.GroupAction.Basic
 /-!
 # Period of a group action
 
-This module defines some helpful lemmas around [`MulAction.period`] and [`AddAction.period`].
+This module defines some helpful lemmas around [`MonoidAction.period`] and [`AddAction.period`].
 The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a`
 (resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
 
 If such an `m` does not exist,
-then by convention `MulAction.period` and `AddAction.period` return 0.
+then by convention `MonoidAction.period` and `AddAction.period` return 0.
 -/
 
 @[expose] public section
 
-namespace MulAction
+namespace MonoidAction
 
 universe u v
 variable {α : Type v}
-variable {G : Type u} [Group G] [MulAction G α]
-variable {M : Type u} [Monoid M] [MulAction M α]
+variable {G : Type u} [Group G] [MonoidAction G α]
+variable {M : Type u} [Monoid M] [MonoidAction M α]
 
 /-- If the action is periodic, then a lower bound for its period can be computed. -/
 @[to_additive /-- If the action is periodic, then a lower bound for its period can be computed. -/]
@@ -64,7 +64,7 @@ theorem pow_smul_ne_of_lt_period {m : M} {a : α} {n : ℕ} (n_pos : 0 < n)
 
 section Identities
 
-/-! ### `MulAction.period` for common group elements
+/-! ### `MonoidAction.period` for common group elements
 -/
 
 variable (M) in
@@ -82,7 +82,7 @@ end Identities
 
 section MonoidExponent
 
-/-! ### `MulAction.period` and group exponents
+/-! ### `MonoidAction.period` and group exponents
 
 The period of a given element `m : M` can be bounded by the `Monoid.exponent M` or `orderOf m`.
 -/
@@ -126,4 +126,4 @@ theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M)
 end MonoidExponent
 
 
-end MulAction
+end MonoidAction

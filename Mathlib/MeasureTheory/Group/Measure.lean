@@ -100,7 +100,7 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
   (measurePreserving_mul_right μ g).comp hf
 
 @[to_additive]
-instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
+instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MonoidAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
   ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
@@ -515,7 +515,7 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 @[to_additive
 /-- The image of an inner regular measure under map of a left additive action is again
 inner regular -/]
-instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousConstSMul α G]
+instance innerRegular_map_smul {α} [Monoid α] [MonoidAction α G] [ContinuousConstSMul α G]
     [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
   InnerRegular.map_of_continuous (continuous_const_smul a)
 
@@ -843,7 +843,7 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
 @[to_additive
 /-- The image of a Haar measure under map of a left additive action is again a Haar measure -/]
 instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
-    [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    [Group α] [MonoidAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
   lt_top_of_isCompact K hK := by

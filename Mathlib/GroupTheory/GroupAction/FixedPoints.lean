@@ -14,21 +14,21 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
-This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
+This module contains some useful properties of `MonoidAction.fixedPoints` and `MonoidAction.fixedBy`
 that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
-as well as their interaction with `MulActionHom`.
+as well as their interaction with `MonoidActionHom`.
 
 ## Main theorems
 
-* `MulAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
-* `MulAction.fixedBy_conj` and `MulAction.smul_fixedBy`: the pointwise group action of `h` on
+* `MonoidAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
+* `MonoidAction.fixedBy_conj` and `MonoidAction.smul_fixedBy`: the pointwise group action of `h` on
   `fixedBy α g` is equal to the `fixedBy` set of the conjugation of `h` with `g`
   (`fixedBy α (h * g * h⁻¹)`).
-* `MulAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
+* `MonoidAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
   `(fixedBy α g)ᶜ`, then the group action of `g` cannot send elements of `s` outside of `s`.
-  This is expressed as `s ∈ fixedBy (Set α) g`, and `MulAction.set_mem_fixedBy_iff` allows one
+  This is expressed as `s ∈ fixedBy (Set α) g`, and `MonoidAction.set_mem_fixedBy_iff` allows one
   to convert the relationship back to `g • x ∈ s ↔ x ∈ s`.
-* `MulAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
+* `MonoidAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
   do not commute from the disjointness of the `(fixedBy α g)ᶜ` set and `h • (fixedBy α g)ᶜ`,
   which is a property used in the proof of Rubin's theorem.
 
@@ -41,7 +41,7 @@ a set `s : Set α` can be expressed using `fixedBy (Set α) g`.
 To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise` in your file.
 
 `s ∈ fixedBy (Set α) g` means that `g • s = s`, which is equivalent to say that
-`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MulAction.set_mem_fixedBy_iff`).
+`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MonoidAction.set_mem_fixedBy_iff`).
 
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
@@ -49,12 +49,12 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 
 @[expose] public section
 
-namespace MulAction
+namespace MonoidAction
 open Pointwise
 
 variable {α : Type*}
-variable {G : Type*} [Group G] [MulAction G α]
-variable {M : Type*} [Monoid M] [MulAction M α]
+variable {G : Type*} [Group G] [MonoidAction G α]
+variable {M : Type*} [Monoid M] [MonoidAction M α]
 
 
 section FixedPoints
@@ -268,23 +268,23 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
 
 end Faithful
 
-end MulAction
+end MonoidAction
 
-namespace MulActionHom
+namespace MonoidActionHom
 
-/-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
+/-- `MonoidActionHom` maps `fixedPoints` to `fixedPoints`. -/
 @[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
-lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
-    f a ∈ MulAction.fixedPoints H B := by
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MonoidAction.fixedPoints H A) :
+    f a ∈ MonoidAction.fixedPoints H B := by
   intro ⟨h, _⟩
   simp_all [← f.map_smul h a]
 
-/-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
+/-- `MonoidActionHom` maps `fixedBy` to `fixedBy`. -/
 @[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
-lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
-    f a ∈ MulAction.fixedBy B g := by
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MonoidAction.fixedBy A g) :
+    f a ∈ MonoidAction.fixedBy B g := by
   simpa using congr_arg f ha
 
-end MulActionHom
+end MonoidActionHom

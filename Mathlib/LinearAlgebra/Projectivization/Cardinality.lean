@@ -34,7 +34,7 @@ def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V
 
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/
 noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } ≃ ℙ k V × kˣ :=
-  let e := MulAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
+  let e := MonoidAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
     rw [(Units.nonZeroSubMul k V).stabilizer_of_subMul,
       Module.stabilizer_units_eq_bot_of_ne_zero k b.property]
   e.trans (Equiv.prodCongrLeft (fun _ ↦ (equivQuotientOrbitRel k V).symm))

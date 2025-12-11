@@ -169,7 +169,7 @@ def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) : SubMulAction 𝒢 (O
 
 /-- The type of cusp orbits of `𝒢`, i.e. orbits for the action of `𝒢` on its own cusps. -/
 abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
-  MulAction.orbitRel.Quotient 𝒢 (cusps_subMulAction 𝒢)
+  MonoidAction.orbitRel.Quotient 𝒢 (cusps_subMulAction 𝒢)
 
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/

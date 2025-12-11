@@ -76,12 +76,12 @@ section CommRing
 variable (G : Type*) [Group G] [Fintype G]
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
-open MulAction
+open MonoidAction
 
 /-- the product of `(X - g • x)` over distinct `g • x`. -/
 noncomputable def prodXSubSMul (x : R) : R[X] :=
   letI := Classical.decEq R
-  (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g ↦
+  (Finset.univ : Finset (G ⧸ MonoidAction.stabilizer G x)).prod fun g ↦
     Polynomial.X - Polynomial.C (ofQuotientStabilizer G x g)
 
 theorem prodXSubSMul.monic (x : R) : (prodXSubSMul G R x).Monic :=

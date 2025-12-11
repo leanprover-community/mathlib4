@@ -19,7 +19,7 @@ then it is either null or conull.
 
 @[expose] public section
 
-open Set Filter MeasureTheory MulAction
+open Set Filter MeasureTheory MonoidAction
 open scoped Pointwise
 
 /--
@@ -63,7 +63,7 @@ theorem aeconst_of_forall_preimage_smul_ae_eq [SMul G α] [ErgodicSMul G α μ] 
 
 section Group
 
-variable [Group G] [MulAction G α] [ErgodicSMul G α μ] {s : Set α}
+variable [Group G] [MonoidAction G α] [ErgodicSMul G α μ] {s : Set α}
 
 @[to_additive]
 theorem aeconst_of_forall_smul_ae_eq (hm : NullMeasurableSet s μ) (h : ∀ g : G, g • s =ᵐ[μ] s) :
@@ -78,7 +78,7 @@ theorem _root_.MulAction.aeconst_of_aestabilizer_eq_top
 
 end Group
 
-theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MulAction G α] [SMulInvariantMeasure G α μ]
+theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MonoidAction G α] [SMulInvariantMeasure G α μ]
     (h : ∀ s, MeasurableSet s → aestabilizer G μ s = ⊤ → EventuallyConst s (ae μ)) :
     ErgodicSMul G α μ :=
   ⟨fun hm hs ↦ h _ hm <| (Subgroup.eq_top_iff' _).2 fun g ↦ by

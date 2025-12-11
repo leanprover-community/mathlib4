@@ -36,7 +36,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open MulAction Finset Module
+open MonoidAction Finset Module
 
 universe u v w
 
@@ -138,7 +138,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) ?_ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
+  refine (sum_attach s fun i ↦ (g • l i - l i) • MonoidAction.toFun G F i).trans ?_
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -153,8 +153,8 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     · ext x
       rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   change
-    (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
-      ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
+    (∑ x ∈ s, g • (fun y => l y • MonoidAction.toFun G F y) x (g⁻¹ * g')) =
+      ∑ x ∈ s, (fun y => l y • MonoidAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
     sum_apply _ _ fun y => l y • toFun G F y]
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
@@ -198,9 +198,9 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
-      (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
+      (Polynomial.pairwise_coprime_X_sub_C <| MonoidAction.injective_ofQuotientStabilizer G x) fun y =>
       QuotientGroup.induction_on y fun g => ?_
-  rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
+  rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MonoidAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul',
     ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
     ← MulSemiringActionHom.coe_polynomial, ← map_smul, smul_polynomial,

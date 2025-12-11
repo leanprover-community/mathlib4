@@ -36,12 +36,12 @@ public import Mathlib.Algebra.Group.Units.Hom
 open Function Set Pointwise
 
 
-section MulActionSemiHomClass
+section MonoidActionSemiHomClass
 
 section SMul
 
 variable {M N F : Type*} {α β : Type*} {σ : M → N} [SMul M α] [SMul N β] [FunLike F α β]
-  [MulActionSemiHomClass F σ α β] {f : F} {s : Set α} {t : Set β}
+  [MonoidActionSemiHomClass F σ α β] {f : F} {s : Set α} {t : Set β}
 
 @[to_additive (attr := simp)]
 theorem image_smul_setₛₗ (f : F) (c : M) (s : Set α) :
@@ -79,7 +79,7 @@ end SMul
 section Monoid
 
 variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
-  [MulAction M α] [MulAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β]
+  [MonoidAction M α] [MonoidAction N β] [FunLike F α β] [MonoidActionSemiHomClass F σ α β]
   {f : F} {s : Set α} {t : Set β} {c : M}
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
@@ -91,7 +91,7 @@ theorem preimage_smul_setₛₗ_of_isUnit_isUnit (f : F)
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
 @[to_additive]
 theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomClass G M N]
-    (σ : G) [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
+    (σ : G) [FunLike F α β] [MonoidActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit _ hc (hc.map _) _
 
@@ -100,7 +100,7 @@ theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomC
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
 @[to_additive]
 protected theorem MonoidHom.preimage_smul_setₛₗ {F : Type*} (σ : M →* N) [FunLike F α β]
-    [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
+    [MonoidActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   hc.preimage_smul_setₛₗ σ f t
 
@@ -109,18 +109,18 @@ end Monoid
 /-- `preimage_smul_setₛₗ` in the context of groups -/
 @[to_additive]
 theorem Group.preimage_smul_setₛₗ {G H α β : Type*} [Group G] [Group H] (σ : G → H)
-    [MulAction G α] [MulAction H β]
-    {F : Type*} [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (c : G) (t : Set β) :
+    [MonoidAction G α] [MonoidAction H β]
+    {F : Type*} [FunLike F α β] [MonoidActionSemiHomClass F σ α β] (f : F) (c : G) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit _ (Group.isUnit _) (Group.isUnit _) _
 
-end MulActionSemiHomClass
+end MonoidActionSemiHomClass
 
-section MulActionHomClass
+section MonoidActionHomClass
 
 section SMul
 
-variable {M α β F : Type*} [SMul M α] [SMul M β] [FunLike F α β] [MulActionHomClass F M α β]
+variable {M α β F : Type*} [SMul M α] [SMul M β] [FunLike F α β] [MonoidActionHomClass F M α β]
 
 @[to_additive]
 theorem image_smul_set (f : F) (c : M) (s : Set α) : f '' (c • s) = c • f '' s :=
@@ -138,17 +138,17 @@ theorem Set.MapsTo.smul_set {f : F} {s : Set α} {t : Set β} (hst : MapsTo f s 
 end SMul
 
 @[to_additive]
-theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MulAction M α] [MulAction M β]
-    [FunLike F α β] [MulActionHomClass F M α β] (f : F) {c : M} (hc : IsUnit c) (t : Set β) :
+theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MonoidAction M α] [MonoidAction M β]
+    [FunLike F α β] [MonoidActionHomClass F M α β] (f : F) {c : M} (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit f hc hc t
 
 -- TODO: when you remove the next 2 aliases,
 -- please move the `Group` version to the root namespace.
 @[to_additive]
-theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*} [MulAction G α] [MulAction G β]
-    {F : Type*} [FunLike F α β] [MulActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
+theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*} [MonoidAction G α] [MonoidAction G β]
+    {F : Type*} [FunLike F α β] [MonoidActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   (Group.isUnit c).preimage_smul_set f t
 
-end MulActionHomClass
+end MonoidActionHomClass

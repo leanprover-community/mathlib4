@@ -53,7 +53,7 @@ computing group (co)homology.
 
 ## Main definitions
 
- * `groupCohomology.resolution.ofMulActionBasis`
+ * `groupCohomology.resolution.ofMonoidActionBasis`
  * `classifyingSpaceUniversalCover`
  * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
  * `Rep.standardResolution`
@@ -125,8 +125,8 @@ the left-hand side is `TensorProduct.leftModule`, whilst that of the right-hand 
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
 of the right-hand side. -/
 @[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
-def ofMulActionBasisAux :
-    k[G] ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[k[G]] (ofMulAction k G (Fin (n + 1) → G)).asModule :=
+def ofMonoidActionBasisAux :
+    k[G] ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[k[G]] (ofMonoidAction k G (Fin (n + 1) → G)).asModule :=
   haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
   { e with
@@ -135,19 +135,19 @@ def ofMulActionBasisAux :
       congr 1
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · simp only [smul_zero]
-      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
-        exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
+      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMonoidAction_self_smul_eq_mul]
+        exact (smul_tprod_one_asModule (Representation.ofMonoidAction k G G) r x y).symm
       · rw [smul_add, hz, hy, smul_add] }
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
 @[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
 from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulActionBasis := Representation.freeAsModuleBasis
+alias ofMonoidActionBasis := Representation.freeAsModuleBasis
 
 @[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
 from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulAction_free := Representation.free_asModule_free
+alias ofMonoidAction_free := Representation.free_asModule_free
 
 end Basis
 
@@ -159,7 +159,7 @@ variable (G)
 @[simps obj map]
 def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
-  obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
+  obj n := Action.ofMonoidAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
@@ -175,9 +175,9 @@ variable [Monoid G]
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
 def cechNerveTerminalFromIso :
-    cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
-  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
+    cechNerveTerminalFrom (Action.ofMonoidAction G G) ≅ classifyingSpaceUniversalCover G :=
+  NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMonoidActionLimitCone _ _)) fun f => by
+    refine IsLimit.hom_ext (Action.ofMonoidActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -270,7 +270,7 @@ variable (k G)
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
+def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMonoidAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
 instance x_projective (G : Type u) [Group G] (n : ℕ) :
@@ -282,7 +282,7 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
 theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
+  simp [Action.ofMonoidAction_V, standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
@@ -317,7 +317,7 @@ def forget₂ToModuleCatHomotopyEquiv :
               Types.terminalIso.toEquiv.unique).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
+def ε : Rep.ofMonoidAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
   comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
     (by simp [ModuleCat.endRingEquiv])

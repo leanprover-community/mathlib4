@@ -53,12 +53,12 @@ instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar 
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
 @[to_additive]
-instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
+instance mulAction [Monoid R] [MonoidAction R M] : MonoidAction (ULift R) M where
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
 @[to_additive]
-instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
+instance mulAction' [Monoid R] [MonoidAction R M] : MonoidAction R (ULift M) where
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
 
@@ -108,14 +108,14 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
   smul_zero _ := ULift.ext _ _ <| smul_zero _
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 
-instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
-    MulActionWithZero (ULift R) M :=
+instance mulActionWithZero [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M] :
+    MonoidActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
     one_smul := one_smul _
     mul_smul := mul_smul }
 
-instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
-    MulActionWithZero R (ULift M) :=
+instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M] :
+    MonoidActionWithZero R (ULift M) :=
   { ULift.smulWithZero' with
     one_smul := one_smul _
     mul_smul := mul_smul }

@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 
 This file proves cardinality properties of group actions which use the quotient group construction,
 notably
-* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* the class formula `MonoidAction.card_eq_sum_card_group_div_card_stabilizer'`
 * `card_comm_eq_card_conjClasses_mul_card`
 
 as well as their analogues for additive groups.
@@ -30,15 +30,15 @@ variable {α β : Type*}
 
 open Function
 
-namespace MulAction
+namespace MonoidAction
 
 variable (α β)
-variable [Group α] [MulAction α β]
+variable [Group α] [MonoidAction α β]
 
 local notation "Ω" => Quotient <| orbitRel α β
 
 /-- **Class formula** for a finite group acting on a finite type. See
-`MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
+`MonoidAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out`. -/
 @[to_additive
       /-- **Class formula** for a finite group acting on a finite type. See
@@ -64,7 +64,7 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
 
-end MulAction
+end MonoidAction
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
     Infinite { p : α × α // Commute p.1 p.2 } :=
@@ -87,7 +87,7 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
               (fun g ↦ card (MulAction.fixedBy G g))
               fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq
       _ = card (Quotient (MulAction.orbitRel (ConjAct G) G)) * card (ConjAct G) :=
-             MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group _ _
+             MonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_group _ _
       _ = card (ConjClasses G) * card G := by
              congr 1; apply card_congr'; congr; ext
              exact (Setoid.comm' _).trans isConj_iff.symm

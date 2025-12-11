@@ -97,10 +97,10 @@ end SMul
 
 open Convex
 
-section MulActionWithZero
+section MonoidActionWithZero
 
 variable (𝕜)
-variable [ZeroLEOneClass 𝕜] [MulActionWithZero 𝕜 E]
+variable [ZeroLEOneClass 𝕜] [MonoidActionWithZero 𝕜 E]
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
@@ -108,7 +108,7 @@ theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
 theorem right_mem_segment (x y : E) : y ∈ [x -[𝕜] y] :=
   segment_symm 𝕜 y x ▸ left_mem_segment 𝕜 y x
 
-end MulActionWithZero
+end MonoidActionWithZero
 
 section Module
 

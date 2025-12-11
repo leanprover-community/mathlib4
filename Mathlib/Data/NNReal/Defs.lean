@@ -241,20 +241,20 @@ def toRealHom : ℝ≥0 →+* ℝ where
 
 section Actions
 
-/-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
-instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M toRealHom.toMonoidHom
+/-- A `MonoidAction` over `ℝ` restricts to a `MonoidAction` over `ℝ≥0`. -/
+instance {M : Type*} [MonoidAction ℝ M] : MonoidAction ℝ≥0 M :=
+  MonoidAction.compHom M toRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
+theorem smul_def {M : Type*} [MonoidAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 
-instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
+instance {M N : Type*} [MonoidAction ℝ M] [MonoidAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ)
 
-instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance smulCommClass_left {M N : Type*} [MonoidAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ)
 
-instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance smulCommClass_right {M N : Type*} [MonoidAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ)
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
@@ -392,11 +392,11 @@ example : DenselyOrdered ℝ≥0 := by infer_instance
 
 example : NoMaxOrder ℝ≥0 := by infer_instance
 
-instance instPosSMulStrictMono {α} [Preorder α] [MulAction ℝ α] [PosSMulStrictMono ℝ α] :
+instance instPosSMulStrictMono {α} [Preorder α] [MonoidAction ℝ α] [PosSMulStrictMono ℝ α] :
     PosSMulStrictMono ℝ≥0 α where
   smul_lt_smul_of_pos_left _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr) :)
 
-instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [SMulPosStrictMono ℝ α] :
+instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MonoidAction ℝ α] [SMulPosStrictMono ℝ α] :
     SMulPosStrictMono ℝ≥0 α where
   smul_lt_smul_of_pos_right _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
 

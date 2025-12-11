@@ -60,10 +60,10 @@ private local instance fintypeQuotient (H : OpenSubgroup (G)) :
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
   Fintype.ofFinite _
 
-private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
+private local instance fintypeQuotientStabilizer {X : Type*} [MonoidAction G X]
     [TopologicalSpace X] [ContinuousSMul G X] [DiscreteTopology X] (x : X) :
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
-  fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
+  fintypeQuotient ⟨MonoidAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
@@ -94,8 +94,8 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     exact Continuous.comp continuous_smul (by fun_prop)
   have (i : ι) : ∃ (U : OpenSubgroup (G)), (Nonempty ((f i) ≅ G ⧸ₐ U.toSubgroup)) := by
     obtain ⟨(x : (f i).V)⟩ := nonempty_fiber_of_isConnected (forget₂ _ _) (f i)
-    let U : OpenSubgroup (G) := ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
-    letI : Fintype (G ⧸ MulAction.stabilizer (G) x) := fintypeQuotient U
+    let U : OpenSubgroup (G) := ⟨MonoidAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
+    letI : Fintype (G ⧸ MonoidAction.stabilizer (G) x) := fintypeQuotient U
     exact ⟨U, ⟨FintypeCat.isoQuotientStabilizerOfIsConnected (f i) x⟩⟩
   choose g ui using this
   exact ⟨ι, hf, g, ⟨(Sigma.mapIso (fun i ↦ (ui i).some)).symm ≪≫ u⟩⟩
@@ -103,9 +103,9 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
 to the quotient of `Aut F` by the stabilizer of `x` as `Aut F`-sets. -/
 def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :
-    (functorToAction F).obj X ≅ Aut F ⧸ₐ MulAction.stabilizer (Aut F) x :=
+    (functorToAction F).obj X ≅ Aut F ⧸ₐ MonoidAction.stabilizer (Aut F) x :=
   haveI : IsConnected ((functorToAction F).obj X) := PreservesIsConnected.preserves
-  letI : Fintype (Aut F ⧸ MulAction.stabilizer (Aut F) x) := fintypeQuotientStabilizer x
+  letI : Fintype (Aut F ⧸ MonoidAction.stabilizer (Aut F) x) := fintypeQuotientStabilizer x
   FintypeCat.isoQuotientStabilizerOfIsConnected ((functorToAction F).obj X) x
 
 section
@@ -222,11 +222,11 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
   have hn : Nonempty (F.obj <| (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F (∏ᶜ fun X : I => X) hn
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  let U : OpenSubgroup (Aut F) := ⟨MulAction.stabilizer (Aut F) a, stabilizer_isOpen (Aut F) a⟩
+  let U : OpenSubgroup (Aut F) := ⟨MonoidAction.stabilizer (Aut F) a, stabilizer_isOpen (Aut F) a⟩
   let u := fiberIsoQuotientStabilizer A a
   have hUnormal : U.toSubgroup.Normal := stabilizer_normal_of_isGalois F A a
   have h1 (σ : Aut F) (σinU : σ ∈ U) : σ.hom.app A = 𝟙 (F.obj A) := by
-    have hi : (Aut F ⧸ₐ MulAction.stabilizer (Aut F) a).ρ σ = 𝟙 _ := by
+    have hi : (Aut F ⧸ₐ MonoidAction.stabilizer (Aut F) a).ρ σ = 𝟙 _ := by
       refine FintypeCat.hom_ext _ _ (fun x ↦ ?_)
       induction x using Quotient.inductionOn with | _ τ
       change ⟦σ * τ⟧ = ⟦τ⟧

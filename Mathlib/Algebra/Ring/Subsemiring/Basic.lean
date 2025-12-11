@@ -930,7 +930,7 @@ end NonAssocSemiring
 variable [Semiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
+instance mulAction [MonoidAction R' α] (S : Subsemiring R') : MonoidAction S α :=
   inferInstance
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
@@ -944,13 +944,13 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsem
   inferInstance
 
 instance (priority := low) {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
-    [Zero α] [MulActionWithZero R' α] : MulActionWithZero s α where
+    [Zero α] [MonoidActionWithZero R' α] : MonoidActionWithZero s α where
   smul_zero r := smul_zero (r : R')
   zero_smul := zero_smul R'
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring R') :
-    MulActionWithZero S α :=
+instance mulActionWithZero [Zero α] [MonoidActionWithZero R' α] (S : Subsemiring R') :
+    MonoidActionWithZero S α :=
   inferInstance
 
 instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R']

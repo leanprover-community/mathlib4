@@ -251,7 +251,7 @@ def ofGroup (g : G) : NormalWord d :=
 
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
-instance : MulAction G (NormalWord d) :=
+instance : MonoidAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
@@ -484,8 +484,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     conv_lhs => erw [IsComplement.equiv_mul_left]
     rfl
 
-noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
-  MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
+noncomputable instance : MonoidAction (HNNExtension G A B φ) (NormalWord d) :=
+  MonoidAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
     (HNNExtension.lift (MulAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
       intro a
       ext : 1
@@ -498,16 +498,16 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp [instHSMul, SMul.smul, MonoidAction.toEndHom]
 
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp [instHSMul, SMul.smul, MonoidAction.toEndHom]
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
-    simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
+    simp [instHSMul, SMul.smul, MonoidAction.toEndHom, Equiv.Perm.inv_def]
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)

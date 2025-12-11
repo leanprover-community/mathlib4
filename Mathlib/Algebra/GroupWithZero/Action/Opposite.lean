@@ -49,8 +49,8 @@ instance instSMulWithZero [MonoidWithZero M] [AddMonoid α] [SMulWithZero M α] 
     SMulWithZero M αᵐᵒᵖ where
   zero_smul _ := unop_injective <| zero_smul _ _
 
-instance instMulActionWithZero [MonoidWithZero M] [AddMonoid α] [MulActionWithZero M α] :
-    MulActionWithZero M αᵐᵒᵖ where
+instance instMonoidActionWithZero [MonoidWithZero M] [AddMonoid α] [MonoidActionWithZero M α] :
+    MonoidActionWithZero M αᵐᵒᵖ where
   smul_zero _ := unop_injective <| smul_zero _
   zero_smul _ := unop_injective <| zero_smul _ _
 
@@ -76,7 +76,7 @@ reversed.
 
 open MulOpposite
 
-/-- `Monoid.toOppositeMulAction` is faithful on nontrivial cancellative monoids with zero. -/
+/-- `Monoid.toOppositeMonoidAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.toFaithfulSMul_opposite [CancelMonoidWithZero α]
     [Nontrivial α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h => unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩

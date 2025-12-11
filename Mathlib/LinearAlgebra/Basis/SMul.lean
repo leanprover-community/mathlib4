@@ -55,7 +55,7 @@ theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g :
 @[simp] theorem repr_smul (g : G) (b : Basis ι R M) :
     (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
 
-instance : MulAction G (Basis ι R M) :=
+instance : MonoidAction G (Basis ι R M) :=
   Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
 
 instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
@@ -70,7 +70,7 @@ section CommSemiring
 
 variable {v : ι → M} {x y : M}
 
-theorem groupSMul_span_eq_top {G : Type*} [Group G] [SMul G R] [MulAction G M]
+theorem groupSMul_span_eq_top {G : Type*} [Group G] [SMul G R] [MonoidAction G M]
     [IsScalarTower G R M] {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → G} :
     Submodule.span R (Set.range (w • v)) = ⊤ := by
   rw [eq_top_iff]

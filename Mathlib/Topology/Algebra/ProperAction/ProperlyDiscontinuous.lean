@@ -28,7 +28,7 @@ group action, proper action, properly discontinuous, compactly generated
 
 @[expose] public section
 
-variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
+variable {G X : Type*} [Group G] [MonoidAction G X] [TopologicalSpace G] [TopologicalSpace X]
 
 open Prod Set
 

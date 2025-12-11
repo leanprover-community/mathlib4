@@ -16,7 +16,7 @@ public import Mathlib.Algebra.GroupWithZero.Prod
 This file defines a hierarchy of group action type-classes on top of the previously defined
 notation classes `SMul` and its additive version `VAdd`:
 
-* `MulAction M α` and its additive version `AddAction G P` are typeclasses used for
+* `MonoidAction M α` and its additive version `AddAction G P` are typeclasses used for
   actions of multiplicative and additive monoids and groups; they extend notation classes
   `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
@@ -55,15 +55,15 @@ open Function
 variable {G G₀ A M M₀ N₀ R α : Type*}
 
 section GroupWithZero
-variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
+variable [GroupWithZero G₀] [MonoidAction G₀ α] {a : G₀}
 
-protected lemma MulAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
-  MulAction.bijective <| Units.mk0 a ha
+protected lemma MonoidAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · : α → α) :=
+  MonoidAction.bijective <| Units.mk0 a ha
 
-protected lemma MulAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
+protected lemma MonoidAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
   (MulAction.bijective₀ ha).injective
 
-protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
+protected lemma MonoidAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
   (MulAction.bijective₀ ha).surjective
 
 end GroupWithZero
@@ -74,17 +74,17 @@ variable (A)
 
 /-- Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `MulAction.toPerm`. -/
+This is a stronger version of `MonoidAction.toPerm`. -/
 @[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := toAddMonoidHom A x
-  __ := MulAction.toPermHom G A x
+  __ := MonoidAction.toPermHom G A x
 
 variable (G)
 
 /-- Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `MulAction.toPermHom`. -/
+This is a stronger version of `MonoidAction.toPermHom`. -/
 @[simps]
 def DistribMulAction.toAddAut [DistribMulAction G A] : G →* AddAut A where
   toFun := toAddEquiv _
@@ -95,7 +95,7 @@ end DistribMulAction
 
 /-- Scalar multiplication as a monoid homomorphism with zero. -/
 @[simps]
-def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]
+def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MonoidActionWithZero M₀ N₀]
     [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 
@@ -103,7 +103,7 @@ namespace AddAut
 
 /-- The tautological action by `AddAut A` on `A`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
   smul := (· <| ·)
   smul_zero := map_zero

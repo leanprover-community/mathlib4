@@ -122,7 +122,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul := (· <| ·)
   smul_zero := map_zero

@@ -59,7 +59,7 @@ theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraM
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
 
-instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
+instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MonoidAction A X]
     [ContinuousSMul A X] : ContinuousSMul S X :=
   Subsemiring.continuousSMul S.toSubsemiring X
 
@@ -205,7 +205,7 @@ protected theorem map_smul (f : A →A[R] B) (c : R) (x : A) :
   map_smul ..
 
 theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A] [SMul R B]
-    [Algebra S B] [MulActionHomClass (A →A[S] B) R A B] (f : A →A[S] B) (c : R) (x : A) :
+    [Algebra S B] [MonoidActionHomClass (A →A[S] B) R A B] (f : A →A[S] B) (c : R) (x : A) :
     f (c • x) = c • f x :=
   map_smul f c x
 

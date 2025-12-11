@@ -25,9 +25,9 @@ namespace Equiv
 variable {M N O α β : Type*}
 
 variable (M) [Monoid M] in
-/-- Transfer `MulAction` across an `Equiv` -/
+/-- Transfer `MonoidAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
+protected abbrev mulAction (e : α ≃ β) [MonoidAction M β] : MonoidAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_smul]

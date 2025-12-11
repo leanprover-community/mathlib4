@@ -346,24 +346,24 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
 @[to_additive /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
-def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
+def mkMonoidAction (f : α → β → β) : MonoidAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl
   mul_smul _ _ _ := List.foldr_append
 
 @[to_additive]
 theorem smul_def (f : α → β → β) (l : FreeMonoid α) (b : β) :
-    haveI := mkMulAction f
+    haveI := mkMonoidAction f
     l • b = l.toList.foldr f b := rfl
 
 @[to_additive]
 theorem ofList_smul (f : α → β → β) (l : List α) (b : β) :
-    haveI := mkMulAction f
+    haveI := mkMonoidAction f
     ofList l • b = l.foldr f b := rfl
 
 @[to_additive (attr := simp)]
 theorem of_smul (f : α → β → β) (x : α) (y : β) :
-    (haveI := mkMulAction f
+    (haveI := mkMonoidAction f
     of x • y) = f x y := rfl
 
 /-! ### map -/

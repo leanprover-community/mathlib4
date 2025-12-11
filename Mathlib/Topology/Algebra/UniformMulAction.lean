@@ -163,7 +163,7 @@ open scoped Pointwise
 variable {M X}
 
 @[to_additive]
-theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+theorem IsUnit.smul_uniformity [Monoid M] [MonoidAction M X] [UniformContinuousConstSMul M X] {c : M}
     (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
   let ⟨d, hcd⟩ := hc.exists_right_inv
   have cU : c • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul c
@@ -171,11 +171,11 @@ theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousCons
   le_antisymm cU <| by simpa [smul_smul, hcd] using Filter.smul_filter_le_smul_filter (a := c) dU
 
 @[to_additive (attr := simp)]
-theorem smul_uniformity [Group M] [MulAction M X] [UniformContinuousConstSMul M X] (c : M) :
+theorem smul_uniformity [Group M] [MonoidAction M X] [UniformContinuousConstSMul M X] (c : M) :
     c • 𝓤 X = 𝓤 X :=
   Group.isUnit _ |>.smul_uniformity
 
-theorem smul_uniformity₀ [GroupWithZero M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+theorem smul_uniformity₀ [GroupWithZero M] [MonoidAction M X] [UniformContinuousConstSMul M X] {c : M}
     (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
   hc.isUnit.smul_uniformity
 
@@ -234,8 +234,8 @@ theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Co
 end SMul
 
 @[to_additive]
-noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
-    MulAction M (Completion X) where
+noncomputable instance [Monoid M] [MonoidAction M X] [UniformContinuousConstSMul M X] :
+    MonoidAction M (Completion X) where
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
     ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by

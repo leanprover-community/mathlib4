@@ -55,7 +55,7 @@ multiplication component by component with `mixedEmbedding K u`. -/
 instance unitSMul : SMul (𝓞 K)ˣ (mixedSpace K) where
   smul u x := mixedEmbedding K u * x
 
-instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
+instance : MonoidAction (𝓞 K)ˣ (mixedSpace K) where
   one_smul := fun _ ↦ by simp_rw [unitSMul_smul, Units.coe_one, map_one, one_mul]
   mul_smul := fun _ _ _ ↦ by simp_rw [unitSMul_smul, Units.coe_mul, map_mul, mul_assoc]
 
@@ -327,7 +327,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
-instance : MulAction (torsion K) (integerSet K) where
+instance : MonoidAction (torsion K) (integerSet K) where
   one_smul := fun _ ↦ by
     rw [Subtype.mk_eq_mk, integerSetTorsionSMul_smul_coe, OneMemClass.coe_one, one_smul]
   mul_smul := fun _ _ _ ↦ by
@@ -400,7 +400,7 @@ def integerSetQuotEquivAssociates :
     ⟨Setoid.lift_injective_iff_ker_eq_of_le _ |>.mpr <| by
         ext a b
         rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
-          MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+          MonoidAction.orbitRel_apply, MonoidAction.mem_orbit_iff],
         (Quot.surjective_lift _).mpr (integerSetToAssociates_surjective K)⟩
 
 @[simp]
@@ -408,9 +408,9 @@ theorem integerSetQuotEquivAssociates_apply (a : integerSet K) :
     integerSetQuotEquivAssociates K ⟦a⟧ = ⟦preimageOfMemIntegerSet a⟧ := rfl
 
 theorem integerSetTorsionSMul_stabilizer (a : integerSet K) :
-    MulAction.stabilizer (torsion K) a = ⊥ := by
+    MonoidAction.stabilizer (torsion K) a = ⊥ := by
   refine (Subgroup.eq_bot_iff_forall _).mpr fun ζ hζ ↦ ?_
-  rwa [MulAction.mem_stabilizer_iff, Subtype.ext_iff, integerSetTorsionSMul_smul_coe,
+  rwa [MonoidAction.mem_stabilizer_iff, Subtype.ext_iff, integerSetTorsionSMul_smul_coe,
     unitSMul_smul, ← mixedEmbedding_preimageOfMemIntegerSet, ← map_mul,
     (mixedEmbedding_injective K).eq_iff, ← map_mul, ← RingOfIntegers.ext_iff, mul_eq_right₀,
     Units.val_eq_one, OneMemClass.coe_eq_one] at hζ

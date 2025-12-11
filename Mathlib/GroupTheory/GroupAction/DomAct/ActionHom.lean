@@ -24,7 +24,7 @@ Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Hom/GroupAc
 
 namespace DomMulAct
 
-section MulActionSemiHom
+section MonoidActionSemiHom
 
 section SMul
 
@@ -32,7 +32,7 @@ variable {M α N β : Type*}
 variable [SMul M α] [SMul N α] [SMulCommClass M N α] [SMul N β]
 
 instance : SMul Mᵈᵐᵃ (α →[N] β) where
-  smul c f := f.comp (SMulCommClass.toMulActionHom _ _ (mk.symm c))
+  smul c f := f.comp (SMulCommClass.toMonoidActionHom _ _ (mk.symm c))
 
 instance {M' : Type*} [SMul M' α] [SMulCommClass M' N α] [SMulCommClass M M' α] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (α →[N] β) :=
@@ -47,11 +47,11 @@ theorem mk_smul_mulActionHom_apply (c : M) (f : α →[N] β) (a : α) : (mk c �
 
 end SMul
 
-instance {M α N β : Type*} [Monoid M] [MulAction M α] [SMul N α] [SMulCommClass M N α] [SMul N β] :
-    MulAction Mᵈᵐᵃ (α →[N] β) :=
+instance {M α N β : Type*} [Monoid M] [MonoidAction M α] [SMul N α] [SMulCommClass M N α] [SMul N β] :
+    MonoidAction Mᵈᵐᵃ (α →[N] β) :=
   DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
-end MulActionSemiHom
+end MonoidActionSemiHom
 
 section DistribMulActionHom
 
@@ -79,7 +79,7 @@ end SMul
 
 instance {M N A B : Type*} [Monoid M] [AddMonoid A] [DistribMulAction M A] [Monoid N] [AddMonoid B]
     [DistribMulAction N A] [SMulCommClass M N A] [DistribMulAction N B] :
-    MulAction Mᵈᵐᵃ (A →+[N] B) :=
+    MonoidAction Mᵈᵐᵃ (A →+[N] B) :=
   DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
 end DistribMulActionHom

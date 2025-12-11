@@ -43,7 +43,7 @@ The Sylow theorems are the following results for every finite group `G` and ever
 @[expose] public section
 
 
-open MulAction Subgroup
+open MonoidAction Subgroup
 
 section InfiniteSylow
 
@@ -211,9 +211,9 @@ instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) :=
 
 open Pointwise
 
-/-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
-instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
-    MulAction α (Sylow p G) where
+/-- `Subgroup.pointwiseMonoidAction` preserves Sylow subgroups. -/
+instance pointwiseMonoidAction {α : Type*} [Group α] [MulDistribMulAction α G] :
+    MonoidAction α (Sylow p G) where
   smul g P :=
     ⟨g • P.toSubgroup, P.2.map _, fun {Q} hQ hS =>
       inv_smul_eq_iff.mp
@@ -227,7 +227,7 @@ theorem pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α G] {g
     {P : Sylow p G} : ↑(g • P) = g • (P : Subgroup G) :=
   rfl
 
-instance mulAction : MulAction G (Sylow p G) :=
+instance mulAction : MonoidAction G (Sylow p G) :=
   compHom _ MulAut.conj
 
 theorem smul_def {g : G} {P : Sylow p G} : g • P = MulAut.conj g • P :=
@@ -501,7 +501,7 @@ theorem QuotientGroup.card_preimage_mk (s : Subgroup G) (t : Set (G ⧸ s)) :
 
 namespace Sylow
 theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
-    {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
+    {x : G} : (x : G ⧸ H) ∈ MonoidAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
     have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := mem_fixedPoints'.1 hx _
     (inv_mem_iff (G := G)).1
@@ -524,7 +524,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
 
 /-- The fixed points of the action of `H` on its cosets correspond to `normalizer H / H`. -/
 def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] :
-    MulAction.fixedPoints H (G ⧸ H) ≃
+    MonoidAction.fixedPoints H (G ⧸ H) ≃
       normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H :=
   @subtypeQuotientEquivQuotientSubtype G (normalizer H : Set G) (_) (_)
     (MulAction.fixedPoints H (G ⧸ H))

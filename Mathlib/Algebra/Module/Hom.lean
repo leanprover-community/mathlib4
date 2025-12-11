@@ -32,7 +32,7 @@ namespace ZeroHom
 
 instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
     Module R (ZeroHom A B) where
-  __ : MulActionWithZero _ _ := ZeroHom.instMulActionWithZero
+  __ : MonoidActionWithZero _ _ := ZeroHom.instMonoidActionWithZero
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
 

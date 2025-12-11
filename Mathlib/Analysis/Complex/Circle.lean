@@ -165,14 +165,14 @@ instance instSMulCommClass_right [SMul ℂ β] [SMul α β] [SMulCommClass α �
 instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTower ℂ α β] :
     IsScalarTower Circle α β := Submonoid.isScalarTower _
 
-instance instMulAction [MulAction ℂ α] : MulAction Circle α := Submonoid.mulAction _
+instance instMonoidAction [MonoidAction ℂ α] : MonoidAction Circle α := Submonoid.mulAction _
 
 instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
     DistribMulAction Circle M := Submonoid.distribMulAction _
 
 lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a := rfl
 
-instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
+instance instContinuousSMul [TopologicalSpace α] [MonoidAction ℂ α] [ContinuousSMul ℂ α] :
     ContinuousSMul Circle α := Submonoid.continuousSMul
 
 @[simp]

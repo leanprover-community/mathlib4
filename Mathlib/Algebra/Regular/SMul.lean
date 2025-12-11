@@ -116,7 +116,7 @@ end SMul
 
 section Monoid
 
-variable [Monoid R] [MulAction R M]
+variable [Monoid R] [MonoidAction R M]
 variable (M)
 
 /-- One is always `M`-regular. -/
@@ -150,7 +150,7 @@ end Monoid
 
 section MonoidSMul
 
-variable [Monoid S] [SMul R M] [SMul R S] [MulAction S M] [IsScalarTower R S M]
+variable [Monoid S] [SMul R M] [SMul R S] [MonoidAction S M] [IsScalarTower R S M]
 
 /-- An element of `S` admitting a left inverse in `R` is `M`-regular. -/
 theorem of_smul_eq_one (h : a • s = 1) : IsSMulRegular M s :=
@@ -163,11 +163,11 @@ end MonoidSMul
 
 section MonoidWithZero
 
-variable [MonoidWithZero R] [Zero M] [MulActionWithZero R M]
+variable [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
-  ⟨fun a b => h (by dsimp only [Function.comp_def]; repeat' rw [MulActionWithZero.zero_smul])⟩
+  ⟨fun a b => h (by dsimp only [Function.comp_def]; repeat' rw [MonoidActionWithZero.zero_smul])⟩
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
@@ -208,7 +208,7 @@ variable {G : Type*} [Group G]
 
 /-- An element of a group acting on a Type is regular. This relies on the availability
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/
-theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
+theorem isSMulRegular_of_group [MonoidAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
   convert congr_arg (g⁻¹ • ·) h using 1 <;> simp [← smul_assoc]
 
@@ -216,7 +216,7 @@ end Group
 
 section Units
 
-variable [Monoid R] [MulAction R M]
+variable [Monoid R] [MonoidAction R M]
 
 /-- Any element in `Rˣ` is `M`-regular. -/
 theorem Units.isSMulRegular (a : Rˣ) : IsSMulRegular M (a : R) :=

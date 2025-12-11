@@ -28,7 +28,7 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, 
 
 @[expose] public section
 
-assert_not_exists MulAction IsOrderedMonoid
+assert_not_exists MonoidAction IsOrderedMonoid
 
 variable {F ι α β : Type*}
 

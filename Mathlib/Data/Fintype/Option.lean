@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Option
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 open Function
 

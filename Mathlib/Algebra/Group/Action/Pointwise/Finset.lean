@@ -82,8 +82,8 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β` -/]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
-    MulAction (Finset α) (Finset β) where
+protected def mulAction [DecidableEq α] [Monoid α] [MonoidAction α β] :
+    MonoidAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
@@ -92,7 +92,7 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
 @[to_additive
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
-protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
+protected def mulActionFinset [Monoid α] [MonoidAction α β] : MonoidAction α (Finset β) :=
   coe_injective.mulAction _ coe_smul_finset
 
 scoped[Pointwise]
@@ -157,7 +157,7 @@ theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [
 
 section Group
 
-variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α} {b : β}
+variable [DecidableEq β] [Group α] [MonoidAction α β] {s t : Finset β} {a : α} {b : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
@@ -177,7 +177,7 @@ theorem mem_inv_smul_finset_iff : b ∈ a⁻¹ • s ↔ a • b ∈ s := by
 
 @[to_additive (attr := simp)]
 theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
-  image_subset_image_iff <| MulAction.injective _
+  image_subset_image_iff <| MonoidAction.injective _
 
 @[to_additive]
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
@@ -193,20 +193,20 @@ theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
 
 @[to_additive]
 theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ <| MulAction.injective a
+  image_inter _ _ <| MonoidAction.injective a
 
 @[to_additive]
 theorem smul_finset_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ <| MulAction.injective a
+  image_sdiff _ _ <| MonoidAction.injective a
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ <| MulAction.injective a
+  image_symmDiff _ _ <| MonoidAction.injective a
 
 @[to_additive (attr := simp)]
 theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
-  image_univ_of_surjective <| MulAction.surjective a
+  image_univ_of_surjective <| MonoidAction.surjective a
 
 @[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=
@@ -216,7 +216,7 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
 
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ <| MulAction.injective _
+  card_image_of_injective _ <| MonoidAction.injective _
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
@@ -224,7 +224,7 @@ the size of `t` divides the size of `s • t`. -/
 distinct!), then the size of `t` divides the size of `s +ᵥ t`. -/]
 theorem card_dvd_card_smul_right {s : Finset α} :
     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
-  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+  card_dvd_card_image₂_right fun _ _ => MonoidAction.injective _
 
 variable [DecidableEq α]
 

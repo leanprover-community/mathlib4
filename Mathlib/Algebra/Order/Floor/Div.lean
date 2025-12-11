@@ -135,7 +135,7 @@ lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
 end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
-variable [Semiring α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β] [MulActionWithZero α β]
+variable [Semiring α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β] [MonoidActionWithZero α β]
 
 section FloorDiv
 variable [FloorDiv α β] {a : α}

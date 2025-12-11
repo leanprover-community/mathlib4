@@ -42,7 +42,7 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction M αᵐᵒᵖ where
+instance instMonoidAction [Monoid M] [MonoidAction M α] : MonoidAction M αᵐᵒᵖ where
   one_smul _ := unop_injective <| one_smul _ _
   mul_smul _ _ _ := unop_injective <| mul_smul _ _ _
 
@@ -128,7 +128,7 @@ end examples
 end RightActions
 
 section
-variable [Monoid α] [MulAction αᵐᵒᵖ β]
+variable [Monoid α] [MonoidAction αᵐᵒᵖ β]
 
 open scoped RightActions
 
@@ -156,9 +156,9 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α where
   op_smul_eq_smul _ _ := mul_comm _ _
 
-/-- Like `Monoid.toMulAction`, but multiplies on the right. -/
+/-- Like `Monoid.toMonoidAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
-instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
+instance Monoid.toOppositeMonoidAction [Monoid α] : MonoidAction αᵐᵒᵖ α where
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 
@@ -175,6 +175,6 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]
 
 -- The above instance does not create an unwanted diamond, the two paths to
--- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
-example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction := by
+-- `MonoidAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
+example [Monoid α] : Monoid.toMonoidAction αᵐᵒᵖ = MulOpposite.instMonoidAction := by
   with_reducible_and_instances rfl

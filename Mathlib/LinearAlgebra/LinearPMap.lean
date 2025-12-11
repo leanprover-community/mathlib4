@@ -375,7 +375,7 @@ instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[
 instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
-instance instMulAction : MulAction M (E →ₗ.[R] F) where
+instance instMonoidAction : MonoidAction M (E →ₗ.[R] F) where
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 

@@ -51,7 +51,7 @@ pointwise subtraction
 
 @[expose] public section
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
+assert_not_exists Set.iUnion MonoidAction MonoidWithZero IsOrderedMonoid
 
 library_note2 «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form

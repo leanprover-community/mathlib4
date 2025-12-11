@@ -35,7 +35,7 @@ variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/
 def functorToAction : C ⥤ Action FintypeCat.{u} (Aut F) where
-  obj X := Action.FintypeCat.ofMulAction (Aut F) (F.obj X)
+  obj X := Action.FintypeCat.ofMonoidAction (Aut F) (F.obj X)
   map f := {
     hom := F.map f
     comm := fun g ↦ symm <| g.hom.naturality f
@@ -47,12 +47,12 @@ lemma functorToAction_comp_forget₂_eq : functorToAction F ⋙ forget₂ _ Fint
 lemma functorToAction_map {X Y : C} (f : X ⟶ Y) : ((functorToAction F).map f).hom = F.map f :=
   rfl
 
-instance (X : C) : MulAction (Aut X) ((functorToAction F).obj X).V :=
-  inferInstanceAs <| MulAction (Aut X) (F.obj X)
+instance (X : C) : MonoidAction (Aut X) ((functorToAction F).obj X).V :=
+  inferInstanceAs <| MonoidAction (Aut X) (F.obj X)
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-instance (X : C) [IsGalois X] : MulAction.IsPretransitive (Aut X) ((functorToAction F).obj X).V :=
+instance (X : C) [IsGalois X] : MonoidAction.IsPretransitive (Aut X) ((functorToAction F).obj X).V :=
   isPretransitive_of_isGalois F X
 
 instance : Functor.Faithful (functorToAction F) :=

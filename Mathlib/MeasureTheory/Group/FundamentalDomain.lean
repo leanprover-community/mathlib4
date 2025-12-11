@@ -79,7 +79,7 @@ variable {G H α β E : Type*}
 
 namespace IsFundamentalDomain
 
-variable [Group G] [Group H] [MulAction G α] [MeasurableSpace α] [MulAction H β] [MeasurableSpace β]
+variable [Group G] [Group H] [MonoidAction G α] [MeasurableSpace α] [MonoidAction H β] [MeasurableSpace β]
   [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
 
 /-- If for each `x : α`, exactly one of `g • x`, `g : G`, belongs to a measurable set `s`, then `s`
@@ -181,7 +181,7 @@ theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : �
   h.aedisjoint.mono fun _ _ H => hν H
 
 @[to_additive]
-theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α] [MeasurableSpace G']
+theorem smul_of_comm {G' : Type*} [Group G'] [MonoidAction G' α] [MeasurableSpace G']
     [MeasurableSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
     (h : IsFundamentalDomain G s μ) (g : G') : IsFundamentalDomain G (g • s) μ :=
   h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
@@ -476,7 +476,7 @@ end IsFundamentalDomain
 
 section MeasurableSpace
 
-variable (G) [Group G] [MulAction G α] (s : Set α) {x : α}
+variable (G) [Group G] [MonoidAction G α] (s : Set α) {x : α}
 
 /-- The boundary of a fundamental domain, those points of the domain that also lie in a nontrivial
 translate. -/
@@ -537,12 +537,12 @@ theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInt
   diff_self_inter
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
-theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
+theorem fundamentalFrontier_smul [Group H] [MonoidAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalFrontier G (g • s) = g • fundamentalFrontier G s := by
   simp_rw [fundamentalFrontier, smul_set_inter, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_vadd]
-theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
+theorem fundamentalInterior_smul [Group H] [MonoidAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalInterior G (g • s) = g • fundamentalInterior G s := by
   simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 
@@ -573,7 +573,7 @@ end MeasurableSpace
 
 namespace IsFundamentalDomain
 
-variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
+variable [Countable G] [Group G] [MonoidAction G α] [MeasurableSpace α] {μ : Measure α} {s : Set α}
   (hs : IsFundamentalDomain G s μ)
 include hs
 
@@ -614,10 +614,10 @@ end IsFundamentalDomain
 
 section FundamentalDomainMeasure
 
-variable (G) [Group G] [MulAction G α] [MeasurableSpace α]
+variable (G) [Group G] [MonoidAction G α] [MeasurableSpace α]
   (μ : Measure α)
 
-local notation "α_mod_G" => MulAction.orbitRel G α
+local notation "α_mod_G" => MonoidAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
@@ -684,7 +684,7 @@ noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace �
     (ν : Measure α := by volume_tac) : ℝ≥0∞ :=
   if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
 
-variable [Group G] [MulAction G α] [MeasurableSpace α]
+variable [Group G] [MonoidAction G α] [MeasurableSpace α]
 
 /-- If there is a fundamental domain `s`, then `HasFundamentalDomain` holds. -/
 @[to_additive]
@@ -737,9 +737,9 @@ class AddQuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
 
 end additive
 
-variable [Group G] [MulAction G α] [MeasurableSpace α]
+variable [Group G] [MonoidAction G α] [MeasurableSpace α]
 
-local notation "α_mod_G" => MulAction.orbitRel G α
+local notation "α_mod_G" => MonoidAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 
@@ -833,7 +833,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    have : π ⁻¹' (π '' (A n)) = _ := MonoidAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
       let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
@@ -879,10 +879,10 @@ end QuotientMeasureEqMeasurePreimage
 section QuotientMeasureEqMeasurePreimage
 
 
-variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G] [MeasurableSpace G]
+variable [Group G] [MonoidAction G α] [MeasureSpace α] [Countable G] [MeasurableSpace G]
   [SMulInvariantMeasure G α volume] [MeasurableSMul G α]
 
-local notation "α_mod_G" => MulAction.orbitRel G α
+local notation "α_mod_G" => MonoidAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 

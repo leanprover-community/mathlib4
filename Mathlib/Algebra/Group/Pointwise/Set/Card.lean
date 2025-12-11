@@ -76,7 +76,7 @@ variable [Group G] {s t : Set G}
 lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
   rw [div_eq_mul_inv, ← natCard_inv t]; exact natCard_mul_le
 
-variable [MulAction G α]
+variable [MonoidAction G α]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=

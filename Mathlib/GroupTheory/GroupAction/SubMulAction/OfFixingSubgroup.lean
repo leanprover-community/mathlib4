@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Group
 /-!
 # SubMulActions on complements of invariant subsets
 
-Given a `MulAction` of `G` on `α` and `s : Set α`,
+Given a `MonoidAction` of `G` on `α` and `s : Set α`,
 
 * `SubMulAction.ofFixingSubgroup` is the action
   of `FixingSubgroup G s` on the complement `sᶜ` of `s`.
@@ -68,11 +68,11 @@ and permit to manipulate them in a relatively smooth way:
 
 open scoped Pointwise
 
-open MulAction Function
+open MonoidAction Function
 
 namespace SubMulAction
 
-variable (M : Type*) {α : Type*} [Group M] [MulAction M α] (s : Set α)
+variable (M : Type*) {α : Type*} [Group M] [MonoidAction M α] (s : Set α)
 
 /-- The `SubMulAction` of `fixingSubgroup M s` on the complement of `s`. -/
 @[to_additive /-- The `SubAddAction` of `fixingAddSubgroup M s` on the complement of `s`. -/]
@@ -464,7 +464,7 @@ end Construction
 
 section TwoCriteria
 
-open MulAction
+open MonoidAction
 
 /-- A pretransitivity criterion. -/
 theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
@@ -477,7 +477,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
   have ha' : a ∈ (s ∩ g • s)ᶜ := by
     rw [Set.compl_inter]
     exact Set.mem_union_left _ ha.1
-  rw [MulAction.isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup M (s ∩ g • s))]
+  rw [MonoidAction.isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup M (s ∩ g • s))]
   rintro ⟨x, hx⟩
   rw [mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
   rcases hx with hx | hx
@@ -516,12 +516,12 @@ end SubMulAction
 
 section Pointwise
 
-open MulAction Set
+open MonoidAction Set
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+variable (G : Type*) [Group G] {α : Type*} [MonoidAction G α]
 
 @[to_additive]
-theorem MulAction.fixingSubgroup_le_stabilizer (s : Set α) :
+theorem MonoidAction.fixingSubgroup_le_stabilizer (s : Set α) :
     fixingSubgroup G s ≤ stabilizer G s := by
   intro k hk
   rw [mem_stabilizer_iff]

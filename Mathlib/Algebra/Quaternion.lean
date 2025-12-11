@@ -490,7 +490,7 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
--- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
+-- TODO: add weaker `MonoidAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   algebraMap :=

@@ -63,10 +63,10 @@ section AddCommMonoid
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
 -- see Note [lower instance priority]
-/-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero
-    {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
-  { (inferInstance : MulAction R M) with
+/-- A module over a semiring automatically inherits a `MonoidActionWithZero` structure. -/
+instance (priority := 100) Module.toMonoidActionWithZero
+    {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MonoidActionWithZero R M :=
+  { (inferInstance : MonoidAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
 
@@ -155,13 +155,13 @@ end Module
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
 protected theorem Module.subsingleton (R M : Type*) [MonoidWithZero R] [Subsingleton R] [Zero M]
-    [MulActionWithZero R M] : Subsingleton M :=
-  MulActionWithZero.subsingleton R M
+    [MonoidActionWithZero R M] : Subsingleton M :=
+  MonoidActionWithZero.subsingleton R M
 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
 protected theorem Module.nontrivial (R M : Type*) [MonoidWithZero R] [Nontrivial M] [Zero M]
-    [MulActionWithZero R M] : Nontrivial R :=
-  MulActionWithZero.nontrivial R M
+    [MonoidActionWithZero R M] : Nontrivial R :=
+  MonoidActionWithZero.nontrivial R M
 
 -- see Note [lower instance priority]
 instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where

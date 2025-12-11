@@ -1274,7 +1274,7 @@ In this section we show inequalities on the norm.
 
 section IsBoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
+variable {𝕜 : Type*} [NormedRing 𝕜] [MonoidActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq

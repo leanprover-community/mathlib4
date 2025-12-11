@@ -33,7 +33,7 @@ with continuous addition/multiplication. See also `Submonoid.top_closure_mul_sel
 
 section ContinuousConstSMul
 
-variable [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousConstSMul α β] {s : Set α}
+variable [TopologicalSpace β] [Group α] [MonoidAction α β] [ContinuousConstSMul α β] {s : Set α}
   {t : Set β}
 
 variable [TopologicalSpace α]
@@ -46,7 +46,7 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
-variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
+variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MonoidAction α β] [ContinuousInv α]
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
 open Prod in
@@ -78,12 +78,12 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     (ht.preimage continuous_snd)
 
 @[to_additive]
-theorem MulAction.isClosedMap_quotient [CompactSpace α] :
+theorem MonoidAction.isClosedMap_quotient [CompactSpace α] :
     letI := orbitRel α β
     IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
   intro t ht
   rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
-    MulAction.quotient_preimage_image_eq_union_mul]
+    MonoidAction.quotient_preimage_image_eq_union_mul]
   convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]

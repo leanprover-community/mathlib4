@@ -18,13 +18,13 @@ and relates it to the set of fixed points via a Galois connection.
 
 ## Main definitions
 
-* `fixingSubmonoid M s` : in the presence of `MulAction M α` (with `Monoid M`)
+* `fixingSubmonoid M s` : in the presence of `MonoidAction M α` (with `Monoid M`)
   it is the `Submonoid M` consisting of elements which fix `s : Set α` pointwise.
 
 * `fixingSubmonoid_fixedPoints_gc M α` is the `GaloisConnection`
   that relates `fixingSubmonoid` with `fixedPoints`.
 
-* `fixingSubgroup M s` : in the presence of `MulAction M α` (with `Group M`)
+* `fixingSubgroup M s` : in the presence of `MonoidAction M α` (with `Group M`)
   it is the `Subgroup M` consisting of elements which fix `s : Set α` pointwise.
 
 * `fixingSubgroup_fixedPoints_gc M α` is the `GaloisConnection`
@@ -43,11 +43,11 @@ TODO :
 
 section Monoid
 
-open MulAction
+open MonoidAction
 
-variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Monoid M] [MonoidAction M α]
 
-/-- The submonoid fixing a set under a `MulAction`. -/
+/-- The submonoid fixing a set under a `MonoidAction`. -/
 @[to_additive /-- The additive submonoid fixing a set under an `AddAction`. -/]
 def fixingSubmonoid (s : Set α) : Submonoid M where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
@@ -104,11 +104,11 @@ end Monoid
 
 section Group
 
-open MulAction
+open MonoidAction
 
-variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
+variable (M : Type*) {α : Type*} [Group M] [MonoidAction M α]
 
-/-- The subgroup fixing a set under a `MulAction`. -/
+/-- The subgroup fixing a set under a `MonoidAction`. -/
 @[to_additive /-- The additive subgroup fixing a set under an `AddAction`. -/]
 def fixingSubgroup (s : Set α) : Subgroup M :=
   { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
@@ -175,9 +175,9 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
 /-- The orbit of the fixing subgroup of `sᶜ` (i.e. the moving subgroup of `s`) is a subset of `s` -/
 @[to_additive]
 theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
-    MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
+    MonoidAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
   intro b b_in_orbit
-  let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
+  let ⟨⟨g, g_fixing⟩, g_eq⟩ := MonoidAction.mem_orbit_iff.mp b_in_orbit
   rw [Submonoid.mk_smul] at g_eq
   rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
   rwa [← g_eq, smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]

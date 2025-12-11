@@ -111,14 +111,14 @@ instance : GaloisCategory (Action FintypeCat G) where
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
-    [IsConnected X] : MulAction.IsPretransitive G X.V where
+    [IsConnected X] : MonoidAction.IsPretransitive G X.V where
   exists_smul_eq x y := by
     /- We show that the `G`-orbit of `x` is a non-initial subobject of `X` and hence by
     connectedness, the orbit equals `X.V`. -/
-    let T : Set X.V := MulAction.orbit G x
+    let T : Set X.V := MonoidAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
-    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
+    letI : MonoidAction G (FintypeCat.of T) := inferInstanceAs <| MonoidAction G ↑(MulAction.orbit G x)
+    let T' : Action FintypeCat G := Action.FintypeCat.ofMonoidAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
@@ -133,9 +133,9 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     exact hg.trans hy'
 
 /-- A nonempty `G`-set with transitive `G`-action is connected. -/
-theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
-    [MulAction.IsPretransitive G X] [h : Nonempty X] :
-    IsConnected (Action.FintypeCat.ofMulAction G X) where
+theorem Action.isConnected_of_transitive (X : FintypeCat) [MonoidAction G X]
+    [MonoidAction.IsPretransitive G X] [h : Nonempty X] :
+    IsConnected (Action.FintypeCat.ofMonoidAction G X) where
   notInitial := not_initial_of_inhabited (Action.forget _ _) h.some
   noTrivialComponent Y i hm hni := by
     /- We show that the induced inclusion `i.hom` of finite sets is surjective, using the
@@ -146,7 +146,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
       · haveI : Mono i.hom := map_mono (forget₂ _ _) i
         exact ConcreteCategory.injective_of_mono_of_preservesPullback i.hom
       · letI x : X := i.hom y
-        obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
+        obtain ⟨σ, hσ⟩ := MonoidAction.exists_smul_eq G x x'
         use σ • y
         change (Y.ρ σ ≫ i.hom) y = x'
         rw [i.comm, FintypeCat.comp_apply]
@@ -155,7 +155,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
 
 /-- A nonempty finite `G`-set is connected if and only if the `G`-action is transitive. -/
 theorem Action.isConnected_iff_transitive (X : Action FintypeCat G) [Nonempty X.V] :
-    IsConnected X ↔ MulAction.IsPretransitive G X.V :=
+    IsConnected X ↔ MonoidAction.IsPretransitive G X.V :=
   ⟨fun _ ↦ pretransitive_of_isConnected G X, fun _ ↦ isConnected_of_transitive G X.V⟩
 
 variable {G}
@@ -164,14 +164,14 @@ variable {G}
 to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
 noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
     [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
-    X ≅ G ⧸ₐ MulAction.stabilizer G x :=
-  haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
-  let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
+    X ≅ G ⧸ₐ MonoidAction.stabilizer G x :=
+  haveI : MonoidAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
+  let e : X.V ≃ G ⧸ MonoidAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
       (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
-      MulAction.orbitEquivQuotientStabilizer G x
+      MonoidAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
-    ext (a : G ⧸ MulAction.stabilizer G x)
+    ext (a : G ⧸ MonoidAction.stabilizer G x)
     obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
     exact mul_smul σ τ x
 

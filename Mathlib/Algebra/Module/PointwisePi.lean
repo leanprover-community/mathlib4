@@ -39,10 +39,10 @@ theorem smul_univ_pi [∀ i, SMul K (R i)] (r : K) (t : ∀ i, Set (R i)) :
   piMap_image_univ_pi _ _
 
 @[to_additive]
-theorem smul_pi [Group K] [∀ i, MulAction K (R i)] (r : K) (S : Set ι) (t : ∀ i, Set (R i)) :
+theorem smul_pi [Group K] [∀ i, MonoidAction K (R i)] (r : K) (S : Set ι) (t : ∀ i, Set (R i)) :
     r • S.pi t = S.pi (r • t) :=
-  piMap_image_pi (fun _ _ => MulAction.surjective _) _
+  piMap_image_pi (fun _ _ => MonoidAction.surjective _) _
 
-theorem smul_pi₀ [GroupWithZero K] [∀ i, MulAction K (R i)] {r : K} (S : Set ι) (t : ∀ i, Set (R i))
+theorem smul_pi₀ [GroupWithZero K] [∀ i, MonoidAction K (R i)] {r : K} (S : Set ι) (t : ∀ i, Set (R i))
     (hr : r ≠ 0) : r • S.pi t = S.pi (r • t) :=
   smul_pi (Units.mk0 r hr) S t

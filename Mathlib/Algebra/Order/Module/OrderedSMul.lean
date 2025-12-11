@@ -121,7 +121,7 @@ section LinearOrderedSemifield
 variable [Semifield 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] [PosMulReflectLT 𝕜]
   [AddCommMonoid M] [PartialOrder M]
   [AddCommMonoid N] [PartialOrder N]
-  [MulActionWithZero 𝕜 M] [MulActionWithZero 𝕜 N]
+  [MonoidActionWithZero 𝕜 M] [MonoidActionWithZero 𝕜 N]
 
 set_option linter.deprecated false in
 /-- To prove that a vector space over a linear ordered field is ordered, it suffices to verify only
@@ -145,7 +145,7 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
 
 set_option linter.deprecated false in
 instance Pi.orderedSMul {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, PartialOrder (M i)]
-    [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
+    [∀ i, MonoidActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
 
 end LinearOrderedSemifield

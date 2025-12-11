@@ -18,7 +18,7 @@ It also contains proofs of some corollaries of this lemma about existence of fix
 
 @[expose] public section
 
-open Fintype MulAction
+open Fintype MonoidAction
 
 variable (p : ℕ) (G : Type*) [Group G]
 
@@ -142,7 +142,7 @@ theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G 
     Finite.one_lt_card_iff_nontrivial.1 <|
       hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 
-variable {α : Type*} [MulAction G α]
+variable {α : Type*} [MonoidAction G α]
 
 theorem card_orbit (a : α) [Finite (orbit G a)] : ∃ n : ℕ, Nat.card (orbit G a) = p ^ n := by
   let ϕ := orbitEquivQuotientStabilizer G a
@@ -190,7 +190,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
   of `p` then the action has a fixed point. -/
-theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
+theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MonoidAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
   @Set.Nonempty.of_subtype _ _

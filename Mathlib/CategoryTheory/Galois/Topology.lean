@@ -181,7 +181,7 @@ open Limits
 /-- The stabilizers of points in the fibers of Galois objects form a neighbourhood basis
 of the identity in `Aut F`. -/
 lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ True)
-    (fun X : PointedGaloisObject F ↦ MulAction.stabilizer (Aut F) X.pt) where
+    (fun X : PointedGaloisObject F ↦ MonoidAction.stabilizer (Aut F) X.pt) where
   mem_iff' S := by
     rw [mem_nhds_iff]
     refine ⟨?_, ?_⟩
@@ -203,7 +203,7 @@ lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ Tr
       obtain ⟨f, rfl⟩ := hbij.surjective z
       rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, ht]
     · intro ⟨X, _, h⟩
-      exact ⟨MulAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
+      exact ⟨MonoidAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
         Subgroup.one_mem _⟩
 
 end PreGaloisCategory

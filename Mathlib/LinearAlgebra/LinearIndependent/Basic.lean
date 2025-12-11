@@ -168,7 +168,7 @@ theorem LinearIndepOn.congr {w : ι → M} (hli : LinearIndepOn R v s) (h : EqOn
     LinearIndepOn R w s :=
   (linearIndepOn_congr h).1 hli
 
-theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
+theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MonoidAction G R]
     [SMul G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
     (hv : LinearIndependent R v) (w : ι → G) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
@@ -179,8 +179,8 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [MulAction G R]
   · simpa only [smul_assoc, smul_comm] using hsum
 
 @[simp]
-theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G R]
-    [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
+theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MonoidAction G R]
+    [MonoidAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
   convert h.group_smul (fun i ↦ (w i)⁻¹)
@@ -493,7 +493,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   letI := Classical.decEq (G →* L)
-  letI : MulAction L L := DistribMulAction.toMulAction
+  letI : MonoidAction L L := DistribMulAction.toMonoidAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   apply linearIndependent_iff'.2
   intro s

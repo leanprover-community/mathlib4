@@ -53,7 +53,7 @@ instance [Zero M] [SMulZeroClass S M] (c : SMulCon S M) : SMulZeroClass S c.Quot
 instance [Zero S] [Zero M] [SMulWithZero S M] (c : SMulCon S M) : SMulWithZero S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.smulWithZero ⟨_, rfl⟩ fun _ _ ↦ rfl
 
-@[to_additive] instance [Monoid S] [MulAction S M] (c : SMulCon S M) : MulAction S c.Quotient :=
+@[to_additive] instance [Monoid S] [MonoidAction S M] (c : SMulCon S M) : MonoidAction S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.mulAction (⟦·⟧) fun _ _ ↦ rfl
 
 section addConGen
@@ -119,7 +119,7 @@ instance [Zero S] [Zero M] [Add M] [SMulWithZero S M] (c : ModuleCon S M) :
     SMulWithZero S c.Quotient :=
   inferInstanceAs (SMulWithZero S c.toSMulCon.Quotient)
 
-instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.Quotient :=
+instance [Monoid S] [Add M] [MonoidAction S M] (c : ModuleCon S M) : MonoidAction S c.Quotient :=
   inferInstanceAs (MulAction S c.toSMulCon.Quotient)
 
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
@@ -138,7 +138,7 @@ section ker
 
 variable {R M N}
 
-/-- The kernel of a `MulActionHom` as a congruence relation. -/
+/-- The kernel of a `MonoidActionHom` as a congruence relation. -/
 @[to_additive /-- The kernel of an `AddActionHom` as a congruence relation. -/]
 def SMulCon.ker [SMul R M] [SMul S N] {φ : R → S} (f : M →ₑ[φ] N) : SMulCon R M where
   __ := Setoid.ker f
@@ -147,7 +147,7 @@ def SMulCon.ker [SMul R M] [SMul S N] {φ : R → S} (f : M →ₑ[φ] N) : SMul
 /-- The kernel of a `DistribMulActionHom` as a congruence relation. -/
 def ModuleCon.ker [Monoid R] [Monoid S] [AddMonoid M] [AddMonoid N] [DistribMulAction R M]
     [DistribMulAction S N] {φ : R →* S} (f : M →ₑ+[φ] N) : ModuleCon R M where
-  __ := SMulCon.ker f.toMulActionHom
+  __ := SMulCon.ker f.toMonoidActionHom
   __ := AddCon.ker f
 
 /-- The first isomorphism theorem for semimodules in the case of a surjective homomorphism. -/

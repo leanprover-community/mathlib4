@@ -235,9 +235,9 @@ theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ
 section LinearOrderedField
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [MulActionWithZero α ℝ] [IsStrictOrderedModule α ℝ]
+  [MonoidActionWithZero α ℝ] [IsStrictOrderedModule α ℝ]
 
-theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
+theorem gauge_smul_of_nonneg [MonoidActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_smul, gauge_zero, zero_smul]
@@ -261,7 +261,7 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
     rw [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc]
     exact smul_mem_smul_set hx
 
-theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ ℝ]
+theorem gauge_smul_left_of_nonneg [MonoidActionWithZero α E] [SMulCommClass α ℝ ℝ]
     [IsScalarTower α ℝ ℝ] [IsScalarTower α ℝ E] {s : Set E} {a : α} (ha : 0 ≤ a) :
     gauge (a • s) = a⁻¹ • gauge s := by
   obtain rfl | ha' := ha.eq_or_lt

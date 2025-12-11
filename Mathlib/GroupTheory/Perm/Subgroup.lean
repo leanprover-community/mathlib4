@@ -21,7 +21,7 @@ It also provides decidable instances on membership in these subgroups, since
 The presence of these instances induces a `Fintype` instance on the `QuotientGroup.Quotient` of
 these subgroups.
 
-In particular, we prove **Cayley's theorem** in `Equiv.Perm.subgroupOfMulAction`:
+In particular, we prove **Cayley's theorem** in `Equiv.Perm.subgroupOfMonoidAction`:
 every group `G` is isomorphic to a subgroup of the symmetric group acting on `G`.
 -/
 
@@ -68,9 +68,9 @@ theorem subtypeCongrHom.card_range {α : Type*} (p : α → Prop) [DecidablePred
 /-- **Cayley's theorem**: Every group G is isomorphic to a subgroup of the symmetric group acting on
 `G`. Note that we generalize this to an arbitrary "faithful" group action by `G`. Setting `H = G`
 recovers the usual statement of Cayley's theorem via `RightCancelMonoid.faithfulSMul` -/
-noncomputable def subgroupOfMulAction (G H : Type*) [Group G] [MulAction G H] [FaithfulSMul G H] :
+noncomputable def subgroupOfMonoidAction (G H : Type*) [Group G] [MonoidAction G H] [FaithfulSMul G H] :
     G ≃* (MulAction.toPermHom G H).range :=
-  MulEquiv.ofLeftInverse' _ (Classical.choose_spec MulAction.toPerm_injective.hasLeftInverse)
+  MulEquiv.ofLeftInverse' _ (Classical.choose_spec MonoidAction.toPerm_injective.hasLeftInverse)
 
 end Perm
 

@@ -185,7 +185,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
 @[to_additive /-- Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
   `b ↦ ∑' (a : α), f(a • b)`. -/]
-noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
+noncomputable def MonoidAction.automorphize [Group α] [MonoidAction α β] (f : β → M) :
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
@@ -202,9 +202,9 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
+lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
-    MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+    MonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
   ext x
   apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
@@ -247,14 +247,14 @@ variable {G : Type*} [Group G] {Γ : Subgroup G}
 @[to_additive /-- Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
   automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
   `g ↦ ∑' (γ : Γ), f(γ • g)`. -/]
-noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MonoidAction.automorphize f
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
       = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) :=
-  MulAction.automorphize_smul_left f g
+  MonoidAction.automorphize_smul_left f g
 
 end
 

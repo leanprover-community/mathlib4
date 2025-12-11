@@ -43,7 +43,7 @@ end PosSMulMono
 
 
 section
-variable [Preorder α] [Preorder β] [GroupWithZero α] [Zero β] [MulActionWithZero α β]
+variable [Preorder α] [Preorder β] [GroupWithZero α] [Zero β] [MonoidActionWithZero α β]
   [PosSMulMono α β] [PosSMulReflectLE α β] {s : Set β} {a : α}
 
 @[simp] lemma lowerBounds_smul_of_pos (ha : 0 < a) : lowerBounds (a • s) = a • lowerBounds s :=

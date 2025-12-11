@@ -52,7 +52,7 @@ instance instCommMonoid : CommMonoid (IterateMulAct f) where
   npow_succ n a := by ext; apply Nat.succ_mul
 
 @[to_additive]
-instance instMulAction : MulAction (IterateMulAct f) α where
+instance instMonoidAction : MonoidAction (IterateMulAct f) α where
   smul n x := f^[n.val] x
   one_smul _ := rfl
   mul_smul _ _ := Function.iterate_add_apply f _ _

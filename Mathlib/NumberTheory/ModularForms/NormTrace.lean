@@ -23,8 +23,8 @@ variable {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} (f : F) [FunLike F �
 
 local notation "𝒬" => ℋ ⧸ (𝒢.subgroupOf ℋ)
 
-instance : MulAction ℋ ℋ := Monoid.toMulAction ..
-instance : MulAction ℋ 𝒬 := .quotient ..
+instance : MonoidAction ℋ ℋ := Monoid.toMonoidAction ..
+instance : MonoidAction ℋ 𝒬 := .quotient ..
 
 namespace SlashInvariantForm
 

@@ -143,7 +143,7 @@ lemma variableChange_def : C • W = {
     a₆ := C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
       - C.r * C.t * W.a₁) } := rfl
 
-instance : MulAction (VariableChange R) (WeierstrassCurve R) where
+instance : MonoidAction (VariableChange R) (WeierstrassCurve R) where
   one_smul W := by
     rw [VariableChange.one_def, variableChange_def, inv_one, Units.val_one]
     ext <;> dsimp only <;> ring1

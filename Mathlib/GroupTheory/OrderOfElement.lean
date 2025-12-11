@@ -672,11 +672,11 @@ theorem orderOf_dvd_of_mem_zpowers (h : y ∈ Subgroup.zpowers x) : orderOf y �
   rw [orderOf_dvd_iff_pow_eq_one]
   exact zpow_pow_orderOf
 
-theorem smul_eq_self_of_mem_zpowers {α : Type*} [MulAction G α] (hx : x ∈ Subgroup.zpowers y)
+theorem smul_eq_self_of_mem_zpowers {α : Type*} [MonoidAction G α] (hx : x ∈ Subgroup.zpowers y)
     {a : α} (hs : y • a = a) : x • a = a := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hx
-  rw [← MulAction.toPerm_apply, ← MulAction.toPermHom_apply, map_zpow _ y k,
-    MulAction.toPermHom_apply]
+  rw [← MonoidAction.toPerm_apply, ← MonoidAction.toPermHom_apply, map_zpow _ y k,
+    MonoidAction.toPermHom_apply]
   exact Function.IsFixedPt.perm_zpow (by exact hs) k -- Porting note: help elab'n with `by exact`
 
 theorem vadd_eq_self_of_mem_zmultiples {G : Type*} [AddGroup G] {x y : G} {α : Type*}
@@ -1078,7 +1078,7 @@ theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ Nat.gcd n (Fintype.card G) =
 
 lemma smul_eq_of_le_smul
     {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : a ≤ g • a) : g • a = a := by
+    [MonoidAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : a ≤ g • a) : g • a = a := by
   have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
   rw [smul_smul, ← _root_.pow_succ',
     Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
@@ -1086,7 +1086,7 @@ lemma smul_eq_of_le_smul
 
 lemma smul_eq_of_smul_le
     {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : g • a ≤ a) : g • a = a := by
+    [MonoidAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : g • a ≤ a) : g • a = a := by
   have key := smul_mono_right g (pow_smul_le h (Nat.card G - 1))
   rw [smul_smul, ← _root_.pow_succ',
     Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key

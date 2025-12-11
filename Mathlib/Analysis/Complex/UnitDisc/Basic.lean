@@ -104,7 +104,7 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
 instance : Inhabited 𝔻 :=
   ⟨0⟩
 
-instance circleAction : MulAction Circle 𝔻 :=
+instance circleAction : MonoidAction Circle 𝔻 :=
   mulActionSphereBall
 
 instance isScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
@@ -123,7 +123,7 @@ instance instSMulCommClass_circle' : SMulCommClass 𝔻 Circle 𝔻 :=
 theorem coe_smul_circle (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :=
   rfl
 
-instance closedBallAction : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
+instance closedBallAction : MonoidAction (closedBall (0 : ℂ) 1) 𝔻 :=
   mulActionClosedBallBall
 
 instance isScalarTower_closedBall_closedBall :
