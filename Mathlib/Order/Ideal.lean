@@ -3,11 +3,13 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Cofinal
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -44,6 +46,8 @@ in line with most presentations of forcing.
 ideal, cofinal, dense, countable, generic
 
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -145,7 +149,7 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
   @Set.mem_of_mem_of_subset P x I J
 
 /-- A proper ideal is one that is not the whole set.
-    Note that the whole set might not be an ideal. -/
+Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/
@@ -168,7 +172,7 @@ class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
-theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
+theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -178,9 +182,9 @@ end
 
 section Directed
 
-variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
+variable [IsDirectedOrder P] [Nonempty P] {I : Ideal P}
 
-/-- In a directed and nonempty order, the top ideal of a is `univ`. -/
+/-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top
@@ -327,7 +331,7 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsCodirectedOrder P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=
@@ -483,9 +487,6 @@ structure Cofinal (P) [Preorder P] where
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
-
-@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
-alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 

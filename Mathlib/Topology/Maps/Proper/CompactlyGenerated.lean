@@ -3,8 +3,10 @@ Copyright (c) 2024 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # A map is proper iff preimage of compact sets are compact
@@ -12,6 +14,8 @@ import Mathlib.Topology.Maps.Proper.Basic
 This file proves that if `Y` is a Hausdorff and compactly generated space, a continuous map
 `f : X → Y` is proper if and only if preimage of compact sets are compact.
 -/
+
+@[expose] public section
 
 open Set Filter
 

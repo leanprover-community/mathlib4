@@ -3,9 +3,11 @@ Copyright (c) 2025 Loic Simon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Loic Simon
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Measure.Sub
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Measure.Sub
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Jordan decomposition from signed measure subtraction
@@ -27,6 +29,8 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 

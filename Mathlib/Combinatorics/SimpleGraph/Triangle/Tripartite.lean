@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
 /-!
 # Construct a tripartite graph from its triangles
@@ -34,6 +36,8 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is
   corner-free.
 -/
+
+@[expose] public section
 
 open Finset Function Sum3
 
@@ -143,7 +147,7 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
 /-- This lemma reorders the elements of a triangle in the tripartite graph. It turns a triangle
 `{x, y, z}` into a triangle `{a, b, c}` where `a : α `, `b : β`, `c : γ`. -/
 lemma graph_triple ⦃x y z⦄ :
-  (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
+    (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
     ({in₀ a, in₁ b, in₂ c} : Finset (α ⊕ β ⊕ γ)) = {x, y, z} ∧ (graph t).Adj (in₀ a) (in₁ b) ∧
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>

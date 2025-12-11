@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Solvable
+module
+
+public import Mathlib.Algebra.Lie.Solvable
 
 /-!
 # Semisimple Lie algebras
@@ -22,12 +24,19 @@ In this file we define simple and semisimple Lie algebras, together with related
 lie algebra, radical, simple, semisimple
 -/
 
+@[expose] public section
+
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
 
 /-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
 abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
+
+variable {R L M} in
+lemma LieModule.IsIrreducible.mk [Nontrivial M] (h : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤) :
+    IsIrreducible R L M :=
+  IsSimpleOrder.of_forall_eq_top h
 
 lemma LieSubmodule.eq_top_of_isIrreducible [LieModule.IsIrreducible R L M]
     (N : LieSubmodule R L M) [Nontrivial N] :
@@ -69,6 +78,9 @@ the label 'reductive' should mean when the coefficients are not a field of chara
 lemma hasCentralRadical_of_radical_le (h : radical R L ≤ center R L) :
     LieAlgebra.HasCentralRadical R L where
   radical_eq_center := le_antisymm h (center_le_radical R L)
+
+instance [Subsingleton L] : HasTrivialRadical R L :=
+  ⟨by simpa only [radical_eq_top_of_isSolvable] using Subsingleton.elim ⊤ ⊥⟩
 
 export HasCentralRadical (radical_eq_center)
 attribute [simp] radical_eq_center

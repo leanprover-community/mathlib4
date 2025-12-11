@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Baire category and Baire measurable sets
@@ -25,6 +27,8 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 
 -/
 
+@[expose] public section
+
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 open Topology
@@ -37,7 +41,7 @@ scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _)
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
 scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
 
-/-- Notation to say that a property of points in a topological space holds on a non meager set. -/
+/-- Notation to say that a property of points in a topological space holds on a nonmeager set. -/
 scoped[Topology] notation3 "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
@@ -149,7 +153,7 @@ theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :
 /-- A set is Baire measurable if and only if it differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.iff_residualEq_isOpen :
     BaireMeasurableSet s ↔ ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u :=
-  ⟨fun h => h.residualEq_isOpen , fun ⟨_, uo, ueq⟩ => uo.baireMeasurableSet.congr ueq.symm⟩
+  ⟨fun h => h.residualEq_isOpen, fun ⟨_, uo, ueq⟩ => uo.baireMeasurableSet.congr ueq.symm⟩
 
 section Map
 

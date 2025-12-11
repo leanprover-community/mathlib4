@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HasNoLoop
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Homology.HasNoLoop
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees
@@ -16,6 +18,8 @@ It consists of the objects `X₀` and `X₁` in degrees `i₀` and `i₁`, respe
 with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject Opposite
 
@@ -177,7 +181,7 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
   homEquiv {K} :=
     { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
       invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
+      left_inv g := by cat_disch
       right_inv f := by simp }
   homEquiv_comp := by simp
 

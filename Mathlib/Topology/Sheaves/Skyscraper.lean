@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
-import Mathlib.Topology.Sheaves.PUnit
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.Functors
+module
+
+public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Skyscraper (pre)sheaves
@@ -30,6 +32,8 @@ of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then
 
 TODO: generalize universe level when calculating stalks, after generalizing universe level of stalk.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -93,14 +97,14 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
 theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> cat_disch
 
 theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
   simp only [SkyscraperPresheafFunctor.map'_app]
-  split_ifs with h <;> aesop_cat
+  split_ifs with h <;> cat_disch
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by
 sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U) = f : a ⟶ b` if

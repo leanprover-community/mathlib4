@@ -3,10 +3,12 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.CategoryTheory.WithTerminal.Cone
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # The category of commutative algebras over a commutative ring
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.WithTerminal.Cone
 This file defines the bundled category `CommAlgCat` of commutative algebras over a fixed commutative
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -146,17 +150,19 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ 
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]
-def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
+def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
 
+@[deprecated (since := "2025-08-22")] alias ofIso := algEquivOfIso
+
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
-  toFun := ofIso
+  toFun := algEquivOfIso
   invFun := isoMk
 
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where

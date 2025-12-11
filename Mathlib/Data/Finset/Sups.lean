@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Set.Sups
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Set.Sups
 
 /-!
 # Set family operations
@@ -23,7 +25,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Notation
 
-We define the following notation in locale `FinsetFamily`:
+We define the following notation in scope `FinsetFamily`:
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
@@ -34,6 +36,8 @@ We define the following notation in locale `FinsetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+@[expose] public section
 
 open Function
 

@@ -3,13 +3,16 @@ Copyright (c) 2025 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
+module
 
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Disjoint
+public meta import Mathlib.Data.Set.SymmDiff
+public meta import Mathlib.Data.Set.Disjoint
 
 /-!
 # The `tauto_set` tactic
 -/
+
+public meta section
 
 assert_not_exists RelIso
 

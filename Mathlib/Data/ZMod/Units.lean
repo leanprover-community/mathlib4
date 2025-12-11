@@ -3,13 +3,17 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -39,8 +43,6 @@ lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
 
 lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
-@[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
-
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
   suffices ∀ x : ℕ, x.Coprime n → ∃ k : ℕ, (x + k * n).Coprime m by

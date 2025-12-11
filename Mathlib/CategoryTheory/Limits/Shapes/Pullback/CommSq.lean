@@ -3,14 +3,15 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
-# Pullback and pushout squares, and bicartesian squares
+# Pullback and pushout squares, and bi-Cartesian squares
 
 We provide another API for pullbacks and pushouts.
 
@@ -35,9 +36,14 @@ for the usual `pullback f g` provided by the `HasLimit` API.
 We don't attempt to restate everything we know about pullbacks in this language,
 but do restate the pasting lemmas.
 
-We define bicartesian squares, and
-show that the pullback and pushout squares for a biproduct are bicartesian.
+We define bi-Cartesian squares, and
+show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
+
+-- TODO: was pushed over the limit by module system adjustments
+set_option linter.style.longFile 1700
+
+@[expose] public section
 
 
 noncomputable section
@@ -124,7 +130,7 @@ end CommSq
   Y ---g---> Z
 
 ```
-is a pullback square. (Also known as a fibered product or cartesian square.)
+is a pullback square. (Also known as a fibered product or Cartesian square.)
 -/
 structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) : Prop
     extends CommSq fst snd f g where
@@ -141,7 +147,7 @@ structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)
   Y --inr--> P
 
 ```
-is a pushout square. (Also known as a fiber coproduct or cocartesian square.)
+is a pushout square. (Also known as a fiber coproduct or co-Cartesian square.)
 -/
 structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) : Prop
     extends CommSq f g inl inr where
@@ -150,7 +156,7 @@ structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (i
 
 section
 
-/-- A *bicartesian* square is a commutative square
+/-- A *bi-Cartesian* square is a commutative square
 ```
   W ---f---> X
   |          |
@@ -346,7 +352,7 @@ theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     (by
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
-          (fun s => ?_) (by aesop_cat)
+          (fun s => ?_) (by cat_disch)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :
@@ -373,6 +379,23 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
+/-- Same as `IsPullback.of_iso`, but using the data and compatibilities involving
+the inverse isomorphisms instead. -/
+lemma of_iso' (h : IsPullback fst snd f g)
+    {P' X' Y' Z' : C} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+    (e₁ : P' ≅ P) (e₂ : X' ≅ X) (e₃ : Y' ≅ Y) (e₄ : Z' ≅ Z)
+    (commfst : e₁.hom ≫ fst = fst' ≫ e₂.hom)
+    (commsnd : e₁.hom ≫ snd = snd' ≫ e₃.hom)
+    (commf : e₂.hom ≫ f = f' ≫ e₄.hom)
+    (commg : e₃.hom ≫ g = g' ≫ e₄.hom) :
+    IsPullback fst' snd' f' g' := by
+  apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commfst, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commsnd, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+
 section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
@@ -585,6 +608,23 @@ lemma of_iso (h : IsPushout f g inl inr)
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 
+/-- Same as `IsPushout.of_iso`, but using the data and compatibilities involving
+the inverse isomorphisms instead. -/
+lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (h : IsPushout f g inl inr)
+    {Z' X' Y' P' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'} {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'}
+    (e₁ : Z' ≅ Z) (e₂ : X' ≅ X) (e₃ : Y' ≅ Y) (e₄ : P' ≅ P)
+    (commf : e₁.hom ≫ f = f' ≫ e₂.hom)
+    (commg : e₁.hom ≫ g = g' ≫ e₃.hom)
+    (comminl : e₂.hom ≫ inl = inl' ≫ e₄.hom)
+    (comminr : e₃.hom ≫ inr = inr' ≫ e₄.hom) :
+    IsPushout f' g' inl' inr' := by
+  apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminl, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminr, Iso.inv_hom_id_assoc]
+
 section
 
 variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
@@ -791,6 +831,10 @@ theorem of_bot' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ :
     IsPullback h₁₁ (t.lift (h₁₁ ≫ v₁₂) v₃₁ (by rw [Category.assoc, s.w])) v₁₂ h₂₁ :=
   of_bot ((t.lift_snd _ _ _) ▸ s) (by simp only [lift_fst]) t
 
+instance [HasPullbacksAlong f] (h : P ⟶ Y) : HasPullback h (pullback.fst g f) :=
+  IsPullback.hasPullback (IsPullback.of_bot' (IsPullback.of_hasPullback (h ≫ g) f)
+    (IsPullback.of_hasPullback g f))
+
 section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
@@ -917,6 +961,46 @@ Z --id--> Z
 -/
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+
+/--
+In a category, given a morphism `f : A ⟶ B` and an object `X`,
+this is the obvious pullback diagram:
+```
+A ⨯ X ⟶ A
+  |     |
+  v     v
+B ⨯ X ⟶ B
+```
+-/
+lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
+    [HasBinaryProduct B X] :
+    IsPullback prod.fst (prod.map f (𝟙 X)) f prod.fst where
+  isLimit' := ⟨PullbackCone.isLimitAux' _ (fun s ↦ by
+    refine ⟨prod.lift s.fst (s.snd ≫ prod.snd), ?_, ?_, ?_⟩
+    · simp
+    · ext
+      · simp [PullbackCone.condition]
+      · simp
+    · intro m h₁ h₂
+      dsimp at m h₁ h₂ ⊢
+      ext
+      · simpa using h₁
+      · simp [← h₂])⟩
+
+lemma of_isLimit_binaryFan_of_isTerminal
+    {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
+    {T : C} (hT : IsTerminal T) :
+    IsPullback c.fst c.snd (hT.from _) (hT.from _) where
+  isLimit' := ⟨PullbackCone.IsLimit.mk _
+    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryFan.IsLimit.hom_ext hc
+      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
+        rfl
+      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
+        rfl)⟩
 
 end IsPullback
 
@@ -1330,7 +1414,7 @@ open ZeroObject
    v            v
    Y -----0---> 0
 ```
-is a bicartesian square.
+is a bi-Cartesian square.
 -/
 theorem of_is_biproduct₁ {b : BinaryBicone X Y} (h : b.IsBilimit) :
     BicartesianSq b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) :=
@@ -1344,7 +1428,7 @@ theorem of_is_biproduct₁ {b : BinaryBicone X Y} (h : b.IsBilimit) :
    v            v
    Y --inr--> X ⊞ Y
 ```
-is a bicartesian square.
+is a bi-Cartesian square.
 -/
 theorem of_is_biproduct₂ {b : BinaryBicone X Y} (h : b.IsBilimit) :
     BicartesianSq (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr :=
@@ -1358,7 +1442,7 @@ theorem of_is_biproduct₂ {b : BinaryBicone X Y} (h : b.IsBilimit) :
    v            v
    Y -----0---> 0
 ```
-is a bicartesian square.
+is a bi-Cartesian square.
 -/
 @[simp]
 theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
@@ -1373,7 +1457,7 @@ theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
    v            v
    Y --inr--> X ⊞ Y
 ```
-is a bicartesian square.
+is a bi-Cartesian square.
 -/
 @[simp]
 theorem of_has_biproduct₂ [HasBinaryBiproduct X Y] :
