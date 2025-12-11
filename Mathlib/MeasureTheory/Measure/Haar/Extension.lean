@@ -57,7 +57,7 @@ namespace TopologicalGroup.IsSES
 /-- Construct a short exact sequence of topological groups from a closed normal subgroup. -/
 @[to_additive /-- Construct a short exact sequence of topological groups from a
 closed normal subgroup. -/]
-def ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+theorem ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     (H : Subgroup G) [H.Normal] (hH : IsClosed (H : Set G)) :
     TopologicalGroup.IsSES H.subtype (QuotientGroup.mk' H) where
   isClosedEmbedding := ⟨⟨Topology.IsInducing.subtypeVal, H.subtype_injective⟩, by simpa⟩
@@ -263,7 +263,7 @@ theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
   apply RealRMK.integral_rieszMeasure
 
 @[to_additive]
-theorem isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
+instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
   lt_top_of_isCompact K hK := by
     let U : Set B := Set.univ
     have hU : IsOpen U := isOpen_univ
