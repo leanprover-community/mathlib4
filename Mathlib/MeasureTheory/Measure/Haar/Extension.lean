@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Alex Kontorovich and Heather Macbeth. All rights reserved.
+Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
@@ -43,6 +43,15 @@ structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
   isOpenQuotientMap : IsOpenQuotientMap ψ
   exact : φ.range = ψ.ker
 
+/-- A predicate stating that `φ` and `ψ` define a short exact sequence of topological groups. -/
+structure TopologicalAddGroup.IsSES {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
+    [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →+ B) (ψ : B →+ C) where
+  isClosedEmbedding : Topology.IsClosedEmbedding φ
+  isOpenQuotientMap : IsOpenQuotientMap ψ
+  exact : φ.range = ψ.ker
+
+attribute [to_additive TopologicalAddGroup.IsSES] TopologicalGroup.IsSES
+
 namespace TopologicalGroup.IsSES
 
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
@@ -50,6 +59,7 @@ variable {A B C E : Type*} [Group A] [Group B] [Group C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
 
 include H in
+@[to_additive]
 theorem apply_apply (a : A) : ψ (φ a) = 1 :=
    H.exact.le ⟨a, rfl⟩
 
@@ -57,6 +67,7 @@ variable [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
 
 /-- Pullback a continuous compactly supported function `f` on `B` to the continuous
 compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive]
 noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
     CompactlySupportedContinuousMap A E where
   toFun a := f (b * φ a)
@@ -69,6 +80,7 @@ noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
     have : Continuous φ := H.isClosedEmbedding.continuous
     fun_prop
 
+@[to_additive]
 theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
     pullback H f b a = f (b * φ a) :=
   rfl
@@ -76,6 +88,7 @@ theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
 variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
   [NormedSpace ℝ E]
 
+@[to_additive]
 theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     ∫ a, H.pullback f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, H.pullback f b a ∂μA := by
   have h : ψ ((Function.invFun ψ (ψ b))⁻¹ * b) = 1 := by simp [Function.apply_invFun_apply]
@@ -88,6 +101,7 @@ variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
 /-- Pushforward a continuous comapctly supported function on `B` to a continuous compactly
 supported function on `C` by integrating over `A`. -/
+@[to_additive]
 noncomputable def pushforward :
     CompactlySupportedContinuousMap B E →ₗ[ℝ] CompactlySupportedContinuousMap C E where
   toFun f :=
@@ -175,14 +189,17 @@ noncomputable def pushforward :
     ext c
     apply integral_smul
 
+@[to_additive]
 theorem pushforward_def (f : CompactlySupportedContinuousMap B E) (c : C) :
     pushforward H μA f c = ∫ a, pullback H f (Function.invFun ψ c) a ∂μA :=
   rfl
 
+@[to_additive]
 theorem pushforward_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     pushforward H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
   integral_pullback_invFun_apply H μA f b
 
+@[to_additive]
 theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
     pushforward H μA f ≤ pushforward H μA g := by
   intro c
@@ -195,6 +212,7 @@ theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f �
 variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
 /-- Integrate a continuous comapctly supported function on `B` by integrating over `A` and `C`. -/
+@[to_additive]
 noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E where
   toFun f := ∫ c, pushforward H μA f c ∂μC
   map_add' f g := by
@@ -204,10 +222,12 @@ noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E 
     rw [map_smul]
     exact integral_smul x (H.pushforward μA f)
 
+@[to_additive]
 theorem integrate_apply (f : CompactlySupportedContinuousMap B E) :
     H.integrate μA μC f = ∫ c, pushforward H μA f c ∂μC :=
   rfl
 
+@[to_additive]
 theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
     integrate H μA μC f ≤ integrate H μA μC g :=
   integral_mono  (pushforward H μA f).integrable (pushforward H μA g).integrable
@@ -216,16 +236,20 @@ theorem integrate_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ 
 variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
 
 /-- The Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
+@[to_additive]
 noncomputable def inducedMeasure : Measure B :=
   RealRMK.rieszMeasure ⟨integrate H μA μC, integrate_mono H μA μC⟩
 
+@[to_additive]
 instance inducedMeasure_regular : (inducedMeasure H μA μC).Regular :=
   RealRMK.regular_rieszMeasure _
 
+@[to_additive]
 theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
     ∫ b : B, f b ∂(inducedMeasure H μA μC) = integrate H μA μC f := by
   apply RealRMK.integral_rieszMeasure
 
+@[to_additive]
 theorem isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
   lt_top_of_isCompact K hK := by
     let U : Set B := Set.univ
@@ -270,6 +294,7 @@ theorem isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) 
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
 /-- A sufficiently large open subset of `B` cannot be a fundamental domain. -/
+@[to_additive]
 theorem not_injOn_of_inducedMeasure_gt (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
     (h : μC Set.univ * μA {1} < inducedMeasure H μA μC U) :
     ¬ U.InjOn ψ := by
