@@ -880,10 +880,53 @@ theorem transvectionDegree_of_not_isExceptional
   · exact transvectionDegree_le_of_reduce_eq_one e h
   · exact transvectionDegree_of_reduce_ne_smul_id e (he h)
 
+example (e : SpecialLinearGroup K V) (a : K) (he1 : e ≠ 1)
+    (he : e = a • LinearMap.id (R := K) (M := V)) :
+    e ∉ (transvections K V) ^ ((finrank K V)) := by
+  induction hn : finrank K V generalizing V with
+  | zero => simpa using he1
+  | succ n hind =>
+    rw [pow_succ]
+    rintro ⟨e', he', t, ⟨f, v, hfv, rfl⟩, h⟩
+    simp only at h
+    rw [eq_comm, ← mul_inv_eq_iff_eq_mul,  transvection.inv _ (by simp [hfv]), ← Subtype.coe_inj, LinearEquiv.ext_iff] at h
+    generalize_proofs _ hfv' at h
+    have he'_eq (x : V) : e' x = a • x - a • f x • v := by
+      specialize h x
+      simp [LinearMap.transvection.apply] at h
+      rw [← LinearEquiv.coe_toLinearMap, he] at h
+      simp_rw [← h]
+      simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+      module
+    have he'_fixed: e'.fixedSubmodule = K ∙ v := sorry
+    have he'_red : e'.reduce = a • LinearMap.id (R := K) (M := V ⧸ e'.fixedSubmodule) := sorry
+    apply hind e'.reduce ?_ ?_ ?_
+    · sorry
+    · sorry
+      -- soit 0 < n et c'est OK, a ≠ 1
+      -- soit n = 0, et a = 1 aussi
+    · sorry -- he'_eq et he'_red
+    · sorry
+
+
+
+/-- If an element of `SpecialLinearGroup K V` is a product of
+exactly `finrank K (V ⧸ e.fixedSubmodule)` transvections,
+then it is not exceptional. (Dieudonné's theorem) -/
 example (e : SpecialLinearGroup K V)
     (n : ℕ) (hn : n = finrank K (V ⧸ e.fixedSubmodule))
     (he : e ∈ transvections K V ^ n) :
     ¬ IsExceptional e := by
+  intro he'
+  have : ∃ t : Fin (finrank K V) → SpecialLinearGroup K V,
+    e = Fin.prod t ∧ ∀ i, t i ∈ transvections K V := sorry
+  obtain ⟨t, he', ht⟩ := this
+  set f := fun i ↦ (ht i).choose
+  set v := fun i ↦ (ht i).choose_spec.choose
+  have hfv (i) : f i (v i) = 0 := (ht i).choose_spec.choose_spec.choose
+  have ht (i) : t i = transvection (hfv i) := (ht i).choose_spec.choose_spec.choose_spec
+  have he_fixed : e.fixedSubmodule = iInf (fun i ↦ LinearMap.ker (f i)) :=
+    sorry
   induction n generalizing e with
   | zero =>
     simp only [pow_zero, Set.mem_one] at he
@@ -893,11 +936,6 @@ example (e : SpecialLinearGroup K V)
   | succ n hind =>
     rw [pow_succ, Set.mem_mul] at he
     obtain ⟨e', he', t, ⟨f, v, hfv, rfl⟩, he⟩ := he
-    have : LinearMap.ker f ⊓ e.fixedSubmodule ≤ e'.fixedSubmodule := fun x ⟨hfx, hxe⟩ ↦ by
-      replace he := congr($he x)
-      simp only [SetLike.mem_coe, mem_fixedSubmodule_iff] at hxe
-      simp only [SetLike.mem_coe, LinearMap.mem_ker] at hfx
-      simpa [LinearMap.transvection.apply, hfx, hxe, mem_fixedSubmodule_iff] using he
     have this : e.fixedSubmodule = LinearMap.ker f ⊓ e'.fixedSubmodule := by
       symm
       apply Submodule.eq_of_le_of_finrank_le
@@ -920,6 +958,28 @@ example (e : SpecialLinearGroup K V)
         exact Dual.finrank_le_one_add_finrank_ker_inf f e'.fixedSubmodule
       · rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
         exact finrank_le_add_finrank_fixedSubmodule he'
+    ---
+    rintro ⟨her_ne_one, a, her_eq⟩
+    have : Submodule.map e'.val (LinearMap.ker f) ≤ LinearMap.ker f := by
+      rintro _ ⟨x, hx, rfl⟩
+      simp only [SetLike.mem_coe, LinearMap.mem_ker] at hx ⊢
+      have : ∀ x ∈ LinearMap.ker f, e' x = a • x := fun x hx ↦ by
+        rw [eq_comm, ← mul_inv_eq_iff_eq_mul] at he
+        rw [← he]
+        simp only [coe_mul, coe_inv, transvection.coe_toLinearEquiv, LinearEquiv.mul_apply,
+          LinearEquiv.coe_inv]
+        rw [LinearEquiv.transvection.symm_eq' _ (by simp [hfv])]
+        rw [LinearEquiv.transvection.apply]
+        simp
+
+      replace he := congr($he x)
+      simp only [coe_mul, transvection.coe_toLinearEquiv, LinearEquiv.mul_apply,
+        LinearEquiv.transvection.coe_apply, LinearMap.transvection.apply, hx, zero_smul,
+        add_zero] at he
+      rw [
+
+
+
     intro hex
     unfold IsExceptional at hex
     obtain ⟨hex, a, her⟩ := hex
