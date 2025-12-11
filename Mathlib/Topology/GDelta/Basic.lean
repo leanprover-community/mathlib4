@@ -230,6 +230,11 @@ lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y
   obtain ⟨_, hx, x, x_mem_s, rfl⟩ := mem_closure_iff.mp (ho y_mem_o) o isOpen_o y_mem_o
   refine ⟨x, f⁻¹' o, ⟨hf.continuous.isOpen_preimage o isOpen_o, by grw [ho]⟩, hx⟩
 
+/-- A set is nowhere dense if it is nowhere dense in some subspace. -/
+lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
+    (hs : IsNowhereDense s) : IsNowhereDense (s : Set X) :=
+  Topology.IsInducing.subtypeVal.isNowhereDense_image hs
+
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
