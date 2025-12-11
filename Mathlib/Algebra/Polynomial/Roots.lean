@@ -294,7 +294,7 @@ theorem roots_eq_of_degree_of_ne_zero {S : Finset R}
 
 theorem roots_eq_of_degree {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
-  roots_eq_of_degree_of_ne_zero hS (by cutsat) (by contrapose! hcard; simp [hcard])
+  roots_eq_of_degree_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
 
 theorem roots_eq_of_natDegree_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
