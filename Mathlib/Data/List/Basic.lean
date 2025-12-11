@@ -194,15 +194,9 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 
-@[simp]
-theorem append_right_injective' (s t t' : List α) : s ++ t = s ++ t' ↔ t = t' := by aesop
-
 @[aesop safe]
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
-
-@[simp]
-theorem append_left_injective' (s s' t : List α) : s ++ t = s' ++ t ↔ s = s' := by aesop
 
 /-! ### replicate -/
 
