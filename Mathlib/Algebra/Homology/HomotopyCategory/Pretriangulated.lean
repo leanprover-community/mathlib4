@@ -233,10 +233,10 @@ noncomputable def rotateHomotopyEquiv :
         Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
         Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
         neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega),
+        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia),
         Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
         ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
-        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
+        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
         shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
         shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
         Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
@@ -245,7 +245,7 @@ noncomputable def rotateHomotopyEquiv :
         inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
         Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
         liftCochain_v_snd_v,
-        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
+        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by lia),
         Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
         inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
 

@@ -53,7 +53,7 @@ lemma dim_le_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLE d] : n ≤ d :=
   Nat.le_of_lt_succ (X.dim_lt_of_nonDegenerate x (d + 1))
 
-lemma hasDimensionLT_of_le (hn : d ≤ n := by cutsat) : HasDimensionLT X n where
+lemma hasDimensionLT_of_le (hn : d ≤ n := by lia) : HasDimensionLT X n where
   degenerate_eq_top i hi :=
     X.degenerate_eq_top_of_hasDimensionLT d i (hn.trans hi)
 
