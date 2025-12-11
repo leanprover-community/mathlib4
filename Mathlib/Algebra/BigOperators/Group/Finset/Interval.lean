@@ -41,9 +41,6 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
     f (N + 1) * f (-(N + 1) : ℤ) * ∏ m ∈ Icc (-N : ℤ) N, f m := by
   induction N
   · rw [Icc_succ_succ]
-    simp only [CharP.cast_eq_zero, neg_zero, Icc_self, zero_add, Int.reduceNeg, union_insert,
-      union_singleton, mem_insert, reduceCtorEq, mem_singleton, neg_eq_zero, one_ne_zero, or_self,
-      not_false_eq_true, prod_insert, prod_singleton]
     grind
   · rw [Icc_succ_succ, prod_union (by simp)]
     grind
