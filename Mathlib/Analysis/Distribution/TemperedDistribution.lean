@@ -28,7 +28,7 @@ distribution.
 
 noncomputable section
 
-open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
+open SchwartzMap ContinuousLinearMap
 
 open scoped Nat NNReal ContDiff
 
