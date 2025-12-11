@@ -37,7 +37,7 @@ lemma bonza_apply_dvd_pow (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n 
 
 lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ} (hp : Nat.Prime p) :
     f p = 1 ∨ (∀ b : ℕ, b > 0 → (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
-  have : f p ∣ p ^ p := bonza_apply_dvd_pow hf (Prime.pos hp)
+  have : f p ∣ p ^ p := bonza_apply_dvd_pow hf hp.pos
   obtain ⟨k, _, eq⟩ : ∃ k, k ≤ p ∧ f p = p ^ k := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : k = 0
   · left
@@ -45,17 +45,15 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
   · right
     intro b hb
     have : (p : ℤ) ∣ (b : ℤ) ^ p - (f b) ^ f p := by calc
-      _ ∣ (f p : ℤ) := by
-        rw [eq, natCast_dvd_natCast]
-        exact dvd_pow_self p ch
-      _ ∣ _ := hf.1 p b (Prime.pos hp) hb
+      _ ∣ (f p : ℤ) := by simp [eq, ch]
+      _ ∣ _ := hf.1 p b hp.pos hb
     have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by calc
       _ ≡ (b : ℤ) ^ p [ZMOD p] := (ModEq.pow_prime_eq_self hp b).symm
       _ ≡ (f b) ^ f p [ZMOD p] := (Int.modEq_iff_dvd.mpr this).symm
       _ ≡ _ [ZMOD p] := by
         rw [eq]
         nth_rw 2 [← pow_one (f b : ℤ)]
-        exact Int.ModEq.pow_eq_pow hp (p.sub_one_dvd_pow_sub_one k) (one_le_pow k p (Prime.pos hp))
+        exact Int.ModEq.pow_eq_pow hp (p.sub_one_dvd_pow_sub_one k) (one_le_pow k p hp.pos)
           (by norm_num) (f b)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
@@ -145,7 +143,7 @@ lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (h
       refine pow_dvd_pow 2 ?_
       calc
       _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
-      _ ≤ _ := by simp [propext (Nat.pow_le_pow_iff_right le.refl)]
+      _ ≤ _ := by simp [Nat.pow_le_pow_iff_right le.refl]
     _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
 /-- To verify the example is a bonza function -/
@@ -193,7 +191,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
       rw [hk] at apply_dvd_three_pow_sub_one
       calc
         _ ≤ 2 ^ padicValNat 2 (3 ^ n - 1) := by
-          rwa [hk, propext (Nat.pow_le_pow_iff_right Nat.le.refl), ← padicValNat_dvd_iff_le
+          rwa [hk, Nat.pow_le_pow_iff_right Nat.le.refl, ← padicValNat_dvd_iff_le
             (by grind [one_lt_pow])]
         _ = 4 * 2 ^ padicValNat 2 n := by
           have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
