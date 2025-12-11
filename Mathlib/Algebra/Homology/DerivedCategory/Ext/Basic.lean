@@ -416,7 +416,7 @@ noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} wher
     rw [← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
-    omega
+    lia
 
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/

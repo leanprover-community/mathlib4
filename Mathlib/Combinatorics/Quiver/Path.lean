@@ -175,7 +175,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
       p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · have h_len : p.length = (p.length - 1) + 1 := by omega
+  · have h_len : p.length = (p.length - 1) + 1 := by lia
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
     exact ⟨c, e, p', rfl, by lia⟩
   · rintro ⟨c, p', e, rfl, h⟩

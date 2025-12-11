@@ -216,6 +216,9 @@ def degree : (σ →₀ R) →+ R where
 
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
 
+@[deprecated (since := "2025-12-09")]
+alias degree_def := degree_apply
+
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp
 
