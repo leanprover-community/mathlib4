@@ -257,7 +257,7 @@ theorem Connected.diff_dist_adj (hG : G.Connected) (hadj : G.Adj v w) :
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
   have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
   have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
-  omega
+  lia
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
@@ -299,7 +299,7 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
   have : r.length = ru.length + s.length + rv.length := by simp [r]
   have := dist_le r
-  cutsat
+  lia
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
@@ -318,17 +318,17 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
-      cutsat)]
-    omega
-  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+      lia)]
+    lia
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; lia
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
-    cutsat
+    lia
   by_cases hadj : G.Adj v (p.getVert 2)
   · have : G.dist v w ≤ p.tail.tail.length + 1 :=
       dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
-    cutsat
+    lia
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist

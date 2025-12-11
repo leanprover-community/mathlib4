@@ -133,7 +133,7 @@ def coconeTypes : F.CoconeTypes where
   pt := F.ColimitType
   ι j := F.ιColimitType j
 
-/-- An heterogeneous universe version of the universal property of the colimit is
+/-- A heterogeneous universe version of the universal property of the colimit is
 satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
 def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
@@ -223,6 +223,17 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
+
+lemma iff_bijective {c' : CoconeTypes.{w₂} F}
+    (f : c.pt → c'.pt) (hf : ∀ j x, c'.ι j x = f (c.ι j x)) :
+    c'.IsColimit ↔ Function.Bijective f := by
+  refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
+  have h₁ := hc.bijective
+  rw [← Function.Bijective.of_comp_iff _ hc.bijective]
+  convert hc'.bijective
+  ext x
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+  simp [hf]
 
 end IsColimit
 

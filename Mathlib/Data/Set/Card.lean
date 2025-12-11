@@ -40,11 +40,11 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 
 ## Implementation Notes
 
-The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
-instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
-`Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
-for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`
-in the future.
+The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
+`Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then
+derive most of the `Set.ncard` results as a consequence. Things are done this way to avoid reliance
+on the `Finset` API for theorems about infinite sets, and to allow for a refactor that removes or
+modifies `Set.ncard` in the future.
 
 Nearly all the theorems for `Set.ncard` require finiteness of one or more of their arguments. We
 provide this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`,
@@ -845,6 +845,9 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 
+theorem ncard_congr' {S : Set α} {T : Set β} (f : S ≃ T) : Set.ncard S = Set.ncard T :=
+  Cardinal.toNat_congr f
+
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
@@ -1179,7 +1182,7 @@ lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s 
     (he : Even (s.ncard)) : 1 < s.ncard := by
   rw [← Set.ncard_pos hs] at hn
   have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
-  cutsat
+  lia
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
