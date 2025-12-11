@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Closure
+public import Mathlib.Topology.Constructions
 
 /-!
 # `Gδ` sets
@@ -183,7 +184,7 @@ end residual
 
 section IsMeagre
 open Function TopologicalSpace Set
-variable {X : Type*} [TopologicalSpace X]
+variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
@@ -213,6 +214,16 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
+
+/-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
+lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
+  simp only [IsNowhereDense] at *
+  rw [hf.closure_eq_preimage_closure_image] at h
+  contrapose! h
+  obtain ⟨y, o, ⟨isOpen_o, ho⟩, y_mem_o⟩ := h
+  obtain ⟨_, hx, x, x_mem_s, rfl⟩ := mem_closure_iff.mp (ho y_mem_o) o isOpen_o y_mem_o
+  refine ⟨x, f⁻¹' o, ⟨hf.continuous.isOpen_preimage o isOpen_o, by grw [ho]⟩, hx⟩
 
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
