@@ -87,15 +87,11 @@ theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace 
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 90) PseudoMetrizableSpace.firstCountableTopology
-    [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by
-  letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
-  infer_instance
-
-/-- Every pseudo-metrizable space is regular. -/
-instance (priority := 90) PseudoMetrizableSpace.regular
-    [h : PseudoMetrizableSpace X] : RegularSpace X := by
-  letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
-  infer_instance
+    [h : PseudoMetrizableSpace X] : FirstCountableTopology X :=
+  let : UniformSpace X := pseudoMetrizableSpaceUniformity X
+  have : (uniformity X).IsCountablyGenerated :=
+    pseudoMetrizableSpaceUniformity_countably_generated X
+  inferInstance
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
