@@ -74,7 +74,6 @@ import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
 import Archive.Wiedijk100Theorems.Konigsberg
-import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
