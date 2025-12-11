@@ -28,13 +28,9 @@ variable {K V W : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projectiv
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W) :
     ∃ T : V ≃ₗ[K] W, f = T.conjAlgEquiv K := by
-  by_cases hV : Subsingleton V
-  · have : Subsingleton W := by
-      by_contra!
-      have : f 0 = f 1 := congr(f $(Subsingleton.allEq _ _))
-      simp at this
-    exact ⟨0, Subsingleton.allEq _ _⟩
-  rw [not_subsingleton_iff_nontrivial] at hV
+  by_cases! hV : Subsingleton V
+  · nontriviality W
+    simpa using congr(f $(Subsingleton.allEq 0 1))
   simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := Projective.exists_dual_ne_zero K hu
