@@ -10,13 +10,13 @@ public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 
-# Subpresheaf of types
+# Subfunctor of types
 
 We define the subpresheaf of a type-valued presheaf.
 
 ## Main results
 
-- `CategoryTheory.Subpresheaf` :
+- `CategoryTheory.Subfunctor` :
   A subpresheaf of a presheaf of types.
 
 -/
@@ -35,7 +35,7 @@ variable {C : Type u} [Category.{v} C]
 /-- A subpresheaf of a presheaf consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
-structure Subpresheaf (F : C ⥤ Type w) where
+structure Subfunctor (F : C ⥤ Type w) where
   /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
   `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
@@ -43,12 +43,12 @@ structure Subpresheaf (F : C ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-variable {F F' F'' : C ⥤ Type w} (G G' : Subpresheaf F)
+variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
-instance : PartialOrder (Subpresheaf F) :=
-  PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
+instance : PartialOrder (Subfunctor F) :=
+  PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
-instance : CompleteLattice (Subpresheaf F) where
+instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U
       map _ _ := by
@@ -92,50 +92,50 @@ instance : CompleteLattice (Subpresheaf F) where
       map := by simp }
   le_top _ _ := le_top
 
-namespace Subpresheaf
+namespace Subfunctor
 
-lemma le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
+lemma le_def (S T : Subfunctor F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
 
 variable (F)
 
-@[simp] lemma top_obj (i : C) : (⊤ : Subpresheaf F).obj i = ⊤ := rfl
-@[simp] lemma bot_obj (i : C) : (⊥ : Subpresheaf F).obj i = ⊥ := rfl
+@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = ⊤ := rfl
+@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ⊥ := rfl
 
 variable {F}
 
-lemma sSup_obj (S : Set (Subpresheaf F)) (U : C) :
+lemma sSup_obj (S : Set (Subfunctor F)) (U : C) :
     (sSup S).obj U = sSup (Set.image (fun T ↦ T.obj U) S) := rfl
 
-lemma sInf_obj (S : Set (Subpresheaf F)) (U : C) :
+lemma sInf_obj (S : Set (Subfunctor F)) (U : C) :
     (sInf S).obj U = sInf (Set.image (fun T ↦ T.obj U) S) := rfl
 
 @[simp]
-lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : C) :
+lemma iSup_obj {ι : Type*} (S : ι → Subfunctor F) (U : C) :
     (⨆ i, S i).obj U = ⋃ i, (S i).obj U := by
   simp [iSup, sSup_obj]
 
 @[simp]
-lemma iInf_obj {ι : Type*} (S : ι → Subpresheaf F) (U : C) :
+lemma iInf_obj {ι : Type*} (S : ι → Subfunctor F) (U : C) :
     (⨅ i, S i).obj U = ⋂ i, (S i).obj U := by
   simp [iInf, sInf_obj]
 
 @[simp]
-lemma max_obj (S T : Subpresheaf F) (i : C) :
+lemma max_obj (S T : Subfunctor F) (i : C) :
     (S ⊔ T).obj i = S.obj i ∪ T.obj i := rfl
 
 @[simp]
-lemma min_obj (S T : Subpresheaf F) (i : C) :
+lemma min_obj (S T : Subfunctor F) (i : C) :
     (S ⊓ T).obj i = S.obj i ∩ T.obj i := rfl
 
-lemma max_min (S₁ S₂ T : Subpresheaf F) :
+lemma max_min (S₁ S₂ T : Subfunctor F) :
     (S₁ ⊔ S₂) ⊓ T = (S₁ ⊓ T) ⊔ (S₂ ⊓ T) := by
   aesop
 
-lemma iSup_min {ι : Type*} (S : ι → Subpresheaf F) (T : Subpresheaf F) :
+lemma iSup_min {ι : Type*} (S : ι → Subfunctor F) (T : Subfunctor F) :
     (⨆ i, S i) ⊓ T = ⨆ i, S i ⊓ T := by
   aesop
 
-instance : Nonempty (Subpresheaf F) :=
+instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subpresheaf as a presheaf. -/
@@ -166,10 +166,10 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
-def homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
   app U x := ⟨x, h U x.prop⟩
 
-instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
+instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e =>
     NatTrans.ext <|
       funext fun U =>
@@ -177,12 +177,12 @@ instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x :) :)⟩
 
 @[reassoc (attr := simp)]
-theorem homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
-    Subpresheaf.homOfLe h ≫ G'.ι = G.ι := by
+theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :
+    Subfunctor.homOfLe h ≫ G'.ι = G.ι := by
   ext
   rfl
 
-instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
+instance : IsIso (Subfunctor.ι (⊤ : Subfunctor F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   intro X
   rw [isIso_iff_bijective]
@@ -203,6 +203,6 @@ theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
-end Subpresheaf
+end Subfunctor
 
 end CategoryTheory

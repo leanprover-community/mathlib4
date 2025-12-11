@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
@@ -21,11 +21,11 @@ and the associated compatible family of elements with values in `G.toPresheaf`.
 
 universe w v u
 
-namespace CategoryTheory.Subpresheaf
+namespace CategoryTheory.Subfunctor
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w} (G : Subpresheaf F)
+variable {C : Type u} [Category.{v} C] {F : Cᵒᵖ ⥤ Type w} (G : Subfunctor F)
 
 /-- Given a subpresheaf `G` of `F`, an `F`-section `s` on `U`, we may define a sieve of `U`
 consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in `G`. -/
@@ -48,4 +48,4 @@ theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 
-end CategoryTheory.Subpresheaf
+end CategoryTheory.Subfunctor

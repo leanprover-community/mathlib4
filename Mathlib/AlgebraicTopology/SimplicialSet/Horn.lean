@@ -6,7 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
 # Horns
@@ -56,7 +56,7 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (horn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
   ext j
   -- this was produced using `simp? [horn_eq_iSup]`
-  simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+  simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
     Set.mem_univ, iff_true]
@@ -108,7 +108,7 @@ def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) 
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
     -- this was produced by `simp? [horn_eq_iSup]`
-    simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
+    simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
       Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
       mem_singleton, exists_prop]
     refine ⟨k, hk.1, fun a ↦ ?_⟩
@@ -152,7 +152,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
   -- this was produced using `simp? [horn_eq_iSup]`
-  simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+  simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
   have hS : ¬ ({i, (⟨k, by lia⟩ : Fin (n + 4)), (⟨k + 1, by lia⟩ : Fin (n + 4)),
@@ -186,7 +186,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
 def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u}) _⦋n⦌ :=
-  yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
+  yonedaEquiv (Subfunctor.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
@@ -194,13 +194,13 @@ protected
 lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
     (h : ∀ (j) (h : j ≠ i), σ₁.app _ (face i j h) = σ₂.app _ (face i j h)) :
     σ₁ = σ₂ := by
-  rw [← Subpresheaf.equalizer_eq_iff]
-  apply le_antisymm (Subpresheaf.equalizer_le σ₁ σ₂)
+  rw [← Subfunctor.equalizer_eq_iff]
+  apply le_antisymm (Subfunctor.equalizer_le σ₁ σ₂)
   simp only [horn_eq_iSup, iSup_le_iff,
     Subtype.forall, Set.mem_compl_iff, Set.mem_singleton_iff,
     ← stdSimplex.ofSimplex_yonedaEquiv_δ, Subcomplex.ofSimplex_le_iff]
   intro j hj
-  exact (Subpresheaf.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)
+  exact (Subfunctor.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)
 
 
 /-- Given `i` and `j` in `Fin (n + 1)` such that `j ≠ i`, this is
@@ -228,7 +228,7 @@ lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ 
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     ι i j hij ≫ Λ[n + 1, i].ι =
       stdSimplex.{u}.δ j := by
-  rw [ι, face, Equiv.symm_apply_apply, Subpresheaf.lift_ι]
+  rw [ι, face, Equiv.symm_apply_apply, Subfunctor.lift_ι]
 
 @[reassoc (attr := simp)]
 lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
