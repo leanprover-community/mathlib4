@@ -40,8 +40,8 @@ theorem gal_quintic : Function.Bijective (galActionHom quintic ℂ) :=
 theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : ¬IsSolvableByRad ℚ x := by
   refine mt (solvableByRad.isSolvable' irreducible_quintic hx)
     fun h ↦ Equiv.Perm.not_solvable (rootSet quintic ℂ) ?_ (solvable_of_surjective gal_quintic.2)
-  rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable
-    (splits_codomain quintic), natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
+  rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable (splits _),
+    natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
 /-- **Abel-Ruffini Theorem** -/
 theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
   have h : quintic.degree > 0 := by rw [degree_quintic]; norm_num
