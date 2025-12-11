@@ -117,7 +117,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast

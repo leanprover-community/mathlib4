@@ -311,7 +311,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
     apply comapDomain_single
   · rw [toFinsupp_inj]
     ext a
-    have : a ≠ n := by omega
+    have : a ≠ n := by lia
     simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_natCast, coeff_zero,
       single_eq_of_ne this]
 

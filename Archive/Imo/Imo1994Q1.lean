@@ -37,7 +37,7 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1)
   rcases hk with ⟨c, rfl⟩
   have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by lia
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
-  omega
+  lia
 
 end Imo1994Q1
 

@@ -299,13 +299,13 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     have hd₁ : n < ((X - C x) * P).eraseLead.natDegree := by
       linarith [natDegree_eraseLead_add_one h₂]
     rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg hd₁.ne']
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by omega)]
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by lia)]
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
-    · simpa [coeff_monomial, hp] using fun _ ↦ by omega
-    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by omega),
-        if_neg (by omega), mul_zero, sub_zero]
+    · simpa [coeff_monomial, hp] using fun _ ↦ by lia
+    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by lia),
+        if_neg (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
     · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]

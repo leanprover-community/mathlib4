@@ -159,7 +159,7 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   termination_by p.length
   decreasing_by {
     rw [← Walk.length_tail_add_one hnp]
-    omega
+    lia
   }
   exact aux hu hr.some
 

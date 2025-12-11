@@ -514,7 +514,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> omega
+          _ ≤ c.degBound ^ c.degBound := by gcongr <;> lia
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']

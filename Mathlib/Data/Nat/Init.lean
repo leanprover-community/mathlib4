@@ -392,7 +392,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
-    · have this : a + 1 = b ∨ a + 1 < b := by omega
+    · have this : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h

@@ -583,12 +583,12 @@ definitional properties. See also the equational lemma `mapHomologicalComplexXIs
 noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
       (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
-  hom := H.map ((fst φ).1.v n m (by omega)) ≫
-      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by omega) +
+  hom := H.map ((fst φ).1.v n m (by lia)) ≫
+      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by lia) +
       H.map ((snd φ).v n n (add_zero n)) ≫
         (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
-  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by omega) ≫
-      H.map ((inl φ).v m n (by omega)) +
+  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by lia) ≫
+      H.map ((inl φ).v m n (by lia)) +
       (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫
         H.map ((inr φ).f n)
   hom_inv_id := by

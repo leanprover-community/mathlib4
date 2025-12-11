@@ -72,6 +72,7 @@ namespace ComposableArrows
 
 variable {n : ℕ} (S : ComposableArrows C n)
 
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- `F : ComposableArrows C n` is a complex if all compositions of
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
