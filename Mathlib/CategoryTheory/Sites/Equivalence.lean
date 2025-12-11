@@ -100,7 +100,7 @@ lemma isDenseSubsite_inverse_of_isCocontinuous
     : e.inverse.IsDenseSubsite K J :=
   have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
   have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
-  isDenseSubsite_functor_of_IsCocontinuous _ _ e.symm
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
 
 variable [e.inverse.IsDenseSubsite K J]
 
