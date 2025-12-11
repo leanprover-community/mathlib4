@@ -354,3 +354,32 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     rw [show C = (C : ℝ≥0∞).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) B
   have : InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
+  rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
+    (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
+  simp only [compl_compl, iSup_le_iff, ENNReal.ofReal_le_coe]
+  intro g g_cont gK g_nonneg g_le
+  have : Tendsto (fun (ρ : FiniteMeasure E) ↦ ∫ x, g x ∂ρ) f (𝓝 (∫ x, g x ∂μ)) := by
+    let g' : E →ᵇ ℝ :=
+    { toFun := g
+      map_bounded' := sorry }
+    exact tendsto_iff_forall_integral_tendsto.1 L g'
+  apply le_of_tendsto this
+  filter_upwards [hf] with ρ hρ
+  calc ∫ x, g x ∂ρ
+  _ ≤ ∫ x, indicator (K n)ᶜ 1 x ∂ρ := by
+    apply integral_mono_of_nonneg
+    · filter_upwards [] with x using g_nonneg x
+    · apply Integrable.indicator (integrable_const _) (hK n).measurableSet.compl
+    · filter_upwards [] with x
+      by_cases hx : x ∈ (K n)ᶜ
+      · simpa [hx] using g_le x
+      · simp only [hx, not_false_eq_true, indicator_of_notMem]
+        apply le_of_eq
+        apply gK
+        simpa using hx
+  _ = ρ (K n)ᶜ := by
+    rw [integral_indicator (hK n).measurableSet.compl]
+    simp
+  _ ≤ u n := by
+    norm_cast
+    exact hρ.2 n
