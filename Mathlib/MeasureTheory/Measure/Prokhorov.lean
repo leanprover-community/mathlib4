@@ -139,9 +139,6 @@ instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
   apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
 
-
-#exit
-
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
 lemma isCompact_setOf_finiteMeasure_le_of_isCompact
@@ -183,12 +180,58 @@ lemma partialSups_eq_accumulate
     {α : Type*} (f : ℕ → Set α) (n : ℕ) : partialSups f n = Accumulate f n := by
   simp [partialSups_eq_sup_range, Accumulate, Nat.lt_succ_iff]
 
+open Measure
+
+omit [T2Space E] [BorelSpace E]
+instance innerRegular_add {μ ν : Measure E} [InnerRegular μ] [InnerRegular ν] :
+    InnerRegular (μ + ν) := by
+  constructor
+  intro s hs r hr
+  simp only [Measure.coe_add, Pi.add_apply] at hr
+  rcases eq_or_ne (μ s) 0 with h | h
+  · simp only [h, zero_add] at hr
+    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
+    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
+  rcases eq_or_ne (ν s) 0 with h' | h'
+  · simp only [h', add_zero] at hr
+    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
+    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
+  rcases ENNReal.exists_lt_add_of_lt_add hr h h' with ⟨u, hu, v, hv, huv⟩
+  rcases MeasurableSet.exists_lt_isCompact hs hu with ⟨K, Ks, hK, h'K⟩
+  rcases MeasurableSet.exists_lt_isCompact hs hv with ⟨K', K's, hK', h'K'⟩
+  refine ⟨K ∪ K', union_subset Ks K's, hK.union hK', huv.trans_le ?_⟩
+  apply (add_le_add h'K.le h'K'.le).trans
+  simp only [Measure.coe_add, Pi.add_apply]
+  gcongr <;> simp
+
+instance innerRegular_sum {ι : Type*} {μ : ι → Measure E} [∀ i, InnerRegular (μ i)] (a : Finset ι) :
+    InnerRegular (∑ i ∈ a, μ i) := by
+  classical
+  induction a using Finset.induction with
+  | empty => simp only [Finset.sum_empty]; infer_instance
+  | insert a s ha ih => simp only [ha, not_false_eq_true, Finset.sum_insert]; infer_instance
+
+
+instance {ι : Type*} {μ : ι → Measure E} [∀ i, InnerRegular (μ i)] :
+    InnerRegular (Measure.sum μ) := by
+  constructor
+  intro s hs r hr
+  have : Tendsto (fun (a : Finset ι) ↦ ∑ i ∈ a, μ i s) atTop (𝓝 (Measure.sum μ s)) := by
+    simp only [hs, Measure.sum_apply]
+    exact ENNReal.summable.hasSum
+  obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
+    simp only [coe_finset_sum, Finset.sum_apply]
+    exact ((tendsto_order.1 this).1 r hr).exists
+  rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
+  refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
+  simp [hK.measurableSet, ENNReal.sum_le_tsum]
+
 lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     [TopologicalSpace E] [T2Space E] [NormalSpace E] [BorelSpace E] {u : ℕ → ℝ≥0} {K : ℕ → Set E}
     (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have I (μ : FiniteMeasure E) (n : ℕ) :
-        ∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i) = μ.restrict (partialSups K n) := by
+      ∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i) = μ.restrict (partialSups K n) := by
     induction n with
     | zero => simp
     | succ n ih =>
@@ -201,22 +244,34 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
   apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
   have A n : IsCompact (partialSups K n) := by
     simpa [partialSups_eq_accumulate] using isCompact_accumulate hK _
-  have M n : ∃ ν ∈ {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ (partialSups K n)ᶜ = 0},
+  have M n : ∃ (ν : FiniteMeasure E), Measure.InnerRegular (ν : Measure E) ∧
       Tendsto (fun (μ : FiniteMeasure E) ↦ μ.restrict (disjointed K n)) f (𝓝 ν) := by
-    simp only [Tendsto]
-    rw [← Ultrafilter.coe_map]
-    apply IsCompact.ultrafilter_le_nhds'
-      (isCompact_setOf_finiteMeasure_le_of_isCompact C (A n))
-    simp only [null_iff_toMeasure_null, Ultrafilter.mem_map, preimage_setOf_eq]
-    filter_upwards [hf] with μ hμ
-    simp only [restrict_mass, restrict_measure_eq,
-      Measure.restrict_apply (A n).measurableSet.compl]
-    refine ⟨(apply_le_mass μ _).trans hμ.1, ?_⟩
-    convert measure_empty (μ := (μ : Measure E))
-    apply disjoint_iff.1
-    apply disjoint_compl_left.mono_right
-    exact le_trans sdiff_le (le_partialSups _ _)
-  choose! ν ν_mem hν using M
+    obtain ⟨ν, hν, ν_lim⟩ : ∃ ν ∈ {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ (partialSups K n)ᶜ = 0},
+        Tendsto (fun (μ : FiniteMeasure E) ↦ μ.restrict (disjointed K n)) f (𝓝 ν) := by
+      simp only [Tendsto]
+      rw [← Ultrafilter.coe_map]
+      apply IsCompact.ultrafilter_le_nhds'
+        (isCompact_setOf_finiteMeasure_le_of_isCompact C (A n))
+      simp only [null_iff_toMeasure_null, Ultrafilter.mem_map, preimage_setOf_eq]
+      filter_upwards [hf] with μ hμ
+      simp only [restrict_mass, restrict_measure_eq,
+        Measure.restrict_apply (A n).measurableSet.compl]
+      refine ⟨(apply_le_mass μ _).trans hμ.1, ?_⟩
+      convert measure_empty (μ := (μ : Measure E))
+      apply disjoint_iff.1
+      apply disjoint_compl_left.mono_right
+      exact le_trans sdiff_le (le_partialSups _ _)
+    obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ ν', ν'.InnerRegular ∧ IsFiniteMeasure ν' ∧
+        ∀ (g : E →ᵇ ℝ), ∫ x, g x ∂ν = ∫ x, g x ∂ν' := by
+      apply Measure.exists_innerRegular_eq_of_isCompact _ (A n)
+      rw [← MeasureTheory.FiniteMeasure.null_iff_toMeasure_null]
+      exact hν.2
+    let μ : FiniteMeasure E := ⟨ν', ν'_fin⟩
+    refine ⟨μ, ν'_reg, ?_⟩
+    apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
+    convert tendsto_iff_forall_integral_tendsto.1 ν_lim g using 2
+    exact (hν' g).symm
+  choose! ν ν_reg hν using M
   have B : (Measure.sum (fun n ↦ (ν n : Measure E))) univ ≤ C := by
     simp only [MeasurableSet.univ, Measure.sum_apply]
     have : Tendsto (fun n ↦ ∑ i ∈ Finset.range (n + 1), (ν i : Measure E) univ) atTop
@@ -240,12 +295,7 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     rw [I, restrict_mass]
     exact le_trans (apply_mono _ (subset_univ _)) hμ.1
   let μ : FiniteMeasure E := ⟨Measure.sum (fun n ↦ (ν n : Measure E)), ⟨B.trans_lt (by simp)⟩⟩
-  refine ⟨μ, ⟨?_, ?_⟩, ?_⟩
-  · simp only [mass, mk_apply, μ]
-    rw [show C = (C : ℝ≥0∞).toNNReal by simp]
-    exact ENNReal.toNNReal_mono (by simp) B
-  · sorry
-  · change Tendsto id f (𝓝 μ)
+  have L : Tendsto id f (𝓝 μ) := by
     apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
     rw [Metric.tendsto_nhds]
     intro ε εpos
@@ -299,3 +349,8 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
         _ < ε / 3 := h'n
       · simpa using hρ
     _ = ε := by ring
+  refine ⟨μ, ⟨?_, fun n ↦ ?_⟩, L⟩
+  · simp only [mass, mk_apply, μ]
+    rw [show C = (C : ℝ≥0∞).toNNReal by simp]
+    exact ENNReal.toNNReal_mono (by simp) B
+  have : InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance

@@ -98,6 +98,36 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
     exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
+/-- Given an inner regular finite measure, the measure of an open set is the supremum of the
+integrals of nonnegative continuous functions supported in this set and bounded by `1`. -/
+lemma IsOpen.measure_eq_biSup_integral_continuous
+    {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [T2Space X]
+    {U : Set X} (hU : IsOpen U)
+    (μ : Measure X) [IsFiniteMeasure μ] [InnerRegularCompactLTTop μ]
+    [NormalSpace X] :
+    μ U = ⨆ (f : X → ℝ) (_ : Continuous f) (_ : EqOn f 0 Uᶜ) (_ : 0 ≤ f) (_ : f ≤ 1),
+      ENNReal.ofReal (∫ x, f x ∂μ) := by
+  apply le_antisymm
+  · apply le_of_forall_lt (fun r hr ↦ ?_)
+    simp only [lt_iSup_iff, exists_prop]
+    obtain ⟨K, KU, K_comp, hK⟩ : ∃ K ⊆ U, IsCompact K ∧ r < μ K :=
+      MeasurableSet.exists_lt_isCompact_of_ne_top hU.measurableSet (by simp) hr
+    obtain ⟨⟨f, f_cont⟩, fU, fK, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 0 Uᶜ ∧ EqOn f 1 K
+        ∧ ∀ (x : X), f x ∈ Icc 0 1 := exists_continuous_zero_one_of_isClosed
+      hU.isClosed_compl K_comp.isClosed (disjoint_compl_left_iff_subset.mpr KU)
+    refine ⟨f, f_cont, fU, fun x ↦ (f_range x).1, fun x ↦ (f_range x).2, ?_⟩
+    apply hK.trans_le
+    apply Integrable.measure_le_integral
+    · apply Integrable.of_mem_Icc 0 1 f_cont.aemeasurable
+      filter_upwards [] with x using f_range x
+    · filter_upwards [] with x using (f_range x).1
+    · intro x hx
+      apply Eq.ge
+      exact fK hx
+  · simp only [iSup_le_iff]
+    intro f f_cont fU f_nonneg f_le
+    exact integral_le_measure (fun x hx ↦ f_le x) (fun x hx ↦ le_of_eq (fU hx))
+
 namespace MeasureTheory
 
 /-- The parameterized integral `x ↦ ∫ y, g (y⁻¹ * x) ∂μ` depends continuously on `y` when `g` is a
