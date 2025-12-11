@@ -208,48 +208,18 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
   Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
 
 /-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
-def inclusionCompFunctorToCoreIdIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
+def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-@[deprecated (since := "2025-12-10")] alias inclusionCompFunctorToCoreIso :=
-  inclusionCompFunctorToCoreIdIso
-
-theorem inclusion_comp_functorToCore_id : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
-  Functor.ext_of_iso inclusionCompFunctorToCoreIdIso (by cat_disch)
-
-@[deprecated (since := "2025-12-10")] alias inclusion_comp_functorToCore :=
-  inclusion_comp_functorToCore_id
+theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
+  Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
 
 /-- The functor `functorToCore (inclusion C)` is isomorphic to the identity on `Core C`. -/
 def functorToCoreInclusionIso : functorToCore (inclusion C) ≅ 𝟭 (Core C) :=
   Iso.refl _
 
 theorem functorToCore_inclusion : functorToCore (inclusion C) = 𝟭 (Core C) :=
-  rfl
-
-/-- The composition of `functorToCore F` followed by `inclusion` is isomorphic to `F` itself. -/
-def functorToCoreCompInclusionIso (F : G ⥤ C) : functorToCore F ⋙ inclusion C ≅ F :=
-  Iso.refl _
-
-theorem functorToCore_comp_inclusion (F : G ⥤ C) : functorToCore F ⋙ inclusion C = F :=
-  rfl
-
-/-- Applying `functorToCore` to `F ⋙ inclusion C` returns `F` itself. -/
-def functorToCoreApplyCompInclusionIso (F : G ⥤ Core C) :
-    functorToCore (F ⋙ inclusion C) ≅ F :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
-
-theorem functorToCore_apply_comp_inclusion (F : G ⥤ Core C) :
-    functorToCore (F ⋙ inclusion C) = F :=
-  Functor.ext_of_iso (functorToCoreApplyCompInclusionIso F) (by cat_disch)
-
-/-- Functors into `C` are equivalent to functors into the core category `Core C`. -/
-@[simps]
-def functorEquiv : (G ⥤ C) ≃ (G ⥤ Core C) where
-  toFun := functorToCore
-  invFun F := F ⋙ inclusion C
-  left_inv := functorToCore_comp_inclusion
-  right_inv := functorToCore_apply_comp_inclusion
+  Functor.ext_of_iso functorToCoreInclusionIso (by cat_disch)
 
 end Core
 
