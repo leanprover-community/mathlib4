@@ -112,6 +112,16 @@ lemma isColocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
     (⨆ (i : ι), W i).isColocal = ⨅ (i : ι), (W i).isColocal := by
   aesop
 
+lemma isLocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isLocal Z ↔
+      (Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+
+lemma isColocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isColocal Z ↔
+      (Function.Bijective (fun (g : Z ⟶ _) ↦ g ≫ f)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+
 end MorphismProperty
 
 end CategoryTheory

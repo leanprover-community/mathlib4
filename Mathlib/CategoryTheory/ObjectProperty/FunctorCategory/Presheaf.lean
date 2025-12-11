@@ -40,6 +40,9 @@ variable {C : Type u} [Category.{v} C]
   (hc : IsLimit c) (hc' : IsColimit c') (P : Cᵒᵖ ⥤ Type w)
 
 variable {P} in
+/-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
+For any `P : Cᵒᵖ ⥤ Type w`, this is the bijection between `c'.pt ⟶ P` and the type
+of sections of `F ⋙ P`. -/
 @[simps -isSimp symm_apply apply_coe]
 noncomputable def coconeCompShrinkYonedaHomEquiv :
     (c'.pt ⟶ P) ≃ (F ⋙ P).sections where
@@ -50,9 +53,8 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
         dsimp at h₁ ⊢
         rw [← h₁, Category.assoc]
         conv_rhs => rw [shrinkYonedaEquiv_comp]
-        erw [map_shrinkYonedaEquiv]
         rw [shrinkYonedaEquiv_shrinkYoneda_map]
-        rfl }
+        apply map_shrinkYonedaEquiv }
   invFun s := hc'.desc (Cocone.mk _
     { app j := shrinkYonedaEquiv.symm (s.val j.unop)
       naturality j₁ j₂ f := by
@@ -62,6 +64,10 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
   left_inv f := hc'.hom_ext (by simp)
   right_inv u := by ext; simp
 
+
+/-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
+For any cone `c` for `F`, this is the canonical natural transformation
+`c'.pt ⟶ shrinkYoneda.{w}.obj c.pt.unop`. -/
 noncomputable def coconePtToShrinkYoneda :
     c'.pt ⟶ shrinkYoneda.{w}.obj c.pt.unop :=
   hc'.desc (shrinkYoneda.{w}.mapCocone (coconeLeftOpOfCone c))
@@ -75,18 +81,14 @@ lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
   refine hc'.hom_ext (fun j ↦ ?_)
   dsimp [coconePtToShrinkYoneda, coconeCompShrinkYonedaHomEquiv_symm_apply]
   rw [hc'.fac_assoc, hc'.fac]
-  dsimp
-  rw [shrinkYonedaEquiv_symm_map]
+  exact (shrinkYonedaEquiv_symm_map _ _).symm
 
 lemma nonempty_isLimit_mapCone_iff :
     Nonempty (IsLimit (P.mapCone c)) ↔
       (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal P := by
-  -- this should be a separate lemma
-  have h : (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal P ↔
-      (Function.Bijective (fun (f : _ ⟶ P) ↦ coconePtToShrinkYoneda c hc' ≫ f)) :=
-    ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
-  rw [Types.isLimit_iff_bijective_sectionOfCone, h, ← Function.Bijective.of_comp_iff'
-    (coconeCompShrinkYonedaHomEquiv hc').symm.bijective,
+  rw [Types.isLimit_iff_bijective_sectionOfCone,
+    MorphismProperty.isLocal_single_iff_bijective,
+    ← Function.Bijective.of_comp_iff' (coconeCompShrinkYonedaHomEquiv hc').symm.bijective,
     ← Function.Bijective.of_comp_iff _ shrinkYonedaEquiv.bijective]
   convert Iff.rfl using 2
   ext : 1
@@ -103,16 +105,21 @@ lemma preservesLimit_eq_isLocal_single :
   exact ⟨fun _ ↦ ⟨isLimitOfPreserves P hc⟩,
     fun ⟨h⟩ ↦ preservesLimit_of_preserves_limit_cone hc h⟩
 
-variable (F)
+variable (F) [Small.{w} J]
 
-variable [Small.{w} J]
+/-- Auxiliary definition for `Presheaf.preservesLimitHomFamily`. -/
 noncomputable def preservesLimitHomFamilySrc :=
   colimit (F.leftOp ⋙ shrinkYoneda)
 
+/-- Auxiliary definition for `Presheaf.preservesLimitHomFamily`. -/
 noncomputable def preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
   letI := h.down
   shrinkYoneda.obj (limit F).unop
 
+/-- Let `F : J ⥤ Cᵒᵖ` be a functor. This is the family of morphisms
+which consists of the single morphism
+`colimit (F.leftOp ⋙ shrinkYoneda) ⟶ shrinkYoneda.obj (limit F).unop`
+if `F` has a limit, or is the empty family otherwise. -/
 noncomputable def preservesLimitHomFamily (h : PLift (HasLimit F)) :
     preservesLimitHomFamilySrc F ⟶ preservesLimitHomFamilyTgt F h :=
   letI := h.down
