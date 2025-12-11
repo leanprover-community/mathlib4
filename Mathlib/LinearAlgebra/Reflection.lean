@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Polynomial.Chebyshev
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
  1. the kernel of `f` is fixed,
- 2. the point `x ↦ -x`.
+ 2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -43,7 +43,7 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 
 ## TODO
 
-Related definitions of reflection exists elsewhere in the library. These more specialised
+Related definitions of reflection exist elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
 should connect (or unify) these definitions with `Module.reflection` defined here.
