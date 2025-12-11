@@ -199,7 +199,7 @@ theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
     simp
   · apply le_floor
     apply le_div_iff₀ (by positivity)|>.mpr
-    simp
+    simp only [cast_one, one_mul]
     gcongr
 
 theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
