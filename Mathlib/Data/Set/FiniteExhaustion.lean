@@ -74,7 +74,7 @@ noncomputable def choice (s : Set α) [Countable s] : FiniteExhaustion s := by
       simp [Set.not_nonempty_iff_eq_empty'.mp h]
 
 noncomputable instance [Countable s] :
-    Inhabited (FiniteExhaustion s) :=
+    Nonempty (FiniteExhaustion s) :=
   ⟨FiniteExhaustion.choice s⟩
 
 section prod
