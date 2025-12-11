@@ -45,10 +45,9 @@ variable {x y : ℝ}
 def artanh (x : ℝ) :=
   log √((1 + x) / (1 - x))
 
-theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Ioo (-1) 1) :
+theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Icc (-1) 1) :
     artanh x = 1 / 2 * log ((1 + x) / (1 - x)) := by
-  rw [artanh, log_sqrt <| le_of_lt <| div_pos (by grind) (by grind),
-    one_div_mul_eq_div]
+  rw [artanh, log_sqrt <| div_nonneg (by grind) (by grind), one_div_mul_eq_div]
 
 theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : exp (artanh x) = √((1 + x) / (1 - x)) :=
   exp_log <| sqrt_pos_of_pos <| div_pos (by grind) (by grind)
