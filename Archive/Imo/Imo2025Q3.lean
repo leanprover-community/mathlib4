@@ -61,11 +61,11 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
 theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     (∃ N, ∀ p > N, p.Prime → f p = 1) := by
   obtain ⟨b, hb, neq⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
-  have {p : ℕ} (hp : p.Prime): f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
-    Or.casesOn (bonza_apply_prime_eq_one_or_dvd_self_sub_apply hf hp) (by grind) (by grind)
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
-  rcases this pp with ch | ch
+  have : f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
+    Or.casesOn (bonza_apply_prime_eq_one_or_dvd_self_sub_apply hf pp) (by grind) (by grind)
+  rcases this with ch | ch
   · exact ch
   · have : p ≤ ((b : ℤ) - (f b : ℤ)).natAbs := natAbs_le_of_dvd_ne_zero ch (by grind)
     linarith
@@ -105,8 +105,8 @@ lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
       _ ∣ (f n : ℤ) := ofNat_dvd.mpr hp
       _ ∣ _ := by
-        have := hf.1 n p hn (Prime.pos pp)
-        have p_gt_two : p > 2 := Nat.lt_of_le_of_ne (Prime.two_le pp) (fun a ↦ nh (id (Eq.symm a)))
+        have := hf.1 n p hn pp.pos
+        have p_gt_two : p > 2 := Nat.lt_of_le_of_ne pp.two_le (fun a ↦ nh (id (Eq.symm a)))
         rwa [bonza_apply_prime_gt_two_eq_one hf hnf p p_gt_two pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (Nat.ne_zero_of_lt hn)
     exact (Nat.Prime.not_dvd_one pp) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
@@ -203,10 +203,9 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
     · have : k = 0 := by
         by_contra! nh
         have : Odd (f n) := Odd.of_dvd_nat (Odd.pow ch) (bonza_apply_dvd_pow hf hn)
-        rw [hk, propext (odd_pow_iff nh)] at this
+        rw [hk, odd_pow_iff nh] at this
         contradiction
-      simp [this] at hk
-      omega
+      simpa [hk, this] using by omega
 
 theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ c * n} 4 := by
   constructor
@@ -216,8 +215,7 @@ theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 
     exact apply_le hf hn
   · intro c hc
     have : 16 ≤ c * 4 := by
-      simpa [fExample, padicValNat_eq_primeFactorsList_count] using
-        hc fExample bonza_fExample 4 (by norm_num)
+      simpa [fExample, padicValNat_eq_primeFactorsList_count] using hc fExample bonza_fExample 4
     linarith
 
 end Imo2025Q3
