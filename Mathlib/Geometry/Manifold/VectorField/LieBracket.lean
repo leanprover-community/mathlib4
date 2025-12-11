@@ -355,36 +355,44 @@ lemma _root_.mfderivWithin_target_extChartAt_symm :
   rw [this]
   exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
 
+omit [IsManifold I 2 M] in
+/-- The round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm` is eventually equal
+to the identity in a neighborhood within `range I` of the chart point. -/
+lemma _root_.eventuallyEq_extChartAt_comp_extChartAt_symm_nhdsWithin_range :
+    ((extChartAt I x) ∘ (extChartAt I x).symm) =ᶠ[𝓝[range I] (extChartAt I x x)] id := by
+  set φ := extChartAt I x
+  rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
+  apply eventuallyEq_of_mem (s := φ.source)
+    ((isOpen_extChartAt_source x).mem_nhds (mem_extChartAt_source x))
+  intro y hy
+  rw [comp_apply, comp_apply, φ.right_inv (φ.map_source hy)]
+
+omit [IsManifold I 2 M] in
+/-- The `fderivWithin` of the round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm`
+at the chart point in `range I` equals the identity. -/
+lemma _root_.fderivWithin_extChartAt_comp_extChartAt_symm_range :
+    fderivWithin 𝕜 ((extChartAt I x) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) =
+      ContinuousLinearMap.id 𝕜 _ := by
+  set φ := extChartAt I x
+  have eq_nhd := eventuallyEq_extChartAt_comp_extChartAt_symm_nhdsWithin_range (I := I) (x := x)
+  have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
+    rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
+  rw [eq_nhd.fderivWithin_eq hx]
+  exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
+
 -- TODO: clean up this proof (and add the version for `extChartAt`)
 lemma _root_.mfderivWithin_range_extChartAt_symm :
     mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
-  -- TODO: extract as new lemma!
-  have eq_nhd : (φ ∘ φ.symm) =ᶠ[𝓝[range I] (φ x)] id := by
-    rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
-    apply eventuallyEq_of_mem (s := φ.source)
-      ((isOpen_extChartAt_source x).mem_nhds (mem_extChartAt_source x))
-    intro y hy
-    rw [comp_apply, comp_apply, φ.right_inv (φ.map_source hy)]
-  have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
-    rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
   have : MDiffAt[range I] φ.symm (φ x) :=
     mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-  -- Should this also be a separate lemma?
-  have final : fderivWithin 𝕜 ((extChartAt I x) ∘ φ.symm) (range I) (φ x) = .id 𝕜 _ := by
-    rw [eq_nhd.fderivWithin_eq hx]
-    exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
-  simp only [mfderivWithin, this, ↓reduceIte,
-    writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-    OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
-    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
-    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
-    PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
-    range_id, inter_univ]
-  rw [extChartAt_to_inv x, ← extChartAt_coe]
-  exact final
+  rw [mfderivWithin, if_pos this, writtenInExtChartAt,
+    modelWithCornersSelf_coe, range_id, inter_univ,
+    extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe,
+    extChartAt_to_inv x, ← extChartAt_coe]
+  exact fderivWithin_extChartAt_comp_extChartAt_symm_range
 
 -- TODO: add pre-composition version also and move to the right location
 omit [IsManifold I 2 M] in
@@ -395,23 +403,27 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
   obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
   rwa [extChartAt_self_eq] at hf
 
--- TODO: find a good name (and perhaps split into further lemmas)!
-lemma foobarbaz {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) f s x) :
+/-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
+applied to a tangent vector, gives back the tangent vector. -/
+lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :
+    (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse v = v := by
+  rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
+  exact ContinuousLinearMap.id_apply ..
+
+/-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
+the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
+lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
+    (hf : MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) f s x) :
     let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
     let W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
     letI s' : Set E := (extChartAt I x).symm ⁻¹' s ∩ range I
     mpullback I 𝓘(𝕜, E) (extChartAt I x)
         (fun x₀ ↦ (fderivWithin 𝕜 (f ∘ (extChartAt I x).symm) s' x₀) (V' x₀) • W' x₀) x =
       (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
-  -- TODO: clean up this computation, in particular remove the non-terminal simp
-  simp [mfderivWithin, hf, mpullback]
-  simp only [← aux_computation' x W, mpullbackWithin]
-  congr
-  have : (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse (V x) = V x := by
-    rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
-    exact ContinuousLinearMap.id_apply ..
-  convert this
-  exact extChartAt_to_inv x
+  simp only [mpullback, mfderivWithin, hf, map_smul, ← aux_computation' x W, mpullbackWithin]
+  congr 2
+  rw [extChartAt_to_inv]
+  exact mfderivWithin_extChartAt_symm_inverse_apply (v := V x)
 
 variable [CompleteSpace E]
 
@@ -445,7 +457,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
   simp only [A]
-  exact foobarbaz hf
+  exact mpullback_mfderivWithin_apply_smul hf
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
