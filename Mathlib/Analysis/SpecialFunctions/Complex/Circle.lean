@@ -11,9 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 /-!
 # Maps on the unit circle
 
-In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
-to the unit circle. These two maps define a partial equivalence between `circle` and `ℝ`, see
-`circle.argPartialEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
+In this file we prove some basic lemmas about `Circle.exp` and the restriction of `Complex.arg`
+to the unit circle. These two maps define a partial equivalence between `Circle` and `ℝ`, see
+`Circle.argPartialEquiv` and `Circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
 
 @[expose] public section
@@ -39,7 +39,7 @@ theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x :
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
 
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
+/-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
 noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
@@ -52,7 +52,7 @@ noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   left_inv' z _ := exp_arg z
   right_inv' _ hx := arg_exp hx.1 hx.2
 
-/-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
+/-- `Complex.arg` and `Circle.exp ∘ (↑)` define an equivalence between `Circle` and `(-π, π]`. -/
 @[simps -fullyApplied]
 noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩

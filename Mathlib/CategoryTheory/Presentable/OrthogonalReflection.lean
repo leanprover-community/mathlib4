@@ -46,7 +46,7 @@ a transfinite iteration to this `SuccStruct`, we obtain the following results
 under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
 a regular cardinal) such that the domains and codomains of the morphisms
-satisfying `W` are `κ`-presentable :
+satisfying `W` are `κ`-presentable:
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
@@ -328,29 +328,29 @@ noncomputable def succStruct (Z₀ : C) : SuccStruct C where
   succ Z := succ W Z
   toSucc Z := toSucc W Z
 
-variable (κ : Cardinal.{w}) [OrderBot κ.ord.toType]
-  [HasIterationOfShape κ.ord.toType C]
+variable (κ : Cardinal.{w}) [OrderBot κ.ord.ToType]
+  [HasIterationOfShape κ.ord.ToType C]
 
-/-- The transfinite iteration of `succStruct W Z` to the power `κ.ord.toType`. -/
-noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.toType
+/-- The transfinite iteration of `succStruct W Z` to the power `κ.ord.ToType`. -/
+noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.ToType
 
 /-- The map which shall exhibit `reflectionObj W Z κ` as the image of `Z` by
 the left adjoint of the inclusion of `W.isLocal`, see `corepresentableBy`. -/
 noncomputable def reflection : Z ⟶ reflectionObj W Z κ :=
-  (succStruct W Z).ιIteration κ.ord.toType
+  (succStruct W Z).ιIteration κ.ord.ToType
 
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` is a transfinite
 compositions of morphisms in `LeftBousfield.W W.isLocal`. -/
 noncomputable def transfiniteCompositionOfShapeReflection :
-    W.isLocal.isLocal.TransfiniteCompositionOfShape κ.ord.toType
+    W.isLocal.isLocal.TransfiniteCompositionOfShape κ.ord.ToType
       (reflection W Z κ) :=
-  ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.toType).ofLE (by
+  ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.ToType).ofLE (by
     rintro Z₀ _ _ ⟨_⟩
     exact isLocal_isLocal_toSucc W Z₀)
 
-/-- The functor `κ.ord.toType ⥤ C` that is the diagram of the
+/-- The functor `κ.ord.ToType ⥤ C` that is the diagram of the
 transfinite composition `transfiniteCompositionOfShapeReflection`. -/
-noncomputable abbrev iteration : κ.ord.toType ⥤ C :=
+noncomputable abbrev iteration : κ.ord.ToType ⥤ C :=
   (transfiniteCompositionOfShapeReflection W Z κ).F
 
 section
@@ -359,27 +359,27 @@ variable [Fact κ.IsRegular]
 
 /-- `(iteration W Z κ).obj (Order.succ j)` identifies to the image of
 `(iteration W Z κ).obj j` by `succ`. -/
-noncomputable def iterationObjSuccIso (j : κ.ord.toType) :
+noncomputable def iterationObjSuccIso (j : κ.ord.ToType) :
   (iteration W Z κ).obj (Order.succ j) ≅ succ W ((iteration W Z κ).obj j) :=
     (succStruct W Z).iterationFunctorObjSuccIso j (by
       have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
       exact not_isMax j)
 
 @[reassoc]
-lemma iteration_map_succ (j : κ.ord.toType) :
+lemma iteration_map_succ (j : κ.ord.ToType) :
     (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
       toSucc W _ ≫ (iterationObjSuccIso W Z κ j).inv :=
   (succStruct W Z).iterationFunctor_map_succ _ _
 
 variable {κ W Z} in
-lemma iteration_map_succ_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+lemma iteration_map_succ_injectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.ToType}
     (g₁ g₂ : Y ⟶ (iteration W Z κ).obj j) (hg : f ≫ g₁ = f ≫ g₂) :
     g₁ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) =
       g₂ ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
   simp [iteration_map_succ, reassoc_of% (toSucc_injectivity f hf _ _ hg)]
 
 variable {κ W Z} in
-lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.toType}
+lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ.ord.ToType}
     (g : X ⟶ (iteration W Z κ).obj j) :
     ∃ (g' : Y ⟶ (iteration W Z κ).obj (Order.succ j)),
       f ≫ g' = g ≫ (iteration W Z κ).map (homOfLE (Order.le_succ j)) := by
@@ -391,7 +391,7 @@ end
 
 lemma isLocal_isLocal_reflection :
      W.isLocal.isLocal (reflection W Z κ) :=
-  W.isLocal.isLocal.transfiniteCompositionsOfShape_le κ.ord.toType _
+  W.isLocal.isLocal.transfiniteCompositionsOfShape_le κ.ord.ToType _
     ⟨transfiniteCompositionOfShapeReflection W Z κ⟩
 
 variable {W} {κ} [Fact κ.IsRegular]
@@ -406,7 +406,7 @@ lemma isLocal_reflectionObj :
   obtain ⟨_, _⟩ := hW f hf
   refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
   · obtain ⟨j, g₁, g₂, rfl, rfl⟩ :
-      ∃ (j : κ.ord.toType) (g₁' g₂' : Y ⟶ H.F.obj j), g₁' ≫ H.incl.app j = g₁ ∧
+      ∃ (j : κ.ord.ToType) (g₁' g₂' : Y ⟶ H.F.obj j), g₁' ≫ H.incl.app j = g₁ ∧
         g₂' ≫ H.incl.app j = g₂ := by
       obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₁
       obtain ⟨j₂, g₂, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ H.isColimit g₂
@@ -452,7 +452,7 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  let : OrderBot κ.ord.toType :=
+  let : OrderBot κ.ord.ToType :=
     Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W
