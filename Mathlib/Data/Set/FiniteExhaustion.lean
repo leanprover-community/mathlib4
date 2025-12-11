@@ -62,7 +62,8 @@ theorem iUnion_eq : ⋃ n, K n = s :=
   K.iUnion_eq'
 
 /-- A choice of a `FiniteExhaustion` for a countable set `s`. -/
-noncomputable def choice (s : Set α) [Countable s] : FiniteExhaustion s := by
+noncomputable def _root_.Set.Countable.finiteExhaustion {s : Set α} (hs : s.Countable) :
+    FiniteExhaustion s := by
     apply Classical.choice
     by_cases h : Nonempty s
     · obtain ⟨f, hf⟩ := exists_surjective_nat s
