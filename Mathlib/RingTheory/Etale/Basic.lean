@@ -126,6 +126,9 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
   have := FormallySmooth.of_restrictScalars R A B
   .of_formallyUnramified_and_formallySmooth
 
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
+
 end Comp
 
 lemma iff_of_surjective
@@ -134,6 +137,9 @@ lemma iff_of_surjective
     Algebra.FormallyEtale R S ↔ IsIdempotentElem (RingHom.ker (algebraMap R S)) := by
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
+
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
 
 section BaseChange
 
