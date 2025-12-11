@@ -180,7 +180,7 @@ section Insert
 
 variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
   simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 

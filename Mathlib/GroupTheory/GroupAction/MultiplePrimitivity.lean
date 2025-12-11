@@ -243,7 +243,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
     apply isPreprimitive_of_is_two_pretransitive
     have hs' : s.encard = m := by
-      simp [hm, add_comm 1] at hs
+      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
       exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
     have : Finite s := Set.finite_of_encard_eq_coe hs'
     apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)
@@ -328,7 +328,7 @@ theorem isMultiplyPreprimitive_congr
       simpa only [Set.mem_image, t, eq_comm] using hy⟩
     let g : ofFixingSubgroup M s →ₑ[ψ] ofFixingSubgroup N t := {
       toFun x := ⟨f x.val, by
-        simp [mem_ofFixingSubgroup_iff, t, hf.injective.eq_iff]
+        simp only [mem_ofFixingSubgroup_iff, Set.mem_image, hf.injective.eq_iff, exists_eq_right, t]
         exact x.prop⟩
       map_smul' m x := by simp [subgroup_smul_def, map_smulₛₗ, ψ] }
     rw [isPreprimitive_congr (f := g)]

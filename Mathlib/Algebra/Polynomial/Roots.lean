@@ -286,6 +286,20 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
         card_roots (X_pow_sub_C_ne_zero hn a)
       _ = n := degree_X_pow_sub_C hn a
 
+theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.degree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val := by
+  refine (Multiset.eq_of_le_of_card_le ?_ ?_).symm
+  · exact (Finset.val_le_iff_val_subset.mpr (fun x hx ↦ (p.mem_roots hp).mpr (hS x hx)))
+  · simpa using (p.card_roots hp).trans hcard
+
+theorem roots_eq_of_degree_le_card {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
+  roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
+
+theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
+  roots_eq_of_degree_le_card_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp
+
 section NthRoots
 
 /-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`. -/
@@ -315,7 +329,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
           (by
-            rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
+            rw [hn, pow_zero, ← C_1, ← map_sub]
             exact degree_C_le))
   else by
     rw [← Nat.cast_le (α := WithBot ℕ)]
@@ -574,6 +588,10 @@ theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
+
+theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [CommRing S] [IsDomain S]
+    [Algebra T S] {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 := by
+  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
 theorem rootSet_maps_to' {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] (hp : p.map (algebraMap T S') = 0 → p.map (algebraMap T S) = 0)
