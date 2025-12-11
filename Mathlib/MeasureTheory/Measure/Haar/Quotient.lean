@@ -482,13 +482,16 @@ structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
   isOpenQuotientMap : IsOpenQuotientMap ψ
   exact : φ.range = ψ.ker
 
-
 namespace TopologicalGroup.IsSES
 
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
+
+include H in
+theorem apply_apply (a : A) : ψ (φ a) = 1 :=
+   H.exact.le ⟨a, rfl⟩
 
 /-- Pullback a continuous compactly supported function `f` on `B` to the continuous
 compactly supported function `a ↦ f (b * φ a)` on `A`. -/
@@ -503,6 +506,10 @@ noncomputable def pullback (f : CompactlySupportedContinuousMap B E) (b : B) :
   continuous_toFun := by
     have : Continuous φ := H.isClosedEmbedding.continuous
     fun_prop
+
+theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
+    pullback H f b a = f (b * φ a) :=
+  rfl
 
 variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
   [NormedSpace ℝ E]
@@ -606,6 +613,14 @@ noncomputable def pushforward :
     ext c
     apply integral_smul
 
+theorem pushforward_def (f : CompactlySupportedContinuousMap B E) (c : C) :
+    pushforward H μA f c = ∫ a, pullback H f (Function.invFun ψ c) a ∂μA :=
+  rfl
+
+theorem pushforward_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
+    pushforward H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
+  integral_pullback_invFun_apply H μA f b
+
 theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
     pushforward H μA f ≤ pushforward H μA g := by
   intro c
@@ -614,10 +629,6 @@ theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f �
   · exact (pullback H g _).integrable
   · intro a
     apply h
-
-theorem pushforward_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
-    pushforward H μA f (ψ b) = ∫ a, pullback H f b a ∂μA :=
-  integral_pullback_invFun_apply H μA f b
 
 open Filter
 
@@ -655,8 +666,7 @@ theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
     ∫ b : B, f b ∂(inducedMeasure H μA μC) = integrate H μA μC f := by
   apply RealRMK.integral_rieszMeasure
 
-theorem isHaarMeasure_inducedMeasure :
-    IsHaarMeasure (inducedMeasure H μA μC) where
+theorem isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
   lt_top_of_isCompact K hK := by
     let U : Set B := Set.univ
     have hU : IsOpen U := isOpen_univ
@@ -682,7 +692,6 @@ theorem isHaarMeasure_inducedMeasure :
     obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
     replace hb : b ∈ K := interior_subset hb
     obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
-    -- replace f : CompactlySupportedContinuousMap
     have hf0 : 0 ≤ H.pushforward μA ⟨f, hf2⟩ := by
       rw [← map_zero (H.pushforward μA)]
       apply pushforward_mono
@@ -700,65 +709,37 @@ theorem isHaarMeasure_inducedMeasure :
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
--- upgrade exists_continuousMap_one_of_isCompact_subset_isOpen
--- upgrade Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
-
-theorem main₀ (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
+/-- A large open subset of `B` cannot be a fundamental domain. -/
+theorem main (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
     (h : μC Set.univ * μA {1} < inducedMeasure H μA μC U) :
     ¬ U.InjOn ψ := by
   have ho : 0 < μA {1} := (isOpen_discrete {1}).measure_pos _ (singleton_nonempty 1)
   have ht : μA {1} < ⊤ := isCompact_singleton.measure_lt_top
   obtain ⟨K, hKU, hK, h⟩ := Regular.innerRegular hU _ h
   obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
-  have : μC Set.univ * μA {1} < ENNReal.ofReal (∫ c : C, pushforward H μA ⟨f, hf2⟩ c ∂μC) :=
-    lt_of_lt_of_le h
-      ((RealRMK.rieszMeasure_le_of_eq_one (f := ⟨f, hf2⟩) _ (fun x ↦ (hf4 x).1)
-        hK (fun x hx ↦ hf1 hx)))
-  have : ∃ c : C, (μA {1}).toReal < pushforward H μA ⟨f, hf2⟩ c := by
-    contrapose! this
-    rcases eq_top_or_lt_top (μC Set.univ) with h | h
-    · rw [h, ENNReal.top_mul ho.ne']
-      exact le_top
-    have hC : IsFiniteMeasure μC := ⟨h⟩
-    rw [← ENNReal.ofReal_toReal h.ne, ← ENNReal.ofReal_toReal ht.ne, ← ENNReal.ofReal_mul]
-    apply ENNReal.ofReal_le_ofReal
-    rw [← Measure.real_def, ← smul_eq_mul, ← integral_indicator_const, indicator_univ]
-    apply integral_mono_of_nonneg
-    · apply Filter.Eventually.of_forall
-      have key := pushforward_mono H μA 0 ⟨f, hf2⟩ (fun x ↦ (hf4 x).1)
-      rwa [map_zero] at key
-    · apply MeasureTheory.integrable_const
-    · apply Filter.Eventually.of_forall
-      exact this
-    · exact MeasurableSet.univ
-    · exact ENNReal.toReal_nonneg
-  obtain ⟨c, hc⟩ := this
+  replace h : μC Set.univ * μA {1} < ENNReal.ofReal (∫ c : C, pushforward H μA ⟨f, hf2⟩ c ∂μC) :=
+    lt_of_lt_of_le h ((RealRMK.rieszMeasure_le_of_eq_one (f := ⟨f, hf2⟩) _ (fun x ↦ (hf4 x).1)
+      hK (fun x hx ↦ hf1 hx)))
+  replace h : ∃ c : C, (μA {1}).toReal < pushforward H μA ⟨f, hf2⟩ c := by
+    contrapose! h
+    rcases eq_top_or_lt_top (μC Set.univ) with hC | hC
+    · simp [hC, ENNReal.top_mul ho.ne']
+    · have : IsFiniteMeasure μC := ⟨hC⟩
+      rw [ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_lt_top hC ht).ne, ENNReal.toReal_mul,
+        ← Measure.real_def, ← smul_eq_mul, ← integral_const]
+      exact integral_mono (H.pushforward μA ⟨f, hf2⟩).integrable (integrable_const _) h
+  obtain ⟨c, hc⟩ := h
   contrapose! hc
-  by_cases h : ∀ a, f (Function.invFun ψ c * φ a) = 0
-  · simp [pushforward, h, pullback]
-  push_neg at h
-  obtain ⟨a₀, ha₀⟩ := h
-  replace hc : Function.support (fun a ↦ f (Function.invFun ψ c * φ a)) = {a₀} := by
-    rw [Set.eq_singleton_iff_unique_mem]
-    use ha₀
-    intro a ha
-    replace ha := hf3 (subset_tsupport _ ha)
-    replace ha₀ := hf3 (subset_tsupport _ ha₀)
-    have : ∀ a, ψ (φ a) = 1 := by
-      intro a
-      apply H.exact.le
-      exact ⟨a, rfl⟩
-    have key := hc ha ha₀ (by simp [this])
-    simpa [H.isClosedEmbedding.injective.eq_iff] using key
-  simp only [pushforward, pullback]
-  simp only [CompactlySupportedContinuousMap.coe_mk,
-    ContinuousMap.coe_mk, ge_iff_le]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, CompactlySupportedContinuousMap.coe_mk,
-    ContinuousMap.coe_mk]
-  rw [← MeasureTheory.setIntegral_support, hc, integral_singleton, smul_eq_mul,
-    real_def, haar_singleton]
-  rw [mul_le_iff_le_one_right]
-  · exact (hf4 _).2
-  · apply ENNReal.toReal_pos ho.ne' ht.ne
+  simp only [pushforward_def, pullback_def, CompactlySupportedContinuousMap.coe_mk]
+  rw [← MeasureTheory.setIntegral_support]
+  have key : (Function.support (fun a ↦ f (Function.invFun ψ c * φ a))).Subsingleton := by
+    intro a ha b hb
+    simpa [H.isClosedEmbedding.injective.eq_iff] using
+      hc (hf3 (subset_tsupport _ ha)) (hf3 (subset_tsupport _ hb)) (by simp [H.apply_apply])
+  obtain h | ⟨a, ha⟩ := key.eq_empty_or_singleton
+  · simp [h]
+  · rw [ha, integral_singleton, real_def, haar_singleton, smul_eq_mul, mul_le_iff_le_one_right]
+    · exact (hf4 _).2
+    · exact ENNReal.toReal_pos ho.ne' ht.ne
 
 end TopologicalGroup.IsSES
