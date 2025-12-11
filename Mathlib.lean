@@ -6868,6 +6868,7 @@ public import Mathlib.Topology.Algebra.Monoid.AddChar
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.MulActionConst
 public import Mathlib.Topology.Algebra.MvPolynomial
 public import Mathlib.Topology.Algebra.NonUnitalAlgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
