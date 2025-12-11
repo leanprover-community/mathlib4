@@ -89,6 +89,28 @@ theorem artanh_tanh (x : ℝ) : artanh (tanh x) = x := by
     sq_sqrt (le_of_lt h), tanh_eq, exp_neg]
   field
 
+theorem strictMonoOn_sqrt : StrictMonoOn sqrt (Ioi 0) :=
+  fun _ _ _ hb h => (sqrt_lt_sqrt_iff_of_pos hb).mpr h
+
+theorem strictMonoOn_one_add_div_one_sub :
+    StrictMonoOn (fun (x : ℝ) => (1 + x) / (1 - x)) (Ioo (-1) 1) := by
+  intro x hx y hy h
+  field_simp [show 0 < 1 - x by grind, show 0 < 1 - y by grind]
+  grind
+
+theorem strictMonoOn_artanh : StrictMonoOn artanh (Ioo (-1) 1) := by
+  apply strictMonoOn_log.comp ?_ fun x hx ↦ sqrt_pos_of_pos <| div_pos (by grind) (by grind)
+  apply strictMonoOn_sqrt.comp strictMonoOn_one_add_div_one_sub
+    fun x hx ↦ show 0 < (1 + x) / (1 - x) by exact div_pos (by grind) (by grind)
+
+theorem artanh_le_artanh {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
+    artanh x ≤ artanh y ↔ x ≤ y :=
+  strictMonoOn_artanh.le_iff_le hx hy
+
+theorem artanh_lt_artanh {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
+    artanh x < artanh y ↔ x < y :=
+  strictMonoOn_artanh.lt_iff_lt hx hy
+
 /-- `Real.tanh` as a `PartialEquiv`. -/
 def tanhPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := tanh
