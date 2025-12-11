@@ -471,18 +471,19 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
     G.dist u v ≠ G.dist u w :=
   hG.IsAcyclic.dist_ne_of_adj hadj <| hG.isConnected u v
 
-lemma IsAcyclic.diff_dist_adj (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w)
-    (hreach : G.Reachable u v) : G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
+lemma IsAcyclic.dist_eq_dist_add_one_of_adj_of_reachable
+    (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w) (hreach : G.Reachable u v) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u w = G.dist u v + 1 := by
   grind [dist_ne_of_adj, Adj.diff_dist_adj]
 
-lemma IsTree.diff_dist_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
-    G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
+lemma IsTree.dist_eq_dist_add_one_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u w = G.dist u v + 1 := by
   grind [dist_ne_of_adj, Adj.diff_dist_adj]
 
 /-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
   Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
-    grind [diff_dist_adj]
+    grind [dist_eq_dist_add_one_of_adj]
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
@@ -500,7 +501,7 @@ noncomputable def IsAcyclic.coloringTwoOfVerts (hG : G.IsAcyclic) (verts : G.Con
   map_rel' := by
     intro u v hadj
     have := ConnectedComponent.sound hadj.reachable
-    have := hG.diff_dist_adj _ hadj <| ConnectedComponent.exact <| h _
+    have := hG.dist_eq_dist_add_one_of_adj_of_reachable _ hadj <| ConnectedComponent.exact <| h _
     grind [top_adj]
 
 /-- Arbitrary coloring with two colors for a forest -/
