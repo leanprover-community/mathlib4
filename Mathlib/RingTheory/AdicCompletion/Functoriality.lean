@@ -5,9 +5,10 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.AdicCompletion.Algebra
-public import Mathlib.Algebra.DirectSum.Basic
 
 /-!
 # Functoriality of adic completions
@@ -197,6 +198,9 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
   ext
   simp
 
+theorem map_of (f : M →ₗ[R] N) (x : M) : map I f (of I M x) = of I N (f x) :=
+  rfl
+
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
     AdicCompletion I M ≃ₗ[AdicCompletion I R] AdicCompletion I N :=
@@ -360,4 +364,102 @@ end Pi
 
 end Families
 
+open Submodule
+
+variable {I}
+
+theorem exists_smodEq_pow_add_one_smul {f : M →ₗ[R] N}
+    (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {y : N} {n : ℕ}
+    (hy : y ∈ (I ^ n • ⊤ : Submodule R N)) :
+    ∃ x ∈ (I ^ n • ⊤ : Submodule R M), f x ≡ y [SMOD (I ^ (n + 1) • ⊤ : Submodule R N)] := by
+  induction hy using smul_induction_on' with
+  | smul r hr y _ =>
+    obtain ⟨x, hx⟩ := h (mkQ _ y)
+    use r • x, smul_mem_smul hr mem_top
+    simp only [coe_comp, Function.comp_apply, mkQ_apply, ← SModEq.def, map_smul] at ⊢ hx
+    rw [pow_succ, ← smul_smul]
+    exact SModEq.smul' hx hr
+  | add y1 hy1 y2 hy2 ih1 ih2 =>
+    obtain ⟨x1, hx1, hx1'⟩ := ih1
+    obtain ⟨x2, hx2, hx2'⟩ := ih2
+    use x1 + x2, add_mem hx1 hx2
+    simp only [map_add]
+    exact SModEq.add hx1' hx2'
+
+theorem exists_smodEq_pow_smul_top_and_smodEq_pow_add_one_smul_top {f : M →ₗ[R] N}
+    (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {x : M} {y : N} {n : ℕ}
+    (hxy : f x ≡ y [SMOD (I ^ n • ⊤ : Submodule R N)]) :
+    ∃ x' : M, x ≡ x' [SMOD (I ^ n • ⊤ : Submodule R M)] ∧
+    f x' ≡ y [SMOD (I ^ (n + 1) • ⊤ : Submodule R N)] := by
+  obtain ⟨z, hz, hz'⟩ :=
+    exists_smodEq_pow_add_one_smul h (y := y - f x) (SModEq.sub_mem.mp hxy.symm)
+  use x + z
+  constructor
+  · simpa [SModEq.sub_mem]
+  · simpa [SModEq.sub_mem, sub_sub_eq_add_sub, add_comm] using hz'
+
+theorem exists_smodEq_pow_smul_top_and_mkQ_eq {f : M →ₗ[R] N}
+    (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) {x : M} {n : ℕ}
+    {y : N ⧸ (I ^ n • ⊤ : Submodule R N)} {y' : N ⧸ (I ^ (n + 1) • ⊤ : Submodule R N)}
+    (hyy' : factor (pow_smul_top_le I N n.le_succ) y' = y) (hxy : mkQ _ (f x) = y) :
+    ∃ x' : M, x ≡ x' [SMOD (I ^ n • ⊤ : Submodule R M)] ∧ mkQ _ (f x') = y' := by
+  obtain ⟨y0, hy0⟩ := mkQ_surjective _ y'
+  have : f x ≡ y0 [SMOD (I ^ n • ⊤ : Submodule R N)] := by
+    rw [SModEq, ← mkQ_apply, ← mkQ_apply, ← factor_mk (pow_smul_top_le I N n.le_succ) y0,
+        hy0, hyy', hxy]
+  obtain ⟨x', hxx', hx'y0⟩ :=
+    exists_smodEq_pow_smul_top_and_smodEq_pow_add_one_smul_top h this
+  use x', hxx'
+  rwa [mkQ_apply, hx'y0]
+
+theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
+    (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective (map I f) := by
+  intro y
+  suffices h : ∃ x : ℕ → M, ∀ n, x n ≡ x (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] ∧
+      Submodule.Quotient.mk (f (x n)) = eval I _ n y by
+    obtain ⟨x, hx⟩ := h
+    use AdicCompletion.mk I M ⟨x, fun h ↦
+        eq_factor_of_eq_factor_succ (fun _ _ ↦ pow_smul_top_le I M) _ (fun n ↦ (hx n).1) h⟩
+    ext n
+    simp [hx n]
+  let x : (n : ℕ) → {m : M // Submodule.Quotient.mk (f m) = eval I _ n y} := fun n ↦ by
+    induction n with
+    | zero =>
+      use 0
+      apply_fun (Submodule.Quotient.equiv (I ^ 0 • ⊤) ⊤ (.refl R N) (by simp)).toEquiv
+      exact Subsingleton.elim _ _
+    | succ n xn =>
+      choose z hz using exists_smodEq_pow_smul_top_and_mkQ_eq h
+          (y' := eval _ _ (n + 1) y) (by simp) xn.2
+      exact ⟨z, hz.2⟩
+  exact ⟨fun n ↦ (x n).val, fun n ↦ ⟨(Classical.choose_spec (exists_smodEq_pow_smul_top_and_mkQ_eq
+      h (y' := eval I _ (n + 1) y) (by simp) (x n).2)).1, (x n).property⟩⟩
+
 end AdicCompletion
+
+open AdicCompletion Submodule
+
+variable {I}
+
+theorem surjective_of_mkQ_comp_surjective [IsPrecomplete I M] [IsHausdorff I N]
+    {f : M →ₗ[R] N} (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective f := by
+  intro y
+  obtain ⟨x', hx'⟩ := AdicCompletion.map_surjective_of_mkQ_comp_surjective h (of I N y)
+  obtain ⟨x, hx⟩ := of_surjective I M x'
+  use x
+  rwa [← of_inj (I := I), ← map_of, hx]
+
+variable {S : Type*} [CommRing S] (f : R →+* S)
+
+theorem surjective_of_mk_map_comp_surjective [IsPrecomplete I R] [haus : IsHausdorff (I.map f) S]
+    (h : Function.Surjective ((Ideal.Quotient.mk (I.map f)).comp f)) :
+    Function.Surjective f := by
+  let _ := f.toAlgebra
+  let fₗ := (Algebra.ofId R S).toLinearMap
+  change Function.Surjective ((restrictScalars R (I.map f)).mkQ ∘ₗ fₗ) at h
+  have : I • ⊤ = restrictScalars R (Ideal.map f I) := by
+    simp only [Ideal.smul_top_eq_map, restrictScalars_inj]
+    rfl
+  have _ := IsHausdorff.map_algebraMap_iff.mp haus
+  apply surjective_of_mkQ_comp_surjective (I := I) (f := fₗ)
+  rwa [Ideal.smul_top_eq_map]
