@@ -606,11 +606,11 @@ variable [NormedAddTorsor V P]
 
 /-- The orthogonal projection of a point `p` onto the hyperplane spanned by the simplex's points. -/
 def orthogonalProjectionSpan {n : ℕ} (s : Simplex ℝ P n) :
-    P →ᴬ[ℝ] affineSpan ℝ (Set.range s.points) :=
-  orthogonalProjection (affineSpan ℝ (Set.range s.points))
+    P →ᴬ[ℝ] affineSpan ℝ (Set.range s) :=
+  orthogonalProjection (affineSpan ℝ (Set.range s))
 
 lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ : Simplex ℝ P n}
-    {p₁ p₂ : P} (h : Set.range s₁.points = Set.range s₂.points) (hp : p₁ = p₂) :
+    {p₁ p₂ : P} (h : Set.range s₁ = Set.range s₂) (hp : p₁ = p₂) :
     (s₁.orthogonalProjectionSpan p₁ : P) = s₂.orthogonalProjectionSpan p₂ :=
   orthogonalProjection_congr (by rw [h]) hp
 
@@ -624,17 +624,17 @@ orthogonal projection, produces the original point if the vector is a
 multiple of the result of subtracting a point's orthogonal projection
 from that point. -/
 theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} (s : Simplex ℝ P n)
-    {p₁ : P} (p₂ : P) (r : ℝ) (hp : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
+    {p₁ : P} (p₂ : P) (r : ℝ) (hp : p₁ ∈ affineSpan ℝ (Set.range s)) :
     s.orthogonalProjectionSpan (r • (p₂ -ᵥ s.orthogonalProjectionSpan p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
   EuclideanGeometry.orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _
 
 theorem coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection {n : ℕ} {r₁ : ℝ}
-    (s : Simplex ℝ P n) {p p₁o : P} (hp₁o : p₁o ∈ affineSpan ℝ (Set.range s.points)) :
+    (s : Simplex ℝ P n) {p p₁o : P} (hp₁o : p₁o ∈ affineSpan ℝ (Set.range s)) :
     ↑(s.orthogonalProjectionSpan (r₁ • (p -ᵥ ↑(s.orthogonalProjectionSpan p)) +ᵥ p₁o)) = p₁o :=
   congrArg ((↑) : _ → P) (orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ _ hp₁o)
 
 theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq {n : ℕ}
-    (s : Simplex ℝ P n) {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ affineSpan ℝ (Set.range s.points)) :
+    (s : Simplex ℝ P n) {p₁ : P} (p₂ : P) (hp₁ : p₁ ∈ affineSpan ℝ (Set.range s)) :
     dist p₁ p₂ * dist p₁ p₂ =
       dist p₁ (s.orthogonalProjectionSpan p₂) * dist p₁ (s.orthogonalProjectionSpan p₂) +
         dist p₂ (s.orthogonalProjectionSpan p₂) * dist p₂ (s.orthogonalProjectionSpan p₂) := by
@@ -647,13 +647,13 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
 
 @[simp]
 lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
-    s.orthogonalProjectionSpan p = s.points 0 := by
+    s.orthogonalProjectionSpan p = s 0 := by
   rw [orthogonalProjectionSpan]
   convert orthogonalProjection_affineSpan_singleton _ _
   simp [Fin.fin_one_eq_zero]
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
-    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s i.rev := by
   simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
