@@ -34,7 +34,7 @@ This will be useful to define embedded submanifolds.
 -/
 
 open scoped ContDiff
-open Function Set Topology Manifold
+open Topology
 
 @[expose] public section
 
