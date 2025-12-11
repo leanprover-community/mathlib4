@@ -68,10 +68,7 @@ noncomputable def choice (s : Set α) [Countable s] : FiniteExhaustion s := by
     · obtain ⟨f, hf⟩ := exists_surjective_nat s
       refine ⟨fun n ↦ (Subtype.val ∘ f) '' {i | i ≤ n}, ?_, ?_, ?_⟩
       · exact fun n ↦ Finite.image _ (finite_le_nat n)
-      · intro n
-        simp only [Function.comp_apply]
-        gcongr
-        simp
+      · grind
       · simp [← image_image, ← image_iUnion, iUnion_le_nat, range_eq_univ.mpr hf]
     · refine ⟨fun _ ↦ ∅, by simp [Finite.to_subtype], fun n ↦ by simp, ?_⟩
       simp [Set.not_nonempty_iff_eq_empty'.mp h]
