@@ -3,10 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.MetricSpace.UniformConvergence
-import Mathlib.Topology.MetricSpace.Contracting
-import Mathlib.Data.Seq.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.MetricSpace.UniformConvergence
+public import Mathlib.Topology.MetricSpace.Contracting
+public import Mathlib.Data.Seq.Basic
 
 /-!
 # Non-primitive corecursion for sequences
@@ -14,6 +16,7 @@ import Mathlib.Data.Seq.Basic
 https://arxiv.org/pdf/1501.05425
 -/
 
+@[expose] public section
 
 namespace Stream'.Seq
 
@@ -21,13 +24,14 @@ open scoped UniformConvergence
 
 variable {α β γ γ' : Type*}
 
-noncomputable local instance : MetricSpace (Stream' α) :=
+
+noncomputable local instance instMetricSpaceStream' : MetricSpace (Stream' α) :=
   @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 noncomputable local instance : MetricSpace (Seq α) :=
   Subtype.metricSpace
 
-local instance : CompleteSpace (Stream' α) :=
+local instance instCompleteSpaceStream' : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 local instance : CompleteSpace (Seq α) := by
@@ -55,7 +59,7 @@ theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := by
   apply Stream'.dist_le_one
 
 -- TODO: upstream to PiNat
-local instance : BoundedSpace (Stream' α) := by
+local instance instBoundedSpaceStream' : BoundedSpace (Stream' α) := by
   rw [Metric.boundedSpace_iff]
   use 1
   apply Stream'.dist_le_one

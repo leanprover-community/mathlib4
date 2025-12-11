@@ -3,9 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
 
 /-!
 # Logarithm of Multiseries
@@ -13,6 +15,8 @@ import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
 -/
 
 set_option linter.style.multiGoal false
+
+@[expose] public section
 
 open Filter Asymptotics Topology
 

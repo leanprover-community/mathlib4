@@ -3,11 +3,13 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+module
+
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 set_option linter.style.multiGoal false
 
@@ -15,6 +17,8 @@ set_option linter.style.multiGoal false
 # Inversion for multiseries
 
 -/
+
+@[expose] public section
 
 -- TODO: refactor using Pow.lean
 

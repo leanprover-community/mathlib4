@@ -3,18 +3,28 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+module
+
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 /-!
 # Basic operations for multiseries: multiplication by constant and negation
 
 -/
 
+@[expose] public section
+
 namespace ComputeAsymptotics
 
 namespace PreMS
+
+open Filter in
+lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    (h : PreMS.Approximates (@PreMS.nil basis_hd basis_tl) f) : Tendsto f atTop (nhds 0) := by
+  apply PreMS.Approximates_nil at h
+  exact h.tendsto
 
 /-- Multiplies all coefficient of the multiseries to `c`. -/
 def mulConst {basis : Basis} (c : ℝ) (ms : PreMS basis) : PreMS basis :=
@@ -32,9 +42,9 @@ necessary for using `abel` tactic in our proofs. -/
 instance instNeg {basis : Basis} : Neg (PreMS basis) where
   neg := neg
 
-/-- This instance is copy of the previous. But without it `Neg (PreMS (basis_hd :: basis_tl))` can
-not be inferred. -/
-instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: basis_tl)) := instNeg
+-- /-- This instance is copy of the previous. But without it `Neg (PreMS (basis_hd :: basis_tl))` can
+-- not be inferred. -/
+-- instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: basis_tl)) := instNeg
 
 -------------------- theorems
 

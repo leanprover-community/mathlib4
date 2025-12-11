@@ -3,11 +3,13 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.Analytic.Binomial
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
+module
+
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Analysis.Analytic.Binomial
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 /-!
 # Powers for multiseries
@@ -15,6 +17,8 @@ import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 -/
 
 set_option linter.style.multiGoal false
+
+@[expose] public section
 
 open Filter Asymptotics Topology
 

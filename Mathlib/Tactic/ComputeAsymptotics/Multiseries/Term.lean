@@ -3,15 +3,19 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Tactic.MoveAdd
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Tactic.MoveAdd
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
 
 /-!
 Here we find the limit of the term of the form `coef * b1(x)^d1 * b2(x)^d2 * ...`
 where `[b1, b2, ...]` is well-formed basis and `coef` is real constant.
 -/
+
+@[expose] public section
 
 namespace ComputeAsymptotics
 

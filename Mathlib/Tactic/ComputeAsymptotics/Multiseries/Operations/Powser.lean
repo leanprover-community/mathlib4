@@ -3,17 +3,21 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
+module
+
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 /-!
 # Substituting multiseries into analytic series
 
 -/
+
+@[expose] public section
 
 open Filter Asymptotics Topology Stream' Seq
 
