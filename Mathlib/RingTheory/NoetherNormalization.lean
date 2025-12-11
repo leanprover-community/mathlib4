@@ -199,7 +199,9 @@ private noncomputable abbrev eqv1 :
     _ = (I.map (T f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
     _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
-    _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
+    _ = _ := by
+      -- remove `AlgHom.toRingHom_eq_coe` when `Ideal.map` is restricted to `RingHom`s
+      simp [← Ideal.map_map, AlgHom.toRingHom_eq_coe, Ideal.map_coe]
 
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
@@ -255,7 +257,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       exact ⟨d + 1, le_rfl, _, bij.1, isIntegral_of_surjective _ bij.2⟩
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
-      have := Quotient.nontrivial hi
+      have := Quotient.nontrivial_iff.mpr hi
       obtain ⟨s, _, g, injg, intg⟩ := hd (hom2 f I).ker (ker_ne_top (hom2 f I).toRingHom)
       have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (hom2 f I).ker) = (hom2 f I) :=
         AlgHom.ext fun a ↦ by

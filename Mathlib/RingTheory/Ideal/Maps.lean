@@ -747,6 +747,11 @@ theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
 theorem ker_equiv (f : R ≃+* S) : ker f.toRingHom = ⊥ := by
   ext; simp
 
+@[simp]
+lemma ker_algEquiv {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S]
+    [Algebra R T] (e : S ≃ₐ[R] T) : (e : S →ₐ[R] T).ker = ⊥ :=
+  RingHom.ker_equiv e.toRingEquiv
+
 lemma ker_equiv_comp (f : R →+* S) (e : S ≃+* T) :
     ker (e.toRingHom.comp f) = RingHom.ker f := by
   rw [← RingHom.comap_ker, RingEquiv.toRingHom_eq_coe, RingHom.ker_coe_equiv, RingHom.ker]

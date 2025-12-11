@@ -61,7 +61,10 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
 abbrev KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
-  RingHom.ker (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S)
+  (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).ker
+
+lemma KaehlerDifferential.mem_ideal_iff (x : S ⊗[R] S) :
+    x ∈ KaehlerDifferential.ideal R S ↔ TensorProduct.lmul' R x = 0 := .rfl
 
 variable {S}
 
@@ -111,7 +114,8 @@ theorem KaehlerDifferential.submodule_span_range_eq_ideal :
   · rw [Submodule.span_le]
     rintro _ ⟨s, rfl⟩
     exact KaehlerDifferential.one_smul_sub_smul_one_mem_ideal _ _
-  · rintro x (hx : _ = _)
+  · rintro x hx
+    rw [Submodule.restrictScalars_mem, KaehlerDifferential.mem_ideal_iff] at hx
     have : x - TensorProduct.lmul' (S := S) R x ⊗ₜ[R] (1 : S) = x := by
       rw [hx, TensorProduct.zero_tmul, sub_zero]
     rw [← this]
@@ -255,9 +259,11 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     rw [LinearMap.mem_ker]
     refine Submodule.smul_induction_on ((Submodule.restrictScalars_mem _ _ _).mp hx) ?_ ?_
     · rintro x hx y -
-      rw [RingHom.mem_ker] at hx
+      rw [KaehlerDifferential.mem_ideal_iff] at hx
       dsimp
-      rw [Derivation.tensorProductTo_mul, hx, y.prop, zero_smul, zero_smul, zero_add]
+      rw [Derivation.tensorProductTo_mul]
+      have hy : (TensorProduct.lmul' R) y.1 = 0 := y.prop
+      rw [hx, hy, zero_smul, zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 
 theorem Derivation.liftKaehlerDifferential_apply (D : Derivation R S M) (x) :

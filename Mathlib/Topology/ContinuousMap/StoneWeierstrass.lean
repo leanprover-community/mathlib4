@@ -642,7 +642,7 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
   simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe,
     RingHom.mem_ker, RingHom.coe_coe, StarAlgHom.coe_toAlgHom, ContinuousMap.evalStarAlgHom_apply,
     ContinuousMap.coe_coe]
-  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, map_zero f]
+  rw [show ⟨0, h0'⟩ = (0 : s) by rfl, map_zero f]
 
 open NonUnitalStarAlgebra in
 lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]

@@ -146,19 +146,19 @@ noncomputable def Ideal.ResidueField.lift
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable
-def Ideal.ResidueField.liftₐ (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B) (hf₁ : I ≤ RingHom.ker f)
+def Ideal.ResidueField.liftₐ (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B) (hf₁ : I ≤ f.ker)
     (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) : I.ResidueField →ₐ[R] B where
   __ := Ideal.ResidueField.lift I f.toRingHom hf₁ hf₂
   commutes' r := by simp [IsScalarTower.algebraMap_apply R A I.ResidueField]
 
 @[simp]
 lemma Ideal.ResidueField.liftₐ_algebraMap (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B)
-    (hf₁ : I ≤ RingHom.ker f) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) (r : A) :
+    (hf₁ : I ≤ f.ker) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) (r : A) :
     liftₐ I f hf₁ hf₂ (algebraMap _ _ r) = f r :=
   lift_algebraMap _ _ _ hf₂ _
 
 @[simp] lemma Ideal.ResidueField.liftₐ_comp_toAlgHom (I : Ideal A) [I.IsPrime] (f : A →ₐ[R] B)
-    (hf₁ : I ≤ RingHom.ker f) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) :
+    (hf₁ : I ≤ f.ker) (hf₂ : I.primeCompl ≤ (IsUnit.submonoid B).comap f) :
     (liftₐ I f hf₁ hf₂).comp (IsScalarTower.toAlgHom _ A _) = f :=
   AlgHom.ext fun _ ↦ liftₐ_algebraMap _ _ _ hf₂ _
 
