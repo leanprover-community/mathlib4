@@ -49,6 +49,17 @@ theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : M
   MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
     (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
+theorem integrable_of_bilin_of_bdd_left {f : α → E} {g : α → F} (C : ℝ)
+    (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) (hg : Integrable g μ) :
+    Integrable (fun x ↦ B (f x) (g x)) μ :=
+  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 (memLp_top_of_bound hf1 C hf2)
+    (memLp_one_iff_integrable.2 hg)
+
+theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
+    (hf : Integrable f μ) (hg1 : AEStronglyMeasurable g μ) (hg2 : ∀ᵐ a ∂μ, ‖g a‖ ≤ C) :
+    Integrable (fun x ↦ B (f x) (g x)) μ :=
+  B.flip.integrable_of_bilin_of_bdd_left C hg1 hg2 hf
+
 variable (r) in
 /-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
