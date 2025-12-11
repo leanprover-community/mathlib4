@@ -848,6 +848,7 @@ theorem transvectionDegree_of_reduce_ne_smul_id
         simp only [mem_sup, mem_span_singleton, exists_exists_eq_and]
         use 1, 1, by module
 
+-- delete
 theorem ENat.eq_coe_sub_coe_iff {a : ℕ∞} {b c : ℕ} (h : b ≤ c) :
     a = c - b ↔ c = a + b := by
   induction a with
@@ -855,6 +856,17 @@ theorem ENat.eq_coe_sub_coe_iff {a : ℕ∞} {b c : ℕ} (h : b ≤ c) :
   | coe a =>
     simp only [← ENat.coe_add, ← ENat.coe_sub, ENat.coe_inj]; aesop
 
+theorem _root_.Module.Dual.finrank_le_one_add_finrank_ker_inf
+    (f : Dual K V) (W : Submodule K V) :
+    finrank K W ≤ 1 + finrank K (LinearMap.ker f ⊓ W : Submodule K V) := by
+  rw [add_comm, ← Nat.add_le_add_iff_left, ← add_assoc,
+      finrank_sup_add_finrank_inf_eq, add_assoc, add_comm _ 1,
+      ← add_assoc, add_le_add_iff_right]
+  apply le_trans (finrank_le _)
+  by_cases hf : f = 0
+  · rw [hf, LinearMap.ker_zero, finrank_top]
+    exact Nat.le_add_right (finrank K V) 1
+  · rw [Dual.finrank_ker_add_one_of_ne_zero hf]
 
 /-- If an element of `SpecialLinearGroup K V` is not exceptional,
 then it is a product of exactly `finrank K (V ⧸ e.fixedSubmodule)` transvection,
@@ -867,6 +879,84 @@ theorem transvectionDegree_of_not_isExceptional
   by_cases h : e.reduce = 1
   · exact transvectionDegree_le_of_reduce_eq_one e h
   · exact transvectionDegree_of_reduce_ne_smul_id e (he h)
+
+example (e : SpecialLinearGroup K V)
+    (n : ℕ) (hn : n = finrank K (V ⧸ e.fixedSubmodule))
+    (he : e ∈ transvections K V ^ n) :
+    ¬ IsExceptional e := by
+  induction n generalizing e with
+  | zero =>
+    simp only [pow_zero, Set.mem_one] at he
+    rw [he]
+    intro he'
+    exact he'.1 (map_one _)
+  | succ n hind =>
+    rw [pow_succ, Set.mem_mul] at he
+    obtain ⟨e', he', t, ⟨f, v, hfv, rfl⟩, he⟩ := he
+    have : LinearMap.ker f ⊓ e.fixedSubmodule ≤ e'.fixedSubmodule := fun x ⟨hfx, hxe⟩ ↦ by
+      replace he := congr($he x)
+      simp only [SetLike.mem_coe, mem_fixedSubmodule_iff] at hxe
+      simp only [SetLike.mem_coe, LinearMap.mem_ker] at hfx
+      simpa [LinearMap.transvection.apply, hfx, hxe, mem_fixedSubmodule_iff] using he
+    have this : e.fixedSubmodule = LinearMap.ker f ⊓ e'.fixedSubmodule := by
+      symm
+      apply Submodule.eq_of_le_of_finrank_le
+      · replace he := congr($he x)
+        simp only [SetLike.mem_coe, mem_fixedSubmodule_iff] at hxe
+        simp only [SetLike.mem_coe, LinearMap.mem_ker] at hfx
+        simpa [eq_comm, LinearMap.transvection.apply, hfx, hxe, mem_fixedSubmodule_iff] using he
+      rw [← Nat.add_le_add_iff_left, Submodule.finrank_quotient_add_finrank, ← hn]
+      apply le_trans (finrank_le_add_finrank_fixedSubmodule he')
+      simp only [add_assoc, add_le_add_iff_left]
+      exact Dual.finrank_le_one_add_finrank_ker_inf f e'.fixedSubmodule
+    have that : ¬ (e'.IsExceptional) := by
+      apply hind _ _ he'
+      apply le_antisymm
+      · rw [← Nat.add_le_add_iff_right, hn,
+        ← Nat.add_le_add_iff_right, finrank_quotient_add_finrank,
+        this]
+        rw [← finrank_quotient_add_finrank e'.fixedSubmodule]
+        simp only [add_assoc, add_le_add_iff_left]
+        exact Dual.finrank_le_one_add_finrank_ker_inf f e'.fixedSubmodule
+      · rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank]
+        exact finrank_le_add_finrank_fixedSubmodule he'
+    intro hex
+    unfold IsExceptional at hex
+    obtain ⟨hex, a, her⟩ := hex
+
+    apply that
+    constructor
+    · sorry
+    · use a
+      ext x
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+        LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+      have : e.fixedSubmodule ≤ e'.fixedSubmodule := by
+        rw [this]
+        apply inf_le_right
+      simp only [mkQ_apply, reduce_apply e' x]
+      rw [Submodule.linearMap_qext_iff, LinearMap.ext_iff] at her
+      specialize her x
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, mkQ_apply,
+        LinearMap.smul_apply, LinearMap.id_coe, id_eq, reduce_apply] at her
+      simp only [← he] at her
+      simp only [coe_mul, transvection.coe_toLinearEquiv, LinearEquiv.mul_apply,
+        LinearEquiv.transvection.coe_apply, LinearMap.transvection.apply] at her
+      simp only [map_add, map_smul, Quotient.mk_add, Quotient.mk_smul] at her
+      rw [eq_comm, ← sub_eq_iff_eq_add] at her
+      rw [← mkQ_apply]
+      rw [← Submodule.factor_comp_mk this, LinearMap.comp_apply,
+        mkQ_apply, ← her]
+      simp
+
+
+      simp only [← mkQ_apply]
+      rw [mkQ_apply, ← Submodule.factor_comp_mk this]
+      simp only [LinearMap.comp_apply]
+
+
+
+
 
 #exit
 
