@@ -320,6 +320,7 @@ public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
@@ -5137,6 +5138,7 @@ public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
