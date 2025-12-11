@@ -82,8 +82,7 @@ theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
 theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
   rw [tanh_eq]
   field_simp
-  suffices 0 < rexp x by linarith
-  positivity
+  grind [exp_pos]
 
 /-- `artanh` is the left inverse of `tanh`. -/
 theorem artanh_tanh (x : ℝ) : artanh (tanh x) = x := by
