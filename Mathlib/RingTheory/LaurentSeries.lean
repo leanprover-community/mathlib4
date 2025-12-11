@@ -67,9 +67,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 ## Implementation details
 
-* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ R`, the definition of the
+* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ`, the definition of the
   coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go
-  back-and-forth from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
+  back-and-forth from `X : R⸨X⸩` to `single 1 1 : R⟦ℤ⟧`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
   two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
   uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
@@ -98,8 +98,7 @@ noncomputable section
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
-abbrev LaurentSeries (R : Type u) [Zero R] :=
-  HahnSeries ℤ R
+abbrev LaurentSeries (R : Type u) [Zero R] := R⟦ℤ⟧
 
 variable {R : Type*}
 
