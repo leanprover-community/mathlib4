@@ -624,7 +624,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let mut macroDecl ← `($attrKind:attrKind macro_rules | `($pat) => `($val'))
   if isLocalAttrKind attrKind then
     -- For local notation, take section variables into account
-    macroDecl ← `(section set_option quotPrecheck.allowSectionVars true $macroDecl end)
+    macroDecl ← `(command| set_option quotPrecheck.allowSectionVars true in $macroDecl)
   elabCommand macroDecl
 
   -- 3. Create a delaborator
