@@ -33,7 +33,7 @@ This however is not straightforward.
 Consider `n : ℕ`. We cannot write `(κ n) ⊗ₖ (κ (n + 1))` directly, we need to first
 introduce an equivalence to see `κ (n + 1)` as a kernel with codomain
 `(Π i : Iic n, X i) × X (n + 1)`, and we get a `Kernel (Π i : Iic n, X i) (X (n + 1) × (X (n + 2))`.
-However we want to do multiple composition at ones, i.e. write
+However we want to do multiple composition at once, i.e. write
 `(κ n) ⊗ₖ ... ⊗ₖ (κ m)` for `n < m`. This requires even more equivalences to make sense of, and at
 the end of the day we get kernels which still cannot be composed together.
 
@@ -338,7 +338,7 @@ lemma lmarginalPartialTraj_succ [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
     all_goals lia
   all_goals fun_prop
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0∞} (hf : Measurable f) :
     Measurable (lmarginalPartialTraj κ a b f) := by
   unfold lmarginalPartialTraj

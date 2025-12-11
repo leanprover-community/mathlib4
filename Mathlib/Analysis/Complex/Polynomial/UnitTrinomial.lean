@@ -37,7 +37,7 @@ theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
   rw [natDegree_pos_iff_degree_pos] at hq''
   rw [← degree_map_eq_of_injective (algebraMap ℤ ℂ).injective_int] at hq''
   obtain ⟨z, hz⟩ := Complex.exists_root hq''
-  rw [IsRoot, eval_map, ← aeval_def] at hz
+  rw [IsRoot, eval_map_algebraMap] at hz
   refine h z ⟨?_, ?_⟩
   · obtain ⟨g', hg'⟩ := hq
     rw [hg', aeval_mul, hz, zero_mul]
