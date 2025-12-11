@@ -1078,7 +1078,7 @@ section LinearIsometry
 alias LinearIsometry.extend := LinearMap.extendOfIsometry
 
 @[deprecated (since := "2025-12-11")]
-alias LinearIsometry.extend_apply := LinearMap.extendOfIsometry_apply
+alias LinearIsometry.extend_apply := LinearMap.extendOfIsometry_eq
 
 end LinearIsometry
 

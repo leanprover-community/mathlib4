@@ -20,6 +20,8 @@ subspace to the entire Banach space.
 * `LinearMap.extendOfNorm`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
 `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
 `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
+* `LinearMap.extendOfIsometry`: Extend `f : E →ₛₗ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] F`,
+where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have that `‖f x‖ = ‖e x‖` for all `x : E`.
 
 Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
