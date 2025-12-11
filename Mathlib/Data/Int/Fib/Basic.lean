@@ -155,6 +155,9 @@ theorem gcd_fib (m n : ℤ) : gcd (fib m) (fib n) = Nat.fib (gcd m n) := by
     <;> obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     <;> simp [fib_neg, Nat.fib_gcd, apply_ite, apply_ite_left]
 
+@[deprecated gcd_fib (since := "2025-12-09")]
+theorem fib_gcd (m n : ℤ) : fib (gcd m n) = gcd (fib m) (fib n) := by simpa using (gcd_fib m n).symm
+
 private theorem fib_natCast_dvd {m : ℕ} {n : ℤ} (h : (m : ℤ) ∣ n) : fib m ∣ fib n := by
   rwa [← gcd_eq_left_iff_dvd (by simp), gcd_fib, ← fib_natCast, (gcd_eq_left_iff_dvd (by simp)).mpr]
 

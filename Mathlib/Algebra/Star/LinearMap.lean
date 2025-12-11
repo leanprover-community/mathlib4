@@ -66,11 +66,17 @@ theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : E →ₗ[R] F) :
     IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
   simp_rw [IsSelfAdjoint, LinearMap.ext_iff, intrinsicStar_apply, star_eq_iff_star_eq, eq_comm]
 
+@[deprecated (since := "2025-12-09")]
+alias isSelfAdjoint_iff_map_star := IntrinsicStar.isSelfAdjoint_iff_map_star
+
 /-- A star-preserving linear map is self-adjoint (with respect to the intrinsic star). -/
 @[simp]
 protected theorem _root_.IntrinsicStar.StarHomClass.isSelfAdjoint {S : Type*} [FunLike S E F]
     [LinearMapClass S R E F] [StarHomClass S E F] {f : S} : IsSelfAdjoint (f : E →ₗ[R] F) :=
   IntrinsicStar.isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
+
+@[deprecated (since := "2025-12-09")]
+alias _root_.StarHomClass.isSelfAdjoint := _root_.IntrinsicStar.StarHomClass.isSelfAdjoint
 
 variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
 
