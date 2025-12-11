@@ -12,15 +12,18 @@ public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Hahn Series
-If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `R⟦Γ⟧`, with the most studied case being when `Γ` is
-a linearly ordered abelian group and `R` is a field, in which case `R⟦Γ⟧` is a
-valued field, with value group `Γ`.
+
+If `Γ` is ordered and `R` has zero, then the type `HahnSeries Γ R`, which we denote as `R⟦Γ⟧`,
+consists of formal series over `Γ` with coefficients in `R`, whose supports are partially
+well-ordered. With further structure on `R` and `Γ`, we can add further structure on `R⟦Γ⟧`, with
+the most studied case being when `Γ` is a linearly ordered abelian group and `R` is a field, in
+which case `R⟦Γ⟧` is a valued field, with value group `Γ`.
+
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
 in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main Definitions
+
 * If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
 * `support x` is the subset of `Γ` whose coefficients are nonzero.
@@ -33,6 +36,7 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 * `embDomain` preserves coefficients, but embeds the index set `Γ` in a larger poset.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
