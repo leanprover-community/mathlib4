@@ -64,19 +64,19 @@ theorem iUnion_eq : ⋃ n, K n = s :=
 /-- A choice of a `FiniteExhaustion` for a countable set `s`. -/
 noncomputable def _root_.Set.Countable.finiteExhaustion {s : Set α} (hs : s.Countable) :
     FiniteExhaustion s := by
-    apply Classical.choice
-    by_cases h : Nonempty s
-    · obtain ⟨f, hf⟩ := exists_surjective_nat s
-      refine ⟨fun n ↦ (Subtype.val ∘ f) '' {i | i ≤ n}, ?_, ?_, ?_⟩
-      · exact fun n ↦ Finite.image _ (finite_le_nat n)
-      · grind
-      · simp [← image_image, ← image_iUnion, iUnion_le_nat, range_eq_univ.mpr hf]
-    · refine ⟨fun _ ↦ ∅, by simp [Finite.to_subtype], fun n ↦ by simp, ?_⟩
-      simp [Set.not_nonempty_iff_eq_empty'.mp h]
+  apply Classical.choice
+  by_cases h : Nonempty s
+  · obtain ⟨f, hf⟩ := @exists_surjective_nat s h hs
+    refine ⟨fun n ↦ (Subtype.val ∘ f) '' {i | i ≤ n}, ?_, ?_, ?_⟩
+    · exact fun n ↦ Finite.image _ (finite_le_nat n)
+    · grind
+    · simp [← image_image, ← image_iUnion, iUnion_le_nat, range_eq_univ.mpr hf]
+  · refine ⟨fun _ ↦ ∅, by simp [Finite.to_subtype], fun n ↦ by simp, ?_⟩
+    simp [Set.not_nonempty_iff_eq_empty'.mp h]
 
 noncomputable instance [Countable s] :
     Nonempty (FiniteExhaustion s) :=
-  ⟨FiniteExhaustion.choice s⟩
+  ⟨Set.Countable.finiteExhaustion ‹Countable s›⟩
 
 section prod
 
