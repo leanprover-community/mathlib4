@@ -447,11 +447,13 @@ theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔
   exact not_isUnit_X_pow_sub_one F n h
 
 /-- In a field `F`, for any `t ∈ F` and `n > 0`, the polynomial `X ^ n - t` is separable
-    iff `↑n ≠ 0`. -/
-theorem X_pow_sub_C_separable_iff {n : ℕ} (x : F) (hn : n > 0)
-    (hx : IsUnit x) : (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
+    iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
+    is separable iff `t ≠ 1`. -/
+theorem X_pow_sub_C_separable_iff {n : ℕ} (x : F) (hn : n > 0) (hx : IsUnit x) :
+    (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
   refine ⟨?_, fun h => separable_X_pow_sub_C_unit hx.unit (IsUnit.mk0 _ h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_C, sub_zero]
+  -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
   rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
   have hDeg : (X ^ n - C x).natDegree = n := by simp
