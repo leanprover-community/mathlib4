@@ -364,6 +364,10 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
   ext x
   simp [eq_comm]
 
+/-- A Suslin Space is a topological space that is an analytic set in itself. -/
+@[mk_iff] class SuslinSpace (X : Type*) [TopologicalSpace X] : Prop where
+  analyticSet_univ : AnalyticSet (@univ X)
+
 /-! ### Separating sets with measurable sets -/
 
 /-- Two sets `u` and `v` in a measurable space are measurably separable if there
