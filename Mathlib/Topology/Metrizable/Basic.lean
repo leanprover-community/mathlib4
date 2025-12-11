@@ -86,7 +86,7 @@ theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace 
     Filter.comap.isCountablyGenerated (uniformity Y) (Prod.map f f)⟩⟩
 
 /-- Every pseudo-metrizable space is first countable. -/
-instance (priority := 90) PseudoMetrizableSpace.firstCountableTopology
+instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X :=
   let : UniformSpace X := pseudoMetrizableSpaceUniformity X
   have : (uniformity X).IsCountablyGenerated :=

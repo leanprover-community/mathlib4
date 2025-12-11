@@ -308,9 +308,3 @@ instance (priority := 100) PseudoEMetricSpace.pseudoMetrizableSpace
 instance (priority := 100) EMetricSpace.metrizableSpace
     [EMetricSpace α] : MetrizableSpace α :=
   inferInstance
-
-/-- Every pseudo-metrizable space is regular. -/
-instance (priority := 90) PseudoMetrizableSpace.regularSpace
-    [PseudoMetrizableSpace α] : RegularSpace α := by
-  letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
-  infer_instance

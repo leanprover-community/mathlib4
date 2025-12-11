@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.MetricSpace.Polish
 public import Mathlib.Topology.UniformSpace.Cauchy
 
