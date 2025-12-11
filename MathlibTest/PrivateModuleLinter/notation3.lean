@@ -8,9 +8,6 @@ import Mathlib.Util.Whatsnew
 
 open Lean
 
-open scoped Lean.Elab.Command
-
-
 local notation3 "MyList[" (x", "* => foldr (a b => List.cons a b) List.nil) "]" => x
 
 /- Check that we have indeed created declarations, and aren't not linting just due to being an
@@ -25,8 +22,7 @@ info: [_private.MathlibTest.PrivateModuleLinter.notation3.0.«_aux_MathlibTest_P
 run_cmd do
   logInfo m!"{(← getEnv).constants.map₂.toArray.map (·.1)}"
 
-
--- The linter should fire despite the public name `foo.eq_1` being present
+-- The linter should fire despite since the `notation` is local
 -- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 set_option linter.mathlibStandardSet true in
 open Mathlib.Linter Parser in
