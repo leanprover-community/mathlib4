@@ -77,7 +77,7 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-lemma isDenseSubsite_functor_of_IsCocontinuous
+lemma isDenseSubsite_functor_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
     e.functor.IsDenseSubsite J K where
   functorPushforward_mem_iff {X S} := by
