@@ -127,7 +127,7 @@ theorem prod_symm_trans_prod
 end Prod
 
 /-!
-# Pi types
+## Pi types
 
 Finite indexed products of partial homeomorphisms
 -/
