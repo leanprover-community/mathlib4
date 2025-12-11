@@ -196,9 +196,9 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
 @[stacks 0052 "(3)"]
-theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
+theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
   classical
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
   have hι : ι.Finite := NoetherianSpace.finite_irreducibleComponents.subset Set.diff_subset
@@ -229,5 +229,11 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
       · exact ⟨i, Or.inr i.2, hi⟩
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
   exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+
+@[deprecated exists_isOpen_nonempty_subset_irreducibleComponent (since := "2025-12-11")]
+theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
+    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
+  simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
 end TopologicalSpace
