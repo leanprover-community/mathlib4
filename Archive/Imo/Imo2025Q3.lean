@@ -8,24 +8,27 @@ import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.Tactic.Simproc.Factors
 
-open Nat Int
+/-!
+# IMO 2025 Q3
 
-/- Let $\mathbb{N}+$ denote the set of positive integers. A function $f: \mathbb{N}+ \rightarrow
+Let $\mathbb{N}+$ denote the set of positive integers. A function $f: \mathbb{N}+ \rightarrow
 \mathbb{N}+$ is said to be bonza if $f(a)$ divides $b^a-f(b)^{f(a)}$ for all positive integers $a$
 and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
 $f$ and all positive integers $n$.
 -/
 
-/-- Define bonza functions
--/
+open Nat Int
+
+namespace Imo2025Q3
+
+/-- Define bonza functions -/
 def bonza : Set (ℕ → ℕ) :=
   {f : ℕ → ℕ | (∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)) ∧
     ∀ n, 0 < n → f n > 0}
 
 variable {f : ℕ → ℕ}
 
-/- For each bonza function $f$, we have $f n | n ^ n$
--/
+/-- For each bonza function $f$, we have $f n | n ^ n$ -/
 lemma bonza_apply_dvd_pow (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
     (f n : ℤ).dvd_refl.pow (Nat.ne_zero_of_lt (hf.2 n hn))
@@ -56,8 +59,7 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
           (by norm_num) (f b)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
-/- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$
--/
+/-- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$ -/
 theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     (∃ N, ∀ p > N, p.Prime → f p = 1) := by
   obtain ⟨b, hb, neq⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
@@ -88,8 +90,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
         exact dvd_pow_self (q : ℤ) ch
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
     obtain ⟨p, hp⟩ : ∃ p > N, Nat.Prime p ∧ p ≡ -1 [ZMOD q] :=
-      haveI := NeZero.of_gt hq
-      forall_exists_prime_gt_and_modEq N isCoprime_one_left.neg_left
+      forall_exists_prime_gt_and_zmodEq N (by omega) isCoprime_one_left.neg_left
     have : 1 ≡ -1 [ZMOD q] := by calc
       _ ≡ p ^ q [ZMOD q] := by grind [Int.modEq_iff_dvd]
       _ ≡ p [ZMOD q] := ModEq.pow_prime_eq_self qp p
@@ -98,8 +99,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
     have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
     omega
 
-/- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two
--/
+/-- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two -/
 lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦
   have : ∀ {p}, p.Prime → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
@@ -114,8 +114,7 @@ lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x
     exact (Nat.Prime.not_dvd_one pp) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
   ⟨(f n).primeFactorsList.length, eq_prime_pow_of_unique_prime_dvd (ne_zero_of_lt (hf.2 n hn)) this⟩
 
-/-- An example of a bonza function achieving the maximum number of values of `c`.
--/
+/-- An example of a bonza function achieving the maximum number of values of `c`. -/
 def fExample : ℕ → ℕ := fun x ↦
   if ¬ 2 ∣ x then 1
   else if x = 2 then 4
@@ -149,8 +148,7 @@ lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (h
       _ ≤ _ := by simp [propext (Nat.pow_le_pow_iff_right le.refl)]
     _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
-/- To verify the example is a bonza function
--/
+/-- To verify the example is a bonza function -/
 lemma bonza_fExample : fExample ∈ bonza := by
   constructor
   · intro a b ha hb
@@ -222,3 +220,5 @@ theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 
       simpa [fExample, padicValNat_eq_primeFactorsList_count] using
         hc fExample bonza_fExample 4 (by norm_num)
     linarith
+
+end Imo2025Q3
