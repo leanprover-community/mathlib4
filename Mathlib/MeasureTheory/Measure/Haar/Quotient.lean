@@ -552,7 +552,14 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     obtain ⟨K, hK, hf₀⟩ := hf₀
     let S : Set A := φ ⁻¹' (U₀⁻¹ * K)
     have hS : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
-    let V₀ := μA S
+    have hS' : ∀ x ∈ U₀, ∀ y : A, f (x * φ y) ≠ 0 → y ∈ S := by
+      intro x hx y h
+      contrapose! h
+      apply hf₀
+      contrapose! h
+      replace h := Set.mul_mem_mul (Set.inv_mem_inv.mpr hx) h
+      rwa [inv_mul_cancel_left] at h
+    set V₀ := μA S with hV₀
     have hV₀' : V₀ < ⊤ := hS.measure_lt_top
     have : ∃ v : ℝ, 0 < v ∧ v * ENNReal.toReal V₀ < ε := by
       by_cases h : V₀ = 0
@@ -578,37 +585,16 @@ noncomputable def average (f : CompactlySupportedContinuousMap B E) :
     rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm,
       ← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
     · apply (MeasureTheory.lintegral_mono hd).trans_lt
-      -- up to here
-      rw [lintegral_const]
-      simp only [MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-      change _ * V₀ < _
-      rwa [← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
+      rwa [lintegral_const, Measure.restrict_apply_univ, ← hV₀,
+        ← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
         ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
     · intro x hx
       have : f (t * b * φ x) ≠ 0 ∨ f (b * φ x) ≠ 0 := by
         contrapose! hx
         simp [hx.1, hx.2]
       rcases this with h | h
-      · have : t * b * φ x ∈ K := by
-          contrapose! h
-          apply hf₀ _ h
-        -- c * e * φ x ∈ K
-        change φ x ∈ U₀⁻¹ * K
-        have h : φ x = (t * b)⁻¹ * (t * b * φ x) := by group
-        rw [h]
-        apply Set.mul_mem_mul
-        · rwa [Set.inv_mem_inv]
-        · exact this
-      · have : b * φ x ∈ K := by
-          contrapose! h
-          apply hf₀ _ h
-        change φ x ∈ U₀⁻¹ * K
-        have h : φ x = b⁻¹ * (b * φ x) := by simp
-        rw [h]
-        apply Set.mul_mem_mul
-        · rw [Set.inv_mem_inv]
-          exact mem_of_mem_nhds hb
-        · exact this
+      · exact hS' (t * b) htb x h
+      · exact hS' b (mem_of_mem_nhds hb) x h
 
 noncomputable def average_zero :
     average H μA (0 : CompactlySupportedContinuousMap B E) = 0 := by
