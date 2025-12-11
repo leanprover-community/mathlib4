@@ -31,7 +31,7 @@ variable (C : Type u) [Category.{v} C] (A : Type w) [AddMonoid A] [HasShift C A]
 /-- Given a category `C` equipped with a shift by a monoid `A` -/
 structure TwistShiftData where
   /-- The invertible elements in the center of `C` which are used to
-  modify the `shiftFunctorAdd` isomorphisms . -/
+  modify the `shiftFunctorAdd` isomorphisms. -/
   z (a b : A) : (CatCenter C)ˣ
   z_zero_zero : z 0 0 = 1 := by cat_disch
   assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by cat_disch
