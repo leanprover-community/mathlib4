@@ -155,7 +155,7 @@ theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A �
   rfl
 
 -- make the coercion the simp-normal form
-@[simp]
+@[simp← ]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
