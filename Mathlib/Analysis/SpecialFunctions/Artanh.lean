@@ -111,6 +111,14 @@ theorem artanh_lt_artanh {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1
     artanh x < artanh y ↔ x < y :=
   strictMonoOn_artanh.lt_iff_lt hx hy
 
+theorem artanh_pos {x : ℝ} (hx : x ∈ Ioo 0 1) : 0 < artanh x := by
+  rw [← artanh_zero, artanh_lt_artanh (by grind) (by grind)]
+  exact hx.1
+
+theorem artanh_nonneg {x : ℝ} (hx : x ∈ Ico 0 1) : 0 ≤ artanh x := by
+  rw [← artanh_zero, artanh_le_artanh (by grind) (by grind)]
+  exact hx.1
+
 /-- `Real.tanh` as a `PartialEquiv`. -/
 def tanhPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := tanh
