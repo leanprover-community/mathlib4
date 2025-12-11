@@ -9,6 +9,7 @@ public import Mathlib.Topology.UnitInterval
 
 /-!
 # Every compact metric space can be embedded into the Hilbert cube.
+
 In this file we prove `exists_closed_embedding_to_hilbert`: every compact metric space can be
 embedded into the Hilbert cube (`ℕ → unitInterval`).
 -/
