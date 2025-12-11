@@ -75,7 +75,7 @@ noncomputable def _root_.Set.Countable.finiteExhaustion {s : Set α} (hs : s.Cou
     simp [Set.not_nonempty_iff_eq_empty'.mp h]
 
 noncomputable instance [Countable s] :
-    Nonempty (FiniteExhaustion s) := ⟨Set.Countable.finiteExhaustion ‹Countable s›⟩
+    Nonempty (FiniteExhaustion s) := ⟨Countable.finiteExhaustion ‹Countable s›⟩
 
 section prod
 
