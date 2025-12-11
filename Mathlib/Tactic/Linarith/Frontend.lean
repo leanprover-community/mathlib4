@@ -515,6 +515,19 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
+private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
+    (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
+  let g ← getMainGoal
+  if _h : i < hs.length then
+    let rest := hs.eraseIdx i
+    st.restore
+    try
+      let _ ← Linarith.linarith true rest cfg g
+      minimize cfg st rest i
+    catch _ => minimize cfg st hs (i+1)
+  else
+    return hs
+
 elab_rules : tactic
   | `(tactic| linarith?%$tk $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) =>
       withMainContext do
@@ -530,17 +543,7 @@ elab_rules : tactic
             throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
             if cfg.minimize then
-              let rec minimize (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
-                if _h : i < hs.length then
-                  let rest := hs.eraseIdx i
-                  st.restore
-                  try
-                    let _ ← Linarith.linarith true rest cfg g
-                    minimize rest i
-                  catch _ => minimize hs (i+1)
-                else
-                  return hs
-              minimize used₀ 0
+              minimize cfg st used₀ 0
             else
               pure used₀
           st.restore
