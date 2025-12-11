@@ -309,10 +309,9 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   obtain ⟨k, hk⟩ := exists_nat_ge (max r <| (N - r) * Real.log 2 / (Real.log (3 / 2)))
   have hk₁ : r ≤ k := le_trans le_sup_left hk
   have hk₂ : Real.log 2 * (N - r) ≤ (Real.log (3 / 2)) * k := by
-    have := le_trans le_sup_right hk
+    have := le_sup_right.trans hk
     field_simp at this
-    nth_rewrite 1 [mul_comm] at this
-    exact this
+    grind
   use k, ∑ k ∈ Finset.range (N + 1), ‖Polynomial.eval r (descPochhammer ℝ k)‖, by positivity
   intro n hn x hx
   have : ContDiffAt ℝ n (fun x ↦ x ^ r) x :=
@@ -328,12 +327,10 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   simp only [Real.norm_eq_abs]
   apply (Real.abs_rpow_le_abs_rpow _ _).trans
   by_cases! h : 0 ≤ r - n
-  · have : r - n ≤ k := by
-      simp only [tsub_le_iff_right]
-      apply hk₁.trans (by simp)
+  · have : r - n ≤ k := by simpa using hk₁.trans (by simp)
     rw [← Real.rpow_natCast]
-    apply le_trans _ (Real.rpow_le_rpow_of_exponent_le (by simp) this)
-    exact Real.rpow_le_rpow (by positivity) (by simp) h
+    exact (Real.rpow_le_rpow (by positivity) (by simp) h).trans
+      (Real.rpow_le_rpow_of_exponent_le (by simp) this)
   have h : 0 < n - r := by grind
   calc
     _ = x ^ (-(n - r)) := by
@@ -344,8 +341,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       simp only [one_div, Set.mem_setOf_eq, t] at hx
       rw [Real.rpow_neg_eq_inv_rpow]
       gcongr
-      apply le_of_lt
-      exact (inv_lt_comm₀ hx'' (by norm_num)).mpr hx
+      exact ((inv_lt_comm₀ hx'' (by norm_num)).mpr hx).le
     _ = Real.exp (Real.log 2 * (n - r)) := by
       rw [Real.rpow_def_of_pos]
       norm_num
