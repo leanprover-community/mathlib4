@@ -77,6 +77,12 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
     have := h.count_le p
     simp at this
 
+theorem padicValNat_eq_primeFactorsList_count {m p : ℕ} [hp : Fact p.Prime] :
+    padicValNat p m = m.primeFactorsList.count p := by
+  by_cases hm : m = 0
+  . simp [hm]
+  · rw [primeFactorsList_count_eq, padicValNat_def hm, multiplicity_eq_factorization hp.out hm]
+
 theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.primeFactorsList : Multiset ℕ) := by
   ext p
