@@ -292,13 +292,13 @@ theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
   · exact (Finset.val_le_iff_val_subset.mpr (fun x hx ↦ (p.mem_roots hp).mpr (hS x hx)))
   · simpa using (p.card_roots hp).trans hcard
 
-theorem roots_eq_of_degree {S : Finset R}
+theorem roots_eq_of_degree_le_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
-  roots_eq_of_degree_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
+  roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
 
-theorem roots_eq_of_natDegree_of_ne_zero {S : Finset R}
+theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
-  roots_eq_of_degree_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp
+  roots_eq_of_degree_le_card_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp
 
 section NthRoots
 
