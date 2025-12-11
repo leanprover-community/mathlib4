@@ -1300,8 +1300,8 @@ Q1077741:
 
 Q1082910:
   title: Euler's partition theorem
-  authors: Bhavik Mehta and Aaron Anderson
-  decl: Theorems100.partition_theorem
+  authors: Bhavik Mehta, Aaron Anderson, and Weiyi Wang
+  decl: Nat.Partition.card_odds_eq_card_distincts
 
 Q1095330:
   title: Apéry's theorem

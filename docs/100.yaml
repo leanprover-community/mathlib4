@@ -185,8 +185,8 @@
   authors: Chris Hughes
 45:
   title  : The Partition Theorem
-  authors: Bhavik Mehta and Aaron Anderson
-  decl   : Theorems100.partition_theorem
+  authors: Bhavik Mehta, Aaron Anderson, and Weiyi Wang
+  decl   : Nat.Partition.card_odds_eq_card_distincts
 46:
   title  : The Solution of the General Quartic Equation
   decl   : Theorems100.quartic_eq_zero_iff
