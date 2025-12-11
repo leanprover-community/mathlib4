@@ -304,7 +304,7 @@ variable [CommRing T] [Algebra S R] [Algebra S T] (p : R[X])
 a root of `f` in `S`. -/
 def liftAlgHom (i : R →ₐ[S] T) (x : T) (h : p.eval₂ i x = 0) : AdjoinRoot p →ₐ[S] T where
   __ := lift i.toRingHom _ h
-  commutes' r := by simp [lift_of h, AdjoinRoot.algebraMap_eq']
+  commutes' r := by simp [AdjoinRoot.algebraMap_eq']
 
 @[simp] lemma toRingHom_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) :
     (liftAlgHom p i x h : AdjoinRoot p →+* T) = lift i.toRingHom _ h := rfl

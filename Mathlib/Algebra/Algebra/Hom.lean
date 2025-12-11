@@ -245,6 +245,10 @@ theorem coe_id : ⇑(AlgHom.id R A) = id :=
 theorem id_toRingHom : (AlgHom.id R A : A →+* A) = RingHom.id _ :=
   rfl
 
+@[simp]
+lemma toRingHom_id : (AlgHom.id R A).toRingHom = RingHom.id _ :=
+  rfl
+
 end
 
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
@@ -436,6 +440,8 @@ variable {R}
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
 @[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+
+@[simp] lemma toRingHom_ofId' : (ofId R A).toRingHom = algebraMap R A := rfl
 
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=

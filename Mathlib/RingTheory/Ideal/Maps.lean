@@ -1231,6 +1231,8 @@ lemma injective_iff_ker_eq_bot {R A B : Type*} [CommSemiring R] [Ring A] [Semiri
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) : Function.Injective f ↔ f.ker = ⊥ := by
   convert RingHom.injective_iff_ker_eq_bot f.toRingHom
 
+lemma ker_eq_comap_bot : f.ker = Ideal.comap f ⊥ := rfl
+
 end AlgHom
 
 namespace Algebra

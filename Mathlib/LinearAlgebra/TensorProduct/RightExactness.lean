@@ -618,7 +618,7 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   rw [AlgHom.comp_toRingHom', ← RingHom.comap_ker]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, (map (AlgHom.id R A) g).ker_eq_comap_bot]
-  rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g).toRingHom
+  rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g)
     (LinearMap.lTensor_surjective A hg)]
   -- apply the other step of exactness
   rw [Algebra.TensorProduct.rTensor_ker _ hf]
