@@ -218,6 +218,39 @@ theorem factorization_ordCompl (n p : ℕ) :
   · rw [Finsupp.erase_ne hqp, factorization_div (ordProj_dvd n p)]
     simp [pp.factorization, hqp.symm]
 
+theorem ordProj_PrimePow_eq_self {p k : ℕ} (hp : Prime p) : ordProj[p] (p ^ k) = p ^ k := by
+  have pow_ne_zero : p ^ k ≠ 0 := pow_ne_zero k (Prime.ne_zero hp)
+  apply Nat.eq_of_factorization_eq
+  · exact pos_iff_ne_zero.mp (ordProj_pos (p ^ k) p)
+  · exact pow_ne_zero
+  · simp [Prime.factorization_pow hp]
+
+theorem ordCompl_PrimePow_eq_one {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 := by
+  have pow_ne_zero : p ^ k ≠ 0 := pow_ne_zero k (Prime.ne_zero hp)
+  apply Nat.eq_of_factorization_eq
+  · exact pos_iff_ne_zero.mp (ordCompl_pos p pow_ne_zero)
+  · exact one_ne_zero
+  · simp [Prime.factorization_pow hp]
+
+theorem ordCompl_PrimePow_mul_eq_self (n k : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] (p ^ k * n) = ordCompl[p] n := by
+  rw [ordCompl_mul, ordCompl_PrimePow_eq_one hp, one_mul]
+
+theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] n = n ↔ n = 0 ∨ ¬p ∣ n := by
+  constructor
+  · intro h
+    by_cases n_zero : n = 0
+    · simp [n_zero]
+    · right
+      rw [← h]
+      exact not_dvd_ordCompl hp n_zero
+  · rintro (n_eq_zero | not_dvd)
+    · simp [n_eq_zero]
+    · have : n.factorization p = 0 := Nat.factorization_eq_zero_of_not_dvd not_dvd
+      rw [this]
+      simp
+
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
     d ∣ ordCompl[p] n := by
