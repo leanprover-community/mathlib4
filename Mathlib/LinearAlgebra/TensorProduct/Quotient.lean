@@ -107,11 +107,7 @@ noncomputable def quotientTensorEquiv (m : Submodule R M) :
   congr (LinearEquiv.refl _ _) ((Submodule.quotEquivOfEqBot _ rfl).symm) ≪≫ₗ
   quotientTensorQuotientEquiv (N := N) m ⊥ ≪≫ₗ
   Submodule.Quotient.equiv _ _ (LinearEquiv.refl _ _) (by
-    simp only [Submodule.map_sup]
-    erw [Submodule.map_id, Submodule.map_id]
-    simp only [sup_eq_left]
-    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
-    simp)
+    simp [Submodule.map_span, range_map_eq_span_tmul])
 
 @[simp]
 lemma quotientTensorEquiv_apply_tmul_mk (m : Submodule R M) (x : M) (y : N) :
