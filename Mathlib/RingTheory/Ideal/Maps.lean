@@ -1233,6 +1233,11 @@ lemma injective_iff_ker_eq_bot {R A B : Type*} [CommSemiring R] [Ring A] [Semiri
 
 lemma ker_eq_comap_bot : f.ker = Ideal.comap f ⊥ := rfl
 
+lemma sub_mem_ker_iff {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+      (f : A →ₐ[R] B) {x y : A} :
+    x - y ∈ f.ker ↔ f x = f y :=
+  f.toRingHom.sub_mem_ker_iff
+
 end AlgHom
 
 namespace Algebra

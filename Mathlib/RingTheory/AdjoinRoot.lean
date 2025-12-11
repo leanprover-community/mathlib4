@@ -140,6 +140,8 @@ def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
 
 @[simp, norm_cast] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
 
+@[simp] theorem mkₐ_toRingHom' : (mkₐ f).toRingHom = mk f := rfl
+
 @[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
 
 @[simp]
