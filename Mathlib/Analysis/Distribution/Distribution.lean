@@ -151,10 +151,10 @@ variable
   {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
   {n k : ℕ∞}
 
+
 -- TODO: def or abbrev?
 variable (Ω F n) in
--- abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
-abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L[ℝ] F
+abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 
 -- TODO: I'm not sure these notations are good
 /-- Notation for the space of distributions of order less than `n`. -/
@@ -163,23 +163,30 @@ scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω
 /-- Notation for the space of distributions. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
-variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
-variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
+-- variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+-- variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
 
 namespace Distribution
 
 section mapCLM
 
-def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  .postcomp (𝓓^{n}(Ω, ℝ)) A
+def mapCLM [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGroup F']
+    [ContinuousSMul ℝ F'] (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+  A.postcomp_uniformConvergenceCLM _
 
 @[simp]
-lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+lemma mapCLM_apply [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGroup F']
+    [ContinuousSMul ℝ F'] {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
 
+variable [NormedAddCommGroup F] [NormedAddCommGroup F']
 -- TODO: naming...
-noncomputable def mapCLE (A : F ≃L[ℝ] F') : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
-  (ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, ℝ)).arrowCongr A
+noncomputable def mapCLE (A : F ≃L[ℝ] F') [NormedAddCommGroup F] : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
+  by
+  -- #synth TopologicalSpace 𝓓'^{n}(Ω, F)
+  have := ContinuousLinearEquiv.arrowCongr (e₁ := ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, F))
+    (G := F') A
+  -- (ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, ℝ)).arrowCongr A
 
 @[simp]
 lemma mapCLE_apply {A : F ≃L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
