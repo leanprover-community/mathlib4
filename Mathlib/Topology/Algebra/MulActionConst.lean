@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
