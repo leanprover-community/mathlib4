@@ -24,7 +24,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {F₁ F₂ : Cᵒᵖ ⥤ Type w} {A : Subpresheaf F₁}
+variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ Type w} {A : Subpresheaf F₁}
   (f g : A.toPresheaf ⟶ F₂)
 
 namespace Subpresheaf
@@ -48,11 +48,11 @@ lemma equalizer_le : Subpresheaf.equalizer f g ≤ A :=
 @[simp]
 lemma equalizer_self : Subpresheaf.equalizer f f = A := by aesop
 
-lemma mem_equalizer_iff {i : Cᵒᵖ} (x : A.toPresheaf.obj i) :
+lemma mem_equalizer_iff {i : C} (x : A.toPresheaf.obj i) :
     x.1 ∈ (Subpresheaf.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
-lemma range_le_equalizer_iff {G : Cᵒᵖ ⥤ Type w} (φ : G ⟶ A.toPresheaf) :
+lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toPresheaf) :
     range (φ ≫ A.ι) ≤ Subpresheaf.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]
   simp [le_def, Set.subset_def, funext_iff, CategoryTheory.types_ext_iff]
@@ -89,19 +89,19 @@ is such that `φ ≫ f = φ ≫ g`, then this is the lifted morphism
 `G ⟶ (Subpresheaf.equalizer f g).toPresheaf`. This is part of the universal
 property of the equalizer that is satisfied by
 the presheaf `(Subpresheaf.equalizer f g).toPresheaf`. -/
-def equalizer.lift {G : Cᵒᵖ ⥤ Type w} (φ : G ⟶ A.toPresheaf)
+def equalizer.lift {G : C ⥤ Type w} (φ : G ⟶ A.toPresheaf)
     (w : φ ≫ f = φ ≫ g) :
     G ⟶ (Subpresheaf.equalizer f g).toPresheaf :=
   Subpresheaf.lift (φ ≫ A.ι) (by simpa only [range_le_equalizer_iff] using w)
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι' {G : Cᵒᵖ ⥤ Type w} (φ : G ⟶ A.toPresheaf)
+lemma equalizer.lift_ι' {G : C ⥤ Type w} (φ : G ⟶ A.toPresheaf)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ (Subpresheaf.equalizer f g).ι = φ ≫ A.ι :=
   rfl
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι {G : Cᵒᵖ ⥤ Type w} (φ : G ⟶ A.toPresheaf)
+lemma equalizer.lift_ι {G : C ⥤ Type w} (φ : G ⟶ A.toPresheaf)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ equalizer.ι f g = φ :=
   rfl

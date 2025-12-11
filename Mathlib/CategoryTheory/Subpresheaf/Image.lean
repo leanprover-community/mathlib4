@@ -25,7 +25,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {F F' F'' : Cᵒᵖ ⥤ Type w}
+variable {C : Type u} [Category.{v} C] {F F' F'' : C ⥤ Type w}
 
 namespace Subpresheaf
 
@@ -77,7 +77,7 @@ def toRange :
 @[reassoc (attr := simp)]
 lemma toRange_ι : toRange p ≫ (range p).ι = p := rfl
 
-lemma toRange_app_val {i : Cᵒᵖ} (x : F'.obj i) :
+lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]
 
