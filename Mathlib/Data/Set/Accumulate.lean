@@ -15,7 +15,8 @@ public import Mathlib.Order.PartialSups
 The function `Accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
 
 This is closely related to the function `partialSups`, although these two functions have
-slightly different typeclass assumptions and API.
+slightly different typeclass assumptions and API. `partialSups_eq_accumulate` shows
+that they coincide on `ℕ`.
 -/
 
 @[expose] public section
@@ -78,9 +79,9 @@ theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j :
   exact disjoint_left.1 (hs (hk.trans_lt hij).ne) hx
 
 theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
-    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := Nat.biUnion_le_succ u n
+    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
-lemma partialSups_eq_accumulate (f : ℕ → Set α) (n : ℕ) :
+lemma partialSups_eq_accumulate (f : ℕ → Set α) :
     partialSups f = Accumulate f := by
   ext n
   simp [partialSups_eq_sup_range, Accumulate, Nat.lt_succ_iff]
