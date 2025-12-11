@@ -95,7 +95,7 @@ lemma isDenseSubsite_functor_of_isCocontinuous
         NatIso.inv_inv_app]
       simp
 
-lemma isDenseSubsite_inverse_of_IsCocontinuous
+lemma isDenseSubsite_inverse_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J]
     : e.inverse.IsDenseSubsite K J :=
   have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
