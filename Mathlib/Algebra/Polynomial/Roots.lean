@@ -286,7 +286,7 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
         card_roots (X_pow_sub_C_ne_zero hn a)
       _ = n := degree_X_pow_sub_C hn a
 
-theorem roots_eq_of_degree_of_ne_zero {S : Finset R}
+theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.degree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val := by
   refine (Multiset.eq_of_le_of_card_le ?_ ?_).symm
   · exact (Finset.val_le_iff_val_subset.mpr (fun x hx ↦ (p.mem_roots hp).mpr (hS x hx)))
