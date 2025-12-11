@@ -431,6 +431,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
   simp only [A]
   exact mpullback_mfderivWithin_apply_smul hf
+
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
