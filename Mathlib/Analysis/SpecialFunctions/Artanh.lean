@@ -76,8 +76,7 @@ theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : tanh (artanh x) = 
 theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
   rw [tanh_eq]
   field_simp
-  suffices 0 < rexp (-x) by linarith
-  positivity
+  grind [exp_pos]
 
 theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
   rw [tanh_eq]
