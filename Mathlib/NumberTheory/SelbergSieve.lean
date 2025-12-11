@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
 /-!
 # The Selberg Sieve
@@ -149,7 +149,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
         apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
         apply s.nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
-      · simp only [nonempty_primeFactors, show 1 < d by cutsat]
+      · simp only [nonempty_primeFactors, show 1 < d by lia]
     _ = 1 := by
       simp
 

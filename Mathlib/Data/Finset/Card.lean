@@ -509,7 +509,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  cutsat
+  lia
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -591,8 +591,7 @@ theorem card_sdiff_add_card (s t : Finset α) : #(s \ t) + #t = #(s ∪ t) := by
   rw [← card_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 
 theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
-  exact fun h' ↦ h.not_ge (card_le_card h')
+  grind
 
 omit [DecidableEq α] in
 theorem exists_mem_notMem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
@@ -626,7 +625,7 @@ theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
     (hstu : #s < #t + #u) : (t ∩ u).Nonempty := by
   contrapose! hstu
   calc
-    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, not_nonempty_iff_eq_empty.1 hstu]
+    _ = #(t ∪ u) := by simp [← card_union_add_card_inter, hstu]
     _ ≤ #s := by gcongr; exact union_subset hts hus
 
 end Lattice
@@ -659,7 +658,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : #(X ∩ (Y \ X)) = 0 := Finset.card_eq_zero.mpr (by grind)
   have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by cutsat
+  obtain h | h : n < #X ∨ n < #(Y \ X) := by lia
   · exact ⟨X, by grind⟩
   · exact ⟨Y \ X, by grind⟩
 
