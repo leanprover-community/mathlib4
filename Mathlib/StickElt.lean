@@ -3,6 +3,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.Data.Finsupp.Pointwise
+public import Mathlib.RingTheory.ClassGroup
 
 @[expose] public section
 
@@ -67,7 +68,8 @@ theorem smul_single (z : ℤ) (q : ℚ) (σ : G) :
 
 theorem mem_ZG_iff {x : ℚ[G]} :
     x ∈ (1 : Submodule ℤ[G] ℚ[G]) ↔ ∀ σ, ∃ n : ℤ, x σ = n := by
-  simp [MonoidAlgebra.ext_iff]
+  simp only [Submodule.mem_one, algebraMap_def, algebraMap_int_eq, MonoidAlgebra.ext_iff,
+    mapRangeRingHom_apply, eq_intCast]
 ---  simp only [RingHom.mem_range, MonoidAlgebra.ext_iff, mapRangeRingHom_apply, eq_intCast]
   constructor
   · rintro ⟨z, hz⟩ σ
@@ -88,7 +90,7 @@ variable {K} in
 /--
 Docstring.
 -/
-abbrev nν : G → ℕ := fun σ ↦ ((ν σ).val : ZMod m).val
+abbrev nν : G → ℕ := fun σ ↦ ((ν σ).val : ZMod m).val -- Should it be in ℤ instead
 
 omit [IsMulCommutative G] in
 theorem nν_mul (σ τ : G) :
@@ -137,6 +139,25 @@ theorem single_sub_one_mul_Stick (τ : G) :
   simp_rw [nν_mul, ← mul_div_assoc]
   simp
 
+open NumberField nonZeroDivisors
+
+-- instance (Γ : Type*) [Group Γ] [MulSemiringAction Γ K] [IsGaloisGroup Γ ℚ K] :
+--     SMul Γ (Ideal K) where
+--   smul σ I := by
+--     sorry
+
+-- instance : SMul G (ClassGroup (𝓞 K)) where
+--     smul σ C := by
+--       refine Quotient.liftOn' C ?_ ?_
+--       intro J
+--       let I := ClassGroup.integralRep J.val
+--       exact ClassGroup.mk0 (σ • I)
+
+-- instance : SMul ℤ[G] (ClassGroup (𝓞 K)) where
+--   smul m C := by
+--     sorry
+
+
 /-- Docstring. -/
 abbrev StickDen : Ideal ℤ[G] :=
   Ideal.span ({single 1 (m : ℤ)} ∪
@@ -168,10 +189,10 @@ theorem smul_Stick_mem_ZG_iff (x : ℤ[G]) :
       simp_rw [← mul_div_assoc] at hy
       rw [← Finset.sum_div, div_eq_mul_inv] at hy
       rw [mul_inv_eq_iff_eq_mul₀] at hy
-      simp_rw [← Int.cast_natCast (R := ℚ), ← Int.cast_mul] at hy
-      rw [← Int.cast_sum] at hy
-      rw [Int.cast_inj, mul_comm] at hy
-      refine ⟨y, hy⟩
+      · simp_rw [← Int.cast_natCast (R := ℚ), ← Int.cast_mul] at hy
+        · rw [← Int.cast_sum] at hy
+          rw [Int.cast_inj, mul_comm] at hy
+          refine ⟨y, hy⟩
       simp [NeZero.ne m]
     have h₂ : x = ∑ σ, (x σ : ℤ[G]) * (single σ (1 : ℤ) - single 1 (nν m σ : ℤ)) +
         (∑ σ, x σ * nν m σ : ℤ[G]) := by

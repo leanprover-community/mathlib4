@@ -15,168 +15,139 @@ public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 @[expose] public section
 
+section IsPrimitiveRoot
+
+theorem IsPrimitiveRoot.autToPow_eq_iff (R : Type*) {S : Type*} [CommRing S] [IsDomain S] {μ : S}
+    {n : ℕ} (hμ : IsPrimitiveRoot μ n) [CommRing R] [Algebra R S] [NeZero n] (f : S ≃ₐ[R] S)
+    (m : ZMod n) :
+    autToPow R hμ f = m ↔ f μ = μ ^ m.val := by
+  rw [coe_autToPow_apply]
+  have t₀ := (map_rootsOfUnity_eq_pow_self f hμ.toRootsOfUnity).choose_spec
+  have t₁ : orderOf hμ.toRootsOfUnity = n := by
+    rw [← Subgroup.orderOf_coe]
+    rw [← IsPrimitiveRoot.iff_orderOf]
+    exact coe_units_iff.mp hμ
+  rw [show m = m.val by  aesop]
+  simp_rw [ZMod.natCast_eq_natCast_iff', ← t₁]
+  rw [← pow_inj_mod]
+  rw [Subtype.ext_iff]
+  rw [Subgroup.coe_pow]
+  rw [Units.ext_iff]
+  rw [Units.val_pow_eq_pow_val, ← t₀]
+  simp only [val_toRootsOfUnity_coe, SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val]
+  simp only [ZMod.natCast_val, ZMod.cast_id', id_eq]
+
+end IsPrimitiveRoot
 
 open Nat List
 
-/--
-The list of digits of `n` in base `b` with `0` appended so that its length is `l`.
-...
--/
-abbrev Nat.digitsFixedLength (b l n : ℕ) : List ℕ :=
-  b.digits n ++ replicate (l - (b.digits n).length) 0
+theorem Nat.ofDigits_digitsAppend (b l n : ℕ) :
+    ofDigits b (digitsAppend b l n) = n := by
+  rw [ofDigits_append_replicate_zero, ofDigits_digits]
 
-theorem Nat.digitsFixedLength_length {b l n : ℕ} (hb : 1 < b) (hn : n < b ^ l) :
-    (digitsFixedLength b l n).length = l := sorry
+theorem Nat.ofDigits_eq_sum (b : ℕ) (L : List ℕ) :
+    ofDigits b L = ∑ j : Fin (L.length), L[j] * b ^ j.val := by
+  induction L with
+  | nil => simp
+  | cons head tail ih =>
+      simp [ofDigits_cons, ih, length_cons, Fin.sum_univ_succ, pow_succ, ← mul_assoc,
+        ← Finset.sum_mul, mul_comm b _]
 
-theorem Nat.digitsFixedLength_mem_lt {b l n : ℕ} (hb : 1 < b) :
-  ∀ x ∈ Nat.digitsFixedLength b l n, x < b := sorry
+theorem Nat.ofDigits_eq_base_pow_length_sub_one_iff {b : ℕ} {l : List ℕ} (hb : 1 < b)
+    (hl : ∀ x ∈ l, x < b) :
+    ofDigits b l = b ^ l.length - 1 ↔ ∀ x ∈ l, x = b - 1 := by
+  induction l with
+  | nil => simp
+  | cons head tail ih =>
+      have h_tail : ∀ x ∈ tail, x < b := fun x hx ↦ hl x <| mem_cons_of_mem head hx
+      specialize ih h_tail
+      simp only [length_cons, pow_succ', ofDigits_cons, mem_cons, forall_eq_or_imp, ← ih]
+      refine ⟨fun h ↦ ?_, fun ⟨h1, h2⟩ ↦ ?_⟩
+      · rw [eq_tsub_iff_add_eq_of_le (by bound)] at h
+        have : Nat.ofDigits b tail < b ^ List.length tail := ofDigits_lt_base_pow_length hb h_tail
+        have : head < b := hl _ mem_cons_self
+        have h_head: head = b - 1 := eq_tsub_of_add_eq (by nlinarith)
+        refine ⟨h_head, ?_⟩
+        rwa [h_head, ← Nat.sub_add_comm hb.le, Nat.sub_add_cancel (le_add_right_of_le hb.le),
+          add_comm, ← eq_tsub_iff_add_eq_of_le (by bound), ← mul_sub_one,
+          Nat.mul_left_cancel_iff (by positivity)] at h
+      · rw [h2, h1, Nat.mul_sub_one, add_comm, Nat.sub_add_sub_cancel (by bound) hb.le]
 
-example (b l : ℕ) (hb : 1 < b) : Set.InvOn (ofDigits b) (digitsFixedLength b l) {n | n < b ^ l}
-    {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b}  := by
-  refine ⟨?_, ?_⟩
-  · intro n hn
-    rw [ofDigits_append_replicate_zero, ofDigits_digits]
-  · intro L hL
-    apply injOn_ofDigits hb l
-    · refine ⟨?_, ?_⟩
-      · rw [digitsFixedLength_length hb]
-        -- Follows from maptsto (ofDigits)
-        sorry
-      · intro i hi
-        exact digitsFixedLength_mem_lt hb i hi
-    · exact hL
-    · rw [ofDigits_append_replicate_zero, ofDigits_digits]
+theorem Nat.ofDigits_lt_base_pow_length_sub_one_iff {b : ℕ} {l : List ℕ} (hb : 1 < b)
+    (hl : ∀ x ∈ l, x < b) :
+    ofDigits b l < b ^ l.length - 1 ↔ ∃ x ∈ l, x < b - 1 := by
+  convert (Nat.ofDigits_eq_base_pow_length_sub_one_iff hb hl).not
+  · have := ofDigits_lt_base_pow_length hb hl
+    grind
+  · grind
 
-example (n r : ℤ) (m : ℕ) (h₁ : n % m = r) :
-    Int.fract ((n : ℚ) / (m : ℚ)) = (r : ℚ) / (m : ℚ) := by
-  rw [Int.fract_div_intCast_eq_div_intCast_mod, h₁]
-
-example {f : ℕ} [NeZero f] (p : ℚ) (hp : p ≠ 1) (j : Fin f) :
-    ∑ i ∈ Finset.range f, p ^ ((i + j.val) % f) = (p ^ f - 1) / (p - 1) := by
-  rw [Finset.sum_range]
-  let e := Equiv.addRight j
-  have {i : Fin f} : (i.val + j.val)%f = (e i).val := by
-    simp only [Equiv.coe_addRight, e]
-    exact rfl
-  simp_rw [this]
-  rw [Equiv.sum_comp e (fun x ↦ p ^ x.val)]
-  rw [← Finset.sum_range]
-  rw [geom_sum_eq]
-  exact hp
-
-theorem zap (b l : ℕ) [NeZero l] (h : b ^ l ≠ 1) (L : Fin l → ℕ) :
-    ∑ i, L i =  (b - 1 : ℚ) *
-        ∑ i : Fin l, Int.fract ((b : ℚ) ^ i.val *
-          (∑ j, L j * b ^ j.val) / (b ^ l - 1)) := by
-  have {i : Fin l} : Int.fract ((b : ℚ) ^ i.val * (∑ j, L j * b ^ j.val) / (b ^ l - 1)) =
-      (∑ j, L j * b ^ (Equiv.addRight j i).val) / (b ^ l - 1) := by
-    refine Int.fract_eq_iff.mpr ⟨?_, ?_, ?_⟩
-    · sorry
-    · sorry
-    · simp_rw [eq_comm]
-      change _ ∈ (Int.castRingHom ℚ).range
-      rw [Nat.cast_sum, Nat.cast_sum, Finset.mul_sum, ← sub_div, ← Finset.sum_sub_distrib,
-        Finset.sum_div]
-      refine Subring.sum_mem _ fun j _ ↦ ?_
-      simp only [Nat.cast_mul, Nat.cast_mul, Nat.cast_pow, Equiv.coe_addRight]
-      rw [mul_rotate', ← mul_sub, mul_div_assoc]
-      refine Subring.mul_mem _ (natCast_mem _ _) ?_
-      sorry
-      -- rw [ ← pow_add, ← Nat.mod_add_div (j + i) l, Fin.val_add, pow_add, pow_mul, ← mul_sub_one,
-      --   mul_div_assoc, ← geom_sum_eq _]
-      -- refine Subring.mul_mem _ ?_ ?_
-      -- · exact Subring.pow_mem _ (natCast_mem _ _) _
-      -- · refine Subring.sum_mem _ fun k _ ↦ ?_
-      --   refine Subring.pow_mem _ ?_ _
-      --   refine Subring.pow_mem _ (natCast_mem _ _) _
-      -- rwa [← Rat.natCast_pow, Nat.cast_ne_one]
-  simp_rw [this, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow, Finset.sum_div]
-  rw [Finset.sum_comm]
-  simp_rw [← Finset.sum_div, ← Finset.mul_sum] -- , Equiv.sum_comp (Equiv.addRight _)]
-  conv_rhs =>
-    enter [2, 1, 2, j, 2]
-    rw [Equiv.sum_comp (Equiv.addRight j) fun i : Fin l ↦ (b : ℚ) ^ i.val]
-    rw [← Finset.sum_range]
-    rw [geom_sum_eq sorry]
-  rw [← Finset.sum_mul, mul_div_assoc]
-  rw [div_div_cancel_left', mul_comm, inv_mul_cancel_right₀]
-  sorry
-  sorry
-
-theorem zap' (b l : ℕ) [NeZero l] (h : b ^ l ≠ 1) (L : List ℕ) :
+theorem List.sum_eq_of_mem_fixedLengthDigits {b l : ℕ} (hb : 1 < b) (hl : l ≠ 0) {L : List ℕ}
+    (hL : L ∈ List.fixedLengthDigits hb l) (hL' : ofDigits b L < b ^ l - 1) :
     L.sum = (b - 1 : ℚ) *
-        ∑ i : Fin l, Int.fract ((b : ℚ) ^ i.val *
-          (Nat.ofDigits b L) / (b ^ l - 1)) := by
-  have {i : Fin l} : Int.fract ((b : ℚ) ^ i.val *
-      (Nat.ofDigits b L) / (b ^ l - 1)) =
-        (∑ j, L.getD j.val 0 * b ^ (Equiv.addRight j i).val) / (b ^ l - 1) := by
+        ∑ i ∈ Finset.range l, Int.fract ((b : ℚ) ^ i * (Nat.ofDigits b L) / (b ^ l - 1)) := by
+  simp_rw [show l = L.length by aesop] at hL hL' hl ⊢
+  have : NeZero L.length := ⟨hl⟩
+  have h₁ : 1 < (b : ℚ) ^ L.length := one_lt_pow₀ (by rwa [one_lt_cast]) (NeZero.ne _)
+  have h_main {i : Fin L.length} : Int.fract ((b : ℚ) ^ i.val *
+      (∑ j : Fin L.length, L[j] * b ^ j.val) / (b ^ L.length - 1)) =
+        (∑ j : Fin L.length, L[j]* b ^ (Equiv.addRight j i).val) / (b ^ L.length - 1) := by
     refine Int.fract_eq_iff.mpr ⟨?_, ?_, ?_⟩
-    · sorry
-    · sorry
+    · apply div_nonneg Rat.natCast_nonneg
+      rw [← Rat.le_iff_sub_nonneg]
+      exact h₁.le
+    · refine (div_lt_one (by rwa [← Rat.lt_iff_sub_pos])).mpr ?_
+      rw [← Nat.cast_pow, ← Nat.cast_pred (by positivity), Nat.cast_lt]
+      let L' := ofFn ((fun j ↦ L[↑j]) ∘ fun x ↦ x + -i)
+      have h₁ : L.length = L'.length := by grind
+      have h₂ {x : ℕ} : x ∈ L' ↔ x ∈ L :=
+        Perm.mem_iff <| by simpa using
+          Equiv.Perm.ofFn_comp_perm (Equiv.addRight i).symm (fun j ↦ L[j])
+      simp_rw [h₁]
+      replace hL := ((mem_fixedLengthDigits_iff hb).mp hL).2
+      convert_to ofDigits b L' < b ^ L'.length - 1
+      · rw [ofDigits_eq_sum, ← ((Equiv.addLeft i).trans (finCongr h₁)).sum_comp]
+        simp [L']
+      · rw [ofDigits_lt_base_pow_length_sub_one_iff hb hL] at hL'
+        obtain ⟨x, hx, hx'⟩ := hL'
+        refine (ofDigits_lt_base_pow_length_sub_one_iff hb fun x hx ↦ ?_).mpr ⟨x, by rwa [h₂], hx'⟩
+        apply hL x
+        rwa [← h₂]
     · simp_rw [eq_comm]
       change _ ∈ (Int.castRingHom ℚ).range
-      rw [Nat.ofDigits_eq_sum_mapIdx]
-
       rw [Nat.cast_sum, Nat.cast_sum, Finset.mul_sum, ← sub_div, ← Finset.sum_sub_distrib,
         Finset.sum_div]
       refine Subring.sum_mem _ fun j _ ↦ ?_
       simp only [Nat.cast_mul, Nat.cast_mul, Nat.cast_pow, Equiv.coe_addRight]
       rw [mul_rotate', ← mul_sub, mul_div_assoc]
       refine Subring.mul_mem _ (natCast_mem _ _) ?_
-      sorry
-      -- rw [ ← pow_add, ← Nat.mod_add_div (j + i) l, Fin.val_add, pow_add, pow_mul, ← mul_sub_one,
-      --  mul_div_assoc, ← geom_sum_eq _]
-      -- refine Subring.mul_mem _ ?_ ?_
-      -- · exact Subring.pow_mem _ (natCast_mem _ _) _
-      -- · refine Subring.sum_mem _ fun k _ ↦ ?_
-      --   refine Subring.pow_mem _ ?_ _
-      --   refine Subring.pow_mem _ (natCast_mem _ _) _
-      -- rwa [← Rat.natCast_pow, Nat.cast_ne_one]
-  simp_rw [this, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow, Finset.sum_div]
+      rw [← pow_add, add_comm, ← Nat.mod_add_div (i + j) L.length, Fin.val_add, pow_add, pow_mul,
+        ← _root_.mul_sub_one, mul_div_assoc, ← geom_sum_eq h₁.ne']
+      refine Subring.mul_mem _ (Subring.pow_mem _ (natCast_mem _ _) _) ?_
+      exact Subring.sum_mem _ fun k _ ↦ Subring.pow_mem _ (Subring.pow_mem _ (natCast_mem _ _) _) _
+  simp_rw [Finset.sum_range, Nat.ofDigits_eq_sum, h_main, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow,
+    Finset.sum_div]
   rw [Finset.sum_comm]
-  simp_rw [← Finset.sum_div, ← Finset.mul_sum] -- , Equiv.sum_comp (Equiv.addRight _)]
+  simp_rw [← Finset.sum_div, ← Finset.mul_sum]
   conv_rhs =>
     enter [2, 1, 2, j, 2]
-    rw [Equiv.sum_comp (Equiv.addRight j) fun i : Fin l ↦ (b : ℚ) ^ i.val]
-    rw [← Finset.sum_range]
-    rw [geom_sum_eq sorry]
-  rw [← Finset.sum_mul, mul_div_assoc]
-  rw [div_div_cancel_left', mul_comm, inv_mul_cancel_right₀]
-  sorry
-  sorry
+    rw [Equiv.sum_comp (Equiv.addRight j) fun i : Fin L.length ↦ (b : ℚ) ^ i.val,
+      ← Finset.sum_range, geom_sum_eq (by aesop)]
+  rw [← Finset.sum_mul, mul_div_assoc, div_div_cancel_left', mul_comm, inv_mul_cancel_right₀]
+  · aesop
+  · rw [sub_ne_zero, cast_ne_one]
+    exact hb.ne'
+  · rw [sub_ne_zero]
+    exact h₁.ne'
 
-example (a b l : ℕ) (ha : a < b ^ l) [NeZero l] :
+theorem Nat.sum_digits_eq_mul_sum {a b l : ℕ} (hb : 1 < b) (hl : l ≠ 0) (ha : a < b ^ l - 1) :
     (b.digits a).sum =
       (b - 1 : ℚ) * ∑ i ∈ Finset.range l, Int.fract ((b : ℚ) ^ i * a / (b ^ l - 1)) := by
-  have : (b.digits a).sum =  ∑ j : Fin l, (b.digits a).getD j.val 0 := sorry
-  rw [this]
-  have : a = ∑ j : Fin l, (b.digits a).getD j.val 0 * b ^ j.val := sorry
-  have := zap b l sorry (fun j : Fin l ↦ (b.digits a).getD j.val 0)
-  rw [this, Finset.sum_range]
-  congr!
-
-
-
-
-  have : (b.digits a).sum =
-    (b.digits a ++ replicate (l - (b.digits a).length) 0).sum := sorry
-  rw [this]
-  obtain ⟨L, hL, rfl⟩ := (Nat.bijOn_ofDigits (b := b) sorry l).surjOn ha
-  -- have h (i : Fin l) : i.val < L.length := sorry
-
-  convert zap' b l sorry L
-  ·
-    sorry
-  · rw [Finset.sum_range]
-    -- rw [Nat.ofDigits_eq_sum_mapIdx]
-    congr! with i
-    sorry
-
-
-
-
-
-
+  have h : b.digitsAppend l a ∈ fixedLengthDigits hb l :=
+    (Nat.bijOn_digitsAppend' hb l).mapsTo <| by grind
+  rw [show (b.digits a).sum = (b.digitsAppend l a).sum by simp]
+  convert List.sum_eq_of_mem_fixedLengthDigits hb hl h ?_
+  · rw [ofDigits_digitsAppend]
+  · rwa [ofDigits_digitsAppend]
 
 theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
   Nat.lt_of_le_of_ne h₁.two_le (by grind)

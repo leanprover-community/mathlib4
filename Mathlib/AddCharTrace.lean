@@ -67,6 +67,17 @@ theorem addCharTrace_apply' [P.LiesOver 𝒑] {a : ℤ} {x : A ⧸ P}
   rw [addCharTrace_apply, ha, ← Quotient.mk_eq_mk, ← Submodule.Quotient.mk''_eq_mk,
     Quotient.liftOn'_mk]
 
+/--
+Use this to simplify all the proofs?
+-/
+theorem exists_nat_addCharTrace_eq_pow [P.LiesOver 𝒑] (x : A ⧸ P) :
+    ∃ a : ℕ, (Algebra.trace (ℤ ⧸ 𝒑) (A ⧸ P)) x = a ∧ addCharTrace P hζ x = ζ ^ a := by
+  obtain ⟨a, -, ha⟩ := Int.exists_nat_eq_ideal_quot
+    (by simp [NeZero.ne p]) (Algebra.trace (ℤ ⧸ 𝒑) (A ⧸ P) x)
+  rw [addCharTrace_apply' P hζ (a := a) (by simp [ha]), zpow_natCast, Units.val_pow_eq_pow_val,
+    IsUnit.unit_spec]
+  exact ⟨_, ha, rfl⟩
+
 theorem addCharTrace_apply_eq_one_iff [P.LiesOver 𝒑] {x : A ⧸ P} :
     addCharTrace P hζ x = 1 ↔ Algebra.trace (ℤ ⧸ 𝒑) (A ⧸ P) x = 0 := by
   rw [addCharTrace_apply]
@@ -115,11 +126,9 @@ theorem exists_nat_addCharTrace_eq_sum_pow [P.LiesOver 𝒑] (x : A ⧸ P) :
     ∃ a : ℕ, (Algebra.trace (ℤ ⧸ 𝒑) (A ⧸ P)) x = a ∧
       addCharTrace P hζ x =
         ∑ n ∈ Finset.range (a + 1), ((ζ - 1) ^ n * ↑(a.choose n)) := by
-  obtain ⟨a, -, ha⟩ := Int.exists_nat_eq_ideal_quot
-    (by simp [NeZero.ne p]) (Algebra.trace (ℤ ⧸ 𝒑) (A ⧸ P) x)
-  rw [addCharTrace_apply' P hζ (a := a) (by simp [ha])]
+  obtain ⟨a, ha, ha'⟩ := exists_nat_addCharTrace_eq_pow P hζ x
   refine ⟨a, ha, ?_⟩
-  rw [zpow_natCast, Units.val_pow_eq_pow_val, IsUnit.unit_spec]
+  rw [ha']
   nth_rewrite 1 [show ζ = (ζ - 1) + 1 by ring, add_pow]
   simp_rw [one_pow, mul_one]
 
@@ -160,3 +169,9 @@ theorem addCharTrace_mk_sq [P.LiesOver 𝒑] {𝓟 : Ideal R} (h : ζ - 1 ∈ �
       apply mul_eq_zero_of_left
       rw [Ideal.Quotient.eq_zero_iff_mem, add_assoc, pow_add]
       exact Ideal.mul_mem_left _ _ <| Submodule.pow_mem_pow 𝓟 h 2
+
+theorem map_addCharTrace_eq_pow [P.LiesOver 𝒑] {σ : R →+* R} {n : ℕ} (hσ : σ ζ = ζ ^ n)
+    (x : A ⧸ P) :
+    σ (addCharTrace P hζ x) = (addCharTrace P hζ x) ^ n  := by
+  obtain ⟨a, -, ha⟩ := exists_nat_addCharTrace_eq_pow P hζ x
+  rw [ha, map_pow, hσ, pow_right_comm]

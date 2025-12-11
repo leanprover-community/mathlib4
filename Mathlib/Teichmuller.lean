@@ -65,6 +65,23 @@ theorem teichmuller_apply_pow_eq_one (x : (R ⧸ I)ˣ) :
     (mem_rootsOfUnity _ _).mp, Units.val_one]
   exact SetLike.coe_mem _
 
+theorem exists_nat_teichmuller_eq_pow [IsDomain R] [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+    (x : (R ⧸ I)ˣ) :
+    ∃ a : ℕ, a < n ∧ teichmuller h x = ζ ^ a := by
+  have := teichmuller_apply_pow_eq_one h x
+  rw [map_pow] at this
+  obtain ⟨a, ha, ha'⟩ := hζ.eq_pow_of_pow_eq_one this
+  refine ⟨a, ha, ha'.symm⟩
+
+theorem map_teichmuller_eq_pow [IsDomain R] [NeZero n] {σ : R →+* R} {m : ℕ} {ζ : R}
+    (hm : m ≠ 0) (hζ : IsPrimitiveRoot ζ n) (hσ : σ ζ = ζ ^ m) (x : R ⧸ I) :
+    σ (teichmuller h x) = (teichmuller h x) ^ m  := by
+  by_cases hx : IsUnit x
+  · lift x to (R ⧸ I)ˣ using hx
+    obtain ⟨a, -, ha⟩ := exists_nat_teichmuller_eq_pow h hζ x
+    rw [ha, map_pow, hσ, pow_right_comm]
+  · rw [teichmuller_apply_nonunit h hx, map_zero, zero_pow hm]
+
 theorem teichmuller_pow_eq_one :
     teichmuller h ^ n = 1 := by
   refine MulChar.eq_one_iff.mpr fun _ ↦ ?_

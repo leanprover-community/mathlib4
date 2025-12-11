@@ -72,7 +72,8 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     k < (b.digits n).length ↔ b ^ k ≤ n := by
-  contrapose!
+  rw [← not_iff_not]
+  push_neg
   exact digits_length_le_iff hb n
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
@@ -147,8 +148,6 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
--- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
-set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
@@ -305,37 +304,6 @@ theorem ofDigits_neg_one :
   | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
-/-! ### Bijection -/
-
-open List
-
-theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
-    Set.MapsTo (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
-  fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
-
-theorem surjOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
-    Set.SurjOn (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} := by
-  intro n hn
-  refine ⟨b.digits n ++ replicate (l - (b.digits n).length) 0, ⟨?_, fun i hi ↦ ?_⟩, ?_⟩
-  · rw [length_append, length_replicate, Nat.add_sub_cancel']
-    rwa [digits_length_le_iff hb]
-  · rw [mem_append, mem_replicate] at hi
-    obtain hi | ⟨_, rfl⟩  := hi
-    · exact digits_lt_base hb hi
-    · linarith
-  · simp [ofDigits_digits]
-
-theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
-    Set.InjOn (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} :=
-  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
-
-/--
-The map `L ↦ Nat.ofDigits b L` is bijection from the set of list of natural integers of length `l`
-with coefficients `< b` to the set of natural integers `< b ^ l`.
--/
-theorem bijOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
-    Set.BijOn (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
-  ⟨mapsTo_ofDigits hb l, injOn_ofDigits hb l, surjOn_ofDigits hb l⟩
 
 /-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
 theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
@@ -351,6 +319,75 @@ theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 
       simp
     · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
+/-! ### Bijection -/
+
+open List
+
+/--
+The list of digits of `n` in base `b` with some `0`'s appended so that its length is equal to `l`
+if it is `< l`. This is an inverse function of `Nat.ofDigits` for `n < b ^ l`,
+see `Nat.setInvOn_digitsAppend_ofDigits`.
+If `n ≥ b ^ l`, then the list of digits of `n` in base `b` is of length at least `l` and
+this function just return `b.digits n`.
+-/
+abbrev digitsAppend (b l n : ℕ) : List ℕ :=
+  b.digits n ++ replicate (l - (b.digits n).length) 0
+
+theorem length_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
+    (digitsAppend b l n).length = l := by
+  rw [length_append, length_replicate, Nat.add_sub_cancel']
+  rwa [digits_length_le_iff hb]
+
+theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
+    (hi : i ∈ digitsAppend b l n) : i < b := by
+  rw [mem_append, mem_replicate] at hi
+  obtain hi | ⟨_, rfl⟩  := hi
+  · exact digits_lt_base hb hi
+  · linarith
+
+theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.MapsTo (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
+  fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
+
+theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.MapsTo (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
+  fun _ h ↦ ⟨by rw [length_digitsAppend hb _ h], fun _ hi ↦ lt_of_mem_digitsAppend hb l _ hi⟩
+
+theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.InjOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
+  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
+
+theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
+      {n | n < b ^ l} := by
+  refine ⟨fun L hL ↦ ?_, fun _ _ ↦ by rw [ofDigits_append_replicate_zero, ofDigits_digits]⟩
+  refine (injOn_ofDigits hb l) ⟨?_, ?_⟩ hL (by rw [ofDigits_append_replicate_zero, ofDigits_digits])
+  · rw [length_digitsAppend hb _ (mapsTo_ofDigits hb _ hL)]
+  · exact fun x hx ↦ lt_of_mem_digitsAppend hb l x hx
+
+/--
+The map `L ↦ Nat.ofDigits b L` is bijection between the set of lists of natural integers of
+length `l` with coefficients `< b` to the set of natural integers `< b ^ l`.
+-/
+theorem bijOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.BijOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
+  (setInvOn_digitsAppend_ofDigits hb l).bijOn (mapsTo_ofDigits hb l) (mapsTo_digitsAppend hb l)
+
+
+/--
+The map `n ↦ Nat.digitsAppend b L` is bijection between the set of natural integers `< b ^ l`
+to the set of lists of natural integers of length `l` with coefficients `< b` to .
+-/
+theorem bijOn_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.BijOn (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
+  (bijOn_ofDigits hb l).symm (setInvOn_digitsAppend_ofDigits hb l).symm
+
+theorem sum_digits_ofDigits_eq_sum {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ}
+    (hL : L ∈ {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}) :
+    (b.digits (ofDigits b L)).sum = L.sum := by
+  nth_rewrite 2 [← (setInvOn_digitsAppend_ofDigits hb l).1 hL]
+  rw [List.sum_append_nat, List.sum_replicate, nsmul_zero, add_zero]
+
 end Nat
 
 namespace List
@@ -358,20 +395,24 @@ namespace List
 open Nat
 
 /--
-The set of list of natural integers of length `l` with coefficients `< b` as a `Finset`.
+The set of lists of natural integers of length `l` with coefficients `< b` as a `Finset`.
 This can be seen as the set of lists of length `l` of the digits in base `b` of
 the integers `< b ^ l`.
-Having this set as a `Finset` can helpful for some proofs.
+Having this set as a `Finset` can be helpful for some proofs.
 -/
 noncomputable abbrev fixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) : Finset (List ℕ) := by
-  have : Fintype {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} :=
+  have : Fintype {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
     Fintype.ofInjective (Set.MapsTo.restrict _ _ _ (mapsTo_ofDigits hb l))
       <| (Set.MapsTo.restrict_inj (mapsTo_ofDigits hb l)).mpr <| injOn_ofDigits hb l
-  exact {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b}.toFinset
+  exact {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}.toFinset
+
+theorem mem_fixedLengthDigits_iff {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ} :
+    L ∈ fixedLengthDigits hb l ↔ L.length = l ∧ ∀ x ∈ L, x < b := by
+  simp
 
 /--
 The bijection `Nat.bijOn_ofDigits` stated as a bijection between `Finset`.
-This spelling can helpful for some proofs.
+This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
@@ -379,10 +420,15 @@ theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
   convert bijOn_ofDigits hb l
   ext; simp
 
-
-theorem mem_fixedLengthDigits_iff {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ} :
-    L ∈ fixedLengthDigits hb l ↔ l = L.length ∧ ∀ x ∈ L, x < b := by
-  simp
+/--
+The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
+This spelling can be helpful for some proofs.
+-/
+theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l)  := by
+  simp only [Set.coe_toFinset]
+  convert bijOn_digitsAppend hb l
+  ext; simp
 
 @[simp]
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
@@ -394,37 +440,19 @@ theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 1 = Finset.image (fun x : ℕ ↦ [x]) (Finset.range b) := by
   ext
-  rw [mem_fixedLengthDigits_iff, eq_comm, List.length_eq_one_iff]
+  rw [mem_fixedLengthDigits_iff, List.length_eq_one_iff]
   grind
 
-theorem fixedLengthDigits_card {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem card_fixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Finset.card (fixedLengthDigits hb l) = b ^ l := by
   rw [Set.BijOn.finsetCard_eq (ofDigits b) (bijOn_ofDigits' hb l), Finset.card_range]
-
-/--
-Let `L` be a list in `List.fixedLengthDigits b l`. Then `L` is equal to the list of digits of
-`ofDigits b L` concatenated with enough `0`'s to that its length is equal to `l`.
--/
-theorem eq_digits_ofDigits_append_of_mem_fixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ)
-    {L : List ℕ} (hL : L ∈ fixedLengthDigits hb l) :
-    L = b.digits (ofDigits b L) ++ replicate (l - (b.digits (ofDigits b L)).length) 0 := by
-  refine (Nat.bijOn_ofDigits' hb l).2.1 hL ?_ (by simp [Nat.ofDigits_digits])
-  refine (mem_fixedLengthDigits_iff hb).mpr ⟨?_, fun x hx ↦ ?_⟩
-  · rw [length_append, length_replicate, Nat.add_sub_cancel']
-    rw [digits_length_le_iff hb, ← Finset.mem_range]
-    exact (Nat.bijOn_ofDigits' hb l).1 hL
-  · simp only [mem_append, mem_replicate] at hx
-    obtain hi | ⟨_, rfl⟩  := hx
-    · exact digits_lt_base hb hi
-    · linarith
 
 /--
 The `Finset` of lists whose head is a fixed integer `d` and tail is a list
 in `List.fixedLengthDigits b l`.
 -/
 noncomputable abbrev consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l d : ℕ) :
-    Finset (List ℕ) := Finset.image (fun L ↦ d::L) (fixedLengthDigits hb l)
-
+    Finset (List ℕ) := Finset.image (fun L ↦ d :: L) (fixedLengthDigits hb l)
 
 theorem ne_empty_of_mem_consFixedLengthDigits {b : ℕ} (hb : 1 < b) {l d : ℕ} {L : List ℕ}
     (hL : L ∈ consFixedLengthDigits hb l d) : L ≠ [] := by
@@ -439,11 +467,11 @@ theorem consFixedLengthDigits_head {b : ℕ} (hb : 1 < b) {l d : ℕ} {L : List 
 
 /--
 If `L` is a list in `List.fixedLengthDigits b l` and `d` is an integer `< b`, then
-`d::L` is a list in `List.fixedLengthDigits b (l + 1).`
+`d :: L` is a list in `List.fixedLengthDigits b (l + 1).`
 -/
 theorem cons_mem_fixedLengthDigits_succ {b : ℕ} (hb : 1 < b) (l d : ℕ) (hd : d < b) {L : List ℕ}
     (hL : L ∈ fixedLengthDigits hb l) :
-    d::L ∈ fixedLengthDigits hb (l + 1) := by
+    d :: L ∈ fixedLengthDigits hb (l + 1) := by
   refine (mem_fixedLengthDigits_iff hb).mpr ⟨?_, ?_⟩
   · simpa using ((mem_fixedLengthDigits_iff hb).mp hL).1
   · intro x hx
@@ -451,7 +479,7 @@ theorem cons_mem_fixedLengthDigits_succ {b : ℕ} (hb : 1 < b) (l d : ℕ) (hd :
     · exact hd
     · exact ((mem_fixedLengthDigits_iff hb).mp hL).2 _ hx
 
-theorem disj_consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem pairwiseDisjoint_consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.PairwiseDisjoint (Finset.range b : Set ℕ) (fun d ↦ consFixedLengthDigits hb l d) := by
   refine Finset.pairwiseDisjoint_iff.mpr fun i _ j _ ⟨L, hL⟩ ↦ ?_
   rw [Finset.mem_inter] at hL
@@ -463,11 +491,11 @@ The set `List.fixedLengthDigits b (l + 1)` is the disjoint union of the sets
 -/
 theorem fixedLengthDigits_succ_eq_disjiUnion {b : ℕ} (hb : 1 < b) (l : ℕ) :
     fixedLengthDigits hb (l + 1) = Finset.disjiUnion (Finset.range b)
-      (consFixedLengthDigits hb l) (disj_consFixedLengthDigits hb l) := by
+      (consFixedLengthDigits hb l) (pairwiseDisjoint_consFixedLengthDigits hb l) := by
   ext L
   simp_rw [Finset.disjiUnion_eq_biUnion, Finset.mem_biUnion, Finset.mem_range, Finset.mem_image]
   refine ⟨fun hL ↦ ?_, ?_⟩
-  · have hL₁ : L.length = l + 1 := ((mem_fixedLengthDigits_iff hb).mp hL).1.symm
+  · have hL₁ : L.length = l + 1 := ((mem_fixedLengthDigits_iff hb).mp hL).1
     have hL₂ : ∀ x ∈ L, x < b := ((mem_fixedLengthDigits_iff hb).mp hL).2
     have hL₃ : L ≠ [] := by simp [ne_nil_iff_length_pos, hL₁]
     refine ⟨L.head hL₃, hL₂ _ (L.head_mem hL₃), L.tail, ?_, cons_head_tail hL₃⟩
@@ -489,21 +517,18 @@ theorem sum_fixedLengthDigits_sum {b : ℕ} (hb : 1 < b) (l : ℕ) :
         Finset.sum_add_distrib, hr, add_tsub_cancel_right]
       rw [Finset.sum_comm]
       simp only [Finset.sum_range_id, Finset.sum_const, Finset.card_range, nsmul_eq_mul,
-        fixedLengthDigits_card, cast_pow, cast_id, choose_two_right]
+        card_fixedLengthDigits, cast_pow, cast_id, choose_two_right]
       rw [show b ^ l = b * b ^ (l - 1) by rw [← Nat.pow_succ', Nat.sub_one, Nat.succ_pred hl]]
       ring
 
 end List
 
 /--
-The formula for the sum of the sum of the digits in `b` over the natural integers `< b ^ l`.
+The formula for the sum of the sum of the digits in base `b` over the natural integers `< b ^ l`.
 -/
-theorem Nat.sum_digits_sum_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem Nat.sum_sum_digits_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
     ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * b.choose 2 := by
   rw [← List.sum_fixedLengthDigits_sum hb]
   refine (Finset.sum_nbij (ofDigits b) (by exact (bijOn_ofDigits' hb l).1)
-    (bijOn_ofDigits' hb l).2.1 (bijOn_ofDigits' hb l).2.2 ?_).symm
-  intro L hL
-  nth_rewrite 1 [List.eq_digits_ofDigits_append_of_mem_fixedLengthDigits hb l hL]
-  rw [List.sum_append_nat, List.sum_replicate, nsmul_zero, add_zero]
-
+    (bijOn_ofDigits' hb l).2.1 (bijOn_ofDigits' hb l).2.2 fun L hL ↦ ?_).symm
+  rw [sum_digits_ofDigits_eq_sum hb ((List.mem_fixedLengthDigits_iff hb).mp hL)]
