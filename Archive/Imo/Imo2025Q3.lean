@@ -155,7 +155,9 @@ lemma bonza_fExample : fExample ∈ bonza := by
     by_cases ch1 : ¬ 2 ∣ a
     · simp [fExample, ch1]
     by_cases ch2 : a = 2
-    · simp [fExample, ch2]
+    · simp only [fExample, ch2, dvd_refl, not_true_eq_false, ↓reduceIte, Nat.cast_ofNat,
+        Nat.two_dvd_ne_zero, Nat.cast_ite, Nat.cast_one, Nat.cast_pow, ite_pow, one_pow,
+        Int.reducePow]
       split_ifs with hb1 hb2
       · grind [sq_mod_four_eq_one_of_odd]
       · simp [hb2]
@@ -163,7 +165,8 @@ lemma bonza_fExample : fExample ∈ bonza := by
         · have : 2 ∣ (b : ℤ) := by grind
           simpa using pow_dvd_pow_of_dvd this 2
         · exact Dvd.dvd.pow ⟨2 ^ padicValNat 2 b, by ring⟩ (zero_ne_add_one 3).symm
-    · simp [fExample, ch1, ch2]
+    · simp only [fExample, ch1, ↓reduceIte, ch2, Nat.cast_pow, Nat.cast_ofNat, Nat.two_dvd_ne_zero,
+        Nat.cast_ite, Nat.cast_one, ite_pow, one_pow]
       split_ifs with hb1 hb2
       · by_cases lt : b = 1
         · simp [lt]
@@ -184,9 +187,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
         have eq1 : f 3 = 1 := bonza_apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
         have eq2 : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
-          have : (3 : ℤ) ^ n = (3 ^ n : ℕ) := by simp
-          rw [this, natCast_pred_of_pos]
-          exact pos_of_neZero (3 ^ n)
+          grind [natCast_pred_of_pos, pos_of_neZero]
         have := hf.1 n 3 hn (by norm_num)
         rwa [Nat.cast_ofNat, eq1, Nat.cast_one, one_pow, eq2, ofNat_dvd] at this
       rw [hk] at apply_dvd_three_pow_sub_one
