@@ -155,12 +155,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
 /-! ### Discrete and indiscrete finpartitions -/
 
 
-variable (s) -- [Decidable (a = ⊥)]
+variable (s)
 
 theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
 
-theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
+theorem top_isEquipartition [Decidable (s = ∅)] : (⊤ : Finpartition s).IsEquipartition :=
   Set.Subsingleton.isEquipartition (parts_top_subsingleton _)
 
 theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by

@@ -196,26 +196,21 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
 @[stacks 0052 "(3)"]
-theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
+theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
   classical
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
   have hι : ι.Finite := NoetherianSpace.finite_irreducibleComponents.subset Set.diff_subset
-  have hι' : Finite ι := by rwa [Set.finite_coe_iff]
-  let U := Z \ ⋃ (x : ι), x
-  have hU0 : U ≠ ∅ := fun r ↦ by
+  have hι' : Finite ι := hι
+  let U := Z \ ⋃ x : ι, x
+  have hU0 : U.Nonempty := Set.diff_nonempty.mpr fun r ↦ by
     obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_isClosed.mp H.1 hι.toFinset
-      (fun z hz ↦ by
-        simp only [Set.Finite.mem_toFinset] at hz
-        exact isClosed_of_mem_irreducibleComponents _ hz.1)
-      (by
-        rw [Set.Finite.coe_toFinset, Set.sUnion_eq_iUnion]
-        rw [Set.diff_eq_empty] at r
-        exact r)
-    simp only [Set.Finite.mem_toFinset] at hZ'
+      (fun z hz ↦ isClosed_of_mem_irreducibleComponents _ (hι.mem_toFinset.mp hz).1)
+      (by rwa [hι.coe_toFinset, Set.sUnion_eq_iUnion])
+    rw [Set.Finite.mem_toFinset] at hZ'
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
-  have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
+  have hU1 : U = (⋃ x : ι, x) ᶜ := by
     rw [Set.compl_eq_univ_diff]
     refine le_antisymm (Set.diff_subset_diff le_top subset_rfl) ?_
     rw [← Set.compl_eq_univ_diff]
@@ -234,5 +229,11 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
       · exact ⟨i, Or.inr i.2, hi⟩
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
   exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+
+@[deprecated exists_isOpen_nonempty_subset_irreducibleComponent (since := "2025-12-11")]
+theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
+    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
+    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
+  simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
 end TopologicalSpace
