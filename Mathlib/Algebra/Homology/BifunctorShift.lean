@@ -100,7 +100,7 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
     (m₁ m : ℤ) (hm₁ : m₁ = n₁ + x) (hm : m = n + x) :
     ιMapBifunctor _ K₂ F n₁ n₂ n h ≫ (mapBifunctorShift₁Iso K₁ K₂ F x).hom.f n =
       (F.map (shiftFunctorObjXIso K₁ x n₁ m₁ hm₁).hom).app _ ≫
-        ιMapBifunctor K₁ K₂ F m₁ n₂ m (by cutsat) ≫
+        ιMapBifunctor K₁ K₂ F m₁ n₂ m (by lia) ≫
           (shiftFunctorObjXIso (mapBifunctor K₁ K₂ F) x n m hm).inv := by
   dsimp [mapBifunctorShift₁Iso]
   simp only [HomologicalComplex₂.ιTotal_map_assoc,
@@ -156,7 +156,7 @@ lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
     (m₂ m : ℤ) (hm₂ : m₂ = n₂ + y) (hm : m = n + y) :
     ιMapBifunctor K₁ _ F n₁ n₂ n h ≫ (mapBifunctorShift₂Iso K₁ K₂ F y).hom.f n =
       (n₁ * y).negOnePow • (F.obj _).map (shiftFunctorObjXIso K₂ y n₂ m₂ hm₂).hom ≫
-        ιMapBifunctor K₁ K₂ F n₁ m₂ m (by cutsat) ≫
+        ιMapBifunctor K₁ K₂ F n₁ m₂ m (by lia) ≫
         (shiftFunctorObjXIso (mapBifunctor K₁ K₂ F) y n m hm).inv := by
   dsimp [mapBifunctorShift₂Iso]
   simp only [HomologicalComplex₂.ιTotal_map_assoc,
@@ -223,7 +223,7 @@ noncomputable instance (K₁ : CochainComplex C₁ ℤ) :
     ext K₂ n
     dsimp
     ext p q h
-    simp [CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ F 0 p q n h q n (by cutsat) (by cutsat),
+    simp [CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ F 0 p q n h q n (by lia) (by lia),
       CochainComplex.shiftFunctorZero_eq]
   commShiftIso_add a b := by
     ext K₂ n
@@ -231,10 +231,10 @@ noncomputable instance (K₁ : CochainComplex C₁ ℤ) :
     ext p q h
     dsimp at h
     simp [CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ F (a + b) p q n h
-        (q + a + b) (n + a + b) (by cutsat) (by cutsat),
+        (q + a + b) (n + a + b) (by lia) (by lia),
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ F b p q n h _ _ rfl rfl,
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ F a p (q + b) (n + b)
-        (by cutsat) (q + a + b) (n + a + b) (by cutsat) (by cutsat), smul_smul,
+        (by lia) (q + a + b) (n + a + b) (by lia) (by lia), smul_smul,
         ← Int.negOnePow_add, CochainComplex.shiftFunctorAdd_eq,
         add_comm (p * b), mul_add, XIsoOfEq]
 
@@ -267,17 +267,17 @@ noncomputable instance (K₂ : CochainComplex C₂ ℤ) :
     dsimp
     ext p q h
     simp [CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ F 0 p q n h p n
-      (by cutsat) (by cutsat), CochainComplex.shiftFunctorZero_eq]
+      (by lia) (by lia), CochainComplex.shiftFunctorZero_eq]
   commShiftIso_add a b := by
     ext K₂ n
     dsimp
     ext p q h
     dsimp at h
     simp [CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ F (a + b) p q n h
-        (p + a + b) (n + a + b) (by cutsat) (by cutsat),
+        (p + a + b) (n + a + b) (by lia) (by lia),
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ F b p q n h _ _ rfl rfl,
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ F a (p + b) q (n + b)
-        (by cutsat) (p + a + b) (n + a + b) (by cutsat) (by cutsat),
+        (by lia) (p + a + b) (n + a + b) (by lia) (by lia),
       CochainComplex.shiftFunctorAdd_eq, XIsoOfEq, eqToHom_map]
 
 lemma commShiftIso_map₂CochainComplex_flip_hom_app (K₁ : CochainComplex C₁ ℤ)

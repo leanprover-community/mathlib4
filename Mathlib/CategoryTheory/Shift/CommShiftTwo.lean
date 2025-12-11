@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
 
 /-!
-# Commutation to shifts of functors in two variables
+# Commutation with shifts of functors in two variables
 
 We introduce a typeclass `Functor.CommShift₂Int` for a bifunctor `G : C₁ ⥤ C₂ ⥤ D`
 (with `D` a preadditive category) as the two variable analogue of `Functor.CommShift`.
@@ -57,7 +57,6 @@ structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
   hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
 /-- The standard setup for the commutation of bifunctors with shifts by `ℤ`. -/
-@[simps]
 noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
     CommShift₂Setup D ℤ where
@@ -65,7 +64,6 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    congr 1
     cutsat
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
