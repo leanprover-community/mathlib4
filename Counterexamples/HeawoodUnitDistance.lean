@@ -30,7 +30,8 @@ namespace SimpleGraph
 
 open Finset
 
-/-- The Heawood graph, a notable simple graph on 14 vertices. -/
+/-- The Heawood graph, a notable simple graph on 14 vertices. The numbering corresponds to a
+typical [Hamiltonian cycle-and-arcs drawing](https://commons.wikimedia.org/wiki/File:Heawood_Graph.svg). -/
 def heawoodGraph : SimpleGraph (Fin 14) where
   Adj i j := (i - j).1 = 1            ∨ (j - i).1 = 1 ∨
              (i - j).1 = 5 ∧ Even j.1 ∨ (j - i).1 = 5 ∧ Even i.1
@@ -43,10 +44,19 @@ instance : DecidableRel heawoodGraph.Adj :=
 lemma heawoodGraph_edgeFinset :
     heawoodGraph.edgeFinset = (univ.image fun i ↦ s(i, i + 1)) ∪
       (univ.filter (Even ·.1)).image fun i ↦ s(i, i + 5) := by
-  ext e; induction e; simp [heawoodGraph]; grind
+  decide
 
 lemma card_heawoodGraph_edgeFinset : #heawoodGraph.edgeFinset = 21 := by
   rw [heawoodGraph_edgeFinset]; decide
+
+lemma heawoodGraph_neighborFinset (i : Fin 14) :
+    heawoodGraph.neighborFinset i = {i + 1, i - 1, if Even i.1 then i + 5 else i - 5} := by
+  revert i; decide
+
+/-- The Heawood graph is 3-regular. -/
+lemma isRegularOfDegree_heawoodGraph : heawoodGraph.IsRegularOfDegree 3 := fun i ↦ by
+  rw [← card_neighborFinset_eq_degree, heawoodGraph_neighborFinset]
+  revert i; decide
 
 /-! ### A key number -/
 
