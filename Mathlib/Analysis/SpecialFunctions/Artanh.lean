@@ -67,11 +67,9 @@ theorem cosh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : cosh (artanh x) = 1 / �
   grind [artanh, cosh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
 
 /-- `artanh` is the right inverse of `tanh` over (-1, 1). -/
-theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : tanh (artanh x) = x := by
-  rw [tanh_eq_sinh_div_cosh, sinh_artanh hx, cosh_artanh hx, div_div_div_cancel_right₀, div_one]
-  apply sqrt_ne_zero'.mpr
-  rw [show 1 - x ^ 2 = (1 + x) * (1 - x) by ring]
-  exact mul_pos (neg_lt_iff_pos_add'.mp hx.1) (sub_pos.mpr hx.2)
+theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : tanh (artanh x) = x := by
+  have := sq_sub_sq 1 x
+  grind [tanh_eq_sinh_div_cosh, sinh_artanh, cosh_artanh, sqrt_ne_zero', mul_pos]
 
 theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
   rw [tanh_eq]
