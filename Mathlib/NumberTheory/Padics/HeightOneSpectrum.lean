@@ -22,15 +22,15 @@ This file constructs continuous `ℚ`-algebra` isomorphisms between the two, as 
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
 ```
-HeightOneSpectrum (𝓞 ℚ) <--------->  Nat.Primes
+HeightOneSpectrum (𝓞 ℚ) <----------->  Nat.Primes
           |                               |
           |                               |
           v                               v
-v.adicCompletionIntegers ℚ  <----->  ℤ_[primesEquiv v]
+v.adicCompletionIntegers ℚ  <------->   ℤ_[p]
           |                               |
           |                               |
           v                               v
-v.adicCompletion ℚ  <------------->  ℚ_[primesEquiv v]
+v.adicCompletion ℚ  <--------------->   ℚ_[p]
 ```
 
 ## Main definitions

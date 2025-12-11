@@ -209,7 +209,6 @@ private theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
--- TODO: remove hv hw when we have range bases for Valued's ValuativeRel #27314
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) (hv : Function.Surjective v)
