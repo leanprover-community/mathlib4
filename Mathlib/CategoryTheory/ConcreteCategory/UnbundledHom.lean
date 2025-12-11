@@ -26,7 +26,7 @@ namespace CategoryTheory
 /-- A class for unbundled homs used to define a category. `hom` must
 take two types `α`, `β` and instances of the corresponding structures,
 and return a predicate on `α → β`. -/
-@[deprecated "The prefered method for talking about concrete categories is to implement the \
+@[deprecated "The preferred method for talking about concrete categories is to implement the \
 category manually and then provide the `ConcreteCategory` instance on top of this. See \
 `ConcreteCategory/Basic.lean`" (since := "2025-11-17")]
 class UnbundledHom {c : Type u → Type u} (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) : Prop where
