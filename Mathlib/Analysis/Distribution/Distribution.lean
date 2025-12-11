@@ -176,29 +176,28 @@ def mapCLM [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGro
 lemma mapCLM_apply [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGroup F']
     [ContinuousSMul ℝ F'] {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
+
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+-- variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
-
--- variable [NormedAddCommGroup F] [NormedAddCommGroup F']
+-- variable [NormedAddCommGroup F'] [NormedAddCommGroup F']
 -- TODO: naming...
-noncomputable def mapCLE (A : F ≃L[ℝ] F') : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
-  by
-  -- #synth TopologicalSpace 𝓓'^{n}(Ω, F)
-  have := ContinuousLinearEquiv.arrowCongr (e₁ := ContinuousLinearEquiv.refl ℝ 𝓓'^{n}(Ω, F))
-    (G := F') (H := 𝓓'^{n}(Ω, F))
-  -- (ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, ℝ)).arrowCongr A
-
-@[simp]
-lemma mapCLE_apply {A : F ≃L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
-    mapCLE A T f = A (T f) := rfl
-
-@[simp]
-lemma mapCLE_symm {A : F ≃L[ℝ] F'} :
-    (mapCLE A : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F')).symm = mapCLE A.symm := rfl
+-- noncomputable def mapCLE (A : F ≃L[ℝ] F') : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') := by
+--   -- let φ := @mapCLM E _ _ Ω F _ _ _ F' _ _ _ n _ _ _ _ A
+--   -- refine ContinuousLinearEquiv.equivOfInverse φ ?_ ?_ ?_
+--
+--   let := @ContinuousLinearEquiv.arrowCongr
+--   -- let := (ContinuousLinearEquiv.refl ℝ 𝓓'^{n}(Ω, ℝ)).arrowCongr A
+--
+-- @[simp]
+-- lemma mapCLE_apply {A : F ≃L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+--     mapCLE A T f = A (T f) := rfl
+--
+-- @[simp]
+-- lemma mapCLE_symm {A : F ≃L[ℝ] F'} :
+--     (mapCLE A : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F')).symm = mapCLE A.symm := rfl
 
 end mapCLM
-
-end Distribution
 
 section ofFun
 
@@ -227,8 +226,8 @@ noncomputable def ofFun (f : E → F) (μ : Measure E := by volume_tac) : 𝓓'(
 @[simp]
 lemma ofFunWithOrder_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
     {φ : 𝓓^{n}(Ω, ℝ)} :
-    ofFunWithOrder Ω n f μ φ = ∫ x, φ x • f x ∂μ := by
-  simp [ofFunWithOrder, hf]
+    ofFunWithOrder Ω n f μ φ = ∫ x, φ x • f x ∂μ := by sorry
+  -- simp [ofFunWithOrder, hf]
 
 @[simp]
 lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
@@ -238,10 +237,11 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
 
 lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
     (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
-  ext φ
-  simp_rw [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
-    TestFunction.integralAgainstBilinLM, hf]
-  dsimp
+  sorry
+  -- ext φ
+  -- simp_rw [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
+  --   TestFunction.integralAgainstBilinLM, hf]
+  -- dsimp
 
 lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
     ofFun Ω f μ = 0 := by
@@ -256,8 +256,9 @@ lemma ofFun_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict �
 
 @[simp]
 lemma ofFunWithOrder_zero {μ : Measure E} : ofFunWithOrder Ω n (0 : E → F) μ = 0 := by
-  ext φ
-  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM, TestFunction.integralAgainstBilinLM]
+  sorry
+  -- ext φ
+  -- simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM, TestFunction.integralAgainstBilinLM]
 
 @[simp]
 lemma ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ = 0 := by
@@ -273,12 +274,13 @@ lemma integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ)) (hf : 
 lemma ofFun_add {f g : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
     ofFun Ω (f + g) μ = ofFun Ω f μ + ofFun Ω g μ := by
-  ext φ
-  simp only [ContinuousLinearMap.add_apply]
-  rw [ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
-    ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
-  congr with x
-  simp
+  sorry
+  -- ext φ
+  -- simp only [ContinuousLinearMap.add_apply]
+  -- rw [ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
+  --   ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
+  -- congr with x
+  -- simp
 
 lemma ofFun_neg {f : E → F} {μ : Measure E} : ofFun Ω (-f) μ = -ofFun Ω f μ := by
   ext φ
@@ -296,35 +298,41 @@ lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) �
     simp [ofFun_of_not_locallyIntegrable this, ofFun_of_not_locallyIntegrable hf]
   ext φ
   rw [ofFun_apply (hf.smul c)]
-  simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul']
-  rw [ofFun_apply hf, ← integral_smul c]
-  congr with x
-  module
+  sorry
+  -- simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul']
+  -- rw [ofFun_apply hf, ← integral_smul c]
+  -- congr with x
+  -- module
 
 end ofFun
 
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
+
 section lineDeriv
+
+
 
 -- TODO: where to put the minus ? Doesn't matter mathematically of course
 variable (n k) in
 noncomputable def lineDerivWithOrderCLM (v : E) :
-    𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{k}(Ω, F) :=
-  .precomp F (- TestFunction.lineDerivWithOrderCLM k n v)
+    𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{k}(Ω, F) := sorry
+  -- (- TestFunction.lineDerivWithOrderCLM k n v).(precomp F )
 
 @[simp]
 lemma lineDerivWithOrderCLM_apply {v : E} {T : 𝓓'^{n}(Ω, F)} {φ : 𝓓^{k}(Ω, ℝ)} :
-    lineDerivWithOrderCLM n k v T φ = T (- TestFunction.lineDerivWithOrderCLM k n v φ) :=
-  rfl
+    lineDerivWithOrderCLM n k v T φ = T (- TestFunction.lineDerivWithOrderCLM k n v φ) := sorry
+  -- rfl
 
 -- TODO: where to put the minus ? Doesn't matter mathematically of course
 noncomputable def lineDerivCLM (v : E) :
-    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, F) :=
-  .precomp F (- TestFunction.lineDerivCLM v)
+    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, F) := sorry
+  -- .precomp F (- TestFunction.lineDerivCLM v)
 
 @[simp]
 lemma lineDerivCLM_apply {v : E} {T : 𝓓'(Ω, F)} {φ : 𝓓(Ω, ℝ)} :
-    lineDerivCLM v T φ = T (- TestFunction.lineDerivCLM v φ) :=
-  rfl
+    lineDerivCLM v T φ = T (- TestFunction.lineDerivCLM v φ) := sorry
+  -- rfl
 
 end lineDeriv
 
@@ -356,21 +364,26 @@ noncomputable def fderivCLM :
 
 end fderiv
 
--- section iteratedFDeriv
+section
+
 --
--- open Distribution
+open Distribution ContinuousMultilinearMap
 --
+variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+-- variable [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 -- variable [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 --
--- noncomputable def iteratedFDerivCLM (i : ℕ) :
---     𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E [×i]→L[ℝ] F) :=
---   Nat.recOn i
---     (mapCLM (continuousMultilinearCurryFin0 ℝ E F).symm)
---     fun j rec ↦
---       letI C : (E →L[ℝ] E [×j]→L[ℝ] F) →L[ℝ] (E [×(j+1)]→L[ℝ] F) :=
---         (continuousMultilinearCurryLeftEquiv ℝ (fun (_ : Fin j.succ) ↦ E) F).symm
---       (mapCLM C) ∘L fderivCLM ∘L rec
+noncomputable def iteratedFDerivCLM (i : ℕ) :
+    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E [×i]→L[ℝ] F) :=
+  Nat.recOn i
+    (mapCLM (continuousMultilinearCurryFin0 ℝ E F).symm)
+    fun j rec ↦
+      letI C : (E →L[ℝ] E [×j]→L[ℝ] F) →L[ℝ] (E [×(j+1)]→L[ℝ] F) :=
+        (continuousMultilinearCurryLeftEquiv ℝ (fun (_ : Fin j.succ) ↦ E) F).symm
+      (mapCLM C) ∘L fderivCLM ∘L rec
 --
--- -- TODO: write lemmas for this...
+-- TODO: write lemmas for this...
 --
--- end iteratedFDeriv
+end iteratedFDeriv
+
+end Distribution

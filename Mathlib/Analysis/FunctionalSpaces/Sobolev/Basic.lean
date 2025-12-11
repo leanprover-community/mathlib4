@@ -109,6 +109,7 @@ lemma weakDeriv_apply {f : E → F} (hf : LocallyIntegrableOn f Ω μ) (φ : �
   -- XXX: why do I need the dsimp step?
   dsimp
   simp [ofFun_apply hf, TestFunction.lineDerivCLM, TestFunction.fderivCLM]
+  sorry
 
 @[simp]
 lemma weakDeriv_add (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ) :
