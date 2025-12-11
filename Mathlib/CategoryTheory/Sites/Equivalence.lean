@@ -88,7 +88,7 @@ lemma isDenseSubsite_functor_of_isCocontinuous
     · intro H
       refine K.superset_covering ?_
         (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
-      exact fun Y f (H : S _) ↦ ⟨_, _, (e.counitInv.app Y), H, by simp⟩
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
 
 lemma isDenseSubsite_inverse_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J]
