@@ -113,7 +113,7 @@ theorem card_pow_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Semiring R
     exact (card_mul_le ..).trans <| mul_le_mul_left IH _
 
 theorem card_hsum_le [AddCommMonoid R] (s : SummableFamily Γ R α) :
-    lift s.hsum.card ≤ sum fun a : α ↦ (s a).card :=
+    lift s.hsum.card ≤ sum fun a ↦ (s a).card :=
   (lift_le.2 <| mk_le_mk_of_subset (SummableFamily.support_hsum_subset ..)).trans
     mk_iUnion_le_sum_mk_lift
 
@@ -123,9 +123,9 @@ section LinearOrder
 variable [LinearOrder Γ]
 
 theorem card_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
-    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤ sum fun n ↦ x.card ^ n := by
+    (x : HahnSeries Γ R) : (SummableFamily.powers x).hsum.card ≤ max ℵ₀ x.card := by
   rw [← lift_uzero (card _)]
-  refine (card_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
+  refine (sum_pow_le_max_aleph0 _).trans' <| (card_hsum_le _).trans <| sum_le_sum _ _ fun i ↦ ?_
   rw [SummableFamily.powers_toFun]
   split_ifs
   · exact card_pow_le ..

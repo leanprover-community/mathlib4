@@ -210,6 +210,10 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
+theorem exists_cons {α : Fin (n + 1) → Type*} (q : ∀ i, α i) :
+    ∃ (x₀ : α 0) (x : ∀ i : Fin n, α i.succ), q = cons x₀ x :=
+  ⟨q 0, tail q, (cons_self_tail q).symm⟩
+
 @[simp]
 theorem forall_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
     (∀ x, P x) ↔ P finZeroElim :=
@@ -959,6 +963,16 @@ theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
   funext x
   apply insertNth_rev
 
+@[simp]
+theorem insertNth_succ_cons {α} (i : Fin (n + 1)) (x a : α) (p : Fin n → α) :
+    (insertNth i.succ x (cons a p) : Fin (n + 2) → α) = cons a (insertNth i x p) := by
+  ext j
+  cases j using Fin.succAboveCases i.succ with
+  | x => simp
+  | p j =>
+    simp only [insertNth_apply_succAbove]
+    cases j using Fin.cases <;> simp
+
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
     cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
   simpa using insertNth_rev 0 a f i
@@ -1096,7 +1110,7 @@ grind_pattern Fin.find_spec => Fin.find p h
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
   @(Fin.findX p h).2.2
 
-/-- For `m : Fin n`, if `m` satsifies `p`, then `Fin.find p h ≤ m`. -/
+/-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
 

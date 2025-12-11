@@ -533,6 +533,7 @@ public import Mathlib.Algebra.Homology.BifunctorAssociator
 public import Mathlib.Algebra.Homology.BifunctorFlip
 public import Mathlib.Algebra.Homology.BifunctorHomotopy
 public import Mathlib.Algebra.Homology.BifunctorShift
+public import Mathlib.Algebra.Homology.CochainComplexOpposite
 public import Mathlib.Algebra.Homology.CommSq
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Homology.ComplexShapeSigns
@@ -1547,6 +1548,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 public import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
@@ -1763,6 +1765,7 @@ public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
+public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierSchwartz
 public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.TemperateGrowth
@@ -2071,6 +2074,7 @@ public import Mathlib.Analysis.Real.Pi.Leibniz
 public import Mathlib.Analysis.Real.Pi.Wallis
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.SpecialFunctions.Arcosh
 public import Mathlib.Analysis.SpecialFunctions.Arsinh
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
@@ -2470,6 +2474,7 @@ public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
+public import Mathlib.CategoryTheory.Generator.Type
 public import Mathlib.CategoryTheory.GlueData
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.CategoryTheory.GradedObject.Associator
@@ -2938,6 +2943,7 @@ public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
+public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Type
@@ -3164,6 +3170,7 @@ public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.Hindman
+public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Combinatorics.Matroid.Circuit
 public import Mathlib.Combinatorics.Matroid.Closure
@@ -4153,6 +4160,7 @@ public import Mathlib.Geometry.Euclidean.MongePoint
 public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.SignedDist
+public import Mathlib.Geometry.Euclidean.Similarity
 public import Mathlib.Geometry.Euclidean.Simplex
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
@@ -5206,6 +5214,7 @@ public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 public import Mathlib.NumberTheory.LocalField.Basic
 public import Mathlib.NumberTheory.LucasLehmer
 public import Mathlib.NumberTheory.LucasPrimality
+public import Mathlib.NumberTheory.MahlerMeasure
 public import Mathlib.NumberTheory.MaricaSchoenheim
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
@@ -6258,6 +6267,7 @@ public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Smooth.Locus
+public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
