@@ -155,73 +155,40 @@ lemma irreducible_of_disjoint_support [IsDomain R]
     rw [Finsupp.sub_add_single_one_cancel hi]
   let φ : MvPolynomial n R := monomial d₀ (f.coeff d)
   let ψ : MvPolynomial n R := f - φ * X i
-  have hf : f = φ * X i + ψ := by grind
+  have hf : f = φ * X i + ψ := by grind only
+  have hdφX (k) : (φ * X i).coeff k = if k = d then f.coeff d else 0 := by
+    simp only [X, monomial_mul, ← hd₀, mul_one, coeff_monomial, eq_comm (a := k), φ]
+  have hdψ (k) : ψ.coeff k = if k = d then 0 else f.coeff k := by
+    simp +contextual [ψ, hdφX, sub_eq_iff_eq_add, ite_add_ite]
+  have hψsupp : ψ.support = f.support.erase d := by ext; simp [mem_support_iff, hdψ]
   rw [hf]
   apply irreducible_mul_X_add
-  · simp [φ, monomial_eq_zero, hfd]
+  · grind only [monomial_eq_zero]
   · simp [φ, hfd, h1 d hd i hi, d₀]
-  · simp_rw [mem_vars, not_exists, not_and]
-    intro k hk hik
-    obtain rfl : d = k := by
-      by_contra! hdk
-      have hkf : k ∈ f.support := by
-        rw [mem_support_iff] at hk ⊢
-        rw [hf, coeff_add, coeff_mul_X', if_pos hik]
-        dsimp only [φ]
-        rwa [coeff_monomial, if_neg, zero_add]
-        contrapose! hdk
-        apply tsub_inj_left _ _ hdk
-        · simp only [Finsupp.mem_support_iff, ne_eq, Finsupp.single_le_iff] at hi ⊢
-          grind
-        · simp only [Finsupp.mem_support_iff, ne_eq, Finsupp.single_le_iff] at hik ⊢
-          grind
-      have := h2 _ hd _ hkf i hi hik
-      contradiction
-    rw [mem_support_iff] at hk
-    apply hk
-    rw [Finsupp.mem_support_iff] at hi
-    simp [ψ, coeff_mul_X', hi, φ, d₀]
+  · grind only [mem_vars, Finset.mem_erase]
   · intro p hpφ hpψ
     simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
     obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
+    obtain ⟨q, hq⟩ := hpψ
+    obtain ⟨d₂, hd₂, H⟩ := h0.exists_ne d
     obtain rfl : m = 0 := by
-      obtain ⟨d₂, hd₂, H⟩ := h0.exists_ne d
       ext j
-      have hne := H
+      rw [Finsupp.zero_apply]
+      have aux : coeff d₂ ψ ≠ 0 := by simpa only [hdψ, H, ↓reduceIte,  mem_support_iff] using hd₂
+      simp only [hq, coeff_monomial_mul', ne_eq, ite_eq_right_iff, Classical.not_imp] at aux
+      replace aux := aux.1 j
+      specialize hm j
+      simp only [Finsupp.coe_tsub, Pi.sub_apply, d₀] at hm
       contrapose! H
-      rw [Finsupp.zero_apply] at H
-      apply h2 d₂ hd₂ d hd j
-      · have := support_add (p := φ * X i) (q := ψ)
-        rw [← hf] at this
-        specialize this hd₂
-        have : coeff d₂ ψ ≠ 0 := by
-          simpa [φ, hfd, ← hd₀, hne.symm] using this
-        obtain ⟨q, hq⟩ := hpψ
-        simp only [hq, coeff_monomial_mul', ne_eq, ite_eq_right_iff, Classical.not_imp] at this
-        replace this := this.1 j
-        rw [Finsupp.mem_support_iff]
-        grind
-      · rw [Finsupp.mem_support_iff]
-        specialize hm j
-        simp only [Finsupp.coe_tsub, Pi.sub_apply, d₀] at hm
-        grind
+      apply h2 d₂ hd₂ d hd j <;> grind only [= Finsupp.mem_support_iff]
     simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
     refine ⟨b, ?_, rfl⟩
     apply h3
     intro k
     obtain rfl | hk := eq_or_ne k d
     · exact hb
-    by_cases hkf : coeff k f = 0
-    · simp [hkf]
-    suffices coeff k (φ * X i) = 0 by
-      rw [hf, coeff_add, this, zero_add]
-      rw [← C_apply, C_dvd_iff_dvd_coeff] at hpψ
-      apply hpψ
-    rw [coeff_mul_X', ite_eq_right_iff]
-    intro hik
-    rw [← ne_eq, ← mem_support_iff] at hkf
-    have := h2 _ hkf _ hd i hik hi
-    contradiction
+    rw [hf]
+    simp [hk, hq, hdφX]
 
 end
 
