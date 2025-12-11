@@ -92,12 +92,11 @@ theorem not_isSquare_of_isNegNNRat_rat (a : ℚ) (n d : ℕ) (hn : n ≠ 0) (hd 
     -(n / d : ℚ) < 0 := by rw [Left.neg_neg_iff]; apply div_pos <;> simpa [Nat.pos_iff_ne_zero]
     _ ≤ q * q := mul_self_nonneg _
 
-open Lean in
-/-- `norm_num` extension for `IsSquare`.
+open Lean
 
-Works for `ℕ`, `ℤ`, `ℚ`. -/
-@[norm_num IsSquare _]
-def evalIsSquare : NormNumExt where eval {u αP} e := do
+/-- `norm_num` extension for `IsSquare` on `ℕ`. -/
+@[norm_num @IsSquare ℕ _ _]
+def evalIsSquareNat : NormNumExt where eval {u αP} e := do
   match u, αP, e with
   | 0, ~q(Prop), ~q(@IsSquare ℕ $mulN $a) => do
     let ⟨n, pa⟩ ← deriveNat (u := 0) (α := q(ℕ)) a q(inferInstance)
@@ -115,6 +114,12 @@ def evalIsSquare : NormNumExt where eval {u αP} e := do
       have hk₂ : Q(Nat.ble $n ($ek + 2 * $em)) := (q(Eq.refl true) : Expr)
       assertInstancesCommute
       return .isFalse q(not_isSquare_nat_of_isNat $a $n $pa $em $ek $hm $hk₁ $hk₂)
+  | _ => failure
+
+/-- `norm_num` extension for `IsSquare` on `ℤ`. -/
+@[norm_num @IsSquare ℤ _ _]
+def evalIsSquareInt : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
   | 0, ~q(Prop), ~q(@IsSquare ℤ $mulZ $a) => do
     match ← derive a with
     | .isNat sa n pa => do
@@ -127,6 +132,12 @@ def evalIsSquare : NormNumExt where eval {u αP} e := do
       let ⟨b, pb⟩ ← deriveBoolOfIff q($n = 0) q(IsSquare $a) q(iff_isSquare_of_isInt_int $a $n $pa)
       return .ofBoolResult pb
     | _ => failure
+  | _ => failure
+
+/-- `norm_num` extension for `IsSquare` on `ℚ`. -/
+@[norm_num @IsSquare ℚ _ _]
+def evalIsSquareRat : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
   | 0, ~q(Prop), ~q(@IsSquare ℚ $mulQ $a) => do
     match ← derive a with
     | .isNat sa n pa => do
@@ -139,6 +150,8 @@ def evalIsSquare : NormNumExt where eval {u αP} e := do
       let ⟨b, pb⟩ ← deriveBoolOfIff q($n = 0) q(IsSquare $a) q(iff_isSquare_of_isInt_rat $a $n $pa)
       return .ofBoolResult pb
     | .isNNRat sQ q n d pa => do
+      -- We make sure to avoid proving `Nat.Coprime $n $d` unless we need to.
+      -- Also, we do not derive `IsSquare $d` unless `$n` is a square
       match ← deriveBool q(IsSquare $n) with
       | .mk true pn =>
         match ← deriveBool q(IsSquare $d) with
