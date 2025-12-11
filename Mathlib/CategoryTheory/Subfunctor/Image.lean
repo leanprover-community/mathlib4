@@ -190,6 +190,33 @@ lemma preimage_image_of_epi (G : Subfunctor F) (p : F' ⟶ F) [hp : Epi p] :
 
 end preimage
 
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range := range
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_id := range_id
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_ι := range_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.lift := lift
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.lift_ι := lift_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange := toRange
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange_ι := toRange_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange_app_val := toRange_app_val
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_toRange := range_toRange
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.epi_iff_range_eq_top := epi_iff_range_eq_top
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_top := range_eq_top
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_comp_le := range_comp_le
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.image := image
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_top := image_top
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_iSup := image_iSup
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_comp := image_comp
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_comp := range_comp
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage := preimage
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_id := preimage_id
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_comp := preimage_comp
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_le_iff := image_le_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.fromPreimage := fromPreimage
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.fromPreimage_ι := fromPreimage_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_eq_top_iff := preimage_eq_top_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_image_of_epi :=
+  preimage_image_of_epi
+
 end Subfunctor
 
 end CategoryTheory

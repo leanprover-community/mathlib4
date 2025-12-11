@@ -74,6 +74,12 @@ noncomputable def orderIsoSubobject : Subfunctor F ≃o Subobject F where
       exact leOfHom (((equivalenceMonoOver F).trans
         (ThinSkeleton.equivalence _).symm).functor.map (homOfLE h))
 
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equivalenceMonoOver := equivalenceMonoOver
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_subobjectMk_ι := range_subobjectMk_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.subobjectMk_range_arrow :=
+  subobjectMk_range_arrow
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.orderIsoSubobject := orderIsoSubobject
+
 end Subfunctor
 
 end CategoryTheory

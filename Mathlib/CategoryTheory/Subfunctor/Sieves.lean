@@ -48,4 +48,10 @@ theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.sieveOfSection := sieveOfSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.familyOfElementsOfSection :=
+  familyOfElementsOfSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.family_of_elements_compatible :=
+  family_of_elements_compatible
+
 end CategoryTheory.Subfunctor

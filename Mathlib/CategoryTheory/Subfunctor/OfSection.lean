@@ -104,6 +104,15 @@ lemma range_eq_ofSection' {X : C} (f : yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) 
 
 end
 
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection := ofSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.mem_ofSection_obj := mem_ofSection_obj
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_le_iff := ofSection_le_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_image := ofSection_image
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_eq_range := ofSection_eq_range
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_ofSection := range_eq_ofSection
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.ofSection_eq_range' := ofSection_eq_range'
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_ofSection' := range_eq_ofSection'
+
 end Subfunctor
 
 end CategoryTheory

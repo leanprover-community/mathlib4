@@ -123,6 +123,24 @@ def equalizer.forkIsLimit : Limits.IsLimit (equalizer.fork f g) :=
     (fun s ↦ by dsimp)
     (fun s m hm ↦ by simp [← cancel_mono (Subfunctor.equalizer f g).ι, ← hm])
 
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer := Subfunctor.equalizer
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer_le := equalizer_le
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer_self := equalizer_self
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.mem_equalizer_iff := mem_equalizer_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_le_equalizer_iff :=
+  range_le_equalizer_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer_eq_iff := equalizer_eq_iff
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.ι := equalizer.ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.ι_ι := equalizer.ι_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.condition := equalizer.condition
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.lift := equalizer.lift
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.lift_ι' := equalizer.lift_ι'
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.lift_ι := equalizer.lift_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.fork := equalizer.fork
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.fork_ι := equalizer.fork_ι
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.equalizer.forkIsLimit :=
+  equalizer.forkIsLimit
+
 end Subfunctor
 
 end CategoryTheory
