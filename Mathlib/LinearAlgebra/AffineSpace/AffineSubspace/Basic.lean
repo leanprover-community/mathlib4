@@ -335,12 +335,12 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
 variable (k)
 
 /-- The `vectorSpan` of two points is the span of their difference. -/
-theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₁ -ᵥ p₂ := by
+theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₁ -ᵥ p₂) := by
   simp_rw [vectorSpan_eq_span_vsub_set_left k (mem_insert p₁ _), image_pair, vsub_self,
     Submodule.span_insert_zero]
 
 /-- The `vectorSpan` of two points is the span of their difference (reversed). -/
-theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₂ -ᵥ p₁ := by
+theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₂ -ᵥ p₁) := by
   rw [pair_comm, vectorSpan_pair]
 
 variable {k}
@@ -405,7 +405,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
 of any one difference between points in the two subspaces. -/
 theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s₁) (hp₂ : p₂ ∈ s₂) :
-    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ p₂ -ᵥ p₁ := by
+    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ (p₂ -ᵥ p₁) := by
   refine le_antisymm ?_ ?_
   · change (affineSpan k ((s₁ : Set P) ∪ s₂)).direction ≤ _
     rw [← mem_coe] at hp₁
@@ -639,7 +639,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
-  simpa [h_span]  using eqOn_affineSpan h_agree
+  simpa [h_span] using eqOn_affineSpan h_agree
 
 end AffineMap
 
@@ -649,7 +649,7 @@ namespace AffineEquiv
 theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
-  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
+  AffineEquiv.toAffineMap_inj.mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
@@ -696,7 +696,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, LinearMap.map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]
@@ -767,6 +767,15 @@ theorem map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
 theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
   rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
+    GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun s p ↦ by simp; grind
+
+lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
+    (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
+  (gciMapComap hf).u_l_eq _
 
 end AffineSubspace
 
@@ -874,6 +883,10 @@ lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁].direction ≤ line[k, p₂, q₂].direction ↔ ∃ z : k, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
   rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
     Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
 
 end AffineSubspace
 
