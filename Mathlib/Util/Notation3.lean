@@ -621,7 +621,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
-  let mut macroDecl ← `(macro_rules | `($pat) => `($val'))
+  let mut macroDecl ← `($attrKind:attrKind macro_rules | `($pat) => `($val'))
   if isLocalAttrKind attrKind then
     -- For local notation, take section variables into account
     macroDecl ← `(section set_option quotPrecheck.allowSectionVars true $macroDecl end)
