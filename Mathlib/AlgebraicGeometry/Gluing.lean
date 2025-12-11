@@ -672,8 +672,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     F.map f ≫ (glueData F).ι j = (glueData F).ι i := by
   have : IsIso (V F ↓i ↓j).ι := by
     have : V F ↓i ↓j = ⊤ :=
-      sorry
-      --top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 i, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
+      top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 _, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
     exact this ▸ (topIso _).isIso_hom
   have : t F ↓i ↓j ≫ (V F ↓j ↓i).ι ≫ _ = (V F ↓i ↓j).ι ≫ _ :=
     (glueData F).glue_condition i j
@@ -682,13 +681,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
   convert Category.id_comp _
-  sorry /-
-  rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
-    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 i) f),
-    ← Category.assoc, ← Category.assoc, Category.assoc]
-  convert Category.id_comp _
-  rw [← cancel_mono (Opens.ι _)]
-  simp [V, InducedCategory.category, Shrink.instCategoryShrink]-/
+  simp [← cancel_mono (Opens.ι _), V]
 
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram.
