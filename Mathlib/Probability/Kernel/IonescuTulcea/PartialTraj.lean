@@ -226,7 +226,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
         Equiv.coe_fn_mk, Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq,
         Nat.succ_eq_add_one, IocProdIoc]
       split_ifs <;> try rfl
-      omega
+      lia
     nth_rw 1 [← partialTraj_comp_partialTraj h k.le_succ, hk, partialTraj_succ_self, comp_map,
       comap_map_comm, comap_prod, id_comap, ← id_map, map_prod_eq, ← map_comp_right, this,
       map_comp_right, id_prod_eq, prodAssoc_prod, map_comp_right, ← map_prod_map, map_id,

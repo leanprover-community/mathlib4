@@ -451,6 +451,7 @@ public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Membership
+public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Group.Torsion
@@ -2318,6 +2319,7 @@ public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
+public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.ChosenFiniteProducts
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
@@ -2960,6 +2962,7 @@ public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Shift.CommShiftTwo
 public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Linear
@@ -2972,6 +2975,7 @@ public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 public import Mathlib.CategoryTheory.Shift.Twist
+public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.CategoryTheory.Sigma.Basic
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.SingleObj
@@ -3039,6 +3043,7 @@ public import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.CategoryTheory.Sites.Point.Category
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
@@ -3103,6 +3108,7 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 public import Mathlib.CategoryTheory.Triangulated.Rotate
@@ -4718,6 +4724,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 public import Mathlib.LinearAlgebra.SModEq
 public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.SesquilinearForm
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
