@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Tactic
 
 /-!
 # Definable Sets
@@ -261,6 +262,15 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
           rangeFactorization_coe]
 
+/-- Finite existential quantifiers preserve definablity. -/
+lemma Definable.exists_fintype [Finite β] {S : Set ((α ⊕ β) → M)}
+    (hS : A.Definable L S) :
+    A.Definable L { v : α → M | ∃ u : β → M, Sum.elim v u ∈ S } := by
+  obtain ⟨φ, hφ⟩ := hS
+  exists φ.iExs β
+  ext v
+  simp [hφ]
+
 variable (L A)
 
 /-- A 1-dimensional version of `Definable`, for `Set M`. -/
@@ -397,6 +407,121 @@ noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α)
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff coe_himp
 
 end DefinableSet
+
+section
+
+open FirstOrder FirstOrder.Language Set
+
+variable {M : Type w} (L : Language) [L.Structure M]
+variable {α β : Type*} (A : Set M)
+
+/-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
+def DefinableFun (f : (α → M) → M) : Prop :=
+  A.Definable L { v : (α ⊕ Unit) → M | f (v ∘ Sum.inl) = v (Sum.inr ()) }
+
+variable {L A}
+
+namespace DefinableFun
+
+/-- A function symbol is a definable function. -/
+theorem definable_fun_of_fun_symbol {n : ℕ} (f : L.Functions n) :
+    DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) := by
+  refine empty_definable_iff.mpr ?_
+  let t_out : L.Term (Fin n ⊕ Unit) := Term.var (Sum.inr ())
+  let t_in : Fin n → L.Term (Fin n ⊕ Unit) := fun i => Term.var (Sum.inl i)
+  let φ := (Term.func f t_in).equal t_out
+  exists φ
+
+/-- A term is a definable function. -/
+theorem definable_fun_of_term (t : L.Term α) :
+    DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
+  refine empty_definable_iff.mpr ?_
+  let t_lifted : L.Term (α ⊕ Unit) := t.relabel Sum.inl
+  let t_out : L.Term (α ⊕ Unit) := Term.var (Sum.inr ())
+  let φ := t_lifted.equal t_out
+  exists φ
+  ext v
+  simp [φ, t_lifted, t_out]
+
+variable (L A)
+
+/-- A constant function is a definable function. -/
+theorem definable_fun_of_const_fun (γ : Type*) (a : M) :
+    DefinableFun L ({a} : Set M) (fun _ : γ → M => a) := by
+  simp only [DefinableFun]
+  convert Definable.preimage_comp (fun _ : Fin 1 => Sum.inr ()) (Definable.singleton L a) using 1
+  simp only [Fin.isValue, mem_singleton_iff, preimage_setOf_eq, Function.comp_apply]
+  ext v
+  exact comm
+
+/-- A family of functions is definable when each coordinate is definable. -/
+def DefinableMap (F : (α → M) → (β → M)) : Prop :=
+  ∀ i : β, DefinableFun L A fun x => F x i
+
+variable {L A}
+
+/-- The preimage of a definable set under a definable map is definable. -/
+lemma definable_preimage_of_definableMap
+    {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : DefinableMap L A F)
+    {S : Set (β → M)} (hS : A.Definable L S) :
+    A.Definable L { v : α → M | F v ∈ S } := by
+  letI := Fintype.ofFinite β
+  let graph := { w : α ⊕ β → M | ∀ i, (F (w ∘ Sum.inl)) i = w (Sum.inr i) }
+  have h_graph : A.Definable L graph := by
+    simp only [graph]
+    rw [setOf_forall fun i x => F (x ∘ Sum.inl) i = x (Sum.inr i)]
+    have : ∀ i, A.Definable L {x | F (x ∘ Sum.inl) i = x (Sum.inr i)} := by
+      intro i
+      specialize hF i
+      simp [DefinableFun] at hF
+      let f : α ⊕ Unit → α ⊕ β := Sum.map id (fun _ => i)
+      convert hF.preimage_comp f using 1
+    convert definable_biInter_finset this Finset.univ using 1
+    simp
+  have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
+    hS.preimage_comp Sum.inr
+  have hS' := Definable.exists_fintype (Definable.inter h_graph h_cyl)
+  simp only [graph, inter_def] at hS'
+  convert hS' using 1
+  ext v
+  simp only [mem_setOf_eq, Sum.elim_comp_inl, Sum.elim_inr, Sum.elim_comp_inr]
+  constructor
+  · intro h ; use (F v) ; grind
+  · rintro ⟨u,hFv,hu⟩
+    have : F v = u := by exact (eqOn_univ (F v) u).mp fun ⦃x⦄ a ↦ hFv x
+    rwa [this]
+
+/-- The equalizer of two definable functions is a definable. -/
+lemma definable_equalizer {f g : (α → M) → M}
+    (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
+    A.Definable L {v : α → M | f v = g v} := by
+  let F : (α → M) → Fin 2 → M := fun v i => if i = 0 then f v else g v
+  have hF : DefinableMap L A F := by
+    intro i
+    fin_cases i
+    · exact hf
+    · exact hg
+  have hDiag : A.Definable L { v : Fin 2 → M | v 0 = v 1 } :=
+    Set.Definable.mono (Set.Definable.diagonal L) (empty_subset A)
+  convert definable_preimage_of_definableMap hF hDiag
+
+/-- The fiber of a definable function is definable. -/
+lemma definable_fiber {f : (α → M) → M} (hf : DefinableFun L A f) (a : A) :
+    A.Definable L {v : α → M | f v = a} := by
+  let F : (α → M) → Fin 2 → M := fun v i => if i = 0 then f v else a
+  have hF : DefinableMap L A F := by
+    intro i
+    fin_cases i
+    · exact hf
+    · simp only [F]
+      exact Definable.mono (definable_fun_of_const_fun L α (a : M)) (by grind)
+  have hDiag : A.Definable L { v : Fin 2 → M | v 0 = v 1 } :=
+    Set.Definable.mono (Set.Definable.diagonal L) (empty_subset A)
+  convert definable_preimage_of_definableMap hF hDiag
+
+end DefinableFun
+
+end
 
 end Language
 
