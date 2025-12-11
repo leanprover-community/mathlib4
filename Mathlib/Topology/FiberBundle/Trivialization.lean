@@ -594,7 +594,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
 /-- Post-composition of a `Trivialization` and a `Homeomorph`. -/
 protected def homeomorphComp {B' : Type*} [TopologicalSpace B'] (h : B ≃ₜ B') :
     Trivialization F (h ∘ proj) where
-  toPartialHomeomorph := e.toPartialHomeomorph.transHomeomorph (h.prodCongr <| .refl _)
+  toOpenPartialHomeomorph := e.toOpenPartialHomeomorph.transHomeomorph (h.prodCongr <| .refl _)
   baseSet := h.symm ⁻¹' e.baseSet
   open_baseSet := e.open_baseSet.preimage h.continuous_symm
   source_eq := by ext; simp [e.mem_source]
