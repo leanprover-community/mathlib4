@@ -72,7 +72,7 @@ def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (
         cases i using Fin.addCases <;>
         cases j using Fin.addCases <;>
         rw [Fin.le_def] at h ⊢ <;>
-        simp [Fin.coe_castAdd, Fin.coe_natAdd, Fin.addCases_left,
+        simp [Fin.val_castAdd, Fin.val_natAdd, Fin.addCases_left,
           Fin.addCases_right] at h ⊢
         · case left.left i j => exact f₁.toOrderHom.monotone h
         · case left.right i j => lia
