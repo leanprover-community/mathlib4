@@ -197,9 +197,7 @@ theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
   rw [psi_eq_sum_theta (by linarith), ← add_sum_Ioc_eq_sum_Icc]
   · congr
     simp
-  · apply le_floor
-    apply le_div_iff₀ (by positivity)|>.mpr
-    simp only [cast_one, one_mul]
+  · rw [le_floor_iff' one_ne_zero, le_div_iff₀ (by positivity), cast_one, one_mul]
     gcongr
 
 theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
