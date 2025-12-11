@@ -106,7 +106,6 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     simp only [shiftLeft_eq, Nat.one_mul]
     refine Nat.le_of_lt (Nat.le_trans lt_log2_self (le_add_right_of_le ?_))
     rw [← Nat.pow_add]
-    apply Nat.pow_le_pow_right (by decide)
     grind
 
 lemma sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n := (sqrt_isSqrt n).left

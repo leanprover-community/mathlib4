@@ -1208,10 +1208,7 @@ lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
 
 theorem find?_eq_dite {p : Fin n → Bool} :
     find? p = if h : ∃ i, p i then some (Fin.find (p ·) h) else none := by
-  split_ifs with h
-  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
-    grind
-  · simpa [find?_eq_none_iff] using h
+  split_ifs <;> grind
 
 theorem find?_decide_eq_dite :
     find? (p ·) = if h : ∃ i, p i then some (Fin.find p h) else none := by
