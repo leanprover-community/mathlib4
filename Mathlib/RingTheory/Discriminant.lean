@@ -212,7 +212,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     nodup_roots (Separable.map (Algebra.IsSeparable.isSeparable K pb.gen))
   have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
-    rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
+    rw [mem_roots, IsRoot.def, eval_map_algebraMap, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero pb.isIntegral_gen]
   apply (algebraMap K E).injective
   rw [map_mul, map_pow, map_neg, map_one, discr_powerBasis_eq_prod'' _ _ _ e]

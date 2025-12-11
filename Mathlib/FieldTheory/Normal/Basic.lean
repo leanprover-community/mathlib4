@@ -48,7 +48,7 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
                 Finset.prod_ne_zero_iff.2 fun x _ => ?_).2 ?_)
   · exact minpoly.ne_zero (h.isIntegral (s x))
-  rw [IsRoot.def, eval_map, ← aeval_def, map_prod]
+  rw [IsRoot.def, eval_map_algebraMap, map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
 
 section NormalTower
@@ -111,7 +111,8 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
-  simpa [Polynomial.map_map] using this.map (inclusion hE).toRingHom
+  have := this.map (inclusion hE).toRingHom -- necessary for performance reasons
+  rwa [Polynomial.map_map] at this
 
 /-- If a set of algebraic elements in a field extension `K/F` have minimal polynomials that
   split in another extension `L/F`, then all minimal polynomials in the intermediate field

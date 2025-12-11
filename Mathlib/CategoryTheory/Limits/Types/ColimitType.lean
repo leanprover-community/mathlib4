@@ -224,6 +224,17 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
 
+lemma iff_bijective {c' : CoconeTypes.{w₂} F}
+    (f : c.pt → c'.pt) (hf : ∀ j x, c'.ι j x = f (c.ι j x)) :
+    c'.IsColimit ↔ Function.Bijective f := by
+  refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
+  have h₁ := hc.bijective
+  rw [← Function.Bijective.of_comp_iff _ hc.bijective]
+  convert hc'.bijective
+  ext x
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+  simp [hf]
+
 end IsColimit
 
 /-- Structure which expresses that `c : F.CoconeTypes`
