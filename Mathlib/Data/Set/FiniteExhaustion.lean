@@ -57,6 +57,7 @@ theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset_succ' n
 protected theorem mono {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 
+@[simp]
 theorem iUnion_eq : ⋃ n, K n = s :=
   K.iUnion_eq'
 
