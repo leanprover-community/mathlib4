@@ -523,7 +523,7 @@ This command can be used in mathlib4 but it has an uncertain future and was crea
 for backward compatibility.
 -/
 elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    vis:(visibility)? "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
     pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
@@ -652,6 +652,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       let delabKeys : List DelabKey := ms.foldr (·.1 ++ ·) []
+      let vis ← vis.getDM do if isPrivateName (← getDeclNGen).namePrefix then
+        `(visibility| private) else `(visibility| public)
       for key in delabKeys do
         trace[notation3] "Creating delaborator for key {repr key}"
         let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
@@ -662,7 +664,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         elabCommand <| ← `(
           /-- Pretty printer defined by `notation3` command. -/
           @[$attrKind delab $(mkIdent key.key)]
-          public aux_def delab_app $(mkIdent fullName) : Delab :=
+          $vis:visibility aux_def delab_app $(mkIdent fullName) : Delab :=
             whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
     else
       logWarning s!"\
