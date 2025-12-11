@@ -213,10 +213,9 @@ theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
 /-- `|ψ x - θ x| ≤ c x √ x` with an explicit constant c. -/
 theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
     |ψ x - θ x| ≤ 2 * x.sqrt * x.log := by
-  by_cases hx : x < 2
+  by_cases! hx : x < 2
   · rw [psi_eq_zero_of_lt_two hx, theta_eq_zero_of_lt_two hx, sub_zero, abs_zero]
     bound
-  push_neg at hx
   rw [psi_eq_theta_add_sum_theta hx, add_sub_cancel_left]
   apply le_trans <| abs_sum_le_sum_abs ..
   simp_rw [abs_of_nonneg <| theta_nonneg _]
