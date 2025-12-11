@@ -111,14 +111,14 @@ variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate. -/
-def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
+    AddMonoidActionHom (AddAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_vadd' := fun ⟨k, hk⟩ x ↦ by
-    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
-      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
+    simp [← SetLike.coe_eq_coe, AddMonoidAction.addSubgroup_vadd_def,
+      AddMonoidAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate. -/
@@ -136,14 +136,14 @@ variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
-theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
-    {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
+    {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
     CompTriple (AddAction.stabilizerEquivStabilizer hg)
       (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
+    simp [AddMonoidAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
 
 variable {hg hh hk} in
 @[to_additive existing]

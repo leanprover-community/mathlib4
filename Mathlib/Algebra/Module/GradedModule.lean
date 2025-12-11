@@ -155,7 +155,7 @@ end
 open DirectSum
 
 variable {ιA ιM R A M σ σ' : Type*}
-variable [AddMonoid ιA] [AddAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
+variable [AddMonoid ιA] [AddMonoidAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
 variable (𝓐 : ιA → σ') [SetLike σ' A]
 variable (𝓜 : ιM → σ)
 

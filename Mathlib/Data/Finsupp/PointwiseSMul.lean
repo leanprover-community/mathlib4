@@ -54,7 +54,7 @@ theorem mem_vaddAntidiagonal_iff [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zer
     gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
   simp [vaddAntidiagonal]
 
-theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [Zero V]
+theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddMonoidAction G P] [Zero R] [Zero V]
     (f : G →₀ R) (x : P → V) (p : P) (gh : G × P) :
     gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.2 = -gh.1 +ᵥ p := by
   rw [mem_vaddAntidiagonal_iff, eq_neg_vadd_iff]
@@ -68,7 +68,7 @@ theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SM
     (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2 := rfl
 
-theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoid V]
+theorem smul_apply_addAction [AddGroup G] [AddMonoidAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.support, (f i) • x (-i +ᵥ p) := by
   rw [smul_eq, Finset.sum_of_injOn Prod.fst]

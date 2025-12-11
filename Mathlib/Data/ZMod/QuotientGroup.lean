@@ -50,11 +50,11 @@ lemma index_zmultiples (a : ℤ) : (AddSubgroup.zmultiples a).index = a.natAbs :
 end Int
 
 
-namespace AddAction
+namespace AddMonoidAction
 
 open AddSubgroup AddMonoidHom AddEquiv Function
 
-variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
+variable {α β : Type*} [AddGroup α] (a : α) [AddMonoidAction α β] (b : β)
 
 /-- The quotient `(ℤ ∙ a) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod (a +ᵥ ·) b`. -/
 noncomputable def zmultiplesQuotientStabilizerEquiv :
@@ -79,11 +79,11 @@ theorem zmultiplesQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a
       (cast n : ℤ) • (⟨a, mem_zmultiples a⟩ : zmultiples a) :=
   rfl
 
-end AddAction
+end AddMonoidAction
 
 namespace MonoidAction
 
-open AddAction Subgroup AddSubgroup Function
+open AddMonoidAction Subgroup AddSubgroup Function
 
 variable {α β : Type*} [Group α] (a : α) [MonoidAction α β] (b : β)
 
@@ -102,9 +102,9 @@ noncomputable def orbitZPowersEquiv : orbit (zpowers a) b ≃ ZMod (minimalPerio
   (orbitEquivQuotientStabilizer _ b).trans (zpowersQuotientStabilizerEquiv a b).toEquiv
 
 /-- The orbit `(ℤ • a) +ᵥ b` is a cycle of order `minimalPeriod (a +ᵥ ·) b`. -/
-noncomputable def _root_.AddAction.orbitZMultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
-    [AddAction α β] (b : β) :
-    AddAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod (a +ᵥ ·) b) :=
+noncomputable def _root_.AddMonoidAction.orbitZMultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
+    [AddMonoidAction α β] (b : β) :
+    AddMonoidAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod (a +ᵥ ·) b) :=
   (AddAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
     (zmultiplesQuotientStabilizerEquiv a b).toEquiv
 
@@ -122,11 +122,11 @@ theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
   rw [orbitZPowersEquiv_symm_apply, ZMod.coe_intCast]
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
 
-theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
-    [AddAction α β] (b : β) (k : ℤ) :
+theorem _root_.AddMonoidAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
+    [AddMonoidAction α β] (b : β) (k : ℤ) :
     (AddAction.orbitZMultiplesEquiv a b).symm k =
-      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
-  rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
+      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddMonoidAction.mem_orbit_self b⟩ := by
+  rw [AddMonoidAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
   -- Making `a` explicit turns this from ~190000 heartbeats to ~700.
   exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a _ k)
 

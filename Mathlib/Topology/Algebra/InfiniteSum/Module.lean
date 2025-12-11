@@ -221,9 +221,9 @@ lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : �
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
+lemma AddMonoidAction.automorphize_smul_left [AddGroup α] [AddMonoidAction α β] (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
-    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+    AddMonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
   ext x
   apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
@@ -267,7 +267,7 @@ variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
 lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
-  AddAction.automorphize_smul_left f g
+  AddMonoidAction.automorphize_smul_left f g
 
 end
 

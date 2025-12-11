@@ -302,7 +302,7 @@ instance instVAdd : VAdd V (AffineBasis ι k P) where
   ext
   simp
 
-instance instAddAction : AddAction V (AffineBasis ι k P) :=
+instance instAddMonoidAction : AddMonoidAction V (AffineBasis ι k P) :=
   DFunLike.coe_injective.addAction _ coe_vadd
 
 @[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :

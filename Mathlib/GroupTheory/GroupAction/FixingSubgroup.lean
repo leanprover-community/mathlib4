@@ -48,7 +48,7 @@ open MonoidAction
 variable (M : Type*) {α : Type*} [Monoid M] [MonoidAction M α]
 
 /-- The submonoid fixing a set under a `MonoidAction`. -/
-@[to_additive /-- The additive submonoid fixing a set under an `AddAction`. -/]
+@[to_additive /-- The additive submonoid fixing a set under an `AddMonoidAction`. -/]
 def fixingSubmonoid (s : Set α) : Submonoid M where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
@@ -109,7 +109,7 @@ open MonoidAction
 variable (M : Type*) {α : Type*} [Group M] [MonoidAction M α]
 
 /-- The subgroup fixing a set under a `MonoidAction`. -/
-@[to_additive /-- The additive subgroup fixing a set under an `AddAction`. -/]
+@[to_additive /-- The additive subgroup fixing a set under an `AddMonoidAction`. -/]
 def fixingSubgroup (s : Set α) : Subgroup M :=
   { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
 

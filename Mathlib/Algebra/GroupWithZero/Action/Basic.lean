@@ -16,7 +16,7 @@ public import Mathlib.Algebra.GroupWithZero.Prod
 This file defines a hierarchy of group action type-classes on top of the previously defined
 notation classes `SMul` and its additive version `VAdd`:
 
-* `MonoidAction M α` and its additive version `AddAction G P` are typeclasses used for
+* `MonoidAction M α` and its additive version `AddMonoidAction G P` are typeclasses used for
   actions of multiplicative and additive monoids and groups; they extend notation classes
   `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on

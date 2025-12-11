@@ -79,10 +79,10 @@ variable (G : Type*) (X : Type*)
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-class _root_.AddAction.IsPreprimitive [VAdd G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop extends AddMonoidAction.IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
-  isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
+  isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddMonoidAction.IsBlock G B → AddMonoidAction.IsTrivialBlock B
 
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
@@ -96,11 +96,11 @@ open IsPreprimitive
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
-class _root_.AddAction.IsQuasiPreprimitive
-    [AddGroup G] [AddAction G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsQuasiPreprimitive
+    [AddGroup G] [AddMonoidAction G X] : Prop extends AddMonoidAction.IsPretransitive G X where
   isPretransitive_of_normal :
-    ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
-      AddAction.IsPretransitive N X
+    ∀ {N : AddSubgroup G} [N.Normal], AddMonoidAction.fixedPoints N X ≠ .univ →
+      AddMonoidAction.IsPretransitive N X
 
 /-- An action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
@@ -182,8 +182,8 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
 @[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+alias _root_.AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
@@ -404,8 +404,8 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     use g, x
 
 @[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
-  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
+alias _root_.AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
+  AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul

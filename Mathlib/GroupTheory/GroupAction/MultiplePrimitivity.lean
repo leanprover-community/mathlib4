@@ -80,14 +80,14 @@ end Preprimitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
-class _root_.AddAction.IsMultiplyPreprimitive
-    (M α : Type*) [AddGroup M] [AddAction M α] (n : ℕ) where
+class _root_.AddMonoidAction.IsMultiplyPreprimitive
+    (M α : Type*) [AddGroup M] [AddMonoidAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive -/
-  isMultiplyPretransitive (M α n) : AddAction.IsMultiplyPretransitive M α n
+  isMultiplyPretransitive (M α n) : AddMonoidAction.IsMultiplyPretransitive M α n
   /-- In an `n`-preprimitive action, the action of `fixingAddSubgroup M s`
   on `ofFixingAddSubgroup M s` is preprimitive, for all sets `s` such that `s.encard + 1 = n` -/
   isPreprimitive_ofFixingAddSubgroup (M n) {s : Set α} (hs : s.encard + 1 = n) :
-    AddAction.IsPreprimitive (fixingAddSubgroup M s) (SubAddAction.ofFixingAddSubgroup M s)
+    AddMonoidAction.IsPreprimitive (fixingAddSubgroup M s) (SubAddAction.ofFixingAddSubgroup M s)
 
 /-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality

@@ -155,7 +155,7 @@ universe u v w
 variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → Type w}
   [∀ i, AddTorsor (fg i) (fp i)]
 
-open AddAction AddTorsor
+open AddMonoidAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
 instance instAddTorsor : AddTorsor (∀ i, fg i) (∀ i, fp i) where

@@ -42,15 +42,15 @@ variable {M G α β : Type*}
 for an additive action). A transitive action should furthermore have `α` nonempty.
 
 In this section we define typeclasses `MonoidAction.IsPretransitive` and
-`AddAction.IsPretransitive` and provide `MonoidAction.exists_smul_eq`/`AddAction.exists_vadd_eq`,
-`MonoidAction.surjective_smul`/`AddAction.surjective_vadd` as public interface to access this
+`AddMonoidAction.IsPretransitive` and provide `MonoidAction.exists_smul_eq`/`AddMonoidAction.exists_vadd_eq`,
+`MonoidAction.surjective_smul`/`AddMonoidAction.surjective_vadd` as public interface to access this
 property. We do not provide typeclasses `*Action.IsTransitive`; users should assume
 `[MonoidAction.IsPretransitive M α] [Nonempty α]` instead.
 -/
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
+class AddMonoidAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
   /-- There is `g` such that `g +ᵥ x = y`. -/
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 
@@ -114,11 +114,11 @@ section
 open Additive Multiplicative
 
 instance Additive.addAction_isPretransitive [Monoid α] [MonoidAction α β]
-    [MonoidAction.IsPretransitive α β] : AddAction.IsPretransitive (Additive α) β :=
+    [MonoidAction.IsPretransitive α β] : AddMonoidAction.IsPretransitive (Additive α) β :=
   ⟨@MonoidAction.exists_smul_eq α _ _ _⟩
 
-instance Multiplicative.mulAction_isPretransitive [AddMonoid α] [AddAction α β]
-    [AddAction.IsPretransitive α β] : MonoidAction.IsPretransitive (Multiplicative α) β :=
-  ⟨@AddAction.exists_vadd_eq α _ _ _⟩
+instance Multiplicative.mulAction_isPretransitive [AddMonoid α] [AddMonoidAction α β]
+    [AddMonoidAction.IsPretransitive α β] : MonoidAction.IsPretransitive (Multiplicative α) β :=
+  ⟨@AddMonoidAction.exists_vadd_eq α _ _ _⟩
 
 end

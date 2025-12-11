@@ -28,7 +28,7 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
 * `MonoidAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
-  an equivalent `AddAction.period g x` is defined for additive actions.
+  an equivalent `AddMonoidAction.period g x` is defined for additive actions.
 
 ## Main statements
 
@@ -572,7 +572,7 @@ such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
 /-- `MonoidAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive /-- `AddAction.period m a` is definitionally equal to
+@[to_additive /-- `AddMonoidAction.period m a` is definitionally equal to
 `Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MonoidAction.period m a = minimalPeriod (fun x => m • x) a := rfl

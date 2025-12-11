@@ -32,7 +32,7 @@ as well as their interaction with `MonoidActionHom`.
   do not commute from the disjointness of the `(fixedBy α g)ᶜ` set and `h • (fixedBy α g)ᶜ`,
   which is a property used in the proof of Rubin's theorem.
 
-The theorems above are also available for `AddAction`.
+The theorems above are also available for `AddMonoidAction`.
 
 ## Pointwise group action and `fixedBy (Set α) g`
 
@@ -273,7 +273,7 @@ end MonoidAction
 namespace MonoidActionHom
 
 /-- `MonoidActionHom` maps `fixedPoints` to `fixedPoints`. -/
-@[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
+@[to_additive /-- `AddMonoidActionHom` maps `fixedPoints` to `fixedPoints`. -/]
 lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
     (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MonoidAction.fixedPoints H A) :
     f a ∈ MonoidAction.fixedPoints H B := by
@@ -281,7 +281,7 @@ lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidA
   simp_all [← f.map_smul h a]
 
 /-- `MonoidActionHom` maps `fixedBy` to `fixedBy`. -/
-@[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
+@[to_additive /-- `AddMonoidActionHom` maps `fixedBy` to `fixedBy`. -/]
 lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
     (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MonoidAction.fixedBy A g) :
     f a ∈ MonoidAction.fixedBy B g := by

@@ -177,7 +177,7 @@ variable (G α)
 /-- An action is pretransitive if and only if the quotient by `MonoidAction.orbitRel` is a
 subsingleton. -/
 @[to_additive /-- An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton. -/]
+`AddMonoidAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -300,8 +300,8 @@ end Stabilizer
 
 end MonoidAction
 
-namespace AddAction
-variable {G α : Type*} [AddGroup G] [AddAction G α]
+namespace AddMonoidAction
+variable {G α : Type*} [AddGroup G] [AddMonoidAction G α]
 
 variable {g h k : G} {a b c : α}
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
@@ -353,7 +353,7 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
   (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
 
-end AddAction
+end AddMonoidAction
 
 attribute [to_additive existing] MonoidAction.stabilizerEquivStabilizer
 attribute [to_additive existing] MonoidAction.stabilizerEquivStabilizer_trans

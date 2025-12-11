@@ -287,7 +287,7 @@ For `Finite α`, use `MonoidAction.isMultiplyPretransitive_of_le` -/
 is `n`-pretransitive for any `m ≤ n`.
 
 This version allows `α` to be infinite and uses `ENat.card`.
-For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`. -/]
+For `Finite α`, use `AddMonoidAction.isMultiplyPretransitive_of_le`. -/]
 theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
     IsMultiplyPretransitive G α m := by

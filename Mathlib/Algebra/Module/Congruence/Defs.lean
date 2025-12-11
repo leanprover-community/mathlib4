@@ -139,7 +139,7 @@ section ker
 variable {R M N}
 
 /-- The kernel of a `MonoidActionHom` as a congruence relation. -/
-@[to_additive /-- The kernel of an `AddActionHom` as a congruence relation. -/]
+@[to_additive /-- The kernel of an `AddMonoidActionHom` as a congruence relation. -/]
 def SMulCon.ker [SMul R M] [SMul S N] {φ : R → S} (f : M →ₑ[φ] N) : SMulCon R M where
   __ := Setoid.ker f
   smul r _ _ h := by rw [Setoid.ker_def] at h ⊢; simp_rw [map_smulₛₗ, h]

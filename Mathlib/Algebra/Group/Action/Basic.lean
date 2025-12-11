@@ -35,10 +35,10 @@ def MonoidAction.toPerm (a : α) : Equiv.Perm β :=
   ⟨fun x => a • x, fun x => a⁻¹ • x, inv_smul_smul a, smul_inv_smul a⟩
 
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
-add_decl_doc AddAction.toPerm
+add_decl_doc AddMonoidAction.toPerm
 
 /-- `MonoidAction.toPerm` is injective on faithful actions. -/
-@[to_additive /-- `AddAction.toPerm` is injective on faithful actions. -/]
+@[to_additive /-- `AddMonoidAction.toPerm` is injective on faithful actions. -/]
 lemma MonoidAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MonoidAction.toPerm) from smul_left_injective').of_comp
@@ -95,7 +95,7 @@ section Arrow
 variable {G A B : Type*} [DivisionMonoid G] [MonoidAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive (attr := simps) arrowAddAction
+@[to_additive (attr := simps) arrowAddMonoidAction
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MonoidAction G (A → B) where
   smul g F a := F (g⁻¹ • a)

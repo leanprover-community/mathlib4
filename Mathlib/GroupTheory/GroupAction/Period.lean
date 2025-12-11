@@ -12,12 +12,12 @@ public import Mathlib.GroupTheory.GroupAction.Basic
 /-!
 # Period of a group action
 
-This module defines some helpful lemmas around [`MonoidAction.period`] and [`AddAction.period`].
+This module defines some helpful lemmas around [`MonoidAction.period`] and [`AddMonoidAction.period`].
 The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a`
 (resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
 
 If such an `m` does not exist,
-then by convention `MonoidAction.period` and `AddAction.period` return 0.
+then by convention `MonoidAction.period` and `AddMonoidAction.period` return 0.
 -/
 
 @[expose] public section

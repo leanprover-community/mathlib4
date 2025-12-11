@@ -721,9 +721,9 @@ section QuotientMeasureEqMeasurePreimage
 
 section additive
 
-variable [AddGroup G] [AddAction G α] [MeasurableSpace α]
+variable [AddGroup G] [AddMonoidAction G α] [MeasurableSpace α]
 
-local notation "α_mod_G" => AddAction.orbitRel G α
+local notation "α_mod_G" => AddMonoidAction.orbitRel G α
 
 local notation "π" => @Quotient.mk _ α_mod_G
 

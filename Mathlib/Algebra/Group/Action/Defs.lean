@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Spread
 This file defines a hierarchy of group action type-classes on top of the previously defined
 notation classes `SMul` and its additive version `VAdd`:
 
-* `MonoidAction M α` and its additive version `AddAction G P` are typeclasses used for
+* `MonoidAction M α` and its additive version `AddMonoidAction G P` are typeclasses used for
   actions of multiplicative and additive monoids and groups; they extend notation classes
   `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
@@ -52,7 +52,7 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
+attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddMonoidAction` -/] instSMulOfMul
 
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMonoidAction` and `MulZeroClass.toSMulWithZero`. -/
@@ -64,7 +64,7 @@ def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 See also `Monoid.toOppositeMonoidAction` and `MonoidWithZero.toOppositeMonoidActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.toOppositeAddAction`. -/]
+  See also `AddMonoid.toOppositeAddMonoidAction`. -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
@@ -106,15 +106,15 @@ class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
 /--
 Type class for additive monoid actions on types, with notation `g +ᵥ p`.
 
-The `AddAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
+The `AddMonoidAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
 More precisely this means that the action satisfies the two axioms `0 +ᵥ p = p` and
 `(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the additive monoid `G`
 acts on `P`.
 
 For example, if `A` is an additive group and `X` is a type, if a mathematician says
-say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
+say "let `A` act on the set `X`" they will usually mean `[AddMonoidAction A X]`.
 -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
+class AddMonoidAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
 
@@ -127,7 +127,7 @@ More precisely this means that the action satisfies the two axioms `1 • p = p`
 acts on `P`.
 
 For example, if `G` is a group and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+say "let `G` act on the set `X`" they will probably mean  `[AddMonoidAction G X]`.
 -/
 @[to_additive (attr := ext)]
 class MonoidAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
@@ -282,7 +282,7 @@ variable [SMul M α]
 
 /-- Auxiliary definition for `SMul.comp`, `MonoidAction.compHom`,
 `DistribMulAction.compHom`, `Module.compHom`, etc. -/
-@[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
+@[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddMonoidAction.compHom`, etc. -/]
 def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
 
 variable (α)

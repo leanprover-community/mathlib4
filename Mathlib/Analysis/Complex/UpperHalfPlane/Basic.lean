@@ -190,9 +190,9 @@ theorem pos_real_re : (x • z).re = x * z.re :=
 
 end PosRealAction
 
-section RealAddAction
+section RealAddMonoidAction
 
-instance : AddAction ℝ ℍ where
+instance : AddMonoidAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := Subtype.ext <| by simp [HVAdd.hVAdd]
   add_vadd x y z := Subtype.ext <| by simp [HVAdd.hVAdd, add_assoc]
@@ -211,7 +211,7 @@ theorem vadd_re : (x +ᵥ z).re = x + z.re :=
 theorem vadd_im : (x +ᵥ z).im = z.im :=
   zero_add _
 
-end RealAddAction
+end RealAddMonoidAction
 
 section upperHalfPlaneSet
 

@@ -21,7 +21,7 @@ This file provides:
 and the actions
 
 * `Submonoid.pointwiseMonoidAction`
-* `AddSubmonoid.pointwiseAddAction`
+* `AddSubmonoid.pointwiseAddMonoidAction`
 
 which matches the action of `Set.mulActionSet`.
 

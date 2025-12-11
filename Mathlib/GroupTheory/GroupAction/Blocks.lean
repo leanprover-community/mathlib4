@@ -371,11 +371,11 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
+theorem _root_.AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
+    {G : Type*} [AddGroup G] {X : Type*} [AddMonoidAction G X] {B : Set X}
+    {H : AddSubgroup G} (hB : AddMonoidAction.IsBlock H B) (g : G) :
+    AddMonoidAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
+  rw [AddMonoidAction.isBlock_iff_vadd_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
   simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
@@ -405,13 +405,13 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
-theorem _root_.AddAction.IsBlock.translate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
-    (g : G) (hB : AddAction.IsBlock G B) :
-    AddAction.IsBlock G (g +ᵥ B) := by
-  rw [← AddAction.isBlock_top] at hB ⊢
+theorem _root_.AddMonoidAction.IsBlock.translate
+    {G : Type*} [AddGroup G] {X : Type*} [AddMonoidAction G X] (B : Set X)
+    (g : G) (hB : AddMonoidAction.IsBlock G B) :
+    AddMonoidAction.IsBlock G (g +ᵥ B) := by
+  rw [← AddMonoidAction.isBlock_top] at hB ⊢
   rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
+  · apply AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
     rwa [AddSubgroup.comap_top]
   · exact (AddAut.conj g).surjective
 
@@ -500,7 +500,7 @@ variable [MonoidAction G H] [IsScalarTower G H H]
 
 /-- See `MonoidAction.isBlock_subgroup'` for a version that works for the right action of a group on
 itself. -/
-@[to_additive /-- See `AddAction.isBlock_subgroup'` for a version that works for the right action
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup'` for a version that works for the right action
 of a group on itself. -/]
 lemma isBlock_subgroup : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
@@ -517,7 +517,7 @@ open MulOpposite
 
 /-- See `MonoidAction.isBlock_subgroup` for a version that works for the left action of a group on
 itself. -/
-@[to_additive /-- See `AddAction.isBlock_subgroup` for a version that works for the left action
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup` for a version that works for the left action
 of a group on itself. -/]
 lemma isBlock_subgroup' : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]

@@ -104,10 +104,10 @@ theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
     ((g • s : n.Combination α) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
-theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
+theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
-      ↔ AddAction.toPerm g = (1 : Equiv.Perm α) := by
+    AddMonoidAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
+      ↔ AddMonoidAction.toPerm g = (1 : Equiv.Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
     have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
@@ -116,22 +116,22 @@ theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α
     rw [Equiv.ext_iff, not_forall]
     use s
     contrapose! has'
-    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
+    simp only [AddMonoidAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
     rw [← has']
     simpa [← mem_coe_iff]
-  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
+  · simp only [Equiv.ext_iff, AddMonoidAction.toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
 
 /-- If an additive group `G` acts faithfully on `α`,
 then it acts faithfully on `n.Combination α`,
 provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
+theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
     FaithfulVAdd G (n.Combination α) := by
   rw [faithfulVAdd_iff]
   intro g hg
-  apply AddAction.toPerm_injective (α := G) (β := α)
-  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
+  apply AddMonoidAction.toPerm_injective (α := G) (β := α)
+  rw [AddMonoidAction.toPerm_zero, ← addAction_faithful hn hα]
   exact Equiv.Perm.ext_iff.mpr hg
 
 theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MonoidAction G α] {n : ℕ}

@@ -53,7 +53,7 @@ abbrev compHom [Monoid N] (g : N →* M) : MonoidAction N α where
 an additive action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-add_decl_doc AddAction.compHom
+add_decl_doc AddMonoidAction.compHom
 
 @[to_additive]
 lemma compHom_smul_def

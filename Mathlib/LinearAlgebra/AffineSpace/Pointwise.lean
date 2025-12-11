@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
-This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
+This file provides the additive action `AffineSubspace.pointwiseAddMonoidAction` in the
 `Pointwise` locale.
 
 -/
@@ -44,10 +44,10 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
+protected def pointwiseAddMonoidAction : AddMonoidAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
-scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
+scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddMonoidAction
 
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=

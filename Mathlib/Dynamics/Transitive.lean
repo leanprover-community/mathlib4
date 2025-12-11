@@ -28,8 +28,8 @@ open scoped Pointwise
 /-- An action of an additive monoid `M` on a topological space `α` is called
 *topologically transitive* if for any pair of nonempty open sets `U` and `V` in `α` there exists an
 `m : M` such that `(m +ᵥ U) ∩ V` is nonempty. -/
-class AddAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
-    [AddAction M α] : Prop where
+class AddMonoidAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
+    [AddMonoidAction M α] : Prop where
   exists_vadd_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m +ᵥ U) ∩ V).Nonempty
 

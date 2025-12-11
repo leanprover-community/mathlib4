@@ -52,9 +52,9 @@ class QuotientAction : Prop where
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, a⁻¹ * a' ∈ H → (b • a)⁻¹ * b • a' ∈ H
 
-/-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
-  [AddAction β α] (H : AddSubgroup α) : Prop where
+/-- A typeclass for when an `AddMonoidAction β α` descends to the quotient `α ⧸ H`. -/
+class _root_.AddMonoidAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
+  [AddMonoidAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, -a + a' ∈ H → -(b +ᵥ a) + (b +ᵥ a') ∈ H
@@ -169,13 +169,13 @@ noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ 
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
-@[to_additive AddAction.orbitProdStabilizerEquivAddGroup /-- Orbit-stabilizer theorem. -/]
+@[to_additive AddMonoidAction.orbitProdStabilizerEquivAddGroup /-- Orbit-stabilizer theorem. -/]
 noncomputable def orbitProdStabilizerEquivGroup (b : β) : orbit α b × stabilizer α b ≃ α :=
   (Equiv.prodCongr (orbitEquivQuotientStabilizer α _) (Equiv.refl _)).trans
     Subgroup.groupEquivQuotientProdSubgroup.symm
 
 /-- Orbit-stabilizer theorem. -/
-@[to_additive AddAction.card_orbit_mul_card_stabilizer_eq_card_addGroup
+@[to_additive AddMonoidAction.card_orbit_mul_card_stabilizer_eq_card_addGroup
 /-- Orbit-stabilizer theorem. -/]
 theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fintype <| orbit α b]
     [Fintype <| stabilizer α b] :
@@ -208,7 +208,7 @@ provide `MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case
       the relation `orbit_rel G X`) to an element in this orbit, this gives a (noncomputable)
       bijection between `X` and the disjoint union of `G/Stab(φ(ω))` over all orbits `ω`. In most
       cases you'll want `φ` to be `Quotient.out`, so we provide
-      `AddAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. -/]
+      `AddMonoidAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. -/]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     (hφ : LeftInverse Quotient.mk'' φ) : β ≃ Σ ω : Ω, α ⧸ stabilizer α (φ ω) :=
   calc
@@ -222,14 +222,14 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 `MonoidAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/
 @[to_additive
       /-- **Class formula**. This is a special case of
-      `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/]
+      `AddMonoidAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α ⧸ stabilizer α ω.out :=
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
 `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is a group acting on `X` and
 `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/
-@[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
+@[to_additive AddMonoidAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
       acting on `X` and `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
@@ -254,7 +254,7 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
-@[to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
+@[to_additive AddMonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
       /-- **Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. -/]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
@@ -384,7 +384,7 @@ to the product of the quotient of `β` by `α` and `α`.
 See `MonoidAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
 @[to_additive selfEquivOrbitsQuotientProd' /-- If `α` acts freely on `β`, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
-See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/]
+See `AddMonoidAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/]
 noncomputable def selfEquivOrbitsQuotientProd'
     {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
     (h : ∀ b : β, MonoidAction.stabilizer α b = ⊥) :

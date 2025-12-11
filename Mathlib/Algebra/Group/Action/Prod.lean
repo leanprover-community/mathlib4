@@ -115,8 +115,8 @@ variable (M N α) [Monoid M] [Monoid N]
 
 /-- Construct a `MonoidAction` by a product monoid from `MonoidAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
-@[to_additive AddAction.prodOfVAddCommClass
-/-- Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
+@[to_additive AddMonoidAction.prodOfVAddCommClass
+/-- Construct an `AddMonoidAction` by a product monoid from `AddMonoidAction`s by the factors.
 This is not an instance to avoid diamonds for example when `α := M × N`. -/]
 abbrev MonoidAction.prodOfSMulCommClass [MonoidAction M α] [MonoidAction N α] [SMulCommClass M N α] :
     MonoidAction (M × N) α where
@@ -127,8 +127,8 @@ abbrev MonoidAction.prodOfSMulCommClass [MonoidAction M α] [MonoidAction N α] 
     rw [mul_smul, mul_smul, smul_comm y.1 x.2]
 
 /-- A `MonoidAction` by a product monoid is equivalent to commuting `MonoidAction`s by the factors. -/
-@[to_additive AddAction.prodEquiv
-/-- An `AddAction` by a product monoid is equivalent to commuting `AddAction`s by the factors. -/]
+@[to_additive AddMonoidAction.prodEquiv
+/-- An `AddMonoidAction` by a product monoid is equivalent to commuting `AddMonoidAction`s by the factors. -/]
 def MonoidAction.prodEquiv :
     MonoidAction (M × N) α ≃ Σ' (_ : MonoidAction M α) (_ : MonoidAction N α), SMulCommClass M N α where
   toFun _ :=

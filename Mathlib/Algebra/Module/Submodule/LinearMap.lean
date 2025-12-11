@@ -104,15 +104,15 @@ theorem injective_subtype : Injective p.subtype :=
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 
-section AddAction
+section AddMonoidAction
 
 variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
-instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
+instance [AddMonoidAction M α] : AddMonoidAction p α :=
+  AddMonoidAction.compHom _ p.subtype.toAddMonoidHom
 
-end AddAction
+end AddMonoidAction
 
 end AddCommMonoid
 

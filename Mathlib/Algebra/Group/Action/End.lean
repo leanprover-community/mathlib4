@@ -59,7 +59,7 @@ instance applyMonoidAction : MonoidAction (Function.End α) α where
   mul_smul _ _ _ := rfl
 
 /-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance applyAddAction : AddAction (Additive (Function.End α)) α := inferInstance
+instance applyAddMonoidAction : AddMonoidAction (Additive (Function.End α)) α := inferInstance
 
 @[simp] lemma smul_def (f : Function.End α) (a : α) : f • a = f a := rfl
 
@@ -173,14 +173,14 @@ variable [AddMonoid M]
 
 /-- The additive monoid hom representing an additive monoid action.
 
-When `M` is a group, see `AddAction.toPermHom`. -/
-def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
+When `M` is a group, see `AddMonoidAction.toPermHom`. -/
+def AddMonoidAction.toEndHom [AddMonoidAction M α] : M →+ Additive (Function.End α) :=
   MonoidAction.toEndHom.toAdditiveRight
 
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
-abbrev AddAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddAction M α := .compHom α f
+abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddMonoidAction M α := .compHom α f
 
 end AddMonoid
 
@@ -205,18 +205,18 @@ lemma MonoidAction.toPerm_one :
 end Group
 
 section AddGroup
-variable (G α) [AddGroup G] [AddAction G α]
+variable (G α) [AddGroup G] [AddMonoidAction G α]
 
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
+def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
-lemma AddAction.coe_toPermHom :
-    ⇑(AddAction.toPermHom G α) = AddAction.toPerm :=
+lemma AddMonoidAction.coe_toPermHom :
+    ⇑(AddAction.toPermHom G α) = AddMonoidAction.toPerm :=
   rfl
 
-theorem AddAction.toPerm_zero :
+theorem AddMonoidAction.toPerm_zero :
     (AddAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
   aesop
 

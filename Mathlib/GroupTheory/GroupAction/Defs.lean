@@ -340,14 +340,14 @@ variable (G α)
 
 /-- The quotient by `MonoidAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive
-    /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
+    /-- The quotient by `AddMonoidAction.orbitRel`, given a name to enable dot notation. -/]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MonoidAction.orbitRel` -/
-@[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
+@[to_additive /-- The orbit corresponding to an element of the quotient by `AddMonoidAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
   Quotient.liftOn' x (orbit G) fun _ _ => MonoidAction.orbit_eq_iff.2
 
@@ -466,8 +466,8 @@ This version is expressed in terms of `MonoidAction.orbitRel.Quotient.orbit` ins
 @[to_additive
   /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-  This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-  `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
+  This version is expressed in terms of `AddMonoidAction.orbitRel.Quotient.orbit` instead of
+  `AddMonoidAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -487,7 +487,7 @@ def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MonoidAction.selfEquivSigmaOrbits` for the type isomorphism. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
-group action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type
+group action. Phrased as a set union. See `AddMonoidAction.selfEquivSigmaOrbits` for the type
 isomorphism. -/]
 lemma univ_eq_iUnion_orbit :
     Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
