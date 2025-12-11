@@ -292,13 +292,7 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi
 
-/-!
-## Forward differences of polynomials
-
-We prove a formula about the forward difference operator applied to polynomials:
-* `sum_shift_eq_fwdDiff_iter` :
-  A formula for the sum of a polynomial sequence, which generalizes **Faulhaber's formula**.
--/
+/-- A formula for the sum of a polynomial sequence, which generalizes **Faulhaber's formula**. -/
 theorem sum_shift_eq_fwdDiff_iter (f : M → G) (y : M) {n : ℕ} (hn : 0 < n) :
     ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range (n + 1), n.choose (k + 1) • Δ_[h]^[k] f y := by
   simp_rw [shift_eq_sum_fwdDiff_iter]
