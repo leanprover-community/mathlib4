@@ -29,9 +29,11 @@ open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topo
     rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
     exact ⟨C, by grind⟩
 
+variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
+
+variable (E) in
 /-- In a compact space, the set of finite measures with mass at most `C` is compact. -/
-theorem isCompact_setOf_finiteMeasure_le_of_compactSpace (E : Type*) [MeasurableSpace E]
-    [TopologicalSpace E] [T2Space E] [CompactSpace E] [BorelSpace E] (C : ℝ≥0) :
+theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C} := by
   /- To prove the compactness, we will show that any sequence has a converging subsequence, in
   ultrafilters terms as things are not second countable. The integral against any bounded continuous
@@ -121,9 +123,9 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace (E : Type*) [Measurable
   simp only [FiniteMeasure.toMeasure_mk, RealRMK.integral_rieszMeasure, μlim', μlim]
   rfl
 
+variable (E) in
 /-- In a compact space, the set of finite measures with mass `C` is compact. -/
-lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace (E : Type*) [MeasurableSpace E]
-    [TopologicalSpace E] [T2Space E] [CompactSpace E] [BorelSpace E] (C : ℝ≥0) :
+lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C} := by
   have : {μ : FiniteMeasure E | μ.mass = C} = {μ | μ.mass ≤ C} ∩  {μ | μ.mass = C} := by grind
   rw [this]
@@ -131,12 +133,14 @@ lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace (E : Type*) [MeasurableSp
   exact isClosed_eq (by fun_prop) (by fun_prop)
 
 /-- In a compact space, the space of probability measures is also compact. -/
-instance {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [CompactSpace E]
-    [BorelSpace E] : CompactSpace (ProbabilityMeasure E) := by
+instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   constructor
   apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
   simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
   apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
+
+
+#exit
 
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
