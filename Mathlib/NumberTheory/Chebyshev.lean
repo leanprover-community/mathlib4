@@ -203,9 +203,8 @@ theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
     gcongr
 
 theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
-  by_cases h : x < 2
+  by_cases! h : x < 2
   · rw [theta_eq_zero_of_lt_two h, psi_eq_zero_of_lt_two h]
-  push_neg at h
   rw [psi_eq_theta_add_sum_theta h]
   simp only [le_add_iff_nonneg_right]
   exact sum_nonneg fun _ _ ↦ theta_nonneg _
