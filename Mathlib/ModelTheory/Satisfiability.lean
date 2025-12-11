@@ -430,10 +430,10 @@ theorem isComplete_iff_models_elementarily_equivalent :
     T.IsComplete ↔
     T.IsSatisfiable ∧ ∀ (M N : ModelType.{u, v, max u v} T), ElementarilyEquivalent L M N := by
   constructor
-  · intro h
-    refine ⟨h.1, ?_⟩
+  · intro hcomp
+    refine ⟨hcomp.1, ?_⟩
     intro M N
-    rw [ElementarilyEquivalent, ← h.eq_complete_theory, ← h.eq_complete_theory]
+    rw [ElementarilyEquivalent, ← hcomp.eq_complete_theory, ← hcomp.eq_complete_theory]
   · rintro ⟨hsat, h⟩
     refine ⟨hsat, ?_⟩
     intro φ
