@@ -699,7 +699,7 @@ lemma ExcenterExists.affineSpan_faceOpposite_eq_orthRadius [hf : Fact (Module.fi
   rw [direction_affineSpan, (s.faceOpposite i).independent.finrank_vectorSpan_add_one,
     Fintype.card_fin, hf.out]
   have := NeZero.ne n
-  cutsat
+  lia
 
 lemma affineSpan_faceOpposite_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = n)]
     (i : Fin (n + 1)) :
