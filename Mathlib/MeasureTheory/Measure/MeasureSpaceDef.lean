@@ -377,7 +377,7 @@ notation3 "∃ᵐ "(...)", "r:(scoped P =>
 
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
 macro "volume_tac" : tactic =>
-  `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
+  `(tactic| exact MeasureTheory.MeasureSpace.volume)
 
 end MeasureSpace
 

@@ -118,6 +118,10 @@ def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := 
 lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     P.inverseImage F f ↔ P (F.map f) := by rfl
 
+@[simp]
+lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
+    (P.inverseImage F).op = P.op.inverseImage F.op := rfl
+
 /-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
 inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
   | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
@@ -262,6 +266,11 @@ def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+
+@[simp]
+lemma op_isomorphisms : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
+  ext
+  apply isIso_unop_iff
 
 section
 
