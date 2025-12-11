@@ -373,7 +373,9 @@ Analysis:
     First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
+    Test functions: 'TestFunction'
     Schwartz space: 'SchwartzMap'
+    Distributions: 'Distribution'
 
   Fourier analysis:
     Fourier transform as an integral: 'Real.fourier_eq'
