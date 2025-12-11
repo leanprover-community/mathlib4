@@ -221,41 +221,6 @@ theorem irreducible_X : Irreducible (X : R[X]) :=
 theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
   (hm.prime_of_degree_eq_one hp1).irreducible
 
-/-- The degree 1 polynomial `a • X + C b` is irreducible
-if `a ≠ 0` and `a, b` are relatively prime. -/
-theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrime a b) :
-    Irreducible (a • X + C b : Polynomial R) where
-  not_isUnit h := by
-    obtain ⟨u, hu, h⟩ := isUnit_iff.mp h
-    apply ha
-    simpa using congr_arg (fun f ↦ coeff f 1) h.symm
-  isUnit_or_isUnit f g h := by
-    wlog H : f.degree ≤ g.degree generalizing f g
-    · rcases le_total f.degree g.degree with h' | h'
-      · exact this f g h h'
-      · rw [mul_comm] at h
-        exact or_comm.mp (this g f h h')
-    have hd := congr_arg degree h
-    have ha' : (a • (X : R[X])).degree = 1 := by
-      simp [smul_eq_C_mul a, degree_C ha]
-    rw [degree_mul, degree_add_C (by simp [ha']), ha'] at hd
-    rw [eq_comm, Nat.WithBot.add_eq_one_iff] at hd
-    rcases hd with hd | hd
-    · left
-      have hf := f.eq_C_of_degree_eq_zero hd.1
-      suffices IsUnit (f.coeff 0) by
-        rw [isUnit_iff]
-        exact ⟨f.coeff 0, this, hf.symm⟩
-      rw [hf, ← smul_eq_C_mul] at h
-      apply hab
-      · use g.coeff 1
-        simpa using congr_arg (fun f ↦ coeff f 1) h
-      · use g.coeff 0
-        simpa using congr_arg (fun f ↦ coeff f 0) h
-    · exfalso
-      rw [hd.1, hd.2, ← not_lt] at H
-      apply H (zero_lt_one' (WithBot ℕ))
-
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
   by_contra! ⟨hp, hq⟩
