@@ -269,7 +269,7 @@ theorem isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) 
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
-/-- A large open subset of `B` cannot be a fundamental domain. -/
+/-- A sufficiently large open subset of `B` cannot be a fundamental domain. -/
 theorem not_injOn_of_inducedMeasure_gt (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
     (h : μC Set.univ * μA {1} < inducedMeasure H μA μC U) :
     ¬ U.InjOn ψ := by
