@@ -5,14 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Haar measures on group extensions
@@ -41,6 +36,7 @@ open MeasureTheory MeasureTheory.Measure
 
 open scoped Pointwise
 
+/-- A predicate stating that `φ` and `ψ` define a short exact sequence of topological groups. -/
 structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
     [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →* B) (ψ : B →* C) where
   isClosedEmbedding : Topology.IsClosedEmbedding φ
