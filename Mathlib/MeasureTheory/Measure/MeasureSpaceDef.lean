@@ -401,7 +401,10 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
-function. -/
+function.
+
+A similar notion is `MeasureTheory.NullMeasurable`. That notion is equivalent to `AEMeasurable` if
+the σ-algebra on the codomain is countably generated, but weaker in general. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
