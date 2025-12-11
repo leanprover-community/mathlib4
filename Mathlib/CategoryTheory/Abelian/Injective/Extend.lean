@@ -36,7 +36,7 @@ variable [HasZeroObject C] [Preadditive C] {X : C}
   (R : InjectiveResolution X)
 
 /-- If `R : InjectiveResolution X`, this is the cochain complex indexed by `ℤ`
-obtained by extending by zero the `R.cocomplex`. -/
+obtained by extending by zero the cochain complex `R.cocomplex` indexed by `ℕ`. -/
 noncomputable def cochainComplex : CochainComplex C ℤ :=
   R.cocomplex.extend ComplexShape.embeddingUpNat
 
@@ -68,6 +68,7 @@ noncomputable def ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainCo
   (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).inv ≫
     (ComplexShape.embeddingUpNat.extendFunctor C).map R.ι
 
+@[reassoc]
 lemma ι'_f_zero :
     R.ι'.f 0 = (HomologicalComplex.singleObjXSelf (.up ℤ) 0 X).hom ≫ R.ι.f 0 ≫
       (R.cochainComplexXIso _ _ (by simp)).inv := by
