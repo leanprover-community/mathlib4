@@ -22,9 +22,10 @@ variable {α β γ δ : Sort*}
 namespace PProd
 
 def mk.injArrow {α : Type*} {β : Type*} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion rfl rfl (heq_of_eq h₁)
-    (fun h₃ h₄ ↦ h₂ (eq_of_heq h₃) (eq_of_heq h₄))
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta {p : PProd α β} : PProd.mk p.1 p.2 = p :=
