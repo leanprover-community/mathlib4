@@ -73,17 +73,15 @@ theorem pow_carmichael {n : ℕ} (a : (ZMod n)ˣ) : a ^ Carmichael n = 1 := by
   exact pow_exponent_eq_one a
 
 theorem carmichael_dvd_totient (n : ℕ) : Carmichael n ∣ n.totient := by
-  by_cases hn : n = 0
-  · simp [hn]
-  have : NeZero n := ⟨hn⟩
+  cases n
+  · simp
   rw [← ZMod.card_units_eq_totient, carmichael_eq_exponent']
   exact Group.exponent_dvd_card
 
 theorem carmichael_dvd {a b : ℕ} (h : a ∣ b) : Carmichael a ∣ Carmichael b := by
-  by_cases hb : b = 0
-  · simp [hb]
-  rw [carmichael_eq_exponent <| ne_zero_of_dvd_ne_zero hb h, carmichael_eq_exponent hb]
-  have : NeZero b := ⟨hb⟩
+  cases b
+  · simp
+  rw [carmichael_eq_exponent <| ne_zero_of_dvd_ne_zero (by lia) h, carmichael_eq_exponent']
   exact MonoidHom.exponent_dvd <| ZMod.unitsMap_surjective h
 
 theorem carmichael_lcm (a b : ℕ) :
