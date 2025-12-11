@@ -85,21 +85,16 @@ group homomorphism into the automorphism group of `F`. -/
 def toAut : G →* Aut F where
   toFun g := NatIso.ofComponents (isoOnObj F g) <| by
     intro X Y f
-    have : IsNaturalSMul F G := inferInstance
-    sorry
-    --ext
-    --simp [IsNaturalSMul.naturality]
+    ext
+    exact (IsNaturalSMul.naturality _ _ _).symm
   map_one' := by
     ext
-    sorry
-    --simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, one_smul]
-    --rfl
+    dsimp [isoOnObj]
+    cat_disch
   map_mul' := by
     intro g h
     ext X x
-    sorry
-    --simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, mul_smul]
-    --rfl
+    apply mul_smul
 
 variable {G} in
 @[simp]
