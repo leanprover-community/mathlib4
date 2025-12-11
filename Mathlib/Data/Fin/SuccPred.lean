@@ -914,7 +914,7 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
     simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
       coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
-  split_ifs <;> omega
+  split_ifs <;> lia
 
 end PredAbove
 

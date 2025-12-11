@@ -340,8 +340,8 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
       lia)]
-    omega
-  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+    lia
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; lia
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
