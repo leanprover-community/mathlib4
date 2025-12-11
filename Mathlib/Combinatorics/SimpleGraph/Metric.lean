@@ -187,7 +187,7 @@ protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u 
 theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
 
-@[simp, grind .]
+@[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :
     G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 
@@ -238,14 +238,14 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
 lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
-  · grind
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
-  · grind
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
@@ -273,7 +273,7 @@ theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
 theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
   by_cases! huw : ¬G.Reachable u w
-  · grind [Reachable.trans, Adj.reachable]
+  · grind [dist_eq_zero_iff_eq_or_not_reachable, Reachable.trans, Adj.reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
   have : G.dist u w ≤ G.dist u v + G.dist v w := hadj.reachable.dist_triangle_right u
