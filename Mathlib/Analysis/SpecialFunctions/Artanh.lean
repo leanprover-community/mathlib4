@@ -45,13 +45,13 @@ variable {x y : ℝ}
 def artanh (x : ℝ) :=
   log √((1 + x) / (1 - x))
 
-theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) :
+theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Ioo (-1) 1) :
     artanh x = 1 / 2 * log ((1 + x) / (1 - x)) := by
-  rw [artanh, log_sqrt <| le_of_lt <| div_pos (neg_lt_iff_pos_add'.mp hx.1) (sub_pos.mpr hx.2),
+  rw [artanh, log_sqrt <| le_of_lt <| div_pos (by grind) (by grind),
     one_div_mul_eq_div]
 
-theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : exp (artanh x) = √((1 + x) / (1 - x)) :=
-  exp_log <| sqrt_pos_of_pos <| div_pos (neg_lt_iff_pos_add'.mp hx.1) (sub_pos.mpr hx.2)
+theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : exp (artanh x) = √((1 + x) / (1 - x)) :=
+  exp_log <| sqrt_pos_of_pos <| div_pos (by grind) (by grind)
 
 @[simp]
 theorem artanh_zero : artanh 0 = 0 := by simp [artanh]
@@ -83,14 +83,12 @@ theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
 
 /-- `artanh` is the left inverse of `tanh`. -/
 theorem artanh_tanh (x : ℝ) : artanh (tanh x) = x := by
-  rw [artanh, ← exp_eq_exp, exp_log, ← sq_eq_sq₀, sq_sqrt, tanh_eq, exp_neg]
-  · field
-  · exact le_of_lt <| div_pos
-      (neg_lt_iff_pos_add'.mp (neg_one_lt_tanh x)) (sub_pos.mpr (tanh_lt_one x))
-  · positivity
-  · positivity
-  · exact sqrt_pos_of_pos <| div_pos
-      (neg_lt_iff_pos_add'.mp (neg_one_lt_tanh x)) (sub_pos.mpr (tanh_lt_one x))
+  have h : 0 < (1 + tanh x) / (1 - tanh x) :=
+    div_pos (by grind [neg_one_lt_tanh]) (by grind [tanh_lt_one])
+  rw [artanh, ← exp_eq_exp, exp_log (sqrt_pos_of_pos h),
+    ← sq_eq_sq₀ (le_of_lt <| sqrt_pos_of_pos h) (exp_nonneg x),
+    sq_sqrt (le_of_lt h), tanh_eq, exp_neg]
+  field
 
 /-- `Real.tanh` as a `PartialEquiv`. -/
 def tanhPartialEquiv : PartialEquiv ℝ ℝ where
