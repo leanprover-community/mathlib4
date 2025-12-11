@@ -287,6 +287,8 @@ These operations are inverse to each other, giving rise to an equivalence betwee
 called `OrderedFinPartition.extendEquiv`.
 -/
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 @[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
@@ -307,9 +309,9 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         simp only [cons_succ, cases_succ, comp_apply, succ_lt_succ_iff]
         exact c.parts_strictMono (by simpa using hij)
   disjoint i hi j hj hij := by
-    wlog h : j < i generalizing i j
+    wlog! h : j < i generalizing i j
     · exact .symm
-        (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne (le_of_not_gt h) hij))
+        (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne h hij))
     induction i using Fin.induction with
     | zero => simp at h
     | succ i =>
@@ -334,6 +336,8 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
     · simp only [mem_range]
       exact ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), by simp⟩
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
   simp only [extendLeft, cases_zero]
@@ -544,6 +548,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
     rw [← Nat.add_lt_add_iff_right (k := 1)]
     convert Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
+      -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
@@ -768,7 +773,7 @@ theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E [×c
     simp [applyOrderedFinpartition]
   · simp [h, applyOrderedFinpartition]
 
-/-- Given a an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
+/-- Given an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
 variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then

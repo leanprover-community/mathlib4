@@ -124,7 +124,7 @@ def Regular (s : Simplex R P n) : Prop :=
 
 lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral := by
   refine ⟨dist (s.points 0) (s.points 1), fun i j hij ↦ ?_⟩
-  have hn : n ≠ 0 := by omega
+  have hn : n ≠ 0 := by lia
   by_cases hi : i = 1
   · rw [hi, dist_comm]
     rcases hr (Equiv.swap 0 j) with ⟨x, hx⟩
@@ -132,7 +132,7 @@ lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral :
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
     convert rfl
-    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by cutsat)]
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by lia)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]

@@ -91,7 +91,7 @@ theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
   ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
-      Function.comp_apply, eval_map, ← aeval_def] using
+      Function.comp_apply, eval_map_algebraMap] using
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
 
 theorem ker_eval {s : S} (hs : IsIntegral R s) :
@@ -111,6 +111,18 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is a unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
+    obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
+  mpr isUnit := by
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial

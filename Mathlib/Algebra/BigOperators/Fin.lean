@@ -168,6 +168,27 @@ theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (n
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
 
+@[to_additive]
+private lemma prod_insertNth_go :
+    ∀ n i (h : i < n + 1) x (p : Fin n → M), ∏ j, insertNth ⟨i, h⟩ x p j = x * ∏ j, p j
+  | n, 0, h, x, p => by simp
+  | 0, i, h, x, p => by simp [fin_one_eq_zero ⟨i, h⟩]
+  | n + 1, i + 1, h, x, p => by
+    obtain ⟨hd, tl, rfl⟩ := exists_cons p
+    have i_lt := Nat.lt_of_succ_lt_succ h
+    let i_fin : Fin (n + 1) := ⟨i, i_lt⟩
+    rw [show ⟨i + 1, h⟩ = i_fin.succ from rfl]
+    simp only [insertNth_succ_cons, prod_cons]
+    rw [prod_insertNth_go n i i_lt x tl, mul_left_comm]
+
+@[to_additive (attr := simp)]
+theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
+  prod_insertNth_go n i.val i.isLt x p
+
+@[to_additive (attr := simp)]
+theorem mul_prod_removeNth i (f : Fin (n + 1) → M) : f i * ∏ j, removeNth i f j = ∏ j, f j := by
+  rw [← prod_insertNth, insertNth_self_removeNth]
+
 /-!
 ### Products over intervals: `Fin.cast`
 -/
@@ -507,15 +528,15 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
         succAbove_of_castSucc_lt] <;>
       simp only [lt_def, coe_castSucc, val_succ] <;>
-      omega
+      lia
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
         succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
       simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
-      omega
+      lia
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
         castSucc_succ] <;>
       simp only [le_def, val_succ, coe_castSucc] <;>
-      omega
+      lia
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
