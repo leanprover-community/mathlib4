@@ -133,7 +133,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   cobounded_sets : (Bornology.cobounded α).sets =
     { s | ∃ C : ℝ, ∀ x ∈ sᶜ, ∀ y ∈ sᶜ, dist x y ≤ C } := by intros; rfl
 
-/-- Two pseudo metric space structures with the same distance function coincide. -/
+/-- Two pseudometric space structures with the same distance function coincide. -/
 @[ext]
 theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
     (h : m.toDist = m'.toDist) : m = m' := by
@@ -990,7 +990,7 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := by
   with_reducible_and_instances rfl
 
-/-- Build a new pseudo metric space from an old one where the bundled topological structure is
+/-- Build a new pseudometric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
