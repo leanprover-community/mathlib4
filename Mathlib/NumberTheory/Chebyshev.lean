@@ -256,10 +256,9 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
     ψ x ≤ (log 4 + 4) * x := by
-  by_cases hx : x < 1
+  by_cases! hx : x < 1
   · rw [psi_eq_zero_of_lt_two (by linarith)]
     bound
-  push_neg at hx
   apply le_trans (psi_le hx)
   rw [add_mul]
   gcongr 1
