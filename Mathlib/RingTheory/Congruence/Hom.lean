@@ -496,7 +496,7 @@ def kerLiftₐ : (ker f.toRingHom).Quotient →ₐ[R] P :=
   liftₐ (ker f.toRingHom) f (le_refl _)
 
 /- Note : This can't be @[simp] because
-  `(ker f.toRingHom).Quotient` is tranformed into `(ker ↑f).Quotient`.
+  `(ker f.toRingHom).Quotient` is transformed into `(ker ↑f).Quotient`.
   Maybe `kerLiftₐ` should use the latter. -/
 /-- The diagram described by the universal property for quotients of rings, when
 the ring congruence relation is the kernel of the homomorphism, commutes. -/

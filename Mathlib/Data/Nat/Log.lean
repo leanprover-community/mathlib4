@@ -36,7 +36,7 @@ Note a tail-recursive version of `Nat.log` is also possible:
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
   decreasing_by
-    have : n / b < n := Nat.div_lt_self (by omega) h.2
+    have : n / b < n := Nat.div_lt_self (by lia) h.2
     decreasing_trivial
   go n 0
 ```
@@ -217,7 +217,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     any_goals
       simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
         at h
-      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
+      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> lia
   · simp [@eq_comm _ 0, hm]
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -428,7 +428,7 @@ theorem clog_of_two_le {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) :
 
 theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := by
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
-  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> omega
+  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> lia
 
 theorem clog_le_of_le_pow {b x y : ℕ} (h : x ≤ b ^ y) : clog b x ≤ y := by
   rcases Nat.lt_or_ge 1 b with hb | hb

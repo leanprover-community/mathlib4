@@ -28,7 +28,7 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
   apply Order.krullDim_le_of_krullDim_preimage_le' C.specComap ?_ (fun p ↦ ?_)
   · exact fun {a b} h ↦ Ideal.comap_mono h
   · rw [show C = (algebraMap R (Polynomial R)) from rfl, Order.krullDim_eq_of_orderIso
-      (PrimeSpectrum.preimageOrderIsoTensorResidueField R (Polynomial R) p), ← ringKrullDim,
+      (PrimeSpectrum.preimageOrderIsoFiber R (Polynomial R) p), ← ringKrullDim,
       ← ringKrullDim_eq_of_ringEquiv (polyEquivTensor R (p.asIdeal.ResidueField)).toRingEquiv,
       ← Ring.krullDimLE_iff]
     infer_instance
