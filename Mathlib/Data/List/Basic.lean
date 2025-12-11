@@ -163,7 +163,6 @@ theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (�
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x := by grind
 
-@[simp]
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
     (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x := by grind
 
@@ -178,7 +177,6 @@ theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l�
     l₁ ++ l₂ ⊆ l :=
   fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
-@[simp]
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
     map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ := by
   refine ⟨?_, map_subset f⟩; intro h2 x hx
