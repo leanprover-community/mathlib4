@@ -19,16 +19,6 @@ open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topo
   TopologicalSpace MeasureTheory BoundedContinuousFunction MeasureTheory.FiniteMeasure
 
 
-
-@[simps] def CompactlySupportedContinuousMap.toBoundedContinuousFunction {α β : Type*}
-    [TopologicalSpace α] [PseudoMetricSpace β] [Zero β]
-    (f : C_c(α, β)) : α →ᵇ β where
-  toFun := f
-  map_bounded' := by
-    have : IsCompact (range f) := f.hasCompactSupport.isCompact_range f.continuous
-    rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
-    exact ⟨C, by grind⟩
-
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
 variable (E) in
@@ -176,10 +166,6 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
 
-lemma partialSups_eq_accumulate
-    {α : Type*} (f : ℕ → Set α) (n : ℕ) : partialSups f n = Accumulate f n := by
-  simp [partialSups_eq_sup_range, Accumulate, Nat.lt_succ_iff]
-
 open Measure
 
 omit [T2Space E] [BorelSpace E]
@@ -226,10 +212,27 @@ instance {ι : Type*} {μ : ι → Measure E} [∀ i, InnerRegular (μ i)] :
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
   simp [hK.measurableSet, ENNReal.sum_le_tsum]
 
-lemma prokh_aux' {E : Type*} [MeasurableSpace E]
+/-- *Prokhorov theorem*: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to zero,
+the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
+compact set. -/
+lemma isCompact_setOf_finiteMeasure_compl_isCompact_le {E : Type*} [MeasurableSpace E]
     [TopologicalSpace E] [T2Space E] [NormalSpace E] [BorelSpace E] {u : ℕ → ℝ≥0} {K : ℕ → Set E}
     (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
+  /- Consider a sequence of measures with mass at most `C` and giving mass at most `uₙ` to `Kₙᶜ`,
+  for which we want to find a converging subsequence.
+  We want to write `⋃ n, Kₙ` as the disjoint union of `disjointed K n`, restrict the measures to
+  each of these sets (which is contained in the compact set `Kₙ`), extract a converging subsequence
+  there, to a limit `νₙ`, and then argue that the sequence converges to `μ := ∑ νₙ`.
+  We will implement this rough idea, but there are two technical complications.
+  First, we should not use a sequence and subsequences, but a ultrafilter as things are not second
+  countable.
+  Second, it is not obvious that the limit will satisfy the inequality `μ (Kₙᶜ) ≤ uₙ`, as this is
+  not a closed condition in the space of measures in general (note that we are not assuming that
+  our space is metrizable). However, this works fine if we can ensure additionally that `μ` is
+  inner regular. We will guarantee this by making sure each `νₙ` is inner regular.
+  -/
+  -- We can decompose a measure as a sum of restrictions to `disjointed K n`, finite version.
   have I (μ : FiniteMeasure E) (n : ℕ) :
       ∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i) = μ.restrict (partialSups K n) := by
     induction n with
@@ -241,38 +244,50 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
       · rw [← Order.succ_eq_add_one, disjointed_succ _ (not_isMax n)]
         exact disjoint_sdiff_right
       · apply MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
-  apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
   have A n : IsCompact (partialSups K n) := by
     simpa [partialSups_eq_accumulate] using isCompact_accumulate hK _
+  -- start with a ultrafilter `f`, for which we want to prove convergence.
+  apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
+  -- the restrictions to `disjointed K n` converge along the ultrafilter, and moreover we can
+  -- choose the limit to be inner regular.
   have M n : ∃ (ν : FiniteMeasure E), Measure.InnerRegular (ν : Measure E) ∧
-      Tendsto (fun (μ : FiniteMeasure E) ↦ μ.restrict (disjointed K n)) f (𝓝 ν) := by
-    obtain ⟨ν, hν, ν_lim⟩ : ∃ ν ∈ {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ (partialSups K n)ᶜ = 0},
-        Tendsto (fun (μ : FiniteMeasure E) ↦ μ.restrict (disjointed K n)) f (𝓝 ν) := by
+      Tendsto (fun (ρ : FiniteMeasure E) ↦ ρ.restrict (disjointed K n)) f (𝓝 ν) := by
+    -- the existence of a limit follows from the fact that these measures are supported in
+    -- the compact set `partialSups K n`.
+    obtain ⟨ν, hν, ν_lim⟩ : ∃ ν ∈ {ρ : FiniteMeasure E | ρ.mass ≤ C ∧ ρ (partialSups K n)ᶜ = 0},
+        Tendsto (fun (ρ : FiniteMeasure E) ↦ ρ.restrict (disjointed K n)) f (𝓝 ν) := by
       simp only [Tendsto]
       rw [← Ultrafilter.coe_map]
       apply IsCompact.ultrafilter_le_nhds'
         (isCompact_setOf_finiteMeasure_le_of_isCompact C (A n))
       simp only [null_iff_toMeasure_null, Ultrafilter.mem_map, preimage_setOf_eq]
-      filter_upwards [hf] with μ hμ
+      filter_upwards [hf] with ρ hρ
       simp only [restrict_mass, restrict_measure_eq,
         Measure.restrict_apply (A n).measurableSet.compl]
-      refine ⟨(apply_le_mass μ _).trans hμ.1, ?_⟩
-      convert measure_empty (μ := (μ : Measure E))
+      refine ⟨(apply_le_mass ρ _).trans hρ.1, ?_⟩
+      convert measure_empty (μ := (ρ : Measure E))
       apply disjoint_iff.1
       apply disjoint_compl_left.mono_right
       exact le_trans sdiff_le (le_partialSups _ _)
+    -- We can find an inner regular measure which coincides with the above limit wrt
+    -- integration of bounded continuous functions.
     obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ ν', ν'.InnerRegular ∧ IsFiniteMeasure ν' ∧
         ∀ (g : E →ᵇ ℝ), ∫ x, g x ∂ν = ∫ x, g x ∂ν' := by
       apply Measure.exists_innerRegular_eq_of_isCompact _ (A n)
       rw [← MeasureTheory.FiniteMeasure.null_iff_toMeasure_null]
       exact hν.2
+    -- This inner regular measure is also a limit for our ultrafilter
     let μ : FiniteMeasure E := ⟨ν', ν'_fin⟩
     refine ⟨μ, ν'_reg, ?_⟩
     apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
     convert tendsto_iff_forall_integral_tendsto.1 ν_lim g using 2
     exact (hν' g).symm
+  -- let `νₙ` be such nice limits on `disjointed K n`.
   choose! ν ν_reg hν using M
+  -- their sum is a finite measure, of mass at most `C`.
   have B : (Measure.sum (fun n ↦ (ν n : Measure E))) univ ≤ C := by
+    -- this follows from the corresponding result for finite sums, where we can use the
+    -- continuity of the mass of a finite measure under weak convergence.
     simp only [MeasurableSet.univ, Measure.sum_apply]
     have : Tendsto (fun n ↦ ∑ i ∈ Finset.range (n + 1), (ν i : Measure E) univ) atTop
         (𝓝 (∑' i, (ν i : Measure E) univ)) :=
@@ -294,39 +309,57 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
     filter_upwards [hf] with μ hμ
     rw [I, restrict_mass]
     exact le_trans (apply_mono _ (subset_univ _)) hμ.1
+  -- Let `μ` be the limiting measure
   let μ : FiniteMeasure E := ⟨Measure.sum (fun n ↦ (ν n : Measure E)), ⟨B.trans_lt (by simp)⟩⟩
+  -- first, we show that it is indeed a limit of the ultrafilter
   have L : Tendsto id f (𝓝 μ) := by
+    -- we need to check the convergence of the integral of a bounded continuous function
+    -- finite sums of restrictions to `disjointed K n` converge obviously to finite sums of `νₙ`,
+    -- but we need to control the infinite sums. For this, we split `ε` in 3, argue that for `μ`
+    -- this is the limit of finite sums, and inside the space we can uniformly truncate the sum
+    -- also as the tail is controlled by `uₙ`. Once we have fixed a truncation level satisfying
+    -- both conditions, we can rely on the finite sum convergence to conclude.
     apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
     rw [Metric.tendsto_nhds]
     intro ε εpos
-    have : Tendsto (fun n ↦ ∫ x, g x ∂(∑ i ∈ Finset.range n, ν i)) atTop (𝓝 (∫ x, g x ∂μ)) := by
-      simp only [FiniteMeasure.toMeasure_mk, μ]
-      rw [integral_sum_measure (g.integrable (μ := μ))]
-      simp_rw [integral_finset_sum_measure (fun i hi ↦ g.integrable _)]
-      apply Summable.tendsto_sum_tsum_nat
-      apply (hasSum_integral_measure _).summable
-      exact g.integrable (μ := μ)
+    -- first, control truncation of the finite sums for the limiting measure
     have I1 : ∀ᶠ n in atTop,
-        dist (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i)) (∫ x, g x ∂μ) < ε / 3 :=
-      Metric.tendsto_nhds.1 (this.comp (tendsto_add_atTop_nat 1)) _ (by positivity)
+        dist (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i)) (∫ x, g x ∂μ) < ε / 3 := by
+      have : Tendsto (fun n ↦ ∫ x, g x ∂(∑ i ∈ Finset.range n, ν i)) atTop (𝓝 (∫ x, g x ∂μ)) := by
+        simp only [FiniteMeasure.toMeasure_mk, μ]
+        rw [integral_sum_measure (g.integrable (μ := μ))]
+        simp_rw [integral_finset_sum_measure (fun i hi ↦ g.integrable _)]
+        apply Summable.tendsto_sum_tsum_nat
+        apply (hasSum_integral_measure _).summable
+        exact g.integrable (μ := μ)
+      exact Metric.tendsto_nhds.1 (this.comp (tendsto_add_atTop_nat 1)) _ (by positivity)
+    -- second, truncation threshold in terms of tails `uₙ` (the relevance of this condition will
+    -- appear below).
     have I2 : ∀ᶠ n in atTop, ‖g‖ * u n < ε / 3 := by
       have := (NNReal.tendsto_coe.2 hu).const_mul (‖g‖)
       simp only [NNReal.coe_zero, mul_zero] at this
       exact (tendsto_order.1 this).2 (ε / 3) (by positivity)
+    -- fix a large `n` satisfying both truncation conditions
     rcases (I1.and I2).exists with ⟨n, hn, h'n⟩
+    -- the finite sums up to the fixed `n` converge to the limit, by convergence of individual
+    -- summands
     have : Tendsto (fun (ρ : FiniteMeasure E) ↦
         ∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ρ.restrict (disjointed K i) : FiniteMeasure E)) f
         (𝓝 (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i : FiniteMeasure E))) := by
       apply tendsto_iff_forall_integral_tendsto.1 _ g
       apply tendsto_finset_sum _ (fun i hi ↦ hν i)
+    -- therefore, after some point the difference is bounded by `ε / 3`.
     filter_upwards [Metric.tendsto_nhds.1 this (ε / 3) (by positivity), hf] with ρ hρ h'ρ
+    -- let us show that in this case the full integrals differ by at most `ε`.
     calc dist (∫ (x : E), g x ∂ρ) (∫ (x : E), g x ∂μ)
+    -- we separate away the tails from the sums up to `n`
     _ ≤ dist (∫ (x : E), g x ∂ρ)
           (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ρ.restrict (disjointed K i)))
         + dist (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ρ.restrict (disjointed K i)))
           (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i))
         + dist (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i)) (∫ (x : E), g x ∂μ) :=
       dist_triangle4 _ _ _ _
+    -- each term is bounded by `ε / 3` by design.
     _ < ε / 3 + ε / 3 + ε / 3 := by
       gcongr
       · have : ρ = ρ.restrict (partialSups K n)ᶜ +
@@ -349,10 +382,17 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
         _ < ε / 3 := h'n
       · simpa using hρ
     _ = ε := by ring
+  -- Now that we have proved the convergence, we can finish the proof of the theorem. It remains
+  -- to check the mass control of the limit (which we have already done when proving finiteness)
+  -- and to show that `μ (Kₙᶜ) ≤ uₙ`, which is harder.
   refine ⟨μ, ⟨?_, fun n ↦ ?_⟩, L⟩
   · simp only [mass, mk_apply, μ]
     rw [show C = (C : ℝ≥0∞).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) B
+  -- to show that `μ (Kₙᶜ) ≤ uₙ`, we argue that `μ (Kₙᶜ)` is the supremum of the integrals of
+  -- continuous functions supported in `Kₙᶜ` and bounded by `1`, as the measure is inner regular.
+  -- therefore, we are reduced to a question about integrals of continuous functions, for which
+  -- we can take advantage of the weak convergence.
   have : InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
   rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
     (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
@@ -361,7 +401,11 @@ lemma prokh_aux' {E : Type*} [MeasurableSpace E]
   have : Tendsto (fun (ρ : FiniteMeasure E) ↦ ∫ x, g x ∂ρ) f (𝓝 (∫ x, g x ∂μ)) := by
     let g' : E →ᵇ ℝ :=
     { toFun := g
-      map_bounded' := sorry }
+      map_bounded' := by
+        refine ⟨1, fun x y ↦ ?_⟩
+        simp only [dist, abs_le, neg_le_sub_iff_le_add, tsub_le_iff_right]
+        exact ⟨(g_le y).trans (by simpa using g_nonneg x),
+          (g_le x).trans (by simpa using g_nonneg y)⟩ }
     exact tendsto_iff_forall_integral_tendsto.1 L g'
   apply le_of_tendsto this
   filter_upwards [hf] with ρ hρ
