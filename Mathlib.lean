@@ -2490,8 +2490,6 @@ public import Mathlib.CategoryTheory.Groupoid.Discrete
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
-public import Mathlib.CategoryTheory.Groupoid.Grpd.Core
-public import Mathlib.CategoryTheory.Groupoid.Grpd.Free
 public import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.CategoryTheory.GuitartExact.Basic
