@@ -113,45 +113,40 @@ def btℕ : Q(ℕ) → Type := sorry
 
 universe u v
 
-/-
-I'm having universe issues with an inductive type. In short I'm trying to add a type parameter to
-docs#Mathlib.Tactic.Ring.ExSum, but the parameter forces the inductive type to live in `Type 1`
-instead of `Type`. This is a problem because `MetaM : Type → Type`, so I can't return anything in
-`Type 1`.
+-- /-
+-- I'm having universe issues with an inductive type. In short I'm trying to add a type parameter to
+-- docs#Mathlib.Tactic.Ring.ExSum, but the parameter forces the inductive type to live in `Type 1`
+-- instead of `Type`. This is a problem because `MetaM : Type → Type`, so I can't return anything in
+-- `Type 1`.
 
-Here's a simplified example of what I'm dealing with:
--/
+-- Here's a simplified example of what I'm dealing with:
+-- -/
 
-inductive Ex : ∀ {u : Lean.Level} (α : Q(Type u)), (Q($α) → Type) → (e : Q($α)) → Type 1
-| const {u : Lean.Level} {α : Q(Type u)} {type} {e : Q($α)} (c : type e) : Ex α type e
-| mul {u : Lean.Level} {α : Q(Type u)} {type} {a t : Q($α)} {e : Q(ℕ)}
-    (base : Ex α type a) (exp : Ex q(ℕ) (fun _ ↦ ℕ) e) (tail : Ex α type t) : Ex α type e
-
-
-/-
-I tried to bump down the universe level by turning the arguments into parameters, but the `exp` argument of the  `mul` constructor changes the arguments, so that doesn't work:
--/
-
-/-
-(kernel) arg #8 of 'Mathlib.Tactic.Algebra.Ex'.mul' contains a non valid occurrence of the datatypes being declared
--/
-inductive Ex' {u : Lean.Level} (α : Q(Type u)) (type : Q($α) → Type) : (e : Q($α)) → Type
-| const {e : Q($α)} (c : type e) : Ex' α type e
-| mul {a t : Q($α)} {e : Q(ℕ)}
-    (base : Ex' α type a) (exp : Ex' q(ℕ) (fun _ ↦ ℕ) e) (tail : Ex' α type t) : Ex' α type e
+-- inductive Ex : ∀ {u : Lean.Level} (α : Q(Type u)), (Q($α) → Type) → (e : Q($α)) → Type 1
+-- | const {u : Lean.Level} {α : Q(Type u)} {type} {e : Q($α)} (c : type e) : Ex α type e
+-- | mul {u : Lean.Level} {α : Q(Type u)} {type} {a t : Q($α)} {e : Q(ℕ)}
+--     (base : Ex α type a) (exp : Ex q(ℕ) (fun _ ↦ ℕ) e) (tail : Ex α type t) : Ex α type e
 
 
+-- /-
+-- I tried to bump down the universe level by turning the arguments into parameters, but the `exp` argument of the  `mul` constructor changes the arguments, so that doesn't work:
+-- -/
 
+-- /-
+-- (kernel) arg #8 of 'Mathlib.Tactic.Algebra.Ex'.mul' contains a non valid occurrence of the datatypes being declared
+-- -/
+-- inductive Ex' {u : Lean.Level} (α : Q(Type u)) (type : Q($α) → Type) : (e : Q($α)) → Type
+-- | const {e : Q($α)} (c : type e) : Ex' α type e
+-- | mul {a t : Q($α)} {e : Q(ℕ)}
+--     (base : Ex' α type a) (exp : Ex' q(ℕ) (fun _ ↦ ℕ) e) (tail : Ex' α type t) : Ex' α type e
 
-
-inductive Ex' (type : Type) : ∀ {u : Lean.Level} (α : Q(Type u)) (type : Type), Type
-| const {u : Lean.Level} {α : Q(Type u)} {type} (e : Ex q(ℕ) ℚ) : Ex α type
+-- inductive Ex' (type : Type) : ∀ {u : Lean.Level} (α : Q(Type u)) (type : Type), Type
+-- | const {u : Lean.Level} {α : Q(Type u)} {type} (e : Ex q(ℕ) ℚ) : Ex α type
 
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
-inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, (Q($α) → Type) →
-    Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
 
@@ -164,140 +159,79 @@ inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, (Q($α) → Type) →
   while `value : expr` contains a representative of this class.
   The function `resolve_atom` determines the appropriate atom for a given expression.
   -/
-  | atom {sα} {e} (id : ℕ) : ExBase bt sα e
+  | atom {e} (id : ℕ) : ExBaseNat e
   /-- A sum of monomials. -/
-  | sum {sα} {e} (_ : ExSum bt sα e) : ExBase bt sα e
+  | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
 
 /--
 A monomial, which is a product of powers of `ExBase` expressions,
 terminated by a (nonzero) constant coefficient.
 -/
-inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type),
-    Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExProdNat : (e : Q(ℕ)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
-  | const {u : Lean.Level} {α : Q(Type u)} {bt} {sα} {e : Q($α)} (value : bt e) : ExProd bt sα e
+  | const {e : Q(ℕ)} (value : btℕ e) : ExProdNat e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
   and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
-  | mul {u : Lean.Level} {α : Q(Type u)} {bt} {sα} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
-    ExBase bt sα x → ExProd btℕ sℕ e → ExProd bt sα b → ExProd bt sα q($x ^ $e * $b)
+  | mul {x : Q(ℕ)} {e : Q(ℕ)} {b : Q(ℕ)} :
+    ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, (Q($α) → Type) → Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
-  | zero {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} : ExSum bt sα q(0 : $α)
+  | zero : ExSumNat q(0)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
-  | add {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
-    ExProd bt sα a → ExSum bt sα b → ExSum bt sα q($a + $b)
+  | add {a b : Q(ℕ)} : ExProdNat a → ExSumNat b → ExSumNat q($a + $b)
 end
 
-class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
-  (sα : Q(CommSemiring $α))
-     where
-  evalAdd : ∀ x y : Q($α), baseType x → baseType y → baseType q($x + $y)
-  evalMul : ∀ x y : Q($α), baseType x → baseType y → baseType q($x * $y)
-  eq : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
-  compare : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
-  cast : ∀ (x : Q($α)) {v : Lean.Level} {β : Q(Type v)} (btβ : Q($β) → Type), Σ b, btβ b
-  one : baseType q((nat_lit 1).rawCast)
-
-instance : RingCompute btℕ sℕ := sorry
 
 mutual
 
-/-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
-def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
-    {a b : Q($α)} :
-    ExBase bt sα a → ExBase bt sα b → Bool
-  | .atom i, .atom j => i == j
-  | .sum a, .sum b => a.eq b
-  | _, _ => false
+/-- The base `e` of a normalized exponent expression. -/
+inductive ExBase {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type) (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
+  /--
+  An atomic expression `e` with id `id`.
 
-@[inherit_doc ExBase.eq]
-def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
-    {a b : Q($α)} :
-    ExProd bt sα a → ExProd bt sα b → Bool
-  | .const i, .const j => RingCompute.eq sα i j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq b₁ && a₂.eq b₂ && a₃.eq b₃
-  | _, _ => false
+  Atomic expressions are those which `ring` cannot parse any further.
+  For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
+  The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
 
-@[inherit_doc ExBase.eq]
-def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
-    {a b : Q($α)} :
-    ExSum bt sα a → ExSum bt sα b → Bool
-  | .zero, .zero => true
-  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
-  | _, _ => false
-end
+  Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
+  The field `index : ℕ` should be a unique number for each class,
+  while `value : expr` contains a representative of this class.
+  The function `resolve_atom` determines the appropriate atom for a given expression.
+  -/
+  | atom {e} (id : ℕ) : ExBase baseType sα e
+  /-- A sum of monomials. -/
+  | sum {e} (_ : ExSum baseType sα e) : ExBase baseType sα e
 
-mutual
+
 /--
-A total order on normalized expressions.
-This is not an `Ord` instance because it is heterogeneous.
+A monomial, which is a product of powers of `ExBase` expressions,
+terminated by a (nonzero) constant coefficient.
 -/
-def ExBase.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
-    ExBase bt sα a → ExBase bt sα b → Ordering
-  | .atom i, .atom j => compare i j
-  | .sum a, .sum b => a.cmp b
-  | .atom .., .sum .. => .lt
-  | .sum .., .atom .. => .gt
+inductive ExProd {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type) (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
+  /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
+  If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
+  | const {e : Q($α)} (value : baseType e) : ExProd baseType sα e
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
+  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
+  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
+  | mul {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
+    ExBase baseType sα x → ExProdNat e → ExProd baseType sα b → ExProd baseType sα q($x ^ $e * $b)
 
-@[inherit_doc ExBase.cmp]
-def ExProd.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
-    ExProd bt sα a → ExProd bt sα b → Ordering
-  | .const i, .const j => RingCompute.compare sα i j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp b₁).then (a₂.cmp b₂) |>.then (a₃.cmp b₃)
-  | .const _, .mul .. => .lt
-  | .mul .., .const _ => .gt
-
-@[inherit_doc ExBase.cmp]
-def ExSum.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
-    ExSum bt sα a → ExSum bt sα b → Ordering
-  | .zero, .zero => .eq
-  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
-  | .zero, .add .. => .lt
-  | .add .., .zero => .gt
+/-- A polynomial expression, which is a sum of monomials. -/
+inductive ExSum {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type) (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
+  /-- Zero is a polynomial. `e` is the expression `0`. -/
+  | zero : ExSum baseType sα q(0 : $α)
+  /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
+  | add {a b : Q($α)} :
+    ExProd baseType sα a → ExSum baseType sα b → ExSum baseType sα q($a + $b)
 end
 
-variable {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)}
-  [RingCompute bt sα] [∀ e, Inhabited (bt e)]
-
-instance : Inhabited (Σ e, (ExBase bt sα) e) := ⟨default, .atom 0⟩
-instance : Inhabited (Σ e, (ExSum bt sα) e) := ⟨_, .zero⟩
-instance : Inhabited (Σ e, (ExProd bt sα) e) := ⟨default, .const default⟩
-
-mutual
-
-/-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExBase bt sα a → Σ a, ExBase btβ sβ a
-  | .atom i => ⟨a, .atom i⟩
-  | .sum a => let ⟨_, vb⟩ := a.cast (btβ := btβ); ⟨_, .sum vb⟩
-
-/-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExProd bt sα a → Σ a, ExProd btβ sβ a
-  | .const i => ⟨_, .const (RingCompute.cast bt sα a btβ).2⟩
-  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
-
-/-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
-def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExSum bt sα a → Σ a, ExSum btβ sβ a
-  | .zero => ⟨_, .zero⟩
-  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
-
-end
+variable {u : Lean.Level}
 
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
@@ -315,6 +249,157 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type*) (e : Q($α)) where
 instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E e)] :
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
+
+
+/- TODO: Figure out why it has trouble inferring `u`.-/
+class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+     where
+  sα : Q(CommSemiring $α)
+  evalAdd : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x + $y))
+  evalMul : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x * $y))
+  eq : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
+  compare : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
+  isZero : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 0)
+  cast : ∀ (_ : Q($α)) {v : Lean.Level} {β : Q(Type v)} (btβ : Q($β) → Type), Σ b, btβ b
+  one : baseType q((nat_lit 1).rawCast)
+
+instance : RingCompute (u := 0) btℕ := sorry
+
+instance (e : Expr) : Inhabited <| btℕ e := sorry
+
+instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, (ExProdNat) e) := ⟨default, .const default⟩
+
+variable {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)}
+  [RingCompute bt] [∀ e, Inhabited (bt e)]
+
+instance : Inhabited (Σ e, (ExBase bt sα) e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, (ExSum bt sα) e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, (ExProd bt sα) e) := ⟨default, .const default⟩
+
+instance : ∀ e, Inhabited (btℕ e) := sorry
+
+mutual
+
+partial def ExBaseNat.toExBase (e : Q(ℕ)) : ExBaseNat e → Σ e', ExBase btℕ sℕ e' := fun
+  | .atom id => ⟨_, .atom (e := e) id⟩
+  | .sum v => ⟨_, .sum v.toExSum.2⟩
+
+partial def ExProdNat.toExProd (e : Q(ℕ)) : ExProdNat e → Σ e', ExProd btℕ sℕ e' := fun
+  | .const value => ⟨_, .const value⟩
+  | .mul vx ve vt => ⟨_, .mul vx.toExBase.2 ve vt.toExProd.2⟩
+
+partial def ExSumNat.toExSum (e : Q(ℕ)) : ExSumNat e → Σ e', ExSum btℕ sℕ e' := fun
+  | .zero => ⟨_, .zero (baseType := btℕ) (sα := sℕ)⟩
+  | .add va vb => ⟨_, .add va.toExProd.2 vb.toExSum.2⟩
+
+end
+
+mutual
+
+partial def ExBase.toExBaseNat (e : Q(ℕ)) : ExBase btℕ sℕ e → Σ e', ExBaseNat e' := fun
+  | .atom id => ⟨_, .atom (e := e) id⟩
+  | .sum v => ⟨_, .sum v.toExSumNat.2⟩
+
+partial def ExProd.toExProdNat (e : Q(ℕ)) : ExProd btℕ sℕ e → Σ e', ExProdNat e' := fun
+  | .const value => ⟨_, .const value⟩
+  | .mul vx ve vt => ⟨_, .mul vx.toExBaseNat.2 ve vt.toExProdNat.2⟩
+
+partial def ExSum.toExSumNat (e : Q(ℕ)) : ExSum btℕ sℕ e → Σ e', ExSumNat e' := fun
+  | .zero => ⟨_, .zero⟩
+  | .add va vb => ⟨_, .add va.toExProdNat.2 vb.toExSumNat.2⟩
+
+end
+
+
+mutual
+
+/-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
+def ExBase.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt]
+    {a b : Q($α)} :
+    ExBase bt sα a → ExBase bt sα b → Bool
+  | .atom i, .atom j => i == j
+  | .sum a, .sum b => a.eq b
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+def ExProd.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt]
+    {a b : Q($α)} :
+    ExProd bt sα a → ExProd bt sα b → Bool
+  | .const i, .const j => RingCompute.eq i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq b₁ && a₂.toExProd.2.eq b₂.toExProd.2 && a₃.eq b₃
+  | _, _ => false
+
+@[inherit_doc ExBase.eq]
+def ExSum.eq
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt]
+    {a b : Q($α)} :
+    ExSum bt sα a → ExSum bt sα b → Bool
+  | .zero, .zero => true
+  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | _, _ => false
+end
+
+mutual
+/--
+A total order on normalized expressions.
+This is not an `Ord` instance because it is heterogeneous.
+-/
+def ExBase.cmp
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt] {a b : Q($α)} :
+    ExBase bt sα a → ExBase bt sα b → Ordering
+  | .atom i, .atom j => compare i j
+  | .sum a, .sum b => a.cmp b
+  | .atom .., .sum .. => .lt
+  | .sum .., .atom .. => .gt
+
+@[inherit_doc ExBase.cmp]
+def ExProd.cmp
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt] {a b : Q($α)} :
+    ExProd bt sα a → ExProd bt sα b → Ordering
+  | .const i, .const j => RingCompute.compare i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp b₁).then (a₂.toExProd.2.cmp b₂.toExProd.2) |>.then (a₃.cmp b₃)
+  | .const _, .mul .. => .lt
+  | .mul .., .const _ => .gt
+
+@[inherit_doc ExBase.cmp]
+def ExSum.cmp
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt] {a b : Q($α)} :
+    ExSum bt sα a → ExSum bt sα b → Ordering
+  | .zero, .zero => .eq
+  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
+  | .zero, .add .. => .lt
+  | .add .., .zero => .gt
+end
+
+
+mutual
+
+/-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExBase.cast
+    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExBase bt sα a → Σ a, ExBase btβ sβ a
+  | .atom i => ⟨a, .atom i⟩
+  | .sum a => let ⟨_, vb⟩ := a.cast (btβ := btβ); ⟨_, .sum vb⟩
+
+/-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExProd.cast
+    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExProd bt sα a → Σ a, ExProd btβ sβ a
+  | .const i => ⟨_, .const (RingCompute.cast bt a btβ).2⟩
+  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
+
+/-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExSum.cast
+    {v : Lean.Level} {β : Q(Type v)} {btβ} [∀ e, Inhabited (btβ e)] {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExSum bt sα a → Σ a, ExSum btβ sβ a
+  | .zero => ⟨_, .zero⟩
+  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
+
+end
 
 variable (sα)
 variable {R : Type*} [CommSemiring R]
@@ -358,8 +443,11 @@ section
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd
     {a : Q($α)} {b : Q(ℕ)}
-    (va : ExBase bt sα a) (vb : ExProd btℕ sℕ b) :
-    ExProd bt sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const RingCompute.one)
+    (va : ExBase bt sα a) (vb : ExProdNat b) :
+    Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
+      ⟨_, .mul va vb (.const  (RingCompute.one (baseType := bt))),
+        /- TODO: Remove unsafe cast -/
+        (q(Eq.refl ($a ^ $b * (nat_lit 1).rawCast)):) ⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
@@ -380,7 +468,7 @@ Two monomials are said to "overlap" if they differ by a constant factor, in whic
 constants just add. When this happens, the constant may be either zero (if the monomials cancel)
 or nonzero (if they add up); the zero case is handled specially.
 -/
-inductive Overlap (e : Q($α)) : Type 1 where
+inductive Overlap (e : Q($α)) : Type where
   /-- The expression `e` (the sum of monomials) is equal to `0`. -/
   | zero (_ : Q(IsNat $e (nat_lit 0)))
   /-- The expression `e` (the sum of monomials) is equal to another monomial
@@ -413,17 +501,15 @@ def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) 
     OptionT MetaM (Overlap bt sα q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
-  | .const za ha, .const zb hb => do
-    let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← ra.add rb
-    match res with
-    | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
-    | rc =>
-      let ⟨zc, hc⟩ ← rc.toRatNZ
-      let ⟨c, pc⟩ := rc.toRawEq
-      pure <| .nonzero ⟨c, .const zc hc, pc⟩
+  | .const za, .const zb => do
+    let ⟨_, zc, pf⟩ ← RingCompute.evalAdd _ _ za zb
+    match RingCompute.isZero zc with
+    | .some pf => pure <| .zero pf
+    | .none =>
+      assumeInstancesCommute
+      pure <| .nonzero ⟨_, .const zc, q($pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ => do
-    guard (va₁.eq vb₁ && va₂.eq vb₂)
+    guard (va₁.eq vb₁ && va₂.toExProd.2.eq vb₂.toExProd.2)
     have : $a₁ =Q $b₁ := ⟨⟩; have : $a₂ =Q $b₂ := ⟨⟩
     match ← evalAddOverlap va₃ vb₃ with
     | .zero p => pure <| .zero q(add_overlap_pf_zero $a₁ $a₂ $p)
@@ -456,8 +542,8 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a + $b) := do
+partial def evalAdd {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a + $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
@@ -507,37 +593,34 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalMulProd {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
-    MetaM <| Result (ExProd sα) q($a * $b) := do
+partial def evalMulProd {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
+    MetaM <| Result (ExProd bt sα) q($a * $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
-  | .const za ha, .const zb hb =>
-    if za = 1 then
-      have : $a =Q Nat.rawCast 1 := ⟨⟩
-      return ⟨b, .const zb hb, q(one_mul $b)⟩
-    else if zb = 1 then
-      have : $b =Q Nat.rawCast 1 := ⟨⟩
-      return ⟨a, .const za ha, q(mul_one $a)⟩
-    else
-      let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-      let rc ← ra.mul rb
-      let ⟨zc, hc⟩ := rc.toRatNZ.get!
-      let ⟨c, pc⟩ := rc.toRawEq
-      return ⟨c, .const zc hc, pc⟩
-  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _ _) =>
+  | .const za, .const zb =>
+    let ⟨_, zc, pf⟩ ← RingCompute.evalMul _ _ za zb
+    assumeInstancesCommute
+    return ⟨_, .const zc, q($pf)⟩
+  | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) =>
     let ⟨_, vc, pc⟩ ← evalMulProd va₃ vb
     return ⟨_, .mul va₁ va₂ vc, q(mul_pf_left $a₁ $a₂ $pc)⟩
-  | va@(.const _ _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
+  | va@(.const _), .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ =>
     let ⟨_, vc, pc⟩ ← evalMulProd va vb₃
     return ⟨_, .mul vb₁ vb₂ vc, q(mul_pf_right $b₁ $b₂ $pc)⟩
   | .mul (x := xa) (e := ea) vxa vea va₂, .mul (x := xb) (e := eb) vxb veb vb₂ =>
     have va := .mul vxa vea va₂; have vb := .mul vxb veb vb₂ -- FIXME: why does `va@(...)` fail?
+    let ⟨ea', vea'⟩ := vea.toExProd
+    let ⟨eb', veb'⟩ := veb.toExProd
     if vxa.eq vxb then
       have : $xa =Q $xb := ⟨⟩
-      if let some (.nonzero ⟨_, ve, pe⟩) ← (evalAddOverlap sℕ vea veb).run then
+      if let some (.nonzero ⟨ec', vec', pec'⟩) ← (evalAddOverlap sℕ vea' veb').run then
         let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb₂
-        return ⟨_, .mul vxa ve vc, q(mul_pp_pf_overlap $xa $pe $pc)⟩
-    if let .lt := (vxa.cmp vxb).then (vea.cmp veb) then
+        let ⟨ec, vec⟩ := vec'.toExProdNat
+        have : $ea =Q $ea' := ⟨⟩
+        have : $eb =Q $eb' := ⟨⟩
+        have : $ec =Q $ec' := ⟨⟩
+        return ⟨_, .mul vxa vec vc, q(mul_pp_pf_overlap $xa $pec' $pc)⟩
+    if let .lt := (vxa.cmp vxb).then (vea'.cmp veb') then
       let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb
       return ⟨_, .mul vxa vea vc, q(mul_pf_left $xa $ea $pc)⟩
     else
@@ -555,8 +638,8 @@ theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c
 * `a * 0 = 0`
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
 -/
-def evalMul₁ {a b : Q($α)} (va : ExProd sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a * $b) := do
+def evalMul₁ {a b : Q($α)} (va : ExProd bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a * $b) := do
   match vb with
   | .zero => return ⟨_, .zero, q(mul_zero $a)⟩
   | .add vb₁ vb₂ =>
@@ -575,8 +658,8 @@ theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c
 * `0 * b = 0`
 * `(a₁ + a₂) * b = (a₁ * b) + (a₂ * b)`
 -/
-def evalMul {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    MetaM <| Result (ExSum sα) q($a * $b) := do
+def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+    MetaM <| Result (ExSum bt sα) q($a * $b) := do
   match va with
   | .zero => return ⟨_, .zero, q(zero_mul $b)⟩
   | .add va₁ va₂ =>
@@ -606,7 +689,7 @@ mutual -- partial only to speed up compilation
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalNatCast`.
 -/
-partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
+partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase btℕ sℕ a) : AtomM (Result (ExBase bt sα) q($a)) :=
   match va with
   | .atom _ => do
     let (i, ⟨b', _⟩) ← addAtomQ q($a)
@@ -620,9 +703,9 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) : AtomM (Result (ExProd sα) q($a)) :=
+partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd btℕ sℕ a) : AtomM (Result (ExProd bt sα) q($a)) :=
   match va with
-  | .const c hc =>
+  | .const c =>
     have n : Q(ℕ) := a.appArg!
     have : $a =Q Nat.rawCast $n := ⟨⟩
     pure ⟨q(Nat.rawCast $n), .const c hc, q(natCast_nat (R := $α) $n)⟩
@@ -636,7 +719,7 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sℕ a) : AtomM (Result
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sℕ a) : AtomM (Result (ExSum sα) q($a)) :=
+partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum btℕ sℕ a) : AtomM (Result (ExSum bt sα) q($a)) :=
   match va with
   | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
   | .add va₁ va₂ => do
