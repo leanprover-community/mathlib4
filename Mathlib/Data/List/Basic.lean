@@ -159,7 +159,7 @@ theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (�
     ∃ x ∈ a :: l, p x :=
   fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 
-@[aesop safe]
+@[aesop safe destruct]
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x := by grind
 
@@ -186,7 +186,7 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 
 /-! ### append -/
 
-@[aesop safe]
+@[simp]
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
 
@@ -194,9 +194,15 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 
+@[simp]
+theorem append_right_injective' (s t t' : List α) : s ++ t = s ++ t' ↔ t = t' := by aesop
+
 @[aesop safe]
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
+
+@[simp]
+theorem append_left_injective' (s s' t : List α) : s ++ t = s' ++ t ↔ s = s' := by aesop
 
 /-! ### replicate -/
 
@@ -275,11 +281,11 @@ theorem reverse_involutive : Involutive (@reverse α) :=
 theorem reverse_injective : Injective (@reverse α) :=
   reverse_involutive.injective
 
-@[aesop norm]
+@[aesop safe]
 theorem reverse_surjective : Surjective (@reverse α) :=
   reverse_involutive.surjective
 
-@[aesop norm]
+@[aesop safe]
 theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
@@ -377,7 +383,7 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
 
 @[aesop safe]
 theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
-    x ∈ (l₁ ++ l₂).getLast? := by grind
+    x ∈ (l₁ ++ l₂).getLast? := by aesop
 
 @[aesop safe]
 theorem mem_dropLast_of_mem_of_ne_getLast {a : α} (ha : a ∈ l)
