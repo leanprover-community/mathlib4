@@ -211,6 +211,9 @@ lemma iUnion_range_comap_comp_evalRingHom
     obtain ⟨i, p, rfl⟩ := exists_comap_evalRingHom_eq p
     exact Set.mem_iUnion_of_mem i ⟨p, rfl⟩
 
+@[deprecated (since := "2025-12-11")]
+alias iUnion_range_specComap_comp_evalRingHom := iUnion_range_comap_comp_evalRingHom
+
 end Pi
 
 end PrimeSpectrum

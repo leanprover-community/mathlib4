@@ -330,7 +330,9 @@ lemma continuous_comap (f : R →+* S) : Continuous (comap f) := by
   rintro _ ⟨s, rfl⟩
   exact ⟨_, preimage_comap_zeroLocus_aux f s⟩
 
-@[deprecated (since := "2025-12-10")] alias comap_apply := continuous_comap
+@[deprecated "RingHom.specComap and PrimeSpectrum.comap were unified,\
+so this lemma is now a no-op." (since := "2025-12-10")]
+lemma comap_apply (f : R →+* S) (x : PrimeSpectrum S) : comap f x = comap f x := rfl
 
 variable (f : R →+* S)
 
