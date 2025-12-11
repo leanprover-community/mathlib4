@@ -328,18 +328,7 @@ lemma aux_computation' :
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
   rw [aux_computation, extChartAt_to_inv]
 
-omit [IsManifold I 2 M] in
-/-- The round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm` is eventually equal
-to the identity in a neighborhood within `range I` of the chart point. -/
-lemma _root_.extChartAt_comp_extChartAt_symm_eventuallyEq :
-    ((extChartAt I x) ∘ (extChartAt I x).symm) =ᶠ[𝓝[range I] (extChartAt I x x)] id := by
-  set φ := extChartAt I x
-  rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
-  apply eventuallyEq_of_mem (s := φ.source)
-    ((isOpen_extChartAt_source x).mem_nhds (mem_extChartAt_source x))
-  intro y hy
-  rw [comp_apply, comp_apply, φ.right_inv (φ.map_source hy)]
-
+-- TODO: move to a better place!
 omit [IsManifold I 2 M] in
 /-- The `fderivWithin` of the round-trip composition `(extChartAt I x) ∘ (extChartAt I x).symm`
 at the chart point in `range I` equals the identity. -/
@@ -347,10 +336,9 @@ lemma _root_.fderivWithin_extChartAt_comp_extChartAt_symm_range :
     fderivWithin 𝕜 ((extChartAt I x) ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
-  have eq_nhd := extChartAt_comp_extChartAt_symm_eventuallyEq (I := I) (x := x)
-  have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
-    rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
-  rw [eq_nhd.fderivWithin_eq hx]
+  have eq_nhd : ((extChartAt I x) ∘ (extChartAt I x).symm) =ᶠ[𝓝[range I] (extChartAt I x x)] id :=
+    (eventuallyEq_of_mem (extChartAt_target_mem_nhdsWithin x) (fun _ ↦ (extChartAt I x).right_inv))
+  rw [eq_nhd.fderivWithin_eq (by simp)]
   exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
 
 -- TODO: clean up this proof (and add the version for `extChartAt`)
