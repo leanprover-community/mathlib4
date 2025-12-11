@@ -56,29 +56,15 @@ theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : exp (artanh x) = �
 @[simp]
 theorem artanh_zero : artanh 0 = 0 := by simp [artanh]
 
-theorem sinh_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : sinh (artanh x) = x / √(1 - x ^ 2) := by
-  have : 1 - x ^ 2 = (1 + x) * (1 - x) := by ring
-  rw [this, artanh, sinh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
-  · field_simp
-    rw [sq_sqrt, sq_sqrt]
-    · ring
-    · exact le_of_lt <| sub_pos.mpr hx.2
-    · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact sqrt_pos_of_pos <| div_pos (neg_lt_iff_pos_add'.mp hx.1) (sub_pos.mpr hx.2)
+theorem sinh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : sinh (artanh x) = x / √(1 - x ^ 2) := by
+  have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
+  have := sq_sub_sq 1 x
+  grind [artanh, sinh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
 
-theorem cosh_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : cosh (artanh x) = 1 / √(1 - x ^ 2) := by
-  have : 1 - x ^ 2 = (1 + x) * (1 - x) := by ring
-  rw [this, artanh, cosh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
-  · field_simp
-    rw [sq_sqrt, sq_sqrt]
-    · ring
-    · exact le_of_lt <| sub_pos.mpr hx.2
-    · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact le_of_lt <| neg_lt_iff_pos_add'.mp hx.1
-  · exact sqrt_pos_of_pos <| div_pos (neg_lt_iff_pos_add'.mp hx.1) (sub_pos.mpr hx.2)
+theorem cosh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : cosh (artanh x) = 1 / √(1 - x ^ 2) := by
+  have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
+  have := sq_sub_sq 1 x
+  grind [artanh, cosh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
 
 /-- `artanh` is the right inverse of `tanh` over (-1, 1). -/
 theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1 : ℝ) 1) : tanh (artanh x) = x := by
