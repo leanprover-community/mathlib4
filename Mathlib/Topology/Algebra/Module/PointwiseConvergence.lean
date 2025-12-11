@@ -9,7 +9,7 @@ public import Mathlib.Topology.Algebra.Module.StrongTopology
 public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
-# Topology of pointwise convergence on continous linear maps
+# Topology of pointwise convergence on continuous linear maps
 
 ## Main definitions
 
@@ -17,7 +17,7 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 topology on finite sets.
 * `PointwiseConvergenceCLM.evalCLM`: The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for fixed `a : E`
 as a continuous linear map.
-* `ContinousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
+* `ContinuousLinearMap.toPointwiseConvergenceCLM`: The canonical map from `E →SL[σ] F` to
 `E →SLₚₜ[σ] F` as a continuous linear map. This is the statement that bounded convergence is
 stronger than pointwise convergence.
 * `PointwiseConvergenceCLM.equivWeakDual`: The continuous equivalence between `E →Lₚₜ[𝕜] 𝕜` and
