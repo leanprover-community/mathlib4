@@ -228,7 +228,7 @@ lemma Submodule.disjoint_ker_of_finrank_le [NoZeroSMulDivisors R M] {N : Type*} 
   rw [← LinearMap.range_domRestrict] at h
   have := (LinearMap.ker (f.domRestrict L)).finrank_quotient_add_finrank
   rw [LinearEquiv.finrank_eq (f.domRestrict L).quotKerEquivRange] at this
-  omega
+  lia
 
 end Finrank
 

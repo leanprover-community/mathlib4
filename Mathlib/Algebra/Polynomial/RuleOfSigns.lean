@@ -192,7 +192,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
         rw [signVariations, signVariations, this]
-    have : 0 < natDegree ((X - C η) * P.eraseLead) := by omega
+    have : 0 < natDegree ((X - C η) * P.eraseLead) := by lia
     grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
       LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
       nextCoeff_eq_zero_of_eraseLead_eq_zero]

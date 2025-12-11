@@ -165,8 +165,8 @@ instance : TotalComplexShape c c c where
 
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
-  rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
-  add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
+  rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
+  add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
   ε'_succ := by
     rintro _ q rfl
     dsimp
@@ -177,8 +177,8 @@ lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n :=
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
-  rel_add p q r (hpq : p + 1 = q) := by dsimp; omega
-  add_rel p q r (hpq : p + 1 = q) := by dsimp; omega
+  rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
+  add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
   ε'_succ := by
     rintro p _ rfl
     dsimp

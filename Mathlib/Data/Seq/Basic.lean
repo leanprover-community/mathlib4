@@ -535,7 +535,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
       convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
-      omega
+      lia
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
@@ -829,16 +829,16 @@ theorem Pairwise.cons {R : α → α → Prop} {hd : α} {tl : Seq α}
     | zero =>
       simp only [get?_cons_zero, Option.mem_def, Option.some.injEq] at hx
       exact hx ▸ all_get h_hd hy
-    | succ n => exact h_tl n k (by omega) x hx y hy
+    | succ n => exact h_tl n k (by lia) x hx y hy
 
 theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
     (h : Pairwise R (.cons hd tl)) : (∀ x ∈ tl, R hd x) ∧ Pairwise R tl := by
   simp only [Pairwise] at *
-  refine ⟨?_, fun i j h_ij ↦ h (i + 1) (j + 1) (by omega)⟩
+  refine ⟨?_, fun i j h_ij ↦ h (i + 1) (j + 1) (by lia)⟩
   intro x hx
   rw [mem_iff_exists_get?] at hx
   obtain ⟨n, hx⟩ := hx
-  simpa [← hx] using h 0 (n + 1) (by omega)
+  simpa [← hx] using h 0 (n + 1) (by lia)
 
 @[simp]
 theorem Pairwise_cons_nil {R : α → α → Prop} {hd : α} : Pairwise R (cons hd nil) := by
@@ -893,7 +893,7 @@ theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans α R] {s : Seq α
   induction k generalizing y with
   | zero => exact h_succ hx hy
   | succ k ih =>
-    obtain ⟨z, hz⟩ := ge_stable (m := i + k + 1) _ (by omega) hy
+    obtain ⟨z, hz⟩ := ge_stable (m := i + k + 1) _ (by lia) hy
     exact _root_.trans (ih z hz) <| h_succ hz hy
 
 theorem Pairwise_tail {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) :
@@ -947,7 +947,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
     generalize a_tl.length' = u at ha'
     enat_to_nat
-    omega
+    lia
 
 instance : Functor Seq where map := @map
 

@@ -92,7 +92,7 @@ lemma wf_ancestralRel : WellFounded P.AncestralRel := by
   refine not_strictAnti_of_wellFoundedLT (fun n ↦ f.rank (g (n₀ + n)))
     (strictAnti_nat_of_succ_lt (fun n ↦ ?_))
   rw [← add_assoc]
-  exact f.lt (hg _) (by rw [← hn₀ (n₀ + n + 1) (by omega), ← hn₀ (n₀ + n) (by omega)])
+  exact f.lt (hg _) (by rw [← hn₀ (n₀ + n + 1) (by lia), ← hn₀ (n₀ + n) (by lia)])
 
 lemma isRegular : P.IsRegular where
   wf := f.wf_ancestralRel

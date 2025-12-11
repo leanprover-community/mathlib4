@@ -528,15 +528,15 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
         succAbove_of_castSucc_lt] <;>
       simp only [lt_def, coe_castSucc, val_succ] <;>
-      omega
+      lia
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
         succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
       simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
-      omega
+      lia
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
         castSucc_succ] <;>
       simp only [le_def, val_succ, coe_castSucc] <;>
-      omega
+      lia
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.

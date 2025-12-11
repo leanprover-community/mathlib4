@@ -208,7 +208,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   have small_eq := fp.part_eq_of_mem hs hv
   have ha : G.Adj v w := by
     by_contra hn; rw [h.not_adj_iff_part_eq, small_eq, large_eq] at hn
-    rw [hn] at ineq; omega
+    rw [hn] at ineq; lia
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
   have : #large ≤ card V := by simpa using card_le_card large.subset_univ
@@ -356,7 +356,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [Fintype.card_fin] at this; convert this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
-      have n'r : n = n' + r := by omega
+      have n'r : n = n' + r := by lia
       rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
         add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
       congr 1

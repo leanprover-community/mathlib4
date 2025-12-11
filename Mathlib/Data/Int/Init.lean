@@ -124,9 +124,9 @@ lemma inductionOn'_sub_one (hz : z ≤ b) :
   rw [hn]
   obtain _ | n := n
   · change _ = -1 at hn
-    have : z = b := by omega
+    have : z = b := by lia
     subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
-  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; omega
+  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; lia
     subst this
     refine (cast_heq _ _).trans ?_
     congr
@@ -301,7 +301,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> omega
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> lia
 
 /-! ### toNat -/
 

@@ -111,9 +111,9 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
   on_goal 2 => · contradiction
   · contradiction
 
--- `omega` is a follower and `all_goals` is a `combinatorLike`
+-- `lia` is a follower and `all_goals` is a `combinatorLike`
 #guard_msgs in
-example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
+example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals lia
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
@@ -226,7 +226,7 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
 example (n : Nat) : n + 1 = 1 + n := by
   by_cases 0 = 0
   · simp_all
-    omega
+    lia
   · have : 0 ≠ 1 := by
       intro h
       -- should not flag `cases`!

@@ -51,7 +51,7 @@ instance initial_inclusion {n : ℕ} [NeZero n] : (inclusion n).Initial := by
 `m`-truncated simplex category is initial. -/
 theorem initial_incl {n m : ℕ} [NeZero n] (hm : n ≤ m) : (incl n m).Initial := by
   have : (incl n m hm ⋙ inclusion m).Initial :=
-    Functor.initial_of_natIso (inclCompInclusion _).symm
+    Functor.initial_of_natIso (inclCompInclusion (by lia)).symm
   apply Functor.initial_of_comp_full_faithful _ (inclusion m)
 
 /-- Abbreviation for face maps in the `n`-truncated simplex category. -/

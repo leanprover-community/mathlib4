@@ -66,7 +66,7 @@ lemma findAtom_eq_bot {r : α} :
   mp h := by
     unfold findAtom at h
     have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate h
-    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
+    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by lia
     simpa [this] using h
   mpr h := by simp [h]
 
