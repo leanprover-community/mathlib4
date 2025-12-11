@@ -35,9 +35,6 @@ open Relation
 
 namespace Turing
 
--- TODO: revisit this after #13791 is merged
-set_option linter.flexible false
-
 /-!
 ## Simulating sequentialized partial recursive functions in TM2
 
@@ -855,6 +852,7 @@ theorem trNormal_respects (c k v s) :
       exact ⟨_, h₁, h.trans h₂⟩
   | fix f IH => apply IH
 
+set_option linter.flexible false -- TODO: revisit this after #13791 is merged
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
