@@ -376,11 +376,11 @@ namespace WidePullbackCone
 variable {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}
 
 /-- The projection on the components of a wide pullback cone. -/
-abbrev π (s : WidePullbackCone f) (i : ι) : s.pt ⟶ Y i :=
+def π (s : WidePullbackCone f) (i : ι) : s.pt ⟶ Y i :=
   (Cone.π s).app (some i)
 
 /-- The projection to the base of a wide pullback cone. -/
-abbrev base (s : WidePullbackCone f) : s.pt ⟶ X :=
+def base (s : WidePullbackCone f) : s.pt ⟶ X :=
   (Cone.π s).app none
 
 @[reassoc (attr := simp)]
@@ -431,14 +431,14 @@ def IsLimit.lift {s : WidePullbackCone f} (hs : IsLimit s)
 @[reassoc (attr := simp)]
 lemma IsLimit.lift_base {s : WidePullbackCone f} (hs : IsLimit s)
     {W : C} (b : W ⟶ X) (a : ∀ i, W ⟶ Y i) (w : ∀ i, a i ≫ f i = b) :
-    IsLimit.lift hs b a w ≫ s.base = b := by
-  simp [lift]
+    IsLimit.lift hs b a w ≫ s.base = b :=
+  hs.fac _ _
 
 @[reassoc (attr := simp)]
 lemma IsLimit.lift_π {s : WidePullbackCone f} (hs : IsLimit s)
     {W : C} (b : W ⟶ X) (a : ∀ i, W ⟶ Y i) (w : ∀ i, a i ≫ f i = b) (i : ι) :
-    IsLimit.lift hs b a w ≫ s.π i = a i := by
-  simp [lift]
+    IsLimit.lift hs b a w ≫ s.π i = a i :=
+  hs.fac _ _
 
 /-- To show two wide pullback cones are isomorphic, it suffices to given a compatible isomorphism
 of their cone points. -/
@@ -448,7 +448,10 @@ def ext {ι : Type*}
     (base : e.hom ≫ t.base = s.base)
     (π : ∀ i, e.hom ≫ t.π i = s.π i) :
     s ≅ t :=
-  Cones.ext e <| by rintro (_ | _) <;> simp [base, π]
+  Cones.ext e <| by
+    rintro (_ | _)
+    · exact base.symm
+    · exact (π _).symm
 
 /-- Reindex a wide pullback cone. -/
 @[simps! pt]
@@ -475,9 +478,9 @@ def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ 
     IsLimit.equivOfNatIsoOfIso
       (WidePullbackShape.functorExt (Iso.refl X) (fun i ↦ eqToIso (by simp))
         fun i ↦ by simp [← eqToHom_naturality]) _ _
-      (WidePullbackCone.ext (Iso.refl _) (by simp [WidePullbackCone.base, WidePullbackCone.reindex])
+      (WidePullbackCone.ext (Iso.refl _) (by simp [base, reindex, mk])
         (fun i ↦ by
-          simp [WidePullbackCone.π, WidePullbackCone.reindex,
+          simp [π, reindex, mk,
             eqToHom_naturality (fun i ↦ (Cone.π s).app (some i)) (e.apply_symm_apply i)]))
 
 end WidePullbackCone
