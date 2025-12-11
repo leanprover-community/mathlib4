@@ -194,6 +194,11 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
 
+/-- A subset of a nowhere dense set is nowhere dense. -/
+@[gcongr]
+lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
+  Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
+
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by
