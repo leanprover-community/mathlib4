@@ -77,12 +77,6 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
     have := h.count_le p
     simp at this
 
-theorem padicValNat_eq_primeFactorsList_count {m p : ℕ} [hp : Fact p.Prime] :
-    padicValNat p m = m.primeFactorsList.count p := by
-  by_cases hm : m = 0
-  . simp [hm]
-  · rw [primeFactorsList_count_eq, padicValNat_def hm, multiplicity_eq_factorization hp.out hm]
-
 theorem factorization_eq_primeFactorsList_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.primeFactorsList : Multiset ℕ) := by
   ext p
@@ -95,6 +89,12 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
   simp [factorization, pp, padicValNat_def' pp.ne_one hn]
+
+theorem padicValNat_eq_primeFactorsList_count {m p : ℕ} [hp : Fact p.Prime] :
+    padicValNat p m = m.primeFactorsList.count p := by
+  by_cases hm : m = 0
+  . simp [hm]
+  · rw [primeFactorsList_count_eq, padicValNat_def hm, multiplicity_eq_factorization hp.out hm]
 
 /-! ### Basic facts about factorization -/
 
