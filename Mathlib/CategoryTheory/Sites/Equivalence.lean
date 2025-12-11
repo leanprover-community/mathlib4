@@ -87,13 +87,8 @@ lemma isDenseSubsite_functor_of_isCocontinuous
       rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
     · intro H
       refine K.superset_covering ?_
-        (e.inverse.cover_lift K J (J.pullback_stable (inv <| e.unit.app X) H))
-      intro Y f (H : S _)
-      refine ⟨_, _, inv (e.counit.app Y), H, ?_⟩
-      simp only [comp_obj, id_obj, map_comp, Equivalence.fun_inv_map, ← Category.assoc,
-        Functor.map_inv, IsIso.inv_hom_id, Category.id_comp, ← IsIso.comp_inv_eq, IsIso.inv_inv,
-        NatIso.inv_inv_app]
-      simp
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, (e.counitInv.app Y), H, by simp⟩
 
 lemma isDenseSubsite_inverse_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J]
