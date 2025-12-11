@@ -3,15 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Emily Riehl, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.PathCategory.MorphismProperty
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 
 /-!
 # The category of quivers
 
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
 -/
+
+@[expose] public section
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃ w
 
@@ -208,7 +212,7 @@ theorem pathComposition_naturality {C : Type u} {D : Type u₁}
 ` 𝟭 _⟶ Cat.free ⋙ Quiv.forget`. -/
 lemma pathsOf_freeMap_toPrefunctor
     {V : Type u} {W : Type u₁} [Quiver.{v + 1} V] [Quiver.{v₁ + 1} W] (F : V ⥤q W) :
-  Paths.of V ⋙q (Cat.freeMap F).toPrefunctor = F ⋙q Paths.of W := rfl
+    Paths.of V ⋙q (Cat.freeMap F).toPrefunctor = F ⋙q Paths.of W := rfl
 
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
 def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :

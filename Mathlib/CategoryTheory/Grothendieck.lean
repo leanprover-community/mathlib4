@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.AsSmall
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # The Grothendieck construction
@@ -46,6 +48,8 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of funct
 * https://ncatlab.org/nlab/show/Grothendieck+construction
 
 -/
+
+@[expose] public section
 
 
 universe w u v u₁ v₁ u₂ v₂
@@ -91,7 +95,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
   cases f; cases g
   congr
   dsimp at w_base
-  aesop_cat
+  cat_disch
 
 /-- The identity morphism in the Grothendieck category.
 -/
@@ -312,7 +316,7 @@ def compAsSmallFunctorEquivalenceFunctor :
 
 /-- Taking the Grothendieck construction on `F ⋙ asSmallFunctor`, where
 `asSmallFunctor : Cat ⥤ Cat` is the functor which turns each category into a small category of a
-(potentiall) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
+(potentially) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
 def compAsSmallFunctorEquivalence :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
@@ -429,7 +433,7 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
 theorem pre_id : pre F (𝟭 C) = 𝟭 _ := rfl
 
 /--
-An natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
+A natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
 morphism `pre F G` and `pre F H`, up to composition with
 `Grothendieck (G ⋙ F) ⥤ Grothendieck (H ⋙ F)`.
 -/

@@ -3,11 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+module
 
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.MetricSpace.Pseudo.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.Order.IsLUB
 
 /-! ## Proper spaces
 
@@ -21,6 +22,8 @@ import Mathlib.Topology.Order.IsLUB
 * `pi_properSpace`: finite products of proper spaces are proper.
 
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -43,6 +46,12 @@ theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x
     IsCompact (sphere x r) :=
   (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
 
+/-- In a proper pseudometric space, any closed ball is a `CompactSpace` when considered as a
+subtype. -/
+instance {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
+    CompactSpace (closedBall x r) :=
+  isCompact_iff_compactSpace.mp (isCompact_closedBall _ _)
+
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
 instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
     (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
@@ -51,7 +60,7 @@ instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperS
 variable [PseudoMetricSpace α]
 
 -- see Note [lower instance priority]
-/-- A proper pseudo metric space is sigma compact, and therefore second countable. -/
+/-- A proper pseudometric space is sigma compact, and therefore second countable. -/
 instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
     SecondCountableTopology α := by
   -- We already have `sigmaCompactSpace_of_locallyCompact_secondCountable`, so we don't
@@ -87,10 +96,6 @@ instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α 
 instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
-
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")]
-alias locally_compact_of_proper := locallyCompact_of_proper
 
 -- see Note [lower instance priority]
 /-- A proper space is complete -/

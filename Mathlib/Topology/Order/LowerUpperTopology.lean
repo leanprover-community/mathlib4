@@ -3,9 +3,11 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Lower and Upper topology
@@ -49,6 +51,8 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 lower topology, upper topology, preorder
 -/
 
+@[expose] public section
+
 open Set TopologicalSpace Topology
 
 namespace Topology
@@ -79,11 +83,7 @@ namespace WithLower
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
 @[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithLower_symm_eq := toLower_symm
-
 @[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithLower_symm_eq := ofLower_symm
-
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
 @[simp] lemma ofLower_toLower (a : α) : ofLower (toLower a) = a := rfl
@@ -140,9 +140,7 @@ namespace WithUpper
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
 @[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithUpper_symm_eq := toUpper_symm
 @[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithUpper_symm_eq := ofUpper_symm
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -411,7 +409,7 @@ instance : ClosedIicTopology α :=
 theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
   IsLower.isClosed_upperClosure (α := αᵒᵈ) h
 
-/-- Every set open in the upper topology is a upper set. -/
+/-- Every set open in the upper topology is an upper set. -/
 theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
   IsLower.isLowerSet_of_isOpen (α := αᵒᵈ) h
 

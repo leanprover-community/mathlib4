@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Action.Concrete
-import Mathlib.CategoryTheory.Action.Limits
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Action.Concrete
+public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -16,6 +18,8 @@ forgetful functor to `FintypeCat` is a `FiberFunctor`.
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -120,7 +124,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
-      exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
+      exact Set.Nonempty.coe_sort (MulAction.nonempty_orbit x)
     have hb : Function.Bijective i.hom := by
       apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
       exact map_isIso (forget₂ _ FintypeCat) i

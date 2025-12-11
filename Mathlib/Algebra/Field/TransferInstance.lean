@@ -3,14 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.TransferInstance
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module
 

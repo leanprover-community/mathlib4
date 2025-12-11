@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Boundary of an embedding of complex shapes
@@ -31,6 +33,8 @@ only element in this lower boundary. Similarly, we define
 `Embedding.BoundaryLE`.
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
@@ -171,32 +175,32 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      lia
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      lia
 
 lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      lia
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      lia
 
 end ComplexShape

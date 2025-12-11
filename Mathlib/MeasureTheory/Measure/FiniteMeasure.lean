@@ -3,10 +3,13 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Finite measures
@@ -78,6 +81,8 @@ considerations:
 weak convergence of measures, finite measure
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -155,6 +160,11 @@ theorem null_iff_toMeasure_null (ν : FiniteMeasure Ω) (s : Set Ω) :
 theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   ENNReal.toNNReal_mono (measure_ne_top _ s₂) ((μ : Measure Ω).mono h)
 
+theorem apply_union_le (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ := by
+  have := measure_union_le (μ := (μ : Measure Ω)) s₁ s₂
+  apply (ENNReal.toNNReal_mono (by finiteness) this).trans_eq
+  rw [ENNReal.toNNReal_add (by finiteness) (by finiteness), coeFn_def]
+
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
 protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
@@ -216,7 +226,7 @@ instance instSMul : SMul R (FiniteMeasure Ω) where
 @[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 := rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) := rfl
 
 @[simp, norm_cast]
@@ -291,9 +301,9 @@ lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFinite
   simp only [mem_setOf_eq, mem_preimage, mem_Ico, zero_le, true_and]
   exact isFiniteMeasure_iff μ
 
-/-- The monoidal product is a measurabule function from the product of finite measures over
+/-- The monoidal product is a measurable function from the product of finite measures over
 `α` and `β` into the type of finite measures over `α × β`. -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v) :
@@ -305,8 +315,13 @@ theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ _ Hu _ Hv Heq
+  intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
+
+lemma apply_iUnion_le {μ : FiniteMeasure Ω} {f : ℕ → Set Ω}
+    (hf : Summable fun n ↦ μ (f n)) :
+    μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
+  simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
 
 variable [TopologicalSpace Ω]
 
@@ -551,9 +566,6 @@ lemma isEmbedding_toWeakDualBCNN :
   eq_induced := rfl
   injective := injective_toWeakDualBCNN
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_toWeakDualBCNN := isEmbedding_toWeakDualBCNN
-
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
@@ -709,13 +721,55 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h
 
-lemma continuous_integral_boundedContinuousFunction
-    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ := by
-  rw [continuous_iff_continuousAt]
-  intro μ
-  exact continuousAt_of_tendsto_nhds
-    (FiniteMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
+variable {X : Type*} [TopologicalSpace X] {μs : X → FiniteMeasure Ω}
+
+/-- The characterization of weak convergence of finite measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuous_lintegral :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
+    forall_swap (α := X)]
+
+/-- The characterization of weak convergence of finite measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuous_integral :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
+    forall_swap (α := X)]
+
+lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ≥0) : Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuous_lintegral.1 continuous_id _
+
+lemma continuous_integral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ) : Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuous_integral.1 continuous_id _
+
+variable [CompactSpace Ω]
+
+/-- The characterization of weak convergence of finite measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_lintegral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ≥0), Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_lintegral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+/-- The characterization of weak convergence of finite measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_integral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ), Continuous fun x ↦ ∫ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_integral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+variable [CompactSpace X] [MeasurableSpace X] [OpensMeasurableSpace X] {F : Type*}
+
+lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapClass F X ℝ≥0] (f : F) :
+    Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
+
+lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
+    Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
@@ -725,12 +779,7 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
 noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f, by
-    constructor
-    by_cases f_aemble : AEMeasurable f ν
-    · rw [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ]
-      exact measure_lt_top (↑ν) (f ⁻¹' univ)
-    · simp [f_aemble]⟩
+  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isFiniteMeasure_map f⟩
 
 @[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
     (ν.map f).toMeasure = ν.toMeasure.map f := rfl
@@ -754,9 +803,7 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
-    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
-  ext s s_mble
-  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
+    (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by ext; simp [*]
 
 @[simp] lemma map_smul {f : Ω → Ω'} (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Trivial Square-Zero Extension
@@ -50,6 +52,8 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -575,12 +579,8 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    refine (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) ?_).trans ?_
-    · rintro m hm
-      simp_rw [List.mem_map, List.mem_range] at hm
-      obtain ⟨i, hi, rfl⟩ := hm
-      rw [Nat.sub_add_cancel (Nat.lt_succ_iff.mp hi)]
-    · rw [List.length_map, List.length_range]
+    exact (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
+      (by rw [List.length_map, List.length_range])
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
     intro n
@@ -859,7 +859,6 @@ variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
 instance algebra' : Algebra S (tsze R M) where
   algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
-  smul := (· • ·)
   commutes' := fun s x =>
     ext (Algebra.commutes _ _) <|
       show algebraMap S R s •> x.snd + (0 : M) <• x.fst
@@ -948,7 +947,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, hg]
-        rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+        rw [← map_mul, map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)

@@ -3,11 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.EssentialImage
+public import Mathlib.Tactic.CategoryTheory.Slice
 /-!
 # Equivalence of categories
 
@@ -44,16 +46,18 @@ if it is full, faithful and essentially surjective.
 
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
-`F` is an equivalence iff `G` is.
+  `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
 
-## Notations
+## Notation
 
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -62,32 +66,40 @@ open CategoryTheory.Functor NatIso Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-/-- We define an equivalence as a (half)-adjoint equivalence, a pair of functors with
-  a unit and counit which are natural isomorphisms and the triangle law `Fη ≫ εF = 1`, or in other
-  words the composite `F ⟶ FGF ⟶ F` is the identity.
+/-- An equivalence of categories.
 
-  In `unit_inverse_comp`, we show that this is actually an adjoint equivalence, i.e., that the
-  composite `G ⟶ GFG ⟶ G` is also the identity.
+We define an equivalence between `C` and `D`, with notation `C ≌ D`, as a half-adjoint equivalence:
+a pair of functors `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit
+`ε : G ⋙ F ≅ 𝟭 D`, such that the natural isomorphisms `η` and `ε` satisfy the triangle law for
+`F`: namely, `Fη ≫ εF = 𝟙 F`. Or, in other words, the composite `F` ⟶ `F ⋙ G ⋙ F` ⟶ `F` is the
+identity.
 
-  The triangle equation is written as a family of equalities between morphisms, it is more
-  complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`. -/
+In `unit_inverse_comp`, we show that this is sufficient to establish a full adjoint
+equivalence. I.e., the composite `G` ⟶ `G ⋙ F ⋙ G` ⟶ `G` is also the identity.
+
+The triangle equation `functor_unitIso_comp` is written as a family of equalities between
+morphisms. It is more complicated if we write it as an equality of natural transformations, because
+then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
-  /-- A functor in one direction -/
+  /-- The forwards direction of an equivalence. -/
   functor : C ⥤ D
-  /-- A functor in the other direction -/
+  /-- The backwards direction of an equivalence. -/
   inverse : D ⥤ C
-  /-- The composition `functor ⋙ inverse` is isomorphic to the identity -/
+  /-- The composition `functor ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ functor ⋙ inverse
-  /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
+  /-- The composition `inverse ⋙ functor` is isomorphic to the identity. -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphisms compose to the identity. -/
+  /-- The triangle law for the forwards direction of an equivalence: the unit and counit compose
+  to the identity when whiskered along the forwards direction.
+
+  We state this as a family of equalities among morphisms instead of an equality of natural
+  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
-      𝟙 (functor.obj X) := by aesop_cat
+      𝟙 (functor.obj X) := by cat_disch
 
-/-- We infix the usual notation for an equivalence -/
+@[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -315,7 +327,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
-  dsimp [adjointifyη,Trans.trans]
+  dsimp [adjointifyη, Trans.trans]
   simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
@@ -403,7 +415,7 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
   simp
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
-@[simps! functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
   functor := (whiskeringLeft _ _ _).obj e.inverse
   inverse := (whiskeringLeft _ _ _).obj e.functor
@@ -416,7 +428,7 @@ def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
       Functor.comp_map, ← F.map_comp, unit_inverse_comp, map_id]
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
-@[simps! functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
   functor := (whiskeringRight _ _ _).obj e.functor
   inverse := (whiskeringRight _ _ _).obj e.inverse
@@ -559,11 +571,11 @@ def changeFunctor (e : C ≌ D) {G : C ⥤ D} (iso : e.functor ≅ G) : C ≌ D 
   counitIso := isoWhiskerLeft _ iso.symm ≪≫ e.counitIso
 
 /-- Compatibility of `changeFunctor` with identity isomorphisms of functors -/
-theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by aesop_cat
+theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by cat_disch
 
 /-- Compatibility of `changeFunctor` with the composition of isomorphisms of functors -/
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
-    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by aesop_cat
+    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
@@ -699,9 +711,6 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
   inverse := ObjectProperty.ιOfLE h.symm.le
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-@[deprecated (since := "2025-03-04")]
-alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 

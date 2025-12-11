@@ -3,10 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -27,6 +29,8 @@ left with angle less than `π`.
 * https://planetmath.org/proofofabelslimittheorem
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
+
+@[expose] public section
 
 
 open Filter Finset
@@ -61,7 +65,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, mem_nhdsWithin]
-  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
@@ -78,7 +82,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
-      _ = √(1 - x) := by congr 1; field_simp; ring
+      _ = √(1 - x) := by congr 1; field
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le

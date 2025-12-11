@@ -3,8 +3,10 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Modules over a ring
@@ -32,6 +34,8 @@ to use a canonical `Module` typeclass throughout.
 
 semimodule, module, vector space
 -/
+
+@[expose] public section
 
 assert_not_exists Field Invertible Pi.single_smul₀ RingHom Set.indicator Multiset Units
 
@@ -61,7 +65,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero
-  {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
+    {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }

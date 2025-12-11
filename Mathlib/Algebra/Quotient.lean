@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Tactic.Common
 
 /-!
 # Algebraic quotients
@@ -12,11 +14,11 @@ This file defines notation for algebraic quotients, e.g. quotient groups `G ⧸ 
 quotient modules `M ⧸ N` and ideal quotients `R ⧸ I`.
 
 The actual quotient structures are defined in the following files:
-* quotient group: `Mathlib/GroupTheory/QuotientGroup.lean`
-* quotient module: `Mathlib/LinearAlgebra/Quotient.lean`
-* quotient ring: `Mathlib/RingTheory/Ideal/Quotient.lean`
+* Quotient Group: `Mathlib/GroupTheory/Cosets/Defs.lean`
+* Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
+* Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
 
-## Notations
+## Notation
 
 The following notation is introduced:
 
@@ -31,6 +33,8 @@ The following notation is introduced:
 quotient, group quotient, quotient group, module quotient, quotient module, ring quotient,
 ideal quotient, quotient ring
 -/
+
+@[expose] public section
 
 
 universe u v

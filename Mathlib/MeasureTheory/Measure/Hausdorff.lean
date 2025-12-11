@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.Topology.MetricSpace.MetricSeparated
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -84,7 +86,7 @@ measures.
 * `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`.
 
@@ -105,6 +107,8 @@ dimension.
 
 Hausdorff measure, measure, metric measure
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal Topology
@@ -210,7 +214,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
+    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; lia
   refine ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
     fun x hx y hy => ?_⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
@@ -351,9 +355,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
   refine surjective_id.iSup_congr id fun ε => surjective_id.iSup_congr id fun hε => ?_
   rw [comap_boundedBy _ (H.imp _ id)]
   · congr with s : 1
-    apply extend_congr
-    · simp [hf.ediam_image]
-    · intros; simp [hf.ediam_image]
+    apply extend_congr <;> simp [hf.ediam_image]
   · intro h_mono s t hst
     simp only [extend, le_iInf_iff]
     intro ht
@@ -700,8 +702,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
     refine le_iSup₂_of_le δ δ0 <| iInf₂_mono' fun t hst ↦
       ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
         ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
-    · rw [← image_iUnion, ← iUnion_inter]
-      exact image_subset _ (subset_inter hst Subset.rfl)
+    · grw [← image_iUnion, ← iUnion_inter, ← hst, inter_self]
     · refine ENNReal.tsum_le_tsum fun n => ?_
       simp only [iSup_le_iff, image_nonempty]
       intro hft
@@ -913,8 +914,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
-        · refine (mul_lt_mul_right npos).2 ?_
-          simp only [(hx i).right, sub_lt_sub_iff_right]
+        · gcongr
+          exact (hx i).right
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
     refine ⟨f, fun i => ⟨?_, ?_⟩⟩
@@ -922,9 +923,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp [npos.ne']
+        _ = x i := by field
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp [npos.ne']
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le
@@ -938,7 +939,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       · filter_upwards [B] with _ hn
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_natCast]
-        intros i _
+        intro i _
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
@@ -953,7 +954,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
             ((ENNReal.continuous_ofReal.tendsto _).comp
               ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_natCast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
-        intros n hn
+        intro n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_natCast]
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
@@ -984,8 +985,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
 
 variable (ι X)
 
-theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
-    [SecondCountableTopology X] (d : ℝ) :
+theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.funUnique ι X) μH[d] μH[d] :=
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 
