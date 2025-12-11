@@ -70,10 +70,10 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
-/-- A wrapper for `lia` which prefaces it with some quick and useful attempts -/
--- TODO: see what can be removed, now that we've changed the terminal step from `omega` to `lia`
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
+/-- A wrapper for `omega` which prefaces it with some quick and useful attempts -/
 macro "valid" : tactic =>
-  `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | lia)
+  `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]

@@ -548,10 +548,11 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
     rw [← Nat.add_lt_add_iff_right (k := 1)]
     convert Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
+      -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
-        · congr; lia
+        · congr; omega
         · rw [Order.one_le_iff_pos]
           conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
           rw [← lt_def]
@@ -562,12 +563,12 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         have : c.emb i ⟨c.partSize i - 1, Nat.sub_one_lt_of_lt (c.partSize_pos i)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hi
         simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
-        lia
+        omega
     · rcases eq_or_ne j (c.index 0) with rfl | hj
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
-        · congr; lia
+        · congr; omega
         · rw [Order.one_le_iff_pos]
           conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
           rw [← lt_def]
@@ -578,7 +579,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         have : c.emb j ⟨c.partSize j - 1, Nat.sub_one_lt_of_lt (c.partSize_pos j)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hj
         simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
-        lia
+        omega
   disjoint i _ j _ hij := by
     wlog h : i ≠ c.index 0 generalizing i j
     · apply Disjoint.symm
@@ -620,7 +621,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         congr 1
         rw [← val_eq_val]
         simp only [coe_cast, val_succ, coe_pred]
-        lia
+        omega
     · have A : update c.partSize (c.index 0) (c.partSize (c.index 0) - 1) i = c.partSize i := by
         simp [hi]
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
