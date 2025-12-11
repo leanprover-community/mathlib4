@@ -1087,7 +1087,11 @@ variable [MetricSpace X] [SeparableSpace X]
 
 variable (X) in
 /-- Embedding function into 1 direction of countable cube -/
-noncomputable abbrev hCubeEmbedding (n : ℕ) (x : X) : I :=
+/-- Given a separable metric space `X`, `denseSeq X : ℕ → X` gives a countable
+dense sequence. This measures the distance between `denseSeq X n` and `x`, truncated to the unit interval `I` so that the distances remain bounded.
+
+The function `(fun x n ↦ distDenseSeq n x) : X → ℕ → I` is a mapping from `X` to the Hilbert cube. -/
+noncomputable abbrev distDenseSeq (n : ℕ) (x : X) : I :=
   have : Nonempty X := ⟨x⟩
   projIcc _ _ zero_le_one <| dist x (denseSeq X n)
 
