@@ -542,9 +542,13 @@ theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
 theorem idxOf_cons_ne {a b : α} (l : List α) (h : b ≠ a) : idxOf a (b :: l) = succ (idxOf a l) := by
   simp [idxOf_cons, beq_false_of_ne h]
 
-@[aesop norm]
+@[simp]
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   grind
+
+@[aesop safe]
+theorem not_mem_of_idxOf_eq_length {a : α} {l : List α} (h : idxOf a l = length l) : a ∉ l :=
+  (idxOf_eq_length_iff.mp h)
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
