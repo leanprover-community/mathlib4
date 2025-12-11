@@ -604,13 +604,16 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (f
     Disjoint diagSet (fromRel hr) ↔ Irreflexive r := by
   simp [Set.disjoint_left, Sym2.forall, Irreflexive]
 
+@[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
+    fromRel hr ⊆ diagSetᶜ ↔ Irreflexive r := by simp [Set.subset_compl_iff_disjoint_left]
+
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
     Reflexive r ↔ diagSet ⊆ fromRel sym := by simp
 
-@[deprecated disjoint_diagSet_fromRel (since := "2025-12-10")]
+@[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
-    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ := by simp [Set.subset_compl_iff_disjoint_left]
+    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
