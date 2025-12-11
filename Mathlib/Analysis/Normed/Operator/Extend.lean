@@ -233,6 +233,39 @@ theorem opNorm_extendOfNorm_le (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
 
 end NormedField
 
+section LinearIsometry
+
+variable [NormedField 𝕜] [NormedField 𝕜₂]
+  [AddCommGroup E] [Module 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [CompleteSpace F]
+  [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ]
+
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
+
+/-- Extend a densely defined operator that preserves the norm to a linear isometry. -/
+def extendOfIsometry (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖) :
+    Eₗ →ₛₗᵢ[σ₁₂] F where
+  __ := f.extendOfNorm e
+  norm_map' := by
+    refine h_dense.induction ?_ ?_
+    · rintro x ⟨y, rfl⟩
+      convert h_norm y
+      apply LinearMap.extendOfNorm_eq h_dense (by use 1; simp [h_norm])
+    · apply isClosed_eq ?_ (by fun_prop)
+      simp only [ContinuousLinearMap.coe_coe]
+      fun_prop
+
+theorem extendOfIsometry_apply (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖) (x : Eₗ) :
+    (f.extendOfIsometry e h_dense h_norm) x = f.extendOfNorm e x := rfl
+
+@[simp]
+theorem extendOfIsometry_eq (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖) (x : E) :
+    f.extendOfIsometry e h_dense h_norm (e x) = f x :=
+  LinearMap.extendOfNorm_eq h_dense ⟨1, fun x ↦ by simp [h_norm x]⟩ x
+
+end LinearIsometry
+
 end LinearMap
 
 namespace LinearEquiv

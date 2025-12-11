@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
@@ -1073,74 +1074,11 @@ def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E
 
 section LinearIsometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
-variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
+@[deprecated (since := "2025-12-11")]
+alias LinearIsometry.extend := LinearMap.extendOfIsometry
 
-open Module
-
-/-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
-isometry mapping `S` into `V` can be extended to a full isometry of `V`.
-
-TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
-noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
-  -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
-  let d := finrank 𝕜 Sᗮ
-  let LS := LinearMap.range L.toLinearMap
-  have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by
-    have dim_LS_perp : finrank 𝕜 LSᗮ = d :=
-      calc
-        finrank 𝕜 LSᗮ = finrank 𝕜 V - finrank 𝕜 LS := by
-          simp only [← LS.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-        _ = finrank 𝕜 V - finrank 𝕜 S := by
-          simp only [LS, LinearMap.finrank_range_of_inj L.injective]
-        _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-    exact
-      (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
-        ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
-  let L3 := LSᗮ.subtypeₗᵢ.comp E.toLinearIsometry
-  -- Project onto S and Sᗮ
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
-  let p1 := S.orthogonalProjection.toLinearMap
-  let p2 := Sᗮ.orthogonalProjection.toLinearMap
-  -- Build a linear map from the isometries on S and Sᗮ
-  let M := L.toLinearMap.comp p1 + L3.toLinearMap.comp p2
-  -- Prove that M is an isometry
-  have M_norm_map : ∀ x : V, ‖M x‖ = ‖x‖ := by
-    intro x
-    -- Apply M to the orthogonal decomposition of x
-    have Mx_decomp : M x = L (p1 x) + L3 (p2 x) := by
-      simp only [M, LinearMap.add_apply, LinearMap.comp_apply, LinearMap.comp_apply,
-        LinearIsometry.coe_toLinearMap]
-    -- Mx_decomp is the orthogonal decomposition of M x
-    have Mx_orth : ⟪L (p1 x), L3 (p2 x)⟫ = 0 := by
-      have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
-        LinearMap.mem_range_self L.toLinearMap (p1 x)
-      have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LS,
-          ← Submodule.range_subtype LSᗮ]
-        apply LinearMap.mem_range_self
-      apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
-    -- Apply the Pythagorean theorem and simplify
-    rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
-    simp only [sq, Mx_decomp]
-    rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
-  exact
-    { toLinearMap := M
-      norm_map' := M_norm_map }
-
-theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
-  simp only [add_eq_left, LinearIsometry.coe_toLinearMap,
-    LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
-    orthogonalProjection_mem_subspace_eq_self, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
-    Submodule.coe_subtype, LinearMap.add_apply, Submodule.coe_eq_zero,
-    LinearIsometryEquiv.map_eq_zero_iff, Submodule.coe_subtypeₗᵢ,
-    orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.orthogonal_orthogonal,
-    Submodule.coe_mem]
+@[deprecated (since := "2025-12-11")]
+alias LinearIsometry.extend_apply := LinearMap.extendOfIsometry_apply
 
 end LinearIsometry
 
