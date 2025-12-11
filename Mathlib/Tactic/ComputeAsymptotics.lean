@@ -265,7 +265,8 @@ partial def proveTendsto {α β : Q(Type)} (f : Q($α → $β)) (source : Q(Filt
       return q(ConvertDomain.tendsto_cast_domain $f' $source $source' $target $cast $h_source $pf)
   | _ =>
     throwError "not implemented (TODO)"
-    -- let ⟨cast, target', h_convert⟩ ← ConvertDomain.convertTendstoTarget q($f) q($source) q($target)
+    -- let ⟨cast, target', h_convert⟩ ← ConvertDomain.convertTendstoTarget q($f) q($source)
+    --   q($target)
     -- let f' : Q($α → ℝ) := q(fun x ↦ $cast ($f x))
     -- -- sorry
     -- let h_goal ← mkFreshExprMVarQ q(Filter.Tendsto $f' $source $target')

@@ -80,7 +80,7 @@ theorem stream_dist_cons (x : α) (s t : Stream' α) :
   suffices PiNat.firstDiff (x :: s) (x :: t) = PiNat.firstDiff s t + 1 by
     simp [this, pow_succ]
     field_simp
-  simp [PiNat.firstDiff, h, h']
+  simp only [PiNat.firstDiff, ne_eq, h', not_false_eq_true, ↓reduceDIte, h]
   generalize_proofs p1 p2
   convert Nat.find_comp_succ _ _ _
   simp [Stream'.cons]
@@ -88,7 +88,8 @@ theorem stream_dist_cons (x : α) (s t : Stream' α) :
 @[simp]
 theorem dist_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   rw [Subtype.dist_eq]
-  simp
+  simp only [val_cons, stream_dist_cons, mul_eq_mul_left_iff, inv_eq_zero, OfNat.ofNat_ne_zero,
+    or_false]
   rw [Subtype.dist_eq]
 
 class FriendOperation (f : γ → Seq α → Seq α) : Prop where
@@ -131,7 +132,8 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
     intro f g
     rw [UniformFun.dist_le (by positivity)]
     intro b
-    simp [UniformFun.toFun, UniformFun.ofFun, T]
+    simp only [UniformFun.toFun, UniformFun.ofFun, Equiv.coe_fn_symm_mk, NNReal.coe_inv,
+      NNReal.coe_ofNat, T]
     cases F b with
     | none => simp
     | some v =>
@@ -144,7 +146,7 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
           specialize this (f b') (g b')
           simpa using this
         _ ≤ _ := by
-          simp [UniformFun.dist_def]
+          simp only [UniformFun.dist_def]
           apply le_ciSup (f := fun b ↦ dist (f b) (g b))
           have : ∃ C, ∀ (a b : Seq α), dist a b ≤ C := by
             rw [← Metric.boundedSpace_iff]
@@ -157,13 +159,13 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
   use f
   intro b
   rw [← hf]
-  simp [T]
+  simp only [T]
   cases hb : F b with
   | none =>
     simp
   | some v =>
     obtain ⟨a, c, b'⟩ := v
-    simp
+    simp only [cons_eq_cons, true_and]
     congr
     change f b' = T f b'
     rw [hf]

@@ -318,7 +318,8 @@ theorem PreMS.sub_log_exp_Approximates {basis : Basis} {B expH : PreMS basis} {f
     exact h _ (by simp)
   apply this.mono
   intro x h_pos
-  simp at h_pos ⊢
+  simp only [Fin.getElem_fin, Pi.pow_apply, Function.comp_apply, Pi.smul_apply,
+    smul_eq_mul] at h_pos ⊢
   rw [Real.rpow_def_of_pos h_pos]
   congr 1
   rw [mul_comm]

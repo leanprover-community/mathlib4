@@ -178,7 +178,7 @@ theorem toFun_pos {t : Term} {basis : Basis}
       simp
     · intro hd h_hd
       apply hx'
-      simp; right; assumption
+      grind
 
 theorem toFun_ne_zero {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis)
     (h_coef : t.coef ≠ 0) :
@@ -496,8 +496,8 @@ theorem not_FirstIsPos_of_AllZero {x : List ℝ} (h : AllZero x) : ¬ FirstIsPos
   | nil => simp [FirstIsPos]
   | cons hd tl =>
     intro h'
-    simp [AllZero, FirstIsPos] at h h'
-    simp [h.left] at h'
+    simp only [AllZero, FirstIsPos] at h h'
+    simp only [h.left, lt_self_iff_false, true_and, false_or] at h'
     exact not_FirstIsPos_of_AllZero h.right h'
 
 theorem not_FirstIsPos_of_FirstIsNeg {x : List ℝ} (h : FirstIsNeg x) : ¬ FirstIsPos x := by

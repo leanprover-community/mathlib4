@@ -88,7 +88,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
     · right
       use Y_exp, Y_coef, ?_, Y_tl
       constructor
-      · simp [add_def, add]
+      · simp only [add_def, add]
         rw [corec_cons]
         · simp
           rfl
@@ -121,7 +121,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       right
       use Y_exp, Y_coef, ?_, Y_tl
       constructor
-      · simp [add_def, add]
+      · simp only [add_def, add]
         rw [corec_cons]
         · simp
           rfl
@@ -161,7 +161,7 @@ theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (bas
   cases Y with
   | nil => simp [add']
   | cons Y_exp Y_coef Y_tl =>
-  simp [add_def, add, add']
+  simp only [add_def, add, add', destruct_cons]
   split_ifs <;>
   (
     rw [corec_cons]
@@ -240,23 +240,24 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
       right
       rw [add_cons_cons]
       split_ifs with h1 h2
-      · simp [mulConst_cons]
+      · simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
         use ?_, ?_
         constructor
         · rfl
         · simp [add_cons_cons, h1]
-      · simp [mulConst_cons]
+      · simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
         use ?_, ?_
         constructor
         · rfl
         · simp [add_cons_cons, h1, h2]
       · have : X_exp = Y_exp := by linarith
         subst this
-        simp [mulConst_cons]
+        simp only [↓existsAndEq, mulConst_cons, cons_eq_cons, and_self, and_true, true_and]
         use ?_, ?_
         constructor
         · rfl
-        · simp [add_cons_cons]
+        · simp only [add_cons_cons, lt_self_iff_false, ↓reduceIte, cons_eq_cons, and_true,
+            true_and]
           rw [add_mulConst]
 
 /-- Addition is commutative. -/
@@ -284,17 +285,18 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     rw [add_cons_cons, add_cons_cons]
     split_ifs with h1 h2
     · linarith
-    · simp [motive]
+    · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
+        exists_and_right, true_and, motive]
       use ?_, ?_
-    · simp [motive]
+    · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
+      exists_and_right, true_and, motive]
       use ?_, ?_
     · have : X_exp = Y_exp := by linarith
       subst this
-      simp
+      simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left', true_and]
       constructor
       · rw [add_comm']
-      · simp [motive]
-        use ?_, ?_
+      · use ?_, ?_
 
 /-- Addition is associative. -/
 private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
@@ -336,7 +338,7 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
       simp_rw [add_cons_cons]
       split_ifs <;> (try exfalso; linarith) <;>
       (
-        simp
+        simp only [↓existsAndEq, cons_eq_cons, and_self, and_true, true_and]
         use ?_, ?_, ?_
         try (
           simp [← h_XY, ← h_YZ, add_assoc' (basis := basis_tl)]
@@ -399,10 +401,10 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
       obtain ⟨X, Y, h_eq, hX_wo, hY_wo⟩ := ih
       cases X with
       | nil =>
-        simp at h_eq
+        simp only [nil_add] at h_eq
         subst h_eq
         obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons hY_wo
-        simp [h_coef_wo, h_comp, motive]
+        simp only [h_coef_wo, h_comp, true_and, motive]
         use nil, tl
         simp [WellOrdered.nil, h_tl_wo]
       | cons X_exp X_coef X_tl =>
@@ -410,20 +412,23 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
         cases Y with
         | nil =>
           simp at h_eq
-          simp [h_eq, hX_coef_wo, hX_comp, motive]
+          simp only [h_eq, hX_coef_wo, hX_comp, true_and, motive]
           use nil, X_tl
           simp [WellOrdered.nil, hX_tl_wo]
         | cons Y_exp Y_coef Y_tl =>
           obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           rw [add_cons_cons] at h_eq
           split_ifs at h_eq with h1 h2 <;> simp at h_eq;
-          · simp [h_eq, hX_coef_wo, hX_comp, motive, h1]
+          · simp only [h_eq, hX_coef_wo, add_leadingExp, leadingExp_cons, sup_lt_iff, hX_comp,
+              WithBot.coe_lt_coe, h1, and_self, true_and, motive]
             use ?_, ?_
-          · simp [h_eq, hY_coef_wo, hY_comp, motive, h2]
+          · simp only [h_eq, hY_coef_wo, add_leadingExp, leadingExp_cons, sup_lt_iff,
+              WithBot.coe_lt_coe, h2, hY_comp, and_self, true_and, motive]
             use ?_, ?_
           · have h_exp : X_exp = Y_exp := by linarith
             subst h_exp
-            simp [h_eq, hX_comp, motive, hY_comp]
+            simp only [h_eq, add_leadingExp, sup_lt_iff, hX_comp, hY_comp, and_self, true_and,
+              motive]
             constructor
             · apply add_WellOrdered <;> assumption
             · use ?_, ?_
@@ -453,26 +458,27 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         | nil =>
           apply Approximates_nil at hY_approx
           left
-          simp
+          simp only [add_nil, true_and]
           grw [hf_eq, hX_approx, hY_approx]
           simp
         | cons Y_exp Y_coef Y_tl =>
           obtain ⟨fYC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           right
           grw [hX_approx] at hf_eq
-          simp at hf_eq
-          simp
+          simp only [zero_add] at hf_eq
+          simp only [nil_add, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+            exists_eq_left']
           use fYC
-          simp [hY_coef]
+          simp only [hY_coef, true_and]
           constructor
           · apply majorated_of_EventuallyEq hf_eq
             assumption
-          simp [motive]
+          simp only [exists_and_left, motive]
           use nil, Y_tl
-          simp
+          simp only [nil_add, true_and]
           use 0, fun t ↦ fY t - basis_hd t ^ Y_exp * fYC t
           constructor
-          · simp
+          · simp only [zero_add]
             push fun _ ↦ _
             grw [hf_eq]
           · simp [Approximates.nil, hY_tl]
@@ -483,18 +489,19 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         | nil =>
           apply Approximates_nil at hY_approx
           grw [hY_approx] at hf_eq
-          simp
+          simp only [add_nil, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+            exists_eq_left']
           use fXC
-          simp [hX_coef]
+          simp only [hX_coef, true_and]
           constructor
           · apply majorated_of_EventuallyEq hf_eq
             simpa
-          simp [motive]
+          simp only [exists_and_left, motive]
           use nil, X_tl
-          simp
+          simp only [nil_add, true_and]
           use 0, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t
           constructor
-          · simp
+          · simp only [zero_add]
             push fun _ ↦ _
             grw [hf_eq]
             simp
@@ -503,9 +510,9 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           obtain ⟨fYC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           rw [add_cons_cons]
           split_ifs with h1 h2
-          · simp
+          · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left']
             use fXC
-            simp [hX_coef]
+            simp only [hX_coef, true_and]
             constructor
             · apply majorated_of_EventuallyEq hf_eq
               convert add_majorated hX_maj hY_maj
@@ -513,16 +520,16 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               linarith
             simp only [motive]
             use X_tl, cons Y_exp Y_coef Y_tl, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t, fY
-            simp [hX_tl, hY_approx]
+            simp only [hX_tl, hY_approx, and_self, and_true, true_and]
             push fun _ ↦ _
             grw [hf_eq]
             convert EventuallyEq.refl _ _ using 1
             ext
             simp
             ring
-          · simp
+          · simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left']
             use fYC
-            simp [hY_coef]
+            simp only [hY_coef, true_and]
             constructor
             · apply majorated_of_EventuallyEq hf_eq
               convert add_majorated hX_maj hY_maj
@@ -530,7 +537,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
               linarith
             simp only [motive]
             use cons X_exp X_coef X_tl, Y_tl, fX, fun t ↦ fY t - basis_hd t ^ Y_exp * fYC t
-            simp [hY_tl, hX_approx]
+            simp only [hX_approx, hY_tl, and_self, and_true, true_and]
             push fun _ ↦ _
             grw [hf_eq]
             convert EventuallyEq.refl _ _ using 1
@@ -539,7 +546,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             ring
           · have : X_exp = Y_exp := by linarith
             subst this
-            simp
+            simp only [cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left']
             use fXC + fYC
             constructorm* _ ∧ _
             · apply add_Approximates hX_coef hY_coef
@@ -550,7 +557,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             use X_tl, Y_tl,
               fun t ↦ fX t - basis_hd t ^ X_exp * fXC t,
               fun t ↦ fY t - basis_hd t ^ X_exp * fYC t
-            simp [hX_tl, hY_tl]
+            simp only [Pi.add_apply, hX_tl, hY_tl, and_self, and_true, true_and]
             push fun _ ↦ _
             grw [hf_eq]
             convert EventuallyEq.refl _ _ using 1
@@ -606,26 +613,26 @@ theorem eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     | nil => simp
     | cons y_exp y_coef y_tl =>
       right
-      simp
+      simp only [add_nil, cons_eq_cons, exists_and_left, ↓existsAndEq, true_and]
       use c_tl, nil
-      simp
+      simp only [add_nil, true_and]
       use cons y_exp y_coef y_tl
       simpa [add_cons_left hy]
   | cons x_exp x_coef x_tl =>
     cases y' with
     | nil =>
       right
-      simp
+      simp only [add_nil, cons_eq_cons, exists_and_left, ↓existsAndEq, true_and]
       use c_tl, cons x_exp x_coef x_tl
-      simp [add_cons_left hx]
+      simp only [add_cons_left hx, true_and]
       use nil
       simpa
     | cons y_exp y_coef y_tl =>
       right
-      simp
-      simp [add_cons_left hx, add_cons_left hy]
+      simp only [add_cons_left hx, cons_eq_cons, add_cons_left hy, exists_and_left, ↓existsAndEq,
+        true_and]
       use c_tl, cons x_exp x_coef x_tl
-      simp
+      simp only [true_and]
       use cons y_exp y_coef y_tl
 
 theorem WellOrdered.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -695,7 +702,7 @@ theorem WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   apply WellOrdered.add_coind motive h_base
   intro exp coef tl ih
   specialize h_step _ ih
-  simp at h_step
+  simp only [cons_ne_nil, false_or] at h_step
   obtain ⟨A, B, h_eq, hA_wo, hBA, hB⟩ := h_step
   cases A with
   | nil => simp at hBA
@@ -703,14 +710,15 @@ theorem WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
   cases B with
   | nil =>
-    simp at h_eq
-    simp [h_eq, hA_coef_wo, hA_comp]
+    simp only [add_nil, cons_eq_cons] at h_eq
+    simp only [h_eq, hA_coef_wo, hA_comp, true_and]
     use A_tl, PreMS.nil
     simp [hA_tl, hB]
   | cons B_exp B_coef B_tl =>
-  simp [add_cons_left hBA] at h_eq
-  simp at hBA
-  simp [h_eq, hA_coef_wo, hA_comp, hBA]
+  simp only [add_cons_left hBA, cons_eq_cons] at h_eq
+  simp only [leadingExp_cons, WithBot.coe_lt_coe] at hBA
+  simp only [h_eq, hA_coef_wo, add_leadingExp, leadingExp_cons, sup_lt_iff, hA_comp,
+    WithBot.coe_lt_coe, hBA, and_self, true_and]
   use A_tl, PreMS.cons B_exp B_coef B_tl
 
 theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -733,24 +741,24 @@ theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
   intro ms f ih
   simp only [motive'] at ih
   obtain ⟨A, B, fA, fB, rfl, hA, hf_eq, hB⟩ := ih
-  simp [motive']
+  simp only [exists_and_left, ↓existsAndEq, true_and, motive']
   cases A with
   | nil =>
     apply Approximates_nil at hA
     specialize h_step _ _ hB
     obtain ⟨rfl, hfB⟩ | ⟨exp, coef, tl, fC, rfl, h_coef, h_maj, X, Y, fX, h_tl, hX, hY⟩ := h_step
-    · simp
+    · simp only [add_nil, true_and, nil_ne_cons, false_and, exists_const, or_false]
       grw [hf_eq, hA, hfB]
       simp
     right
     use exp, coef, fC, X, Y
-    simp [h_coef, h_tl]
+    simp only [h_tl, nil_add, h_coef, true_and]
     constructor
     · apply majorated_of_EventuallyEq _ h_maj
       grw [hf_eq, hA]
       simp
     use fX, hX, fun t ↦ fB t - basis_hd t ^ exp * fC t - fX t
-    simp [hY]
+    simp only [hY, and_true]
     push fun _ ↦ _
     grw [hf_eq, hA]
     convert EventuallyEq.refl _ _ using 1
@@ -763,7 +771,7 @@ theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
     obtain ⟨rfl, hfB⟩ |
       ⟨B_exp, B_coef, B_tl, fBC, rfl, hB_coef, hB_maj, X, Y, fX, h_tl, hX, hY⟩ := h_step
     · use A_exp, A_coef, fAC, A_tl, PreMS.nil
-      simp [hA_coef]
+      simp only [add_nil, hA_coef, true_and]
       constructor
       · apply majorated_of_EventuallyEq _ hA_maj
         grw [hf_eq, hfB]
@@ -775,7 +783,7 @@ theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
     rw [add_cons_cons]
     split_ifs with h1 h2
     · use A_exp, A_coef, fAC, A_tl, PreMS.cons B_exp B_coef B_tl
-      simp [hA_coef]
+      simp only [hA_coef, true_and]
       constructor
       · apply majorated_of_EventuallyEq hf_eq
         apply add_majorated' hA_maj hB_maj (by rfl) (by linarith)
@@ -787,7 +795,7 @@ theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp
       ring
     · use B_exp, B_coef, fBC, PreMS.cons A_exp A_coef A_tl + X, Y
-      simp [h_tl]
+      simp only [h_tl, cons_eq_cons, true_and]
       constructorm* _ ∧ _
       · abel
       · assumption

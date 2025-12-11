@@ -11,12 +11,12 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
-set_option linter.style.multiGoal false
-
 /-!
 # Inversion for multiseries
 
 -/
+
+set_option linter.style.multiGoal false
 
 @[expose] public section
 
@@ -135,7 +135,7 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
   cases basis with
   | nil =>
     unfold inv
-    simp at h_approx ⊢
+    simp only [Approximates_const_iff] at h_approx ⊢
     exact h_approx.inv
   | cons basis_hd basis_tl =>
     cases ms with

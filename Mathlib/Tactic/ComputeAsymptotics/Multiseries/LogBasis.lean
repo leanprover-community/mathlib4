@@ -162,7 +162,8 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
     simp only [WellFormed] at h_wf
-    simp [extendBasisMiddle, WellFormed, h_wo, h_approx, h_wf.right, and_true, true_and]
+    simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed, h_wo, h_approx,
+      h_wf.right, and_true, true_and]
     constructor
     · exact PreMS.extendBasisMiddle_WellOrdered h_wf.left
     constructor

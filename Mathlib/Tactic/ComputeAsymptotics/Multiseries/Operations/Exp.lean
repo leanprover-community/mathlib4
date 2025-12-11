@@ -34,7 +34,7 @@ noncomputable def expSeries : LazySeries :=
 
 theorem expSeries_eq_cons :
     expSeries = Seq.cons 1 (ofFnFrom (fun n ↦ (n ! : ℝ)⁻¹) 1) := by
-  simp [expSeries, ofFn]
+  simp only [expSeries, ofFn]
   rw [ofFnFrom_eq_cons]
   congr
   norm_num
@@ -44,7 +44,7 @@ theorem expSeries_get {n : ℕ} : expSeries.get? n = some ((n ! : ℝ)⁻¹) := 
 
 theorem expSeries_toFormalMultilinearSeries_eq :
     expSeries.toFormalMultilinearSeries = NormedSpace.expSeries ℝ ℝ := by
-  simp [toFormalMultilinearSeries]
+  simp only [toFormalMultilinearSeries]
   unfold NormedSpace.expSeries FormalMultilinearSeries.ofScalars
   simp [coeff, expSeries_get]
 
@@ -59,7 +59,7 @@ theorem expSeries_toFun : expSeries.toFun = Real.exp := by
   have := NormedSpace.exp_hasFPowerSeriesOnBall (𝕂 := ℝ) (𝔸 := ℝ)
   rw [← expSeries_toFormalMultilinearSeries_eq, ← Real.exp_eq_exp_ℝ] at this
   ext x
-  simp [toFun]
+  simp only [toFun]
   conv_rhs => rw [show x = 0 + x by simp]
   symm
   exact HasFPowerSeriesOnBall.sum this (by simp)
@@ -87,16 +87,16 @@ theorem exp_WellOrdered {basis : Basis} {ms : PreMS basis}
   cases ms with
   | nil => simpa [exp] using one_WellOrdered
   | cons exp coef tl =>
-  simp [PreMS.exp]
+  simp only [PreMS.exp, destruct_cons]
   split_ifs with h_if
   · apply apply_WellOrdered h
     simpa
   have h_exp : exp = 0 := by
     unfold leadingTerm at h_nonpos
-    simp at h_nonpos
+    simp only [head_cons] at h_nonpos
     contrapose! h_nonpos
     constructor
-    simp at h_if
+    simp only [not_lt] at h_if
     exact lt_of_le_of_ne h_if h_nonpos.symm
   subst h_exp
   clear h_if
@@ -114,34 +114,34 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
     (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
     ms.exp.Approximates (Real.exp ∘ f) := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [exp, Approximates_const_iff] at h_approx ⊢
+  · simp only [Approximates_const_iff, exp] at h_approx ⊢
     apply h_approx.mono
     simp
   cases ms with
   | nil =>
-    simp [exp]
+    simp only [exp, destruct_nil]
     apply Approximates_nil at h_approx
     apply Approximates_of_EventuallyEq (f := fun _ ↦ 1)
     · apply h_approx.mono
       simp +contextual
     exact one_Approximates h_basis
   | cons exp coef tl =>
-  simp [PreMS.exp]
+  simp only [PreMS.exp, destruct_cons]
   split_ifs with h_if
   · rw [← expSeries_toFun]
     exact apply_Approximates expSeries_analytic h_basis (by simpa) h_approx
   have h_exp : exp = 0 := by
     unfold leadingTerm at h_nonpos
-    simp at h_nonpos
+    simp only [head_cons] at h_nonpos
     contrapose! h_nonpos
     constructor
-    simp at h_if
+    simp only [not_lt] at h_if
     exact lt_of_le_of_ne h_if h_nonpos.symm
   subst h_exp
   clear h_if
   obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
   obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  simp at h_tl
+  simp only [Real.rpow_zero, one_mul] at h_tl
   convert_to ((expSeries.apply tl).mulMonomial coef.exp 0).Approximates
       (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
   · ext t

@@ -38,7 +38,7 @@ theorem mul_const (x y : PreMS []) : (PreMS.mul x y).toReal = x.toReal * y.toRea
   simp [mul, toReal]
 
 @[PreMS_const]
-theorem mulConst_const (x : PreMS []) (c : ℝ) : (PreMS.mulConst x c).toReal = c * x.toReal := rfl
+theorem mulConst_const (x : PreMS []) (c : ℝ) : (PreMS.mulConst c x).toReal = x.toReal * c := rfl
 
 @[PreMS_const]
 theorem inv_const (x : PreMS []) : (PreMS.inv x).toReal = Inv.inv (α := ℝ) x.toReal := rfl
@@ -58,7 +58,7 @@ theorem updateBasis_const (ms : PreMS []) (ex : BasisExtension []) :
   | nil =>
     simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
   | insert f ex_tl =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
+    simp only [BasisExtension.getBasis, updateBasis, const, cons_eq_cons, and_true, true_and]
     rw [updateBasis_const]
 
 @[PreMS_const]
@@ -68,7 +68,7 @@ theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
   | nil =>
     simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
   | insert f ex_tl =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
+    simp only [BasisExtension.getBasis, updateBasis, const, cons_eq_cons, and_true, true_and]
     rw [updateBasis_const]
 
 @[PreMS_const]

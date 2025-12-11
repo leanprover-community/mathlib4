@@ -42,10 +42,6 @@ necessary for using `abel` tactic in our proofs. -/
 instance instNeg {basis : Basis} : Neg (PreMS basis) where
   neg := neg
 
--- /-- This instance is copy of the previous. But without it `Neg (PreMS (basis_hd :: basis_tl))` can
--- not be inferred. -/
--- instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: basis_tl)) := instNeg
-
 -------------------- theorems
 
 open Filter Asymptotics
@@ -93,7 +89,7 @@ theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, mul_assoc]
   | cons =>
-    simp [mulConst]
+    simp only [mulConst, ← map_comp, CompTriple.comp_eq]
     congr 1
     ext1
     simp [mulConst_mulConst]
@@ -118,7 +114,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         simp at h_ms_eq
         constructor
-        · simp [h_ms_eq]
+        · simp only [h_ms_eq]
           exact mulConst_WellOrdered hX_coef_wo
         constructor
         · simpa [h_ms_eq]

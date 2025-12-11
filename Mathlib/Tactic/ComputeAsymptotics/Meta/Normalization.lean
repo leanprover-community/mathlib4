@@ -94,7 +94,7 @@ lemma consNormalize_aux_congr_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 lemma consNormalize_aux_congr_exp_coef {basis_hd : ℝ → ℝ}
     {ms : PreMS [basis_hd]}
-    {exp exp' : ℝ} {coef : PreMS []} {coef' : ℝ} {tl : PreMS [basis_hd]}
+    {exp exp' : ℝ} {coef coef' : PreMS []} {tl : PreMS [basis_hd]}
     (h : ms = PreMS.cons exp coef tl) (h_exp : exp = exp') (h_coef : coef = coef') :
     ms = PreMS.cons exp' coef' tl := by
   rw [h, h_exp, h_coef]

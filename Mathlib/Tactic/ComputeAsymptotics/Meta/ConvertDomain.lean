@@ -49,13 +49,13 @@ def convertFunFromWith {α : Q(Type)} (cast : Name) (f : Q($α → ℝ)) : MetaM
 
 lemma ratCast_comap_nhds_left {c : ℚ} :
     (𝓝[<] (Rat.cast c)).comap (Rat.cast : ℚ → ℝ) = 𝓝[<] c := by
-  simp [nhdsWithin, comap_inf]
+  simp only [nhdsWithin, comap_inf, comap_principal, Rat.preimage_cast_Iio]
   congr
   exact (nhds_induced Rat.cast c).symm
 
 lemma ratCast_comap_nhds_right {c : ℚ} :
     (𝓝[>] (Rat.cast c)).comap (Rat.cast : ℚ → ℝ) = 𝓝[>] c := by
-  simp [nhdsWithin, comap_inf]
+  simp only [nhdsWithin, comap_inf, comap_principal, Rat.preimage_cast_Ioi]
   congr
   exact (nhds_induced Rat.cast c).symm
 
@@ -186,7 +186,7 @@ lemma IsEquivalent_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (
     (h : IsEquivalent l' f g)
     (h_filter : l'.comap cast = l) :
     IsEquivalent l (f ∘ cast) (g ∘ cast) := by
-  simp [IsEquivalent] at h ⊢
+  simp only [IsEquivalent] at h ⊢
   convert_to ((f - g) ∘ cast) =o[l] (g ∘ cast)
   apply IsLittleO_cast_domain _ _ _ _ _ h h_filter
 
@@ -318,7 +318,7 @@ lemma IsEquivalent_cast_codomain {α β : Type} (f g : α → β) (l : Filter α
     (h_cast : LawfulCodomainCast cast)
     (h : IsEquivalent l (cast ∘ f) (cast ∘ g)) :
     IsEquivalent l f g := by
-  simp [IsEquivalent] at h ⊢
+  simp only [IsEquivalent] at h ⊢
   apply IsLittleO_cast_codomain _ _ _ _ _ h_cast h_cast
   convert h
   ext x

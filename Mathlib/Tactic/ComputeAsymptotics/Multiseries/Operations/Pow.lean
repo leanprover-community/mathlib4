@@ -12,7 +12,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 /-!
-# Powers for multiseries
+# Powers of multiseries
 
 -/
 
@@ -107,7 +107,7 @@ theorem powSeries_analytic {a : ℝ} : Analytic (powSeries a) := by
 
 theorem powSeries_toFun_eq {t : ℝ} {a : ℝ} (ht : ‖t‖ < 1) : (powSeries a).toFun t = (1 + t)^a := by
   simp only [toFun, powSeries_eq_binomialSeries]
-  rw [← HasFPowerSeriesOnBall.sum one_add_rpow_hasFPowerSeriesOnBall_zero]
+  rw [← HasFPowerSeriesOnBall.sum Real.one_add_rpow_hasFPowerSeriesOnBall_zero]
   · simp
   · simpa [← ENNReal.ofReal_one, Metric.emetric_ball]
 
@@ -277,7 +277,6 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       grw [h_approx]
       apply EventuallyEq.of_eq
       ext t
-      simp
       exact Real.zero_rpow ha
     | cons exp coef tl =>
       apply Trimmed_cons at h_trimmed

@@ -306,7 +306,7 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
         (Term.toFun (Term.inv ⟨coef2, exp2 :: exps2_tl⟩) (basis_hd :: basis_tl)) x)
     · apply ((Term.inv_toFun (t := ⟨coef2, exp2 :: exps2_tl⟩) h_basis)).mono
       intro x hx
-      simp at hx ⊢
+      simp only [mul_eq_mul_left_iff] at hx ⊢
       left
       rw [hx]
     simp only [List.length_cons, add_left_inj] at h1 h2
@@ -463,7 +463,7 @@ theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
     ms ≠ zero _ := by
   intro h
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [leadingTerm] at h_pos
+  · simp only [leadingTerm] at h_pos
     cases h_pos
   · apply Term.not_FirstIsPos_of_AllZero _ h_pos
     simp only [leadingTerm, h, zero, head_nil, List.length_cons]
@@ -533,7 +533,8 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
   simp only [ms_log, ms']
   rw [monomial_leadingTerm_eq (by simp)]
-  simp [extendBasisEnd_leadingTerm_eq]
+  simp only [List.cons_append, List.length_cons, List.length_append, List.length_nil, zero_add,
+    add_tsub_cancel_left, tsub_self, List.replicate_zero, extendBasisEnd_leadingTerm_eq]
   have h_len : ms.leadingTerm.exps.length = basis_tl.length + 1 := by
     simp [leadingTerm_length]
   clear * - h_pos h_len
@@ -545,7 +546,9 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
     simp only [h_len] at h_pos
     cases h_pos
   | succ n ih =>
-    obtain _ | ⟨exp, exps_tl⟩ := exps <;> simp at h_len
+    obtain _ | ⟨exp, exps_tl⟩ := exps
+    · simp at h_len
+    simp only [List.length_cons, Nat.add_right_cancel_iff] at h_len
     rcases h_pos with h_pos | ⟨rfl, h_pos⟩
     · exact List.Lex.rel h_pos
     apply List.Lex.cons
@@ -673,9 +676,11 @@ theorem extendBasisEnd_zero_last_exp {basis : Basis} {b : ℝ → ℝ} {ms : Pre
     ∀ a, (ms.extendBasisEnd b).leadingTerm.exps.getLast? = .some a → a = 0 := by
   intro a h
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [extendBasisEnd, leadingTerm, PreMS.const] at h
+  · simp only [List.nil_append, extendBasisEnd, const, leadingTerm, head_cons,
+      List.getLast?_singleton, Option.some.injEq] at h
     rw [h]
-  · simp [List.getLast?_eq_some_getLast leadingTerm_ne_nil, extendBasisEnd_zero_last_exp_cons] at h
+  · simp only [List.cons_append, List.getLast?_eq_some_getLast leadingTerm_ne_nil, List.append_eq,
+      extendBasisEnd_zero_last_exp_cons, Option.some.injEq] at h
     rw [h]
 
 end PreMS

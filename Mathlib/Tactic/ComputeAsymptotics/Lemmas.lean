@@ -73,7 +73,7 @@ variable (c : 𝕜)
 theorem tendsto_nhds_right_of_tendsto_top (h : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[>] c) l := by
   have : Tendsto (fun x ↦ x - c) (𝓝[>] c) (𝓝[>] 0) := by
-    simp [Tendsto]
+    simp only [Tendsto]
     convert le_refl _
     rw [IsEmbedding.map_nhdsWithin_eq]
     · simp
@@ -86,7 +86,7 @@ theorem tendsto_nhds_right_of_tendsto_top (h : Tendsto (fun x ↦ f (c + x⁻¹)
 theorem tendsto_nhds_left_of_tendsto_top (h : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l) :
     Tendsto f (𝓝[<] c) l := by
   have : Tendsto (fun x ↦ x - c) (𝓝[<] c) (𝓝[<] 0) := by
-    simp [Tendsto]
+    simp only [Tendsto]
     convert le_refl _
     rw [IsEmbedding.map_nhdsWithin_eq]
     · simp
@@ -103,10 +103,10 @@ theorem tendsto_nhds_punctured_of_tendsto_top (h_neg : Tendsto (fun x ↦ f (c -
     (h_pos : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[≠] c) l := by
   have : Tendsto (fun x ↦ x - c) (𝓝[≠] c) (𝓝[≠] 0) := by
-    simp [Tendsto]
+    simp only [Tendsto]
     convert le_refl _
     rw [IsEmbedding.map_nhdsWithin_eq]
-    · simp
+    · simp only [sub_self]
       congr
       rw [Set.image_compl_eq]
       · simp
@@ -142,7 +142,7 @@ theorem isLittleO_of_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
   replace hx : c⁻¹ ≤ |g x / f x| := by
     apply hx.trans
     apply le_abs_self
-  simp [abs_div] at hx
+  simp only [abs_div] at hx
   by_cases hf : f x = 0
   · simp [hf] at hx
     linarith

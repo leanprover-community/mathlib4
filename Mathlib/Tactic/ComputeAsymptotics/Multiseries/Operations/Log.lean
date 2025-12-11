@@ -234,7 +234,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         simpa using hx
       apply Approximates_of_EventuallyEq
           (f := fun t ↦ Real.log coef + Real.log (1 + (f t - coef.toReal) * coef.toReal⁻¹))
-      · simp [leadingTerm] at h_pos
+      · simp only [leadingTerm, head_cons] at h_pos
         rw [NormedAddCommGroup.tendsto_nhds_zero] at h_tendsto_zero
         specialize h_tendsto_zero (coef.toReal * 2⁻¹) (by positivity)
         calc
@@ -351,7 +351,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
             intro x h
             apply h_last
             rw [← h]
-            simp [List.getLast?_cons]
+            simp only [List.getLast?_cons]
             apply Option.eq_of_mem_of_mem (by simp [h]) h
           have := log_Approximates (ms := coef) (f := fC) h_basis.tail
             (LogBasis.tail_WellFormed h_logBasis) h_coef_wo h_coef h_coef_trimmed h_pos

@@ -248,9 +248,9 @@ theorem extendBasisMiddle_WellOrdered {left right : Basis} {b : ℝ → ℝ} {ms
   | nil => simp at h_eq
   | cons exp coef tl =>
   obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
-  simp at h_eq
+  simp only [map_cons, id_eq, cons_eq_cons] at h_eq
   constructor
-  · simp [h_eq]
+  · simp only [List.append_eq, h_eq]
     exact extendBasisMiddle_WellOrdered h_coef
   constructor
   · cases tl with
@@ -291,7 +291,8 @@ theorem extendBasisMiddle_Approximates {left right : Basis} {f b : ℝ → ℝ}
   | cons exp coef tl =>
   right
   obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  simp
+  simp only [List.append_eq, map_cons, id_eq, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+    exists_eq_left']
   use fC
   constructor
   · exact extendBasisMiddle_Approximates h_basis.tail h_coef
@@ -325,8 +326,8 @@ theorem extendBasisEnd_WellOrdered {basis : Basis} {b : ℝ → ℝ} {ms : PreMS
   cases ms with
   | nil => simp at h_eq
   | cons exp coef tl =>
-  simp at h_eq
-  simp [h_eq]
+  simp only [map_cons, id_eq, cons_eq_cons] at h_eq
+  simp only [List.append_eq, h_eq]
   obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
   constructor
   · exact extendBasisEnd_WellOrdered h_coef
@@ -362,7 +363,8 @@ theorem extendBasisEnd_Approximates {basis : Basis} {f b : ℝ → ℝ} {ms : Pr
   | cons exp coef tl =>
   right
   obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  simp
+  simp only [List.append_eq, map_cons, id_eq, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+    exists_eq_left']
   use fC
   constructor
   · exact extendBasisEnd_Approximates h_basis.tail h_coef
@@ -406,7 +408,7 @@ theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms 
     obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
     simp [BasisExtension.getBasis] at h_eq
     constructor
-    · simp [h_eq]
+    · simp only [h_eq]
       exact updateBasis_WellOrdered h_coef
     constructor
     · cases tl
@@ -443,7 +445,8 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis} {ms
     right
     obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
     obtain ⟨h_coef_wo, h_coef_comp, h_coef_approx⟩ := WellOrdered_cons h_wo
-    simp
+    simp only [map_cons, id_eq, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+      exists_eq_left']
     use fC
     constructor
     · exact updateBasis_Approximates h_basis.tail h_coef_wo h_coef

@@ -148,7 +148,7 @@ theorem cons_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coe
     {tl : PreMS (basis_hd :: basis_tl)} :
     cons exp coef tl ≠ .nil := by
   intro h
-  simp [cons, nil] at h
+  simp only [cons, nil] at h
   apply Seq.cons_ne_nil h
 
 @[simp]
@@ -166,7 +166,7 @@ theorem cons_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp1 exp2 : �
 theorem corec_nil {β : Type*} {basis_hd} {basis_tl}
     {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β} (h : f b = none) :
     corec f b = (nil : PreMS (basis_hd :: basis_tl)) := by
-  simp [corec, nil]
+  simp only [corec, nil]
   rw [Seq.corec_nil]
   simpa
 
@@ -174,7 +174,7 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS 
     {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β}
     (h : f b = some (exp, coef, next)) :
     (corec f b : PreMS (basis_hd :: basis_tl)) = cons exp coef (corec f next) := by
-  simp [corec, cons]
+  simp only [corec, cons]
   rw [Seq.corec_cons]
   simpa
 
@@ -383,7 +383,7 @@ theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
   | cons tl_exp tl_coef tl_tl =>
   obtain ⟨h_all, h_Pairwise⟩ := Pairwise.cons_elim h_Pairwise
   constructor
-  · simp
+  · simp only [leadingExp_cons, WithBot.coe_lt_coe]
     apply h_all (tl_exp, tl_coef) (by simp [cons])
   constructor
   · intro x hx
@@ -414,7 +414,7 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
     · intro (exp, coef) tl h
       constructor
       · intro (tl_exp, tl_coef) h_tl
-        simp
+        simp only [gt_iff_lt]
         change tl_exp < exp
         replace h_step := (h_step exp coef tl h).right.left
         cases tl <;> simp [leadingExp, head] at h_tl h_step; grind

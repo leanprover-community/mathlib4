@@ -261,7 +261,7 @@ theorem toFun_majorated_zero {s : LazySeries} (h_analytic : s.Analytic) {f basis
   intro exp h_pos
   apply IsBigO.trans_isLittleO (toFun_IsBigO_one h_analytic hf)
   eta_expand
-  simp
+  simp only [Pi.one_apply, isLittleO_one_left_iff, Real.norm_eq_abs]
   apply Tendsto.comp Filter.tendsto_abs_atTop_atTop
   exact Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
 
@@ -307,8 +307,8 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
   cases s with
   | nil => simp at h_eq
   | cons s_hd s_tl =>
-  simp at h_eq
-  simp [h_eq, const_WellOrdered]
+  simp only [apply_cons, cons_eq_cons] at h_eq
+  simp only [h_eq, const_WellOrdered, mul_leadingExp, WithBot.coe_zero, true_and]
   constructor
   · generalize ms.leadingExp = x at *
     have : (apply s_tl ms).leadingExp ≤ 0 := apply_leadingExp_le_zero
@@ -332,7 +332,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
   | nil => simpa using hg_eq
   | cons s_hd s_tl =>
   right
-  simp
+  simp only [↓existsAndEq, apply_cons, cons_eq_cons, true_and, exists_and_left, Real.rpow_zero,
+    one_mul]
   have : toFun (Seq.cons s_hd s_tl) ∘ f =ᶠ[atTop] (fun t ↦ s_hd + ((toFun s_tl) t) * t) ∘ f := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact toFun_cons_eventually_eq h_analytic
@@ -358,7 +359,7 @@ theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s
   cases h_get : s.get? n with
   | none => simp
   | some val =>
-  simp
+  simp only [Option.getD_some, NNReal.coe_one, one_pow, mul_one]
   apply h
   exact get?_mem h_get
 
