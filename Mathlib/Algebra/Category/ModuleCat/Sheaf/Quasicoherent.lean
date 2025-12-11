@@ -67,7 +67,7 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
 generators of `Presentation M`. -/
-@[simps! I s epi]
+@[simps! I s]
 def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections :=
@@ -84,7 +84,7 @@ theorem generatingSections_π_eq {M : SheafOfModules.{u} R}
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
 relations of `Presentation M`. -/
-@[simps! I s epi]
+@[simps! I s]
 def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
@@ -151,9 +151,10 @@ generators of `Presentation (F.obj M)`. -/
 def Presentation.map_generators : free P.generators.I ⟶ F.obj M :=
   (map_free F hf' P.generators.I).inv ≫ F.map (P.generators.π)
 
-@[simp]
 theorem Presentation.map_relations_generators :
-    P.map_relations F hf' ≫ P.map_generators F hf' = 0 := by simp [← Functor.map_comp]
+    P.map_relations F hf' ≫ P.map_generators F hf' = 0 := by
+  simp only [map_relations, map_generators, Category.assoc, Iso.hom_inv_id_assoc,
+    ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
