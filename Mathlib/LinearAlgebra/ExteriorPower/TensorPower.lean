@@ -31,7 +31,7 @@ variable (M)
 /-- The linear map from the `n`th exterior power to the `n`th tensor power induced by
 `MultilinearMap.alternarization`. -/
 noncomputable def toTensorPower : ⋀[R]^n M →ₗ[R] (⨂[R]^n) M :=
-  alternatingMapLinearEquiv <|
+    alternatingMapLinearEquiv <|
     MultilinearMap.alternatization (PiTensorProduct.tprod R (s := fun (_ : Fin n) => M))
 
 variable {M}
@@ -41,10 +41,7 @@ open Equiv in
 lemma toTensorPower_apply_ιMulti (v : Fin n → M) :
     toTensorPower R n M (ιMulti R n v) =
       ∑ σ : Perm (Fin n), Perm.sign σ • PiTensorProduct.tprod R (fun i => v (σ i)) := by
-  unfold toTensorPower
-  simp only [alternatingMapLinearEquiv_apply_ιMulti, alternatingMapLinearEquiv_apply_ιMulti]
-  rw [MultilinearMap.alternatization_apply]
-  simp only [MultilinearMap.domDomCongr_apply]
+  simp [toTensorPower, MultilinearMap.alternatization_apply]
 
 /-! Linear form on the exterior power induced by a family of linear forms on the module. This
 is used to prove the linear independence of some families in the exterior power, cf.
@@ -56,18 +53,18 @@ power and then applying `TensorPower.linearFormOfFamily` (which takes the produc
 components of `f`). -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
     ⋀[R]^n M →ₗ[R] R :=
-  TensorPower.linearFormOfFamily f ∘ₗ toTensorPower R n M
+  TensorPower.dprod f ∘ₗ toTensorPower R n M
 
 @[simp]
 lemma linearFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (x : ⋀[R]^n M) :
-    linearFormOfFamily R n f x = TensorPower.linearFormOfFamily f (toTensorPower R n M x) :=
+    linearFormOfFamily R n f x = TensorPower.dprod f (toTensorPower R n M x) :=
   rfl
 
 lemma linearFormOfFamily_apply_ιMulti (f : (_ : Fin n) → (M →ₗ[R] R)) (m : Fin n → M) :
     linearFormOfFamily R n f (ιMulti R n m) =
     ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ • ∏ i, f i (m (σ i)) := by
   simp only [linearFormOfFamily_apply, toTensorPower_apply_ιMulti, map_sum,
-    LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
+    LinearMap.map_smul_of_tower, TensorPower.dprod_apply]
 
 /-- If `f` is a family of linear forms on `M` (index by `Fin n`) and `p` is a linear map
 from `N` to `M`, then the composition of `exteriorPower.linearFormOfFamily R n f` and
@@ -81,7 +78,7 @@ lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N �
   obtain ⟨y, h⟩ := Set.mem_range.mp hx
   simp only [← h, LinearMap.coe_comp, Function.comp_apply, map_apply_ιMulti,
     linearFormOfFamily_apply, toTensorPower_apply_ιMulti, map_sum, LinearMap.map_smul_of_tower,
-    TensorPower.linearFormOfFamily_apply_tprod]
+    TensorPower.dprod_apply]
 
 lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
     (p : N →ₗ[R] M) (x : ⋀[R]^n N) :
