@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Batteries.Data.String.Matcher
 public meta import Std.Time.Format
 public import Mathlib.Init
 
