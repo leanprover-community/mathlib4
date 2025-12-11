@@ -116,7 +116,7 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
       ← cancel_epi (G.map (F.objObjPreimageIso X).hom),
       Preadditive.add_comp, Preadditive.comp_add, ← Functor.map_comp]
     rw [← hf', ← hg', ← F.map_add, ← Functor.comp_map, ← Functor.comp_map, ← Functor.comp_map,
-      (_ ⋙ _).map_add]
+      (F ⋙ G).map_add]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma additive_of_comp_faithful
