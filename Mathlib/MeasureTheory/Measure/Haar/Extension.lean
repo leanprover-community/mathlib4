@@ -54,6 +54,16 @@ attribute [to_additive TopologicalAddGroup.IsSES] TopologicalGroup.IsSES
 
 namespace TopologicalGroup.IsSES
 
+/-- Construct a short exact sequence of topological groups from a closed normal subgroup. -/
+@[to_additive /-- Construct a short exact sequence of topological groups from a
+closed normal subgroup. -/]
+def ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+    (H : Subgroup G) [H.Normal] (hH : IsClosed (H : Set G)) :
+    TopologicalGroup.IsSES H.subtype (QuotientGroup.mk' H) where
+  isClosedEmbedding := ⟨⟨Topology.IsInducing.subtypeVal, H.subtype_injective⟩, by simpa⟩
+  isOpenQuotientMap := MulAction.isOpenQuotientMap_quotientMk
+  exact := by simp
+
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
