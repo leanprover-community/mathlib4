@@ -82,8 +82,7 @@ but should not be used in production code.
 
 `maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
 explaining the need for them; another linter enforces this).
-The `linter.flexible` option should be scoped as `set_option opt in ...`
-(and be followed by a comment explaining the need for it; TODO another linter enforces this).
+The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
 individual commands, if they are truly necessary.
