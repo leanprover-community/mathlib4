@@ -584,19 +584,18 @@ def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) : ZeroHom R⟦Γ⟧ R⟦
       isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
   map_zero' := by ext; simp
 
-theorem support_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : HahnSeries Γ R) :
+theorem support_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) :
     (truncLT c x).support = {y ∈ x.support | y < c} := by
   simp [truncLT, Function.support, and_comm]
 
-theorem support_truncLT_subset [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : HahnSeries Γ R) :
+theorem support_truncLT_subset [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) :
     (truncLT c x).support ⊆ x.support := by
   rw [support_truncLT]
   exact Set.sep_subset ..
 
 @[simp]
-protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ]
-    (c : Γ) (x : R⟦Γ⟧) (i : Γ) : (truncLT c x).coeff i = if i < c then x.coeff i else 0 :=
-  rfl
+protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) (i : Γ) :
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0 := rfl
 
 theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ] {c i : Γ} (h : i < c) (x : R⟦Γ⟧) :
     (truncLT c x).coeff i = x.coeff i := by
