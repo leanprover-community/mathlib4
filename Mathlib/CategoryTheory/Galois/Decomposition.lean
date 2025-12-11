@@ -156,18 +156,8 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso u := IsConnected.noTrivialComponent Y u hn
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
-  have hu : G.map u y = a := by
-    sorry
-    --simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
-    --  Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-    --  inv_hom_id_apply]
-    --erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
-  have hv : G.map v y = b := by
-    sorry
-    --simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
-    --  Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-    --  inv_hom_id_apply]
-    --erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
+  have hu : G.map u y = a := fiberPullbackEquiv_symm_fst_apply _ _ _ h
+  have hv : G.map v y = b := fiberPullbackEquiv_symm_snd_apply _ _ _ h
   rw [← hu, ← hv]
   change (F.map u ≫ F.map _) y = F.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,

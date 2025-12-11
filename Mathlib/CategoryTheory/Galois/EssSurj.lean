@@ -183,7 +183,7 @@ private def coconeQuotientDiagDesc
         change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
         simp [m]
       simp only [← h2, const_obj_obj, Action.comp_hom, FintypeCat.comp_apply]
-      sorry)
+      rfl)
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
     induction x using Quotient.inductionOn with | _ σ
