@@ -163,8 +163,6 @@ scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω
 /-- Notation for the space of distributions. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
--- variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
--- variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
 
 namespace Distribution
 
@@ -178,14 +176,16 @@ def mapCLM [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGro
 lemma mapCLM_apply [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGroup F']
     [ContinuousSMul ℝ F'] {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
 
-variable [NormedAddCommGroup F] [NormedAddCommGroup F']
+-- variable [NormedAddCommGroup F] [NormedAddCommGroup F']
 -- TODO: naming...
-noncomputable def mapCLE (A : F ≃L[ℝ] F') [NormedAddCommGroup F] : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
+noncomputable def mapCLE (A : F ≃L[ℝ] F') : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
   by
   -- #synth TopologicalSpace 𝓓'^{n}(Ω, F)
-  have := ContinuousLinearEquiv.arrowCongr (e₁ := ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, F))
-    (G := F') A
+  have := ContinuousLinearEquiv.arrowCongr (e₁ := ContinuousLinearEquiv.refl ℝ 𝓓'^{n}(Ω, F))
+    (G := F') (H := 𝓓'^{n}(Ω, F))
   -- (ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, ℝ)).arrowCongr A
 
 @[simp]
