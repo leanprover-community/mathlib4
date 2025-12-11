@@ -399,18 +399,19 @@ lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
   intro x hx; simp +contextual
   nth_rw 2 [← I.right_inv (x := x) (by simp_all)]
+  rw [s.chartAt_eq]
+  have hs : Nonempty s := Nonempty.intro y
+  have aux : I.symm x ∈ ((chartAt H y.val).subtypeRestr hs).target := by
+    sorry
+  have := (chartAt H y.val).subtypeRestr_symm_apply (U := s) hs aux
   congr 1
-  dsimp
-  -- should be obvious; doesn't fire as a rewrite!
-  have : Subtype.val ∘ (chartAt H y).symm = (chartAt H y.val).symm := by
-    ext a
-    simp
-    sorry -- missing lemma!
-  set z := I.symm x
-  nth_rw 2 [← OpenPartialHomeomorph.right_inv (chartAt H y.val) (x := z)]
-  · congr 1
-    sorry -- should be true, but missing a lemma somewhere!
-  · sorry -- easy
+  nth_rw 2 [← OpenPartialHomeomorph.right_inv (chartAt H y.val) (x := I.symm x)]
+  · simp [← this]
+  · simp at hx
+    -- XXX: separate lemma, tag with gcongr?
+    have : ((chartAt H y.val).subtypeRestr hs).target ⊆ (chartAt H y.val).target := by
+      sorry
+    exact this aux
 
 end IsImmersionAtOfComplement
 
