@@ -75,6 +75,39 @@ theorem mulTSupport_binop_subset [One β] [One γ] (op : α → β → γ)
   closure_mono (mulSupport_binop_subset op op1 f g) |>.trans closure_union.subset
 
 @[to_additive]
+lemma mulTSupport_comp_subset [One β] {g : α → β} (hg : g 1 = 1) (f : X → α) :
+    mulTSupport (g ∘ f) ⊆ mulTSupport f :=
+  closure_mono (mulSupport_comp_subset hg f)
+
+@[to_additive]
+lemma mulTSupport_subset_comp [One β] {g : α → β} (hg : ∀ {x}, g x = 1 → x = 1) (f : X → α) :
+    mulTSupport f ⊆ mulTSupport (g ∘ f) :=
+  closure_mono (mulSupport_subset_comp hg f)
+
+@[to_additive]
+lemma mulTSupport_comp_eq [One β] {g : α → β} (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : X → α) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq g hg]
+
+@[to_additive]
+lemma mulTSupport_comp_eq_of_range_subset [One β] {g : α → β} {f : X → α}
+    (hg : ∀ {x}, x ∈ range f → (g x = 1 ↔ x = 1)) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_of_range_subset hg]
+
+@[to_additive]
+lemma mulTSupport_comp_subset_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) {f : X → Y}
+    (hf : Continuous f) :
+    mulTSupport (g ∘ f) ⊆ f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage]
+  exact hf.closure_preimage_subset _
+
+@[to_additive]
+lemma mulTSupport_comp_eq_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) (f : X ≃ₜ Y) :
+    mulTSupport (g ∘ f) = f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage, Homeomorph.preimage_closure]
+
+@[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 

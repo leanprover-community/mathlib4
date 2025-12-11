@@ -32,6 +32,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
 public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
@@ -324,6 +325,7 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core

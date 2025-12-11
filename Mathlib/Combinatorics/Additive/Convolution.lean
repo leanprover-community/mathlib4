@@ -64,7 +64,7 @@ lemma convolution_pos : 0 < A.convolution B x ↔ x ∈ A * B := by
 @[to_additive addConvolution_ne_zero]
 lemma convolution_ne_zero : A.convolution B x ≠ 0 ↔ x ∈ A * B := by
   suffices A.convolution B x ≠ 0 ↔ 0 < A.convolution B x by simp [this]
-  cutsat
+  lia
 
 @[to_additive (attr := simp) addConvolution_eq_zero]
 lemma convolution_eq_zero : A.convolution B x = 0 ↔ x ∉ A * B := by
