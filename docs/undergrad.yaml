@@ -586,13 +586,13 @@ Probability Theory:
 # 12.
 Distribution calculus:
   Spaces $\mathcal{D}(\R^d)$:
-    smooth functions with compact support on $\R^d$: ''
+    smooth functions with compact support on $\R^d$: 'TestFunction'
     stability by derivation: ''
     stability by multiplication by a smooth function: ''
     partitions of unity: ''
     constructing approximations of probability density functions in spaces of common functions (trig, exp, rational, log, etc): ''
   Distributions on $\R^d$:
-    definition of distributions: ''
+    definition of distributions: 'Distribution'
     locally integrable functions as distributions: ''
     derivative of a distribution: ''
     Dirac measures: ''
