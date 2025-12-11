@@ -271,6 +271,18 @@ def Definable₁ (s : Set M) : Prop :=
 def Definable₂ (s : Set (M × M)) : Prop :=
   A.Definable L { x : Fin 2 → M | (x 0, x 1) ∈ s }
 
+/-- A singleton is definable by parameter as itself. -/
+theorem Definable.singleton (a : M) :
+    ({a} : Set M).Definable₁ L {a} := by
+  simp only [Definable₁, Definable]
+  exists (Term.var 0).equal (L.con (⟨a, rfl⟩ : ↑({a} : Set M))).term
+
+/-- The 2-dimensional diagonal is ∅-definable. -/
+theorem Definable.diagonal :
+    (∅ : Set M).Definable₂ L {(x,y) : M × M | x = y} := by
+  simp only [Definable₂]
+  exists (Term.var 0).equal (Term.var 1)
+
 end Set
 
 namespace FirstOrder
