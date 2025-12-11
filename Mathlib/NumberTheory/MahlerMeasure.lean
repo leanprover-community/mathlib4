@@ -21,6 +21,8 @@ The main purpose of this file is to prove Northcott's Theorem for the Mahler mea
   of degree at most `n` and Mahler measure at most `B`.
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 open Int
