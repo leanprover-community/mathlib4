@@ -55,16 +55,6 @@ import Mathlib.Tactic.ComputeDegree
 
 @[expose] public section
 
-namespace Polynomial
-
-variable {R : Type*} [CommRing R]
-
--- moved
-instance : IsLocalHom (C : _ →+* Polynomial R) where
-  map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
-
-end Polynomial
-
 namespace MvPolynomial
 
 open scoped Polynomial
