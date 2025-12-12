@@ -3,8 +3,6 @@ module
 import Mathlib.Init
 import all Mathlib.Tactic.Linter.PrivateModule
 import Mathlib.Util.Notation3
-public import Lean.Elab.AuxDef
-import Mathlib.Util.Whatsnew
 
 open Lean
 
@@ -22,7 +20,7 @@ info: [_private.MathlibTest.PrivateModuleLinter.notation3.0.«_aux_MathlibTest_P
 run_cmd do
   logInfo m!"{(← getEnv).constants.map₂.toArray.map (·.1)}"
 
--- The linter should fire despite since the `notation` is local
+-- The linter should fire since the `notation3` is local
 -- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 set_option linter.mathlibStandardSet true in
 open Mathlib.Linter Parser in
