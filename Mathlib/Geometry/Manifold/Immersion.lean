@@ -144,7 +144,7 @@ variable (F I J n) in
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
-NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
+NB. We don't know the particular atlases used for `M` and `N`, so asking for `φ` and `ψ` to be
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
@@ -163,7 +163,7 @@ variable (I J n) in
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
-NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
+NB. We don't know the particular atlases used for `M` and `N`, so asking for `φ` and `ψ` to be
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 
 Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`: being an
@@ -294,7 +294,7 @@ lemma map_target_subset_target (h : IsImmersionAtOfComplement F I J n f x) :
   grw [this, OpenPartialHomeomorph.extend_source]
 
 /-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
-is mapped to it codomain chart's target `(h.domChart.extend J).target`:
+is mapped to its codomain chart's target `(h.domChart.extend J).target`:
 see `map_target_subset_target` for a version stated using images. -/
 lemma target_subset_preimage_target (h : IsImmersionAtOfComplement F I J n f x) :
     (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
@@ -516,7 +516,7 @@ lemma map_target_subset_target (h : IsImmersionAt I J n f x) :
   h.isImmersionAtOfComplement_complement.map_target_subset_target
 
 /-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
-is mapped to it codomain chart's target `(h.domChart.extend J).target`:
+is mapped to its codomain chart's target `(h.domChart.extend J).target`:
 see `map_target_subset_target` for a version stated using images. -/
 lemma target_subset_preimage_target (h : IsImmersionAt I J n f x) :
     (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
@@ -578,7 +578,7 @@ the choice of `F` enters. If you need stronger control over the complement `F`,
 use `IsImmersionOfComplement` instead.
 
 Note that our global choice of complement is a bit stronger than asking `f` to be an immersion at
-each `x ∈ M` w.r.t. to potentially varying complements: see `isImmersionAt` for details.
+each `x ∈ M` w.r.t. potentially varying complements: see `isImmersionAt` for details.
 -/
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
