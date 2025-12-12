@@ -60,7 +60,7 @@ instance (n : ℤ) : Projective (R.cochainComplex.X n) := by
   by_cases hn : n ≤ 0
   · obtain ⟨k, rfl⟩ := Int.exists_eq_neg_ofNat hn
     exact Projective.of_iso (R.cochainComplexXIso (-k) k rfl).symm inferInstance
-  · exact IsZero.projective (CochainComplex.isZero_of_isStrictlyLE _ 0 _ (by lia))
+  · exact IsZero.projective (CochainComplex.isZero_of_isStrictlyLE _ 0 _)
 
 /-- The quasi-isomorphism `R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).obj X`
 in `CochainComplex C ℤ` when `R` is a projective resolution of `X`. -/
