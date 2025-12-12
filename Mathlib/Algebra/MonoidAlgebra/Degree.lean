@@ -457,10 +457,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   rw [(supDegree_leadingCoeff_sum_eq hi this).1]
   exact (this j hj hne).ne_bot
 
-lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
+lemma sum_ne_zero_of_injOn_supDegree (hs : s.Nonempty)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
     ∑ i ∈ s, f i ≠ 0 :=
-  let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
+  let ⟨i, hi⟩ := hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]
