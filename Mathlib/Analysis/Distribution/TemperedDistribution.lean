@@ -28,7 +28,7 @@ distribution.
 
 noncomputable section
 
-open SchwartzMap ContinuousLinearMap
+open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
@@ -74,6 +74,20 @@ theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
   rfl
 
 end MeasureTheory.Measure
+
+namespace Function.HasTemperateGrowth
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+
+def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
+    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
+    toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
+
+end Function.HasTemperateGrowth
 
 end Embeddings
 
