@@ -18,6 +18,8 @@ tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the 
 
 -/
 
+@[expose] public section
+
 open MvPowerSeries Filter
 open scoped Topology Pointwise
 
