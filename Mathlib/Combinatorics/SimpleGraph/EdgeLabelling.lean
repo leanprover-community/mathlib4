@@ -114,21 +114,16 @@ theorem compRight_get (f : K → K') (x y) (h : G.Adj x y) :
     (C.compRight f).get x y h = f (C.get x y h) :=
   rfl
 
-attribute [scoped instance] Sym2.Rel.setoid in
 /-- Construct an edge labelling from a symmetric function taking values everywhere except the
 diagonal.
 -/
 def mk (f : ∀ x y : V, G.Adj x y → K)
-    (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabelling G K :=
-  fun ⟨e, he⟩ => by
+    (f_symm : ∀ (x y : V) (H : G.Adj x y), f y x H.symm = f x y H) : EdgeLabelling G K
+  | ⟨e, he⟩ => by
     revert he
-    refine Quotient.hrecOn e (fun xy => f xy.1 xy.2) ?_
-    rintro ⟨a, b⟩ ⟨c, d⟩ ⟨⟩
-    · rfl
-    refine Function.hfunext ?_ ?_
-    · simp [adj_comm]
-    · intro h₁ h₂ _
-      exact heq_of_eq (f_symm _ _ _)
+    refine Sym2.hrec (fun xy ↦ f xy.1 xy.2) (fun a b ↦ ?_) e
+    apply Function.hfunext (by simp [adj_comm])
+    grind
 
 theorem get_mk (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj x y) :
     (mk f f_symm).get x y h = f x y h :=
@@ -145,9 +140,7 @@ theorem labelGraph_adj {C : EdgeLabelling G K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : G.Adj x y, C ⟨s(x, y), H⟩ = k := by
   rw [EdgeLabelling.labelGraph]
   simp only [mem_edgeSet, fromEdgeSet_adj, Set.mem_setOf_eq, Ne.eq_def]
-  apply and_iff_left_of_imp _
-  rintro ⟨h, -⟩
-  exact h.ne
+  grind [Adj.ne]
 
 instance [DecidableRel G.Adj] [DecidableEq K] (k : K) {C : EdgeLabelling G K} :
     DecidableRel (C.labelGraph k).Adj := fun _ _ =>
@@ -155,32 +148,23 @@ instance [DecidableRel G.Adj] [DecidableEq K] (k : K) {C : EdgeLabelling G K} :
 
 theorem labelGraph_le (C : EdgeLabelling G K) {k : K} : C.labelGraph k ≤ G := by
   intro x y
-  rw [EdgeLabelling.labelGraph_adj]
-  rintro ⟨h, -⟩
-  exact h
+  grind [labelGraph_adj]
 
 theorem pairwise_disjoint_labelGraph {C : EdgeLabelling G K} :
     Pairwise fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
   intro _ _ h
-  rw [SimpleGraph.disjoint_left]
-  simp only [labelGraph_adj, not_exists, forall_exists_index]
-  rintro _ _ h rfl _
-  exact h
+  rw [disjoint_left]
+  grind [labelGraph_adj]
 
 theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabelling G K} :
     Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
   intro _ _ _ _ h
-  rw [Function.onFun]
   exact pairwise_disjoint_labelGraph h
 
 theorem iSup_labelGraph (C : EdgeLabelling G K) : ⨆ k : K, C.labelGraph k = G := by
   ext x y
   simp only [iSup_adj, EdgeLabelling.labelGraph_adj]
-  constructor
-  · rintro ⟨k, h, rfl⟩
-    exact h
-  intro h
-  exact ⟨_, h, rfl⟩
+  grind
 
 end EdgeLabelling
 
@@ -222,11 +206,6 @@ theorem toTopEdgeLabelling_labelGraph_compl (G : SimpleGraph V) [DecidableRel G.
 theorem TopEdgeLabelling.labelGraph_toTopEdgeLabelling [DecidableEq V]
     (C : TopEdgeLabelling V (Fin 2)) : (C.labelGraph 1).toTopEdgeLabelling = C := by
   refine EdgeLabelling.ext_get ?_
-  intro x y h
-  simp only [Ne.eq_def, toTopEdgeLabelling_get, TopEdgeLabelling.labelGraph_adj]
-  split_ifs with h_1
-  · rw [← h_1.choose_spec]
-  have : ∀ {x : Fin 2}, x ≠ 1 → x = 0 := by decide
-  exact this (not_exists.mp h_1 h) |>.symm
+  grind [toTopEdgeLabelling_get, TopEdgeLabelling.labelGraph_adj, Adj.ne]
 
 end SimpleGraph
