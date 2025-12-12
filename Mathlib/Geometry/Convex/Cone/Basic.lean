@@ -384,19 +384,96 @@ instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
 
 section Generating
 
-/-- A convex cone `C` is generating if its linear span is the entire `R`-module `M`. -/
-def Generating (C : ConvexCone R M) : Prop :=
+/-- A convex cone `C` is generating if its linear span is the entire `R`-module `M`.
+
+`IsGenerating` is equivalent to `IsReproducing` modulo some conditions.
+See `IsReproducing.isGenerating` and `IsGenerating.isReproducing` for details. -/
+@[simp] def IsGenerating (C : ConvexCone R M) : Prop :=
   Submodule.span R (C : Set M) = ⊤
 
 /-- The whole `R`-module `M` (viewed as the top convex cone) is generating. -/
-@[simp]
-theorem generating_top : (⊤ : ConvexCone R M).Generating := by
-  simp [Generating]
+@[simp] theorem isGenerating_top : (⊤ : ConvexCone R M).IsGenerating := by
+  simp
 
 /-- A convex cone containing a generating cone is also a generating cone. -/
-theorem Generating.mono (h : C₁ ≤ C₂) (hgen : C₁.Generating) : C₂.Generating := by
-  rw [Generating, ← top_le_iff] at hgen ⊢
+theorem IsGenerating.mono (h : C₁ ≤ C₂) (hgen : C₁.IsGenerating) : C₂.IsGenerating := by
+  rw [IsGenerating, ← top_le_iff] at hgen ⊢
   exact hgen.trans (Submodule.span_mono h)
+
+/-- A convex cone is reproducing if its set of element differences equals the entire module,
+i.e., every element of `M` can be written as a difference of two elements of `C`.
+
+This is an alternative notion of generating (`IsGenerating`) which is equivalent in many cases.
+Note: requires additive inverses and hence `[AddCommGroup M]` in place of `[AddCommMonoid M]`. -/
+def IsReproducing {R : Type*} {M : Type*} [Semiring R] [PartialOrder R] [AddCommGroup M]
+    [Module R M] (C : ConvexCone R M) : Prop :=
+  (C : Set M) - (C : Set M) = Set.univ
+
+/-- A reproducing cone is generating.
+
+Note: this direction requires `Ring R` for subtraction in the span submodule, but does not require
+an ordered ring structure or nonemptiness of `C`. -/
+theorem IsReproducing.isGenerating {R : Type*} {M : Type*} [Ring R] [PartialOrder R]
+    [AddCommGroup M] [Module R M] {C : ConvexCone R M} (h : C.IsReproducing) :
+    C.IsGenerating := by
+  rw [IsGenerating, eq_top_iff]
+  intro x _
+  rw [IsReproducing, Set.eq_univ_iff_forall] at h
+  obtain ⟨y, hy, z, hz, heq⟩ := Set.mem_sub.mp (h x)
+  rw [← heq]
+  exact sub_mem (Submodule.subset_span hy) (Submodule.subset_span hz)
+
+/-- A generating cone is reproducing.
+
+Note: this direction requires `Ring R` and stronger ordering assumptions on `R` to handle negative
+scalar multiplication, and nonemptiness of the cone to establish zero membership. -/
+theorem IsGenerating.isReproducing {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
+    [AddLeftStrictMono R] [AddCommGroup M] [Module R M] {C : ConvexCone R M}
+    (hne : (C : Set M).Nonempty) (h : C.IsGenerating) :
+    C.IsReproducing := by
+  rw [IsReproducing, Set.eq_univ_iff_forall]
+  intro x
+  -- Build the submodule S = C - C and show span C ⊆ S
+  let S : Submodule R M := {
+    carrier := (C : Set M) - (C : Set M)
+    add_mem' := by
+      rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+      exact ⟨y₁ + y₂, C.add_mem hy₁ hy₂, z₁ + z₂, C.add_mem hz₁ hz₂, add_sub_add_comm ..⟩
+    zero_mem' := by
+      obtain ⟨c, hc⟩ := hne
+      exact ⟨c, hc, c, hc, sub_self c⟩
+    smul_mem' := by
+      rintro r _ ⟨y, hy, z, hz, rfl⟩
+      simp only [Set.mem_sub, SetLike.mem_coe]
+      rcases lt_trichotomy r 0 with hr | rfl | hr
+      · -- r < 0: use (-r) • z - (-r) • y = r • (y - z)
+        refine ⟨(-r) • z, C.smul_mem (neg_pos.mpr hr) hz,
+               (-r) • y, C.smul_mem (neg_pos.mpr hr) hy, ?_⟩
+        rw [neg_smul, neg_smul, neg_sub_neg, smul_sub]
+      · -- r = 0
+        simp only [zero_smul]
+        obtain ⟨c, hc⟩ := hne
+        exact ⟨c, hc, c, hc, sub_self c⟩
+      · -- r > 0: use r • y - r • z
+        exact ⟨r • y, C.smul_mem hr hy, r • z, C.smul_mem hr hz, (smul_sub r y z).symm⟩
+  }
+  have hCS : (C : Set M) ⊆ S := fun x hx ↦
+    let ⟨c, hc⟩ := hne; ⟨x + c, C.add_mem hx hc, c, hc, add_sub_cancel_right x c⟩
+  exact (h ▸ Submodule.span_le.mpr hCS) trivial
+
+/-- A convex cone is generating iff every element is a difference of cone elements.
+(Thus, the definition of `IsReproducing` as `C - C = univ` is equivalent to `IsGenerating`
+under certain conditions.)
+
+Specifically, this requires strengthening the assumptions (beyond those of `IsGenerating`):
+`C` must be non-empty (to cover the degenerate case)
+and `[Semiring R] [PartialOrder R]` is replaced by `[Ring R] [LinearOrder R] [AddLeftStrictMono R]`,
+and `[AddCommMonoid M]`  is replaced by  `[AddCommGroup M]` for subtraction. -/
+theorem isGenerating_iff_isReproducing' {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
+    [AddLeftStrictMono R] [AddCommGroup M] [Module R M] {C : ConvexCone R M}
+    (hne : (C : Set M).Nonempty) :
+    C.IsGenerating ↔ C.IsReproducing :=
+  ⟨IsGenerating.isReproducing hne, IsReproducing.isGenerating⟩
 
 end Generating
 
