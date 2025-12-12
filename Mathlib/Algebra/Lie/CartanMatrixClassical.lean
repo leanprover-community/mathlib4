@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
-@[expose] public section
-
 /-!
 # Cartan matrices for classical Lie algebras
 
@@ -39,6 +37,8 @@ works for any `n : ℕ`.
 
 cartan matrix, classical lie algebra, dynkin diagram
 -/
+
+@[expose] public section
 
 namespace CartanMatrix
 
