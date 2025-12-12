@@ -42,7 +42,7 @@ noncomputable def cochainComplex : CochainComplex C ℤ :=
 
 /-- If `R : ProjectiveResolution X`, then `R.chainComplex.X n` (with `n : ℕ`)
 is isomorphic to `R.complex.X k` (with `k : ℕ`) when `k = n`. -/
-noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : -k = n) :
+noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : -k = n := by lia) :
     R.cochainComplex.X n ≅ R.complex.X k :=
   HomologicalComplex.extendXIso _ _ h
 
