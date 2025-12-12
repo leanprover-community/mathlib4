@@ -113,7 +113,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         have := congr($((s.π.naturality h).symm).toFunctor)
         dsimp at this
         rw [Functor.id_comp] at this
-        erw [Functor.congr_hom this f]
+        rw [Functor.congr_hom this f]
         simp
   }
 

@@ -132,7 +132,7 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
   hom_self Y q i g h := by
     simp [← Cat.Hom₂.comp_app]
   hom_comp Y q i₁ i₂ i₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
-    simp_rw [← Cat.Hom₂.comp_app]
+    simp only [← Cat.Hom₂.comp_app]
     simp
 
 /-- Constructor for isomorphisms in `Pseudofunctor.DescentData`. -/

@@ -81,12 +81,7 @@ between the Grothendieck construction on `CostructuredArrow.functor` and the com
 def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functor L) where
   obj X := ⟨X.right, mk X.hom⟩
   map f := ⟨f.right, homMk f.left⟩
-  map_id X := Grothendieck.ext _ _ rfl (by
-    simp_rw [Grothendieck.id_base, Comma.id_right, Comma.id_left, Grothendieck.id_fiber]
-    simp only [Functor.comp_obj, functor_obj, Cat.of_α, Functor.comp_map, functor_map,
-      Functor.toCatHom_toFunctor, map_mk, eqToHom_refl, Category.id_comp, Grothendieck.id_base,
-      hom_eq_iff, mk_left, homMk_left, eqToHom_left]
-    )
+  map_id X := Grothendieck.ext _ _ rfl (by simp)
   map_comp f g := Grothendieck.ext _ _ rfl (by simp)
 
 /-- For `L : C ⥤ D`, taking the Grothendieck construction of `CostructuredArrow.functor L`

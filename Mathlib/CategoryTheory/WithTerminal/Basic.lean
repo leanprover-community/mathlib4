@@ -196,13 +196,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj, Cat.of_α,
-      prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, Cat.Hom.comp_toFunctor,
-      Functor.toCatHom_toFunctor, map_obj, Functor.comp_obj,
-      prelaxfunctor_toPrelaxFunctorStruct_map₂, Cat.whiskerRight_toNatTrans,
-      NatTrans.toCatHom₂_toNatTrans, map₂_app, Functor.whiskerRight_app, Cat.Hom.isoMk_hom,
-      Cat.Hom.isoMk_inv, Cat.Hom.toNatTrans_comp, NatTrans.comp_app, mapComp_hom_app, Iso.refl_hom,
-      map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
       rfl
     · rfl
   map₂_associator := by
@@ -222,14 +216,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj, Cat.of_α,
-      prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, Cat.Hom.comp_toFunctor,
-      Cat.Hom.id_toFunctor, Functor.toCatHom_toFunctor, map_obj, Functor.comp_obj, Functor.id_obj,
-      prelaxfunctor_toPrelaxFunctorStruct_map₂, Cat.rightUnitor_hom_toNatTrans,
-      NatTrans.toCatHom₂_toNatTrans, map₂_app, Functor.rightUnitor_hom_app, Cat.Hom.isoMk_hom,
-      Cat.Hom.toNatTrans_comp, Cat.whiskerLeft_toNatTrans, NatTrans.comp_app, mapComp_hom_app,
-      Iso.refl_hom, Functor.whiskerLeft_app, mapId_hom_app, Category.comp_id]
-      rfl
+    · simpa using (refl _)
     · rfl
 
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
@@ -603,13 +590,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj, Cat.of_α,
-      prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, Cat.Hom.comp_toFunctor,
-      Functor.toCatHom_toFunctor, map_obj, Functor.comp_obj,
-      prelaxfunctor_toPrelaxFunctorStruct_map₂, Cat.whiskerRight_toNatTrans,
-      NatTrans.toCatHom₂_toNatTrans, map₂_app, Functor.whiskerRight_app, Cat.Hom.isoMk_hom,
-      Cat.Hom.isoMk_inv, Cat.Hom.toNatTrans_comp, NatTrans.comp_app, mapComp_hom_app, Iso.refl_hom,
-      map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
       rfl
     · rfl
   map₂_associator := by
@@ -628,14 +609,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     intros
     ext X
     cases X
-    · simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj, Cat.of_α,
-      prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, Cat.Hom.comp_toFunctor,
-      Cat.Hom.id_toFunctor, Functor.toCatHom_toFunctor, map_obj, Functor.comp_obj, Functor.id_obj,
-      prelaxfunctor_toPrelaxFunctorStruct_map₂, Cat.rightUnitor_hom_toNatTrans,
-      NatTrans.toCatHom₂_toNatTrans, map₂_app, Functor.rightUnitor_hom_app, Cat.Hom.isoMk_hom,
-      Cat.Hom.toNatTrans_comp, Cat.whiskerLeft_toNatTrans, NatTrans.comp_app, mapComp_hom_app,
-      Iso.refl_hom, Functor.whiskerLeft_app, mapId_hom_app, Category.comp_id]
-      rfl
+    · simpa using (refl _)
     · rfl
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where

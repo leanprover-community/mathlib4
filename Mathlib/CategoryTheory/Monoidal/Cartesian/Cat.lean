@@ -23,8 +23,6 @@ namespace Cat
 
 open Limits
 
-
-
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
 abbrev chosenTerminal : Cat.{v, u} := Cat.of (ULift (ULiftHom (Discrete Unit)))

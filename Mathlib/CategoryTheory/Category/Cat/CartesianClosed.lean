@@ -72,10 +72,8 @@ instance closed : Closed (Cat.of C) where
   adj := Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Equiv.trans (Cat.Hom.equivFunctor _ _) (curryingFlipEquiv.symm.trans
         (Functor.equivCatHom _ _))
-      homEquiv_naturality_left_symm F G :=
-        congr($(comp_flip_uncurry_eq F.toFunctor G.toFunctor).toCatHom)
-      homEquiv_naturality_right F G :=
-        congr($(curry_obj_comp_flip F.toFunctor G.toFunctor).toCatHom) }
+      homEquiv_naturality_left_symm _ _ := rfl
+      homEquiv_naturality_right _ _ := rfl }
 
 instance cartesianClosed : CartesianClosed Cat.{u, u} where
   closed C := closed C

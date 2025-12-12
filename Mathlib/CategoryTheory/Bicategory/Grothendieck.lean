@@ -290,24 +290,13 @@ instance category : Category (∫ᶜ F) where
   id_comp {a b} f := by
     ext
     · simp
-    · simp only [categoryStruct_comp_base, categoryStruct_id_base, op_comp, op_id,
-      Quiver.Hom.comp_toLoc, Quiver.Hom.id_toLoc, categoryStruct_comp_fiber,
-      categoryStruct_id_fiber, F.mapComp_id_right_inv_app, Cat.Hom.id_toFunctor, id_obj,
-      Strict.rightUnitor_eqToIso, eqToIso.inv, PrelaxFunctor.map₂_eqToHom,
-      Cat.Hom₂.eqToHom_toNatTrans, eqToHom_app, comp_id, eqToHom_naturality,
-      ← NatTrans.naturality_assoc, Functor.id_map, eqToHom_naturality_assoc]
-      rw [← Cat.Hom₂.comp_app, Iso.inv_hom_id]
-      simp
+    · simp [F.mapComp_id_right_inv_app, Strict.rightUnitor_eqToIso, ← NatTrans.naturality_assoc,
+        ← Cat.Hom₂.comp_app]
   comp_id {a b} f := by
     ext
     · simp
-    · simp only [categoryStruct_comp_base, categoryStruct_id_base, op_comp, op_id,
-      Quiver.Hom.comp_toLoc, Quiver.Hom.id_toLoc, categoryStruct_comp_fiber,
-      categoryStruct_id_fiber, F.mapComp_id_left_inv_app, Cat.Hom.id_toFunctor, id_obj,
-      Strict.leftUnitor_eqToIso, eqToIso.inv, PrelaxFunctor.map₂_eqToHom,
-      Cat.Hom₂.eqToHom_toNatTrans, eqToHom_app]
-      rw [← (F.map f.base.op.toLoc).toFunctor.map_comp_assoc,← Cat.Hom₂.comp_app, Iso.inv_hom_id]
-      simp
+    · simp [F.mapComp_id_left_inv_app, Strict.leftUnitor_eqToIso, ← Functor.map_comp_assoc,
+        ← Cat.Hom₂.comp_app]
   assoc f g h := by
     ext
     · simp
@@ -343,23 +332,18 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
   map_id a := by
     ext1
     · dsimp
-    · simp only [categoryStruct_id_base, op_id, Quiver.Hom.id_toLoc, categoryStruct_id_fiber,
-      Cat.Hom.comp_toFunctor, naturality_id_hom_app, Cat.Hom.id_toFunctor, id_obj, eqToHom_refl,
-      comp_id]
-      rw [← Category.assoc,← Functor.map_comp, ← Cat.Hom₂.comp_app, Iso.inv_hom_id]
-      simp
+    · simp [Cat.Hom.comp_toFunctor, naturality_id_hom_app, Cat.Hom.id_toFunctor, ← Category.assoc,
+        ← Functor.map_comp, ← Cat.Hom₂.comp_app]
   map_comp {a b c} f g := by
     ext
     · dsimp
     · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
         categoryStruct_comp_fiber, Cat.Hom.comp_toFunctor, map_comp, naturality_comp_hom_app, assoc,
         eqToHom_refl, comp_id]
-      slice_lhs 2 4 => simp [← Functor.map_comp, ← Cat.Hom.toNatIso_hom, ← Cat.Hom.toNatIso_inv,
-        Iso.inv_hom_id_app]
-      simp only [assoc]
-      simp_rw [← reassoc_of% Cat.Hom.comp_map]
-      rw [(α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
-
+      slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
+        ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
+      simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
+        (α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
 
 @[simp]
 lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by

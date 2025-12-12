@@ -130,10 +130,8 @@ instance : Category (Grothendieck F) where
   assoc f g h := by
     ext
     · simp [comp]
-    · simp only [comp, map_comp, eqToHom_map, Category.assoc, eqToHom_trans_assoc]
-      rw [← NatIso.naturality_2 (Cat.Hom.toNatIso (eqToIso (F.map_comp g.base h.base)) ≪≫
+    · simp [comp, ← NatIso.naturality_2 (Cat.Hom.toNatIso (eqToIso (F.map_comp g.base h.base)) ≪≫
         (eqToIso (Cat.Hom.comp_toFunctor _ _))) f.fiber]
-      simp
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
@@ -207,9 +205,7 @@ def isoMk {X Y : Grothendieck F} (e₁ : X.base ≅ Y.base)
   hom_inv_id := Grothendieck.ext _ _ (by simp) (by simp)
   inv_hom_id := Grothendieck.ext _ _ (by simp) (by
     have := Functor.congr_hom congr($((F.mapIso e₁).inv_hom_id).toFunctor) e₂.inv
-    dsimp at this
-    simp [this]
-    )
+    simp_all)
 
 /--
 If `F : C ⥤ Cat` and `x : Grothendieck F`, then every `C`-isomorphism `α : x.base ≅ c` induces
@@ -246,18 +242,13 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
     fiber := (α.app X.base).toFunctor.obj X.fiber }
   map {X Y} f :=
   { base := f.base
-    fiber :=
-      eqToHom (by
-        simp only
-        rw [← Cat.Hom.comp_obj, ← α.naturality]
-        simp [-NatTrans.naturality]) ≫ (α.app Y.base).toFunctor.map f.fiber
-    }
-  map_id X := by simp only [id_base, id_fiber, eqToHom_map, eqToHom_trans]; rfl
+    fiber := (eqToHom (α.naturality f.base).symm).toNatTrans.app X.fiber ≫
+      (α.app Y.base).toFunctor.map f.fiber }
+  -- map_id X := by simp only [id_base, id_fiber, eqToHom_map, eqToHom_trans]; rfl
   map_comp {X Y Z} f g := by
     apply Grothendieck.ext _ _ (by simp)
-    simp only [comp_base, comp_fiber, eqToHom_refl, map_comp, eqToHom_map, eqToHom_trans_assoc,
-      Category.id_comp, Category.assoc]
-    rw [← Cat.Hom.comp_map, Functor.congr_hom congr($(α.naturality g.base).toFunctor) f.fiber]
+    simp only [comp_fiber, map_comp, ← Cat.Hom.comp_map,
+      Functor.congr_hom congr($(α.naturality g.base).toFunctor) f.fiber]
     simp
 
 

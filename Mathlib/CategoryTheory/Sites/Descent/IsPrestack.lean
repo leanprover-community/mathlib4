@@ -86,20 +86,15 @@ lemma map_eq_pullHom
     (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).inv.toNatTrans.app _ ≫
     pullHom φ g gf₁ gf₂ hgf₁ hgf₂ ≫
     (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).hom.toNatTrans.app _ := by
-  simp only [Cat.Hom.comp_toFunctor, Functor.comp_obj, pullHom, Category.assoc]
-  rw [← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id, ← Cat.Hom₂.comp_app,Iso.inv_hom_id]
-  simp
+  simp [Cat.Hom.comp_toFunctor, pullHom, ← reassoc_of% Cat.Hom₂.comp_app, ← Cat.Hom₂.comp_app]
 
 @[simp]
 lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
     (φ : (F.map f₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map f₂.op.toLoc).toFunctor.obj M₂) :
       pullHom φ (𝟙 _) f₁ f₂ = φ := by
-  simp only [pullHom, op_id, Quiver.Hom.id_toLoc, Cat.Hom.comp_toFunctor, Functor.comp_obj,
-    mapComp'_comp_id_hom_app, Cat.Hom.id_toFunctor, mapComp'_comp_id_inv_app, NatTrans.naturality,
-    Functor.id_obj, Functor.id_map]
-  rw [←reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
-  simp
+  simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app,
+    ← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
 
 @[simp]
 lemma pullHom_pullHom
