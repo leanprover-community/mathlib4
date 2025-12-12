@@ -136,17 +136,19 @@ namespace Set
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
-@[to_dual existing]
 instance : SupSet (Set α) :=
   ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
-@[to_dual /-- Union of a set of sets. -/]
 def sInter (S : Set (Set α)) : Set α :=
   sInf S
 
 /-- Notation for `Set.sInter` Intersection of a set of sets. -/
 prefix:110 "⋂₀ " => sInter
+
+/-- Union of a set of sets. -/
+def sUnion (S : Set (Set α)) : Set α :=
+  sSup S
 
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
@@ -160,12 +162,15 @@ theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S,
   Iff.rfl
 
 /-- Indexed union of a family of sets -/
-@[to_dual /-- Indexed intersection of a family of sets -/]
 def iUnion (s : ι → Set α) : Set α :=
   iSup s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
 notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
+
+/-- Indexed intersection of a family of sets -/
+def iInter (s : ι → Set α) : Set α :=
+  iInf s
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
 notation3 "⋂ " (...)", " r:60:(scoped f => iInter f) => r
