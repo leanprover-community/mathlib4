@@ -128,10 +128,34 @@ variable [LinearOrderedAddCommGroupWithTop α] {a b : α}
 
 attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
 
-lemma add_neg_cancel_of_ne_top {α : Type*} [LinearOrderedAddCommGroupWithTop α]
-    {a : α} (h : a ≠ ⊤) :
-    a + -a = 0 :=
+@[simp]
+lemma top_ne_zero : (⊤ : α) ≠ 0 := by
+  intro nh
+  have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
+  have : a + 0 ≠ b + 0 := by simpa
+  simp [← nh] at this
+
+@[simp]
+theorem zero_ne_top : 0 ≠ (⊤ : α) :=
+  top_ne_zero.symm
+
+lemma add_neg_cancel_of_ne_top (h : a ≠ ⊤) : a + -a = 0 :=
   LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
+
+@[simp]
+lemma add_neg_cancel_iff_ne_top : a + -a = 0 ↔ a ≠ ⊤ where
+  mp := by contrapose; simp +contextual
+  mpr := add_neg_cancel_of_ne_top
+
+@[simp]
+lemma sub_self_eq_zero_iff_ne_top : a - a = 0 ↔ a ≠ ⊤ := by
+  rw [sub_eq_add_neg, add_neg_cancel_iff_ne_top]
+
+alias ⟨_, sub_self_eq_zero_of_ne_top⟩ := sub_self_eq_zero_iff_ne_top
+
+@[simp]
+lemma sub_top (a : α) : a - ⊤ = ⊤ := by
+  rw [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
 
 @[simp]
 lemma add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
@@ -141,22 +165,10 @@ lemma add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
     rw [not_or] at nh
     replace h := congrArg (-a + ·) h
     dsimp only at h
-    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
-      zero_add] at h
+    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at h
     · exact nh.2 h
     · exact nh.1
-  · rintro (rfl | rfl)
-    · simp
-    · simp
-
-@[simp]
-lemma top_ne_zero :
-    (⊤ : α) ≠ 0 := by
-  intro nh
-  have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
-  have : a + 0 ≠ b + 0 := by simpa
-  rw [← nh] at this
-  simp at this
+  · rintro (rfl | rfl) <;> simp
 
 @[simp] lemma neg_eq_top {a : α} : -a = ⊤ ↔ a = ⊤ where
   mp h := by
