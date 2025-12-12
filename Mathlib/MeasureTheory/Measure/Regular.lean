@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 
 /-!
 # Regular measures
@@ -188,6 +190,8 @@ proofs or statements do not apply directly.
 
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
+
+@[expose] public section
 
 open Set Filter ENNReal NNReal TopologicalSpace
 open scoped symmDiff Topology
@@ -748,6 +752,48 @@ protected theorem comap [BorelSpace α] {mβ : MeasurableSpace β} [TopologicalS
     {μ : Measure β} [InnerRegular μ] (f : α ≃ₜ β) :
     (μ.comap f).InnerRegular :=
   InnerRegular.comap' μ f.isOpenEmbedding
+
+instance {μ ν : Measure α} [InnerRegular μ] [InnerRegular ν] : InnerRegular (μ + ν) := by
+  constructor
+  intro s hs r hr
+  simp only [Measure.coe_add, Pi.add_apply] at hr
+  rcases eq_or_ne (μ s) 0 with h | h
+  · simp only [h, zero_add] at hr
+    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
+    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
+  rcases eq_or_ne (ν s) 0 with h' | h'
+  · simp only [h', add_zero] at hr
+    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
+    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
+  rcases ENNReal.exists_lt_add_of_lt_add hr h h' with ⟨u, hu, v, hv, huv⟩
+  rcases MeasurableSet.exists_lt_isCompact hs hu with ⟨K, Ks, hK, h'K⟩
+  rcases MeasurableSet.exists_lt_isCompact hs hv with ⟨K', K's, hK', h'K'⟩
+  refine ⟨K ∪ K', union_subset Ks K's, hK.union hK', huv.trans_le ?_⟩
+  apply (add_le_add h'K.le h'K'.le).trans
+  simp only [Measure.coe_add, Pi.add_apply]
+  gcongr <;> simp
+
+instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] (a : Finset ι) :
+    InnerRegular (∑ i ∈ a, μ i) := by
+  classical
+  induction a using Finset.induction with
+  | empty => simp only [Finset.sum_empty]; infer_instance
+  | insert a s ha ih => simp only [ha, not_false_eq_true, Finset.sum_insert]; infer_instance
+
+instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
+    InnerRegular (Measure.sum μ) := by
+  constructor
+  intro s hs r hr
+  have : Tendsto (fun (a : Finset ι) ↦ ∑ i ∈ a, μ i s) atTop (𝓝 (Measure.sum μ s)) := by
+    simp only [hs, Measure.sum_apply]
+    exact ENNReal.summable.hasSum
+  obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
+    simp only [coe_finset_sum, Finset.sum_apply]
+    exact ((tendsto_order.1 this).1 r hr).exists
+  rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
+  refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
+  simp only [coe_finset_sum, Finset.sum_apply]
+  exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular
 

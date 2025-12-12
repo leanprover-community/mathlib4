@@ -3,12 +3,14 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -41,6 +43,8 @@ https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Additive.20ch
 
 additive character
 -/
+
+@[expose] public section
 
 /-!
 ### Definitions related to and results on additive characters

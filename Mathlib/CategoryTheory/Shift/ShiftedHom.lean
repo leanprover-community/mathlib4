@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! Shifted morphisms
 
@@ -15,6 +17,8 @@ defined as `X ⟶ (Y⟦m⟧)` for all `m : M`, and the composition on these
 shifted hom.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -165,7 +169,7 @@ lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.Com
 
 @[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
-  simp [map, Functor.commShiftIso, Functor.CommShift.iso]
+  simp [map]
 
 lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by

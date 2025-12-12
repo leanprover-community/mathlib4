@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Bases
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Bases
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -275,7 +279,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> omega
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}

@@ -3,11 +3,13 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
-import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+module
+
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Algebra.Polynomial.CoeffMem
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -57,6 +59,8 @@ The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, al
 not give an explicit bound on the complexity.
 
 -/
+
+@[expose] public section
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
@@ -258,6 +262,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
+-- TODO: fix non-terminal simp (large simp set)
+set_option linter.flexible false in
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -404,13 +410,13 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · cutsat
+          · lia
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
-      · cutsat
+      · lia
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
@@ -508,7 +514,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> omega
+          _ ≤ c.degBound ^ c.degBound := by gcongr <;> lia
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']

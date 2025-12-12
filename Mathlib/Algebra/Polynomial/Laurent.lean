@@ -3,10 +3,12 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!  # Laurent polynomials
 
@@ -66,6 +68,8 @@ Lots is missing!
 --  `Polynomial.toFinsuppIso`.
 -- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
+
+@[expose] public section
 
 
 open Polynomial Function AddMonoidAlgebra Finsupp
@@ -297,7 +301,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_coe,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_natCast,
     AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
   -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
@@ -307,8 +311,8 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
     apply comapDomain_single
   · rw [toFinsupp_inj]
     ext a
-    have : a ≠ n := by omega
-    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
+    have : a ≠ n := by lia
+    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_natCast, coeff_zero,
       single_eq_of_ne this]
 
 @[simp]
@@ -476,7 +480,7 @@ instance : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
-  smul_assoc x y z := by dsimp; simp_rw [MulAction.mul_smul]
+  smul_assoc x y z := by rw [smul_eq_mul, mul_smul]
 
 end Semiring
 

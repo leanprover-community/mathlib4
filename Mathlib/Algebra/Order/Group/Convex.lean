@@ -3,15 +3,19 @@ Copyright (c) 2025 Judith Ludwig and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Real.Embedding
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Order.Birkhoff
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Real.Embedding
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Order.Birkhoff
 
 /-! # Convex subgroups of a linearly ordered abelian group -/
+
+@[expose] public section
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
 

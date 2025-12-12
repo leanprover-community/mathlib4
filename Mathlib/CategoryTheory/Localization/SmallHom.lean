@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Shrinking morphisms in localized categories
@@ -19,6 +21,8 @@ functor `L : C ⥤ D` for `W`, we provide a bijection
 with the composition of morphisms.
 
 -/
+
+@[expose] public section
 
 universe w'' w w' v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -274,15 +278,14 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by
     simp [γ, id_comp, comp_id]
-  simp only [Functor.map_comp, assoc]
-  erw [← NatIso.naturality_1 γ]
-  simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
+  simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
+    ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
     Iso.hom_inv_id_app_assoc]
   simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
     Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :

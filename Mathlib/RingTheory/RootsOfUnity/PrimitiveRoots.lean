@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Primitive roots of unity
@@ -41,6 +43,8 @@ This creates a little bit of friction with how `rootsOfUnity` is implemented (as
 of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -99,11 +103,9 @@ variable {k l : ℕ}
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
   refine ⟨h1, fun l hl ↦ ?_⟩
-  suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
-  rw [eq_iff_le_not_lt]
-  refine ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), ?_⟩
-  intro h'; apply h _ (Nat.gcd_pos_of_pos_left _ hk) h'
-  exact pow_gcd_eq_one _ h1 hl
+  suffices k.gcd l = k from this ▸ k.gcd_dvd_right l
+  refine (Nat.le_of_dvd hk (k.gcd_dvd_left l)).eq_of_not_lt fun h' ↦ ?_
+  exact h _ (Nat.gcd_pos_of_pos_left _ hk) h' (by simp [h1, hl])
 
 section CommMonoid
 

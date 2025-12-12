@@ -3,9 +3,11 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
@@ -20,6 +22,8 @@ Define the gamma measure over the reals.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -69,13 +73,13 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
     StronglyMeasurable (gammaPDFReal a r) :=
   (measurable_gammaPDFReal a r).stronglyMeasurable

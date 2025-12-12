@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Monoid and group homomorphisms
@@ -57,6 +59,8 @@ deprecated and moved to `Deprecated/Group`.
 MonoidHom, AddMonoidHom
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -703,6 +707,10 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 
+@[to_additive] theorem isDedekindFiniteMonoid_of_injective (f : F) (hf : Function.Injective f)
+    [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
+
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
@@ -993,7 +1001,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [OneHom.map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩

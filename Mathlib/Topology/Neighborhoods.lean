@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Closure
 
 /-!
 # Neighborhoods in topological spaces
@@ -15,6 +17,8 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 
 neighborhood
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

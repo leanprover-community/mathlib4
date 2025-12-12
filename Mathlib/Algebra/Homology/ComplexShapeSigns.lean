@@ -3,15 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
-the monoidal category structure on categories of homological complexes (TODO).
+monoidal category structure on categories of homological complexes (TODO).
 
 The most important definition is that of `TotalComplexShape c₁ c₂ c₁₂` given
 three complex shapes `c₁`, `c₂`, `c₁₂`: it allows the definition of a total
@@ -23,6 +25,8 @@ and `I` is an additive monoid equipped with a group homomorphism `ε' : Multipli
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field TwoSidedIdeal
 
@@ -132,13 +136,13 @@ lemma add_rel (r : I) {p q : I} (hpq : c.Rel p q) : c.Rel (r + p) (r + q) :=
 
 @[simp]
 lemma ε_zero : c.ε 0 = 1 := by
-  apply MonoidHom.map_one
+  apply map_one
 
 lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
   TensorSigns.ε'_succ p q hpq
 
 lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q := by
-  apply MonoidHom.map_mul
+  apply map_mul
 
 lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
     c.next (p + q) = c.next p + q :=
@@ -161,8 +165,8 @@ instance : TotalComplexShape c c c where
 
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
-  rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
-  add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
+  rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
+  add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
   ε'_succ := by
     rintro _ q rfl
     dsimp
@@ -173,8 +177,8 @@ lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n :=
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
-  rel_add p q r (hpq : p + 1 = q) := by dsimp; omega
-  add_rel p q r (hpq : p + 1 = q) := by dsimp; omega
+  rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
+  add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
   ε'_succ := by
     rintro p _ rfl
     dsimp
@@ -266,6 +270,18 @@ instance {I : Type*} [AddMonoid I] (c : ComplexShape I) [c.TensorSigns] :
 
 end ComplexShape
 
+/-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
+from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
+def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
+    TotalComplexShape c₂ c₁ c₁₂ where
+  π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  ε₁ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  ε₂ := fun ⟨i₂, i₁⟩ ↦ ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  rel₁ h i₁ := ComplexShape.rel_π₂ c₁ c₁₂ i₁ h
+  rel₂ i₂ _ _ h := ComplexShape.rel_π₁ c₂ c₁₂ h i₂
+  ε₂_ε₁ h₂ h₁ := by
+    rw [neg_mul, ComplexShape.ε₂_ε₁ c₁₂ h₁ h₂, neg_mul, neg_neg]
+
 /-- A total complex shape symmetry contains the data and properties which allow the
 identification of the two total complex functors
 `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`
@@ -278,6 +294,17 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
     σ i₁ i₂ * ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₂ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁' i₂
   σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
     σ i₁ i₂ * ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁ i₂'
+
+/-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
+and its symmetric total complex shape. -/
+def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
+    letI := TotalComplexShape.symm c₁ c₂ c₁₂
+    TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=
+  letI := TotalComplexShape.symm c₁ c₂ c₁₂
+  { symm i₁ i₂ := rfl
+    σ _ _ := 1
+    σ_ε₁ _ _ := by aesop
+    σ_ε₂ _ _ := by aesop }
 
 namespace ComplexShape
 

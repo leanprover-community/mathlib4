@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 ### Lattice of group topologies
@@ -18,6 +20,8 @@ Any function `f : α → β` induces `coinduced f : TopologicalSpace α → Grou
 
 The additive version `AddGroupTopology α` and corresponding results are provided as well.
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 

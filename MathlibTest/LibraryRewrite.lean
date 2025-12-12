@@ -85,7 +85,7 @@ info: Pattern n + 1
 · Std.PRange.succ n
   Std.PRange.Nat.succ_eq
 · (*...=n).size
-  Std.PRange.Nat.size_Ric
+  Std.PRange.Nat.size_ric
 · (↑n + 1).toNat
   Int.toNat_natCast_add_one
 
@@ -110,6 +110,11 @@ Pattern n + m
 Pattern a + b
 · 1 + n
   add_comm
+· [n, 1].sum
+  List.sum_pair
+· 0
+  ⊢ 1 + n = 0
+  IsDedekindFiniteAddMonoid.add_eq_zero_symm
 -/
 #guard_msgs in
 #rw?? n + 1

@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Measure.Sub
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
 # Lebesgue decomposition
@@ -43,6 +45,8 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.VectorMeasure
 
@@ -92,7 +96,7 @@ lemma singularPart_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecompos
     μ.singularPart ν = 0 := by
   rw [singularPart, dif_neg h]
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
   · exact (haveLebesgueDecomposition_spec μ ν).1

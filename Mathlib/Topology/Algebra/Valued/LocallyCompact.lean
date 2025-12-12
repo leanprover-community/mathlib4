@@ -3,13 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Field.ProperSpace
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
-import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -22,6 +24,8 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 norm, nonarchimedean, rank one, compact, locally compact
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -184,9 +188,8 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       · exact Set.finite_empty
       · simp [hxy]
     · simp
-    wlog h : x ≤ 1 generalizing x y
-    · push_neg at h
-      specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
+    wlog! h : x ≤ 1 generalizing x y
+    · specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
       refine (this.inv).subset ?_
       rw [Set.inv_Icc]
       intro

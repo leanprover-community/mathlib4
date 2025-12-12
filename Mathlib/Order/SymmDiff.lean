@@ -3,8 +3,10 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -48,6 +50,8 @@ Proof from the Book" by John McCuan:
 boolean ring, generalized boolean algebra, boolean algebra, symmetric difference, bi-implication,
 Heyting
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

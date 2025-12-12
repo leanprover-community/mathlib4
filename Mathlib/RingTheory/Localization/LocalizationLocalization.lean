@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Localizations of localizations
@@ -18,6 +20,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 
@@ -62,7 +66,7 @@ variable [IsLocalization M S]
 theorem localization_localization_map_units [IsLocalization N T]
     (y : localizationLocalizationSubmodule M N) : IsUnit (algebraMap R T y) := by
   obtain ⟨y', z, eq⟩ := mem_localizationLocalizationSubmodule.mp y.prop
-  rw [IsScalarTower.algebraMap_apply R S T, eq, RingHom.map_mul, IsUnit.mul_iff]
+  rw [IsScalarTower.algebraMap_apply R S T, eq, map_mul, IsUnit.mul_iff]
   exact ⟨IsLocalization.map_units T y', (IsLocalization.map_units _ z).map (algebraMap S T)⟩
 
 theorem localization_localization_surj [IsLocalization N T] (x : T) :
@@ -78,9 +82,8 @@ theorem localization_localization_surj [IsLocalization N T] (x : T) :
   refine ⟨⟨z * t', z' * t, ?_⟩, ?_⟩ -- x = y / s = (z * t') / (z' * t)
   · rw [mem_localizationLocalizationSubmodule]
     refine ⟨s, t * t', ?_⟩
-    rw [RingHom.map_mul, ← eq₃, mul_assoc, ← RingHom.map_mul, mul_comm t, Submonoid.coe_mul]
-  · simp only [RingHom.map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂,
-      ← eq₁]
+    rw [map_mul, ← eq₃, mul_assoc, ← map_mul, mul_comm t, Submonoid.coe_mul]
+  · simp only [map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂, ← eq₁]
     ring
 
 theorem localization_localization_exists_of_eq [IsLocalization N T] (x y : R) :

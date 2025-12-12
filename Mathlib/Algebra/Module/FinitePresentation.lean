@@ -3,13 +3,15 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -51,6 +53,8 @@ In particular,
 For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib/RingTheory/FinitePresentation.lean`.
 -/
+
+@[expose] public section
 
 open Finsupp
 
@@ -447,15 +451,13 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
   refine ⟨s₀ * s₁ * s₂, (s₀ * s₁ * s₂).2, fun t ht ↦ ?_⟩
   let Rₛ := Localization (.powers t)
   let lₛ := LocalizedModule.map (.powers t) l
+  have hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩
   have hu₀ : IsUnit (algebraMap R Rₛ s₀) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht)) hu
   have hu₁ : IsUnit (algebraMap R Rₛ s₁) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht)) hu
   have hu₂ : IsUnit (algebraMap R Rₛ s₂) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht)) hu
   let lₛ' := LocalizedModule.map (.powers t) l'
   have H_left : ((hu₀.unit⁻¹).1 • lₛ') ∘ₗ lₛ = LinearMap.id := by
     apply ((Module.End.isUnit_iff _).mp (hu₂.map (algebraMap Rₛ (Module.End Rₛ _)))).1
@@ -561,7 +563,7 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
     [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
     [Module.FinitePresentation R M] :
-      IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
+    IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
   IsLocalizedModule.of_linearEquiv _ _ _
 
 instance [Module.FinitePresentation R M] :

@@ -3,11 +3,14 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Countable
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.RingTheory.Localization.Module
+module
+
+public import Mathlib.LinearAlgebra.Countable
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.RingTheory.Localization.Module
 
 /-!
 # ℤ-lattices
@@ -49,6 +52,8 @@ aspect appears to be the more useful one (especially in computations involving b
 consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -194,7 +199,7 @@ theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b 
 def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
 
 theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
-  fun x => ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
+  fun x => ⟨↑x, Subtype.ext (fract_eq_self.mpr (Subtype.mem x))⟩
 
 @[simp]
 theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
@@ -324,7 +329,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :
 theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
     Set.Finite (s ∩ span ℤ (Set.range b)) := by
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
-  refine Metric.finite_isBounded_inter_isClosed hs ?_
+  refine Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete hs ?_
   rw [← coe_toAddSubgroup]
   exact AddSubgroup.isClosed_of_discrete
 
@@ -464,7 +469,8 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     have : ((fundamentalDomain b) ∩ L).Finite := by
       change ((fundamentalDomain b) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
-      exact Metric.finite_isBounded_inter_isClosed (fundamentalDomain_isBounded b) inferInstance
+      exact Metric.finite_isBounded_inter_isClosed
+        DiscreteTopology.isDiscrete (fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, quotientEquiv_apply_mk, fractRestrict_apply]
@@ -557,12 +563,10 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
-      contrapose h
-      rw [Finset.not_nonempty_iff_eq_empty, Set.toFinset_diff,
-        Finset.sdiff_eq_empty_iff_subset] at h
+      contrapose! h
+      rw [Set.toFinset_diff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h
-      rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
-        finrank_span_set_eq_card ht_lin]
+      rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose! this
@@ -587,7 +591,8 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
-      exact Metric.finite_isBounded_inter_isClosed  Metric.isBounded_closedBall inferInstance
+      exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
+        Metric.isBounded_closedBall inferInstance
     obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by

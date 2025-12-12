@@ -3,15 +3,17 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.Jordan
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+module
+
+public import Mathlib.GroupTheory.GroupAction.Jordan
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
 * `Equiv.Perm.isCoatom_stabilizer`:
-  if neither `s : set α` nor its complementary subset is empty,
+  if neither `s : Set α` nor its complementary subset is empty,
   and the cardinality of `s` is not half of that of `α`,
   then `MulAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
@@ -32,6 +34,8 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -338,7 +342,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
        In the equality case, `Nat.card s` = Nat.card sᶜ`,
        it would be possible that `sᶜ` is a block,
        and then `G` would be a wreath product,
-       — this is case (b) of the O'Nan-Scott classification
+       — this is case (b) of the O'Nan-Scott classification
        of maximal subgroups of the symmetric group -/
   have not_isBlock_sc : ¬ IsBlock G sᶜ := fun hsc ↦ by
     rcases lt_or_ge (Nat.card α) (sᶜ.ncard * 2) with hB' | hB'
@@ -348,18 +352,15 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · rw [← not_lt] at hB'
       apply hB'
       rwa [← Set.ncard_add_ncard_compl sᶜ, mul_two, add_lt_add_iff_left, compl_compl]
-
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
     apply IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le ?_ (le_of_lt hG) hB (s := s)
     exact HasSubset.Subset.ssubset_of_ne hBsc (by aesop)
-
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s ) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs hB
-
   -- Conclusion : we reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
   unfold IsTrivialBlock

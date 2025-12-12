@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Big operators and `Fin`
@@ -22,6 +24,8 @@ constant function. These results have variants for sums instead of products.
 
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -163,6 +167,27 @@ theorem prod_univ_add {a b : ℕ} (f : Fin (a + b) → M) :
 theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
+
+@[to_additive]
+private lemma prod_insertNth_go :
+    ∀ n i (h : i < n + 1) x (p : Fin n → M), ∏ j, insertNth ⟨i, h⟩ x p j = x * ∏ j, p j
+  | n, 0, h, x, p => by simp
+  | 0, i, h, x, p => by simp [fin_one_eq_zero ⟨i, h⟩]
+  | n + 1, i + 1, h, x, p => by
+    obtain ⟨hd, tl, rfl⟩ := exists_cons p
+    have i_lt := Nat.lt_of_succ_lt_succ h
+    let i_fin : Fin (n + 1) := ⟨i, i_lt⟩
+    rw [show ⟨i + 1, h⟩ = i_fin.succ from rfl]
+    simp only [insertNth_succ_cons, prod_cons]
+    rw [prod_insertNth_go n i i_lt x tl, mul_left_comm]
+
+@[to_additive (attr := simp)]
+theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
+  prod_insertNth_go n i.val i.isLt x p
+
+@[to_additive (attr := simp)]
+theorem mul_prod_removeNth i (f : Fin (n + 1) → M) : f i * ∏ j, removeNth i f j = ∏ j, f j := by
+  rw [← prod_insertNth, insertNth_self_removeNth]
 
 /-!
 ### Products over intervals: `Fin.cast`
@@ -443,7 +468,7 @@ lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
   induction m with
   | zero => simp
   | succ n IH =>
-    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last, Nat.even_add_one, ite_not]
+    simp only [Fin.sum_univ_castSucc, Fin.val_castSucc, IH, Fin.val_last, Nat.even_add_one, ite_not]
     split_ifs with h
     · simp [*]
     · simp [(Nat.not_even_iff_odd.mp h).neg_pow]
@@ -464,7 +489,7 @@ theorem partialProd_zero (f : Fin n → M) : partialProd f 0 = 1 := by simp [par
 @[to_additive]
 theorem partialProd_succ (f : Fin n → M) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ]
+  simp [partialProd, List.take_add_one]
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
@@ -502,16 +527,16 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     rcases lt_trichotomy (i : ℕ) a with (h | h | h)
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
         succAbove_of_castSucc_lt] <;>
-      simp only [lt_def, coe_castSucc, val_succ] <;>
-      omega
+      simp only [lt_def, val_castSucc, val_succ] <;>
+      lia
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
-        succAbove_of_le_castSucc, castSucc_fin_succ, partialProd_succ, mul_assoc] <;>
-      simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
-      omega
+        succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
+      simp only [castSucc_lt_succ_iff, le_def, val_castSucc] <;>
+      lia
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
-        castSucc_fin_succ] <;>
-      simp only [le_def, val_succ, coe_castSucc] <;>
-      omega
+        castSucc_succ] <;>
+      simp only [le_def, val_succ, val_castSucc] <;>
+      lia
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
@@ -535,13 +560,13 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_fin_succ, ← mul_assoc,
+    castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
-      castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
+      castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
     · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h
@@ -560,7 +585,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       | succ n ih =>
         cases m
         · exact isEmptyElim (f <| Fin.last _)
-        simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
+        simp_rw [Fin.sum_univ_castSucc, Fin.val_castSucc, Fin.val_last]
         refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _
           (Fin.is_le _)).trans_eq ?_
         rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
@@ -673,7 +698,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   rw [finSigmaFinEquiv]
   unfold finSumFinEquiv
   simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.trans_def,
-    Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
+    Equiv.trans_apply, finCongr_apply, Fin.val_cast]
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]

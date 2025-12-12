@@ -3,13 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.DeclarationRange
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.DeclarationRange
 
 /-!
 # `addRelatedDecl`
 
 -/
+
+public meta section
 
 open Lean Meta Elab
 
@@ -28,7 +32,8 @@ This helper:
 
 Arguments:
 * `src : Name` is the existing declaration that we are modifying.
-* `suffix : String` will be appended to `src` to form the name of the new declaration.
+* `prefix_ : String` will be prepended and `suffix : String` will be appended to `src`
+  to form the name of the new declaration.
 * `ref : Syntax` is the syntax where the user requested the related declaration.
 * `construct value levels : MetaM (Expr × List Name)`
   given an `Expr.const` referring to the original declaration, and its universe variables,
@@ -40,15 +45,15 @@ Arguments:
   attribute commands. Note that `@[elementwise (attr := simp), reassoc (attr := simp)]` will try
   to apply `simp` twice to the current declaration, but that causes no issues.
 -/
-def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
+def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
     (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
     (construct : Expr → List Name → MetaM (Expr × List Name)) :
     MetaM Unit := do
   let tgt := match src with
-    | Name.str n s => Name.mkStr n <| s ++ suffix
+    | Name.str n s => Name.mkStr n <| prefix_ ++ s ++ suffix
     | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
-  let info ← getConstInfo src
+  let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
   let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
@@ -69,7 +74,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     setEnv <| addProtected (← getEnv) tgt
   inferDefEqAttr tgt
   let attrs := match attrs? with | some attrs => attrs | none => #[]
-  _ ← Term.TermElabM.run' <| do
+  _ ← Term.TermElabM.run' do
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
