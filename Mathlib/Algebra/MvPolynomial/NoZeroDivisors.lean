@@ -16,10 +16,8 @@ that hold when the coefficient semiring has no zero divisors.
 
 ## TODOs
 
-* Add a `totalDegree_mul_eq` theorem, which states that the total degree of a product of two
-nonzero multivariate polynomials is the sum of their total degrees. (See also
-`MvPolynomial.totalDegree_mul_of_isDomain`, which proves this
-under the assumption that the coefficient semiring has cancellative multiplication.)
+* Place these theorems with `MvPolynomial.totalDegree_mul_of_isDomain`, which proves this
+under the assumption that the coefficient semiring has cancellative multiplication.
 
 -/
 
@@ -69,7 +67,6 @@ end DegreeOf
 
 section Degrees
 
--- TODO: Can `NoZeroDivisors` be weakened to `IsCancelMulZero` here?
 lemma degrees_mul_eq [NoZeroDivisors R] (hp : p ≠ 0) (hq : q ≠ 0) :
     degrees (p * q) = degrees p + degrees q := by
   classical
