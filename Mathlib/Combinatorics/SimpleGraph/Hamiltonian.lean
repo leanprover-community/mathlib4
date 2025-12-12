@@ -188,45 +188,41 @@ More precisely, let `G : SimpleGraph V` be a simple graph on a finite vertex typ
 If `Fintype.card V ≥ 3` and there exists an edge of `G` which is a bridge,
 then `G` does not admit a Hamiltonian cycle, i.e. `¬ G.IsHamiltonian`.
 -/
-theorem card_le_two_of_isHamiltonian_of_isBridge {G : SimpleGraph V} (hG : G.IsHamiltonian)
-    {e : Sym2 V} (he : G.IsBridge e) : Fintype.card V ≤ 2 := by
+theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
+    (h_order : 3 ≤ Fintype.card V) (e : Sym2 V) (he : G.IsBridge e) :
+    ¬G.IsHamiltonian := by
   classical
-  rcases h_bridge with ⟨e, he⟩
-  refine e.ind (fun x y hbr => ?_) he
+  refine Sym2.ind (fun x y hbr => ?_) e he
   intro hHam
-  have hAdj : G.Adj x y :=
-    (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).1
-  have hxne : x ≠ y := hAdj.ne
+  have hxne : x ≠ y :=
+    ((SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).1).ne
   haveI : Nontrivial V := ⟨⟨x, y, hxne⟩⟩
   have hne : Fintype.card V ≠ 1 := by
     have : 1 < Fintype.card V := by omega
     exact ne_of_gt this
   obtain ⟨u, c, hcHam⟩ := hHam hne
-  have hcycle : c.IsCycle := hcHam.isCycle
   have he_not_in_cycle : s(x, y) ∉ c.edges :=
-    (SimpleGraph.isBridge_iff_adj_and_forall_cycle_notMem.mp hbr).2 c hcycle
+    (SimpleGraph.isBridge_iff_adj_and_forall_cycle_notMem.mp hbr).2 c hcHam.isCycle
   have hWalkAllMem :
       ∀ p : G.Walk x y, s(x, y) ∈ p.edges :=
     (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).2
-  have hx : x ∈ c.support := hcHam.mem_support x
-  have hy : y ∈ c.support := hcHam.mem_support y
-  let cX := c.rotate hx
-  have hcycleX : cX.IsCycle := hcycle.rotate hx
+  let cX := c.rotate (hcHam.mem_support x)
+  have hcycleX : cX.IsCycle := hcHam.isCycle.rotate (hcHam.mem_support x)
   have he_not_in_cX : s(x, y) ∉ cX.edges :=
-    fun h => he_not_in_cycle ((Walk.rotate_edges c hx).mem_iff.mp h)
+    fun h => he_not_in_cycle ((Walk.rotate_edges c (hcHam.mem_support x)).mem_iff.mp h)
   have hyX : y ∈ cX.support := by
     by_cases hxy : x = y
     · subst hxy
       exact Walk.start_mem_support _
-    · have htail := hcHam.isHamiltonian_tail
-      have hy_tail : y ∈ c.tail.support := htail.mem_support y
-      have hc_not_nil : ¬c.Nil := by
-        intro h
-        cases h
-        simp at hcycle
-      have : c.tail.support = c.support.tail := Walk.support_tail_of_not_nil c hc_not_nil
+    · have hy_tail : y ∈ c.tail.support :=
+        (hcHam.isHamiltonian_tail).mem_support y
+      have hc_not_nil : ¬ c.Nil :=
+        hcHam.isCycle.not_nil
+      have : c.tail.support = c.support.tail :=
+        Walk.support_tail_of_not_nil c hc_not_nil
       rw [this] at hy_tail
-      have hperm : cX.support.tail.Perm c.support.tail := (Walk.support_rotate c hx).perm
+      have hperm : cX.support.tail.Perm c.support.tail :=
+        (Walk.support_rotate c (hcHam.mem_support x)).perm
       have : y ∈ cX.support.tail := hperm.symm.mem_iff.mp hy_tail
       exact List.mem_of_mem_tail this
   let p := cX.takeUntil y hyX
