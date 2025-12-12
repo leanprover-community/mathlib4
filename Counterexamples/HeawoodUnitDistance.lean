@@ -149,16 +149,18 @@ theorem injective_udMap : udMap.Injective := by
   obtain ⟨lb, ub⟩ := root_bounds
   refine ⟨fun i hi ↦ ?_, ?_⟩
   · have half_neg : c / 2 < 0 := by linarith
-    fin_cases hi <;> simp [udMap, half_neg.trans_le (sq_nonneg c)]
-    nlinarith
-  rw [coe_insert, Set.injOn_insert (by decide)]; constructor; swap
-  · have ne1 : 1 / 2 < c ^ 2 - c / 2 + 1 := by nlinarith
-    simp_rw [Set.mem_image, not_exists, not_and, mem_coe]; intro i mi
-    rw [udMap, PiLp.ext_iff, not_forall]; use 1; fin_cases mi
-    all_goals
-      simp only [udMap, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
-      linarith
-  exact injOn_udMap_sextet
+    revert i
+    simp [s, udMap]
+    constructor <;> nlinarith
+  rw [coe_insert, Set.injOn_insert (by decide)]
+  refine ⟨injOn_udMap_sextet, ?_⟩
+  have ne1 : 1 / 2 < c ^ 2 - c / 2 + 1 := by nlinarith
+  simp_rw [Set.mem_image, not_exists, not_and, mem_coe]
+  intro i mi
+  rw [udMap, PiLp.ext_iff, not_forall]
+  use 1
+  revert i
+  simpa [udMap] using ne1.ne
 
 lemma dist_udMap_rev {i j : Fin 14} (h : dist (udMap i) (udMap j) = 1) :
     dist (udMap i.rev) (udMap j.rev) = 1 := by
