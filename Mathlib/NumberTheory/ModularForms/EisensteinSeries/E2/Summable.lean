@@ -69,7 +69,6 @@ lemma hasSum_e2Summand_symmetricIcc : HasSum (e2Summand · z)
   simpa [HasSum, -symmetricIcc_filter, symmetricIcc_eq_map_Icc_nat, Function.comp_def,
     G2_partial_sum_eq] using (aux_G2_tendsto z).const_add _
 
--- debatable if this is needed
 lemma summable_e2Summand_symmetricIcc : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ) :=
   (hasSum_e2Summand_symmetricIcc z).summable
 
@@ -84,17 +83,11 @@ lemma hasSum_e2Summand_symmetricIco : HasSum (e2Summand · z)
   apply (hasSum_e2Summand_symmetricIcc z).hasSum_symmetricIco_of_hasSum_symmetricIcc
   simpa using (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
 
--- again debatable if needed
 lemma summable_e2Summand_symmetricIco : Summable (e2Summand · z) (symmetricIco ℤ) :=
   (hasSum_e2Summand_symmetricIco z).summable
 
 lemma G2_eq_tsum_symmetricIco : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z := by
   rw [G2, tsum_symmetricIcc_eq_tsum_symmetricIco (summable_e2Summand_symmetricIcc z)]
   simpa using (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
-
-lemma tendsto_sum_Ico_e2Summand_atTop :
-    Tendsto (fun N : ℤ ↦ ∑ m ∈ Ico (-N) N, e2Summand m z) atTop (𝓝 (G2 z)) := by
-  simpa [G2_eq_tsum_symmetricIco, symmetricIco] using (summable_e2Summand_symmetricIco z).hasSum
-
 
 end EisensteinSeries

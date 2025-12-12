@@ -370,7 +370,7 @@ private lemma tsum_prod_G2Term_eq' (z : ℍ) : ∑' (m : Fin 2 → ℤ), (G2Term
   simp only [mul_inv_rev, Fin.isValue, ← (finTwoArrowEquiv _).symm.summable_iff] at this
   rw [Summable.tsum_comm', tsum_prod_G2Term_eq]
   · apply this.congr
-    grind [Fin.isValue, finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero,
+    grind [finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_inv_rev]
   · simpa [mul_inv_rev] using this.prod_factor
   · have H := (G2Term_add_delta_summable z)
