@@ -407,13 +407,13 @@ variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 
-open Lean Meta Mathlib Meta Positivity Qq in
-/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
-@[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
-  let (.app f a) ← whnfR e | throwError "not abv ·"
-  let pa' ← mkAppM ``abv_nonneg #[f, a]
-  pure (.nonnegative pa')
+-- open Lean Meta Mathlib Meta Positivity Qq in
+-- /-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+-- -- @[positivity _]
+-- meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+--   let (.app f a) ← whnfR e | throwError "not abv ·"
+--   let pa' ← mkAppM ``abv_nonneg #[f, a]
+--   pure (.nonnegative pa')
 
 lemma abv_eq_zero {x} : abv x = 0 ↔ x = 0 := abv_eq_zero'
 
