@@ -2,33 +2,29 @@ module
 
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
-public import Mathlib.Tactic.Linter.CommandStart
-public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
-public import Mathlib.Tactic.Linter.DirectoryDependency
-public import Mathlib.Tactic.Linter.DocPrime
-public import Mathlib.Tactic.Linter.DocString
-public import Mathlib.Tactic.Linter.EmptyLine
-public import Mathlib.Tactic.Linter.GlobalAttributeIn
-public import Mathlib.Tactic.Linter.HashCommandLinter
-public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.FlexibleLinter
+public import MathlibInit.Linter.CommandStart
+public import MathlibInit.Linter.DeprecatedSyntaxLinter
+public import MathlibInit.Linter.DirectoryDependency
+public import MathlibInit.Linter.DocPrime
+public import MathlibInit.Linter.DocString
+public import MathlibInit.Linter.EmptyLine
+public import MathlibInit.Linter.GlobalAttributeIn
+public import MathlibInit.Linter.HashCommandLinter
+public import MathlibInit.Linter.Header
+public import MathlibInit.Linter.FlexibleLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
-public import Mathlib.Tactic.Linter.Lint
-public import Mathlib.Tactic.Linter.Multigoal
-public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.PrivateModule
+public import MathlibInit.Linter.Lint
+public import MathlibInit.Linter.Multigoal
+public import MathlibInit.Linter.OldObtain
+public import MathlibInit.Linter.PrivateModule
 -- The following import contains the environment extension for the unused tactic linter.
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
-public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
-public import Mathlib.Tactic.Linter.Style
+public import MathlibInit.Linter.UnusedTacticExtension
+public import MathlibInit.Linter.UnusedTactic
+public import MathlibInit.Linter.UnusedInstancesInType
+public import MathlibInit.Linter.Style
 -- This import makes the `#min_imports` command available globally.
-public import Mathlib.Tactic.MinImports
-public import Mathlib.Tactic.TacticAnalysis.Declarations
--- This is a redundant import, but it is needed so that
--- the linter doesn't complain about `ParseCommand` not importing `Header`.
--- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
-public import Mathlib.Util.ParseCommand
+public import MathlibInit.MinImports
+public import MathlibInit.TacticAnalysis.Declarations
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
