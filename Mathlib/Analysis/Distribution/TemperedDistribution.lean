@@ -19,6 +19,7 @@ public import Mathlib.MeasureTheory.Function.Holder
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -85,7 +86,7 @@ variable [CompleteSpace F]
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
-/-- Create a tempered distribution from a L^p function.
+/-- Define a tempered distribution from a L^p function.
 
 This is a helper definition with unnecessary parameters. -/
 def toTemperedDistributionAux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fact (1 ≤ q))
@@ -93,7 +94,7 @@ def toTemperedDistributionAux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fac
     𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ <| (lsmul ℂ ℂ).flip.lpPairing μ p q f ∘L toLpCLM ℂ ℂ q μ
 
-/-- Create a tempered distribution from a L^p function. -/
+/-- Define a tempered distribution from a L^p function. -/
 def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
   toTemperedDistributionAux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff])
@@ -112,11 +113,6 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
 instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     CoeDep (Lp F p μ) f 𝓢'(E, F) where
   coe := toTemperedDistribution f
-
-@[simp]
-theorem coe_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) (g : 𝓢(E, ℂ)) :
-    (f : 𝓢'(E, F)) g = ∫ (x : E), g x • f x ∂μ :=
-  toTemperedDistribution_apply f g
 
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
