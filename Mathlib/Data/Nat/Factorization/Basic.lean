@@ -245,9 +245,7 @@ theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) 
       exact not_dvd_ordCompl hp n_zero
   · rintro (n_eq_zero | not_dvd)
     · simp [n_eq_zero]
-    · have : n.factorization p = 0 := Nat.factorization_eq_zero_of_not_dvd not_dvd
-      rw [this]
-      simp
+    · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
 
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
