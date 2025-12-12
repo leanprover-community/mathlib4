@@ -550,7 +550,6 @@ theorem TransGen.swap (h : TransGen r b a) : TransGen (swap r) a b := by
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
 
-@[grind =_]
 theorem transGen_swap : TransGen (swap r) a b ↔ TransGen r b a :=
   ⟨TransGen.swap, TransGen.swap⟩
 
@@ -628,7 +627,6 @@ theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b :
   | refl => rfl
   | tail _ hbc ih => exact ih.head hbc
 
-@[grind =_]
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap, ReflTransGen.swap⟩
 
