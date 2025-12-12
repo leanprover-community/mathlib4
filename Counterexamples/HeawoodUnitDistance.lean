@@ -44,14 +44,14 @@ instance : DecidableRel heawoodGraph.Adj :=
 lemma heawoodGraph_edgeFinset :
     heawoodGraph.edgeFinset = (univ.image fun i ↦ s(i, i + 1)) ∪
       (univ.filter (Even ·.1)).image fun i ↦ s(i, i + 5) := by
-  decide
+  decide +kernel
 
 lemma card_heawoodGraph_edgeFinset : #heawoodGraph.edgeFinset = 21 := by
   rw [heawoodGraph_edgeFinset]; decide
 
 lemma heawoodGraph_neighborFinset (i : Fin 14) :
     heawoodGraph.neighborFinset i = {i + 1, i - 1, if Even i.1 then i + 5 else i - 5} := by
-  revert i; decide
+  revert i; decide +kernel
 
 /-- The Heawood graph is 3-regular. -/
 lemma isRegularOfDegree_heawoodGraph : heawoodGraph.IsRegularOfDegree 3 := fun i ↦ by
@@ -117,10 +117,13 @@ lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14
     rw [mem_coe] at mi mj
     obtain ⟨ci, hci⟩ : ∃ ci, f ci = i := by fin_cases mi <;> decide
     obtain ⟨cj, hcj⟩ : ∃ cj, f cj = j := by fin_cases mj <;> decide
-    rw [← hci, ← hcj] at h; apply_fun (·.proj 0) at h; rwa [← hci, this.injective h]
+    rw [← hci, ← hcj] at h
+    apply_fun (·.proj 0) at h
+    rwa [← hci, this.injective h]
   rw [Fin.strictMono_iff_lt_succ]
   obtain ⟨lb, ub⟩ := root_bounds
-  intro k; fin_cases k
+  intro k
+  fin_cases k
   all_goals
     simp only [f, udMap, Fin.reduceFinMk, Fin.reduceSucc, Fin.reduceCastSucc, PiLp.proj_apply,
       Matrix.cons_val_zero]
@@ -129,8 +132,7 @@ lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14
 /-- `udMap` is injective and thus can be used in a unit-distance embedding. -/
 theorem injective_udMap : udMap.Injective := by
   let s : Finset (Fin 14) := {1, 0, 7, 10, 5, 2, 9}
-  have rev_compl (i) : i ∈ s ↔ i.rev ∉ s := by
-    fin_cases i <;> decide
+  have rev_compl (i) : i ∈ s ↔ i.rev ∉ s := by revert i; decide +kernel
   suffices (∀ i ∈ s, 0 < (udMap i).proj 1) ∧ Set.InjOn udMap s by
     obtain ⟨hpos, hinjOn⟩ := this
     have hneg (i) (ni : i ∉ s) : (udMap i).proj 1 < 0 := by
