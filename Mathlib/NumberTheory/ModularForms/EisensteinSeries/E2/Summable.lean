@@ -90,4 +90,47 @@ lemma G2_eq_tsum_symmetricIco : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z :
   rw [G2, tsum_symmetricIcc_eq_tsum_symmetricIco (summable_e2Summand_symmetricIcc z)]
   simpa using (tendsto_e2Summand_atTop_nhds_zero z).neg.comp tendsto_natCast_atTop_atTop
 
+section Auxiliary
+
+lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
+    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z + d)) atTop (𝓝 0) := by
+  apply Asymptotics.IsBigO.trans_tendsto ?_ tendsto_inv_atTop_nhds_zero_nat (F'' := ℝ)
+  have := (Asymptotics.isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b z)).2
+  simpa [← Nat.map_cast_int_atTop, Asymptotics.isBigO_map] using this
+
+lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
+    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z - d)) atTop (𝓝 0) := by
+  have := (tendsto_zero_inv_linear z (-b)).neg
+  simp only [Int.cast_neg, neg_mul, one_div, neg_zero, ← inv_neg] at *
+  exact this.congr (fun _ ↦ by ring)
+
+private lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
+    1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
+  rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
+  · simp only [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
+    ring
+  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by aesop)
+  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by aesop)
+
+lemma summable_one_div_linear_sub_one_div_linear (z : ℍ) (a b : ℤ) :
+    Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
+  have := Summable.mul_left (b - a : ℂ) (summable_linear_mul_linear (ne_zero z) a b)
+  rw [← Finset.summable_compl_iff (s := {0})] at *
+  apply this.congr
+  intro m
+  rw [linear_sub_linear_eq z a b m (by grind)]
+  simp
+
+lemma summable_one_div_linear_sub_one_div_linear_succ (z : ℍ) (a : ℤ) :
+    Summable fun b : ℤ ↦ 1 / ((a : ℂ) * z + b) - 1 / ((a : ℂ) * z + b + 1) := by
+  have := (summable_linear_add_mul_linear_add z a a)
+  rw [← Finset.summable_compl_iff (s := {0, -1})] at *
+  apply this.congr (fun b ↦ ?_)
+  have := linear_sub_linear_eq z b (b + 1) a (by grind)
+  simp only [Int.reduceNeg, add_assoc, mul_inv_rev, one_div, Int.cast_add, Int.cast_one,
+    add_sub_cancel_left, one_mul] at *
+  rw [this, mul_comm]
+
+end Auxiliary
+
 end EisensteinSeries

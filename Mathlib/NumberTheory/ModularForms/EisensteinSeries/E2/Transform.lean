@@ -40,7 +40,7 @@ open scoped Real Topology
 noncomputable section
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
-nicer indexing sets for our infinite sums. -/
+nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
 private def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
@@ -52,8 +52,10 @@ private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 namespace EisensteinSeries
 
 /-- This gives term gives and alternative infinte sum for G2 which is absolutely convergent. -/
-abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ := (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹
+abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
+    (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
 
+--Do we have this already? if not where should this go?
 /-- The map that swaps the two co-ordinates of a `Fin 2 → α` -/
 def swap {α : Type*} : (Fin 2 → α) → (Fin 2 → α) := fun x ↦ ![x 1, x 0]
 
@@ -71,19 +73,21 @@ def swap_equiv {α : Type*} : Equiv (Fin 2 → α) (Fin 2 → α) := Equiv.mk sw
 
 section AuxiliaryLemmas
 
+/- Acting by `S` (which sends `z` to `-z ⁻¹`) swaps the sums and pulls out a factor of
+`(z ^ 2)⁻¹`. -/
 private lemma aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     ((z : ℂ) ^ 2)⁻¹ * (∑ x ∈ Ico (-N : ℤ) N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + n) ^ 2)⁻¹) =
     ∑' (n : ℤ), ∑ x ∈ Ico (-N : ℤ) N, (((n : ℂ) * z + x) ^ 2)⁻¹ := by
   simp_rw [inv_neg, mul_neg]
   rw [Finset.mul_sum, Summable.tsum_finsetSum
-    (by apply fun i hi => linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega))]
+    (by apply fun (i : ℤ) hi => linear_left_summable (ne_zero z) i (k := 2) (by omega))]
   apply sum_congr rfl fun n hn ↦ ?_
   rw [← tsum_mul_left, ← tsum_comp_neg]
   apply tsum_congr fun d ↦ ?_
   field_simp [ne_zero z]
   grind
 
-private lemma G2_S_act (z : ℍ) :
+private lemma tendsto_double_sum_eq_S_act (z : ℍ) :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
     (𝓝 ((z.1 ^ 2)⁻¹ * G2 (S • z))) := by
   rw [G2_eq_tsum_symmetricIco, ← tsum_mul_left]
@@ -92,6 +96,15 @@ private lemma G2_S_act (z : ℍ) :
   apply this.congr (fun N ↦ ?_)
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk, ← mul_sum]
     using (aux_sum_Ico_S_indentity z N)
+
+private lemma tsumFilter_tsum_eq_S_act (z : ℍ) :
+    ∑'[symmetricIco ℤ] n : ℤ, (∑' m : ℤ, 1 / ((m : ℂ) * z + n) ^ 2) =
+    ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) := by
+  apply HasSum.tsum_eq
+  rw [hasSum_symmetricIco_int_iff]
+  apply (tendsto_double_sum_eq_S_act z).congr (fun x ↦ ?_)
+  rw [Summable.tsum_finsetSum]
+  exact fun i hi => by simpa using linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
 private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
     ∑ n ∈ Ico (-b : ℤ) b, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
@@ -106,27 +119,6 @@ private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
       Int.cast_natCast]
     ring
 
-lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
-    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z + d)) atTop (𝓝 0) := by
-  apply Asymptotics.IsBigO.trans_tendsto ?_ tendsto_inv_atTop_nhds_zero_nat (F'' := ℝ)
-  have := (Asymptotics.isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b z)).2
-  simpa [← Nat.map_cast_int_atTop, Asymptotics.isBigO_map] using this
-
-lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
-    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z - d)) atTop (𝓝 0) := by
-  have := (tendsto_zero_inv_linear z (-b)).neg
-  simp only [Int.cast_neg, neg_mul, one_div, neg_zero, ← inv_neg] at *
-  exact this.congr (fun _ ↦ by ring)
-
-private lemma G2_S_action' (z : ℍ) :
-    ∑'[symmetricIco ℤ] n : ℤ, (∑' m : ℤ, 1 / ((m : ℂ) * z + n) ^ 2) =
-    (((z : ℂ) ^ 2)⁻¹ * G2 (S • z)) := by
-  apply HasSum.tsum_eq
-  rw [hasSum_symmetricIco_int_iff]
-  apply (G2_S_act z).congr (fun x ↦ ?_)
-  rw [Summable.tsum_finsetSum]
-  exact fun i hi => by simpa using linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
-
 private lemma tsum_symmetricIco_eq_zero (z : ℍ) (m : ℤ) :
     ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   apply HasSum.tsum_eq
@@ -136,33 +128,7 @@ private lemma tsum_symmetricIco_eq_zero (z : ℍ) (m : ℤ) :
     rw [telescope_aux z m N]
   simpa using Filter.Tendsto.sub (tendsto_zero_inv_linear_sub z m) (tendsto_zero_inv_linear z m)
 
-private lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
-    1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
-  rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
-  · simp only [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
-    ring
-  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by aesop)
-  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by aesop)
-
-lemma summable_one_div_linear_sub_one_div_linear (z : ℍ) (a b : ℤ) :
-    Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
-  have := Summable.mul_left (b - a : ℂ) (summable_linear_mul_linear (ne_zero z) a b)
-  rw [← Finset.summable_compl_iff (s := {0})] at *
-  apply this.congr
-  intro m
-  rw [linear_sub_linear_eq z a b m (by grind)]
-  simp
-
-private lemma summable_one_div_linear_sub_one_div_linear_succ (z : ℍ) (a : ℤ) :
-    Summable fun b : ℤ ↦ 1 / ((a : ℂ) * z + b) - 1 / ((a : ℂ) * z + b + 1) := by
-  have := (summable_linear_add_mul_linear_add z a a)
-  rw [← Finset.summable_compl_iff (s := {0, -1})] at *
-  apply this.congr (fun b ↦ ?_)
-  have := linear_sub_linear_eq z b (b + 1) a (by grind)
-  simp only [Int.reduceNeg, add_assoc, mul_inv_rev, one_div, Int.cast_add, Int.cast_one,
-    add_sub_cancel_left, one_mul] at *
-  rw [this, mul_comm]
-
+/- We split the sum over `ℤ` into a sum over `ℕ+` but of four terms.-/
 private lemma aux_tsum_identity_1 (z : ℍ) (d : ℕ+) :
     ∑' (m : ℤ), (1 / ((m : ℂ) * z - d) - 1 / (m * z + d)) = -(2 / d) +
     ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - 1 / ((m : ℂ) * z + d) -
@@ -182,6 +148,7 @@ private lemma aux_tsum_identity_1 (z : ℍ) (d : ℕ+) :
   · apply (summable_one_div_linear_sub_one_div_linear z (-d) d).congr
     grind [Int.cast_neg, Int.cast_natCast, one_div, sub_left_inj, inv_inj]
 
+/- This sum of four terms can now be combined into a sum where `z` has changes for `-1 / z`.-/
 private lemma aux_tsum_identity_2 (z : ℍ) (d : ℕ+) :
     ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - (1 / (m * z + d)) -
     1 / (-m * z + d)) = 2 / z * ∑' m : ℕ+, (1 / (-(d : ℂ) / z - m) + 1 / (-d / z + m)) := by
@@ -203,12 +170,11 @@ private lemma aux_tendsto_tsum_cexp_pnat (z : ℍ) :
     Tendsto (fun N : ℕ+ ↦ ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
   have := tendsto_zero_geometric_tsum_pnat (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨-1 / z,
     by simpa using (pnat_div_upperHalfPlane_im_pos 1 z)⟩)
-  simp only [neg_div, one_div, coe_mk_subtype, mul_neg, ← exp_nsmul, smul_neg, nsmul_eq_mul,
-    Nat.cast_mul] at *
   apply this.congr fun n ↦ ?_
-  congr
-  grind [one_div, coe_mk_subtype, mul_neg, smul_neg, nsmul_eq_mul, Nat.cast_mul, neg_inj]
+  simp [← exp_nsmul]
+  grind
 
+/- Now this sum of terms with `-1 / z` tendsto `-2 * π * I / z` which is exactly `D2_S`.-/
 private lemma aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ ↦ 2 / z *
     ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m))) atTop (𝓝 (-2 * π * I / z)) := by
   suffices Tendsto (fun n : ℕ+ ↦ (2 / (z : ℂ) * ∑' (m : ℕ+),
@@ -258,7 +224,7 @@ private lemma tendsto_tsum_one_div_linear_sub_succ_eq (z : ℍ) :
     exact tendsto_comp_val_Ioi_atTop.mpr (aux_tendsto_tsum z)
 
 --these are the two key lemmas
-private lemma tsumFilter_tsum_eq (z : ℍ) :
+private lemma tsumFilter_tsum_sub_eq (z : ℍ) :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
@@ -269,7 +235,7 @@ private lemma tsumFilter_tsum_eq (z : ℍ) :
     simpa using H.congr (by simp)
   exact tendsto_comp_val_Ioi_atTop.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
 
-private lemma tsum_tsumFilter_eq (z : ℍ) :
+private lemma tsum_tsumFilter_sub_eq (z : ℍ) :
     ∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   convert tsum_zero
   exact tsum_symmetricIco_eq_zero z _
@@ -278,9 +244,9 @@ end AuxiliaryLemmas
 
 section transform
 
-lemma G2Term_add_delta_summable (z : ℍ) :
-    Summable fun (m : Fin 2 → ℤ) ↦ (G2Term z m + δ m):= by
-  have H :  Summable (fun m ↦ (G2Term z m)) := by
+lemma G2Term_summable (z : ℍ) : Summable fun m ↦ G2Term z m := by
+  have H : Summable (fun m ↦ (G2Term z m) - δ m) := by
+    simp_rw [G2Term, add_sub_cancel_right]
     apply summable_inv_of_isBigO_rpow_norm_inv (a := 3) (by linarith)
     simpa [pow_three, pow_two, ← mul_assoc] using ((isBigO_linear_add_const_vec z 0 1).mul
       (isBigO_linear_add_const_vec z 0 0)).mul (isBigO_linear_add_const_vec z 0 0)
@@ -314,9 +280,9 @@ private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ 
       grind
 
 /-- This shows `G2` can be defined as a certain absolutely convergent double sum. -/
-lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n]) := by
-  set t := ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n])
-  rw [G2, show t = t + 0 by ring, ← tsum_tsumFilter_eq z, ← Summable.tsum_add]
+lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := by
+  set t := ∑' m, ∑' n, (G2Term z ![m, n])
+  rw [G2, show t = t + 0 by ring, ← tsum_tsumFilter_sub_eq z, ← Summable.tsum_add]
   · rw [← tsum_eq_of_summable_unconditional (L := symmetricIcc ℤ)]
     · congr
       ext a
@@ -328,7 +294,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + �
           Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, G2Term, mul_inv_rev, one_div,
           aux_identity z a b, inv_inj]
         rfl
-      · have := G2Term_add_delta_summable z
+      · have := G2Term_summable z
         simp only [G2Term, Fin.isValue, mul_inv_rev, ← (finTwoArrowEquiv _).symm.summable_iff,
           finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
           Matrix.cons_val_fin_one] at *
@@ -336,14 +302,14 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + �
     · conv =>
         enter [1, N]
         rw [tsum_symmetricIco_eq_zero z N, add_zero]
-      exact ((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_add_delta_summable z)).prod
-  · apply (((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_add_delta_summable z)).prod).congr
+      exact ((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)).prod
+  · apply (((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)).prod).congr
     simp
   · exact summable_zero.congr (fun b ↦ (by simp [← tsum_symmetricIco_eq_zero z b]))
 
 private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
-    ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
-  rw [← tsumFilter_tsum_eq z, ← (G2_S_action' z),
+    ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
+  rw [← tsumFilter_tsum_sub_eq z, ← (tsumFilter_tsum_eq_S_act z),
     ← tsum_eq_of_summable_unconditional (L := symmetricIco ℤ), ← Summable.tsum_sub]
   · apply tsum_congr (fun N ↦ ?_)
     rw [← Summable.tsum_sub]
@@ -356,41 +322,41 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
     · simpa [add_assoc] using summable_one_div_linear_sub_one_div_linear z N (N + 1)
   · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (S • z))
     rw [hasSum_symmetricIco_int_iff]
-    apply (G2_S_act z).congr (fun x ↦ ?_)
+    apply (tendsto_double_sum_eq_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
     simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
   · apply HasSum.summable (a := -2 * π * I / z)
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
-  · have := G2Term_add_delta_summable z
+  · have := G2Term_summable z
     rw [← swap_equiv.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at this
-    simpa using Summable.prod this
+    exact this.prod
 
-private lemma tsum_prod_G2Term_eq (z : ℍ) : ∑' (m : Fin 2 → ℤ), (G2Term z m + δ m) =
-    ∑' m : ℤ, ∑' n : ℤ, (G2Term z ![m, n] + (δ ![m, n])) := by
+private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
+    ∑' m : ℤ, ∑' n : ℤ, G2Term z ![m, n] := by
   rw [ ← (finTwoArrowEquiv _).symm.tsum_eq]
-  have := G2Term_add_delta_summable z
-  simp only [Fin.isValue, finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.cons_val_fin_one, mul_inv_rev] at *
+  have := G2Term_summable z
+  simp only [finTwoArrowEquiv_symm_apply] at *
   rw [← (finTwoArrowEquiv _).symm.summable_iff] at this
   exact Summable.tsum_prod' this (this.prod_factor)
 
-private lemma tsum_prod_G2Term_eq' (z : ℍ) : ∑' (m : Fin 2 → ℤ), (G2Term z m + δ m) =
-    ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
-  have := (G2Term_add_delta_summable z)
-  simp only [mul_inv_rev, Fin.isValue, ← (finTwoArrowEquiv _).symm.summable_iff] at this
-  rw [Summable.tsum_comm', tsum_prod_G2Term_eq]
+private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
+    ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
+  have := G2Term_summable z
+  simp only [← (finTwoArrowEquiv _).symm.summable_iff, finTwoArrowEquiv_symm_apply] at this
+  rw [Summable.tsum_comm', tsum_G2Term_eq_tsum]
   · apply this.congr
     grind [finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_inv_rev]
   · simpa [mul_inv_rev] using this.prod_factor
-  · have H := (G2Term_add_delta_summable z)
+  · have H := (G2Term_summable z)
     rw [← swap_equiv.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at H
     simpa using H.prod_factor
 
 /-- This is the key identity for how `G2` transforms under the slash action by `S`. -/
 lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z := by
-  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z , ← tsum_prod_G2Term_eq', tsum_prod_G2Term_eq]
+  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z , ← tsum_G2Term_eq_tsum',
+  tsum_G2Term_eq_tsum]
 
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
