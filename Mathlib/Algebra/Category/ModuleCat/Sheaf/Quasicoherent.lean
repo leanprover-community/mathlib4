@@ -127,32 +127,25 @@ variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : S
 
 variable {M : SheafOfModules.{u'} R} (P : Presentation M)
   (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-  (hf' : F.obj (unit R) ≅ unit S) (I : Type u')
-
-/-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
-If `F` preserves colimits and `F.obj (unit R) ≅ unit S`, then `F` preserves free sheaves of
-modules. -/
-def map_free : F.obj (free I) ≅ free (R := S) I :=
-  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
-    (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ hf').symm
+  (η : F.obj (unit R) ≅ unit S) (I : Type u')
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 @[simp]
 def Presentation.map_relations : free P.relations.I (R := S) ⟶ free P.generators.I :=
-  (map_free F hf' P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
-    F.map (kernel.ι _) ≫ (map_free F hf' P.generators.I).hom
+  (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
 @[simp]
 def Presentation.map_generators : free P.generators.I ⟶ F.obj M :=
-  (map_free F hf' P.generators.I).inv ≫ F.map (P.generators.π)
+  (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
 
 theorem Presentation.map_relations_generators :
-    P.map_relations F hf' ≫ P.map_generators F hf' = 0 := by
+    P.map_relations F η ≫ P.map_generators F η = 0 := by
   simp only [map_relations, map_generators, Category.assoc, Iso.hom_inv_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
@@ -161,16 +154,16 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 `Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
-  presentationOfIsCokernelFree (P.map_relations F hf') (P.map_generators F hf')
-    (P.map_relations_generators F hf') <| by
+  presentationOfIsCokernelFree (P.map_relations F η) (P.map_generators F η)
+    (P.map_relations_generators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitOfPreserves F P.isColimit)
     · exact (NatIso.ofComponents
-        (by rintro (_ | _); exacts [map_free F hf' _, map_free F hf' _])
+        (by rintro (_ | _); exacts [mapFree F η _, mapFree F η _])
         (by rintro _ _ (_ | _ | _); all_goals cat_disch))
     · exact (Cocones.ext (Iso.refl _) <| by rintro (_ | _) <;> simp [← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F hf').generators.π = (map_free F hf' _).inv ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end
