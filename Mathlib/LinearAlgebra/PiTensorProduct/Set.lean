@@ -75,15 +75,15 @@ theorem univEquiv_tprod (f : (i : ι) → s i) : univEquiv (⨂ₜ[R] i, f i) = 
 
 @[simp]
 theorem univEquiv_symm_tprod (f : (i : ι) → s i) :
-    univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
+  univEquiv.symm (⨂ₜ[R] i : ↥univ, f i) = (⨂ₜ[R] i, f i) := by simp [LinearEquiv.symm_apply_eq]
 
 /-- Tensors indexed by a singleton set `{i₀}` are equivalent to vectors in `s i₀`. -/
 def singletonSetEquiv (i₀ : ι) : (⨂[R] i : ({i₀} : Set ι), s i) ≃ₗ[R] s i₀ :=
-  subsingletonEquivDep (⟨i₀, by simp⟩ : ({i₀} : Set ι))
+  subsingletonEquiv (⟨i₀, by simp⟩ : ({i₀} : Set ι))
 
 @[simp]
 theorem singletonEquiv_tprod (i₀ : ι) (f : (i : ({i₀} : Set ι)) → s i) :
-    singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
+  singletonSetEquiv i₀ (⨂ₜ[R] i, f i) = f ⟨i₀, by simp⟩ := by simp [singletonSetEquiv]
 
 @[simp]
 theorem singletonEquiv_symm_tprod (i₀ : ι) (x : s i₀) :

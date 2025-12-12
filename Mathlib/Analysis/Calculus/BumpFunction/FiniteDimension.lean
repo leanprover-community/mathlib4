@@ -142,7 +142,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
       simp only [Finset.mem_range]
-      omega
+      lia
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
