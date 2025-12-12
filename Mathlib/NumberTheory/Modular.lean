@@ -6,7 +6,7 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -326,7 +326,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; omega
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; lia
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use g 0 1
     suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
@@ -340,7 +340,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; omega
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; lia
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
   simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
@@ -451,7 +451,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
-    replace this : c' ^ 2 ≤ 1 ^ 2 := by omega
+    replace this : c' ^ 2 ≤ 1 ^ 2 := by lia
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
