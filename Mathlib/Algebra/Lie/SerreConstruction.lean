@@ -130,24 +130,19 @@ deriving LieRing, Inhabited, LieAlgebra R
 namespace LieAlgebra
 
 /-- The exceptional split Lie algebra of type e₆. -/
-abbrev e₆ :=
-  CartanMatrix.E₆.ToLieAlgebra R
+abbrev e₆ := Matrix.ToLieAlgebra R CartanMatrix.E₆
 
 /-- The exceptional split Lie algebra of type e₇. -/
-abbrev e₇ :=
-  CartanMatrix.E₇.ToLieAlgebra R
+abbrev e₇ := Matrix.ToLieAlgebra R CartanMatrix.E₇
 
 /-- The exceptional split Lie algebra of type e₈. -/
-abbrev e₈ :=
-  CartanMatrix.E₈.ToLieAlgebra R
+abbrev e₈ := Matrix.ToLieAlgebra R CartanMatrix.E₈
 
 /-- The exceptional split Lie algebra of type f₄. -/
-abbrev f₄ :=
-  CartanMatrix.F₄.ToLieAlgebra R
+abbrev f₄ := Matrix.ToLieAlgebra R CartanMatrix.F₄
 
 /-- The exceptional split Lie algebra of type g₂. -/
-abbrev g₂ :=
-  CartanMatrix.G₂.ToLieAlgebra R
+abbrev g₂ := Matrix.ToLieAlgebra R CartanMatrix.G₂
 
 end LieAlgebra
 
@@ -158,19 +153,15 @@ namespace CartanMatrix
 variable (R : Type*) [CommRing R]
 
 /-- The Lie algebra of type Aₙ₋₁, isomorphic to sl(n). -/
-noncomputable abbrev aₙ (n : ℕ) [NeZero n] :=
-  Matrix.ToLieAlgebra R (CartanMatrix.A n)
+noncomputable abbrev aₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (A n)
 
 /-- The Lie algebra of type Bₙ, isomorphic to so(2n+1). -/
-noncomputable abbrev bₙ (n : ℕ) [NeZero n] :=
-  Matrix.ToLieAlgebra R (CartanMatrix.B n)
+noncomputable abbrev bₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (B n)
 
 /-- The Lie algebra of type Cₙ, isomorphic to sp(2n). -/
-noncomputable abbrev cₙ (n : ℕ) [NeZero n] :=
-  Matrix.ToLieAlgebra R (CartanMatrix.C n)
+noncomputable abbrev cₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (C n)
 
 /-- The Lie algebra of type Dₙ, isomorphic to so(2n). Requires n ≥ 4 for non-degenerate behavior. -/
-noncomputable abbrev dₙ (n : ℕ) [NeZero n] :=
-  Matrix.ToLieAlgebra R (CartanMatrix.D n)
+noncomputable abbrev dₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (D n)
 
 end CartanMatrix
