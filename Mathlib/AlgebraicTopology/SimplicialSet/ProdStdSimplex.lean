@@ -80,9 +80,7 @@ def isoNerve : Δ[p] ⊗ Δ[q] ≅ nerve (ULift.{u} (Fin (p + 1) × Fin (q + 1))
     induction d using SimplexCategory.rec with | _ d
     exact objEquiv.trans
       { toFun f := (ULift.orderIso.symm.monotone.comp f.monotone).functor
-        invFun s := ULift.orderIso.toOrderEmbedding.toOrderHom.comp ⟨_, s.monotone⟩
-        left_inv _ := rfl
-        right_inv _ := rfl }))
+        invFun s := ULift.orderIso.toOrderEmbedding.toOrderHom.comp ⟨_, s.monotone⟩ }))
 
 lemma nonDegenerate_iff_injective_objEquiv {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
     z ∈ (Δ[p] ⊗ Δ[q]).nonDegenerate n ↔ Function.Injective (objEquiv z) := by
