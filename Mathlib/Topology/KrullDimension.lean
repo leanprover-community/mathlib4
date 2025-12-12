@@ -67,8 +67,8 @@ theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Se
   IsInducing.topologicalKrullDim_le IsInducing.subtypeVal
 
 lemma DiscreteTopology.singleton_of_isIrreducible
-{X : Type*} {S : Set X} [TopologicalSpace X] [DiscreteTopology X] (h : IsIrreducible S)
-(s : X) (hs : s ∈ S) :
+    {X : Type*} {S : Set X} [TopologicalSpace X] [DiscreteTopology X] (h : IsIrreducible S)
+    (s : X) (hs : s ∈ S) :
     S = {s} := by
   ext x
   constructor

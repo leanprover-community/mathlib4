@@ -80,8 +80,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro x
-  have : x ∈ (⊤ : X.Opens) := trivial
-  obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
+  obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset (TopologicalSpace.Opens.mem_top x)
   have : IsAffine W := hW1
   have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
   have : IsOpen ({⟨x, hW2⟩} : Set W) := discreteTopology_iff_forall_isOpen.mp
