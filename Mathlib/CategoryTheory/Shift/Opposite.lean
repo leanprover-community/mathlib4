@@ -62,7 +62,7 @@ namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
-noncomputable def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
+def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
   add a b := (NatIso.op (shiftFunctorAdd C a b)).symm
@@ -83,7 +83,7 @@ def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 
-noncomputable instance : HasShift (OppositeShift C A) A :=
+instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
@@ -165,7 +165,7 @@ namespace Functor
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-noncomputable instance commShiftOp [CommShift F A] :
+instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   commShiftIso a := (NatIso.op (F.commShiftIso a)).symm
   commShiftIso_zero := by
@@ -191,7 +191,7 @@ Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps -isSimp]
-noncomputable def commShiftUnop
+def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   commShiftIso_zero := by

@@ -63,6 +63,9 @@ see `IsAlgClosed.splits_domain`.
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
 
+@[deprecated (since := "2025-12-09")]
+alias IsAlgClosed.factors := IsAlgClosed.splits
+
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
