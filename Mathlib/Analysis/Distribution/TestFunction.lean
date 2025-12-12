@@ -380,14 +380,11 @@ end ToBoundedContinuousFunctionCLM
 section postcomp
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 F']
-  [LinearMap.CompatibleSMul F F' ℝ 𝕜]
 
--- Note: generalizing this to a semilinear setting would require a semilinear version of
--- `CompatibleSMul`.
+-- Note: generalizing this to a semilinear setting would require a typeclass-way of saying that
+-- the `RingHom` is `ℝ`-linear.
 /-- Given `T : F →L[𝕜] F'`, `postcompCLM T` is the continuous `𝕜`-linear-map sending
-`f : 𝓓^{n}(Ω, F)` to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`.
-
-This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
+`f : 𝓓^{n}(Ω, F)` to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`. -/
 noncomputable def postcompCLM (T : F →L[𝕜] F') :
     𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F') :=
   letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{n}(Ω, F') :=
