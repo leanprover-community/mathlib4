@@ -237,7 +237,7 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
       m ⊗ₜ[R] (Finsupp.single i 1) := by
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
 
-theorem finsuppScalarRight_smul' (s : S) (t) :
+theorem finsuppScalarRight_smul (s : S) (t) :
     finsuppScalarRight R M ι (s • t) = s • finsuppScalarRight R M ι t := by
   induction t using TensorProduct.induction_on with
   | zero => simp

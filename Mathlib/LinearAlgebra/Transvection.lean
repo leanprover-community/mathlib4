@@ -80,29 +80,20 @@ theorem eq_id_of_finrank_le_one
     {f : Dual R V} {v : V} (hfv : f v = 0) (h1 : finrank R V ≤ 1) :
     transvection f v = LinearMap.id := by
   let b := finBasis R V
-  rw [Nat.le_one_iff_eq_zero_or_eq_one] at h1
-  rcases h1 with h0 | h1
-  · suffices v = 0 by simp [this]
-    rw [b.ext_elem_iff]
-    intro i; exfalso; simpa [h0] using i.prop
+  rcases (by lia : finrank R V = 0 ∨ finrank R V = 1) with h0 | h1
+  · have : Subsingleton V := (finrank_eq_zero_iff_of_free R V).mp h0
+    simp [Subsingleton.eq_zero v]
   · ext x
     suffices f x • v = 0 by
       simp [apply, this]
     let i : Fin (finrank R V) := ⟨0, by simp [h1]⟩
     suffices ∀ x, x = b.repr x i • (b i) by
-      rw [this x, this v]
-      rw [this v] at hfv
-      rw [map_smul, smul_eq_mul, mul_comm] at hfv
-      simp only [map_smul, smul_eq_mul, ← mul_smul]
-      rw [mul_assoc, hfv, mul_zero, zero_smul]
+      rw [this v, map_smul, smul_eq_mul, mul_comm] at hfv
+      rw [this x, this v, map_smul, smul_eq_mul, ← mul_smul, mul_assoc, hfv, mul_zero, zero_smul]
     intro x
     have : x = ∑ i, b.repr x i • b i := (Basis.sum_equivFun b x).symm
     rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i)] at this
-    intro j _ hj
-    exfalso
-    apply hj
-    rw [Fin.eq_mk_iff_val_eq]
-    simpa [h1, Nat.lt_one_iff] using j.prop
+    grind
 
 theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
     (f : Dual R V) (v : V) (e : V ≃ₗ[R] W) :
