@@ -177,7 +177,7 @@ def universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
     refine (mapEquivMonic R S n).eq_symm_apply.mpr <| Subtype.ext ?_
     simp only [universalFactorizationMap, coe_mapEquivMonic_comp, Equiv.apply_symm_apply,
       Polynomial.map_mul]
-    simp [← coe_mapEquivMonic_comp, ← q.2]⟩
+    simp [-AlgHom.toRingHom_eq_coe, ← coe_mapEquivMonic_comp, ← q.2]⟩
   left_inv f := by ext <;> simp
   right_inv q := by ext <;> simp
 
@@ -447,7 +447,8 @@ def UniversalFactorizationRing.homEquiv :
     (𝓡 →ₐ[R] S) ≃ { q : MonicDegreeEq S m × MonicDegreeEq S k //
       q.1.1 * q.2.1 = p.1.map (algebraMap R S) } where
   toFun f := ⟨((factor₁ m k hn p).map f, (factor₂ m k hn p).map f), by
-    simp [← Polynomial.map_mul, factor₁_mul_factor₂ m k hn p, Polynomial.map_map]⟩
+    simp [-AlgHom.toRingHom_eq_coe, ← Polynomial.map_mul, factor₁_mul_factor₂ m k hn p,
+      Polynomial.map_map]⟩
   invFun q :=
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
@@ -584,7 +585,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     letI q := UniversalFactorizationRing.homEquiv S m k hn p (f.comp (IsScalarTower.toAlgHom _ _ _))
     ⟨q.1, q.2, by
       convert (isCoprime_factor₁_factor₂ m k hn p).map (Polynomial.mapRingHom f.toRingHom) <;>
-        simp [q, UniversalFactorizationRing.homEquiv,
+        simp [-AlgHom.toRingHom_eq_coe, q, UniversalFactorizationRing.homEquiv,
           AlgHom.comp_toRingHom, ← Polynomial.map_map] <;> rfl⟩
   invFun q := by
     letI f := (UniversalFactorizationRing.homEquiv S m k hn p).symm ⟨q.1, q.2.1⟩

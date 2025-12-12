@@ -59,10 +59,10 @@ abbrev T :=
 
 /-- The map `R[X₁, ..., Xₙ] → S` factors via `T`, because the `bᵢ` are in `I`. -/
 def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
-  simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
+  simp_rw [← AlgHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
   intro i
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
-    SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
+    SetLike.mem_coe, AlgHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
 
 instance : Algebra D.T S := D.hom.toAlgebra
 instance [Nontrivial S] : Nontrivial D.T := RingHom.domain_nontrivial (algebraMap D.T S)

@@ -93,7 +93,7 @@ lemma Cotangent.exact :
     rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
       _ (toAlgHom_ofComp_surjective Q P)] at hx
     obtain ⟨y, hy, e⟩ := hx
-    rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
+    rw [eq_comm, ← sub_eq_zero, ← map_sub, ← AlgHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
@@ -112,7 +112,7 @@ lemma Cotangent.exact :
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
-    · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
+    · simp only [ker_eq_ker_aeval_val, AlgHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
       rfl

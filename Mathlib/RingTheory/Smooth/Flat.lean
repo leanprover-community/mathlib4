@@ -38,7 +38,7 @@ variable {R A S : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing S] [A
 lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf : Function.Surjective f)
     [Module.Flat R S] [IsNoetherianRing S] [FormallySmooth R A] :
     Module.Flat R A := by
-  have : Module.Flat R (AdicCompletion (RingHom.ker f) S) := .trans _ S _
+  have : Module.Flat R (AdicCompletion f.ker S) := .trans _ S _
   obtain ⟨g, hg⟩ := exists_kerProj_comp_eq_id f hf
   exact .of_retract g.toLinearMap
     (AdicCompletion.kerProj hf).toLinearMap (LinearMap.ext fun x ↦ congr($hg x))
