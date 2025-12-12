@@ -18,6 +18,8 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
 
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 open scoped nonZeroDivisors TensorProduct
