@@ -9,7 +9,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.UrysohnsLemma
 
 /-!
-# Integrals of continuous functions wrt regular measures
+# Integrals of continuous functions with respect to regular measures
 
 When a measure is regular, one may express the measure of compact sets and of open sets
 in terms of the integral of continuous functions equal to 1 on the compact set, or to 0 outside
