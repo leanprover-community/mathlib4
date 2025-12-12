@@ -141,7 +141,7 @@ instance : Nonempty (Subfunctor F) :=
 
 /-- The subfunctor as a functor. -/
 @[simps!]
-def toPresheaf : C ⥤ Type w where
+def toFunctor : C ⥤ Type w where
   obj U := G.obj U
   map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
   map_id X := by
@@ -153,12 +153,12 @@ def toPresheaf : C ⥤ Type w where
     dsimp
     simp only [FunctorToTypes.map_comp_apply]
 
-instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
+instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val
 
 /-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
-def ι : G.toPresheaf ⟶ F where app _ x := x
+def ι : G.toFunctor ⟶ F where app _ x := x
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
@@ -167,7 +167,7 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
-def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor where
   app U x := ⟨x, h U x.prop⟩
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
@@ -200,7 +200,7 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
-theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : C} (i : U ⟶ V)
+theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
@@ -215,12 +215,13 @@ theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : C} (i : U ⟶ V)
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.min_obj := min_obj
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.max_min := max_min
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.iSup_min := iSup_min
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toPresheaf
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toFunctor := toFunctor
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.ι := ι
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe := homOfLe
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe_ι := homOfLe_ι
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_top_iff_isIso := eq_top_iff_isIso
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
 
 end Subfunctor
 

@@ -53,7 +53,7 @@ variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
 @[simps!]
-def lift : F' ⟶ G.toPresheaf where
+def lift : F' ⟶ G.toFunctor where
   app U x := ⟨f.app U x, hf U (by simp)⟩
   naturality _ _ g := by
     ext x
@@ -71,7 +71,7 @@ variable (p : F' ⟶ F)
 /-- Given a morphism `p : F' ⟶ F` of type-valued functors, this is the morphism
 from `F'` to its range. -/
 def toRange :
-    F' ⟶ (range p).toPresheaf :=
+    F' ⟶ (range p).toFunctor :=
   lift p (by rfl)
 
 @[reassoc (attr := simp)]
@@ -165,7 +165,7 @@ lemma image_le_iff (G : Subfunctor F) (f : F ⟶ F') (G' : Subfunctor F') :
 /-- Given a morphism `p : F' ⟶ F` of type-valued functors and `G : Subfunctor F`,
 this is the morphism from the preimage of `G` by `p` to `G`. -/
 def fromPreimage (G : Subfunctor F) (p : F' ⟶ F) :
-    (G.preimage p).toPresheaf ⟶ G.toPresheaf :=
+    (G.preimage p).toFunctor ⟶ G.toFunctor :=
   lift ((G.preimage p).ι ≫ p) (by
     rw [range_comp, range_ι, image_le_iff])
 
