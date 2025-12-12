@@ -206,7 +206,8 @@ def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
 
 @[simp]
 theorem ofArchimedean_apply (f : R →+*o K) (r : R) :
-    ofArchimedean f r = mk ⟨f r, Finite.mem_map_of_archimedean f r⟩ := rfl
+    ofArchimedean f r = mk ⟨f r, Finite.mem_map_of_archimedean f r⟩ :=
+  rfl
 
 theorem ofArchimedean_injective (f : R →+*o K) : Function.Injective (ofArchimedean f) := by
   rw [injective_iff_map_eq_zero]
@@ -214,7 +215,6 @@ theorem ofArchimedean_injective (f : R →+*o K) : Function.Injective (ofArchime
   contrapose! hr
   rw [ofArchimedean_apply, mk_ne_zero, mk_map_of_archimedean' f hr]
 
-@[simp]
 theorem ofArchimedean_inj (f : R →+*o K) {x y : R} :
     ofArchimedean f x = ofArchimedean f y ↔ x = y :=
   (ofArchimedean_injective f).eq_iff
