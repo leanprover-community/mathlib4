@@ -880,6 +880,43 @@ theorem transvectionDegree_of_not_isExceptional
   · exact transvectionDegree_le_of_reduce_eq_one e h
   · exact transvectionDegree_of_reduce_ne_smul_id e (he h)
 
+example (e : SpecialLinearGroup K V) (he : IsExceptional e) :
+    transvectionDegree e ≤ finrank K (V ⧸ e.fixedSubmodule) + 1 := by
+  have : ∃ v : V, v ∉ e.fixedSubmodule := by
+    by_contra! h
+    suffices Subsingleton (SpecialLinearGroup K (V ⧸ e.fixedSubmodule)) by
+      exact he.1 (Subsingleton.allEq _ _)
+    suffices Subsingleton (V ⧸ e.fixedSubmodule) by infer_instance
+    simpa only [Submodule.Quotient.subsingleton_iff, eq_top_iff']
+  obtain ⟨v, hv⟩ := this
+  have : e.fixedSubmodule ⊔ K ∙ v < ⊤ := sorry
+  obtain ⟨f, hf, hfker⟩ := Submodule.exists_dual_map_eq_bot_of_lt_top this inferInstance
+  have hfv : f v = 0 := by
+    rw [← Submodule.mem_bot K, ← hfker]
+    apply mem_map_of_mem (mem_sup_right _)
+    simp
+  set e' := (transvection hfv)⁻¹ * e with e'_def
+  have he' : e = (transvection hfv) * e' := by simp [e']
+  have he'_fixed : e'.fixedSubmodule = e.fixedSubmodule := by
+    sorry
+  apply le_trans (transvectionDegree_le_of_transvection_mul _ (transvection hfv)⁻¹ _)
+  · rw [← e'_def, ← he'_fixed]
+    suffices e'.transvectionDegree ≤ finrank K (V ⧸ e'.fixedSubmodule) by
+      exact add_le_add_left this 1
+    · apply le_of_eq (transvectionDegree_of_not_isExceptional _)
+      rintro ⟨he'1, ⟨b, he'b⟩⟩
+      rw [e'.reduce_eq_smul_id] at he'b
+      simp only [ne_eq, e'.reduce_eq_one] at he'1
+      apply he'1
+      obtain ⟨b, heb⟩ := he.2
+      rw [e.reduce_eq_smul_id] at heb
+      intro x
+      sorry
+  · rw [inv_mem_transvections]
+    exact mem_transvections hfv
+
+
+
 example (e : SpecialLinearGroup K V) (a : K) (he1 : e ≠ 1)
     (he : e = a • LinearMap.id (R := K) (M := V)) :
     e ∉ (transvections K V) ^ ((finrank K V)) := by
