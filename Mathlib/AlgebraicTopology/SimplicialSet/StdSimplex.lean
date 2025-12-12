@@ -209,6 +209,17 @@ end Subcomplex
 
 namespace stdSimplex
 
+lemma obj₀Equiv_symm_mem_face_iff
+    {n : ℕ} (S : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
+  ⟨fun h ↦ by simpa using h, by aesop⟩
+
+lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
+    face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
+  refine ⟨fun h i hi ↦ ?_, fun h d a ha ↦ ha.trans h⟩
+  simp only [← obj₀Equiv_symm_mem_face_iff.{u}] at hi ⊢
+  exact h _ hi
+
 lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin (m + 1) ≃o S) :
     face.{u} S =
       Subcomplex.ofSimplex (X := Δ[n])
