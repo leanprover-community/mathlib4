@@ -84,7 +84,7 @@ noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Ba
     | none => none
     | some (c, cs) =>
       some (0, PreMS.const _ c, ms, cs)
-  gcorec g mul s
+  gcorec g mul' s
 
 -- theorems
 
@@ -285,9 +285,10 @@ theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis
 @[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply (.cons s_hd s_tl) ms) = cons 0 (PreMS.const _ s_hd) (ms.mul (apply s_tl ms)) := by
+    (apply (.cons s_hd s_tl) ms) = cons 0 (PreMS.const _ s_hd) ((apply s_tl ms).mul ms) := by
   simp only [apply]
   rw [gcorec_some]
+  · rfl
   simp
 
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -319,13 +320,13 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
 theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-    (h_neg : ms.leadingExp < 0) {f : ℝ → ℝ}
+    (h_neg : ms.leadingExp < 0) (h_wo : ms.WellOrdered) {f : ℝ → ℝ}
     (h_approx : ms.Approximates f) : (apply s ms).Approximates (s.toFun ∘ f) := by
   have hf_tendsto_zero : Tendsto f atTop (𝓝 0) := by
     apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive (X : PreMS (basis_hd :: basis_tl)) (g : ℝ → ℝ) : Prop :=
     ∃ (s : LazySeries), Analytic s ∧ X = apply s ms ∧ g =ᶠ[atTop] s.toFun ∘ f
-  apply Approximates.mul_coind motive
+  apply Approximates.mul_coind h_basis motive (apply_WellOrdered h_wo h_neg)
   · use s
   rintro X g ⟨s, h_analytic, rfl, hg_eq⟩
   cases s with
@@ -342,12 +343,12 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
     apply toFun_majorated_zero h_analytic hf_tendsto_zero
     apply basis_tendsto_top h_basis
     simp
-  refine ⟨f, toFun s_tl ∘ f, ?_, h_approx, s_tl, tail_analytic h_analytic, rfl, by rfl⟩
+  refine ⟨toFun s_tl ∘ f, f, ?_, h_approx, apply_WellOrdered h_wo h_neg, s_tl,
+    tail_analytic h_analytic, rfl, by rfl⟩
   grw [hg_eq, this]
   apply EventuallyEq.of_eq
   ext t
   simp
-  grind
 
 theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Analytic := by
   simp only [Analytic]
@@ -400,11 +401,11 @@ theorem zeros_analytic : Analytic zeros := by
 
 -- I am almost sure we don't really need `h_wo` and `h_approx`
 theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
-    {f : ℝ → ℝ} (h_basis : WellFormedBasis (basis_hd :: basis_tl))
+    {f : ℝ → ℝ} (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates f) (h_neg : ms.leadingExp < 0) :
     (zeros.apply ms).Approximates 0 := by
   rw [show 0 = zeros.toFun ∘ f by rw [zeros_toFun]; rfl]
-  apply apply_Approximates zeros_analytic h_basis h_neg h_approx
+  apply apply_Approximates zeros_analytic h_basis h_neg h_wo h_approx
 
 end Zeros
 

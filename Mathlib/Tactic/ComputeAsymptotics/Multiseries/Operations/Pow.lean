@@ -237,11 +237,14 @@ theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basi
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         conv =>
           arg 2; ext t
-          rw [← mul_zero (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t))]
+          rw [← mul_zero (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t)), mul_comm]
         apply mul_Approximates h_basis
+        swap
         · apply mulMonomial_Approximates h_basis h_tl
           apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         apply zeros_apply_Approximates h_basis
+        · apply mulMonomial_WellOrdered h_tl_wo
+          apply inv_WellOrdered h_coef_wo
         · apply mulMonomial_Approximates h_basis h_tl
           apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         simp only [mulMonomial_leadingExp]
@@ -393,6 +396,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         cases w with
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
+      · apply mulMonomial_WellOrdered h_tl_wo
+        apply inv_WellOrdered h_coef_wo
       · exact this
 
 theorem zpow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a : ℤ}

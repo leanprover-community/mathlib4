@@ -129,7 +129,7 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
   simp only [PreMS.exp, destruct_cons]
   split_ifs with h_if
   · rw [← expSeries_toFun]
-    exact apply_Approximates expSeries_analytic h_basis (by simpa) h_approx
+    exact apply_Approximates expSeries_analytic h_basis (by simpa) h_wo h_approx
   have h_exp : exp = 0 := by
     unfold leadingTerm at h_nonpos
     simp only [head_cons] at h_nonpos
@@ -148,7 +148,7 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
     simp [← Real.exp_add]
   apply mulMonomial_Approximates h_basis
   · rw [← expSeries_toFun]
-    exact apply_Approximates expSeries_analytic h_basis h_comp h_tl
+    exact apply_Approximates expSeries_analytic h_basis h_comp h_tl_wo h_tl
   apply exp_Approximates h_basis.tail h_coef_wo h_coef
   contrapose! h_nonpos
   exact Term.FirstIsPos_of_tail rfl h_nonpos

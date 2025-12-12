@@ -776,7 +776,12 @@ mutual
 
 end
 
-instance {basis_hd basis_tl} : Stream'.Seq.FriendOperation (mul (basis := basis_hd :: basis_tl)) :=
+-- TODO: swap mul arguments
+noncomputable def mul' {basis : Basis} (X Y : PreMS basis) : PreMS basis :=
+  PreMS.mul Y X
+
+instance {basis_hd basis_tl} :
+    Stream'.Seq.FriendOperation (mul' (basis := basis_hd :: basis_tl)) := by
   sorry
 
 theorem WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -785,14 +790,20 @@ theorem WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_step :
       ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)),
         motive (PreMS.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < ↑exp ∧
-        ∃ (A B : PreMS (basis_hd :: basis_tl)), tl = A.mul B ∧ A.WellOrdered ∧ motive B) :
-    ms.WellOrdered :=
-  WellOrdered.coind_friend' PreMS.mul motive PreMS.WellOrdered
-    (by apply mul_WellOrdered) h_base h_step
+        ∃ (A B : PreMS (basis_hd :: basis_tl)), tl = A.mul' B ∧ A.WellOrdered ∧ motive B) :
+    ms.WellOrdered := by
+  apply WellOrdered.coind_friend' (mul' (basis := basis_hd :: basis_tl)) motive PreMS.WellOrdered
+  · intros
+    apply mul_WellOrdered <;> assumption
+  · assumption
+  · grind
 
 theorem Approximates.mul_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}
-    (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop) (h_base : motive ms f)
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl))
+    (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop)
+    (h_wo : ms.WellOrdered)
+    (h_base : motive ms f)
     (h_step :
       ∀ (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ),
         motive ms f →
@@ -801,9 +812,53 @@ theorem Approximates.mul_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
           ms = PreMS.cons exp coef tl ∧ coef.Approximates fC ∧ majorated f basis_hd exp ∧
           ∃ (A B : PreMS (basis_hd :: basis_tl)) (fA fB : ℝ → ℝ), tl = A.mul B ∧
           f =ᶠ[atTop] (fun t ↦ basis_hd t ^ exp * fC t + fA t * fB t) ∧
-          A.Approximates fA ∧ motive B fB) :
+          B.Approximates fB ∧ A.WellOrdered ∧ motive A fA) :
     ms.Approximates f := by
-  sorry
+  let motive' (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) : Prop :=
+    ∃ A B fA fB, ms = PreMS.mul A B ∧ B.Approximates fB ∧ f =ᶠ[atTop] fA * fB ∧
+      A.WellOrdered ∧ motive A fA
+  apply Approximates.add_coind motive'
+  · use ms, one _, f, 1
+    rw [mul_one']
+    simp only [mul_one, EventuallyEq.refl, h_wo, h_base, and_self, and_true, true_and]
+    apply one_Approximates h_basis
+  rintro ms f ⟨A, B, fA, fB, rfl, hB, hf_eq, hA_wo, hA⟩
+  cases B with
+  | nil =>
+    apply Approximates_nil at hB
+    simp only [mul_nil, true_and, ↓existsAndEq, nil_ne_cons, false_and, exists_const, or_false]
+    grw [hf_eq, hB]
+    simp
+  | cons B_exp B_coef B_tl =>
+  specialize h_step _ _ hA
+  obtain ⟨rfl, hfA⟩ | ⟨A_exp, A_coef, A_tl, fAC, rfl, hA_coef, hA_maj,
+    X, Y, fX, fY, rfl, hfA, hY, hX_wo, hX⟩ := h_step
+  · simp only [nil_mul, true_and, ↓existsAndEq, nil_ne_cons, false_and, exists_const, or_false]
+    grw [hf_eq, hfA]
+    simp
+  right
+  simp only [↓existsAndEq, mul_cons_cons, cons_eq_cons, true_and, exists_and_left]
+  obtain ⟨fBC, hB_coef, hB_maj, hB_tl⟩ := Approximates_cons hB
+  refine ⟨fAC * fBC, _, _, rfl, ?_⟩
+  constructorm* _ ∧ _
+  · apply mul_Approximates (h_basis.tail) hA_coef hB_coef
+  · apply majorated_of_EventuallyEq hf_eq
+    apply mul_majorated hA_maj hB_maj
+    apply basis_head_eventually_pos h_basis
+  simp only [exists_and_left, Pi.mul_apply, motive']
+  refine ⟨_, mulMonomial_Approximates h_basis hB_tl hA_coef, ?_⟩
+  use X, Y.mul (PreMS.cons B_exp B_coef B_tl)
+  constructor
+  · rw [mul_assoc' hX_wo]
+  use fX
+  refine ⟨_, mul_Approximates h_basis hY hB, ?_, hX_wo, hX⟩
+  push fun _ ↦ _
+  grw [hf_eq, hfA]
+  apply (basis_head_eventually_pos h_basis).mono
+  intro t ht
+  simp only [Pi.sub_apply, Pi.mul_apply, Pi.pow_apply]
+  rw [Real.rpow_add ht]
+  ring
 
 end PreMS
 

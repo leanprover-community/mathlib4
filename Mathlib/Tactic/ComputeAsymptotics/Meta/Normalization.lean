@@ -307,7 +307,7 @@ lemma apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
 lemma apply_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     {s : LazySeries}
     {s_hd : ℝ} {s_tl : LazySeries} (h : s = Seq.cons s_hd s_tl) :
-    s.apply ms = PreMS.cons 0 (PreMS.const _ s_hd) (ms.mul (s_tl.apply ms)) := by
+    s.apply ms = PreMS.cons 0 (PreMS.const _ s_hd) ((s_tl.apply ms).mul ms) := by
   subst h
   simp [LazySeries.apply_cons]
 
@@ -546,7 +546,7 @@ partial def normalizePreMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return .nil q(apply_nil $hs)
     | .cons s_hd s_tl hs =>
       return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd)
-        q(($arg).mul (PreMS.LazySeries.apply $s_tl $arg)) q(apply_cons $hs)
+        q((PreMS.LazySeries.apply $s_tl $arg).mul $arg) q(apply_cons $hs)
   | ~q(PreMS.inv $arg) =>
     let res ← normalizePreMSImp arg
     match res with

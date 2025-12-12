@@ -54,6 +54,7 @@ theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   rw [PiNat.dist_eq_of_ne h]
   bound
 
+@[simp]
 theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := by
   rw [Subtype.dist_eq]
   apply Stream'.dist_le_one
@@ -67,30 +68,55 @@ local instance instBoundedSpaceStream' : BoundedSpace (Stream' α) := by
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
 
-@[simp]
-theorem stream_dist_cons (x : α) (s t : Stream' α) :
-    dist (Stream'.cons x s) (Stream'.cons x t) = 2⁻¹ * dist s t := by
-  by_cases h : s = t
-  · simp [h]
-  have h' : x :: s ≠ x :: t := by
-    contrapose! h
-    apply Stream'.cons_injective2 at h
-    simpa using h
-  rw [PiNat.dist_eq_of_ne h, PiNat.dist_eq_of_ne h']
-  suffices PiNat.firstDiff (x :: s) (x :: t) = PiNat.firstDiff s t + 1 by
-    simp [this, pow_succ]
-    field_simp
-  simp only [PiNat.firstDiff, ne_eq, h', not_false_eq_true, ↓reduceDIte, h]
-  generalize_proofs p1 p2
-  convert Nat.find_comp_succ _ _ _
-  simp [Stream'.cons]
+theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2⁻¹ ^ n := by
+  rw [Subtype.dist_eq, PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h)]
+  simp
 
 @[simp]
-theorem dist_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
-  rw [Subtype.dist_eq]
-  simp only [val_cons, stream_dist_cons, mul_eq_mul_left_iff, inv_eq_zero, OfNat.ofNat_ne_zero,
-    or_false]
-  rw [Subtype.dist_eq]
+theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
+  by_cases! h : s = t
+  · simp [h]
+  have h' : cons x s ≠ cons x t := by
+    simpa
+  rw [Subtype.dist_eq, Subtype.dist_eq, PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h),
+    PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h')]
+  simp only [show (1 / 2 : ℝ) = 2⁻¹ by simp, ← pow_succ']
+  congr
+  simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, Subtype.coe_ne_coe.mpr h,
+    not_false_eq_true, ↓reduceDIte, val_eq_get]
+  split_ifs with h_if
+  · contrapose! h'
+    apply_fun Subtype.val using Subtype.val_injective
+    simpa
+  · convert Nat.find_comp_succ _ _ _
+    simp [Stream'.cons]
+
+theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :
+    dist (cons x s) (cons y t) = 1 := by
+  rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
+  · convert pow_zero _
+    simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
+      Nat.find_eq_zero]
+    intro h'
+    simpa [Stream'.cons]
+  · rw [Subtype.coe_ne_coe, ne_eq, cons_eq_cons]
+    simp [h]
+
+@[simp]
+theorem dist_cons_nil (x : α) (s : Seq α) : dist (cons x s) nil = 1 := by
+  rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
+  · convert pow_zero _
+    simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
+      Nat.find_eq_zero]
+    intro h'
+    simp [Stream'.cons]
+  · rw [Subtype.coe_ne_coe, ne_eq]
+    exact cons_ne_nil
+
+@[simp]
+theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
+  rw [dist_comm]
+  simp
 
 class FriendOperation (f : γ → Seq α → Seq α) : Prop where
   lipschitz : ∀ c : γ, LipschitzWith 1 (f c)
@@ -189,13 +215,73 @@ theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α →
   have := (FriendOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
 
+
+@[local simp]
+lemma inv_two_pow_succ_lt_one (n : ℕ) : ¬ 1 ≤ (2⁻¹ : ℝ) ^ (n + 1) := by
+  simp only [not_le]
+  rw [pow_succ]
+  refine mul_lt_one_of_nonneg_of_lt_one_right (pow_le_one₀ ?_ ?_) ?_ ?_
+  all_goals norm_num
+
+attribute [-simp] inv_pow in
+theorem FriendOperation.coind_aux (motive : (Seq α → Seq α) → Prop)
+    (h_step : ∀ op, motive op → ∃ (H : Option α → Option α) (op' : Seq α → Seq α),
+      motive op' ∧ ∀ s, head (op s) = H (head s) ∧
+      tail (op s) = op' (tail s)) (op : Seq α → Seq α)
+    (h_base : motive op) :
+    LipschitzWith 1 op := by
+  rw [lipschitzWith_iff_dist_le_mul]
+  intro s t
+  simp only [NNReal.coe_one, one_mul]
+  suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n by
+    by_cases h : s = t
+    · simp [h]
+    obtain ⟨n, hst⟩ := dist_eq_two_inv_pow h
+    rw [hst] at this ⊢
+    apply this
+    rfl
+  intro n hn
+  induction n generalizing op s t with
+  | zero => simp
+  | succ n ih =>
+  by_cases! h : op s = op t
+  · simp [h]
+  obtain ⟨H, op', h_tl, h_head⟩ := h_step _ h_base
+  obtain ⟨hs_head, hs_tail⟩ := h_head s
+  obtain ⟨ht_head, ht_tail⟩ := h_head t
+  cases s with
+  | nil =>
+    cases t
+    · simp at h
+    · simp at hn
+  | cons s_hd s_tl =>
+  cases t with
+  | nil => simp at hn
+  | cons t_hd t_tl =>
+  by_cases! h_head : s_hd ≠ t_hd
+  · simp [dist_cons_cons_eq_one h_head] at hn
+  subst h_head
+  have h_head : (op (cons s_hd s_tl)).head = (op (cons s_hd t_tl)).head := by
+    simp [hs_head, ht_head]
+  generalize op (cons s_hd s_tl) = x at *
+  generalize op (cons s_hd t_tl) = y at *
+  cases x <;> cases y <;> simp at h h_head
+  rename_i x_hd x_tl y_hd y_tl
+  simp only [h_head, forall_const, tail_cons, dist_cons_cons, pow_succ', inv_pos, Nat.ofNat_pos,
+    mul_le_mul_iff_right₀, ge_iff_le] at h hs_tail ht_tail ⊢
+  rw [hs_tail, ht_tail]
+  apply ih _ h_tl
+  simpa [pow_succ'] using hn
+
 theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
     (h_step : ∀ op, motive op → ∃ (H : Option α → Option α) (op' : Seq α → Seq α),
       motive op' ∧ ∀ s, head (op s) = H (head s) ∧
       tail (op s) = op' (tail s)) (op : γ → Seq α → Seq α)
     (h_base : ∀ c, motive (op c)) :
     FriendOperation op := by
-  sorry
+  constructor
+  intro c
+  apply FriendOperation.coind_aux _ h_step _ (by grind)
 
 theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α} [FriendOperation op]
     (motive : Seq α → Seq α → Prop)
@@ -213,12 +299,12 @@ theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq �
     · simp
   intro n
   induction n generalizing s t with
-  | zero => simpa using dist_le_one s t
+  | zero => simp
   | succ n ih =>
     specialize step s t base
     obtain step | ⟨hd, s', t', c, rfl, rfl, h_next⟩ := step
     · simp [step]
-    simp only [dist_cons]
+    simp only [dist_cons_cons]
     specialize ih h_next
     calc
       _ ≤ 2⁻¹ * dist s' t' := by

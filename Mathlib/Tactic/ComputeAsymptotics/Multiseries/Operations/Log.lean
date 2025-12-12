@@ -272,6 +272,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         · exact WithBot.bot_lt_coe 0
         · simp only [WithBot.coe_zero, WithBot.coe_lt_zero] at h_comp
           norm_cast
+      · apply mulConst_WellOrdered h_tl_wo
       apply mulConst_Approximates'
       apply Approximates_of_EventuallyEq _ h_tl
       simp only [Real.rpow_zero, one_mul]
@@ -415,6 +416,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         · simp only [WithBot.coe_lt_coe] at h_comp
           norm_cast
           linarith
+      · apply mulMonomial_WellOrdered h_tl_wo
+        apply inv_WellOrdered h_coef_wo
       apply mulMonomial_Approximates h_basis h_tl
       exact inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
 

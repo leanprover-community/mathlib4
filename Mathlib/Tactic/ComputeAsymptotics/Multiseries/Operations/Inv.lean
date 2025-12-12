@@ -234,6 +234,9 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
         cases w with
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
+      · apply mulMonomial_WellOrdered
+        · apply neg_WellOrdered h_tl_wo
+        · apply inv_WellOrdered h_coef_wo
       · exact this
 
 theorem div_WellOrdered {basis : Basis} {X Y : PreMS basis}
