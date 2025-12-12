@@ -79,6 +79,10 @@ lemma IsIntegral.isAlmostIntegral [IsFractionRing R S]
     {s : S} (H : IsIntegral R s) : IsAlmostIntegral R s :=
   H.isAlmostIntegral_of_isLocalization _ le_rfl
 
+lemma integralClosure_le_completeIntegralClosure [IsFractionRing R S] :
+    integralClosure R S ≤ completeIntegralClosure R S :=
+  fun _ h ↦ h.isAlmostIntegral
+
 lemma IsAlmostIntegral.isIntegral_of_nonZeroDivisors_le_comap
     {s : S} (H : IsAlmostIntegral R s) [IsNoetherianRing R]
     (H' : R⁰ ≤ S⁰.comap (algebraMap R S)) : IsIntegral R s := by
@@ -117,5 +121,10 @@ lemma isAlmostIntegral_iff_isIntegral [IsNoetherianRing R] [IsDomain R] [IsFract
     {s : S} : IsAlmostIntegral R s ↔ IsIntegral R s :=
   letI := IsFractionRing.isDomain R (K := S)
   ⟨IsAlmostIntegral.isIntegral, IsIntegral.isAlmostIntegral⟩
+
+lemma completeIntegralClosure_eq_integralClosure
+    [IsNoetherianRing R] [IsDomain R] [IsFractionRing R S] :
+    completeIntegralClosure R S = integralClosure R S :=
+  SetLike.ext fun _ ↦ isAlmostIntegral_iff_isIntegral
 
 end
