@@ -287,14 +287,14 @@ lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂
 end DivisionMonoid
 end Units
 
-/-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
-@[to_additive
-  /-- For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`. -/]
-def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
-  ⟨a, b, hab, (mul_comm b a).trans hab⟩
+/-- For `a, b` in a Dedekind-finite monoid such that `a * b = 1`, makes a unit out of `a`. -/
+@[to_additive /-- For `a, b` in a Dedekind-finite additive monoid such that `a + b = 0`,
+makes an addUnit out of `a`. -/]
+def Units.mkOfMulEqOne [Monoid α] [IsDedekindFiniteMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
+  ⟨a, b, hab, mul_eq_one_symm hab⟩
 
 @[to_additive (attr := simp)]
-theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
+theorem Units.val_mkOfMulEqOne [Monoid α] [IsDedekindFiniteMonoid α] {a b : α} (h : a * b = 1) :
     (Units.mkOfMulEqOne a b h : α) = a :=
   rfl
 
@@ -394,14 +394,16 @@ theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
 @[to_additive]
-theorem IsUnit.of_mul_eq_one [CommMonoid M] {a : M} (b : M) (h : a * b = 1) : IsUnit a :=
+theorem IsUnit.of_mul_eq_one [Monoid M] [IsDedekindFiniteMonoid M] {a : M} (b : M) (h : a * b = 1) :
+    IsUnit a :=
   ⟨.mkOfMulEqOne a b h, rfl⟩
 
 @[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
 
 @[to_additive]
-theorem IsUnit.of_mul_eq_one_right [CommMonoid M] {b : M} (a : M) (h : a * b = 1) : IsUnit b :=
-  .of_mul_eq_one a <| mul_comm a b ▸ h
+theorem IsUnit.of_mul_eq_one_right [Monoid M] [IsDedekindFiniteMonoid M] {b : M} (a : M)
+    (h : a * b = 1) : IsUnit b :=
+  .of_mul_eq_one a <| mul_eq_one_symm h
 
 @[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
@@ -442,12 +444,14 @@ lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
 end Monoid
 
 @[to_additive]
-theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
-  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => .of_mul_eq_one b hab⟩
+theorem isUnit_iff_exists_inv [Monoid M] [IsDedekindFiniteMonoid M] {a : M} :
+    IsUnit a ↔ ∃ b, a * b = 1 :=
+  ⟨(·.exists_right_inv), fun ⟨b, hab⟩ ↦ .of_mul_eq_one b hab⟩
 
 @[to_additive]
-theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  simp [isUnit_iff_exists_inv, mul_comm]
+theorem isUnit_iff_exists_inv' [Monoid M] [IsDedekindFiniteMonoid M] {a : M} :
+    IsUnit a ↔ ∃ b, b * a = 1 :=
+  ⟨(·.exists_left_inv), fun ⟨b, hba⟩ ↦ .of_mul_eq_one_right b hba⟩
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
@@ -471,18 +475,22 @@ theorem Units.isUnit_units_mul {M : Type*} [Monoid M] (u : Mˣ) (a : M) :
     u.isUnit.mul
 
 @[to_additive]
-theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
+theorem isUnit_of_mul_isUnit_left [Monoid M] [IsDedekindFiniteMonoid M] {x y : M}
+    (hu : IsUnit (x * y)) : IsUnit x :=
   let ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 
 @[to_additive]
-theorem isUnit_of_mul_isUnit_right [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit y :=
-  @isUnit_of_mul_isUnit_left _ _ y x <| by rwa [mul_comm]
+theorem isUnit_of_mul_isUnit_right [Monoid M] [IsDedekindFiniteMonoid M] {x y : M}
+    (hu : IsUnit (x * y)) : IsUnit y :=
+  let ⟨z, hz⟩ := isUnit_iff_exists_inv'.1 hu
+  isUnit_iff_exists_inv'.2 ⟨z * x, by rwa [mul_assoc]⟩
 
 namespace IsUnit
 
 @[to_additive (attr := simp, grind =)]
-theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
+theorem mul_iff [Monoid M] [IsDedekindFiniteMonoid M] {x y : M} :
+    IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
   ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
    fun h => IsUnit.mul h.1 h.2⟩
 
