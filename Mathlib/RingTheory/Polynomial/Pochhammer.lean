@@ -299,6 +299,11 @@ theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
   induction n with
   | zero => simp
   | succ n ih => simp [ih, descPochhammer_succ_left, map_comp]
+
+lemma descPochhammer_coeff_map (f : R →+* T) (k n : ℕ) :
+    f ((descPochhammer R n).coeff k) = (descPochhammer T n).coeff k := by
+  rw [← coeff_map, descPochhammer_map]
+
 end
 
 @[simp, norm_cast]

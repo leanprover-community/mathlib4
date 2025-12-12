@@ -137,7 +137,6 @@ theorem coe_zero : ((0 : SummableFamily Γ R α) : α → HahnSeries Γ R) = 0 :
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
 
-
 section SMul
 
 variable {M} [SMulZeroClass M R]
@@ -270,6 +269,32 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
   ext g
   simp only [coeff_hsum, Equiv_toFun]
   exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
+
+theorem isPWO_support_fiber (s : SummableFamily Γ R α) (f : α → β) (b : β) :
+    (Function.support fun g ↦ ∑ᶠ (i : α) (_ : f i = b), (s i).coeff g).IsPWO := by
+  refine Set.IsPWO.mono s.isPWO_iUnion_support fun _ h ↦ (Set.mem_iUnion.mpr ?_)
+  obtain ⟨a, _, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero h
+  exact Exists.intro a ha
+
+/-- Form a summable family by summing over fibers of a map. -/
+@[simps]
+def pushforward (s : SummableFamily Γ R α) (f : α → β) : SummableFamily Γ R β where
+  toFun b := ⟨fun g ↦ ∑ᶠ (i : α) (_ : f i = b), (s i).coeff g, s.isPWO_support_fiber f b⟩
+  isPWO_iUnion_support' := by
+    refine Set.IsPWO.mono s.isPWO_iUnion_support ?_
+    intro g hg
+    obtain ⟨b, hb⟩ := Set.mem_iUnion.mp hg
+    simp only [mem_support] at hb
+    obtain ⟨a, _, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero hb
+    rw [Set.mem_iUnion]
+    use a
+    exact ha
+  finite_co_support' g := finite_finsum_on_fiber _ _ (s.finite_co_support g)
+
+theorem hsum_pushforward (s : SummableFamily Γ R α) (f : α → β) :
+    s.hsum = (s.pushforward f).hsum := by
+  ext g
+  simp [finsum_map_eq _ _ (s.finite_co_support g)]
 
 /-- The summable family given by multiplying every series in a summable family by a scalar. -/
 @[simps]

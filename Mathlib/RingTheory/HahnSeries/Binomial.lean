@@ -120,7 +120,7 @@ open SummableFamily
 instance : Pow (orderTopSubOnePos Γ R) R where
   pow x r := toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r)
 
-@[simp]
+--@[simp]
 theorem binomial_power {x : orderTopSubOnePos Γ R} {r : R} :
     x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r) :=
   rfl
@@ -128,8 +128,9 @@ theorem binomial_power {x : orderTopSubOnePos Γ R} {r : R} :
 theorem pow_add {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r + s) = x ^ r * x ^ s := by
   suffices (x ^ (r + s)).val = (x ^ r * x ^ s).val by exact SetLike.coe_eq_coe.mp this
   suffices (x ^ (r + s)).val.val = (x ^ r * x ^ s).val.val by exact Units.val_inj.mp this
-  simp [binomialFamily, hsum_powerSeriesFamily_mul, hsum_mul]
+  simp [binomialFamily, binomial_power, hsum_powerSeriesFamily_mul, hsum_mul]
 
+@[simp]
 theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
     HahnSeries.coeff (toOrderTopSubOnePos (orderTop_sub_pos hg r) ^ s).val (k • g) =
       Ring.choose s k • r ^ k := by
@@ -142,6 +143,66 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
   · contrapose! hn
     apply (StrictMono.injective (nsmul_left_strictMono hg)) hn.symm
   · by_cases hr : r = 0 <;> simp [hr, hg]
+
+/-
+(xy-1)^n = ((x-1)(y-1) + (x-1) + (y-1))^n
+  = ∑(i+j+k=n) trinomial{n}{i,j,k} (x-1)^(i+j) (y-1)^(i+k)
+Have:
+∑(n) binom{r}{n} ∑(i+j+k=n) trinomial{n}{i,j,k} (x-1)^(i+j) (y-1)^(i+k)
+  = ∑(i,j,k) binom{r}{i+j+k} trinomial{i+j+k}{i,j,k} (x-1)^(i+j) (y-1)^(i+k)
+  = ∑(j) (x-1)^j ∑(k) (y-1)^k ∑(i ≤ min(j,k)) binom{r}{j+k-i} trinomial{j+k-i}{i,j-i,k-i}
+  = ∑(i) binom{r}{i} (x-1)^i * ∑(j) binom{r}{j} (y-1)^j
+Assuming :
+  ∑(i ≤ min(j,k)) binom{r}{j+k-i} trinomial{j+k-i}{i,j-i,k-i} = binom{r}{j} binom{r}{k}
+WLoG j ≤ k.
+Induct on j?
+j=0 i=0 : binom{r}{k} = binom{r}{k}
+descPochhammer r k/(j+1)!(k-j-1)! + ∑(i ≤ min(j,k)) descPochhammer r (j+1+k-i) / i! (j+1-i)!(k-i)! -
+  descPochhammer r (j+k-i) / i! (j-i)!(k-i)! =
+  (binom{r}{j+1} - binom{r}{j}) binom{r}{k}
+descPochhammer r (j+1+k-i) / i! (j+1-i)!(k-i)! - descPochhammer r (j+k-i) / i! (j-i)!(k-i)! =
+
+
+Induct on k?
+k=0 : 1 = 1
+show: ∑(i ≤ j) binom{r}{j+k+1-i} trinomial{j+k+1-i}{i,j-i,k-i+1} -
+  binom{r}{j+k-i} trinomial{j+k-i}{i,j-i,k-i} = binom{r}{j} (binom{r}{k+1} - binom{r}{k})
+
+r!/(r-j-k-1+i)!i!(j-i)!(k-i+1)! - r!/(r-j-k+i)!i!(j-i)!(k-i)! =
+  ((r-j-k+i)/(k-i+1) - 1)r!/(r-j-k+i)!i!(j-i)!(k-i)! =
+  ((r-j-2k+2i-1)/(k-i+1))(r!/(r-j)!j!)(r-j)!j!/(r-j-k+i)!i!(j-i)!(k-i)! =
+  binom{r}{j} binom{j}{i} binom{r-j}{k-i} (r-j-2k+2i-1)/(k-i+1)
+
+Elliot's argument: These identities hold for natural number powers, and the coefficients
+of (x - 1)^n in x^r are integer-valued polynomials in r. Therefore, identities follow from the fact
+that integer-valued polynomials are uniquely determined by their evaluations at natural numbers.
+
+theorem mul_pow {x y : orderTopSubOnePos Γ R} {r : R} : (x * y) ^ r = x ^ r * y ^ r := by
+  suffices ((x * y) ^ r).val = (x ^ r * y ^ r).val by exact SetLike.coe_eq_coe.mp this
+  suffices ((x * y) ^ r).val.val = (x ^ r * y ^ r).val.val by exact Units.val_inj.mp this
+  have hx : 0 < (x.val.val - 1).orderTop := (mem_orderTopSubOnePos_iff x.val).mp (SetLike.coe_mem x)
+  have hy : 0 < (y.val.val - 1).orderTop := (mem_orderTopSubOnePos_iff y.val).mp (SetLike.coe_mem y)
+  have hxy : 0 < (x.val.val * y.val.val - 1).orderTop := by
+    rw [← Units.val_mul, ← Subgroup.coe_mul]
+    exact (mem_orderTopSubOnePos_iff (x * y).val).mp (SetLike.coe_mem (x * y))
+  simp only [binomial_power, binomialFamily, Subgroup.coe_mul, Units.val_mul,
+    val_toOrderTopSubOnePos_coe]
+  simp only [powerSeriesFamily, PowerSeries.binomialSeries_coeff, smul_eq_mul, mul_one]
+  rw [← hsum_mul]
+  simp [smulFamily, hx, hy, hxy]
+
+  have hxysub : x.val.val * y.val.val - 1 =
+      (x.val.val - 1) * (y.val.val - 1) + (x.val.val - 1) + (y.val.val - 1) := by ring
+  simp_rw [hxysub]
+
+  sorry
+
+theorem pow_mul {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r * s) = (x ^ r) ^ s := by
+  suffices (x ^ (r * s)).val = ((x ^ r) ^ s).val by exact SetLike.coe_eq_coe.mp this
+  suffices (x ^ (r * s)).val.val = ((x ^ r) ^ s).val.val by exact Units.val_inj.mp this
+  simp only [binomial_power, binomialFamily, val_toOrderTopSubOnePos_coe]
+  sorry
+ -/
 
 end orderTopOneSubPos
 
