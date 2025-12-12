@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Nat.BitIndices
-import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Nat.BitIndices
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order
@@ -56,6 +58,8 @@ Related files are:
 
 colex, colexicographic, binary
 -/
+
+@[expose] public section
 
 open Function
 
@@ -542,7 +546,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   rw [lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by cutsat) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by lia) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the

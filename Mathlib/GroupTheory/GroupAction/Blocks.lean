@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Pointwise.Stabilizer
-import Mathlib.Data.Setoid.Partition
-import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Index
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Pointwise.Stabilizer
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.GroupTheory.GroupAction.Pointwise
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Tactic.IntervalCases
 
 /-! # Blocks
 
@@ -46,6 +48,8 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 We follow [Wielandt-1964].
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped Pointwise
@@ -293,7 +297,7 @@ lemma isInvariantBlock_iff_isFixedBlock : IsInvariantBlock G B ↔ IsFixedBlock 
 @[to_additive /-- An invariant block of a group action is a fixed block. -/]
 alias ⟨IsInvariantBlock.isFixedBlock, _⟩ := isInvariantBlock_iff_isFixedBlock
 
-/-- An invariant block  of a group action is a block. -/
+/-- An invariant block of a group action is a block. -/
 @[to_additive /-- An invariant block of a group action is a block. -/]
 lemma IsInvariantBlock.isBlock (hB : IsInvariantBlock G B) : IsBlock G B := hB.isFixedBlock.isBlock
 
@@ -747,7 +751,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
-  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
+  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' := by
     intro g hg x hx
     -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,

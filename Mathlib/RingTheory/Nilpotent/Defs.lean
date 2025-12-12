@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Definition of nilpotent elements
@@ -23,6 +25,8 @@ and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
   * `nilpotencyClass`
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -193,7 +197,7 @@ end IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=
-  ⟨fun _ ⟨_, hn⟩ => pow_eq_zero hn⟩
+  ⟨fun _ ⟨_, hn⟩ => eq_zero_of_pow_eq_zero hn⟩
 
 instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
     IsReduced R :=
@@ -215,6 +219,10 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
   apply hf
   rw [map_zero]
   exact (hx.map f).eq_zero
+
+lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
+    ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
+  rw [isReduced_iff, not_forall] at h; tauto
 
 instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
     [∀ i, IsReduced (R i)] : IsReduced (∀ i, R i) where

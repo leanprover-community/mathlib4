@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Degree.Units
-import Mathlib.Algebra.Polynomial.Eval.Coeff
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Degree.Units
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
 
 /-!
 # Evaluation of polynomials and degrees
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Eval.Coeff
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.degree`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -181,6 +185,10 @@ theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadin
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
   unfold leadingCoeff
   rw [coeff_map, natDegree_map_of_leadingCoeff_ne_zero f hf]
+
+theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
+    (p.map f).nextCoeff = f p.nextCoeff := by
+  grind [nextCoeff, natDegree_map_of_leadingCoeff_ne_zero, coeff_map]
 
 end Map
 

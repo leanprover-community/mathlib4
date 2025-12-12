@@ -3,10 +3,12 @@ Copyright (c) 2025 Jingting Wang, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Junyan Xu
 -/
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.TensorProduct.Quotient
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # The fiber of a ring homomorphism at a prime ideal
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.TensorProduct.Quotient
   fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal `p : PrimeSpectrum R` and
   the prime spectrum of the tensor product of `S` and the residue field of `p`.
 -/
+
+@[expose] public section
 
 open Algebra TensorProduct in
 /-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal

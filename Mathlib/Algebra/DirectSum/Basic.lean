@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.DFinsupp.Submonoid
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -21,6 +23,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
+
+@[expose] public section
 
 open Function
 
@@ -269,9 +273,8 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
     toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
     invFun := of (fun _ => M) default
     left_inv := fun x =>
-      DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
-        rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
+      DirectSum.induction_on x (by rw [map_zero, map_zero])
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by grind
     right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
@@ -348,9 +351,6 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
-
-@[deprecated (since := "2025-04-06")]
-alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
 
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]

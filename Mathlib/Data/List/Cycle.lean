@@ -3,8 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Cycles of a list
@@ -20,6 +22,8 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -53,19 +57,21 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
   · exact if_neg h
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
-theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
-    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
+theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x ∈ xs.dropLast) :
+    nextOr xs x d = nextOr xs x d' := by
   induction xs with
   | nil => cases x_mem
   | cons y ys IH => ?_
   rcases ys with - | ⟨z, zs⟩
-  · simp at x_mem x_ne
-    contradiction
+  · simp at x_mem
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    · simpa [h] using x_mem
-    · simpa using x_ne
+    simpa [h] using x_mem
+
+@[deprecated "Use `grind [nextOr_eq_nextOr_of_mem_dropLast, dropLast_concat_getLast]` to get the \
+  original statement" (since := "2025-11-29")]
+alias nextOr_eq_nextOr_of_mem_of_ne := nextOr_eq_nextOr_of_mem_dropLast
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction xs with
@@ -148,12 +154,15 @@ theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
   next_cons_cons_eq' l x x z h rfl
 
-theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
-    (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
-    next (y :: l) x h = next l x (by simpa [hy] using h) := by
-  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · assumption
-  · rwa [getLast_cons] at hx
+theorem next_cons_eq_next_of_mem_dropLast (h : x ∈ l.dropLast) (y : α) (hy : x ≠ y) :
+    next (y :: l) x (mem_cons_of_mem _ <| mem_of_mem_dropLast h) =
+      next l x (mem_of_mem_dropLast h) := by
+  rwa [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_dropLast]
+
+@[deprecated "Use \
+  `grind [next_cons_eq_next_of_mem_dropLast, dropLast_concat_getLast, ne_nil_of_mem]` to get the \
+  original statement" (since := "2025-11-29")]
+alias next_ne_head_ne_getLast := next_cons_eq_next_of_mem_dropLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
@@ -168,12 +177,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   subst hx
   intro H
   obtain ⟨_ | k, hk, hk'⟩ := getElem_of_mem H
-  · rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_zero,
-      Option.some_inj] at hk'
-    · exact hy (Eq.symm hk')
-    rw [length_cons]
-    exact length_pos_of_mem (by assumption)
+  · grind
   suffices k + 1 = l.length by simp [this] at hk
   rcases l with - | ⟨hd, tl⟩
   · simp at hk
@@ -189,7 +193,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
         Nat.add_lt_add_iff_right] at hk ⊢
-      cutsat
+      lia
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
@@ -266,7 +270,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
-    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
+    · rw [next_cons_eq_next_of_mem_dropLast _ _ _ _ hx']
       · simp only [getElem_cons_succ]
         rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
         · congr
@@ -275,15 +279,11 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
             Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
         · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
         · exact hn.of_cons
-      · rw [getLast_eq_getElem]
-        intro h
-        have := nodup_iff_injective_get.1 hn h
-        simp at this; simp [this] at hi'
-      · rw [getElem_cons_succ]; exact get_mem _ _
+      · grind [dropLast_concat_getLast]
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by cutsat))) :=
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) :=
   match l with
   | [] => by simp at hi
   | x::l => by
@@ -320,6 +320,12 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
+
+@[simp]
+theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :
+    l.next (l.getLast h) (getLast_mem h) = l.head h := by
+  have h1 : l.length - 1 + 1 = l.length := by grind [length_pos_iff]
+  simp [getLast_eq_getElem h, head_eq_getElem h, next_getElem l hn (l.length - 1) (by grind), h1]
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem

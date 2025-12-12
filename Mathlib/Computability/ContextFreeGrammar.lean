@@ -3,7 +3,10 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Computability.Language
+module
+
+public import Mathlib.Computability.Language
+import Mathlib.Data.Finset.Image
 
 /-!
 # Context-Free Grammars
@@ -22,6 +25,8 @@ nonterminal symbols that are referred to by its finitely many rules.
 ## Main theorems
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
 -/
+
+@[expose] public section
 
 open Function
 

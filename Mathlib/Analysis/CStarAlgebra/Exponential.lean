@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 
 /-! # The exponential map from selfadjoint to unitary
 In this file, we establish various properties related to the map
@@ -17,6 +19,8 @@ In this file, we establish various properties related to the map
 * A unitary is in the path component of `1` if and only if it is a finite product of exponential
   unitaries.
 -/
+
+@[expose] public section
 
 open NormedSpace -- For `NormedSpace.exp`.
 

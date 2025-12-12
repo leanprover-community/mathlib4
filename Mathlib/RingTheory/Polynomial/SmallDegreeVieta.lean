@@ -3,17 +3,28 @@ Copyright (c) 2025 Qinchuan Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qinchuan Zhang
 -/
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.RingTheory.Polynomial.Vieta
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
 # Vieta's Formula for polynomial of small degrees.
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 variable {R T S : Type*}
+
+lemma eq_quadratic_of_degree_le_two [Semiring R] {p : R[X]} (hp : p.degree ≤ 2) :
+    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) := by
+  rw [p.as_sum_range_C_mul_X_pow'
+    (Nat.lt_of_le_of_lt (natDegree_le_iff_degree_le.mpr hp) (Nat.lt_add_one 2))]
+  simp [Finset.sum_range_succ]
+  abel
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}

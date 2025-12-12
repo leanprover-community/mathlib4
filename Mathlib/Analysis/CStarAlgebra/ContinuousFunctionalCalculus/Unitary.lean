@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.Peel
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Tactic.Peel
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+public import Mathlib.Analysis.Complex.Basic
 
 /-! # Conditions on unitary elements imposed by the continuous functional calculus
 
@@ -15,6 +17,8 @@ import Mathlib.Analysis.Complex.Basic
   star-normal and its spectrum lies on the unit circle.
 
 -/
+
+@[expose] public section
 
 section Generic
 
@@ -43,7 +47,7 @@ lemma unitary_iff_isStarNormal_and_spectrum_subset_unitary {u : A} :
   refine and_congr_right fun hu ↦ ?_
   nth_rw 1 [← cfc_id ℂ u]
   rw [cfc_unitary_iff id u, Set.subset_def]
-  simp only [id_eq, RCLike.star_def, SetLike.mem_coe, unitary.mem_iff_star_mul_self]
+  simp only [id_eq, RCLike.star_def, SetLike.mem_coe, Unitary.mem_iff_star_mul_self]
 
 lemma mem_unitary_of_spectrum_subset_unitary {u : A}
     [IsStarNormal u] (hu : spectrum ℂ u ⊆ unitary ℂ) : u ∈ unitary A :=

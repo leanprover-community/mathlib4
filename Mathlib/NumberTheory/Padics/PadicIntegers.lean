@@ -3,8 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Mario Carneiro, Johan Commelin
 -/
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
+module
+
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 # p-adic integers
@@ -44,6 +46,8 @@ Coercions into `ℤ_[p]` are set up to work with the `norm_cast` tactic.
 
 p-adic, p adic, padic, p-adic integer
 -/
+
+@[expose] public section
 
 
 open Padic Metric IsLocalRing
@@ -121,12 +125,18 @@ theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
+@[simps!]
 def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 
 theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := by simp
+
+@[simp]
+lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
+    (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
+  simp [← Coe.ringHom_apply, map_sum PadicInt.Coe.ringHom f s]
 
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
@@ -399,6 +409,27 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
   · simp
   · exact NeZero.ne _
 
+theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
+    IsUnit (r.den : ℤ_[p]) := by
+  rw [isUnit_iff]
+  apply le_antisymm (r.den : ℤ_[p]).2
+  rw [← not_lt, coe_natCast]
+  intro norm_denom_lt
+  have hr : ‖(r * r.den : ℚ_[p])‖ = ‖(r.num : ℚ_[p])‖ := by
+    congr
+    rw_mod_cast [@Rat.mul_den_eq_num r]
+  rw [padicNormE.mul] at hr
+  have key : ‖(r.num : ℚ_[p])‖ < 1 := by
+    calc
+      _ = _ := hr.symm
+      _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
+      _ = 1 := mul_one 1
+  have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
+    simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
+    exact ⟨key, norm_denom_lt⟩
+  apply hp_prime.1.not_dvd_one
+  rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
+
 end Units
 
 section NormLeIff
@@ -504,10 +535,9 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
     · refine ⟨x'.lim, fun n => ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := zpow_pos (mod_cast hp.out.pos) _
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
-      by_cases hin : i ≤ n
+      by_cases! hin : i ≤ n
       · exact (hi i le_rfl n hin).le
-      · push_neg at hin
-        specialize hi i le_rfl i le_rfl
+      · specialize hi i le_rfl i le_rfl
         specialize hx hin.le
         have := nonarchimedean (x n - x i : ℤ_[p]) (x i - x'.lim)
         rw [sub_add_sub_cancel] at this

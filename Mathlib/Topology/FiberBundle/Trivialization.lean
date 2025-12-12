@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Bundle
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Data.Bundle
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Trivializations
@@ -48,6 +50,8 @@ Indeed, since trivializations only have meaning on their base sets (taking junk 
 type of linear trivializations is not even particularly well-behaved.
 -/
 
+@[expose] public section
+
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
@@ -61,6 +65,8 @@ have a topology on both the fiber and the base space. Through the construction
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
 structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
+  /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
+  outside of it, the pretrivialisation returns a junk value -/
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -252,6 +258,7 @@ theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b �
     (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
+@[simp]
 theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
@@ -268,6 +275,8 @@ defined between two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, a
 first coordinate.
 -/
 structure Trivialization (proj : Z → B) extends OpenPartialHomeomorph Z (B × F) where
+  /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
+  outside of it, the pretrivialisation returns a junk value -/
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -578,6 +587,7 @@ theorem symm_apply_apply_mk (e : Trivialization F (π F E)) {b : B} (hb : b ∈ 
     e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
+@[simp, mfld_simps]
 theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) :=
   e.toPretrivialization.apply_mk_symm hb y

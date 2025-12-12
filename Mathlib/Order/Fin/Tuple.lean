@@ -3,15 +3,19 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.PiLex
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.PiLex
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order properties on tuples
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

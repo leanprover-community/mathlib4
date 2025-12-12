@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/
+
+@[expose] public section
 
 open Polynomial AdjoinRoot Localization
 
@@ -23,10 +27,8 @@ noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] Adjoin
   AlgEquiv.ofAlgHom
     { awayLift _ r _ with
       commutes' :=
-        IsLocalization.Away.lift_eq r (isUnit_of_mul_eq_one _ _ <| root_isInv r) }
-    (liftHom _ (IsLocalization.Away.invSelf r) <| by
-      simp only [map_sub, map_mul, aeval_C, aeval_X, IsLocalization.Away.mul_invSelf, aeval_one,
-        sub_self])
+        IsLocalization.Away.lift_eq r (.of_mul_eq_one _ <| root_isInv r) }
+    (liftAlgHom _ (Algebra.ofId _ _) (IsLocalization.Away.invSelf r) <| show aeval _ _ = _ by simp)
     (Subsingleton.elim _ _)
     (Subsingleton.elim (h := IsLocalization.algHom_subsingleton (Submonoid.powers r)) _ _)
 

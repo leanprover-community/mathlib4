@@ -3,13 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Field.ProperSpace
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
-import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -22,6 +24,8 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 norm, nonarchimedean, rank one, compact, locally compact
 -/
+
+@[expose] public section
 
 open NNReal
 
@@ -114,8 +118,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
     have : 𝓂[K] ^ (n + 1) ≤ 𝓂[K] ^ n := Ideal.pow_le_pow_right (by simp)
     replace ih := Finite.of_equiv _ (DoubleQuot.quotQuotEquivQuotOfLE this).symm.toEquiv
     suffices Finite (Ideal.map (Ideal.Quotient.mk (𝓂[K] ^ (n + 1))) (𝓂[K] ^ n)) from
-      Finite.of_finite_quot_finite_ideal
-        (I := Ideal.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
+      .of_ideal_quotient (.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
     exact @Finite.of_equiv _ _ h
       ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
         (IsDiscreteValuationRing.not_a_field _) n).trans
@@ -224,7 +227,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedball _ z0.ne'
+    · exact Valued.isOpen_closedBall _ z0.ne'
     · refine Valued.isOpen_sphere _ ?_
       push_neg at hw
       refine (hw.trans' ?_).ne'

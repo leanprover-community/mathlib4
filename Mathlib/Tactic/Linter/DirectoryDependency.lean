@@ -3,8 +3,11 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Lean.Linter.Basic
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -13,6 +16,8 @@ The `directoryDependency` linter detects imports between directories that are su
 independent. By specifying that one directory does not import from another, we can improve the
 modularity of Mathlib.
 -/
+
+public meta section
 
 -- XXX: is there a better long-time place for this
 /-- Parse all imports in a text file at `path` and return just their names:
@@ -73,7 +78,7 @@ namespace Mathlib.Linter
 open Lean Elab Command Linter
 
 /--
-The `directoryDependency` linter detects detects imports between directories that are supposed to be
+The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. If this is the case, it emits a warning.
 -/
 register_option linter.directoryDependency : Bool := {
@@ -91,7 +96,7 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
-def NamePrefixRel := NameMap NameSet
+@[expose] def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
@@ -187,10 +192,20 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
-  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
-  (`Mathlib.Lean, `Batteries),
+  (`Mathlib.Lean, `Batteries.CodeAction),
+  -- TODO: should this be minimised further?
+  (`Mathlib.Lean.Meta.CongrTheorems, `Batteries),
+  -- These modules are transitively imported by `Batteries.CodeAction.
+  (`Mathlib.Lean, `Batteries.Classes.SatisfiesM),
+  (`Mathlib.Lean, `Batteries.Data.Array.Match),
+  (`Mathlib.Lean, `Batteries.Data.Fin),
+  (`Mathlib.Lean, `Batteries.Data.List),
+  (`Mathlib.Lean, `Batteries.Lean),
+  (`Mathlib.Lean, `Batteries.Control.ForInStep),
+  (`Mathlib.Lean, `Batteries.Tactic.Alias),
+  (`Mathlib.Lean, `Batteries.Util.ProofWanted),
+
   (`Mathlib.Lean.Expr, `Mathlib.Util),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
   -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
@@ -210,6 +225,10 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
 
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Util.ExtendedBinder),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Trans),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Init),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
@@ -221,6 +240,9 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
 
   (`Mathlib.Logic, `Batteries),
   -- TODO: should the next import direction be flipped?
@@ -591,6 +613,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra.Complex, `Mathlib.Topology), -- Complex numbers are analysis/topology.
   (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.
   (`Mathlib.LinearAlgebra.QuadraticForm, `Mathlib.Topology), -- For real/complex quadratic forms.
+  (`Mathlib.LinearAlgebra.SesquilinearForm, `Mathlib.Topology), -- for links with positive semidefinite matrices
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold)
 ]
@@ -620,7 +643,7 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getLinterOptions) do
+  unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
   let imports := env.allImportedModuleNames

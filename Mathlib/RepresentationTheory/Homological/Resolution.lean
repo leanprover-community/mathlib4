@@ -3,11 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.AlgebraicTopology.ExtraDegeneracy
-import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RepresentationTheory.Rep
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
@@ -57,6 +59,8 @@ computing group (co)homology.
  * `Rep.standardResolution`
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -129,7 +133,7 @@ def ofMulActionBasisAux :
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
   { e with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← map_smul e]
       congr 1
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · simp only [smul_zero]
@@ -411,7 +415,7 @@ variable {k G} in
 lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
-        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+        single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
 
 lemma d_comp_diagonalSuccIsoFree_inv_eq :

@@ -3,12 +3,14 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Analysis.Calculus.FDeriv.Star
-import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+module
+
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Analysis.Calculus.FDeriv.Star
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
 # Modular forms
@@ -20,6 +22,8 @@ We begin by defining modular forms and cusp forms as extension of `SlashInvarian
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
 modular form.
 -/
+
+@[expose] public section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
@@ -135,9 +139,10 @@ instance (priority := 100) ModularFormClass.modularForm :
   bdd_at_cusps := ModularForm.bdd_at_cusps'
 
 @[fun_prop]
-lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
-  Continuous f := (ModularFormClass.holo f).continuous
+    Continuous f :=
+  (ModularFormClass.holo f).continuous
 
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
@@ -620,30 +625,36 @@ end translate
 
 section SL2Z
 
-open ModularForm CuspForm
+open ModularForm CuspForm OnePoint
 
-variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] [FunLike F ℍ ℂ]
+variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 
-lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F Γ k]
-    (f : F) (g : SL(2, ℤ)) : IsBoundedAtImInfty (f ∣[k] g) := by
+instance [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
+  ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    using ⟨_, OnePoint.map_infty _⟩⟩
+
+lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k] [Fact (IsCusp ∞ Γ)] :
+    IsBoundedAtImInfty f :=
+  isBoundedAt_infty_iff.mp <| bdd_at_cusps f Fact.out
+
+lemma CuspFormClass.zero_at_infty [CuspFormClass F Γ k] [Fact (IsCusp ∞ Γ)] :
+    IsZeroAtImInfty f :=
+  isZeroAt_infty_iff.mp <| zero_at_cusps f Fact.out
+
+variable [Γ.IsArithmetic] (g : SL(2, ℤ))
+
+lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F Γ k] :
+    IsBoundedAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isBoundedAt_infty_iff, SL_slash, ← OnePoint.IsBoundedAt.smul_iff]
   apply bdd_at_cusps f
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
 
-lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k]
-    (f : F) : IsBoundedAtImInfty f := by
-  simpa using ModularFormClass.bdd_at_infty_slash f 1
-
-lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k]
-    (f : F) (g : SL(2, ℤ)) : IsZeroAtImInfty (f ∣[k] g) := by
+lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
+    IsZeroAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isZeroAt_infty_iff, SL_slash, ← OnePoint.IsZeroAt.smul_iff]
   apply zero_at_cusps f
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
-
-lemma CuspFormClass.zero_at_infty [CuspFormClass F Γ k]
-    (f : F) : IsZeroAtImInfty f := by
-  simpa using CuspFormClass.zero_at_infty_slash f 1
 
 end SL2Z
