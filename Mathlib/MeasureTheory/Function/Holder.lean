@@ -167,9 +167,9 @@ section SMul
 variable {α 𝕜' 𝕜 E : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {p q r : ℝ≥0∞} [hpqr : HolderTriple p q r]
 
-section MonoidActionWithZero
+section MulActionWithZero
 
-variable [NormedRing 𝕜] [NormedAddCommGroup E] [MonoidActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
 functions when the exponents satisfy `ENNReal.HolderTriple p q r`. -/
@@ -192,7 +192,7 @@ protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
   rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
   exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
-end MonoidActionWithZero
+end MulActionWithZero
 
 section Module
 

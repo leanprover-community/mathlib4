@@ -48,7 +48,7 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 
-lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MonoidActionWithZero R S]
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
     [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
     IsNilpotent (t • a) := by
   obtain ⟨k, ha⟩ := ha
@@ -225,7 +225,7 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 end CommSemiring
 
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
-    [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
+    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by
   refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
   induction k with

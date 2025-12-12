@@ -311,8 +311,8 @@ instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] : SMulWithZero R C_c(α, β) :=
   Function.Injective.smulWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
-instance [Zero β] {R : Type*} [MonoidWithZero R] [MonoidActionWithZero R β]
-    [ContinuousConstSMul R β] : MonoidActionWithZero R C_c(α, β) :=
+instance [Zero β] {R : Type*} [MonoidWithZero R] [MulActionWithZero R β]
+    [ContinuousConstSMul R β] : MulActionWithZero R C_c(α, β) :=
   Function.Injective.mulActionWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
 instance [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring R] [Module R β]

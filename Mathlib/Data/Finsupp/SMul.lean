@@ -34,7 +34,7 @@ namespace Finsupp
 
 section
 
-variable [Zero M] [MonoidWithZero R] [MonoidActionWithZero R M]
+variable [Zero M] [MonoidWithZero R] [MulActionWithZero R M]
 
 @[simp]
 theorem single_smul (a b : α) (f : α → M) (r : R) : single a r b • f a = single a (r • f b) b := by

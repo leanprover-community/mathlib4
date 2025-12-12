@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Common
 /-!
 # Pi instances for multiplicative actions with zero
 
-This file defines instances for `MonoidActionWithZero` and related structures on `Pi` types.
+This file defines instances for `MulActionWithZero` and related structures on `Pi` types.
 
 ## See also
 
@@ -77,11 +77,11 @@ instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 
 instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
-    [∀ i, MonoidActionWithZero α (f i)] : MonoidActionWithZero α (∀ i, f i) :=
+    [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
   { Pi.mulAction _, Pi.smulWithZero _ with }
 
 instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
-    [∀ i, MonoidActionWithZero (g i) (f i)] : MonoidActionWithZero (∀ i, g i) (∀ i, f i) :=
+    [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.mulAction', Pi.smulWithZero' with }
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]

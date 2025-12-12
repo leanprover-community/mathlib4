@@ -944,13 +944,13 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsem
   inferInstance
 
 instance (priority := low) {S' : Type*} [SetLike S' R'] [SubsemiringClass S' R'] (s : S')
-    [Zero α] [MonoidActionWithZero R' α] : MonoidActionWithZero s α where
+    [Zero α] [MulActionWithZero R' α] : MulActionWithZero s α where
   smul_zero r := smul_zero (r : R')
   zero_smul := zero_smul R'
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulActionWithZero [Zero α] [MonoidActionWithZero R' α] (S : Subsemiring R') :
-    MonoidActionWithZero S α :=
+instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring R') :
+    MulActionWithZero S α :=
   inferInstance
 
 instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R']

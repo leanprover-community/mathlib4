@@ -241,7 +241,7 @@ lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M]
     NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
   noZeroSMulDivisors_iff_right_eq_zero_of_smul
 
-lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MonoidActionWithZero M₀ M] {m₀ : M₀}
+lemma IsSMulRegular.mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MulActionWithZero M₀ M] {m₀ : M₀}
     (h : IsSMulRegular M m₀) : m₀ ∈ nonZeroSMulDivisors M₀ M :=
   fun _ ↦ h.right_eq_zero_of_smul
 

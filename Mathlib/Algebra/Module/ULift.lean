@@ -108,14 +108,14 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
   smul_zero _ := ULift.ext _ _ <| smul_zero _
   zero_smul _ := ULift.ext _ _ <| zero_smul _ _
 
-instance mulActionWithZero [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M] :
-    MonoidActionWithZero (ULift R) M :=
+instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
+    MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
     one_smul := one_smul _
     mul_smul := mul_smul }
 
-instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MonoidActionWithZero R M] :
-    MonoidActionWithZero R (ULift M) :=
+instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
+    MulActionWithZero R (ULift M) :=
   { ULift.smulWithZero' with
     one_smul := one_smul _
     mul_smul := mul_smul }

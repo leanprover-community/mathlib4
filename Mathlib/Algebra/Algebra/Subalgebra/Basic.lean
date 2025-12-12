@@ -811,7 +811,7 @@ instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α 
   inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [MonoidActionWithZero A α] (S : Subalgebra R A) : MonoidActionWithZero S α :=
+instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
   inferInstanceAs (MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/

@@ -61,7 +61,7 @@ def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
-See also `Monoid.toOppositeMonoidAction` and `MonoidWithZero.toOppositeMonoidActionWithZero`. -/
+See also `Monoid.toOppositeMonoidAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.toOppositeAddMonoidAction`. -/]

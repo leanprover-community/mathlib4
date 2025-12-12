@@ -36,7 +36,7 @@ can be uniformly approximated by sums of functions of the form `(x, y) ↦ f x �
 Note that no continuity properties are assumed either for multiplication on `R`, or for the scalar
 multiplication of `R` on `V`. -/
 lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R]
-    [MonoidWithZero R] [MonoidActionWithZero R V] (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
+    [MonoidWithZero R] [MulActionWithZero R V] (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
   have hS' : {(f, g) | ∀ y, (f y, g y) ∈ S} ∈ 𝓤 C(Y, V) :=

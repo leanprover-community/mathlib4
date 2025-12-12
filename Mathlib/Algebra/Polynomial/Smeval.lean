@@ -43,10 +43,10 @@ is a generalization of `Algebra.Polynomial.Eval`.
 
 namespace Polynomial
 
-section MonoidActionWithZero
+section MulActionWithZero
 
 variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddCommMonoid S] [Pow S ℕ]
-  [MonoidActionWithZero R S] (x : S)
+  [MulActionWithZero R S] (x : S)
 
 /-- Scalar multiplication together with taking a natural number power. -/
 def smul_pow : ℕ → R → S := fun n r => r • x ^ n
@@ -98,7 +98,7 @@ theorem smeval_X_pow {n : ℕ} :
     (X ^ n : R[X]).smeval x = x ^ n := by
   simp only [smeval_eq_sum, smul_pow, X_pow_eq_monomial, zero_smul, sum_monomial_index, one_smul]
 
-end MonoidActionWithZero
+end MulActionWithZero
 
 section Module
 

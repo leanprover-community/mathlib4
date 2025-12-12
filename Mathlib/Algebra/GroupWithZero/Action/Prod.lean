@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.End
 /-!
 # Prod instances for multiplicative actions with zero
 
-This file defines instances for `MonoidActionWithZero` and related structures on `α × β`
+This file defines instances for `MulActionWithZero` and related structures on `α × β`
 
 ## See also
 
@@ -60,8 +60,8 @@ instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] 
     SMulWithZero R (M × N) where
   zero_smul _ := by ext <;> exact zero_smul ..
 
-instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MonoidActionWithZero R M]
-    [MonoidActionWithZero R N] : MonoidActionWithZero R (M × N) :=
+instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
+    [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
   { Prod.mulAction, Prod.smulWithZero with }
 
 end Prod

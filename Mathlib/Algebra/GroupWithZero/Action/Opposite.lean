@@ -49,8 +49,8 @@ instance instSMulWithZero [MonoidWithZero M] [AddMonoid α] [SMulWithZero M α] 
     SMulWithZero M αᵐᵒᵖ where
   zero_smul _ := unop_injective <| zero_smul _ _
 
-instance instMonoidActionWithZero [MonoidWithZero M] [AddMonoid α] [MonoidActionWithZero M α] :
-    MonoidActionWithZero M αᵐᵒᵖ where
+instance instMulActionWithZero [MonoidWithZero M] [AddMonoid α] [MulActionWithZero M α] :
+    MulActionWithZero M αᵐᵒᵖ where
   smul_zero _ := unop_injective <| smul_zero _
   zero_smul _ := unop_injective <| zero_smul _ _
 

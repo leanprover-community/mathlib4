@@ -19,7 +19,7 @@ This file provides:
 and the actions
 
 * `Submodule.pointwiseDistribMulAction`
-* `Submodule.pointwiseMonoidActionWithZero`
+* `Submodule.pointwiseMulActionWithZero`
 
 which matches the action of `Set.mulActionSet`.
 
@@ -261,12 +261,12 @@ This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. Note that `add_smul` does
 not hold so this cannot be stated as a `Module`. -/
-protected def pointwiseMonoidActionWithZero : MonoidActionWithZero α (Submodule R M) :=
+protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
     zero_smul := fun S =>
       (congr_arg (fun f : M →ₗ[R] M => S.map f) (LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseMonoidActionWithZero
+scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 
 end
 

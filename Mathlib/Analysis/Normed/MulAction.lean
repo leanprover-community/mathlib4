@@ -167,7 +167,7 @@ end NormSMulClassModule
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] [SeminormedAddGroup β]
-variable [MonoidActionWithZero α β] [IsBoundedSMul α β]
+variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
 /-- For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative.
 

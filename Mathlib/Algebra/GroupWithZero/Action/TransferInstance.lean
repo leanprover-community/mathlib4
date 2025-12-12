@@ -45,11 +45,11 @@ protected abbrev smulWithZero (e : A ≃ B) [Zero M₀] [Zero B] [SMulWithZero M
   }
 
 variable (M₀) in
-/-- Transfer `MonoidActionWithZero` across an `Equiv` -/
+/-- Transfer `MulActionWithZero` across an `Equiv` -/
 protected abbrev mulActionWithZero (e : A ≃ B) [MonoidWithZero M₀] [Zero B]
-    [MonoidActionWithZero M₀ B] :
+    [MulActionWithZero M₀ B] :
     letI := e.zero
-    MonoidActionWithZero M₀ A := by
+    MulActionWithZero M₀ A := by
   letI := e.zero
   exact { e.smulWithZero M₀, e.mulAction M₀ with }
 

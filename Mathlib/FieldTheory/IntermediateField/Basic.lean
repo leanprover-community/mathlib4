@@ -372,7 +372,7 @@ instance [Zero X] [SMulWithZero L X] (F : IntermediateField K L) : SMulWithZero 
   inferInstanceAs (SMulWithZero F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
-instance [Zero X] [MonoidActionWithZero L X] (F : IntermediateField K L) : MonoidActionWithZero F X :=
+instance [Zero X] [MulActionWithZero L X] (F : IntermediateField K L) : MulActionWithZero F X :=
   inferInstanceAs (MulActionWithZero F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/

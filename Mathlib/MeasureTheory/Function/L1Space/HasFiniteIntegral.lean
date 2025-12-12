@@ -466,7 +466,7 @@ theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENo
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hf, coe_ne_top]
 
-theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MonoidActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : IsUnit c) (f : α → β) :
     HasFiniteIntegral (c • f) μ ↔ HasFiniteIntegral f μ := by
   obtain ⟨c, rfl⟩ := hc

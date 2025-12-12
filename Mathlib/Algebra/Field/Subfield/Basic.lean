@@ -652,7 +652,7 @@ instance [Zero X] [SMulWithZero K X] (F : Subfield K) : SMulWithZero F X :=
   inferInstanceAs (SMulWithZero F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
-instance [Zero X] [MonoidActionWithZero K X] (F : Subfield K) : MonoidActionWithZero F X :=
+instance [Zero X] [MulActionWithZero K X] (F : Subfield K) : MulActionWithZero F X :=
   inferInstanceAs (MulActionWithZero F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/

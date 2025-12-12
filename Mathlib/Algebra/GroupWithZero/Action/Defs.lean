@@ -180,7 +180,7 @@ variable (M₀ A) [MonoidWithZero M₀] [MonoidWithZero M₀'] [Zero A]
 /-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MonoidAction` and
 is compatible with `0` (both in `M₀` and in `A`), with `1 ∈ M₀`, and with associativity of
 multiplication on the monoid `A`. -/
-class MonoidActionWithZero extends MonoidAction M₀ A where
+class MulActionWithZero extends MonoidAction M₀ A where
   -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : M₀, r • (0 : A) = 0
@@ -188,30 +188,30 @@ class MonoidActionWithZero extends MonoidAction M₀ A where
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
 -- see Note [lower instance priority]
-instance (priority := 100) MonoidActionWithZero.toSMulWithZero (M₀ A) {_ : MonoidWithZero M₀}
-    {_ : Zero A} [m : MonoidActionWithZero M₀ A] : SMulWithZero M₀ A :=
+instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : MonoidWithZero M₀}
+    {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
   { m with }
 
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMonoidActionWithZero : MonoidActionWithZero M₀ M₀ :=
+instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
   { MulZeroClass.toSMulWithZero M₀, Monoid.toMonoidAction M₀ with }
 
-/-- Like `MonoidWithZero.toMonoidActionWithZero`, but multiplies on the right. See also
+/-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
-instance MonoidWithZero.toOppositeMonoidActionWithZero : MonoidActionWithZero M₀ᵐᵒᵖ M₀ :=
+instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero M₀ᵐᵒᵖ M₀ :=
   { MulZeroClass.toOppositeSMulWithZero M₀, Monoid.toOppositeMonoidAction with }
 
-protected lemma MonoidActionWithZero.subsingleton [MonoidActionWithZero M₀ A] [Subsingleton M₀] :
+protected lemma MulActionWithZero.subsingleton [MulActionWithZero M₀ A] [Subsingleton M₀] :
     Subsingleton A where
   allEq x y := by
     rw [← one_smul M₀ x, ← one_smul M₀ y, Subsingleton.elim (1 : M₀) 0, zero_smul, zero_smul]
 
-protected lemma MonoidActionWithZero.nontrivial
-    [MonoidActionWithZero M₀ A] [Nontrivial A] : Nontrivial M₀ :=
+protected lemma MulActionWithZero.nontrivial
+    [MulActionWithZero M₀ A] [Nontrivial A] : Nontrivial M₀ :=
   (subsingleton_or_nontrivial M₀).resolve_left fun _ =>
-    not_subsingleton A <| MonoidActionWithZero.subsingleton M₀ A
+    not_subsingleton A <| MulActionWithZero.subsingleton M₀ A
 
-variable {M₀ A} [MonoidActionWithZero M₀ A] [Zero A'] [SMul M₀ A'] (p : Prop) [Decidable p]
+variable {M₀ A} [MulActionWithZero M₀ A] [Zero A'] [SMul M₀ A'] (p : Prop) [Decidable p]
 
 lemma ite_zero_smul (a : M₀) (b : A) : (if p then a else 0 : M₀) • b = if p then a • b else 0 := by
   rw [ite_smul, zero_smul]
@@ -222,22 +222,22 @@ lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : A) (i j : ι) :
     (Pi.single i 1 : ι → M₀) j • x = (Pi.single i x : ι → A) j := by
   rw [single_apply, ite_smul, one_smul, zero_smul, single_apply]
 
-/-- Pullback a `MonoidActionWithZero` structure along an injective zero-preserving homomorphism. -/
+/-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : Injective f)
-    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MonoidActionWithZero M₀ A' :=
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
-/-- Pushforward a `MonoidActionWithZero` structure along a surjective zero-preserving homomorphism. -/
+/-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
-    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MonoidActionWithZero M₀ A' :=
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
 
-/-- Compose a `MonoidActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
-def MonoidActionWithZero.compHom (f : M₀' →*₀ M₀) : MonoidActionWithZero M₀' A where
+/-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
+def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
   mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
   one_smul m := by change f 1 • m = m; simp
@@ -245,7 +245,7 @@ def MonoidActionWithZero.compHom (f : M₀' →*₀ M₀) : MonoidActionWithZero
 end MonoidWithZero
 
 section GroupWithZero
-variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidActionWithZero G₀ G₀']
+variable [GroupWithZero G₀] [GroupWithZero G₀'] [MulActionWithZero G₀ G₀']
   [SMulCommClass G₀ G₀' G₀'] [IsScalarTower G₀ G₀' G₀']
 
 lemma smul_inv₀ (c : G₀) (x : G₀') : (c • x)⁻¹ = c⁻¹ • x⁻¹ := by

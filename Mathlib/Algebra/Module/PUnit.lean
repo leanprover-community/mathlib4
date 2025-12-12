@@ -64,7 +64,7 @@ instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
-instance mulActionWithZero [MonoidWithZero R] : MonoidActionWithZero R PUnit :=
+instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
 instance module [Semiring R] : Module R PUnit where

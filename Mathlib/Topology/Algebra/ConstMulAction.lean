@@ -358,7 +358,7 @@ theorem closure_smul₀' {c : G₀} (hc : c ≠ 0) (s : Set α) :
     closure (c • s) = c • closure s :=
   ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
 
-theorem closure_smul₀ {E} [Zero E] [MonoidActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
+theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
     [ContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · rcases eq_empty_or_nonempty s with (rfl | hs)
@@ -382,14 +382,14 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
 normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`. -/
-theorem isClosedMap_smul₀ {E : Type*} [Zero E] [MonoidActionWithZero G₀ E] [TopologicalSpace E]
+theorem isClosedMap_smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
     [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) : IsClosedMap fun x : E => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
   · simp only [zero_smul]
     exact isClosedMap_const
   · exact (Homeomorph.smulOfNeZero c hne).isClosedMap
 
-theorem IsClosed.smul₀ {E : Type*} [Zero E] [MonoidActionWithZero G₀ E] [TopologicalSpace E]
+theorem IsClosed.smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
     [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) {s : Set E} (hs : IsClosed s) :
     IsClosed (c • s) :=
   isClosedMap_smul₀ c s hs

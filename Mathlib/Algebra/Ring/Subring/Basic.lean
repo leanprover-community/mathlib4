@@ -1056,7 +1056,7 @@ instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
   inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Zero α] [MonoidActionWithZero R α] (S : Subring R) : MonoidActionWithZero S α :=
+instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
   inferInstanceAs (MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/

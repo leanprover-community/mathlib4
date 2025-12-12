@@ -442,11 +442,11 @@ variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars
     [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [Zero E] [TopologicalSpace E]
-    [SMul 𝕜 E] [MonoidActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
+    [SMul 𝕜 E] [MulActionWithZero 𝕜' E] [IsScalarTower 𝕜 𝕜' E] {s : Set E}
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s :=
   match subsingleton_or_nontrivial 𝕜' with
   | .inl _ =>
-    have : Subsingleton E := MonoidActionWithZero.subsingleton 𝕜' E
+    have : Subsingleton E := MulActionWithZero.subsingleton 𝕜' E
     IsVonNBounded.of_subsingleton
   | .inr _ =>
     h.restrict_scalars_of_nontrivial _
