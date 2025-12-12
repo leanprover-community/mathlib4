@@ -232,7 +232,7 @@ theorem ordCompl_self_pow {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 :
 
 theorem ordCompl_self_pow_mul (n k : ℕ) {p : ℕ} (hp : Prime p) :
     ordCompl[p] (p ^ k * n) = ordCompl[p] n := by
-  rw [ordCompl_mul, ordCompl_PrimePow_eq_one hp, one_mul]
+  rw [ordCompl_mul, ordCompl_self_pow hp, one_mul]
 
 theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) :
     ordCompl[p] n = n ↔ n = 0 ∨ ¬p ∣ n := by
