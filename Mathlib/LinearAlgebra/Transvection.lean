@@ -18,10 +18,6 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 * When `f : Module.Dual R V` and `v : V`,
   `LinearMap.transvection f v` is the linear map given by `x ↦ x + f x • v`,
 
-* `LinearMap.transvection.det` shows that the determinant of
-`LinearMap.transvection f v` is equal to `1 + f v`.
-
-
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
   a linear equivalence.
 
@@ -31,61 +27,59 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 namespace LinearMap
 
+open Module
+
 variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
 NB. It is only a transvection when `f v = 0`. See also `Module.preReflection`. -/
-def transvection (f : Module.Dual R V) (v : V) : V →ₗ[R] V where
+def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
   map_add' x y := by simp only [map_add]; module
   map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul]; module
 
 namespace transvection
 
-theorem apply (f : Module.Dual R V) (v x : V) :
+theorem apply (f : Dual R V) (v x : V) :
     transvection f v x = x + f x • v :=
   rfl
 
-theorem comp_of_left_eq_apply {f : Module.Dual R V} {v w : V} {x : V} (hw : f w = 0) :
+theorem comp_of_left_eq_apply {f : Dual R V} {v w : V} {x : V} (hw : f w = 0) :
     transvection f v (transvection f w x) = transvection f (v + w) x := by
   simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hw, smul_add]
   module
 
-theorem comp_of_left_eq {f : Module.Dual R V} {v w : V} (hw : f w = 0) :
+theorem comp_of_left_eq {f : Dual R V} {v w : V} (hw : f w = 0) :
     (transvection f v) ∘ₗ (transvection f w) = transvection f (v + w) := by
   ext; simp [comp_of_left_eq_apply hw]
 
-theorem comp_of_right_eq_apply {f g : Module.Dual R V} {v : V} {x : V} (hf : f v = 0) :
+theorem comp_of_right_eq_apply {f g : Dual R V} {v : V} {x : V} (hf : f v = 0) :
     (transvection f v) (transvection g v x) = transvection (f + g) v x := by
   simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hf, add_apply]
   module
 
-theorem comp_of_right_eq {f g : Module.Dual R V} {v : V} (hf : f v = 0) :
+theorem comp_of_right_eq {f g : Dual R V} {v : V} (hf : f v = 0) :
     (transvection f v) ∘ₗ (transvection g v) = transvection (f + g) v := by
   ext; simp [comp_of_right_eq_apply hf]
 
 @[simp]
 theorem of_left_eq_zero (v : V) :
-    transvection (0 : Module.Dual R V) v = LinearMap.id := by
+    transvection (0 : Dual R V) v = LinearMap.id := by
   ext
   simp [transvection]
 
 @[simp]
-theorem of_right_eq_zero (f : Module.Dual R V) :
+theorem of_right_eq_zero (f : Dual R V) :
     transvection f 0 = LinearMap.id := by
   ext
   simp [transvection]
 
 theorem eq_id_of_finrank_le_one
-    [Module.Free R V] [Module.Finite R V] [StrongRankCondition R]
-    {f : Module.Dual R V} {v : V}
-    (hfv : f v = 0) (h1 : Module.finrank R V ≤ 1) :
+    [Free R V] [Module.Finite R V] [StrongRankCondition R]
+    {f : Dual R V} {v : V} (hfv : f v = 0) (h1 : finrank R V ≤ 1) :
     transvection f v = LinearMap.id := by
-  rcases subsingleton_or_nontrivial R with hR | hR
-  · have : Subsingleton V := Module.subsingleton R V
-    subsingleton
-  let b := Module.finBasis R V
+  let b := finBasis R V
   rw [Nat.le_one_iff_eq_zero_or_eq_one] at h1
   rcases h1 with h0 | h1
   · suffices v = 0 by simp [this]
@@ -94,7 +88,7 @@ theorem eq_id_of_finrank_le_one
   · ext x
     suffices f x • v = 0 by
       simp [apply, this]
-    let i : Fin (Module.finrank R V) := ⟨0, by simp [h1]⟩
+    let i : Fin (finrank R V) := ⟨0, by simp [h1]⟩
     suffices ∀ x, x = b.repr x i • (b i) by
       rw [this x, this v]
       rw [this v] at hfv
@@ -102,7 +96,7 @@ theorem eq_id_of_finrank_le_one
       simp only [map_smul, smul_eq_mul, ← mul_smul]
       rw [mul_assoc, hfv, mul_zero, zero_smul]
     intro x
-    have : x = ∑ i, b.repr x i • b i := (Module.Basis.sum_equivFun b x).symm
+    have : x = ∑ i, b.repr x i • b i := (Basis.sum_equivFun b x).symm
     rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i)] at this
     intro j _ hj
     exfalso
@@ -111,7 +105,7 @@ theorem eq_id_of_finrank_le_one
     simpa [h1, Nat.lt_one_iff] using j.prop
 
 theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
-    (f : Module.Dual R V) (v : V) (e : V ≃ₗ[R] W) :
+    (f : Dual R V) (v : V) (e : V ≃ₗ[R] W) :
     e ∘ₗ (transvection f v) ∘ₗ e.symm = transvection (f ∘ₗ e.symm) (e v) := by
   ext; simp [transvection.apply]
 
@@ -121,10 +115,10 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
 namespace LinearEquiv
 
-open LinearMap LinearMap.transvection
+open LinearMap LinearMap.transvection Module
 
 /-- The transvection associated with a linear form `f` and a vector `v` such that `f v = 0`. -/
-def transvection {f : Module.Dual R V} {v : V} (h : f v = 0) :
+def transvection {f : Dual R V} {v : V} (h : f v = 0) :
     V ≃ₗ[R] V where
   toFun := LinearMap.transvection f v
   invFun := LinearMap.transvection f (-v)
@@ -138,26 +132,26 @@ def transvection {f : Module.Dual R V} {v : V} (h : f v = 0) :
 
 namespace transvection
 
-theorem apply {f : Module.Dual R V} {v : V} (h : f v = 0) (x : V) :
+theorem apply {f : Dual R V} {v : V} (h : f v = 0) (x : V) :
     transvection h x = x + f x • v :=
   rfl
 
 @[simp]
-theorem coe_toLinearMap {f : Module.Dual R V} {v : V} (h : f v = 0) :
+theorem coe_toLinearMap {f : Dual R V} {v : V} (h : f v = 0) :
     LinearEquiv.transvection h = LinearMap.transvection f v :=
   rfl
 
 @[simp]
-theorem coe_apply {f : Module.Dual R V} {v x : V} {h : f v = 0} :
+theorem coe_apply {f : Dual R V} {v x : V} {h : f v = 0} :
     LinearEquiv.transvection h x = LinearMap.transvection f v x :=
   rfl
 
-theorem trans_of_left_eq {f : Module.Dual R V} {v w : V}
+theorem trans_of_left_eq {f : Dual R V} {v w : V}
     (hv : f v = 0) (hw : f w = 0) (hvw : f (v + w) = 0 := by simp [hv, hw]) :
     (transvection hw).trans (transvection hv) = transvection hvw := by
   ext; simp [comp_of_left_eq_apply hw]
 
-theorem trans_of_right_eq {f g : Module.Dual R V} {v : V}
+theorem trans_of_right_eq {f g : Dual R V} {v : V}
     (hf : f v = 0) (hg : g v = 0) (hfg : (f + g) v = 0 := by simp [hf, hg]) :
     (transvection hg).trans (transvection hf) = transvection hfg := by
   ext; simp [comp_of_right_eq_apply hf]
@@ -168,17 +162,17 @@ theorem of_left_eq_zero (v : V) (hv := LinearMap.zero_apply v) :
   ext; simp [transvection]
 
 @[simp]
-theorem of_right_eq_zero (f : Module.Dual R V) (hf := f.map_zero) :
+theorem of_right_eq_zero (f : Dual R V) (hf := f.map_zero) :
     transvection hf = LinearEquiv.refl R V := by
   ext; simp [transvection]
 
-theorem symm_eq {f : Module.Dual R V} {v : V}
+theorem symm_eq {f : Dual R V} {v : V}
     (hv : f v = 0) (hv' : f (-v) = 0 := by simp [hv]) :
     (transvection hv).symm = transvection hv' := by
   ext;
   simp [LinearEquiv.symm_apply_eq, comp_of_left_eq_apply hv']
 
-theorem symm_eq' {f : Module.Dual R V} {v : V}
+theorem symm_eq' {f : Dual R V} {v : V}
     (hf : f v = 0) (hf' : (-f) v = 0 := by simp [hf]) :
     (transvection hf).symm = transvection hf' := by
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
@@ -189,16 +183,16 @@ section baseChange
 
 namespace LinearMap.transvection
 
-open LinearMap LinearEquiv
+open LinearMap LinearEquiv Module
 
 variable {A : Type*} [CommRing A] [Algebra R A]
 
-theorem baseChange (f : Module.Dual R V) (v : V) :
+theorem baseChange (f : Dual R V) (v : V) :
     (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
   ext; simp [transvection, TensorProduct.tmul_add]
 
 theorem _root_.LinearEquiv.transvection.baseChange
-    {f : Module.Dual R V} {v : V} (h : f v = 0)
+    {f : Dual R V} {v : V} (h : f v = 0)
     (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
   simp [← toLinearMap_inj, transvection.coe_toLinearMap, transvection.baseChange]
@@ -209,7 +203,7 @@ variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 @[simp]
-theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
+theorem _root_.IsBaseChange.transvection (f : Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
