@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.EverywherePos
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Topology.Metrizable.Urysohn
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
@@ -72,31 +71,6 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 open Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
-
-/-- In a locally compact regular space with an inner regular measure, the measure of a compact
-set `k` is the infimum of the integrals of compactly supported functions equal to `1` on `k`. -/
-lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
-    {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
-    {k : Set X} (hk : IsCompact k)
-    (μ : Measure X) [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
-    [LocallyCompactSpace X] [RegularSpace X] :
-    μ k = ⨅ (f : X → ℝ) (_ : Continuous f) (_ : HasCompactSupport f) (_ : EqOn f 1 k)
-      (_ : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
-  apply le_antisymm
-  · simp only [le_iInf_iff]
-    intro f f_cont f_comp fk f_nonneg
-    apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
-    · exact Eventually.of_forall f_nonneg
-    · exact fun x hx ↦ by simp [fk hx]
-  · apply le_of_forall_gt (fun r hr ↦ ?_)
-    simp only [iInf_lt_iff, exists_prop]
-    obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
-      hk.exists_isOpen_lt_of_lt r hr
-    obtain ⟨⟨f, f_cont⟩, fk, fU, f_comp, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 1 k ∧ EqOn f 0 Uᶜ
-        ∧ HasCompactSupport f ∧ ∀ (x : X), f x ∈ Icc 0 1 := exists_continuous_one_zero_of_isCompact
-      hk U_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr kU)
-    refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
-    exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
 namespace MeasureTheory
 
