@@ -122,12 +122,9 @@ lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14
     rwa [← hci, this.injective h]
   rw [Fin.strictMono_iff_lt_succ]
   obtain ⟨lb, ub⟩ := root_bounds
-  intro k
-  fin_cases k
-  all_goals
-    simp only [f, udMap, Fin.reduceFinMk, Fin.reduceSucc, Fin.reduceCastSucc, PiLp.proj_apply,
-      Matrix.cons_val_zero]
-    linarith
+  suffices c < 0 ∧ 0 < 1 + c ∧ (1 + c) / 2 < (1 - c) / 2 ∧ (1 - c) / 2 < 1 ∧ 1 < 1 - c by
+    simpa [Fin.forall_fin_succ, f, udMap]
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> linarith
 
 /-- `udMap` is injective and thus can be used in a unit-distance embedding. -/
 theorem injective_udMap : udMap.Injective := by
