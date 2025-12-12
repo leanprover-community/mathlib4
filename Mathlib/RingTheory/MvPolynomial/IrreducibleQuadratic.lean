@@ -187,7 +187,7 @@ theorem irreducible_sum_smul_X [IsDomain R]
       Finsupp.linearCombination_apply, smul_monomial, ι]
     rfl
   have hcoeff (i : n) : coeff (ι i) (sum_smul_X c) = c i := by
-    rw [aux, coeff, Finsupp.embDomain_apply]
+    simp [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sum_smul_X c).support = c.support.map ι := by
     rw [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc_nontrivial.nonempty
@@ -223,7 +223,7 @@ theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
       Finsupp.linearCombination_apply, smul_monomial, ι]
     rfl
   have hcoeff (i : n) : coeff (ι i) (sum_smul_X_mul_Y c) = c i := by
-    rw [aux, coeff, Finsupp.embDomain_apply]
+    simp [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sum_smul_X_mul_Y c).support = c.support.map ι := by
     rw [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc.nonempty
