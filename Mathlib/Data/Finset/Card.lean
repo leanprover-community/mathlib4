@@ -565,7 +565,6 @@ lemma card_union_eq_card_add_card : #(s ∪ t) = #s + #t ↔ Disjoint s t := by
 
 @[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_card_add_card
 
-
 @[grind =]
 theorem card_sdiff_of_subset (h : s ⊆ t) : #(t \ s) = #t - #s := by
   suffices #(t \ s) = #(t \ s ∪ s) - #s by rwa [sdiff_union_of_subset h] at this
