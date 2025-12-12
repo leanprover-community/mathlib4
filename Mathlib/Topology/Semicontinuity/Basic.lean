@@ -320,8 +320,6 @@ alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_
 
 end
 
-end
-
 /-! ### Composition -/
 
 section
