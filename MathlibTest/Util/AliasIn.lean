@@ -1,16 +1,16 @@
 import Mathlib.Util.AliasIn
 
 @[alias_in Baz] def Foo.Bar.baz : Nat := 1
-/-- info: Baz.Bar.baz : Nat -/
+/-- info: Foo.Baz.baz : Nat -/
 #guard_msgs in
-#check Baz.Bar.baz
+#check Foo.Baz.baz
 
-example : Baz.Bar.baz = 1 := rfl
+example : Foo.Baz.baz = 1 := rfl
 
 /- Test that this evaluates correctly (note: this requires applicationTime `.afterCompilation`) -/
 /-- info: 1 -/
 #guard_msgs in
-#eval Baz.Bar.baz
+#eval Foo.Baz.baz
 
 @[alias_in Baz.Qux] def Foo.Bar.baz2 : Nat := 2
 /-- info: Baz.Qux.baz2 : Nat -/
@@ -18,14 +18,24 @@ example : Baz.Bar.baz = 1 := rfl
 #check Baz.Qux.baz2
 
 @[alias_in Baz.Qux 1] def Foo.Bar.baz3 : Nat := 2
-/-- info: Baz.Qux.Bar.baz3 : Nat -/
+/-- info: Foo.Baz.Qux.baz3 : Nat -/
 #guard_msgs in
-#check Baz.Qux.Bar.baz3
+#check Foo.Baz.Qux.baz3
 
-@[alias_in Baz.qux 3] def Foo.Bar.baz4 : Nat := 2
-/-- info: Baz.qux : Nat -/
+/--
+error: Foo.Bar.baz4 has only 2 namespaces, cannot remove 3. ⏎
+Use `@[alias_in Baz.Qux 2]` instead.
+-/
 #guard_msgs in
-#check Baz.qux
+@[alias_in Baz.Qux 3] def Foo.Bar.baz4 : Nat := 2
+
+
+/--
+error: Bar.baz4 has only 1 namespaces, cannot remove 3. ⏎
+Use `@[alias_in Baz.Qux.Foo 1]` instead.
+-/
+#guard_msgs in
+@[alias_in Baz.Qux.Foo] def Bar.baz4 : Nat := 2
 
 
 /-- Look at this docstring! -/
@@ -40,4 +50,4 @@ Look at this docstring!
 -/
 #guard_msgs in
 open Lean in
-run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Baz.Bar.baz5).get!}"
+run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Foo.Baz.baz5).get!}"

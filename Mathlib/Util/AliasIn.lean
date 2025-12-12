@@ -14,8 +14,9 @@ Example:
 ```
 behaves like
 ```
-alias Foo.Bar.C.d := A.B.C.d
+alias A.Foo.Bar.d := A.B.C.d
 ```
+We replace the rightmost/innermost namespaces, but always leave the final part of the name intact.
 By default, `alias_in` assumes that we want to replace the same number of namespaces from the
 original name as given in the new namespace. You can override this by adding a number at the end
 ```
@@ -39,7 +40,12 @@ initialize registerBuiltinAttribute {
       let newNamespace := nm.getId.components
       let num := num.map (·.1.isNatLit?.get!) |>.getD newNamespace.length
       let srcId := mkIdent src
-      let tgtName := .fromComponents <| newNamespace ++ src.components.drop num
+      let components := src.components
+      if components.length ≤ num then
+        throwError m!"{src} has only {components.length - 1} namespaces, cannot remove {num}. \n\
+        Use `@[alias_in {nm} {components.length - 1}]` instead."
+      let tgtName := .fromComponents <|
+        components.take (components.length - 1 - num) ++ newNamespace ++ [components.getLast!]
       let tgtId := mkIdent tgtName
       liftCommandElabM <| elabCommand <| ← `(command| alias $tgtId := $srcId)
       -- add mouse-over text
