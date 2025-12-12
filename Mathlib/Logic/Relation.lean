@@ -310,10 +310,13 @@ inductive EqvGen : α → α → Prop
   | trans x y z : EqvGen x y → EqvGen y z → EqvGen x z
 
 attribute [mk_iff] TransGen
+attribute [grind] TransGen
 attribute [refl] ReflGen.refl
 attribute [grind =] reflGen_iff
+attribute [grind] ReflGen
 attribute [grind =] eqvGen_iff
-attribute [grind =] transGen_iff
+attribute [grind] EqvGen
+attribute [grind] ReflTransGen
 
 namespace ReflGen
 
