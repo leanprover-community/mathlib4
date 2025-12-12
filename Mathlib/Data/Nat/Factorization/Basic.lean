@@ -230,7 +230,7 @@ theorem ordCompl_self_pow {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 :
   · exact one_ne_zero
   · simp [Prime.factorization_pow hp]
 
-theorem ordCompl_PrimePow_mul_eq_self (n k : ℕ) {p : ℕ} (hp : Prime p) :
+theorem ordCompl_self_pow_mul (n k : ℕ) {p : ℕ} (hp : Prime p) :
     ordCompl[p] (p ^ k * n) = ordCompl[p] n := by
   rw [ordCompl_mul, ordCompl_PrimePow_eq_one hp, one_mul]
 
