@@ -64,7 +64,7 @@ lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y
   simp [mfderiv, if_pos this, Function.comp_assoc]
 
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in
-the basis also has unique differential. -/
+the base also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
   hs.bundle_preimage _
