@@ -85,7 +85,7 @@ open scoped BoundedContinuousFunction Topology NNReal ContDiff
 variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  {n k : ℕ∞} {K : Compacts E}
+  {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -295,6 +295,41 @@ lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
+  rfl
+
+open scoped Classical in
+variable (n₁ n₂ K₁ K₂) in
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoLM 𝕜 n₁ n₂ K₁ K₂` is the `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
+
+This is in fact continuous (see `monoCLM`). Furthermore:
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ +1` and `K₁ ⊆ K₂` (not in Mathlib yet)
+-/
+noncomputable def monoLM :
+    𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toFun f :=
+    if h : n₂ ≤ n₁ ∧ K₁ ≤ K₂ then
+      .of_support_subset (f.contDiff.of_le (mod_cast h.1)) (f.support_subset.trans h.2)
+    else 0
+  map_add' f g := by split_ifs <;> ext <;> simp
+  map_smul' c f := by split_ifs <;> ext <;> simp
+
+open scoped Classical in
+@[simp]
+lemma monoLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    (monoLM 𝕜 n₁ n₂ K₁ K₂ f : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 := by
+  rw [monoLM]
+  split_ifs <;> rfl
+
+@[simp]
+lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) → _) = monoLM 𝕜' n₁ n₂ K₁ K₂ :=
   rfl
 
 variable (n k) in
@@ -656,6 +691,52 @@ instance : T3Space 𝓓^{n}_{K}(E, F) :=
   have : T2Space 𝓓^{n}_{K}(E, F) := .of_injective_continuous this
     (toBoundedContinuousFunctionCLM ℝ).continuous
   inferInstance
+
+theorem seminorm_monoLM_le {i : ℕ} (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 n₁ n₂ K₁ K₂ f) ≤ N[𝕜]_{K₁, n₁, i} f := by
+  by_cases H : n₂ ≤ n₁ ∧ K₁ ≤ K₂
+  · simp (discharger := positivity) only [ContDiffMapSupportedIn.seminorm_le_iff_withOrder,
+      monoLM_apply, H, true_and, if_true]
+    intro hik _ _
+    exact norm_iteratedFDeriv_apply_le_seminorm_withOrder _ (hik.trans (mod_cast H.1))
+  · simp [H]
+
+theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂) (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 n₁ n₂ K₁ K₂ f) = N[𝕜]_{K₁, n₁, i} f := by
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm, ContDiffMapSupportedIn.seminorm_apply,
+    structureMapCLM_apply_withOrder, h₁, h₂]
+
+variable (n₁ n₂ K₁ K₂) in
+/-- If `n₁ ≥ n₂` and `K₁ ≤ K₂`, `monoCLM 𝕜 n₁ n₂ K₁ K₂` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{}_{Q'}(E, F)`. Otherwise, this is the zero map.
+
+Furthermore:
+* it is a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
+-/
+noncomputable def monoCLM :
+    𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toLinearMap := monoLM 𝕜 n₁ n₂ K₁ K₂
+  cont := show Continuous (monoLM 𝕜 n₁ n₂ K₁ K₂) by
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, 1, fun f ↦ ?_⟩)
+    simpa using seminorm_monoLM_le 𝕜 f
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    (monoCLM 𝕜 n₁ n₂ K₁ K₂ f : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 :=
+  monoLM_apply 𝕜 f
+
+@[simp]
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoCLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoCLM 𝕜 n₁ n₂ K₁ K₂ : 𝓓^{n₁}_{K₁}(E, F) → _) = monoCLM 𝕜' n₁ n₂ K₁ K₂ :=
+  rfl
 
 end Topology
 
