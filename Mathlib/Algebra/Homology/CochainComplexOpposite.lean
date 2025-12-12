@@ -184,8 +184,8 @@ lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
   obtain rfl : n = -m := by lia
   rw [HomologicalComplex.exactAt_iff' _ (m - 1) m (m + 1) (by simp) (by simp),
     ← ShortComplex.exact_unop_iff]
-  rwa [HomologicalComplex.exactAt_iff' _ (-(m + 1)) (-m) (-(m - 1)) (by simp; lia)
-    (by simp; lia)] at hK
+  rwa [HomologicalComplex.exactAt_iff' _ (-(m + 1)) (-m) (-(m - 1)) (by grind [prev])
+    (by grind [next])] at hK
 
 lemma acyclic_op {K : CochainComplex C ℤ} (hK : K.Acyclic) :
    ((opEquivalence C).functor.obj (op K)).Acyclic :=
