@@ -124,12 +124,10 @@ theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [Lin
     {B : ι → SetRel α α} (hB : (uniformity α).HasAntitoneBasis B) : CompletelyNormalSpace α where
   completely_normal s t hSt hsT := by
     let S (b : Bool) : Set α := b.casesOn (false := s) (true := t)
-    have hST (b : Bool) : Disjoint (S b) (closure (S !b)) :=
-      b.casesOn (false := hsT) (true := hSt.symm)
-    have hx (b : Bool) (x : S b) :
-        ∃ i, Disjoint (ball x.1 ((B i).comp (B i).inv)) (closure (S (!b))) := by
-      obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1
-        (isClosed_closure.compl_mem_nhds ((hST b).notMem_of_mem_left x.2))
+    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (ball x.1 ((B i).comp (B i).inv)) (S (!b)) := by
+      have hST : Disjoint (S b) (closure (S !b)) := b.casesOn (false := hsT) (true := hSt.symm)
+      rw [← disjoint_nhdsSet_principal, disjoint_principal_right] at hST
+      obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1 (nhds_le_nhdsSet x.2 hST)
       obtain ⟨(V : SetRel α α), hV, hVs, hVU⟩ := comp_symm_mem_uniformity_sets hUu
       obtain ⟨i, hi⟩ := hB.mem_iff.1 hV
       refine ⟨i, subset_compl_iff_disjoint_right.1 (subset_trans (ball_mono ?_ x.1) hU)⟩
@@ -146,8 +144,7 @@ theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [Lin
         Disjoint (ball x.1 (B (U b x))) (ball y.1 (B (U (!b) y))) := by
       rw [Set.disjoint_iff]
       intro z hz
-      exact (hU b x).notMem_of_mem_left
-        (mem_ball_comp hz.1 (hB.antitone hxy hz.2)) (subset_closure y.2)
+      exact (hU b x).notMem_of_mem_left (mem_ball_comp hz.1 (hB.antitone hxy hz.2)) y.2
     simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]
     intro x y
     exact (le_total (U false x) (U true y)).elim
