@@ -211,7 +211,7 @@ alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_
 @[deprecated (since := "2025-12-06")]
 alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
-@[deprecated (since := "2025-12-06")]
+@[deprecated (since := "2025-12-13")]
 alias mem_lift_of_splits_of_roots_mem_range := Splits.mem_lift_of_roots_mem_range
 
 /--
