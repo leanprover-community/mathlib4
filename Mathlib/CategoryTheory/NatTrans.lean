@@ -97,7 +97,7 @@ end
 
 /-- The diagram
 ```
-   F(f)      F(g)      F(h)
+    F(f)      F(g)      F(h)
 F X ----> F Y ----> F U ----> F V
  |         |         |         |
  | α(X)    | α(Y)    | α(U)    | α(V)
