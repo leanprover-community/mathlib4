@@ -71,11 +71,10 @@ lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAf
 
 instance [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U where
-  component_artinian W := by
-    have F := (Scheme.Hom.appIso U.ι ↑W).commRingCatIsoToRingEquiv
+  component_artinian W :=
     have : IsArtinianRing Γ(X, U.ι ''ᵁ W) :=
       h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
-    RingEquiv.isArtinianRing F
+    RingEquiv.isArtinianRing (Scheme.Hom.appIso U.ι ↑W).commRingCatIsoToRingEquiv
 
 instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
