@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
@@ -393,6 +393,21 @@ noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
     Δ[1] ≅ (face {i, j} : SSet.{u}) :=
   stdSimplex.isoOfRepresentableBy
     (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
+
+instance (n : SimplexCategory) (d : SimplexCategoryᵒᵖ) :
+    Finite ((stdSimplex.{u}.obj n).obj d) := by
+  rw [objEquiv.finite_iff]
+  infer_instance
+
+instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).Finite := by
+  induction n using SimplexCategory.rec with | _ n
+  exact finite_of_hasDimensionLT _ (n + 1) inferInstance
+
+instance {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
+    SSet.Finite (Subcomplex.ofSimplex x) := by
+  obtain ⟨f, rfl⟩ := yonedaEquiv.surjective x
+  rw [← Subcomplex.range_eq_ofSimplex]
+  infer_instance
 
 end stdSimplex
 
