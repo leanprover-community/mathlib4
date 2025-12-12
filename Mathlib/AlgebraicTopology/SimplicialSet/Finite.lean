@@ -96,10 +96,7 @@ lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.F
   refine finite_of_hasDimensionLT _ d (fun i hi ↦ ?_)
   apply Finite.of_injective (f := fun a ↦ f.app _ a.1)
   rintro ⟨x, _⟩ ⟨y, _⟩ h
-  obtain rfl : x = y := by
-    rw [NatTrans.mono_iff_mono_app] at hf
-    simp only [mono_iff_injective] at hf
-    exact hf _ h
+  obtain rfl : x = y := injective_of_mono _ h
   rfl
 
 lemma finite_of_epi {Y : SSet.{u}} [X.Finite] (f : X ⟶ Y) [hf : Epi f] : Y.Finite := by
