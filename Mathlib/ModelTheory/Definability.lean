@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Tactic
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Definable Sets
@@ -486,7 +486,9 @@ lemma definable_preimage_of_definableMap
   ext v
   simp only [mem_setOf_eq, Sum.elim_comp_inl, Sum.elim_inr, Sum.elim_comp_inr]
   constructor
-  · intro h ; use (F v) ; grind
+  · intro h
+    use (F v)
+    grind
   · rintro ⟨u,hFv,hu⟩
     have : F v = u := by exact (eqOn_univ (F v) u).mp fun ⦃x⦄ a ↦ hFv x
     rwa [this]
