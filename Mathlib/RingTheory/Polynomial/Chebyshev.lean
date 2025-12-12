@@ -341,8 +341,7 @@ theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degre
     push_cast; push_cast at ih2
     have : (2 * X * U R (n+1)).degree = ↑(n + 2) := by
       change (C 2 * X * U R (n+1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2)]
-      rw [mul_comm, degree_mul_X, ih2]
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih2]
       norm_cast
     rw [U_add_two, degree_sub_eq_left_of_degree_lt]
     · rw [this]; norm_cast
@@ -406,8 +405,8 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
   | more n ih1 ih2 =>
     trans (n + 2 : ℤ).negOnePow * (2 * x * (U R (n + 1)).eval x - (U R n).eval x)
     · push_cast; push_cast at ih2
-      rw [U_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2]
-      rw [Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
+      rw [U_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2,
+        Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
       simp; ring
     · simp
 
