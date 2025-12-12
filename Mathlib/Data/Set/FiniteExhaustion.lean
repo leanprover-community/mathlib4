@@ -99,4 +99,4 @@ protected theorem prod_apply (n : ℕ) : (K.prod K') n = K n ×ˢ K' n := by rfl
 
 end prod
 
-end FiniteExhaustion
+end Set.FiniteExhaustion
