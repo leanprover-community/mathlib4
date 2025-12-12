@@ -23,9 +23,10 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
   to generalizations lifting along `Spec S → Spec R`.
 - `Algebra.HasGoingDown.of_flat`: flat algebras satisfy going down.
 
-## TODOs
+## Note
 
-- An integral extension of domains with normal base satisfies going down.
+- For the fact that an integral extension of domains with normal base satisfies going down,
+  see `Mathlib/RingTheory/IntegralClosure/GoingDown.lean`.
 
 -/
 
