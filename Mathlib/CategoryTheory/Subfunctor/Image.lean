@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 /-!
 # The image of a subfunctor
 
-Given a morphism of presheaves of types `p : F' ⟶ F`, we define its range
+Given a morphism of type-valued functors `p : F' ⟶ F`, we define its range
 `Subfunctor.range p`. More generally, if `G' : Subfunctor F'`, we
 define `G'.image p : Subfunctor F` as the image of `G'` by `f`, and
 if `G : Subfunctor F`, we define its preimage `G.preimage f : Subfunctor F'`.
@@ -31,7 +31,7 @@ namespace Subfunctor
 
 section range
 
-/-- The range of a morphism of presheaves of types, as a subfunctor of the target. -/
+/-- The range of a morphism of type-valued functors, as a subfunctor of the target. -/
 @[simps]
 def range (p : F' ⟶ F) : Subfunctor F where
   obj U := Set.range (p.app U)
@@ -68,7 +68,7 @@ section range
 
 variable (p : F' ⟶ F)
 
-/-- Given a morphism `p : F' ⟶ F` of presheaves of types, this is the morphism
+/-- Given a morphism `p : F' ⟶ F` of type-valued functors, this is the morphism
 from `F'` to its range. -/
 def toRange :
     F' ⟶ (range p).toPresheaf :=
@@ -119,7 +119,7 @@ section image
 
 variable (G : Subfunctor F) (f : F ⟶ F')
 
-/-- The image of a subfunctor by a morphism of presheaves of types. -/
+/-- The image of a subfunctor by a morphism of type-valued functors. -/
 @[simps]
 def image : Subfunctor F' where
   obj i := (f.app i) '' (G.obj i)
@@ -143,7 +143,7 @@ end image
 
 section preimage
 
-/-- The preimage of a subfunctor by a morphism of presheaves of types. -/
+/-- The preimage of a subfunctor by a morphism of type-valued functors. -/
 @[simps]
 def preimage (G : Subfunctor F) (p : F' ⟶ F) : Subfunctor F' where
   obj n := p.app n ⁻¹' (G.obj n)
@@ -162,7 +162,7 @@ lemma image_le_iff (G : Subfunctor F) (f : F ⟶ F') (G' : Subfunctor F') :
     G.image f ≤ G' ↔ G ≤ G'.preimage f := by
   simp [Subfunctor.le_def]
 
-/-- Given a morphism `p : F' ⟶ F` of presheaves of types and `G : Subfunctor F`,
+/-- Given a morphism `p : F' ⟶ F` of type-valued functors and `G : Subfunctor F`,
 this is the morphism from the preimage of `G` by `p` to `G`. -/
 def fromPreimage (G : Subfunctor F) (p : F' ⟶ F) :
     (G.preimage p).toPresheaf ⟶ G.toPresheaf :=

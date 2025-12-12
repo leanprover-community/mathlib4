@@ -31,14 +31,14 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A subfunctor of a presheaf consists of a subset of `F.obj U` for every `U`,
+/-- A subfunctor of a functor consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
 structure Subfunctor (F : C ⥤ Type w) where
-  /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
+  /-- If `G` is a subfunctor of `F`, then the sections of `G` on `U` forms a subset of sections of
   `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
-  /-- If `G` is a sub-presheaf of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
+  /-- If `G` is a subfunctor of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 

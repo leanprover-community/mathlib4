@@ -9,9 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
-# The equalizer of two morphisms of presheaves, as a subfunctor
+# The equalizer of two morphisms of functors, as a subfunctor
 
-If `F₁` and `F₂` are presheaves of types, `A : Subfunctor F₁`, and
+If `F₁` and `F₂` are type-valued functors, `A : Subfunctor F₁`, and
 `f` and `g` are two morphisms `A.toPresheaf ⟶ F₂`, we introduce
 `Subcomplex.equalizer f g`, which is the subfunctor of `F₁` contained in `A`
 where `f` and `g` coincide.
@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ Type w} {A : Subfuncto
 
 namespace Subfunctor
 
-/-- The equalizer of two morphisms of presheaves of types of the form
+/-- The equalizer of two morphisms of type-valued functors of types of the form
 `A.toPresheaf ⟶ F₂` with `A : Subfunctor F₁`, as a subcomplex of `F₁`. -/
 @[simps -isSimp]
 protected def equalizer : Subfunctor F₁ where
@@ -69,7 +69,7 @@ lemma equalizer_eq_iff :
     exact le_antisymm (equalizer_le f g) h
 
 /-- Given two morphisms `f` and `g` in `A.toPresheaf ⟶ F₂`, this is the monomorphism
-of presheaves corresponding to the inclusion `Subfunctor.equalizer f g ≤ A`. -/
+of functors corresponding to the inclusion `Subfunctor.equalizer f g ≤ A`. -/
 def equalizer.ι : (Subfunctor.equalizer f g).toPresheaf ⟶ A.toPresheaf :=
   homOfLe (equalizer_le f g)
 
@@ -88,7 +88,7 @@ lemma equalizer.condition : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g := b
 is such that `φ ≫ f = φ ≫ g`, then this is the lifted morphism
 `G ⟶ (Subfunctor.equalizer f g).toPresheaf`. This is part of the universal
 property of the equalizer that is satisfied by
-the presheaf `(Subfunctor.equalizer f g).toPresheaf`. -/
+the functor `(Subfunctor.equalizer f g).toPresheaf`. -/
 def equalizer.lift {G : C ⥤ Type w} (φ : G ⟶ A.toPresheaf)
     (w : φ ≫ f = φ ≫ g) :
     G ⟶ (Subfunctor.equalizer f g).toPresheaf :=
