@@ -397,6 +397,7 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
     try
       result ← orElse result <| ext.eval zα pα e
+      trace[Tactic.positivity] "Best info about {e}: {result.toString}"
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
   result ← orElse result <| normNumPositivity zα pα e
