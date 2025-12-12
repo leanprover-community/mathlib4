@@ -1239,34 +1239,3 @@ theorem ncard_eq_four : s.ncard = 4 ↔
 
 end ncard
 end Set
-
-theorem Function.Surjective.card_le_card_add_one_iff
-    {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
-    Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
-      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  rcases isEmpty_or_nonempty α
-  · simp
-  let g := Function.surjInv hf
-  rw [← Set.ncard_range_of_injective (Function.injective_surjInv hf),
-    ← Set.ncard_add_ncard_compl (Set.range g), add_le_add_iff_left]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [Set.ncard_le_one_iff_subset_singleton] at h
-    obtain ⟨x, hx⟩ := h
-    replace hf : ∀ b, f (g b) = b := Function.surjInv_eq hf
-    simp only [Set.subset_def, Set.mem_compl_iff] at hx
-    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by grind
-    intro a b
-    by_cases ha : a ∈ Set.range g <;> by_cases hb : b ∈ Set.range g <;> grind
-  · rw [Set.ncard_le_one]
-    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, ← ne_eq]
-    intro a ha b hb
-    simpa [(ha (f b)).symm] using congrArg (a ∈ ·) (h a (g (f a)) b (g (f b))
-      (Function.surjInv_eq hf (f a)).symm (Function.surjInv_eq hf (f b)).symm
-      (ha (f a)).symm (hb (f b)).symm)
-
-theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
-    s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
-      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  simpa [Subtype.ext_iff, ← (Set.image_injective.mpr Subtype.val_injective).eq_iff,
-     Set.image_insert_eq, Set.image_singleton] using
-      (Set.surjective_mapsTo_image_restrict f s).card_le_card_add_one_iff
