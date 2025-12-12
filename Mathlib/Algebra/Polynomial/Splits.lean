@@ -285,48 +285,25 @@ alias eval_derivative_of_splits := Splits.eval_derivative
 @[deprecated (since := "2025-12-08")]
 alias aeval_root_derivative_of_splits := Splits.eval_root_derivative
 
-theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
-    (h : p.Splits) (hx : p.eval x ≠ 0) :
-    p.derivative.eval x = p.eval x * (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  classical
-  suffices p.roots.map (fun z ↦ p.leadingCoeff * ((p.roots.erase z).map (fun w ↦ x - w) ).prod) =
-      p.roots.map fun i ↦ p.leadingCoeff * ((x - i)⁻¹ * (p.roots.map (fun z ↦ x - z)).prod) by
-    nth_rw 2 [Splits.eq_prod_roots h]
-    simp [h.eval_derivative, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
-      mul_comm, mul_left_comm]
-  refine Multiset.map_congr rfl fun z hz ↦ ?_
-  rw [← Multiset.prod_map_erase hz, inv_mul_cancel_left₀]
-  aesop (add simp sub_eq_zero)
+@[deprecated (since := "2025-12-12")]
+alias eval_derivative_eq_eval_mul_sum_of_splits := Splits.eval_derivative_eq_eval_mul_sum
 
-theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
-    (h : p.Splits) (hx : p.eval x ≠ 0) :
-    p.derivative.eval x / p.eval x = (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  rw [eval_derivative_eq_eval_mul_sum_of_splits h hx]
-  exact mul_div_cancel_left₀ _ hx
+@[deprecated (since := "2025-12-12")]
+alias eval_derivative_div_eval_of_ne_zero_of_splits := Splits.eval_derivative_div_eval_of_ne_zero
 
-theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]}
-    (hP : P.Splits) :
-    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
-  nth_rw 1 [hP.eq_prod_roots]
-  simp only [coeff_zero_eq_eval_zero, eval_mul, eval_C, eval_multiset_prod, Function.comp_apply,
-    Multiset.map_map, eval_sub, eval_X, zero_sub, Multiset.prod_map_neg]
-  grind [splits_iff_card_roots]
+@[deprecated (since := "2025-12-12")]
+alias coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits :=
+  Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots
 
-/-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem coeff_zero_eq_prod_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
-  simp [hmo, coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP]
+@[deprecated (since := "2025-12-12")]
+alias coeff_zero_eq_prod_roots_of_monic_of_splits := Splits.coeff_zero_eq_prod_roots_of_monic
 
-theorem nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits {P : K[X]}
-    (hP : P.Splits) : P.nextCoeff = -P.leadingCoeff * P.roots.sum := by
-  nth_rw 1 [Splits.eq_prod_roots hP]
-  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
+@[deprecated (since := "2025-12-12")]
+alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
+  Splits.nextCoeff_eq_neg_sum_roots_mul_leadingCoeff
 
-/-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the negative of the sum
-of the roots. -/
-theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits) : P.nextCoeff = -P.roots.sum := by
-  simp [hmo, nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP]
+@[deprecated (since := "2025-12-12")]
+alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
 
 @[deprecated (since := "2025-10-08")]
 alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
