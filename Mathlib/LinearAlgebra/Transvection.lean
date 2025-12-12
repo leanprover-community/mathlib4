@@ -7,12 +7,10 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
-public import Mathlib.LinearAlgebra.Dual.BaseChange
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-!
 # Transvections in a module
