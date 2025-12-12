@@ -314,8 +314,6 @@ attribute [grind] TransGen
 attribute [refl] ReflGen.refl
 attribute [grind =] reflGen_iff
 attribute [grind] ReflGen
-attribute [grind =] eqvGen_iff
-attribute [grind] EqvGen
 attribute [grind] ReflTransGen
 
 namespace ReflGen
