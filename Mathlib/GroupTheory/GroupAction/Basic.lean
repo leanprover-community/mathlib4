@@ -131,8 +131,8 @@ theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
 
 section Orbit
 
--- TODO: This proof is redoing a special case of `MonoidAction.IsInvariantBlock.isBlock`. Can we move
--- this lemma earlier to golf?
+-- TODO: This proof is redoing a special case of `MonoidAction.IsInvariantBlock.isBlock`.
+-- Can we move this lemma earlier to golf?
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|

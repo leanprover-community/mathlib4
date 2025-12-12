@@ -60,10 +60,12 @@ end OrderDual
 namespace Lex
 
 @[to_additive]
-instance instMonoidAction [Monoid M] [MonoidAction M α] : MonoidAction (Lex M) α := ‹MonoidAction M α›
+instance instMonoidAction [Monoid M] [MonoidAction M α] : MonoidAction (Lex M) α :=
+  ‹MonoidAction M α›
 
 @[to_additive]
-instance instMonoidAction' [Monoid M] [MonoidAction M α] : MonoidAction M (Lex α) := ‹MonoidAction M α›
+instance instMonoidAction' [Monoid M] [MonoidAction M α] : MonoidAction M (Lex α) :=
+  ‹MonoidAction M α›
 
 @[to_additive]
 instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :

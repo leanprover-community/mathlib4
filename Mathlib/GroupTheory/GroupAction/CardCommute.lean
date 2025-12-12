@@ -42,8 +42,8 @@ local notation "Ω" => Quotient <| orbitRel α β
 `Quotient.out`. -/
 @[to_additive
       /-- **Class formula** for a finite group acting on a finite type. See
-      `AddMonoidAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized version using
-      `Quotient.out`. -/]
+      `AddMonoidAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized
+      version using `Quotient.out`. -/]
 theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by

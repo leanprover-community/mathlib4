@@ -237,7 +237,8 @@ lemma noZeroDivisors_iff_forall_mem_nonZeroDivisors :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ M₀⁰ :=
   noZeroDivisors_iff_eq_zero_of_mul
 
-lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors {M : Type*} [Zero M] [MonoidAction M₀ M] :
+lemma noZeroSMulDivisors_iff_forall_mem_nonZeroSMulDivisors
+    {M : Type*} [Zero M] [MonoidAction M₀ M] :
     NoZeroSMulDivisors M₀ M ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroSMulDivisors M₀ M :=
   noZeroSMulDivisors_iff_right_eq_zero_of_smul
 

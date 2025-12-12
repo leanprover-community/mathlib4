@@ -1130,8 +1130,9 @@ theorem smul_tendsto_smul_iff [Group γ] [MonoidAction γ β] {m : α → β} {c
     {g : Filter β} : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   Group.isUnit _ |>.smul_tendsto_smul_iff
 
-theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MonoidAction γ β] {m : α → β} {c : γ} {f : Filter α}
-    {g : Filter β} (hc : c ≠ 0) : Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
+theorem smul_tendsto_smul_iff₀ [GroupWithZero γ] [MonoidAction γ β]
+    {m : α → β} {c : γ} {f : Filter α} {g : Filter β} (hc : c ≠ 0) :
+    Tendsto (c • m) f (c • g) ↔ Tendsto m f g :=
   hc.isUnit.smul_tendsto_smul_iff
 
 end Cancel

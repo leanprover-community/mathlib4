@@ -500,8 +500,8 @@ variable [MonoidAction G H] [IsScalarTower G H H]
 
 /-- See `MonoidAction.isBlock_subgroup'` for a version that works for the right action of a group on
 itself. -/
-@[to_additive /-- See `AddMonoidAction.isBlock_subgroup'` for a version that works for the right action
-of a group on itself. -/]
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup'` for a version that works for the right
+action of a group on itself. -/]
 lemma isBlock_subgroup : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
   rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
@@ -517,8 +517,8 @@ open MulOpposite
 
 /-- See `MonoidAction.isBlock_subgroup` for a version that works for the left action of a group on
 itself. -/
-@[to_additive /-- See `AddMonoidAction.isBlock_subgroup` for a version that works for the left action
-of a group on itself. -/]
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup` for a version that works for the left
+action of a group on itself. -/]
 lemma isBlock_subgroup' : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
   rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩

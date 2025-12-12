@@ -180,7 +180,8 @@ def AddMonoidAction.toEndHom [AddMonoidAction M α] : M →+ Additive (Function.
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
-abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddMonoidAction M α := .compHom α f
+abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) :
+    AddMonoidAction M α := .compHom α f
 
 end AddMonoid
 
@@ -210,7 +211,8 @@ variable (G α) [AddGroup G] [AddMonoidAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MonoidAction.toPermHom ..).toAdditiveRight
+def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
+  (MonoidAction.toPermHom ..).toAdditiveRight
 
 lemma AddMonoidAction.coe_toPermHom :
     ⇑(AddMonoidAction.toPermHom G α) = AddMonoidAction.toPerm :=

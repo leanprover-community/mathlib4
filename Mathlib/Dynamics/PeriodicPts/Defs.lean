@@ -27,8 +27,8 @@ A point `x : α` is a periodic point of `f : α → α` of period `n` if `f^[n] 
 * `minimalPeriod f x` : the minimal period of a point `x` under an endomorphism `f` or zero
   if `x` is not a periodic point of `f`.
 * `orbit f x`: the cycle `[x, f x, f (f x), ...]` for a periodic point.
-* `MonoidAction.period g x` : the minimal period of a point `x` under the multiplicative action of `g`;
-  an equivalent `AddMonoidAction.period g x` is defined for additive actions.
+* `MonoidAction.period g x` : the minimal period of a point `x` under the multiplicative
+  action of `g`; an equivalent `AddMonoidAction.period g x` is defined for additive actions.
 
 ## Main statements
 

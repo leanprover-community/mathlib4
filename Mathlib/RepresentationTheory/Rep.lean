@@ -574,7 +574,8 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n �
       single (g • Fin.partialProd f) (a * b) := by
   have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
   simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
-    tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _), Action.ofMonoidAction_V]
+    tensorObj_carrier, types_tensorObj_def, ModuleCat.hom_id (M := .of _ _),
+    Action.ofMonoidAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g r ⊗ₜ f) =

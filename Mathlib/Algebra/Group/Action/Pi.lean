@@ -95,7 +95,8 @@ instance faithfulSMul [Nonempty ι] [∀ i, SMul M (α i)] [∀ i, Nonempty (α 
   faithfulSMul_at i
 
 @[to_additive]
-instance mulAction (M) {m : Monoid M} [∀ i, MonoidAction M (α i)] : @MonoidAction M (∀ i, α i) m where
+instance mulAction (M) {m : Monoid M} [∀ i, MonoidAction M (α i)] :
+    @MonoidAction M (∀ i, α i) m where
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 

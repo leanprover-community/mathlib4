@@ -133,8 +133,9 @@ instance : ContinuousInv₀ ℚ≥0 := inferInstance
 instance : ContinuousSMul ℚ ℝ where
   continuous_smul := continuous_induced_dom.fst'.smul (M := ℝ) (X := ℝ) continuous_snd
 
-instance {R : Type*} [TopologicalSpace R] [MonoidAction ℚ R] [MonoidAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
-    [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
+instance {R : Type*} [TopologicalSpace R] [MonoidAction ℚ R]
+    [MonoidAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R] [ContinuousSMul ℚ R] :
+    ContinuousSMul ℚ≥0 R where
   continuous_smul := by
     conv in _ • _ => rw [← NNRat.cast_smul_eq_nnqsmul ℚ]
     fun_prop

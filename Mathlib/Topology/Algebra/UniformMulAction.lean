@@ -163,8 +163,9 @@ open scoped Pointwise
 variable {M X}
 
 @[to_additive]
-theorem IsUnit.smul_uniformity [Monoid M] [MonoidAction M X] [UniformContinuousConstSMul M X] {c : M}
-    (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
+theorem IsUnit.smul_uniformity [Monoid M] [MonoidAction M X]
+    [UniformContinuousConstSMul M X] {c : M} (hc : IsUnit c) :
+    c • 𝓤 X = 𝓤 X :=
   let ⟨d, hcd⟩ := hc.exists_right_inv
   have cU : c • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul c
   have dU : d • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul d
@@ -175,8 +176,9 @@ theorem smul_uniformity [Group M] [MonoidAction M X] [UniformContinuousConstSMul
     c • 𝓤 X = 𝓤 X :=
   Group.isUnit _ |>.smul_uniformity
 
-theorem smul_uniformity₀ [GroupWithZero M] [MonoidAction M X] [UniformContinuousConstSMul M X] {c : M}
-    (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
+theorem smul_uniformity₀ [GroupWithZero M] [MonoidAction M X]
+    [UniformContinuousConstSMul M X] {c : M} (hc : c ≠ 0) :
+    c • 𝓤 X = 𝓤 X :=
   hc.isUnit.smul_uniformity
 
 end Unit

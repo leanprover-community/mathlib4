@@ -79,8 +79,8 @@ variable {G H α β E : Type*}
 
 namespace IsFundamentalDomain
 
-variable [Group G] [Group H] [MonoidAction G α] [MeasurableSpace α] [MonoidAction H β] [MeasurableSpace β]
-  [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
+variable [Group G] [Group H] [MonoidAction G α] [MeasurableSpace α] [MonoidAction H β]
+  [MeasurableSpace β] [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
 
 /-- If for each `x : α`, exactly one of `g • x`, `g : G`, belongs to a measurable set `s`, then `s`
 is a fundamental domain for the action of `G` on `α`. -/
@@ -833,7 +833,8 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have : π ⁻¹' (π '' (A n)) = _ := MonoidAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    have : π ⁻¹' (π '' (A n)) = _ :=
+      MonoidAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
       let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]

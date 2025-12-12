@@ -462,8 +462,8 @@ theorem span_singleton_smul_le {S} [SMul S R] [SMul S M] [IsScalarTower S R M]
   rw [span_le, Set.singleton_subset_iff, SetLike.mem_coe]
   exact smul_of_tower_mem _ _ (mem_span_singleton_self _)
 
-theorem span_singleton_group_smul_eq {G} [Group G] [SMul G R] [MonoidAction G M] [IsScalarTower G R M]
-    (g : G) (x : M) : R ∙ g • x = R ∙ x := by
+theorem span_singleton_group_smul_eq {G} [Group G] [SMul G R] [MonoidAction G M]
+    [IsScalarTower G R M] (g : G) (x : M) : R ∙ g • x = R ∙ x := by
   refine le_antisymm (span_singleton_smul_le R g x) ?_
   convert span_singleton_smul_le R g⁻¹ (g • x)
   exact (inv_smul_smul g x).symm

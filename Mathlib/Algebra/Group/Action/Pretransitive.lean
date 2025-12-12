@@ -42,7 +42,8 @@ variable {M G α β : Type*}
 for an additive action). A transitive action should furthermore have `α` nonempty.
 
 In this section we define typeclasses `MonoidAction.IsPretransitive` and
-`AddMonoidAction.IsPretransitive` and provide `MonoidAction.exists_smul_eq`/`AddMonoidAction.exists_vadd_eq`,
+`AddMonoidAction.IsPretransitive` and provide
+`MonoidAction.exists_smul_eq`/`AddMonoidAction.exists_vadd_eq`,
 `MonoidAction.surjective_smul`/`AddMonoidAction.surjective_vadd` as public interface to access this
 property. We do not provide typeclasses `*Action.IsTransitive`; users should assume
 `[MonoidAction.IsPretransitive M α] [Nonempty α]` instead.
@@ -102,7 +103,8 @@ section CompatibleScalar
 
 @[to_additive]
 lemma MonoidAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
-    [MonoidAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] : IsPretransitive N α :=
+    [MonoidAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] :
+    IsPretransitive N α :=
   of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 end CompatibleScalar

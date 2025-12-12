@@ -68,8 +68,8 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MonoidAction R M
 
 /-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
 @[simp]
-theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MonoidAction R M]
-    {f : ArithmeticFunction M} {x : ℕ} :
+theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M]
+    [MonoidAction R M] {f : ArithmeticFunction M} {x : ℕ} :
     (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
       ∑ i ∈ divisors x, f i := by
   simp [← coe_zeta_smul_apply (R := R)]

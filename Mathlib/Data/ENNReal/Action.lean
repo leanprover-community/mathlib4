@@ -32,14 +32,17 @@ noncomputable instance {M : Type*} [MonoidAction ℝ≥0∞ M] : MonoidAction �
 theorem smul_def {M : Type*} [MonoidAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 
-instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
-    IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
+instance {M N : Type*} [MonoidAction ℝ≥0∞ M] [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [IsScalarTower ℝ≥0∞ M N] : IsScalarTower ℝ≥0 M N where
+  smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
-instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
-    SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ≥0∞)
+instance smulCommClass_left {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [SMulCommClass ℝ≥0∞ M N] : SMulCommClass ℝ≥0 M N where
+  smul_comm r := smul_comm (r : ℝ≥0∞)
 
-instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
-    SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ≥0∞)
+instance smulCommClass_right {M N : Type*} [MonoidAction ℝ≥0∞ N] [SMul M N]
+    [SMulCommClass M ℝ≥0∞ N] : SMulCommClass M ℝ≥0 N where
+  smul_comm m r := smul_comm m (r : ℝ≥0∞)
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :

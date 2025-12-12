@@ -347,7 +347,8 @@ abbrev orbitRel.Quotient : Type _ :=
 variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MonoidAction.orbitRel` -/
-@[to_additive /-- The orbit corresponding to an element of the quotient by `AddMonoidAction.orbitRel` -/]
+@[to_additive /-- The orbit corresponding to an element of the quotient by
+`AddMonoidAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
   Quotient.liftOn' x (orbit G) fun _ _ => MonoidAction.orbit_eq_iff.2
 
@@ -536,7 +537,8 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
-lemma stabilizer_smul_eq_right {α} [Group α] [MonoidAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+lemma stabilizer_smul_eq_right {α} [Group α] [MonoidAction α β]
+    [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]

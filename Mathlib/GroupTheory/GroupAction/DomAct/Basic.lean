@@ -197,11 +197,13 @@ instance [Monoid M] [MonoidAction M α] : MonoidAction Mᵈᵐᵃ (α → β) wh
   one_smul f := funext fun _ ↦ congr_arg f (one_smul _ _)
   mul_smul _ _ f := funext fun _ ↦ congr_arg f (mul_smul _ _ _)
 
-instance {A : Type*} [Monoid M] [MonoidAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
+instance {A : Type*} [Monoid M] [MonoidAction M α] [AddMonoid A] :
+    DistribMulAction Mᵈᵐᵃ (α → A) where
   smul_zero _ := rfl
   smul_add _ _ _ := rfl
 
-instance {A : Type*} [Monoid M] [MonoidAction M α] [Monoid A] : MulDistribMulAction Mᵈᵐᵃ (α → A) where
+instance {A : Type*} [Monoid M] [MonoidAction M α] [Monoid A] :
+    MulDistribMulAction Mᵈᵐᵃ (α → A) where
   smul_mul _ _ _ := rfl
   smul_one _ := rfl
 

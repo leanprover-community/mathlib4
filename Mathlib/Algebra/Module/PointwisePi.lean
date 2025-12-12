@@ -43,6 +43,7 @@ theorem smul_pi [Group K] [∀ i, MonoidAction K (R i)] (r : K) (S : Set ι) (t 
     r • S.pi t = S.pi (r • t) :=
   piMap_image_pi (fun _ _ => MonoidAction.surjective _) _
 
-theorem smul_pi₀ [GroupWithZero K] [∀ i, MonoidAction K (R i)] {r : K} (S : Set ι) (t : ∀ i, Set (R i))
-    (hr : r ≠ 0) : r • S.pi t = S.pi (r • t) :=
+theorem smul_pi₀ [GroupWithZero K] [∀ i, MonoidAction K (R i)]
+    {r : K} (S : Set ι) (t : ∀ i, Set (R i)) (hr : r ≠ 0) :
+    r • S.pi t = S.pi (r • t) :=
   smul_pi (Units.mk0 r hr) S t

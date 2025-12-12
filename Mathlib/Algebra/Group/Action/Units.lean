@@ -125,7 +125,7 @@ example [Monoid M] [Monoid N] [MonoidAction M N] [SMulCommClass M N N] [IsScalar
 end Units
 
 @[to_additive]
-lemma IsUnit.smul [Group G] [Monoid M] [MonoidAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
-    {m : M} (g : G) (h : IsUnit m) : IsUnit (g • m) :=
+lemma IsUnit.smul [Group G] [Monoid M] [MonoidAction G M] [SMulCommClass G M M]
+    [IsScalarTower G M M] {m : M} (g : G) (h : IsUnit m) : IsUnit (g • m) :=
   let ⟨u, hu⟩ := h
   hu ▸ ⟨g • u, Units.val_smul _ _⟩

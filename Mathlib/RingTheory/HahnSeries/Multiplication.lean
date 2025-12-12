@@ -338,8 +338,9 @@ theorem zero_smul' [Zero R] [SMulWithZero R V] {x : HahnModule Γ' R V} : (0 : R
   simp [coeff_smul]
 
 @[simp]
-theorem one_smul' {Γ} [AddCommMonoid Γ] [PartialOrder Γ] [AddMonoidAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
-    [MonoidWithZero R] [MulActionWithZero R V] {x : HahnModule Γ' R V} : (1 : R⟦Γ⟧) • x = x := by
+theorem one_smul' {Γ} [AddCommMonoid Γ] [PartialOrder Γ] [AddMonoidAction Γ Γ']
+    [IsOrderedCancelVAdd Γ Γ'] [MonoidWithZero R] [MulActionWithZero R V] {x : HahnModule Γ' R V} :
+    (1 : R⟦Γ⟧) • x = x := by
   ext g
   exact coeff_single_zero_smul.trans (one_smul R (x.coeff g))
 

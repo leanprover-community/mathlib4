@@ -146,8 +146,9 @@ theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MonoidAction M 
 -- TODO: when you remove the next 2 aliases,
 -- please move the `Group` version to the root namespace.
 @[to_additive]
-theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*} [MonoidAction G α] [MonoidAction G β]
-    {F : Type*} [FunLike F α β] [MulActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
+theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*}
+    [MonoidAction G α] [MonoidAction G β] {F : Type*} [FunLike F α β]
+    [MulActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   (Group.isUnit c).preimage_smul_set f t
 

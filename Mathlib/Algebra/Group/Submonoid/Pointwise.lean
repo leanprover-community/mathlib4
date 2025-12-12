@@ -108,8 +108,9 @@ theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
   simp [mem_sup, Set.mem_mul]
 
 @[to_additive]
-theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MonoidAction M N] [IsScalarTower M N N]
-    (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
+theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MonoidAction M N]
+    [IsScalarTower M N N] (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) :
+    ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
   | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
   | one => exact ⟨0, by simp⟩

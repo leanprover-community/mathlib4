@@ -111,8 +111,8 @@ variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate. -/
-def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
-    {g : G} {a b : α} (hg : b = g +ᵥ a) :
+def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*}
+    [AddMonoidAction G α] {g : G} {a b : α} (hg : b = g +ᵥ a) :
     AddActionHom (AddMonoidAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
@@ -140,7 +140,8 @@ theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
     {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
     CompTriple (AddMonoidAction.stabilizerEquivStabilizer hg)
-      (AddMonoidAction.stabilizerEquivStabilizer hh) (AddMonoidAction.stabilizerEquivStabilizer hk) where
+      (AddMonoidAction.stabilizerEquivStabilizer hh)
+      (AddMonoidAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
     simp [AddMonoidAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]

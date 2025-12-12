@@ -79,10 +79,12 @@ variable (G : Type*) (X : Type*)
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop extends AddMonoidAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop
+    extends AddMonoidAction.IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
-  isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddMonoidAction.IsBlock G B → AddMonoidAction.IsTrivialBlock B
+  isTrivialBlock_of_isBlock :
+    ∀ {B : Set X}, AddMonoidAction.IsBlock G B → AddMonoidAction.IsTrivialBlock B
 
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/

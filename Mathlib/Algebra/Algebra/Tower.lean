@@ -95,7 +95,9 @@ theorem of_algebraMap_smul [SMul R M] (h : ∀ (r : R) (x : M), algebraMap R A r
   smul_assoc r a x := by rw [Algebra.smul_def, mul_smul, h]
 
 variable (R M) in
-theorem of_compHom : letI := MonoidAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
+theorem of_compHom :
+    letI := MonoidAction.compHom M (algebraMap R A : R →* A)
+    IsScalarTower R A M :=
   letI := MonoidAction.compHom M (algebraMap R A : R →* A); of_algebraMap_smul fun _ _ ↦ rfl
 
 end Module

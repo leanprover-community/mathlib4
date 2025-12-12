@@ -525,7 +525,7 @@ theorem single_isCycle₂_iff_inv (g : G × G) (a : A) :
 theorem single_isCycle₂_iff (g : G × G) (a : A) :
     IsCycle₂ (single g a) ↔
       single g.2 a + single g.1 (g.1 • a) = single (g.1 * g.2) (g.1 • a) := by
-  rw [← (Finsupp.mapRange_injective (α := G) _ (smul_zero _) (MonoidAction.bijective g.1⁻¹).1).eq_iff]
+  rw [← (Finsupp.mapRange_injective _ (smul_zero _) (MonoidAction.bijective g.1⁻¹).1).eq_iff]
   simp [mapRange_add, IsCycle₂]
 
 end

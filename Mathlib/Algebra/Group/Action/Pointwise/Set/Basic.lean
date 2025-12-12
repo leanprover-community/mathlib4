@@ -171,7 +171,8 @@ on `Set β`. -/
 @[to_additive
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
-protected noncomputable def mulAction [Monoid α] [MonoidAction α β] : MonoidAction (Set α) (Set β) where
+protected noncomputable def mulAction [Monoid α] [MonoidAction α β] :
+    MonoidAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 

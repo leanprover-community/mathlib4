@@ -117,7 +117,8 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MonoidAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MonoidAction G (FintypeCat.of T) := inferInstanceAs <| MonoidAction G ↑(MonoidAction.orbit G x)
+    letI : MonoidAction G (FintypeCat.of T) :=
+      inferInstanceAs <| MonoidAction G ↑(MonoidAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMonoidAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)

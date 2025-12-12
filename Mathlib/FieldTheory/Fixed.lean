@@ -198,8 +198,8 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
-      (Polynomial.pairwise_coprime_X_sub_C <| MonoidAction.injective_ofQuotientStabilizer G x) fun y =>
-      QuotientGroup.induction_on y fun g => ?_
+      (Polynomial.pairwise_coprime_X_sub_C <| MonoidAction.injective_ofQuotientStabilizer G x)
+      fun y => QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MonoidAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul',
     ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
