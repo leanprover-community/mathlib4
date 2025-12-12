@@ -78,7 +78,7 @@ instance [X.Finite] (n : SimplexCategoryᵒᵖ) : Finite (X.obj n) := by
   have hφ : Function.Surjective φ := fun x ↦ by
     obtain ⟨m, f, hf, y, rfl⟩ := X.exists_nonDegenerate x
     have := SimplexCategory.le_of_epi f
-    exact ⟨⟨⟨m, by omega⟩, f, y⟩, rfl⟩
+    exact ⟨⟨⟨m, by lia⟩, f, y⟩, rfl⟩
   exact Finite.of_surjective _ hφ
 
 instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
