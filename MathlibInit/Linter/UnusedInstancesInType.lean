@@ -5,9 +5,9 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Lean.Environment
-public meta import Mathlib.Lean.Elab.InfoTree
+public meta import MathlibInit.Lean.Expr.Basic
+public meta import MathlibInit.Lean.Environment
+public meta import MathlibInit.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
 import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
