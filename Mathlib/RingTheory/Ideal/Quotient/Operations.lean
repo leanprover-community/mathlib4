@@ -545,6 +545,8 @@ section liftOfSurjective
 variable {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
     [Algebra R A] [Algebra R B] [Algebra R C]
 
+/-- `AlgHom` version of `RingHom.liftOfSurjective` that descends an algebra homomorphism
+along a surjection. -/
 noncomputable
 def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
