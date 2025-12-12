@@ -5,29 +5,5 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Elab.SyntheticMVars
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header
-
-/-!
-# Additions to `Lean.Elab.Tactic.Meta`
--/
-
-@[expose] public section
-
-namespace Lean.Elab
-open Term
-
-/-- Apply the given tactic code to `mvarId` in `MetaM`.
-
-This is a variant of `Lean.Elab.runTactic` that forgets the final `Term.State`.
--/
-def runTactic' (mvarId : MVarId) (tacticCode : Syntax) (ctx : Context := {}) (s : State := {}) :
-    MetaM (List MVarId) := do
-  instantiateMVarDeclMVars mvarId
-  let go : TermElabM (List MVarId) :=
-    withSynthesize do Tactic.run mvarId (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
-  go.run' ctx s
-
-end Lean.Elab
+public import MathlibInit.Lean.Elab.Tactic.Meta
+import all MathlibInit.Lean.Elab.Tactic.Meta

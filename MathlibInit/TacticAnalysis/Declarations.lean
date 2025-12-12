@@ -8,7 +8,7 @@ module
 public meta import MathlibInit.Tactic.TacticAnalysis
 public meta import MathlibInit.Tactic.ExtractGoal
 public meta import MathlibInit.Tactic.MinImports
-public meta import Mathlib.Util.ParseCommand
+public meta import MathlibInit.Util.ParseCommand
 public meta import Lean.Elab.Command
 
 /-!
