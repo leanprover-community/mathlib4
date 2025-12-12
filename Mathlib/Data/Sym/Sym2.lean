@@ -144,7 +144,7 @@ protected def rec {motive : Sym2 α → Sort*}
 
 /--
 A dependent recursion principle for `Sym2` that uses
-[heterogeneous equality](lean-manual://section HEq)
+[heterogeneous equality](lean-manual://section HEq). -/
 @[elab_as_elim]
 protected def hrec {motive : Sym2 α → Sort*}
     (f : (p : α × α) → motive (Sym2.mk p))
