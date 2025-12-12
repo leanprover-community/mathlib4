@@ -5,6 +5,7 @@ Authors: Jiedong Jiang
 -/
 module
 
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.Perfectoid.Untilt
 public import Mathlib.RingTheory.WittVector.TeichmullerSeries
@@ -16,14 +17,18 @@ homomorphism from the Witt vector `𝕎 R♭` of the tilt of a perfectoid ring `
 to `R` itself. Our definition of `θ` does not require that `R` is perfectoid in the first place.
 We only need `R` to be `p`-adically complete.
 
-## Main definitions
+## Main Definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎 R♭` to `R`.
+
+## Main Theorems
+* `fontaineTheta_teichmuller` : `θ([x])` is the untilt of `x`.
+* `fontaineTheta_surjective` : Fontaine's θ map is surjective.
 
 ## TODO
 Establish that our definition (explicit construction of `θ mod p ^ n`) agrees with the
 deformation-theoretic approach via the cotangent complex, as in
-[Bhatt, *Lecture notes for a class on perfectoid spaces*. Remark 6.1.7]
-(https://www.math.ias.edu/~bhatt/teaching/mat679w17/lectures.pdf).
+[Bhatt, *Lecture notes for a class on perfectoid spaces*.
+Remark 6.1.7](https://www.math.ias.edu/~bhatt/teaching/mat679w17/lectures.pdf).
 
 ## Tags
 Fontaine's theta map, perfectoid theory, p-adic Hodge theory
@@ -62,15 +67,15 @@ ring homomorphism `fontaineTheta : 𝕎 R♭ →+* R`.
 To prove this, we define `fontaineThetaModPPow` as a composition of the following ring
 homomorphisms.
 
-`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/p) --gh_n-> R/p^(n+1)`
+`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/𝔭) --gh_n-> R/𝔭^(n+1)`
 
 Here, the ring map `gh_n` fits in the following diagram.
 
 ```
-𝕎(A)  --ghost_n->   A
+𝕎(R)  --ghost_n->   R
 |                   |
 v                   v
-𝕎(A/p) --gh_n-> A/p^(n+1)
+𝕎(R/𝔭) --gh_n-> R/𝔭^(n+1)
 ```
 -/
 
@@ -89,8 +94,8 @@ theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
   exact pow_dvd_ghostComponent_of_dvd_coeff (fun _ _ ↦ h _)
 
 /--
-The lift ring map `gh_n : 𝕎(A/p) →+* A/p^(n+1)` of the `n`-th ghost component
-`𝕎(A) →+* A` along the surjective ring map `𝕎(A) →+* 𝕎(A/p)`.
+The lift ring map `gh_n : 𝕎(R/𝔭) →+* R/𝔭^(n+1)` of the `n`-th ghost component
+`𝕎(R) →+* R` along the surjective ring map `𝕎(R) →+* 𝕎(R/𝔭)`.
 -/
 def ghostComponentModPPow (n : ℕ) : 𝕎 (R ⧸ 𝔭) →+* R ⧸ 𝔭 ^ (n + 1) :=
   RingHom.liftOfSurjective (WittVector.map (Ideal.Quotient.mk 𝔭))
@@ -182,3 +187,26 @@ theorem fontaineTheta_teichmuller (x : R♭) : fontaineTheta R p (teichmuller p 
   · simp [SModEq, mk_pow_fontaineTheta]
 
 end WittVector
+
+variable [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
+
+/-- If the Frobenius map is surjective on `R/pR`, then the Fontaine's θ map is surjective. -/
+theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP R p) p)) :
+    Function.Surjective (fontaineTheta R p) := by
+  have : Ideal.map (fontaineTheta R p) (span {(p : 𝕎 R♭)}) = 𝔭 := by
+    simp [map_span]
+  have _ : IsHausdorff ((span {(p : 𝕎 R♭)}).map (fontaineTheta R p)) R := by
+    rw [this]
+    infer_instance
+  apply surjective_of_mk_map_comp_surjective (fontaineTheta R p) (I := span {(p : 𝕎 R♭)})
+  simp only [RingHom.coe_comp]
+  suffices h : Function.Surjective (Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p) by
+    rwa [Ideal.map_span, Set.image_singleton, map_natCast]
+  have : Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p = (fun x ↦
+      PreTilt.coeff 0 x) ∘ fun (x : 𝕎 R♭) ↦ (x.coeff 0) := by
+    ext
+    simp [mk_fontaineTheta]
+  rw [this]
+  apply Function.Surjective.comp
+  · exact Perfection.coeff_surjective hF 0
+  · exact WittVector.coeff_surjective 0

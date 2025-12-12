@@ -587,7 +587,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl : 2 * n - k < n := by cutsat
+      let k2nl : 2 * n - k < n := by lia
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
       rw [← Nat.mod_eq_of_lt (Nat.sub_lt (x_pos a1 n) (x_pos a1 (2 * n - k)))]
@@ -691,12 +691,12 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
-    have j42n : 4 * n - j ≤ 2 * n := by cutsat
+    have j42n : 4 * n - j ≤ 2 * n := by lia
     eq_of_xn_modEq a1 i2n j42n
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
         rwa [tsub_tsub_cancel_of_le j4n] at t)
-      (by cutsat)
+      (by lia)
 
 theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) :
@@ -836,7 +836,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
       exact lt_of_le_of_lt (Nat.succ_le_of_lt (Nat.pos_of_ne_zero hy0)) hya
     _ ≤ (a : ℤ) ^ 2 - (a - y : ℤ) ^ 2 - 1 := by
       have := hya.le
-      gcongr <;> norm_cast <;> omega
+      gcongr <;> norm_cast <;> lia
     _ = 2 * a * y - y * y - 1 := by ring
 
 theorem eq_pow_of_pell {m n k} :
@@ -874,7 +874,7 @@ theorem eq_pow_of_pell {m n k} :
       exact x_sub_y_dvd_pow a1 n k
     have ta : 2 * a * n = t + (n * n + 1) := by
       zify
-      omega
+      lia
     have zp : a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1 := ze ▸ pell_eq w1 w
     exact ⟨w, a, t, z, a1, tm, ta, Nat.cast_lt.1 nt, nw, kw, zp⟩
   · rintro (⟨rfl, rfl⟩ | ⟨hk0, ⟨rfl, rfl⟩ | ⟨hn0, w, a, t, z, a1, tm, ta, mt, nw, kw, zp⟩⟩)
