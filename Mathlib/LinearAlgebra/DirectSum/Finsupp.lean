@@ -253,7 +253,7 @@ variable (R S M ι) in
 noncomputable def finsuppScalarRight' :
     M ⊗[R] (ι →₀ R) ≃ₗ[S] ι →₀ M where
   toAddEquiv := finsuppScalarRight R M ι
-  map_smul' s x := finsuppScalarRight_smul' s x
+  map_smul' s x := finsuppScalarRight_smul s x
 
 theorem coe_finsuppScalarRight' :
     ⇑(finsuppScalarRight' R M ι S) = finsuppScalarRight R M ι :=
