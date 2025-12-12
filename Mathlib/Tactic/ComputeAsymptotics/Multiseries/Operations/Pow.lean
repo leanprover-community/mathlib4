@@ -167,7 +167,7 @@ theorem neg_zpow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
       split_ifs with ha <;> simp [pow, ha, one]
     | cons exp coef tl =>
       simp only [pow, neg_cons, destruct_cons]
-      rw [neg_zpow, mulMonomial_mulConst_left]
+      rw [neg_zpow, mulMonomial_mulConst_right]
       congr 3
       rw [neg_inv_comm, mulMonomial_neg_left, mulMonomial_neg_right, neg_neg]
 
@@ -225,21 +225,20 @@ theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basi
       apply Approximates.cons (fC := 1)
       · conv_rhs => rw [← mul_one 1]
         apply mul_Approximates (h_basis.tail)
-        · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         · exact one_Approximates (h_basis.tail)
+        · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       · apply const_majorated
         apply basis_tendsto_top h_basis
         simp
       · simp only [Pi.one_apply, Real.rpow_zero, mul_one, sub_self]
-        rw [show (fun t ↦ 0) = fun t ↦ 1 * (basis_hd t)^(0 : ℝ) * 0 by simp]
+        rw [show (fun t ↦ 0) = fun t ↦ 0 * (basis_hd t)^(0 : ℝ) * 1 by simp]
         apply mulMonomial_Approximates h_basis
         swap
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         conv =>
           arg 2; ext t
-          rw [← mul_zero (fC⁻¹ t * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t)), mul_comm]
+          rw [← mul_zero ((f t - basis_hd t ^ exp * fC t) * basis_hd t ^ (-exp) * fC⁻¹ t)]
         apply mul_Approximates h_basis
-        swap
         · apply mulMonomial_Approximates h_basis h_tl
           apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         apply zeros_apply_Approximates h_basis
@@ -310,22 +309,19 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         apply div_pos hF_pos
         apply Real.rpow_pos_of_pos h_basis_hd_pos
       simp only [pow, destruct_cons]
-      apply Approximates_of_EventuallyEq (f := fun t ↦ (fC t)^a * (basis_hd t)^(exp * a) *
-        (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t)
-      · simp only [EventuallyEq]
-        apply (hC_pos.and h_basis_hd_pos).mono
+      apply Approximates_of_EventuallyEq (f := fun t ↦ (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t * (basis_hd t)^(exp * a) *
+        (fC t)^a)
+      · apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
         simp only [neg_mul, Pi.pow_apply]
-        ring_nf
-        move_mul [←  fC t ^ (-a)]
-        rw [← Real.rpow_add hC_pos]
-        simp [← Real.rpow_add h_basis_hd_pos]
+        simp [Real.rpow_neg_eq_inv_rpow, Real.inv_rpow hC_pos.le, Real.inv_rpow h_basis_hd_pos.le]
+        field
       apply mulMonomial_Approximates h_basis
       swap
       · apply pow_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         rwa [leadingTerm_cons_coef] at h_pos
-      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦ fC⁻¹ t *
-          (basis_hd t)^(-exp) * (f t - basis_hd t ^ exp * fC t))
+      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦ (f t - basis_hd t ^ exp * fC t) *
+          (basis_hd t)^(-exp) * fC⁻¹ t)
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact h_tl
@@ -333,12 +329,10 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       apply Approximates_of_EventuallyEq
         (f' := (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t)) at this
       swap
-      · simp only [EventuallyEq]
-        apply (hC_pos.and h_basis_hd_pos).mono
+      · apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
-        simp only [Pi.inv_apply]
-        ring_nf
-        simp [mul_inv_cancel₀ hC_pos.ne.symm, ← Real.rpow_add h_basis_hd_pos]
+        simp [Real.rpow_neg_eq_inv_rpow, Real.inv_rpow h_basis_hd_pos.le]
+        field
       apply Approximates_of_EventuallyEq
         (f := (fun t ↦ (1 + t)^a) ∘ (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]

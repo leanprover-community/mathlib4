@@ -214,6 +214,7 @@ theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   | cons Y_tl_exp Y_tl_coef Y_tl_tl => simp
 
 /-- `add` commutes with `mulConst`. -/
+@[simp]
 theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
   cases basis with

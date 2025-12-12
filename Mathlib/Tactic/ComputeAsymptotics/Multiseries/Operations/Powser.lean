@@ -84,7 +84,7 @@ noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Ba
     | none => none
     | some (c, cs) =>
       some (0, PreMS.const _ c, ms, cs)
-  gcorec g mul' s
+  gcorec g mul s
 
 -- theorems
 
@@ -172,7 +172,7 @@ theorem toFun_nil : toFun Seq.nil = 0 := by
 theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
     (h : Analytic (Seq.cons s_hd s_tl))
     (ht : t ∈ EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius) :
-    toFun (.cons s_hd s_tl) t = s_hd + ((toFun s_tl) t) * t := by
+    toFun (.cons s_hd s_tl) t = s_hd + t * ((toFun s_tl) t) := by
   have h_tl := tail_analytic h
   have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h
   replace h_hsum := HasFPowerSeriesOnBall.hasSum h_hsum ht
@@ -195,12 +195,11 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
   have := HasSum.zero_add (f := (fun n ↦ t ^ n * (Seq.get? (Seq.cons s_hd s_tl) n).getD 0))
     h_hsum_tl
   convert this using 2
-  · simp
-  · grind
+  simp
 
 theorem toFun_cons_eventually_eq {s_hd : ℝ} {s_tl : LazySeries}
     (h : Analytic (Seq.cons s_hd s_tl)) :
-    toFun (.cons s_hd s_tl) =ᶠ[𝓝 0] (fun t ↦ s_hd + ((toFun s_tl) t) * t) := by
+    toFun (.cons s_hd s_tl) =ᶠ[𝓝 0] (fun t ↦ s_hd + t * ((toFun s_tl) t)) := by
   rw [Filter.eventuallyEq_iff_exists_mem]
   use EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius
   refine ⟨EMetric.ball_mem_nhds 0 h, fun t ht ↦ ?_⟩
@@ -285,11 +284,10 @@ theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis
 @[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply (.cons s_hd s_tl) ms) = cons 0 (PreMS.const _ s_hd) ((apply s_tl ms).mul ms) := by
+    (apply (.cons s_hd s_tl) ms) = cons 0 (PreMS.const _ s_hd) (ms.mul (apply s_tl ms)) := by
   simp only [apply]
   rw [gcorec_some]
-  · rfl
-  simp
+  rfl
 
 theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} :
@@ -335,7 +333,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
   right
   simp only [↓existsAndEq, apply_cons, cons_eq_cons, true_and, exists_and_left, Real.rpow_zero,
     one_mul]
-  have : toFun (Seq.cons s_hd s_tl) ∘ f =ᶠ[atTop] (fun t ↦ s_hd + ((toFun s_tl) t) * t) ∘ f := by
+  have : toFun (Seq.cons s_hd s_tl) ∘ f =ᶠ[atTop] (fun t ↦ s_hd + t * ((toFun s_tl) t)) ∘ f := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact toFun_cons_eventually_eq h_analytic
   refine ⟨fun _ ↦ s_hd, _, _, rfl, const_Approximates (h_basis.tail), ?_, ?_⟩
@@ -343,7 +341,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
     apply toFun_majorated_zero h_analytic hf_tendsto_zero
     apply basis_tendsto_top h_basis
     simp
-  refine ⟨toFun s_tl ∘ f, f, ?_, h_approx, apply_WellOrdered h_wo h_neg, s_tl,
+  refine ⟨f, toFun s_tl ∘ f, ?_, h_approx, apply_WellOrdered h_wo h_neg, s_tl,
     tail_analytic h_analytic, rfl, by rfl⟩
   grw [hg_eq, this]
   apply EventuallyEq.of_eq

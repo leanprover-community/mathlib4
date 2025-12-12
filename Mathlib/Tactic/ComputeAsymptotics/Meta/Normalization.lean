@@ -267,8 +267,8 @@ lemma cons_mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (ba
     {X_exp : ℝ} {X_coef : PreMS basis_tl} {X_tl : PreMS (basis_hd :: basis_tl)}
     {Y_exp : ℝ} {Y_coef : PreMS basis_tl} {Y_tl : PreMS (basis_hd :: basis_tl)}
     (hX : X = PreMS.cons X_exp X_coef X_tl) (hY : Y = PreMS.cons Y_exp Y_coef Y_tl) :
-    X.mul Y = PreMS.cons (X_exp + Y_exp) (X_coef.mul Y_coef) ((mulMonomial Y_tl X_coef X_exp).add
-      (X_tl.mul (PreMS.cons Y_exp Y_coef Y_tl))) := by
+    X.mul Y = PreMS.cons (X_exp + Y_exp) (X_coef.mul Y_coef) ((mulMonomial X_tl Y_coef Y_exp).add
+      ((PreMS.cons X_exp X_coef X_tl).mul Y_tl)) := by
   subst hX hY
   exact PreMS.mul_cons_cons
 
@@ -283,7 +283,7 @@ lemma mulMonomial_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {B : PreMS (b
     {B_tl : PreMS (basis_hd :: basis_tl)}
     (hB : B = PreMS.cons B_exp B_coef B_tl) :
     PreMS.mulMonomial B M_coef M_exp =
-    PreMS.cons (M_exp + B_exp) (mul M_coef B_coef) (mulMonomial B_tl M_coef M_exp) := by
+    PreMS.cons (B_exp + M_exp) (mul B_coef M_coef) (mulMonomial B_tl M_coef M_exp) := by
   subst hB
   simp [PreMS.mulMonomial]
 
@@ -307,7 +307,7 @@ lemma apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
 lemma apply_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     {s : LazySeries}
     {s_hd : ℝ} {s_tl : LazySeries} (h : s = Seq.cons s_hd s_tl) :
-    s.apply ms = PreMS.cons 0 (PreMS.const _ s_hd) ((s_tl.apply ms).mul ms) := by
+    s.apply ms = PreMS.cons 0 (PreMS.const _ s_hd) (ms.mul (s_tl.apply ms)) := by
   subst h
   simp [LazySeries.apply_cons]
 
@@ -522,15 +522,15 @@ partial def normalizePreMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .nil h2 => return .nil q(mul_nil $h2)
       | .cons exp2 coef2 tl2 h2 =>
         return ← consNormalize q($exp1 + $exp2) q(PreMS.mul $coef1 $coef2)
-          q((mulMonomial $tl2 $coef1 $exp1).add
-            (($tl1).mul (PreMS.cons $exp2 $coef2 $tl2))) q(cons_mul_cons $h1 $h2)
+          q((mulMonomial $tl1 $coef2 $exp2).add
+            ((PreMS.cons $exp1 $coef1 $tl1).mul $tl2)) q(cons_mul_cons $h1 $h2)
   | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
     let res_b ← normalizePreMSImp b
     match res_b with
     | .nil hb =>
       return .nil q(mulMonomial_nil $hb)
     | .cons b_exp b_coef b_tl hb =>
-      return ← consNormalize q($m_exp + $b_exp) q(PreMS.mul $m_coef $b_coef)
+      return ← consNormalize q($b_exp + $m_exp) q(PreMS.mul $b_coef $m_coef)
         q(PreMS.mulMonomial (basis_hd := $basis_hd) $b_tl $m_coef $m_exp) q(mulMonomial_cons $hb)
   | ~q(PreMS.mulConst $c $arg) =>
     let res ← normalizePreMSImp arg
@@ -546,7 +546,7 @@ partial def normalizePreMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return .nil q(apply_nil $hs)
     | .cons s_hd s_tl hs =>
       return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd)
-        q((PreMS.LazySeries.apply $s_tl $arg).mul $arg) q(apply_cons $hs)
+        q(($arg).mul (PreMS.LazySeries.apply $s_tl $arg)) q(apply_cons $hs)
   | ~q(PreMS.inv $arg) =>
     let res ← normalizePreMSImp arg
     match res with

@@ -159,20 +159,17 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
         basis_head_eventually_pos h_basis
       simp only [inv, destruct_cons]
-      apply Approximates_of_EventuallyEq (f := fun t ↦ fC⁻¹ t * (basis_hd t)^(-exp) *
-        (fC t * (basis_hd t)^(exp) * f⁻¹ t))
-      · simp only [EventuallyEq]
-        apply (hC_ne_zero.and h_basis_hd_pos).mono
+      apply Approximates_of_EventuallyEq (f := fun t ↦ (fC t * (basis_hd t)^(exp) * f⁻¹ t) * (basis_hd t)^(-exp) *
+        fC⁻¹ t)
+      · apply (hC_ne_zero.and h_basis_hd_pos).mono
         intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
-        simp only [Pi.inv_apply]
-        ring_nf
-        simp only [mul_inv_cancel₀ hC_ne_zero, one_mul, ← Real.rpow_add h_basis_hd_pos,
-          neg_add_cancel, Real.rpow_zero]
+        simp [Real.rpow_neg_eq_inv_rpow, Real.inv_rpow h_basis_hd_pos.le]
+        field
       apply mulMonomial_Approximates h_basis
       swap
       · exact inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
-      have : ((neg tl).mulMonomial coef.inv (-exp)).Approximates (fun t ↦ fC⁻¹ t *
-          (basis_hd t)^(-exp) * -(f t - basis_hd t ^ exp * fC t))
+      have : ((neg tl).mulMonomial coef.inv (-exp)).Approximates (fun t ↦ -(f t - basis_hd t ^ exp * fC t) *
+          (basis_hd t)^(-exp) * fC⁻¹ t)
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
@@ -180,12 +177,10 @@ theorem inv_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis}
       apply Approximates_of_EventuallyEq
         (f' := (fun t ↦ 1 - fC⁻¹ t * basis_hd t ^ (-exp) * f t)) at this
       swap
-      · simp only [EventuallyEq]
-        apply (hC_ne_zero.and h_basis_hd_pos).mono
+      · apply (hC_ne_zero.and h_basis_hd_pos).mono
         intro t ⟨hC_ne_zero, h_basis_hd_pos⟩
-        simp only [Pi.inv_apply, neg_sub]
-        ring_nf
-        simp [mul_inv_cancel₀ hC_ne_zero, ← Real.rpow_add h_basis_hd_pos]
+        simp [Real.rpow_neg_eq_inv_rpow, Real.inv_rpow h_basis_hd_pos.le]
+        field
       apply Approximates_of_EventuallyEq
         (f := (fun t ↦ (1 - t)⁻¹) ∘ (fun t ↦ 1 - fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]

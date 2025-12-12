@@ -143,7 +143,7 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
   obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
   simp only [Real.rpow_zero, one_mul] at h_tl
   convert_to ((expSeries.apply tl).mulMonomial coef.exp 0).Approximates
-      (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
+      (fun t ↦ (Real.exp ∘ (fun s ↦ f s - fC s)) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ fC) t)
   · ext t
     simp [← Real.exp_add]
   apply mulMonomial_Approximates h_basis

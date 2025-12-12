@@ -370,12 +370,12 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       · apply Approximates.nil
         simp only [Real.rpow_zero, one_mul, sub_self]
         rfl
-    · have h_tendsto_zero : Tendsto (fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
-          (f t - basis_hd t ^ exp * fC t)) atTop (𝓝 0) := by
+    · have h_tendsto_zero : Tendsto (fun t ↦ (f t - basis_hd t ^ exp * fC t) * basis_hd t ^ (-exp) *
+          (fC t)⁻¹) atTop (𝓝 0) := by
         apply Tendsto.congr' (f₁ := fun t ↦ fC⁻¹ t * basis_hd t ^ (-exp) * f t - 1)
         · apply Eventually.mono (h_fC_pos.and h_basis_hd_pos)
           intro t ⟨h_fC, h_basis_hd⟩
-          simp only [Pi.inv_apply, mul_sub, sub_right_inj]
+          simp only [Pi.inv_apply]
           ring_nf
           simp [mul_inv_cancel₀ h_fC.ne', ← Real.rpow_add h_basis_hd]
         rw [show (0 : ℝ) = 1 - 1 by simp]
@@ -400,14 +400,13 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
             simp [h] at h_basis_hd_pos
           · exact h_basis_hd_pos.le
       apply Approximates_of_EventuallyEq
-        (f := logSeries.toFun ∘ fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
-          (f t - basis_hd t ^ exp * fC t))
+        (f := logSeries.toFun ∘ fun t ↦ (f t - basis_hd t ^ exp * fC t) * basis_hd t ^ (-exp) *
+          (fC t)⁻¹)
       · apply Eventually.mono (Filter.EventuallyEq.comp_tendsto logSeries_toFun h_tendsto_zero)
         intro t ht
-        simp only [Function.comp_apply] at ht
-        simp only [Function.comp_apply, ht]
-        congr 3
-        ring
+        simp at ht
+        simp [ht]
+        field_simp
       apply apply_Approximates logSeries_analytic h_basis
       · simp only [mulMonomial_leadingExp]
         generalize tl.leadingExp = x at h_comp
