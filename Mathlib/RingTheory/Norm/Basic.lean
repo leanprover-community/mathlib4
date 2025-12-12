@@ -74,7 +74,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).aroots F).prod := by
   haveI := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
-  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
+  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
     ← coeff_map,
     coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) hf,
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
@@ -104,10 +104,10 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
     refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
-    · simpa only [LinearEquiv.map_zero, Pi.zero_apply] using congr_fun hv i
+    · simpa only [map_zero, Pi.zero_apply] using congr_fun hv i
     · contrapose! v_ne with sum_eq
       apply b.equivFun.symm.injective
-      rw [b.equivFun_symm_apply, sum_eq, LinearEquiv.map_zero]
+      rw [b.equivFun_symm_apply, sum_eq, map_zero]
 
 theorem norm_ne_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x ≠ 0 ↔ x ≠ 0 := not_iff_not.mpr norm_eq_zero_iff
