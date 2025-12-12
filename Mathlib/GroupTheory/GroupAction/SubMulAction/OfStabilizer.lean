@@ -147,7 +147,7 @@ theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
 
 variable {hg hh hk} in
 @[to_additive existing]
-theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
+theorem _root_.MonoidAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
     CompTriple (stabilizerEquivStabilizer hg)
       (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
   comp_eq := by
