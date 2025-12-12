@@ -130,7 +130,7 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
-  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
+  rw [← AlgHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
 lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
@@ -219,7 +219,7 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
 
 theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
-  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
+  rw [← AlgHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
       ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
   let R := K[X] ⧸ Ideal.span {p}
   have : IsReduced R :=
@@ -293,8 +293,10 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
-  · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
-      using minpoly.aeval K g
+  · -- TODO: remove `RingHomClass.toRingHom` coercion in `AlgHom.comp_algebraMap_of_tower`
+    rw [AlgHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.toRingHom_eq_coe,
+      AlgHom.comp_algebraMap_of_tower]
+    exact minpoly.aeval K g
   have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by
     rintro (hx | hx) <;> rw [hx]
     · exact ⟨AdjoinRoot.of _ (AdjoinRoot.root _), (eval₂_C _ _).trans (aeval_X f)⟩

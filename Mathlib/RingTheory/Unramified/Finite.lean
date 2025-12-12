@@ -57,7 +57,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
   have : ∀ t : S ⊗[R] S, TensorProduct.lmul' R t = 1 ↔ 1 - t ∈ KaehlerDifferential.ideal R S := by
     intro t
     simp only [KaehlerDifferential.ideal, RingHom.mem_ker, map_sub, map_one,
-      sub_eq_zero, @eq_comm S 1]
+      sub_eq_zero, @eq_comm S 1, AlgHom.coe_toRingHom']
   simp_rw [this, ← KaehlerDifferential.span_range_eq_ideal]
   constructor
   · rintro ⟨e, he₁, he₂ : _ = Ideal.span _⟩
