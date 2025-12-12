@@ -164,14 +164,14 @@ protected theorem iInter_of_antitone_of_frequently
   rw [← compl_iff, compl_iInter]
   exact .iUnion_of_monotone_of_frequently (compl_anti.comp hsm) <| hs.mono fun _ ↦ .compl
 
-protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+protected theorem iUnion_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋃ i, s i) := by
   cases isEmpty_or_nonempty ι with
   | inl _ => simp
   | inr _ => exact .iUnion_of_monotone_of_frequently hsm <| .of_forall hs
 
-protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+protected theorem iInter_of_antitone {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α}
     (hsm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) : MeasurableSet (⋂ i, s i) := by
   rw [← compl_iff, compl_iInter]

@@ -470,7 +470,7 @@ theorem integral_sin_pow_pos : 0 < ∫ x in 0..π, sin x ^ n := by
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
   refine mul_pos (by simp [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
   norm_cast <;>
-  omega
+  lia
 
 theorem integral_sin_pow_succ_le : (∫ x in 0..π, sin x ^ (n + 1)) ≤ ∫ x in 0..π, sin x ^ n := by
   let H x h := pow_le_pow_of_le_one (sin_nonneg_of_mem_Icc h) (sin_le_one x) (n.le_add_right 1)

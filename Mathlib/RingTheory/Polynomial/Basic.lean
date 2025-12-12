@@ -87,17 +87,7 @@ theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     (degree_X_pow_le _).trans (WithBot.coe_le_coe.2 <| Nat.le_of_lt_succ <| Finset.mem_range.1 hk)
 
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
-  rw [degreeLT, Submodule.mem_iInf]
-  conv_lhs => intro i; rw [Submodule.mem_iInf]
-  rw [degree, Finset.max_eq_sup_coe]
-  rw [Finset.sup_lt_iff ?_]
-  rotate_left
-  · apply WithBot.bot_lt_coe
-  conv_rhs =>
-    simp only [mem_support_iff]
-    intro b
-    rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_ge, Ne, not_imp_not]
-  rfl
+  simpa [degreeLT, Submodule.mem_iInf] using (degree_lt_iff_coeff_zero _ _).symm
 
 @[mono]
 theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n := fun _ hf =>
@@ -685,7 +675,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne, Prod.mk_inj, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
-          cutsat
+          lia
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -693,9 +683,9 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           exact Classical.not_not.1 (Nat.find_min hg hj)
 
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
-theorem isPrime_map_C_of_isPrime {P : Ideal R} (H : IsPrime P) :
+instance isPrime_map_C_of_isPrime {P : Ideal R} [IsPrime P] :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) :=
-  (isPrime_map_C_iff_isPrime P).mpr H
+  (isPrime_map_C_iff_isPrime P).mpr ‹_›
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
@@ -755,7 +745,7 @@ theorem prime_C_iff : Prime (C r) ↔ Prime r :=
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
-      apply Ideal.isPrime_map_C_of_isPrime hr
+      infer_instance
     · intro h; apply (this (C_eq_zero.mp h))
     · assumption⟩
 
