@@ -103,14 +103,14 @@ sum of the two components of `objEquiv x : Fin (n + 1) →o Fin (p + 1) × Fin (
 @[simps coe]
 def orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) {m : ℕ} (hm : p + q = m) :
     Fin (n + 1) →o Fin (m + 1) where
-  toFun i := ⟨(x.1 i : ℕ) + x.2 i, by omega⟩
+  toFun i := ⟨(x.1 i : ℕ) + x.2 i, by lia⟩
   monotone' i j h := by
     dsimp
     simp only [Fin.mk_le_mk]
     have := (objEquiv x).monotone h
     have h₁ : x.1 i ≤ x.1 j := this.1
     have h₂ : x.2 i ≤ x.2 j := this.2
-    omega
+    lia
 
 lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) {m : ℕ}
     (hm : p + q = m) :
@@ -119,7 +119,7 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
       a < b ↔ ((a.1 : ℕ) + a.2 < (b.1 : ℕ) + b.2) := by
     obtain ⟨h₁, h₂⟩ := hab
     rw [Prod.lt_iff]
-    cutsat
+    lia
   simp only [Fin.strictMono_iff_lt_succ]
   exact forall_congr' (fun i ↦ (this _ _ ((objEquiv x).monotone i.castSucc_le_succ)).symm)
 
@@ -133,7 +133,7 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
       ← strictMono_orderHomOfSimplex_iff _ rfl] at hx
     replace hx := Fintype.card_le_of_injective _ hx.injective
     simp only [Fintype.card_fin, add_le_add_iff_right] at hx
-    cutsat
+    lia
 
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).Finite :=
   finite_of_hasDimensionLT _ (p + q + 1) inferInstance
