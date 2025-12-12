@@ -48,10 +48,10 @@ variable (X : Scheme)
 
 /-- A scheme `X` is locally Artinian if `𝒪ₓ(U)` is Artinian for all affine `U`. -/
 class IsLocallyArtinian : Prop where
-  component_artinian : ∀ (U : X.affineOpens),
+  isArtinianRing_presheaf_obj : ∀ (U : X.affineOpens),
     IsArtinianRing Γ(X, U) := by infer_instance
 
-attribute [instance] IsLocallyArtinian.component_artinian
+attribute [instance] IsLocallyArtinian.isArtinianRing_presheaf_obj
 
 instance IsLocallyArtinian.isLocallyNoetherian [h : IsLocallyArtinian X] :
     IsLocallyNoetherian X where
@@ -68,7 +68,7 @@ lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAf
 
 instance [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U where
-  component_artinian W :=
+  isArtinianRing_presheaf_obj W :=
     have : IsArtinianRing Γ(X, U.ι ''ᵁ W) :=
       h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
     RingEquiv.isArtinianRing (Scheme.Hom.appIso U.ι ↑W).commRingCatIsoToRingEquiv
@@ -96,7 +96,7 @@ theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
 lemma IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero
     {X : Scheme} [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) :
     IsLocallyArtinian X := by
-  refine { component_artinian := ?_ }
+  refine { isArtinianRing_presheaf_obj := ?_ }
   intro U
   have _ : IsNoetherianRing Γ(X,U) := IsLocallyNoetherian.component_noetherian U
   apply isArtinianRing_iff_krullDimLE_zero.mpr
