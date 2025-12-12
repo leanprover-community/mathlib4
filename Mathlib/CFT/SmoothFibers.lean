@@ -1,13 +1,8 @@
--- import Mathlib.Algebra.Lie.OfAssociative
--- import Mathlib.Order.BourbakiWitt
 import Mathlib.RingTheory.Etale.Field
 import Mathlib.RingTheory.FiniteLength
--- import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
--- import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
--- import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Smooth.Locus
 import Mathlib.RingTheory.TensorProduct.Quotient
@@ -27,8 +22,6 @@ variable
   [CommRing S] [Algebra R S] [CommRing P] [Algebra R P] [Algebra P S]
   [Algebra S A] [Algebra P A] [IsScalarTower P S A]
   [IsScalarTower R P S]
-  --  [IsLocalRing S] [FormallySmooth R P]
-  -- [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
   (h₁ : Function.Surjective (algebraMap P S)) (h' : (RingHom.ker (algebraMap P S)).FG)
 
 local notation "𝓀[" R "]" => ResidueField R
@@ -277,9 +270,6 @@ variable [IsLocalRing R] [IsLocalRing S] [FormallySmooth R P]
     [Module.Flat R S] [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
 attribute [local instance] TensorProduct.rightAlgebra in
-attribute [local irreducible] KaehlerDifferential in
-set_option synthInstance.maxHeartbeats 0 in
-set_option maxHeartbeats 0 in
 def kerTensorProductEquivTensorTensorKer {A : Type*} [CommRing A] [Algebra R A] :
     (RingHom.ker (Algebra.TensorProduct.map (.id A A)
       (IsScalarTower.toAlgHom R P S))) ≃ₗ[A ⊗[R] P]
@@ -299,16 +289,16 @@ def kerTensorProductEquivTensorTensorKer {A : Type*} [CommRing A] [Algebra R A] 
     { __ := e₄'.symm, map_smul' r' x := by
         dsimp
         induction x with
-        | zero => simp only [smul_zero, map_zero]
-        | add x y _ _ => simp only [smul_add, map_add, *]
+        | zero => simp only [smul_zero, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [smul_add, LinearEquiv.map_add, *]
         | tmul x y =>
         induction x with
-        | zero => simp only [zero_tmul, smul_zero, map_zero]
-        | add x y _ _ => simp only [smul_add, add_tmul, map_add, *]
+        | zero => simp only [zero_tmul, smul_zero, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [smul_add, add_tmul, LinearEquiv.map_add, *]
         | tmul x z =>
         induction r' with
-        | zero => simp only [zero_smul, map_zero]
-        | add x y _ _ => simp only [add_smul, map_add, *]
+        | zero => simp only [zero_smul, LinearEquiv.map_zero]
+        | add x y _ _ => simp only [add_smul, LinearEquiv.map_add, *]
         | tmul r s =>
         rw [smul_tmul']
         ext1
@@ -329,7 +319,6 @@ lemma kerTensorProductEquivTensorTensorKer_symm_apply {A : Type*} [CommRing A] [
     (x y z) :
     ((kerTensorProductEquivTensorTensorKer (R := R) (A := A) h₁).symm ((x ⊗ₜ y) ⊗ₜ z)).1 =
       x ⊗ₜ (y * z.1) := rfl
-
 
 include h₁ h₂ in
 set_option synthInstance.maxHeartbeats 0 in
