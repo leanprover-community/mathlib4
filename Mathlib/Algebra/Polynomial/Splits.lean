@@ -214,22 +214,11 @@ alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 @[deprecated (since := "2025-12-13")]
 alias mem_lift_of_splits_of_roots_mem_range := Splits.mem_lift_of_roots_mem_range
 
-/--
-A polynomial of degree `2` with a root splits.
--/
-theorem splits_of_natDegree_eq_two {f : Polynomial K} {x : L} (h₁ : f.natDegree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) := by
-  have hf₀ : f ≠ 0 := ne_zero_of_natDegree_gt (h₁ ▸ zero_lt_two)
-  have h : (map i f /ₘ (X - C x)).natDegree = 1 := by
-    rw [natDegree_divByMonic _ (monic_X_sub_C x), natDegree_map, h₁, natDegree_X_sub_C]
-  replace h₂ := (mem_roots'.mp <| (mem_roots_map_of_injective i.injective hf₀).mpr h₂).2
-  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂]
-  exact (splits_mul_iff (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
-    ⟨Splits.X_sub_C  _, Splits.of_natDegree_le_one (by rw [h])⟩
+@[deprecated (since := "2025-12-13")]
+alias splits_of_natDegree_eq_two := Splits.of_natDegree_eq_two
 
-theorem splits_of_degree_eq_two {f : Polynomial K} {x : L} (h₁ : f.degree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) :=
-  splits_of_natDegree_eq_two i (natDegree_eq_of_degree_eq_some h₁) h₂
+@[deprecated (since := "2025-12-13")]
+alias splits_of_degree_eq_two := Splits.of_degree_eq_two
 
 section UFD
 

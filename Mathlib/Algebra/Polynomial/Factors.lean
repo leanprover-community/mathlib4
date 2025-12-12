@@ -576,6 +576,17 @@ theorem Splits.mem_subfield_of_isRoot (F : Subfield R) {f : F[X]} (hf : Splits f
     {x : R} (hx : (f.map F.subtype).IsRoot x) : x ∈ F := by
   simpa using hf.mem_range_of_isRoot hf0 hx
 
+/-- A polynomial of degree `2` with a root splits. -/
+theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.eval x = 0) :
+    Splits f := by
+  have h : (f /ₘ (X - C x)).natDegree = 1 := by
+    rw [natDegree_divByMonic f (monic_X_sub_C x), h₁, natDegree_X_sub_C]
+  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul_iff (X_sub_C_ne_zero x) (by aesop)]
+  exact ⟨Splits.X_sub_C x, Splits.of_natDegree_eq_one h⟩
+
+theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
+  Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
+
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name.
 theorem splits_iff_splits {f : R[X]} :
