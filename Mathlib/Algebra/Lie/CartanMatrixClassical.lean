@@ -1,4 +1,3 @@
-module
 /-
 Copyright (c) 2025 Jonathan Reich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -6,6 +5,7 @@ Authors: Jonathan Reich
 -/
 import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Data.Fin.Basic
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Cartan matrices for classical Lie algebras
@@ -154,6 +154,26 @@ theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
   ext i j
   fin_cases i <;> fin_cases j
   all_goals simp [A, Matrix.of_apply]
+
+/-- Off-diagonal entries of type A Cartan matrix are non-positive. -/
+theorem A_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : A n i j ≤ 0 := by
+  simp only [A, Matrix.of_apply]
+  split_ifs <;> omega
+
+/-- Off-diagonal entries of type B Cartan matrix are non-positive. -/
+theorem B_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : B n i j ≤ 0 := by
+  simp only [B, Matrix.of_apply]
+  split_ifs <;> omega
+
+/-- Off-diagonal entries of type C Cartan matrix are non-positive. -/
+theorem C_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : C n i j ≤ 0 := by
+  simp only [C, Matrix.of_apply]
+  split_ifs <;> omega
+
+/-- Off-diagonal entries of type D Cartan matrix are non-positive. -/
+theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
+  simp only [D, Matrix.of_apply]
+  split_ifs <;> omega
 
 end Properties
 
