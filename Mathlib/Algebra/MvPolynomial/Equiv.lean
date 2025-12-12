@@ -457,6 +457,16 @@ lemma totalDegree_coeff_optionEquivLeft_le
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
 
+theorem optionEquivLeft_coeff_coeff'
+    (p : MvPolynomial (Option σ) R) (m : ℕ) (d : σ →₀ ℕ) :
+    coeff d (((optionEquivLeft R σ) p).coeff m) = p.coeff (d.optionElim m) := by
+  induction p using MvPolynomial.induction_on' generalizing d m with
+  | monomial j r =>
+    rw [optionEquivLeft_monomial]
+    classical
+    simp +contextual [Finsupp.ext_iff, Option.forall, Polynomial.coeff_monomial, apply_ite]
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+
 end
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and

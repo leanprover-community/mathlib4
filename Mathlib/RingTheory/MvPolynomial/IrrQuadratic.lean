@@ -63,20 +63,9 @@ section
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
--- move this
-theorem optionEquivLeft_coeff_coeff'
-    (p : MvPolynomial (Option n) R) (m : ℕ) (d : n →₀ ℕ) :
-    coeff d (((optionEquivLeft R n) p).coeff m) = p.coeff (d.optionElim m) := by
-  induction p using MvPolynomial.induction_on' generalizing d m with
-  | monomial j r =>
-    rw [optionEquivLeft_monomial]
-    classical
-    simp +contextual [Finsupp.ext_iff, Option.forall, Polynomial.coeff_monomial, apply_ite]
-  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-
 lemma irreducible_mul_X_add [IsDomain R]
     (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars)
-    (h : ∀ p, p ∣ f → p ∣ g → IsUnit p) :
+    (h : IsRelPrime f g) :
     Irreducible (f * X i + g) := by
   classical
   let e₁ := renameEquiv R (σ := n) (Equiv.optionSubtypeNe i).symm
@@ -114,21 +103,24 @@ lemma irreducible_mul_X_add [IsDomain R]
   obtain rfl : d' i = m := by simpa [Finsupp.mapDomain_equiv_apply] using congr($hd' none)
   simp_all [ne_of_gt]
 
+/-- A multivariate polynomial `f` whose support is nontrivial,
+such that some variable `i` appears with exponent `1` in one nontrivial monomial,
+whose monomials have disjoint supports, and which is primitive, is irreducible. -/
 lemma irreducible_of_disjoint_support [IsDomain R]
-    (f : MvPolynomial n R) (h0 : f.support.Nontrivial)
-    (h1 : ∀ d ∈ f.support, ∀ i ∈ d.support, d i ≤ 1)
-    (h2 : ∀ d₁ ∈ f.support, ∀ d₂ ∈ f.support, ∀ i, i ∈ d₁.support → i ∈ d₂.support → d₁ = d₂)
-    (h3 : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
+    {f : MvPolynomial n R}
+    (nontrivial : f.support.Nontrivial)
+    {d : n →₀ ℕ} (hd : d ∈ f.support) {i : n} (hdi : d i = 1)
+    -- Question — should one state this `disjoint` hypothesis as:
+    --  Set.Pairwise (f.support : Set (n →₀ ℕ)) (fun x y ↦ Disjoint x.support y.support))
+    (disjoint : ∀ d₁ ∈ f.support, ∀ d₂ ∈ f.support, ∀ i, i ∈ d₁.support → i ∈ d₂.support → d₁ = d₂)
+    (isPrimitive : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
     Irreducible f := by
   classical
-  obtain ⟨d, hd, hd0⟩ := h0.exists_ne 0
-  rw [ne_eq, ← Finsupp.support_eq_empty, ← ne_eq, ← Finset.nonempty_iff_ne_empty] at hd0
-  rcases hd0 with ⟨i, hi⟩
+  have hi : i ∈ d.support := by simp [Finsupp.mem_support_iff, hdi]
   have hfd : f.coeff d ≠ 0 := by simpa [mem_support_iff] using hd
   let d₀ := d - .single i 1
   have hd₀ : d = d₀ + .single i 1 := by
-    rw [Finsupp.mem_support_iff] at hi
-    rw [Finsupp.sub_add_single_one_cancel hi]
+    rw [Finsupp.sub_add_single_one_cancel (by simp [hdi])]
   let φ : MvPolynomial n R := monomial d₀ (f.coeff d)
   let ψ : MvPolynomial n R := f - φ * X i
   have hf : f = φ * X i + ψ := by grind only
@@ -140,13 +132,13 @@ lemma irreducible_of_disjoint_support [IsDomain R]
   rw [hf]
   apply irreducible_mul_X_add
   · grind only [monomial_eq_zero]
-  · simp [φ, hfd, h1 d hd i hi, d₀]
+  · simp [φ, hfd, d₀, hdi]
   · grind only [mem_vars, Finset.mem_erase]
   · intro p hpφ hpψ
     simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
     obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
     obtain ⟨q, hq⟩ := hpψ
-    obtain ⟨d₂, hd₂, H⟩ := h0.exists_ne d
+    obtain ⟨d₂, hd₂, H⟩ := nontrivial.exists_ne d
     obtain rfl : m = 0 := by
       ext j
       rw [Finsupp.zero_apply]
@@ -156,15 +148,14 @@ lemma irreducible_of_disjoint_support [IsDomain R]
       specialize hm j
       simp only [Finsupp.coe_tsub, Pi.sub_apply, d₀] at hm
       contrapose! H
-      apply h2 d₂ hd₂ d hd j <;> grind only [= Finsupp.mem_support_iff]
+      apply disjoint d₂ hd₂ d hd j <;> grind only [= Finsupp.mem_support_iff]
     simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
     refine ⟨b, ?_, rfl⟩
-    apply h3
+    apply isPrimitive
     intro k
     obtain rfl | hk := eq_or_ne k d
     · exact hb
-    rw [hf]
-    simp [hk, hq, hdφX]
+    simp [hf, hk, hq, hdφX]
 
 end
 
@@ -199,9 +190,11 @@ theorem irreducible_sum_smul_X [IsDomain R]
     rw [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sum_smul_X c).support = c.support.map ι := by
     rw [aux, support, Finsupp.support_embDomain]
-  apply irreducible_of_disjoint_support
+  obtain ⟨a, ha⟩ := hc_nontrivial.nonempty
+  apply irreducible_of_disjoint_support (d := ι a) (i := a)
   · rwa [hsupp, Finset.map_nontrivial]
-  · simp [hsupp, ι, Finsupp.single_apply]
+  · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
+  · simp [ι]
   · simp +contextual [hsupp, ι, Finsupp.single_apply]
   · intro r hr
     apply hc_gcd
@@ -233,9 +226,11 @@ theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
     rw [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sum_smul_X_mul_Y c).support = c.support.map ι := by
     rw [aux, support, Finsupp.support_embDomain]
-  apply irreducible_of_disjoint_support
+  obtain ⟨a, ha⟩ := hc.nonempty
+  apply irreducible_of_disjoint_support (d := ι a) (i := .inl a)
   · rwa [hsupp, Finset.map_nontrivial]
-  · simp [hsupp, ι, Finsupp.single_apply]
+  · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
+  · simp [ι]
   · simp +contextual [hsupp, ι, Finsupp.single_apply]
   · intro r hr
     apply h_dvd
