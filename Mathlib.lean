@@ -98,7 +98,6 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.AlgCat.Limits
 public import Mathlib.Algebra.Category.AlgCat.Monoidal
 public import Mathlib.Algebra.Category.AlgCat.Symmetric
-public import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 public import Mathlib.Algebra.Category.BialgCat.Basic
 public import Mathlib.Algebra.Category.BialgCat.Monoidal
 public import Mathlib.Algebra.Category.BoolRing
@@ -121,7 +120,6 @@ public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Category.Grp.Biproducts
 public import Mathlib.Algebra.Category.Grp.CartesianMonoidal
-public import Mathlib.Algebra.Category.Grp.ChosenFiniteProducts
 public import Mathlib.Algebra.Category.Grp.Colimits
 public import Mathlib.Algebra.Category.Grp.EnoughInjectives
 public import Mathlib.Algebra.Category.Grp.EpiMono
@@ -1247,13 +1245,11 @@ public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.Cover.Over
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
@@ -2275,7 +2271,6 @@ public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
-public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
@@ -2312,11 +2307,6 @@ public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.NegOnePow
 public import Mathlib.CategoryTheory.Center.Preadditive
-public import Mathlib.CategoryTheory.ChosenFiniteProducts
-public import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
-public import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
-public import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
-public import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
 public import Mathlib.CategoryTheory.Closed.Cartesian
 public import Mathlib.CategoryTheory.Closed.Enrichment
 public import Mathlib.CategoryTheory.Closed.Functor
@@ -2824,8 +2814,6 @@ public import Mathlib.CategoryTheory.Monoidal.Mod_
 public import Mathlib.CategoryTheory.Monoidal.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-public import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
-public import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Opposite.Mon_
@@ -2840,7 +2828,6 @@ public import Mathlib.CategoryTheory.Monoidal.Tor
 public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
-public import Mathlib.CategoryTheory.Monoidal.Yoneda
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
@@ -2974,7 +2961,6 @@ public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
-public import Mathlib.CategoryTheory.Sites.ChosenFiniteProducts
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
@@ -3960,7 +3946,6 @@ public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Data.Sigma.Interval
 public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Data.Sigma.Order
-public import Mathlib.Data.Sign
 public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Sign.Defs
 public import Mathlib.Data.Stream.Defs
@@ -5620,7 +5605,6 @@ public import Mathlib.Probability.Distributions.Beta
 public import Mathlib.Probability.Distributions.Exponential
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
-public import Mathlib.Probability.Distributions.Gaussian
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Real
@@ -5718,7 +5702,6 @@ public import Mathlib.Probability.Process.Stopping
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.StrongLaw
 public import Mathlib.Probability.UniformOn
-public import Mathlib.Probability.Variance
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
@@ -5817,7 +5800,6 @@ public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Coprime.Basic
 public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.CotangentLocalizationAway
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DedekindDomain.Different
@@ -5853,7 +5835,6 @@ public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Pi
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
-public import Mathlib.RingTheory.Extension
 public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
@@ -5906,7 +5887,6 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
-public import Mathlib.RingTheory.Generators
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -5985,7 +5965,6 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.Invariant
 public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.Invariant.Defs
 public import Mathlib.RingTheory.Invariant.Profinite
@@ -5999,7 +5978,6 @@ public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.RingTheory.Jacobson.Semiprimary
 public import Mathlib.RingTheory.Kaehler.Basic
-public import Mathlib.RingTheory.Kaehler.CotangentComplex
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
 public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.RingTheory.Kaehler.TensorProduct
@@ -6194,7 +6172,6 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Trunc
 public import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
 public import Mathlib.RingTheory.PowerSeries.WellKnown
-public import Mathlib.RingTheory.Presentation
 public import Mathlib.RingTheory.Prime
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
@@ -6331,7 +6308,6 @@ public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.Quotient
 public import Mathlib.RingTheory.Valuation.RamificationGroup
 public import Mathlib.RingTheory.Valuation.RankOne
-public import Mathlib.RingTheory.Valuation.ValExtension
 public import Mathlib.RingTheory.Valuation.ValuationRing
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.RingTheory.Valuation.ValuativeRel
@@ -7072,7 +7048,6 @@ public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.GDelta.MetrizableSpace
-public import Mathlib.Topology.GDelta.UniformSpace
 public import Mathlib.Topology.Germ
 public import Mathlib.Topology.Gluing
 public import Mathlib.Topology.Hom.ContinuousEval
