@@ -137,7 +137,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       rw [Fin.nontrivial_iff_two_le]
       obtain rfl | hd' := eq_or_ne d 0
       · exact i.elim0
-      omega
+      lia
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true]
