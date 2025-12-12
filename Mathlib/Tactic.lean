@@ -32,6 +32,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
 public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
@@ -84,6 +85,7 @@ public import Mathlib.Tactic.ExistsI
 public import Mathlib.Tactic.Explode
 public import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Pretty
+public import Mathlib.Tactic.Ext
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.ExtractLets
@@ -238,6 +240,7 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.ProdAssoc
+public import Mathlib.Tactic.Propose
 public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
@@ -291,6 +294,7 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
