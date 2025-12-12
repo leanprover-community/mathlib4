@@ -890,7 +890,7 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
-theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : 2 • a = 2 • b)
+theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : (2 : ℤ) • a = 2 • b)
   (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
   have h1:= Real.Angle.two_zsmul_eq_iff.mp h
   rcases h1 with h2 | h3
