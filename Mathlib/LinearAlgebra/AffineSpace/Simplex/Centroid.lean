@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Chu Zheng
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Centroid of a simplex in affine space
@@ -37,6 +39,8 @@ simplex.
 * https://en.wikipedia.org/wiki/Commandino%27s_theorem
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -186,7 +190,7 @@ theorem face_centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n)
 /-- Two simplices with the same points have the same centroid. -/
 theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
     (h : Set.range s₁.points = Set.range s₂.points) :
-    s₁.centroid = s₂.centroid := by
+    Finset.univ.centroid k s₁.points = Finset.univ.centroid k s₂.points := by
   rw [← Set.image_univ, ← Set.image_univ, ← Finset.coe_univ] at h
   exact
     Finset.univ.centroid_eq_of_inj_on_of_image_eq k _

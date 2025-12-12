@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Sites.OneHypercover
+module
+
+public import Mathlib.AlgebraicGeometry.Gluing
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data
@@ -21,6 +24,8 @@ This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -45,7 +50,7 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   p₂ i₁ i₂ _ := D.t i₁ i₂ ≫ D.f i₂ i₁
   w i₁ i₂ _ := by simp only [Category.assoc, Scheme.GlueData.glue_condition]
   mem₀ := by
-    refine zariskiTopology.superset_covering ?_ (grothendieckTopology_cover D.openCover)
+    refine zariskiTopology.superset_covering ?_ D.openCover.mem_grothendieckTopology
     rw [Sieve.generate_le_iff]
     rintro W _ ⟨i⟩
     exact ⟨_, 𝟙 _, _, ⟨i⟩, by simp; rfl⟩

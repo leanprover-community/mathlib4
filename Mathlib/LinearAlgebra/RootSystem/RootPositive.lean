@@ -3,8 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
-import Mathlib.LinearAlgebra.RootSystem.WeylGroup
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Invariant and root-positive bilinear forms on root pairings
@@ -32,6 +33,8 @@ positive semi-definite on weight space and positive-definite on the span of root
   orthogonal.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -63,7 +66,7 @@ lemma two_mul_apply_root_root :
   rw [two_mul, ← eq_sub_iff_add_eq]
   nth_rw 1 [← B.isOrthogonal_reflection j]
   rw [reflection_apply, reflection_apply_self, root_coroot'_eq_pairing, LinearMap.map_sub₂,
-    LinearMap.map_smul₂, smul_eq_mul, LinearMap.map_neg, LinearMap.map_neg, mul_neg, neg_sub_neg]
+    LinearMap.map_smul₂, smul_eq_mul, map_neg, map_neg, mul_neg, neg_sub_neg]
 
 lemma pairing_mul_eq_pairing_mul_swap :
     P.pairing j i * B.form (P.root i) (P.root i) =
@@ -75,18 +78,6 @@ lemma pairing_mul_eq_pairing_mul_swap :
 lemma apply_reflection_reflection (x y : M) :
     B.form (P.reflection i x) (P.reflection i y) = B.form x y :=
   B.isOrthogonal_reflection i x y
-
-@[simp]
-lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
-    B.form (g • x) (g • y) = B.form x y := by
-  revert x y
-  obtain ⟨g, hg⟩ := g
-  induction hg using weylGroup.induction with
-  | mem i => simp
-  | one => simp
-  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
-    intro x y
-    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
 @[simp]
 lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :

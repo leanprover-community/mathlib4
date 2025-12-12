@@ -3,12 +3,16 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
 -/
+
+@[expose] public section
 
 open Module
 
@@ -43,8 +47,7 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
     ((b₁.repr x).sum fun i xi => (b₂.repr y).sum fun j yj => ρ₁₂ xi • σ₁₂ yj • B (b₁ i) (b₂ j)) =
       B x y := by
   conv_rhs => rw [← b₁.linearCombination_repr x, ← b₂.linearCombination_repr y]
-  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
-    LinearMap.map_smulₛₗ]
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, map_smulₛₗ₂, map_smulₛₗ]
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
@@ -53,8 +56,7 @@ theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ} (x 
     ((b₁'.repr x).sum fun i xi => (b₂'.repr y).sum fun j yj => xi • yj • B (b₁' i) (b₂' j)) =
       B x y := by
   conv_rhs => rw [← b₁'.linearCombination_repr x, ← b₂'.linearCombination_repr y]
-  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smul₂,
-    LinearMap.map_smul]
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, map_smul₂, map_smul]
 
 end AddCommMonoid
 

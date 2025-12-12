@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.AddCircle
-import Mathlib.MeasureTheory.Covering.LiminfLimsup
+module
+
+public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -57,6 +59,8 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 (which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
 
+@[expose] public section
+
 
 open Set Filter Function Metric MeasureTheory
 
@@ -103,7 +107,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
+  simp only [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
@@ -292,7 +296,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  by_cases h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
+  by_cases! +distrib h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
@@ -302,7 +306,6 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       rw [hC]
     exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hE₀ h hu
   · right
-    simp only [not_forall, not_and_or] at h
     obtain ⟨p, hp⟩ := h
     rw [hE₁ p]
     cases hp
@@ -341,9 +344,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     exact hδ
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
-    suffices μ (closedBall 0 (δ/2)) = 0 by
-      apply isOpen_univ.measure_ne_zero μ univ_nonempty <| le_zero_iff.mp <| le_trans hδ _
-      simp [this]
+    refine (isOpen_univ.measure_pos μ univ_nonempty).not_ge <| hδ.trans ?_
+    suffices μ (closedBall 0 (δ/2)) = 0 by simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
   have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]

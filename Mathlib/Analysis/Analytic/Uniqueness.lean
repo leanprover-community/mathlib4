@@ -3,11 +3,13 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Uniqueness principle for analytic functions
@@ -15,6 +17,8 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 We show that two analytic functions which coincide around a point coincide on whole connected sets,
 in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -188,7 +192,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
-    convert hasSum_zero (α := F) using 2
+    convert hasSum_zero (α := F) using 1
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B

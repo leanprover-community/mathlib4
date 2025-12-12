@@ -3,8 +3,10 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
-import Mathlib.Topology.Sheaves.LocalPredicate
+module
+
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
+public import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 
@@ -27,6 +29,8 @@ invariant" property is preserved under restriction and gluing.
 * `StructureGroupoid.LocalInvariantProp.sheaf`: the sheaf-of-types of functions `f : M → M'`
   which satisfy the lifted property `LiftProp P`.
 -/
+
+@[expose] public section
 
 
 open scoped Manifold Topology

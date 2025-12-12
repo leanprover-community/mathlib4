@@ -3,15 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Relative cell complexes
 
 In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
-all of which consists in attaching cells. Here, we allow a different
+all of which consist in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
 CW-complexes are defined in the file `Mathlib/Topology/CWComplex/Abstract/Basic.lean`
 by requiring that at the `n`th step, we attach `n`-disks along their
@@ -26,6 +28,8 @@ see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgumen
 
 -/
 
+@[expose] public section
+
 universe w w' t v u
 
 open CategoryTheory
@@ -37,7 +41,7 @@ variable {C : Type u} [Category.{v} C]
   {α : J → Type t} {A B : (j : J) → α j → C}
   (basicCell : (j : J) → (i : α j) → A j i ⟶ B j i) {X Y : C} (f : X ⟶ Y)
 
-/-- Let `J` be a well ordered type. Assume that for each `j : J`, we
+/-- Let `J` be a well-ordered type. Assume that for each `j : J`, we
 have a family `basicCell j` of morphisms. A relative cell complex
 is a morphism `f : X ⟶ Y` which is a transfinite composition of morphisms
 in such a way that at the step `j : J`, we attach cells in the family `basicCell j`. -/

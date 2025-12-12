@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Chu Zheng
 -/
-import Mathlib.Analysis.Normed.Affine.Simplex
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
+module
+
+public import Mathlib.Analysis.Normed.Affine.Simplex
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 
 /-!
 # Simplices in Euclidean spaces.
@@ -17,6 +19,8 @@ This file defines properties of simplices in a Euclidean space.
 * `Affine.Simplex.AcuteAngled`
 
 -/
+
+@[expose] public section
 
 
 namespace Affine
@@ -45,8 +49,7 @@ lemma Equilateral.angle_eq_pi_div_three {s : Simplex ℝ P n} (he : s.Equilatera
     replace hr := hr _ _ h₁₂
     rw [dist_eq_zero] at hr
     exact h₁₂ (s.independent.injective hr)
-  field_simp
-  ring
+  field
 
 /-- The property of all angles of a simplex being acute. -/
 def AcuteAngled (s : Simplex ℝ P n) : Prop :=

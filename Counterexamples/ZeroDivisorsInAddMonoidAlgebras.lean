@@ -137,8 +137,8 @@ elab "guard_decl" na:ident mod:ident : command => do
   let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
-  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
-  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  let some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
@@ -175,7 +175,6 @@ instance : Add F where
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
   add_assoc := by boom
-  zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
