@@ -24,6 +24,11 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.cosh_arcosh`, `Real.arcosh_cosh`: cosh and arcosh are inverse in the appropriate domains.
 
+- `Real.continuousOn_arcosh`: arcosh is continuous on [0, ∞)
+
+- `Real.differentiableOn_arcosh`, `Real.contDiffOn_arcosh`: `Real.arcosh` is
+  differentiable, and continuously differentiable on (0, ∞)
+
 ## Tags
 
 arcosh, arccosh, argcosh, acosh
@@ -134,5 +139,32 @@ def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   open_target := isOpen_Ioi
   continuousOn_toFun := continuous_cosh.continuousOn
   continuousOn_invFun := continuousOn_arcosh.mono Ioi_subset_Ici_self
+
+theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :
+    HasStrictDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x := by
+  convert coshOpenPartialHomeomorph.hasStrictDerivAt_symm hx ?_
+    (hasStrictDerivAt_cosh _) using 2
+  · exact (sinh_arcosh (le_of_lt hx)).symm
+  · rw [ne_eq, sinh_eq_zero, coshOpenPartialHomeomorph, OpenPartialHomeomorph.mk_coe_symm,
+      PartialEquiv.coe_symm_mk]
+    exact ne_of_gt (arcosh_pos hx)
+
+theorem hasDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : HasDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x :=
+  (hasStrictDerivAt_arcosh hx).hasDerivAt
+
+theorem differentiableAt {x : ℝ} (hx : x ∈ Ioi 1) : DifferentiableAt ℝ arcosh x :=
+  (hasDerivAt_arcosh hx).differentiableAt
+
+theorem differentiableOn_arcosh : DifferentiableOn ℝ arcosh (Ioi 1) := fun _ hx =>
+  (differentiableAt hx).differentiableWithinAt
+
+theorem contDiffAt_arcosh {n : ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : ContDiffAt ℝ n arcosh x := by
+  refine coshOpenPartialHomeomorph.contDiffAt_symm_deriv ?_ hx (hasDerivAt_cosh _)
+    contDiff_cosh.contDiffAt
+  rw [ne_eq, sinh_eq_zero]
+  exact ne_of_gt (arcosh_pos hx)
+
+theorem contDiffOn_arcosh {n : ℕ∞} : ContDiffOn ℝ n arcosh (Ioi 1) := fun _ hx =>
+  (contDiffAt_arcosh hx).contDiffWithinAt
 
 end Real
