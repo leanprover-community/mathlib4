@@ -12,12 +12,11 @@ public import Mathlib.Data.Set.Lattice.Image
 
 # Subfunctor of types
 
-We define the subpresheaf of a type-valued presheaf.
+We define subfunctors of a type-valued functors.
 
-## Main results
+## Main definition
 
-- `CategoryTheory.Subfunctor` :
-  A subpresheaf of a presheaf of types.
+`CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
 
 -/
 
@@ -32,7 +31,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A subpresheaf of a presheaf consists of a subset of `F.obj U` for every `U`,
+/-- A subfunctor of a presheaf consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
 structure Subfunctor (F : C ⥤ Type w) where
@@ -140,7 +139,7 @@ lemma iSup_min {ι : Type*} (S : ι → Subfunctor F) (T : Subfunctor F) :
 instance : Nonempty (Subfunctor F) :=
   inferInstance
 
-/-- The subpresheaf as a presheaf. -/
+/-- The subfunctor as a functor. -/
 @[simps!]
 def toPresheaf : C ⥤ Type w where
   obj U := G.obj U
@@ -157,7 +156,7 @@ def toPresheaf : C ⥤ Type w where
 instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
   coe := Subtype.val
 
-/-- The inclusion of a subpresheaf to the original presheaf. -/
+/-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
 def ι : G.toPresheaf ⟶ F where app _ x := x
 
@@ -166,7 +165,7 @@ instance : Mono G.ι :=
     NatTrans.ext <|
       funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
 
-/-- The inclusion of a subpresheaf to a larger subpresheaf -/
+/-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
 def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
   app U x := ⟨x, h U x.prop⟩

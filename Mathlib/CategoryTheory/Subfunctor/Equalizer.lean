@@ -9,11 +9,11 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
-# The equalizer of two morphisms of presheaves, as a subpresheaf
+# The equalizer of two morphisms of presheaves, as a subfunctor
 
 If `F₁` and `F₂` are presheaves of types, `A : Subfunctor F₁`, and
 `f` and `g` are two morphisms `A.toPresheaf ⟶ F₂`, we introduce
-`Subcomplex.equalizer f g`, which is the subpresheaf of `F₁` contained in `A`
+`Subcomplex.equalizer f g`, which is the subfunctor of `F₁` contained in `A`
 where `f` and `g` coincide.
 
 -/

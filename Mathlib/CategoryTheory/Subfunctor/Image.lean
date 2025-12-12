@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
-# The image of a subpresheaf
+# The image of a subfunctor
 
 Given a morphism of presheaves of types `p : F' ⟶ F`, we define its range
 `Subfunctor.range p`. More generally, if `G' : Subfunctor F'`, we
@@ -31,7 +31,7 @@ namespace Subfunctor
 
 section range
 
-/-- The range of a morphism of presheaves of types, as a subpresheaf of the target. -/
+/-- The range of a morphism of presheaves of types, as a subfunctor of the target. -/
 @[simps]
 def range (p : F' ⟶ F) : Subfunctor F where
   obj U := Set.range (p.app U)
@@ -51,7 +51,7 @@ section lift
 
 variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
-/-- If the image of a morphism falls in a subpresheaf, then the morphism factors through it. -/
+/-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
 @[simps!]
 def lift : F' ⟶ G.toPresheaf where
   app U x := ⟨f.app U x, hf U (by simp)⟩
@@ -119,7 +119,7 @@ section image
 
 variable (G : Subfunctor F) (f : F ⟶ F')
 
-/-- The image of a subpresheaf by a morphism of presheaves of types. -/
+/-- The image of a subfunctor by a morphism of presheaves of types. -/
 @[simps]
 def image : Subfunctor F' where
   obj i := (f.app i) '' (G.obj i)
@@ -143,7 +143,7 @@ end image
 
 section preimage
 
-/-- The preimage of a subpresheaf by a morphism of presheaves of types. -/
+/-- The preimage of a subfunctor by a morphism of presheaves of types. -/
 @[simps]
 def preimage (G : Subfunctor F) (p : F' ⟶ F) : Subfunctor F' where
   obj n := p.app n ⁻¹' (G.obj n)

@@ -16,12 +16,10 @@ public import Mathlib.CategoryTheory.Subfunctor.Sieves
 
 # Subsheaf of types
 
-We define the sub(pre)sheaf of a type-valued presheaf.
+We define the subsheaf of a type-valued presheaf.
 
 ## Main results
 
-- `CategoryTheory.Subfunctor` :
-  A subpresheaf of a presheaf of types.
 - `CategoryTheory.Subfunctor.sheafify` :
   The sheafification of a subpresheaf as a subpresheaf. Note that this is a sheaf only when the
   whole sheaf is.
