@@ -1311,6 +1311,8 @@ protected instance instChartedSpace : ChartedSpace H s where
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
+
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
