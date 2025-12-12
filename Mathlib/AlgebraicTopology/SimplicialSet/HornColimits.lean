@@ -169,13 +169,13 @@ variable {X : SSet.{u}} (f₀ f₂ f₃ : Δ[2] ⟶ X)
   (h₂₃ : stdSimplex.δ 2 ≫ f₂ = stdSimplex.δ 2 ≫ f₃)
 
 /-- Auxiliary definition for `desc`. -/
-@[simps!]
+@[simps! pt]
 def desc.multicofork :
     Multicofork ((horn.multicoequalizerDiagram (1 : Fin 4)).multispanIndex.toLinearOrder.map
       Subcomplex.toSSetFunctor) :=
   Multicofork.ofπ _ X (fun ⟨(i : Fin 4), hi⟩ ↦ match i with
     | 0 => (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀
-    | 1 => by simp at hi
+    | 1 => False.elim (by simp at hi)
     | 2 => (stdSimplex.faceSingletonComplIso 2).inv ≫ f₂
     | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (fun x ↦ by
       dsimp at x ⊢
@@ -191,6 +191,21 @@ def desc.multicofork :
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 1 (by simp)).hom,
           ← Category.assoc]
         convert h₂₃ <;> decide)
+
+@[simp, reassoc]
+lemma desc.multicofork_π_zero :
+  (desc.multicofork f₀ f₂ f₃ h₁₂ h₁₃ h₂₃).π ⟨0, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀ := rfl
+
+@[simp, reassoc]
+lemma desc.multicofork_π_two :
+  (desc.multicofork f₀ f₂ f₃ h₁₂ h₁₃ h₂₃).π ⟨2, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 2).inv ≫ f₂ := rfl
+
+@[simp, reassoc]
+lemma desc.multicofork_π_three :
+  (desc.multicofork f₀ f₂ f₃ h₁₂ h₁₃ h₂₃).π ⟨3, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃ := rfl
 
 /-- The morphism `Λ[3, 1] ⟶ X` which is obtained by gluing three
 morphisms `Δ[2] ⟶ X`. -/
@@ -239,14 +254,14 @@ variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)
   (h₂₃ : stdSimplex.δ 0 ≫ f₀ = stdSimplex.δ 0 ≫ f₁)
 
 /-- Auxiliary definition for `desc`. -/
-@[simps!]
+@[simps! pt]
 def desc.multicofork :
     Multicofork ((horn.multicoequalizerDiagram (2 : Fin 4)).multispanIndex.toLinearOrder.map
       Subcomplex.toSSetFunctor) :=
   Multicofork.ofπ _ X (fun ⟨(i : Fin 4), hi⟩ ↦ match i with
     | 0 => (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀
     | 1 => (stdSimplex.faceSingletonComplIso 1).inv ≫ f₁
-    | 2 => by simp at hi
+    | 2 => False.elim (by simp at hi)
     | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (fun x ↦ by
       dsimp at x ⊢
       fin_cases x
@@ -262,6 +277,21 @@ def desc.multicofork :
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 0 2 (by simp)).hom,
           ← Category.assoc]
         convert h₀₂ <;> decide)
+
+@[simp, reassoc]
+lemma desc.multicofork_π_zero :
+  (desc.multicofork f₀ f₁ f₃ h₀₂ h₁₂ h₂₃).π ⟨0, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀ := rfl
+
+@[simp, reassoc]
+lemma desc.multicofork_π_one :
+  (desc.multicofork f₀ f₁ f₃ h₀₂ h₁₂ h₂₃).π ⟨1, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 1).inv ≫ f₁ := rfl
+
+@[simp, reassoc]
+lemma desc.multicofork_π_three :
+  (desc.multicofork f₀ f₁ f₃ h₀₂ h₁₂ h₂₃).π ⟨3, by simp⟩ =
+    (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃ := rfl
 
 /-- The morphism `Λ[3, 2] ⟶ X` which is obtained by gluing three
 morphisms `Δ[2] ⟶ X`. -/
