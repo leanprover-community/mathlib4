@@ -273,6 +273,10 @@ theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
     (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
   rfl
 
+lemma comp_toRingHom' (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
+    (φ₁.comp φ₂).toRingHom = φ₁.toRingHom.comp φ₂.toRingHom :=
+  rfl
+
 @[simp]
 theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
   rfl
