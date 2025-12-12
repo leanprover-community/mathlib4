@@ -52,16 +52,18 @@ lemma Truncated.morphismProperty_eq_top
     · obtain _ | b := b
       · exact (h₁ (fun _ ↦ ⟨0, Subsingleton.elim (α := Fin 1) _ _⟩)).elim
       · obtain ⟨i, g', hf'⟩ := eq_comp_δ_of_not_surjective _ h₁
-        obtain rfl : f = Hom.tr g' ≫ Hom.tr (SimplexCategory.δ i) :=
+        replace hf' : f = Hom.tr g' ≫ Hom.tr (SimplexCategory.δ i) :=
           InducedCategory.hom_ext hf'
+        rw [hf']
         exact W.comp_mem _ _ (hc _ _ _ _ _ (by cutsat))
           (δ_mem _ (by cutsat) _)
     by_cases h₂ : Function.Injective f.hom.toOrderHom; swap
     · obtain _ | a := a
       · exact (h₂ (Function.injective_of_subsingleton (α := Fin 1) _)).elim
       · obtain ⟨i, g', hf'⟩ := eq_σ_comp_of_not_injective _ h₂
-        obtain rfl : f = Hom.tr (SimplexCategory.σ i) ≫ Hom.tr g' :=
+        replace hf' : f = Hom.tr (SimplexCategory.σ i) ≫ Hom.tr g' :=
           InducedCategory.hom_ext hf'
+        rw [hf']
         exact W.comp_mem _ _ (σ_mem _ (by cutsat) _) (hc _ _ _ _ _ (by cutsat))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
