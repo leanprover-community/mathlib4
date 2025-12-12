@@ -132,6 +132,7 @@ theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) := by
     add_pos_of_pos_of_nonneg (show 0 < x by grind) (sqrt_nonneg _)
   exact continuousOn_log.comp (Continuous.continuousOn (by continuity)) (fun _ _ => by grind)
 
+/-- `Real.cosh` as an `OpenPartialHomemorph`. -/
 def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := cosh
   invFun := arcosh
