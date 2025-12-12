@@ -390,27 +390,40 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-set_option linter.flexible false in -- TODO!
 open IsManifold in
 lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
   apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
     (chartAt H y) (chartAt H y.val) (mem_chart_source H y) (mem_chart_source H y.val)
     (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
-  intro x hx; simp +contextual
-  nth_rw 2 [← I.right_inv (x := x) (by simp_all)]
+  intro x hx
+  suffices I ((chartAt H ↑y) ↑((chartAt H y).symm (I.symm x))) = x by simpa +contextual
+  trans I (I.symm x); swap
+  · exact I.right_inv (by simp_all)
+  -- TODO: are there auxiliary lemmas to extract?
   rw [s.chartAt_eq]
   have hs : Nonempty s := Nonempty.intro y
   have aux : I.symm x ∈ ((chartAt H y.val).subtypeRestr hs).target := by
-    sorry
-  have := (chartAt H y.val).subtypeRestr_symm_apply (U := s) hs aux
-  congr 1
+    rw [(chartAt H y).extend_target] at hx
+    replace hx := hx.1
+    rw [mem_preimage] at hx
+    exact hx
   nth_rw 2 [← OpenPartialHomeomorph.right_inv (chartAt H y.val) (x := I.symm x)]
-  · simp [← this]
+  · simp [← (chartAt H y.val).subtypeRestr_symm_apply (U := s) hs aux]
   · simp at hx
-    -- XXX: separate lemma, tag with gcongr?
+    -- XXX: extract as a separate lemma? tag with gcongr?
     have : ((chartAt H y.val).subtypeRestr hs).target ⊆ (chartAt H y.val).target := by
-      sorry
+      rw [← OpenPartialHomeomorph.image_source_eq_target,
+        ← OpenPartialHomeomorph.image_source_eq_target, OpenPartialHomeomorph.subtypeRestr_source]
+      rintro z ⟨z₀, hz₀, rfl⟩
+      use z₀.val
+      simpa
+    -- have scifi : ((chartAt H y.val).subtypeRestr hs).target = (chartAt H y.val).target := by
+    --   apply le_antisymm
+    --   · apply this
+    --   · intro z hz
+    --     sorry -- is this actually true?
+    --     -- convert hz
     exact this aux
 
 end IsImmersionAtOfComplement
