@@ -55,8 +55,7 @@ lemma heawoodGraph_neighborFinset (i : Fin 14) :
 
 /-- The Heawood graph is 3-regular. -/
 lemma isRegularOfDegree_heawoodGraph : heawoodGraph.IsRegularOfDegree 3 := fun i ↦ by
-  rw [← card_neighborFinset_eq_degree, heawoodGraph_neighborFinset]
-  revert i; decide
+  rw [← card_neighborFinset_eq_degree, heawoodGraph_neighborFinset]; revert i; decide
 
 /-! ### A key number -/
 
@@ -99,24 +98,26 @@ noncomputable def udMap : Fin 14 → Plane
   | 12 => !₂[(1 + c) / 2, -(c ^ 2 - c / 2 + 1)]
 
 lemma reflect_toEuclideanLin {x y : ℝ} : !![1, 0; 0, -1].toEuclideanLin !₂[x, y] = !₂[x, -y] := by
-  ext i; fin_cases i <;> simp
+  ext i; match i with | 0 => simp | 1 => simp
 
 lemma udMap_reflect (i : Fin 14) : udMap i.rev = !![1, 0; 0, -1].toEuclideanLin (udMap i) := by
   fin_cases i <;> simp only [udMap, reflect_toEuclideanLin, Fin.reduceFinMk, Fin.reduceRev] <;>
   norm_num
 
 lemma decompose_point (p : Plane) : p = !₂[p.proj 0, p.proj 1] := by
-  ext i; fin_cases i <;> simp
+  ext i; match i with | 0 => simp | 1 => simp
 
 /-- `udMap` is injective on indices `[0, 7, 10, 5, 2, 9]` because their x-coordinates
 strictly increase in that order. -/
 lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14)) := by
   let f : Fin 6 → Fin 14 := fun | 0 => 0 | 1 => 7 | 2 => 10 | 3 => 5 | 4 => 2 | 5 => 9
+  have frange : Set.range f = ({0, 7, 10, 5, 2, 9} : Finset (Fin 14)) := by
+    rw [Set.range_eq_iff]; decide
   suffices StrictMono fun n ↦ (udMap (f n)).proj 0 by
     intro i mi j mj h
-    rw [mem_coe] at mi mj
-    obtain ⟨ci, hci⟩ : ∃ ci, f ci = i := by fin_cases mi <;> decide
-    obtain ⟨cj, hcj⟩ : ∃ cj, f cj = j := by fin_cases mj <;> decide
+    rw [← frange, Set.mem_range] at mi mj
+    obtain ⟨ci, hci⟩ := mi
+    obtain ⟨cj, hcj⟩ := mj
     rw [← hci, ← hcj] at h
     apply_fun (·.proj 0) at h
     rwa [← hci, this.injective h]
@@ -147,20 +148,17 @@ theorem injective_udMap : udMap.Injective := by
       rw [← Fin.rev_rev j, ← rev_compl] at hj
       simpa [udMap_reflect, hij] using hinjOn hi hj
   obtain ⟨lb, ub⟩ := root_bounds
-  refine ⟨fun i hi ↦ ?_, ?_⟩
-  · have half_neg : c / 2 < 0 := by linarith
-    revert i
-    simp [s, udMap]
+  refine ⟨?_, ?_⟩
+  · simp [s, udMap]
     constructor <;> nlinarith
   rw [coe_insert, Set.injOn_insert (by decide)]
   refine ⟨injOn_udMap_sextet, ?_⟩
-  have ne1 : 1 / 2 < c ^ 2 - c / 2 + 1 := by nlinarith
-  simp_rw [Set.mem_image, not_exists, not_and, mem_coe]
+  simp_rw [Set.mem_image, not_exists, not_and, mem_coe, PiLp.ext_iff, not_forall]
   intro i mi
-  rw [udMap, PiLp.ext_iff, not_forall]
   use 1
   revert i
-  simpa [udMap] using ne1.ne
+  simp [udMap]
+  nlinarith
 
 lemma dist_udMap_rev {i j : Fin 14} (h : dist (udMap i) (udMap j) = 1) :
     dist (udMap i.rev) (udMap j.rev) = 1 := by
@@ -189,19 +187,21 @@ noncomputable def unitDistEmbedding : heawoodGraph.UnitDistEmbedding Plane where
     simp only [Function.Embedding.coeFn_mk]
     simp_rw [← mem_edgeSet, ← mem_edgeFinset, heawoodGraph_edgeFinset, mem_union, mem_image,
       mem_univ, true_and] at h
-    rcases h with ⟨k, hk⟩ | ⟨k, mk, hk⟩ <;> (apply dist_udMap_eq_one_of_eq hk; clear! i j)
+    rcases h with ⟨k, hk⟩ | ⟨k, mk, hk⟩ <;> apply dist_udMap_eq_one_of_eq hk <;> clear! i j
     · wlog hk : 6 ≤ k
       · have sixl : 6 ≤ k.rev - 1 := by revert k; decide
         have rae : k.rev - 1 = (k + 1).rev := by revert k; decide
         specialize this _ sixl
         rwa [sub_add_cancel, rae, ← dist_udMap_rev_iff, dist_comm] at this
-      replace hk : k ∈ ({6, 7, 8, 9, 10, 11, 12, 13} : Finset _) := by revert k; decide
-      fin_cases hk
+      replace hk : k = 6 ∨ k = 7 ∨ k = 8 ∨ k = 9 ∨ k = 10 ∨ k = 11 ∨ k = 12 ∨ k = 13 := by
+        revert k; decide
+      rcases hk with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
       all_goals
         simp only [udMap, Fin.reduceAdd, Fin.isValue, dist_eq_one_iff]
         grind [root_equation]
-    · replace mk : k ∈ ({0, 2, 4, 6, 8, 10, 12} : Finset _) := by revert k; decide
-      fin_cases mk
+    · replace mk : k = 0 ∨ k = 2 ∨ k = 4 ∨ k = 6 ∨ k = 8 ∨ k = 10 ∨ k = 12 := by
+        revert k; decide
+      rcases mk with rfl | rfl | rfl | rfl | rfl | rfl | rfl
       all_goals
         simp only [udMap, Fin.reduceAdd, Fin.isValue, dist_eq_one_iff]
         grind [root_equation]
