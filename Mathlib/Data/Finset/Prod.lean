@@ -295,7 +295,7 @@ theorem diag_card : (diag s).card = s.card := by
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
   suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; lia
   by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
+     conv_rhs => rw [← card_filter_add_card_filter_not (fun a => a.1 = a.2)]
 
 @[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
