@@ -272,7 +272,7 @@ theorem compl_compl :
     (compl G α <| (n.add_comm m).trans hm).comp (compl G α hm) = .id G := by
   ext s a
   change a ∈ (compl G α _).comp (compl G α hm) s ↔ a ∈ s
-  simp [MonoidActionHom.comp_apply, mem_compl]
+  simp [MulActionHom.comp_apply, mem_compl]
 
 theorem compl_bijective :
     Function.Bijective (compl G α hm) :=

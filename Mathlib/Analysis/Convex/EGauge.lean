@@ -49,7 +49,7 @@ noncomputable def egauge (𝕜 : Type*) [ENorm 𝕜] {E : Type*} [SMul 𝕜 E] (
 
 variable (𝕜 : Type*) [NNNorm 𝕜] {E : Type*} [SMul 𝕜 E] {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
 
-lemma Set.MapsTo.egauge_le {E' F : Type*} [SMul 𝕜 E'] [FunLike F E E'] [MonoidActionHomClass F 𝕜 E E']
+lemma Set.MapsTo.egauge_le {E' F : Type*} [SMul 𝕜 E'] [FunLike F E E'] [MulActionHomClass F 𝕜 E E']
     (f : F) {t : Set E'} (h : MapsTo f s t) (x : E) : egauge 𝕜 t (f x) ≤ egauge 𝕜 s x :=
   iInf_mono fun c ↦ iInf_mono' fun hc ↦ ⟨h.smul_set c hc, le_rfl⟩
 
@@ -81,7 +81,7 @@ lemma le_egauge_inter (s t : Set E) (x : E) :
 lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
     (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
     egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
-  MapsTo.egauge_le _ (Pi.evalMonoidActionHom i) (fun x hx ↦ by exact hx i hi) _
+  MapsTo.egauge_le _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
 
 variable {F : Type*} [SMul 𝕜 F]
 

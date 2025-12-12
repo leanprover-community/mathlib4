@@ -113,7 +113,7 @@ variable {G}
 the stabilizer of a point and that of its translate. -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddMonoidActionHom (AddMonoidAction.stabilizerEquivStabilizer hg)
+    AddActionHom (AddMonoidAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_vadd' := fun ⟨k, hk⟩ x ↦ by
@@ -124,7 +124,7 @@ def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type
 the stabilizer of a point and that of its translate. -/
 @[to_additive existing]
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
-    MonoidActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
+    MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_smul' := fun ⟨k, hk⟩ ↦ by
     simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]

@@ -98,7 +98,7 @@ end AddMul
   mul_comm := mul_comm
 
 section SMul
-variable [∀ i, SMul R (G i)] [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)]
+variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
 
 @[to_additive] instance : SMul R (DirectLimit G f) where
   smul r := map _ _ (fun _ ↦ (r • ·)) fun _ _ _ ↦ map_smul _ r
@@ -109,7 +109,7 @@ variable [∀ i, SMul R (G i)] [∀ i j h, MonoidActionHomClass (T h) R (G i) (G
 end SMul
 
 @[to_additive] instance [Monoid R] [∀ i, MonoidAction R (G i)]
-    [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     MonoidAction R (DirectLimit G f) where
   one_smul := DirectLimit.induction _ fun i _ ↦ by rw [smul_def, one_smul]
   mul_smul _ _ := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, mul_smul]
@@ -333,19 +333,19 @@ instance [∀ i, CommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
 section Action
 
 instance [∀ i, Zero (G i)] [∀ i, SMulZeroClass R (G i)]
-    [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     SMulZeroClass R (DirectLimit G f) where
   smul_zero r := (smul_def _ _ _).trans <| by rw [smul_zero]; rfl
 
 instance [Zero R] [∀ i, Zero (G i)] [∀ i, SMulWithZero R (G i)]
-    [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)]
+    [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
     [∀ i j h, ZeroHomClass (T h) (G i) (G j)] :
     SMulWithZero R (DirectLimit G f) where
   zero_smul := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, zero_smul, zero_def i]
 
 instance [∀ i, AddZeroClass (G i)] [∀ i, DistribSMul R (G i)]
     [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
-    [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     DistribSMul R (DirectLimit G f) where
   smul_add r := DirectLimit.induction₂ _ fun i _ _ ↦ by
     simp_rw [add_def, smul_def, smul_add, add_def]
@@ -353,12 +353,12 @@ instance [∀ i, AddZeroClass (G i)] [∀ i, DistribSMul R (G i)]
 instance [Monoid R] [∀ i, AddMonoid (G i)] [∀ i, DistribMulAction R (G i)]
     [∀ i j h, DistribMulActionHomClass (T h) R (G i) (G j)] :
     DistribMulAction R (DirectLimit G f) :=
-  have _ i j h : MonoidActionHomClass (T h) R (G i) (G j) := inferInstance
+  have _ i j h : MulActionHomClass (T h) R (G i) (G j) := inferInstance
   { smul_zero := smul_zero, smul_add := smul_add }
 
 instance [Monoid R] [∀ i, Monoid (G i)] [∀ i, MulDistribMulAction R (G i)]
     [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
-    [∀ i j h, MonoidActionHomClass (T h) R (G i) (G j)] :
+    [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     MulDistribMulAction R (DirectLimit G f) where
   smul_mul r := DirectLimit.induction₂ _ fun i _ _ ↦ by
     simp_rw [mul_def, smul_def, MulDistribMulAction.smul_mul, mul_def]

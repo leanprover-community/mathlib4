@@ -120,7 +120,7 @@ def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H where
 
 @[simp]
 theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
-    MonoidActionHom.toQuotient H g = g :=
+    MulActionHom.toQuotient H g = g :=
   rfl
 
 @[to_additive]

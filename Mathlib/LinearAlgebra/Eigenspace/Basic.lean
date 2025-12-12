@@ -826,7 +826,7 @@ lemma genEigenspace_inf_le_add
   · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
 
 lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
-    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MonoidActionHomClass F R L (End R M)] (f : F)
+    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
     (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).genEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
     μ (t • x) = t • μ x := by

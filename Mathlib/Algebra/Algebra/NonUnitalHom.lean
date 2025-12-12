@@ -170,7 +170,7 @@ theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
 def Simps.apply (f : A →ₛₙₐ[φ] B) : A → B := f
 
 initialize_simps_projections NonUnitalAlgHom
-  (toDistribMulActionHom_toMonoidActionHom_toFun → apply, -toDistribMulActionHom)
+  (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 variable {φ A B C}
 @[simp]
@@ -243,7 +243,7 @@ theorem coe_mulHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
   rfl
 
-@[simp] -- Marked as `@[simp]` because `MonoidActionSemiHomClass.map_smulₛₗ` can't be.
+@[simp] -- Marked as `@[simp]` because `MulActionSemiHomClass.map_smulₛₗ` can't be.
 protected theorem map_smul (f : A →ₛₙₐ[φ] B) (c : R) (x : A) : f (c • x) = (φ c) • f x :=
   map_smulₛₗ _ _ _
 

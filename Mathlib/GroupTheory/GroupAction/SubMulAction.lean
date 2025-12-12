@@ -317,8 +317,8 @@ variable [hA : SMulMemClass A R M] (S' : A)
 instance (priority := 75) toMonoidAction : MonoidAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
-/-- The natural `MonoidActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
-@[to_additive /-- The natural `AddMonoidActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]
+/-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
+@[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 

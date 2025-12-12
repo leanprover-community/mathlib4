@@ -643,7 +643,7 @@ which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
-  extends RingEquivClass F A B, MonoidActionSemiHomClass F (@id R) A B where
+  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
 
 -- See note [lower instance priority]
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]

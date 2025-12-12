@@ -166,7 +166,7 @@ Suppose that `g : Y → X` is an action homomorphism in the following sense:
 there exists a continuous function `f : N → M` such that `g (c • x) = f c • g x`.
 Then the action of `N` on `X` is continuous as well.
 
-In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MonoidActionHom`.
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
 However, this version also works for semilinear maps and `f = Units.val`. -/
 @[to_additive
   /-- Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
@@ -174,7 +174,7 @@ Suppose that `g : Y → X` is an additive action homomorphism in the following s
 there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
 Then the action of `N` on `X` is continuous as well.
 
-In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddMonoidActionHom`.
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
 However, this version also works for `f = AddUnits.val`. -/]
 lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
     (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :

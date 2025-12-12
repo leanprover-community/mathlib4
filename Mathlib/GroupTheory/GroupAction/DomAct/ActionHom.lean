@@ -24,7 +24,7 @@ Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Hom/GroupAc
 
 namespace DomMulAct
 
-section MonoidActionSemiHom
+section MulActionSemiHom
 
 section SMul
 
@@ -32,7 +32,7 @@ variable {M α N β : Type*}
 variable [SMul M α] [SMul N α] [SMulCommClass M N α] [SMul N β]
 
 instance : SMul Mᵈᵐᵃ (α →[N] β) where
-  smul c f := f.comp (SMulCommClass.toMonoidActionHom _ _ (mk.symm c))
+  smul c f := f.comp (SMulCommClass.toMulActionHom _ _ (mk.symm c))
 
 instance {M' : Type*} [SMul M' α] [SMulCommClass M' N α] [SMulCommClass M M' α] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (α →[N] β) :=
@@ -51,7 +51,7 @@ instance {M α N β : Type*} [Monoid M] [MonoidAction M α] [SMul N α] [SMulCom
     MonoidAction Mᵈᵐᵃ (α →[N] β) :=
   DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
-end MonoidActionSemiHom
+end MulActionSemiHom
 
 section DistribMulActionHom
 

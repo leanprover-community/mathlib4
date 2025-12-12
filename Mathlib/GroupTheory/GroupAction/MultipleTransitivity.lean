@@ -64,7 +64,7 @@ on `α`, and some results are developed in this context.
 
 @[expose] public section
 
-open MonoidAction MonoidActionHom Function.Embedding Fin Set Nat
+open MonoidAction MulActionHom Function.Embedding Fin Set Nat
 
 section Functoriality
 
@@ -152,7 +152,7 @@ theorem IsPretransitive.of_embedding {n : Type*}
     ext i
     rw [DFunLike.ext_iff] at hg
     rw [smul_apply]
-    simp [← aux_apply, ← hg, MonoidActionHom.map_smul']
+    simp [← aux_apply, ← hg, MulActionHom.map_smul']
 
 @[to_additive]
 theorem IsPretransitive.of_embedding_congr {n : Type*}
