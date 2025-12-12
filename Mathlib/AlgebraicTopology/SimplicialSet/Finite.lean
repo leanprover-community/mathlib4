@@ -57,10 +57,7 @@ lemma hasDimensionLT_of_finite [X.Finite] :
   obtain ⟨d, hd⟩ : ∃ (d : ℕ), ∀ (s : ℕ) (_ : s ∈ Finset.image φ ⊤), s < d := by
     by_cases h : (Finset.image φ ⊤).Nonempty
     · obtain ⟨d, hd⟩ := Finset.max_of_nonempty h
-      refine ⟨d + 1, fun m hm ↦ ?_⟩
-      have := Finset.le_max hm
-      rw [hd, WithBot.coe_le_coe] at this
-      lia
+      exact ⟨d + 1, fun _ _ ↦ by grind [WithBot.coe_le_coe, → Finset.le_max]⟩
     · rw [Finset.not_nonempty_iff_eq_empty] at h
       simp only [h]
       exact ⟨0, by simp⟩
