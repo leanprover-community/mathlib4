@@ -65,7 +65,7 @@ instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] 
 
 lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAffine X] :
     DiscreteTopology X := by
-  have F := AlgebraicGeometry.Scheme.isoSpec X
+  have F := Scheme.isoSpec X
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
   exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
 
