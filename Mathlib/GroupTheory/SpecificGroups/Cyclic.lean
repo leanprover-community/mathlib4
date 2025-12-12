@@ -319,21 +319,18 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   calc
     #{a : α | a ^ n = 1} ≤
-        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset :=
-      card_le_card fun x hx =>
-        let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
-        Set.mem_toFinset.2
-          ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
-            dsimp at hm
-            have hgmn : g ^ (m * Nat.gcd n (Fintype.card α)) = 1 := by
-              rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
-            dsimp only
-            rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
-            refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
-            conv_lhs =>
-              rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ← Nat.card_eq_fintype_card,
-                ← orderOf_eq_card_of_forall_mem_zpowers hg]
-            exact orderOf_dvd_of_pow_eq_one hgmn⟩
+        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset := by
+      gcongr
+      intro x hx
+      let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
+      refine Set.mem_toFinset.2 ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), ?_⟩
+      dsimp only at ⊢ hm
+      rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
+      refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
+      conv_lhs =>
+        rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ← Nat.card_eq_fintype_card,
+          ← orderOf_eq_card_of_forall_mem_zpowers hg]
+      exact orderOf_dvd_of_pow_eq_one <| by simpa [pow_mul, hm] using (mem_filter.1 hx).2
     _ ≤ n := by
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
