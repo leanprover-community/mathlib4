@@ -484,7 +484,7 @@ theorem optionEquivLeft_coeff_coeff'
     simp +contextual [Finsupp.ext_iff, Option.forall, Polynomial.coeff_monomial, apply_ite]
   | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
 
-end
+end optionEquivLeft
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
