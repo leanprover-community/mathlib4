@@ -17,6 +17,8 @@ public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
+linear map.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -32,7 +34,7 @@ open SchwartzMap ContinuousLinearMap
 
 open scoped Nat NNReal ContDiff
 
-variable {E F : Type*}
+variable {E F F₁ F₂ : Type*}
 
 section definition
 
@@ -78,6 +80,46 @@ end MeasureTheory.Measure
 end Embeddings
 
 namespace TemperedDistribution
+
+section Multiplication
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup F₁]
+  [NormedAddCommGroup F₂]
+  [NormedSpace ℝ E]
+  [NormedSpace ℂ F] [NormedSpace ℂ F₁] [NormedSpace ℂ F₂]
+
+/-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`.
+
+Version for a general bilinear map. -/
+def bilinLeftCLM (B : F₂ →L[ℂ] ℂ →L[ℂ] ℂ) {g : E → F₂} (hg : g.HasTemperateGrowth) :
+    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp _ (SchwartzMap.bilinLeftCLM B.flip hg)
+
+variable (F) in
+/-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
+def mulLeftCLM {g : E → ℂ} (hg : g.HasTemperateGrowth) :
+    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  bilinLeftCLM (ContinuousLinearMap.mul ℂ ℂ) hg
+
+@[simp]
+theorem mulLeftCLM_apply_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(E, F))
+    (f' : 𝓢(E, ℂ)) :
+    mulLeftCLM F hg f f' = f (SchwartzMap.mulLeftCLM ℂ hg f') := by
+  rfl
+
+@[simp]
+theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
+    mulLeftCLM F hg₂ (mulLeftCLM F hg₁ f) = mulLeftCLM F (hg₁.mul hg₂) f := by
+  ext; simp
+
+theorem mulLeftCLM_compL_mulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    mulLeftCLM F hg₂ ∘L mulLeftCLM F hg₁ = mulLeftCLM F (hg₁.mul hg₂) := by
+  ext1 f
+  simp
+
+end Multiplication
 
 /-! ### Fourier transform -/
 

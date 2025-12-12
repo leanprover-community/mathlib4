@@ -641,7 +641,11 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+
+section bilin
+
+variable [NormedSpace 𝕜 E]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -693,6 +697,38 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
 @[simp]
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
+
+end bilin
+
+section mul
+
+variable (F) in
+/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
+where `g` is a function of temperate growth. -/
+def mulLeftCLM {g : E → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+
+@[simp]
+theorem mulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(E, F)) (x : E) :
+    mulLeftCLM F hg f x = g x • f x := rfl
+
+@[simp]
+theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    mulLeftCLM F hg₁ (mulLeftCLM F hg₂ f) = mulLeftCLM F (hg₁.mul hg₂) f := by
+  ext x
+  simp [smul_smul]
+
+theorem mulLeftCLM_compL_mulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    mulLeftCLM F hg₁ ∘L mulLeftCLM F hg₂ = mulLeftCLM F (hg₁.mul hg₂) := by
+  ext1 f
+  exact mulLeftCLM_mulLeftCLM_apply hg₁ hg₂ f
+
+end mul
+
+variable [NormedSpace 𝕜 E]
 
 /-- The bilinear pairing of Schwartz functions.
 
