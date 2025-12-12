@@ -30,7 +30,7 @@ Note that since `DirectSum.instMul` combines indices additively, there is no equ
 
 ## Theorems
 
-The defining feature of these operations is that they map `Finsupp.single` to
+The defining feature of these operations is that they map `AddMonoidAlgebra.single` to
 `DirectSum.of` and vice versa:
 
 * `AddMonoidAlgebra.toDirectSum_single`
@@ -51,9 +51,6 @@ For the bundled equivalences, we provide lemmas that they reduce to
 This file largely just copies the API of `Mathlib/Data/Finsupp/ToDFinsupp.lean`, and reuses the
 proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
 `Π₀ i : ι, M`.
-
-Note that there is no `AddMonoidAlgebra` equivalent to `Finsupp.single`, so many statements
-still involve this definition.
 -/
 
 @[expose] public section
@@ -77,8 +74,7 @@ section
 variable [DecidableEq ι] [Semiring M]
 
 @[simp]
-theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
-    AddMonoidAlgebra.toDirectSum (Finsupp.single i m) = DirectSum.of _ i m :=
+lemma AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) : toDirectSum (single i m) = .of _ i m :=
   Finsupp.toDFinsupp_single i m
 
 variable [∀ m : M, Decidable (m ≠ 0)]
@@ -89,7 +85,7 @@ def DirectSum.toAddMonoidAlgebra (f : ⨁ _ : ι, M) : AddMonoidAlgebra M ι :=
 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_of (i : ι) (m : M) :
-    (DirectSum.of _ i m : ⨁ _ : ι, M).toAddMonoidAlgebra = Finsupp.single i m :=
+    (DirectSum.of _ i m : ⨁ _ : ι, M).toAddMonoidAlgebra = .single i m :=
   DFinsupp.toFinsupp_single i m
 
 @[simp]
