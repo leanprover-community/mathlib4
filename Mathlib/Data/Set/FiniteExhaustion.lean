@@ -32,7 +32,7 @@ structure Set.FiniteExhaustion {α : Type*} (s : Set α) where
   /-- The union of all sets in a `FiniteExhaustion` equals `s` -/
   iUnion_eq' : ⋃ n, toFun n = s
 
-namespace FiniteExhaustion
+namespace Set.FiniteExhaustion
 
 instance {α : Type*} {s : Set α} : FunLike (FiniteExhaustion s) ℕ (Set α) where
   coe := toFun
