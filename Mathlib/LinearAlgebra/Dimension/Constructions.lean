@@ -552,6 +552,8 @@ end SubalgebraRank
 
 section Extend
 
+namespace Module.Basis
+
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
     {W : Submodule R V} {m n : Type*}
     (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
@@ -559,7 +561,7 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- Given a basis `bW` of a submodule of an `R`-module `V`,
 and a basis `bQ` of the quotient `V ⧸ W`,
 this is a basis of `V` combining `bW` and a lift of `bQ`. -/
-noncomputable def Module.Basis.sumQuot :
+noncomputable def sumQuot :
     Basis (m ⊕ n) R V := by
   let b : m ⊕ n → V := Sum.elim (fun i ↦ bW i) ((Function.surjInv W.mkQ_surjective) ∘ bQ)
   have br : W.mkQ ∘ b ∘ Sum.inr = bQ := by
@@ -577,60 +579,56 @@ noncomputable def Module.Basis.sumQuot :
     congr 2
 
 @[simp]
-theorem basisSum_inl (i : m) :
-    basisSum bW bQ (Sum.inl i) = bW i := by
-  simp [basisSum]
+theorem sumQuot_inl (i : m) :
+    sumQuot bW bQ (Sum.inl i) = bW i := by
+  simp [sumQuot]
 
 @[simp]
-theorem basisSum_inr (j : n) :
-    Submodule.Quotient.mk (basisSum bW bQ (Sum.inr j)) = bQ j := by
-  simpa only [basisSum, Basis.coe_mk, Sum.elim_inr, Function.comp_apply, ← W.mkQ_apply]
+theorem sumQuot_inr (j : n) :
+    Submodule.Quotient.mk (sumQuot bW bQ (Sum.inr j)) = bQ j := by
+  simpa only [sumQuot, Basis.coe_mk, Sum.elim_inr, Function.comp_apply, ← W.mkQ_apply]
     using Function.rightInverse_surjInv W.mkQ_surjective _
 
 @[simp]
-theorem basisSum_repr_left (i : m) :
-    (basisSum bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
-  rw [← Module.Basis.apply_eq_iff, basisSum_inl]
+theorem sumQuot_repr_left (i : m) :
+    (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
+  rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
 
-@[simp]
-theorem basisSum_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
-    (basisSum bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i := by
-  suffices ∀ w : W,
-    (basisSum bW bQ).repr (W.subtype w) (Sum.inl i) = bW.repr w i by
-    exact this ⟨v, hv⟩
+theorem sumQuot_repr_inl (w : W) (i : m) :
+    (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical
-  intro w
   refine Eq.symm <| (bW.repr_apply_eq
-      (fun w i => (basisSum bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
-    aesop (add simp Finsupp.single_apply)
+      (fun w i => (sumQuot bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
+  aesop (add simp Finsupp.single_apply)
 
 @[simp]
-theorem basisSum_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = 0 := by
-  suffices ∀ w : W, (basisSum bW bQ).repr (W.subtype w) (Sum.inr j) = 0 from
-    this ⟨v, hv⟩
-  classical
-  intro w
-  rw [← bW.linearCombination_repr w]
-  simp [Finsupp.linearCombination_apply, map_finsuppSum]
+theorem sumQuot_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
+    (sumQuot bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i :=
+  sumQuot_repr_inl bW bQ ⟨v, hv⟩ i
 
 @[simp]
-theorem basisSum_repr_inr (v : V) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
+theorem sumQuot_repr_inr (v : V) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
   simp only [← Module.Basis.coord_apply]
   rw [← LinearMap.comp_apply]
   revert v
   rw [← LinearMap.ext_iff]
-  apply (basisSum bW bQ).ext
+  apply (sumQuot bW bQ).ext
   intro x
   induction x with
   | inl i =>
-    simp [basisSum_inl, LinearMap.comp_apply,
-      show W.mkQ (bW i) = 0 from by
-      rw [← LinearMap.mem_ker, Submodule.ker_mkQ]
-      exact Submodule.coe_mem (bW i)]
+    simp [sumQuot_inl, LinearMap.comp_apply,
+      (Quotient.mk_eq_zero W).mpr (Submodule.coe_mem (bW i))]
   | inr i =>
     classical
-    simp [LinearMap.comp_apply, basisSum_inr, Finsupp.single_apply]
+    simp [LinearMap.comp_apply, sumQuot_inr, Finsupp.single_apply]
+
+@[simp]
+theorem sumQuot_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = 0 := by
+  suffices W.mkQ v = 0 by simp [sumQuot_repr_inr, this]
+  aesop
+
+end Module.Basis
 
 end Extend
