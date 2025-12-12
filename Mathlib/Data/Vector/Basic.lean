@@ -171,7 +171,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by cutsat⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -530,7 +530,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    split <;> omega⟩
+    split <;> lia⟩
 
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
     (v.insertIdx a i).val = v.val.insertIdx i.1 a :=

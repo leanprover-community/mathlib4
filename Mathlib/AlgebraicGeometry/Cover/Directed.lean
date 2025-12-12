@@ -44,9 +44,10 @@ every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and 
 class LocallyDirected (𝒰 : X.Cover (precoverage P)) [Category 𝒰.I₀] where
   /-- The transition map `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j`. -/
   trans {i j : 𝒰.I₀} (hij : i ⟶ j) : 𝒰.X i ⟶ 𝒰.X j
-  trans_id (i : 𝒰.I₀) : trans (𝟙 i) = 𝟙 (𝒰.X i)
-  trans_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k): trans (hij ≫ hjk) = trans hij ≫ trans hjk
-  w {i j : 𝒰.I₀} (hij : i ⟶ j) : trans hij ≫ 𝒰.f j = 𝒰.f i := by aesop_cat
+  trans_id (i : 𝒰.I₀) : trans (𝟙 i) = 𝟙 (𝒰.X i) := by cat_disch
+  trans_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
+    trans (hij ≫ hjk) = trans hij ≫ trans hjk := by cat_disch
+  w {i j : 𝒰.I₀} (hij : i ⟶ j) : trans hij ≫ 𝒰.f j = 𝒰.f i := by cat_disch
   directed {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j)).carrier) :
     ∃ (k : 𝒰.I₀) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.X k),
       pullback.lift (trans hki) (trans hkj) (by simp [w]) y = x
@@ -160,7 +161,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     rw [← P.cancel_left_of_respectsIso iso.inv]
     simp [Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
-    convert P.pullback_fst _ _ (𝒰.property_trans hij)
+    convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
 end BaseChange
