@@ -111,6 +111,14 @@ lemma IsStronglyTranscendental.iff_of_isFractionRing (K : Type*) [Field K] [Alge
   rw [← IsStronglyTranscendental.iff_of_isLocalization (T := K) le_rfl,
     isStronglyTranscendental_iff_of_field]
 
+lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra R K]
+    [Algebra S K] [IsScalarTower R S K] [FaithfulSMul R S] [FaithfulSMul S K]
+    {x : S} (H : Transcendental R (algebraMap S K x)) :
+    IsStronglyTranscendental R x := by
+  have : FaithfulSMul R K := .trans R S K
+  rw [← isStronglyTranscendental_iff_of_field] at H
+  exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
+
 @[stacks 00Q0]
 lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
     {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :
