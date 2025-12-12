@@ -783,8 +783,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
   refine ⟨fun h ↦ by constructor <;> congr, fun h_eq => ?_⟩
-  obtain h | h | h := θ.sign.trichotomy
-  all_goals grind [toReal_neg_iff_sign_neg]
+  grind [toReal_neg_iff_sign_neg]
 
 theorem eq_iff_abs_toReal_eq_of_sign_eq {θ ψ : Angle} (h : θ.sign = ψ.sign) :
     θ = ψ ↔ |θ.toReal| = |ψ.toReal| := by simpa [h] using @eq_iff_sign_eq_and_abs_toReal_eq θ ψ
@@ -825,9 +824,7 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
   rcases two_nsmul_eq_zero_iff.mp h with h | h
   · simp_all [add_eq_zero_iff_eq_neg.mp h]
   rw [← coe_toReal θ, ← coe_toReal ψ, ← coe_add] at h
-  suffices |θ.toReal + ψ.toReal| = π by
-    obtain := θ.sign.trichotomy
-    grind [toReal_neg_iff_sign_neg, abs_add_eq_add_abs_iff]
+  suffices |θ.toReal + ψ.toReal| = π by grind [toReal_neg_iff_sign_neg, abs_add_eq_add_abs_iff]
   rw [abs_eq pi_nonneg]
   rcases angle_eq_iff_two_pi_dvd_sub.mp h with ⟨k, hk⟩
   rw [sub_eq_iff_eq_add] at hk
