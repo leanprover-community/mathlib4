@@ -183,5 +183,3 @@ lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [No
 end Int
 
 end SummationFilter
-
-#min_imports
