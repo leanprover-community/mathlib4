@@ -117,6 +117,7 @@ instance instFunLike : FunLike (α →₀ M) α M :=
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+variable (α) in
 theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
     Nontrivial M := by
   obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
