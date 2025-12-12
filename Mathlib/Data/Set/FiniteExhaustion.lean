@@ -22,7 +22,7 @@ open Set
 
 /-- A `FiniteExhaustion` of a set `s` is a monotonically increasing sequence
 of finite sets such that their union is `s`. -/
-structure FiniteExhaustion {α : Type*} (s : Set α) where
+structure Set.FiniteExhaustion {α : Type*} (s : Set α) where
   /-- The underlying sequence of a `FiniteExhaustion`. -/
   toFun : ℕ → Set α
   /-- Every set in a `FiniteExhaustion` is finite. -/
