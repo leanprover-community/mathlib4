@@ -497,7 +497,7 @@ lemma definable_preimage_of_definableMap
 lemma definable_equalizer {f g : (α → M) → M}
     (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
     A.Definable L {v : α → M | f v = g v} := by
-  let F : (α → M) → Fin 2 → M := fun v i => if i = 0 then f v else g v
+  let F : (α → M) → Fin 2 → M := fun v => ![f v, g v]
   have hF : DefinableMap L A F := by
     intro i
     fin_cases i
@@ -510,7 +510,7 @@ lemma definable_equalizer {f g : (α → M) → M}
 /-- The fiber of a definable function is definable. -/
 lemma definable_fiber {f : (α → M) → M} (hf : DefinableFun L A f) (a : A) :
     A.Definable L {v : α → M | f v = a} := by
-  let F : (α → M) → Fin 2 → M := fun v i => if i = 0 then f v else a
+  let F : (α → M) → Fin 2 → M := fun v => ![f v, a]
   have hF : DefinableMap L A F := by
     intro i
     fin_cases i
