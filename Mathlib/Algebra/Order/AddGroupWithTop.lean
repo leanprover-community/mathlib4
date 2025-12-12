@@ -136,7 +136,7 @@ lemma top_ne_zero : (⊤ : α) ≠ 0 := by
   simp [← nh] at this
 
 @[simp]
-theorem zero_ne_top : 0 ≠ (⊤ : α) :=
+lemma zero_ne_top : 0 ≠ (⊤ : α) :=
   top_ne_zero.symm
 
 lemma add_neg_cancel_of_ne_top (h : a ≠ ⊤) : a + -a = 0 :=
