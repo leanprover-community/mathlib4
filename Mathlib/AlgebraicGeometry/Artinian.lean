@@ -23,19 +23,16 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 ## Main results
 
-* `AlgebraicGeometry.IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology`: A scheme is
+* `AlgebraicGeometry.IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology`: A scheme is
   locally Artinian if and only if it is LocallyNoetherian and it has the discrete topology.
 
-* `AlgebraicGeometry.IsArtinianScheme_iff_IsNoetherian_and_Finite`: A scheme is Artinian if and
-  only if it is Noetherian and has the discrete topology.
+* `AlgebraicGeometry.IsArtinianScheme.iff_isNoetherian_and_discreteTopology`: A scheme is Artinian
+  if andonly if it is Noetherian and has the discrete topology.
 
-* `IsLocallyArtinian.Opens_IsLocallyArtinian`: An open subset of a locally Artinian scheme is
-  locally Artinian (when considered as a scheme in the natural way)
+* `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
-* `inst_IsArtinianScheme_Finite`: An Artinian scheme is finite.
-
-* `AlgebraicGeometry.IsArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian if
-  and only if Spec R is Artinian.
+* `AlgebraicGeometry.Scheme.isArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian
+  if and only if Spec R is Artinian.
 
 TODO(Brian-Nugent): Show that all Artinian schemes are affine.
 
@@ -121,6 +118,7 @@ theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
+/-- Artinian Schemes are finite -/
 instance IsArtinianScheme.finite [IsArtinianScheme X] :
     Finite X := @finite_of_compact_of_discrete X _ _ _
 
@@ -129,6 +127,7 @@ instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
       { toIsLocallyNoetherian := inferInstance,
         toCompactSpace := inferInstance}
 
+/-- A scheme is Artinian if and only if it is Noetherian and has the discrete topology. -/
 theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
     IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
@@ -138,7 +137,7 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
       toCompactSpace := inferInstance}⟩
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
-theorem IsArtinianRing.iff_isArtinianScheme (R : Type*) [CommRing R] :
+theorem Scheme.isArtinianRing_iff_isArtinianScheme (R : Type*) [CommRing R] :
     IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := ⟨fun _ =>
     (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
     ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩,
