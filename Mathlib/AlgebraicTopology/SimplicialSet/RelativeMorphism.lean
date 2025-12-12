@@ -183,6 +183,7 @@ lemma precomp_homotopyClass
     {φψ : (A : SSet) ⟶ (C : SSet)} (fac : φ ≫ ψ = φψ) :
     f'.homotopyClass.precomp f fac =
       (f.comp f' fac).homotopyClass := rfl
+
 end RelativeMorphism
 
 end SSet
