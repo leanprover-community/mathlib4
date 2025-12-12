@@ -17,7 +17,7 @@ Let `A` be a `R`-algebra.
 - `Algebra.basicOpen_subset_etaleLocus_iff` :
   `D(f)` is contained in the etale locus if and only if `A_f` is formally etale over `R`.
 - `Algebra.etaleLocus_eq_univ_iff` :
-  The etale locus is the whole spectrum if and only if `A` is etale over `R`.
+  The etale locus is the whole spectrum if and only if `A` is formally etale over `R`.
 - `Algebra.isOpen_etaleLocus` :
   If `A` is of finite type over `R`, then the etale locus is open.
 -/
@@ -39,6 +39,9 @@ variable (R A) in
 /-- `Algebra.etaleLocus R A` is the set of primes `p` of `A` that are etale. -/
 def etaleLocus : Set (PrimeSpectrum A) :=
   { p | IsEtaleAt R p.asIdeal }
+
+@[simp]
+lemma mem_etaleLocus_iff {p : PrimeSpectrum A} : p ∈ etaleLocus R A ↔ IsEtaleAt R p.asIdeal := .rfl
 
 lemma IsEtaleAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
@@ -80,25 +83,28 @@ lemma etaleLocus_eq_univ_iff :
     ← Set.subset_empty_iff, Set.union_subset_iff, Set.subset_empty_iff, Set.subset_empty_iff,
     Module.support_eq_empty_iff, Module.support_eq_empty_iff, Algebra.formallyEtale_iff]
 
-lemma isOpen_etaleLocus [FinitePresentation R A] : IsOpen (etaleLocus R A) := by
+variable [FinitePresentation R A]
+
+lemma isOpen_etaleLocus : IsOpen (etaleLocus R A) := by
   rw [etaleLocus_eq_unramfiedLocus_inter_smoothLocus]
   exact isOpen_unramifiedLocus.inter isOpen_smoothLocus
 
-lemma FinitePresentation.of_isLocalization
-    {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Algebra R S] [Algebra R S']
-    [Algebra S S'] [IsScalarTower R S S'] (f : S) [IsLocalization.Away f S']
-    [Algebra.FinitePresentation R S] :
-    Algebra.FinitePresentation R S' :=
-  have : Algebra.FinitePresentation S S' :=
-    (Presentation.localizationAway S' f).finitePresentation_of_isFinite
-  .trans R S S'
+lemma basicOpen_subset_etaleLocus_iff_etale {f : A} :
+    ↑(PrimeSpectrum.basicOpen f) ⊆ etaleLocus R A ↔ Algebra.Etale R (Localization.Away f) := by
+  rw [basicOpen_subset_etaleLocus_iff]
+  refine ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
 
-lemma exists_etale_of_isEtaleAt [FinitePresentation R A]
+lemma etaleLocus_eq_univ_iff_etale :
+    etaleLocus R A = Set.univ ↔ Algebra.Etale R A := by
+  rw [etaleLocus_eq_univ_iff]
+  refine ⟨fun H ↦ ⟨H, inferInstance⟩, fun _ ↦ inferInstance⟩
+
+lemma exists_etale_of_isEtaleAt
     (P : Ideal A) [P.IsPrime] [IsEtaleAt R P] :
     ∃ f ∉ P, Algebra.Etale R (Localization.Away f) := by
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
       (show ⟨P, ‹_›⟩ ∈ etaleLocus R A by assumption) isOpen_etaleLocus
-  exact ⟨r, hpr, ⟨basicOpen_subset_etaleLocus_iff.mp hr, .of_isLocalization r⟩⟩
+  exact ⟨r, hpr, ⟨basicOpen_subset_etaleLocus_iff.mp hr, .of_isLocalizationAway r⟩⟩
 
 end Algebra
