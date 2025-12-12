@@ -349,7 +349,7 @@ example : x = y := by
   try
     symm
     symm
-    omega
+    lia
   rfl
 
 set_option linter.unusedVariables false in
@@ -367,7 +367,7 @@ example : x = y := by
   any_goals
     symm
     symm
-    omega
+    lia
   rfl
 
 end grindReplacement
