@@ -12,7 +12,10 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 # Horns as colimits
 
 In this file, we express horns as colimits:
-* horns in `Δ[2]` are pushouts of two copies of `Δ[1]`.
+* horns in `Δ[2]` are pushouts of two copies of `Δ[1]`;
+* horns in `Δ[n]` are multicoequalizers of copies of the standard
+simplex of dimension `n-1` (a dedicated API is provided for inner
+horns in `Δ[3]`).
 
 -/
 
