@@ -265,8 +265,8 @@ theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M
 
 variable (M)
 
-/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential characteristic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`
 and a generalization of `IsPurelyInseparable.injective_comp_algebraMap`. -/
 theorem injective_comp [IsPRadical i p] [IsReduced M] :
@@ -274,8 +274,8 @@ theorem injective_comp [IsPRadical i p] [IsReduced M] :
   injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
     pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
 
-/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential characteristic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
 theorem injective_comp_of_perfect [IsPRadical i p] [PerfectRing M p] :
     Function.Injective fun f : L →+* M ↦ f.comp i :=
