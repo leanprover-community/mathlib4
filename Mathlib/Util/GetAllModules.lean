@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 module
 
+public meta import Init.Data.Array.QSort.Basic
 public meta import Lean.Util.Path
 
 /-!
