@@ -226,7 +226,7 @@ theorem succAbove_cycleRange (i j : Fin n) :
   rcases lt_trichotomy j i with (hlt | heq | hgt)
   · have : castSucc (j + 1) = j.succ := by
       ext
-      rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
+      rw [val_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
@@ -389,7 +389,7 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
   · have : subNat i.1 (k.cast (by lia)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
       by simpa [lt_def, sub_val_of_le hij] using by lia
     rw [cycleRange_of_lt this, subNat]
-    simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
+    simp only [val_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by lia), Nat.mod_eq_of_lt (by lia)]
     lia
 
