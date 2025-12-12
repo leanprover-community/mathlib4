@@ -334,8 +334,8 @@ theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
     by simp_rw [Subtype.ext_iff, Submonoid.coe_mul, hc]⟩⟩
 
 lemma prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors
-    {ι : Type*} {s : Finset ι} {f : ι → M₀} (h : ∀ i ∈ s, f i ∈ nonZeroDivisors _) :
-    ∏ i ∈ s, f i ∈ nonZeroDivisors _ :=
+    {ι : Type*} {s : Finset ι} {f : ι → M₀} (h : ∀ i ∈ s, f i ∈ M₀⁰) :
+    ∏ i ∈ s, f i ∈ M₀⁰ :=
   s.prod_induction _ _ (fun _ _ ↦ and_imp.mp mul_mem_nonZeroDivisors.mpr) (one_mem _) h
 
 end CommMonoidWithZero
