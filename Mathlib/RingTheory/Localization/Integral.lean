@@ -420,7 +420,7 @@ protected lemma IsLocalization.integralClosure
     [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
     IsLocalization (Algebra.algebraMapSubmonoid (integralClosure R S) M)
       (integralClosure Rf Sf) := by
-  constructor
+  refine ⟨⟨?_, ?_, ?_⟩⟩
   · rintro ⟨_, f, hf, rfl⟩
     convert (IsLocalization.map_units (S := Rf) ⟨f, hf⟩).map (algebraMap Rf (integralClosure Rf Sf))
     simp [← IsScalarTower.algebraMap_apply]
