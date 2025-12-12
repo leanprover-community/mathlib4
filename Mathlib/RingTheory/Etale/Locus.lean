@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 Let `A` be a `R`-algebra.
 - `Algebra.etaleLocus` : The set of primes of `A` where it is étale over `R`.
 - `Algebra.basicOpen_subset_etaleLocus_iff` :
-  `D(f)` is contained in the etale locus if and only if `A_f` is etale over `R`.
+  `D(f)` is contained in the etale locus if and only if `A_f` is formally etale over `R`.
 - `Algebra.etaleLocus_eq_univ_iff` :
   The etale locus is the whole spectrum if and only if `A` is etale over `R`.
 - `Algebra.isOpen_etaleLocus` :
