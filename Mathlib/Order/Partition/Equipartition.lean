@@ -118,7 +118,7 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
   intro ⟨p, _⟩
-  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
+  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.val_cast]
   by_cases hc : #p = #s / #P.parts + 1 <;> simp [hc]
 
 /-- Given a finset equipartitioned into `k` parts, its elements can be enumerated such that
@@ -155,12 +155,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
 /-! ### Discrete and indiscrete finpartitions -/
 
 
-variable (s) -- [Decidable (a = ⊥)]
+variable (s)
 
 theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
 
-theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
+theorem top_isEquipartition [Decidable (s = ∅)] : (⊤ : Finpartition s).IsEquipartition :=
   Set.Subsingleton.isEquipartition (parts_top_subsingleton _)
 
 theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by
