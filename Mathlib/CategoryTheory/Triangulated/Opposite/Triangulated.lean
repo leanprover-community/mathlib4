@@ -103,7 +103,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
         dsimp at h₁ h₂ ⊢
         simp only [Int.negOnePow_neg, Int.negOnePow_one, Functor.map_comp, Category.assoc,
           Units.neg_smul, one_smul, neg_comp, Functor.map_neg, comp_neg, neg_inj]
-        rw [reassoc_of% h₁, shiftFunctor_op_map _ _ (neg_add_cancel 1) v₂₃.op,
+        rw [reassoc_of% h₁, shiftFunctor_op_map v₂₃.op (-1) 1,
           ← Functor.map_comp, Category.assoc, Category.assoc, Iso.inv_hom_id_app,
           Functor.map_comp, opShiftFunctorEquivalenceSymmHomEquiv_apply,
           Functor.map_comp_assoc, reassoc_of% h₂,
