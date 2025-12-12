@@ -82,9 +82,8 @@ theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int {R : Type*} [CommRing R]
   Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField
     (isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R) h)
 
-theorem genthm₀ (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K]
-    [IsGaloisGroup G ℚ K] :
+theorem NumberField.supr_inertia_eq_top (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
     ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
   have : Finite G := IsGaloisGroup.finite G ℚ K
   set H : Subgroup G := ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G
@@ -111,7 +110,6 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
   let := Ideal.Quotient.field m
   let := Ideal.Quotient.field (m.under (𝓞 F))
   let := Ideal.Quotient.field (m.under ℤ)
-  -- todo: clean up once #30934 is merged
   rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (m.under (𝓞 F)) hm2 m,
     Ideal.card_inertia_eq_ramificationIdxIn (G := G) (m.under ℤ) hm1 m,
     Ideal.ramificationIdxIn_eq_ramificationIdx (m.under (𝓞 F)) m H,
@@ -190,28 +188,24 @@ theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finit
     Function.Surjective.card_le_card_add_one_iff (Set.surjective_mapsTo_image_restrict f s)
 
 theorem _root_.Finset.sum_le_one_iff {α : Type*} {s : Finset α} {f : α → ℕ} :
-    ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y : α, x ∈ s → y ∈ s → 0 < f x → 0 < f y → x = y ∧ f x = 1 := by
+    ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y : α, x ∈ s → y ∈ s → f x ≠ 0 → f y ≠ 0 → x = y ∧ f x = 1 := by
   classical
-  refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, ?_⟩
+  refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, fun h ↦ ?_⟩
   · replace h := (Finset.sum_mono_set f (show {x, y} ⊆ s by grind)).trans h
     grind
-  · intro h
-    by_cases hx : ∃ x ∈ s, 0 < f x
+  · by_cases! hx : ∃ x ∈ s, f x ≠ 0
     · obtain ⟨x, hsx, hfx⟩ := hx
-      rw [Finset.sum_eq_add_sum_diff_singleton hsx]
       have hs : ∀ y ∈ s \ {x}, f y = 0 := by grind
-      rw [Finset.sum_congr rfl hs, Finset.sum_const_zero, add_zero]
-      grind
-    · have hs : ∀ x ∈ s, f x = 0 := by simpa using hx
-      rw [Finset.sum_congr rfl hs, Finset.sum_const_zero]
-      exact one_pos.le
+      simp [Finset.sum_eq_add_sum_diff_singleton hsx, Finset.sum_congr rfl hs,
+        (h x x hsx hsx hfx hfx).2]
+    · simp [Finset.sum_congr rfl hx]
 
 theorem _root_.Multiset.card_le_card_toFinset_add_one_iff {α : Type*} [DecidableEq α]
     {m : Multiset α} : m.card ≤ m.toFinset.card + 1 ↔
       ∀ x y : α, 1 < m.count x → 1 < m.count y → x = y ∧ m.count x = 2 := by
   rw [← m.toFinset_sum_count_eq, m.toFinset.card_eq_sum_ones, ← tsub_le_iff_left,
     ← Finset.sum_tsub_distrib _ (by simp [Multiset.one_le_count_iff_mem]), Finset.sum_le_one_iff]
-  simp only [tsub_pos_iff_lt, Multiset.mem_toFinset, Nat.pred_eq_succ_iff, zero_add]
+  simp only [← pos_iff_ne_zero, tsub_pos_iff_lt, Multiset.mem_toFinset, Nat.pred_eq_succ_iff]
   exact ⟨fun h x y hx hy ↦ h x y (Multiset.one_le_count_iff_mem.mp hx.le)
     (Multiset.one_le_count_iff_mem.mp hy.le) hx hy, fun h x y _ _ hx hy ↦ h x y hx hy⟩
 
@@ -393,7 +387,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     )⟩
     exact ⟨y, Subtype.ext_iff.mp hy⟩
   have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-  refine tada' (S := R) f₀ hf₀ h1 G (genthm₀ K G) ?_
+  refine tada' (S := R) f₀ hf₀ h1 G (NumberField.supr_inertia_eq_top K G) ?_
   intro m
   let := Ideal.Quotient.field m.asIdeal
   have h' : (f₀.rootSet R).ncard ≤ f₀.natDegree := by
