@@ -59,7 +59,7 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 
 ## Implementation notes
 
-Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
+Weak-* topology is defined generally in the file `Mathlib/Topology/Algebra/Module/WeakDual.lean`.
 
 When `M` is a vector space, the duals `StrongDual 𝕜 M` and `WeakDual 𝕜 M` are type synonyms with
 different topology instances.

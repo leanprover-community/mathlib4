@@ -112,7 +112,7 @@ lemma presentable [LocallySmall.{w} C] (X : C) :
   obtain ⟨κ', _, le, hκ'⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ ≤ κ'),
       HasCardinalLT (Arrow J) κ' := by
     obtain ⟨κ', h₁, h₂⟩ := HasCardinalLT.exists_regular_cardinal_forall.{w}
-      (Sum.elim (fun (_ : Unit) ↦ Arrow J) (fun (_ : Unit) ↦ κ.ord.toType))
+      (Sum.elim (fun (_ : Unit) ↦ Arrow J) (fun (_ : Unit) ↦ κ.ord.ToType))
     exact ⟨κ', ⟨h₁⟩,
       le_of_lt (by simpa [hasCardinalLT_iff_cardinal_mk_lt] using h₂ (Sum.inr ⟨⟩)),
       h₂ (Sum.inl ⟨⟩)⟩
@@ -148,7 +148,7 @@ end IsCardinalFilteredGenerator
 end ObjectProperty
 
 /-- The property that a category `C` and a regular cardinal `κ`
-satisfy `P.IsCardinalFilteredGenerators κ` for an suitable essentially
+satisfy `P.IsCardinalFilteredGenerators κ` for a suitable essentially
 small `P : ObjectProperty C`. -/
 class HasCardinalFilteredGenerator (C : Type u) [hC : Category.{v} C]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] : Prop extends LocallySmall.{w} C where

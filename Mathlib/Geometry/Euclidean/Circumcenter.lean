@@ -84,7 +84,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       · rw [hp₁, hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-          ← dist_eq_norm_vsub V p, dist_comm _ cc]
+          Real.norm_eq_abs, abs_mul_abs_self, ← dist_eq_norm_vsub V p, dist_comm _ cc]
         simp only [ycc₂]
         field
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
@@ -122,7 +122,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [hpo, hcc₃'', hcr₃val, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
       dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc₃' _ _
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-      dist_comm, ← dist_eq_norm_vsub V p,
+      Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
     change x * x + _ * (y * y) = _ at hcr₃
     rw [show
@@ -148,7 +148,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    cutsat
+    lia
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -298,6 +298,11 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
   rw [h]
   congr
   simp only [eq_iff_true_of_subsingleton]
+
+lemma circumcenter_ne_point {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    s.circumcenter ≠ s.points i := by
+  rw [← dist_ne_zero, dist_circumcenter_eq_circumradius']
+  exact s.circumradius_pos.ne'
 
 /-- The circumcenter of a 1-simplex equals its centroid. -/
 theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
@@ -600,7 +605,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
     simp [W]
-  rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
+  rw [reflection_apply', h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
     circumcenter_eq_affineCombination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,

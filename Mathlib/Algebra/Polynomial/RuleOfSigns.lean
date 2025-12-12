@@ -151,8 +151,8 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {P : Polyn
 @[simp]
 theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
-  wlog hx2 : 0 < η
-  · simpa [lt_of_le_of_ne (le_of_not_gt hx2), hx] using this (η := -η) (P := -P)
+  wlog! hx2 : 0 < η
+  · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
   rw [signVariations, signVariations]
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
   congr 5
@@ -192,7 +192,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
         rw [signVariations, signVariations, this]
-    have : 0 < natDegree ((X - C η) * P.eraseLead) := by omega
+    have : 0 < natDegree ((X - C η) * P.eraseLead) := by lia
     grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
       LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
       nextCoeff_eq_zero_of_eraseLead_eq_zero]
@@ -268,7 +268,6 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
           monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
           natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
-      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
       grind [coeff_X_sub_C_mul, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
@@ -294,6 +293,8 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
+-- TODO: fix non-terminal simp below; simp followed by rfl
+set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
