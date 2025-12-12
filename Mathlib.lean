@@ -11119,6 +11119,7 @@ public import Mathlib.Data.Set.Finite.List
 public import Mathlib.Data.Set.Finite.Monad
 public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.FiniteExhaustion
 public import Mathlib.Data.Set.Function
 public import Mathlib.Data.Set.Functor
 public import Mathlib.Data.Set.Image

@@ -1364,6 +1364,10 @@ theorem union_iUnion_nat_succ (u : ℕ → Set α) : (u 0 ∪ ⋃ i, u (i + 1)) 
 theorem inter_iInter_nat_succ (u : ℕ → Set α) : (u 0 ∩ ⋂ i, u (i + 1)) = ⋂ i, u i :=
   inf_iInf_nat_succ u
 
+theorem iUnion_le_nat : ⋃ n : ℕ, {i | i ≤ n} = Set.univ :=
+ subset_antisymm (Set.subset_univ _)
+   (fun i _ ↦ Set.mem_iUnion_of_mem i (Set.mem_setOf.mpr (le_refl _)))
+
 end Set
 
 open Set
