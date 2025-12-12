@@ -5,19 +5,50 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib
+public import Mathlib.Algebra.Order.Disjointed
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Prokhorov theorem
 
+We prove statements about the compactness of sets of finite measures or probability measures,
+notably a version of Prokhorov theorem on tight sets of probability measures.
+
+## Main statements
+
+* `instCompactSpaceProbabilityMeasure` proves that the space of probability measures on a compact
+space is itself compact
+* `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
+  sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
+  to the complement of `Kₙ` form a compact set.
+
+Versions are also given for finite measures.
+
+## Implementation
+
+We do not assume second-countability or metrizability.
+
+For the compactness of the space of probability measures in a compact space, we argue that every
+ultrafilter converges, using the Riesz-Markov-Kakutani theorem to construct the limiting measure
+in terms of its integrals against continuous functions.
+
+For Prokhorov theorem, we rely on the compactness of the space of measures
+inside each compact set to get convergence of the restriction there, and argue that the full
+measure converges to the sum of the individual limits of the disjointed components. There is a
+subtlety that the space of finite measures giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed
+in our general setting, but we only need to find *a* limit satisfying this condition. To ensure
+this, we modify the individual limits (again using Riesz-Markov-Kakutani) to make sure that
+they are inner-regular.
 -/
 
 @[expose] public section
 
-open scoped ENNReal NNReal
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
-  TopologicalSpace MeasureTheory BoundedContinuousFunction MeasureTheory.FiniteMeasure
-
+open scoped ENNReal NNReal CompactlySupported
+open Filter Function Set Topology TopologicalSpace MeasureTheory BoundedContinuousFunction
+  MeasureTheory.FiniteMeasure
 
 variable {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
 
@@ -131,8 +162,7 @@ instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
 
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
-lemma isCompact_setOf_finiteMeasure_le_of_isCompact
-    {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [NormalSpace E] [T2Space E] [BorelSpace E]
+lemma isCompact_setOf_finiteMeasure_le_of_isCompact [NormalSpace E]
     (C : ℝ≥0) {K : Set E} (hK : IsCompact K) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ Kᶜ = 0} := by
   let f : K → E := Subtype.val
@@ -166,58 +196,12 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
 
-open Measure
-
-omit [T2Space E] [BorelSpace E]
-instance innerRegular_add {μ ν : Measure E} [InnerRegular μ] [InnerRegular ν] :
-    InnerRegular (μ + ν) := by
-  constructor
-  intro s hs r hr
-  simp only [Measure.coe_add, Pi.add_apply] at hr
-  rcases eq_or_ne (μ s) 0 with h | h
-  · simp only [h, zero_add] at hr
-    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
-    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
-  rcases eq_or_ne (ν s) 0 with h' | h'
-  · simp only [h', add_zero] at hr
-    rcases MeasurableSet.exists_lt_isCompact hs hr with ⟨K, Ks, hK, h'K⟩
-    exact ⟨K, Ks, hK, h'K.trans_le (by simp)⟩
-  rcases ENNReal.exists_lt_add_of_lt_add hr h h' with ⟨u, hu, v, hv, huv⟩
-  rcases MeasurableSet.exists_lt_isCompact hs hu with ⟨K, Ks, hK, h'K⟩
-  rcases MeasurableSet.exists_lt_isCompact hs hv with ⟨K', K's, hK', h'K'⟩
-  refine ⟨K ∪ K', union_subset Ks K's, hK.union hK', huv.trans_le ?_⟩
-  apply (add_le_add h'K.le h'K'.le).trans
-  simp only [Measure.coe_add, Pi.add_apply]
-  gcongr <;> simp
-
-instance innerRegular_sum {ι : Type*} {μ : ι → Measure E} [∀ i, InnerRegular (μ i)] (a : Finset ι) :
-    InnerRegular (∑ i ∈ a, μ i) := by
-  classical
-  induction a using Finset.induction with
-  | empty => simp only [Finset.sum_empty]; infer_instance
-  | insert a s ha ih => simp only [ha, not_false_eq_true, Finset.sum_insert]; infer_instance
-
-
-instance {ι : Type*} {μ : ι → Measure E} [∀ i, InnerRegular (μ i)] :
-    InnerRegular (Measure.sum μ) := by
-  constructor
-  intro s hs r hr
-  have : Tendsto (fun (a : Finset ι) ↦ ∑ i ∈ a, μ i s) atTop (𝓝 (Measure.sum μ s)) := by
-    simp only [hs, Measure.sum_apply]
-    exact ENNReal.summable.hasSum
-  obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
-    exact ((tendsto_order.1 this).1 r hr).exists
-  rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
-  refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp [hK.measurableSet, ENNReal.sum_le_tsum]
-
-/-- *Prokhorov theorem*: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to zero,
-the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
-compact set. -/
-lemma isCompact_setOf_finiteMeasure_compl_isCompact_le {E : Type*} [MeasurableSpace E]
-    [TopologicalSpace E] [T2Space E] [NormalSpace E] [BorelSpace E] {u : ℕ → ℝ≥0} {K : ℕ → Set E}
-    (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+/-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
+to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
+form a compact set. -/
+lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le [NormalSpace E]
+    {u : ℕ → ℝ≥0} {K : ℕ → Set E} (C : ℝ≥0)
+    (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   /- Consider a sequence of measures with mass at most `C` and giving mass at most `uₙ` to `Kₙᶜ`,
   for which we want to find a converging subsequence.
@@ -393,7 +377,7 @@ lemma isCompact_setOf_finiteMeasure_compl_isCompact_le {E : Type*} [MeasurableSp
   -- continuous functions supported in `Kₙᶜ` and bounded by `1`, as the measure is inner regular.
   -- therefore, we are reduced to a question about integrals of continuous functions, for which
   -- we can take advantage of the weak convergence.
-  have : InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
+  have : Measure.InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
   rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
     (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
   simp only [compl_compl, iSup_le_iff, ENNReal.ofReal_le_coe]
@@ -427,3 +411,36 @@ lemma isCompact_setOf_finiteMeasure_compl_isCompact_le {E : Type*} [MeasurableSp
   _ ≤ u n := by
     norm_cast
     exact hρ.2 n
+
+/-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
+zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
+compact set. -/
+lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le [NormalSpace E] {u : ℕ → ℝ≥0}
+    {K : ℕ → Set E} (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+    IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
+  have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
+    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩  {μ | μ.mass = C} := by ext; grind
+  rw [this]
+  apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK)
+  exact isClosed_eq (by fun_prop) (by fun_prop)
+
+/-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
+zero, the probability measures giving mass at most `uₙ` to the complement of `Kₙ` form a
+compact set. -/
+lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le [NormalSpace E] {u : ℕ → ℝ≥0}
+    {K : ℕ → Set E} (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+    IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} := by
+  apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
+  have : ProbabilityMeasure.toFiniteMeasure '' {μ | ∀ (n : ℕ), μ (K n)ᶜ ≤ u n}
+      = {μ : FiniteMeasure E | μ.mass = 1 ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
+    ext μ
+    simp only [mem_image, mem_setOf_eq]
+    refine ⟨?_, ?_⟩
+    · rintro ⟨ν, hν, rfl⟩
+      simpa using hν
+    · rintro ⟨hμ, h'μ⟩
+      let ν : ProbabilityMeasure E := ⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using hμ)⟩
+      have : ν.toFiniteMeasure = μ := by ext; rfl
+      exact ⟨ν, by simpa [← this] using h'μ , this⟩
+  rw [this]
+  exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK
