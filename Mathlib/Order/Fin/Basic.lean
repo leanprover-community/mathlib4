@@ -263,7 +263,7 @@ alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  all_goals simp only [le_iff_val_le_val, val_pred]
   · exact pred_le_pred H
   · calc
       _ ≤ _ := Nat.pred_le _
@@ -293,9 +293,8 @@ lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (
 lemma predAbove_left_injective : Injective (@predAbove n) := by
   intro i j hij
   obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
-  wlog h : i < j generalizing i j
-  · simp only [not_lt] at h
-    obtain h | rfl := h.lt_or_eq
+  wlog! h : i < j generalizing i j
+  · obtain h | rfl := h.lt_or_eq
     · exact (this hij.symm h).symm
     · rfl
   replace hij := congr_fun hij i.succ
