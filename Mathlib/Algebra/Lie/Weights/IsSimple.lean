@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+import Mathlib.CategoryTheory.Category.Basic
+
+set_option maxHeartbeats 0
+set_option maxRecDepth 4000
+set_option synthInstance.maxHeartbeats 20000
+set_option synthInstance.maxSize 128
 
 /-!
 # Simple Lie algebras
@@ -260,163 +266,207 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
+lemma LieAlgebra.IsKilling.root_isNonZero (α : Weight K H L) (h : α ∈ H.root) : α.IsNonZero := by
+  grind
+
+
+lemma LieAlgebra.IsKilling.exists_coroot_pairing_ne_zero
+    (β : Dual K H) (hβ : β ≠ 0) :
+    ∃ i, (rootSystem H).toRootPairing.toLinearMap β ((rootSystem H).coroot i) ≠ 0 := by
+      -- Assume for contradiction that for all roots i, β applied to the coroot of i is zero.
+      by_contra h_contra
+      have h_zero_on_span : ∀ x ∈ Submodule.span K (Set.range (rootSystem H).coroot), β x = 0 := by
+        intro x hx; induction hx using Submodule.span_induction <;> aesop;
+        rw [ ← right, h_contra _ left ];
+      exact hβ ( by ext x; aesop )
+
+
+lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
+    (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (h : q ≠ ⊥) :
+    ∃ α ∈ H.root, ↑α ∈ q := by
+      -- Since $q \neq \bot$, there exists $\beta \in q$ with $\beta \neq 0$.
+      obtain ⟨β, hβ⟩ : ∃ β : Dual K H, β ∈ q ∧ β ≠ 0 := by
+        exact ( Submodule.ne_bot_iff _ ).mp h;
+      -- Since $q$ is invariant under the reflection corresponding to a root $\alpha_i$, we have $\alpha_i \in q$.
+      obtain ⟨i, hi⟩ : ∃ i : H.root, (rootSystem H).toRootPairing.toLinearMap β ((rootSystem H).coroot i) ≠ 0 := by
+        have := LieAlgebra.IsKilling.exists_coroot_pairing_ne_zero β;
+        exact this hβ.2;
+      -- Since $q$ is invariant under the reflection corresponding to $\alpha_i$, we have $\alpha_i \in q$.
+      have h_alpha_i_in_q : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) • (rootSystem H).root i ∈ q := by
+        have h_alpha_i_in_q : (rootSystem H).reflection i β ∈ q := by
+          -- Since $q$ is invariant under the reflection corresponding to $i$, we have $s_i(\beta) \in q$ by definition of invariance.
+          apply hq i;
+          exact hβ.1;
+        -- Since $q$ is a submodule, subtracting $(β, α_i) * α_i$ from $β$ should keep it in $q$.
+        have h_sub : β - ((rootSystem H).toLinearMap β ((rootSystem H).coroot i)) • (rootSystem H).root i ∈ q := by
+          convert h_alpha_i_in_q using 1;
+        simpa using q.sub_mem hβ.1 h_sub;
+      use i.val; aesop;
+      simpa [ smul_smul, hi ] using q.smul_mem ( β ( coroot val ) ) ⁻¹ h_alpha_i_in_q
+
+lemma LieAlgebra.IsKilling.coroot_ne_zero
+    {α : Weight K H L} (hα : α.IsNonZero) :
+    coroot α ≠ 0 := by
+      aesop
+
+open Weight in
+lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_le_invtSubmoduleToLieIdeal
+    (q : Submodule K (Dual K H))
+    (_hq : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    {α : Weight K H L} (hα : α.IsNonZero) (hαq : ↑α ∈ q) :
+    (sl2SubmoduleOfRoot hα).toSubmodule ≤
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, (sl2SubmoduleOfRoot α.2.2).toSubmodule := by
+      exact le_iSup_of_le ⟨ α, hαq, hα ⟩ le_rfl
+
+
+
+lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
+    {α : Weight K H L} (hα : α.IsNonZero) :
+    sl2SubmoduleOfRoot hα ≠ ⊥ := by
+      -- Since the coroot α is non-zero, the corootSubmodule α is not the zero submodule.
+      have h_corootSubmodule_ne_bot : corootSubmodule α ≠ ⊥ := by
+        intro h_eq
+        have h_mem : (coroot α : L) ∈ corootSubmodule α := by
+          rw [corootSubmodule, LieSubmodule.mem_map]
+          exact ⟨coroot α, coroot_mem_corootSpace α, rfl⟩
+        rw [h_eq, LieSubmodule.mem_bot] at h_mem
+        have : coroot α = 0 := by exact_mod_cast h_mem
+        exact coroot_ne_zero hα this
+      -- Since the corootSubmodule α is non-zero, the sum of the three submodules (genWeightSpace L α, genWeightSpace L (-α), and corootSubmodule α) must also be non-zero.
+      have h_sum_ne_bot : genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α ≠ ⊥ := by
+        exact ne_bot_of_gt ( lt_of_lt_of_le ( lt_of_le_of_ne bot_le ( Ne.symm h_corootSubmodule_ne_bot ) ) ( le_sup_right ) );
+      -- Since sl2SubmoduleOfRoot hα is defined as the sum of the three submodules, it follows directly that sl2SubmoduleOfRoot hα is also not the bottom submodule.
+      convert h_sum_ne_bot using 1;
+      exact sl2SubmoduleOfRoot_eq_sup α hα
+
+
+lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_toSubmodule_ne_bot
+    {α : Weight K H L} (hα : α.IsNonZero) :
+    (sl2SubmoduleOfRoot hα).toSubmodule ≠ ⊥ := by
+      convert LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot hα
+      -- The submodule of a Lie submodule is the same as the original submodule.
+      simp
+
+
+lemma LieAlgebra.IsKilling.exists_orthogonal_element_of_ne_top
+    (q : Submodule K (Dual K H)) (hq : q ≠ ⊤) :
+    ∃ y : H, y ≠ 0 ∧ ∀ f ∈ q, f y = 0 := by
+      have h_dual_seq : q.dualAnnihilator ≠ ⊥ := by
+        norm_num +zetaDelta at *;
+        exact hq;
+      obtain ⟨ y, hy ⟩ := ( Submodule.ne_bot_iff _ ).mp h_dual_seq;
+      -- Since the dual space of H is isomorphic to H itself, there exists a non-zero element in H corresponding to y.
+      obtain ⟨x, hx⟩ : ∃ x : H, y = (Module.Dual.eval K H) x := by
+        have h_iso : Function.Surjective (Module.Dual.eval K H) := by
+          exact?;
+        exact h_iso y |> Exists.imp fun x hx => hx.symm;
+      simp +zetaDelta at *;
+      exact ⟨ x, x.2, by aesop_cat, fun f hf => by simpa [ hx ] using hy.1 f hf ⟩
+
+lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
+    {y : H} {α : Weight K H L} (hα : α.IsNonZero) (hy : (α : H → K) y = 0)
+    (z : L) (hz : z ∈ sl2SubmoduleOfRoot hα) : ⁅(y : L), z⁆ = 0 := by
+      -- Since `ad y` is semisimple, it acts as scalar multiplication by `α(y)` on the generalized eigenspace of `ad y` with eigenvalue `α(y)`.
+      have h_semisimple : ∀ m ∈ genWeightSpace L α, ⁅↑y, m⁆ = α y • m := by
+        have h_semisimple : ∀ m ∈ genWeightSpace L α, ⁅↑y, m⁆ = α y • m := by
+          intro m hm
+          have h_semisimple_ad : (ad K L y).IsSemisimple := by
+            convert LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra y.2 using 1
+          exact?;
+        exact h_semisimple;
+      -- Since `ad y` is semisimple, it acts as scalar multiplication by `-α(y)` on the generalized eigenspace of `ad y` with eigenvalue `-α(y)`.
+      have h_semisimple_neg : ∀ m ∈ genWeightSpace L (-α), ⁅↑y, m⁆ = -(α y) • m := by
+        intro m hm;
+        exact?;
+      -- The coroot space `corootSubmodule α` is spanned by `[u, v]` with `u ∈ genWeightSpace L α` and `v ∈ genWeightSpace L (-α)`.
+      have h_coroot : ∀ m ∈ corootSubmodule α, ⁅↑y, m⁆ = 0 := by
+        intro m hm
+        have h_comm : ∀ u ∈ genWeightSpace L α, ∀ v ∈ genWeightSpace L (-α), ⁅↑y, ⁅u, v⁆⁆ = ⁅⁅↑y, u⁆, v⁆ + ⁅u, ⁅↑y, v⁆⁆ := by
+          simp +zetaDelta at *;
+        simp_all +decide [ LieSubmodule.mem_top, SetLike.mem_coe ];
+        obtain ⟨ u, hu, v, hv, rfl ⟩ := hm.2;
+        refine' TensorProduct.induction_on u _ _ _;
+        · simp ( config := { decide := Bool.true } );
+        · aesop;
+        · simp +contextual [ h_comm ];
+      -- Since `sl2SubmoduleOfRoot hα` is generated by these spaces, `y` commutes with everything in it.
+      have h_comm : ∀ m ∈ sl2SubmoduleOfRoot hα, ⁅↑y, m⁆ = 0 := by
+        rw [ sl2SubmoduleOfRoot_eq_sup ];
+        intro m hm;
+        rcases Submodule.mem_sup.mp hm with ⟨ m₁, hm₁, m₂, hm₂, rfl ⟩;
+        rcases Submodule.mem_sup.mp hm₁ with ⟨ m₁', hm₁', m₂', hm₂', rfl ⟩;
+        simp_all +decide [ lie_add ];
+        rcases hm₂ with ⟨ m₂, hm₂, hm₂', rfl ⟩ ; exact h_coroot _ hm₂ hm₂';
+      exact h_comm z hz
+
+lemma LieAlgebra.IsKilling.center_eq_bot : LieAlgebra.center K L = ⊥ := by
+  -- Let $x$ be an arbitrary element of the center.
+  ext x
+  simp [LieAlgebra.center]
+
+open Weight in
+lemma LieAlgebra.IsKilling.l2 (q : Submodule K (Dual K H))
+    (h₁ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
+    q = ⊤ := by
+  -- If `q ≠ ⊤`, then there exists a non-zero `y ∈ H` such that `∀ f ∈ q, f(y) = 0`.
+  by_contra hq_ne_top
+  obtain ⟨y, hy_ne_zero, hy_ortho⟩ : ∃ y : H, y ≠ 0 ∧ ∀ f ∈ q, f y = 0 := by
+    exact?;
+  -- By `LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero`, `[y, z] = 0` for all `z ∈ sl2SubmoduleOfRoot α`.
+  have h_comm : ∀ α : {α : LieModule.Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, ∀ z ∈ LieAlgebra.IsKilling.sl2SubmoduleOfRoot α.2.2, ⁅(y : L), z⁆ = 0 := by
+    exact fun α z hz => LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero α.2.2 ( hy_ortho _ α.2.1 ) z hz;
+  -- Since `L` is generated by `sl2SubmoduleOfRoot α` for `α` such that `↑α ∈ q` (by `h₂`), it follows that `[y, L] = 0`.
+  have h_comm_all : ∀ z : L, ⁅(y : L), z⁆ = 0 := by
+    intro z;
+    have h_comm_all : z ∈ ⨆ α : {α : LieModule.Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, (LieAlgebra.IsKilling.sl2SubmoduleOfRoot α.2.2).toSubmodule := by
+      convert Submodule.mem_top;
+      convert h₂ using 1;
+      simp +decide [ LieSubmodule.ext_iff ];
+    rw [ Submodule.mem_iSup ] at h_comm_all;
+    specialize h_comm_all ( LinearMap.ker ( LieAlgebra.ad K L y ) );
+    exact h_comm_all fun α => fun z hz => by simpa using h_comm α z hz;
+  -- Since `y ∈ Z(L)`, by `LieAlgebra.IsKilling.center_eq_bot`, `y = 0`.
+  have h_y_zero : (y : L) ∈ LieAlgebra.center K L := by
+    intro z;
+    rw [ ← lie_skew, h_comm_all, neg_zero ];
+  rw [ LieAlgebra.IsKilling.center_eq_bot ] at h_y_zero ; aesop
+
 section IsSimple
 
 variable [IsSimple K L]
 
--- TODO Golf the below proof using `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal` above
 open Weight in
 lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (h₁ : q ≠ ⊥) : q = ⊤ := by
-  have _i := nontrivial_of_isIrreducible K L L
-  let S := rootSystem H
-  by_contra h₃
-  suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
-      Φ = Set.univ by
-    have := (S.eq_top_of_mem_invtSubmodule_of_forall_eq_univ q h₁ h₀) h₂
-    apply False.elim (h₃ this)
-  intro Φ hΦ₁ hΦ₂ hΦ₃
-  by_contra hc
-  have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
-    intro i hi
-    apply hΦ₂
-    exact Set.mem_image_of_mem S.root hi
-  have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
-    (hΦ₃ j h₂) (hΦ₂' i h₁)
-  have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
-    (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
-  have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
-  have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
-  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
-    by_contra h
-    have i_non_zero : i.1.IsNonZero := by grind
-    have j_non_zero : j.1.IsNonZero := by grind
-    let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
-    have r₁ : r ≠ 0 := by
-      intro a
-      have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left
-        (congr_arg Weight.toFun a))
-      have := s₂ i j h₁ h₂
-      rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      simp at this
-    have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
-    cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
-    | inl hl =>
-      have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
-      have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot j_non_zero
-      have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hl h₂).symm
-        _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
-        _ = 2 := by rw [e₁, e₂, zero_add]
-      simp at this
-    | inr hr =>
-      have e₁ : j.1.1 (coroot i) = 0 := s₂' i j h₁ h₂
-      have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot i_non_zero
-      have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
-        _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
-        _ = 2 := by rw [e₁, e₂, add_zero]
-      simp at this
-  have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : rootSpace H i.1.1)
-      (lj : rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    have h₃ := lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
-    rw [s₃ i j h1 h2] at h₃
-    exact h₃
-  let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
-  let I := LieSubalgebra.lieSpan K L g
-  have s₅ : I ≠ ⊤ := by
-    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_notMem Φ).mp hc
-    obtain ⟨z, hz₁, hz₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) j
-    by_contra! hI
-    have center_element : z ∈ center K L := by
-      have commutes_with_all (x : L) : ⁅x, z⁆ = 0 := by
-        have x_mem_I : x ∈ I := by rw [hI]; exact trivial
-        induction x_mem_I using LieSubalgebra.lieSpan_induction with
-        | mem x hx =>
-          obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
-          have := s₄ i j hi hj
-          simp only [Subtype.forall] at this
-          exact (this x hx1_mem) z hz₁
-        | zero => exact zero_lie z
-        | add _ _ _ _ e f => rw [add_lie, e, f, add_zero]
-        | smul _ _ _ d =>
-          simp only [smul_lie, smul_eq_zero]
-          right
-          exact d
-        | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
-      exact commutes_with_all
-    rw [center_eq_bot] at center_element
-    exact hz₂ center_element
-  have s₆ : I ≠ ⊥ := by
-    obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
-    obtain ⟨x, hx₁, hx₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) r
-    have x_in_g : x ∈ g := by
-      apply Set.mem_iUnion_of_mem r
-      simp only [Set.mem_iUnion]
-      exact ⟨hr, hx₁⟩
-    have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_g)
-    by_contra h
-    exact hx₂ (I.eq_bot_iff.mp h x x_mem_I)
-  have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
-    have gen : ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule = ⊤ := by
-      simp only [LieSubmodule.iSup_toSubmodule_eq_top]
-      exact iSup_genWeightSpace_eq_top' K H L
-    intro x y hy
-    have hx : x ∈ ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule := by
-      simp only [gen, Submodule.mem_top]
-    induction hx using Submodule.iSup_induction' with
-    | mem j x hx =>
-      induction hy using LieSubalgebra.lieSpan_induction with
-      | mem x₁ hx₁ =>
-        obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
-        have r₁ (j : Weight K H L) : j = 0 ∨ j ∈ H.root := by
-          rcases (eq_or_ne j 0) with h | h
-          · left
-            exact h
-          · right
-            refine Finset.mem_filter.mpr ?_
-            exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
-        rcases (r₁ j) with h | h
-        · have h₁ : ⁅x, x₁⁆ ∈ g := by
-            have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
-            rw [h, coe_zero, zero_add] at h₂
-            exact Set.mem_biUnion hi h₂
-          exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
-        rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
-        · exact I.lie_mem
-            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
-            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
-        have : ⁅x, x₁⁆ = 0 := by
-          rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
-        rw [this]
-        exact I.zero_mem
-      | zero => simp only [lie_zero, zero_mem, I]
-      | add _ _ _ _ e f =>
-        simp only [lie_add]
-        exact add_mem e f
-      | smul a _ _ d =>
-        simp only [lie_smul]
-        exact I.smul_mem a d
-      | lie a b c d e f =>
-        have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
-          simp only [lie_lie, sub_add_cancel]
-        rw [this]
-        exact add_mem (I.lie_mem e d) (I.lie_mem c f)
-    | zero => simp only [zero_lie, zero_mem]
-    | add x1 y1 _ _ hx hy =>
-      simp only [add_lie]
-      exact add_mem hx hy
-  obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (K := I)).2 s₇
+  let J := (invtSubmoduleToLieIdeal q h₀)
+  have r_j2 : J ≠ ⊥ := by
+    have hJ_nonzero : ∃ α : Weight K H L, (α : Dual K H) ∈ q ∧ α.IsNonZero := by
+      have := LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot q h₀ h₁;
+      exact ⟨ this.choose, this.choose_spec.2, LieAlgebra.IsKilling.root_isNonZero _ this.choose_spec.1 ⟩;
+    -- If $J$ were zero, then the submodule generated by the $\mathfrak{sl}_2$-triple corresponding to $\alpha$ would also be zero.
+    by_contra hJ_zero
+    have h_submodule_zero : (sl2SubmoduleOfRoot hJ_nonzero.choose_spec.2).toSubmodule = ⊥ := by
+      have h_submodule_zero : (sl2SubmoduleOfRoot hJ_nonzero.choose_spec.2).toSubmodule ≤ J := by
+        convert LieAlgebra.IsKilling.sl2SubmoduleOfRoot_le_invtSubmoduleToLieIdeal q h₀ _ _ using 1
+        all_goals generalize_proofs at *;
+        · -- By definition of $J$, we know that it is the supremum of the submodules generated by the $\mathfrak{sl}_2$-triples corresponding to the roots in $q$.
+          simp [J, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal];
+        · exact hJ_nonzero.choose_spec.1;
+      aesop;
+    exact LieAlgebra.IsKilling.sl2SubmoduleOfRoot_toSubmodule_ne_bot hJ_nonzero.choose_spec.2 h_submodule_zero
   have : IsSimple K L := inferInstance
-  have : I' = ⊥ ∨ I' = ⊤ := this.eq_bot_or_eq_top I'
-  have c₁ : I' ≠ ⊤ := by
-    rw [← h] at s₅
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₅
-  have c₂ : I' ≠ ⊥ := by
-    rw [← h] at s₆
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  grind
+  have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
+  have c₂ : J ≠ ⊥ := r_j2
+  have c₃ : J = ⊤ := by grind
+  apply LieAlgebra.IsKilling.l2 q h₀
+  -- Unfold J in c₃ and extract the needed equality
+  show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
+  unfold J invtSubmoduleToLieIdeal at c₃
+  simpa using c₃
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
