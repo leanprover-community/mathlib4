@@ -90,12 +90,6 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
     multiplicity p n = n.factorization p := by
   simp [factorization, pp, padicValNat_def' pp.ne_one hn]
 
-theorem padicValNat_eq_primeFactorsList_count {m p : ℕ} [hp : Fact p.Prime] :
-    padicValNat p m = m.primeFactorsList.count p := by
-  by_cases hm : m = 0
-  · simp [hm]
-  · rw [primeFactorsList_count_eq, padicValNat_def hm, multiplicity_eq_factorization hp.out hm]
-
 /-! ### Basic facts about factorization -/
 
 
