@@ -252,7 +252,7 @@ theorem seminormFromConst_const_mul (x : R) :
       (𝓝 (seminormFromConst' hf1 hc hpm x)) := by
     apply (seminormFromConst_isLimit hf1 hc hpm x).comp
       (tendsto_atTop_atTop_of_monotone add_left_mono _)
-    rintro n; use n; omega
+    rintro n; use n; lia
   rw [seminormFromConst_apply_c hf1 hc hpm]
   apply tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (c * x))
   have hterm : seminormFromConst_seq c f (c * x) =

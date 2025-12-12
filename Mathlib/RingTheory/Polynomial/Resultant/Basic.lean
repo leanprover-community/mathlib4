@@ -256,7 +256,7 @@ lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤
     simp only [Finset.range_zero, Finset.sum_empty]
     rw [mul_zero, add_zero]
   | succ k IH =>
-    rw [Finset.sum_range_succ, mul_add, ← add_assoc, resultant_add_mul_monomial_right, IH] <;> omega
+    rw [Finset.sum_range_succ, mul_add, ← add_assoc, resultant_add_mul_monomial_right, IH] <;> lia
 
 /-- `Res(f + gp, g) = Res(f, g)` if `deg g + deg p ≤ deg f`. -/
 lemma resultant_add_mul_left (hk : p.natDegree + n ≤ m) (hg : g.natDegree ≤ n) :

@@ -110,7 +110,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
     by_cases! hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
     · obtain ⟨a, ha⟩ := Nat.le.dest hqn
-      have hnaq : n = a + q := by omega
+      have hnaq : n = a + q := by lia
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by lia⟩ (by
         simp only [hnaq, add_assoc]

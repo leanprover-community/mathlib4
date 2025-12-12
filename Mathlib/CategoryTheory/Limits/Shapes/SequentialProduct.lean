@@ -95,7 +95,7 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
           eqToHom (functorObj_eq_pos (by lia)) ≫ f m := by
   cases m with
   | zero =>
-      have : n = 0 := by omega
+      have : n = 0 := by lia
       subst this
       simp [functorMap]
   | succ m =>
@@ -172,7 +172,7 @@ noncomputable def isLimit : IsLimit (cone f) where
     · simp only [Category.assoc, cone_π_app_comp_Pi_π_pos f _ _ h]
       simp only [dite_eq_ite, Functor.ofOpSequence_obj, limit.lift_π_assoc, Fan.mk_pt,
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
-      have hh : m + 1 ≤ n := by omega
+      have hh : m + 1 ≤ n := by lia
       rw [← s.w (homOfLE hh).op]
       simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
         Category.assoc]

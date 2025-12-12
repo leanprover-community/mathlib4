@@ -255,7 +255,7 @@ def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l
   Truncated.Path.interval f j l h
 
 lemma arrow_interval (f : Path X n) (j l : ℕ) (k' : Fin l) (k : Fin n)
-    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by grind) :
+    (h : j + l ≤ n := by lia) (hkk' : j + k' = k := by grind) :
     (f.interval j l h).arrow k' = f.arrow k := by
   dsimp [interval, arrow, Truncated.Path.interval, Truncated.Path.arrow]
   congr

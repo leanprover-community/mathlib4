@@ -142,7 +142,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
         -/
         rw [pow_add]
         grind
-  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
+  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by lia
   rcases this with this | this
   · calc _ < ε / max a b * b := by
           grw [gBound1 snd]

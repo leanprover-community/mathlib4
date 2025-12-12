@@ -482,7 +482,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rw [Finset.mem_range] at hx
   dsimp only [Subtype.coe_mk, Function.comp_apply]
   rw [edist_comm]
-  congr 4 <;> omega
+  congr 4 <;> lia
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
