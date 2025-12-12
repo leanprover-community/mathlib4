@@ -42,14 +42,14 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
   shiftIso n a a' ha' := NatIso.ofComponents
     (fun X => Hom.isoOfComponents
       (fun i => eqToIso (by
-        obtain rfl : a' = a + n := by omega
+        obtain rfl : a' = a + n := by lia
         by_cases h : i = a
         · subst h
           simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
-          rw [if_neg h, if_neg (fun h' => h (by omega))])))
+          rw [if_neg h, if_neg (fun h' => h (by lia))])))
     (fun {X Y} f => by
-      obtain rfl : a' = a + n := by omega
+      obtain rfl : a' = a + n := by lia
       ext
       simp [single])
   shiftIso_zero a := by
@@ -78,6 +78,11 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 (This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+variable {C} in
+@[simp]
+lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :
+    ((singleFunctor C n).obj X).d p q = 0 := rfl
 
 instance (n : ℤ) : (singleFunctor C n).Full :=
   inferInstanceAs (single _ _ _).Full
