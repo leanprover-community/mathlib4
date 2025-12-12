@@ -294,7 +294,7 @@ lemma ker_rootForm_eq_dualAnnihilator :
   have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R)
   have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
   rw [← P.finrank_corootSpan_eq', P.toPerfPair.finrank_eq, Subspace.dual_finrank_eq] at aux1
-  omega
+  lia
 
 lemma ker_corootForm_eq_dualAnnihilator :
     LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm :=
