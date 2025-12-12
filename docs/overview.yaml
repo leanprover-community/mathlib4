@@ -376,6 +376,7 @@ Analysis:
     Test functions: 'TestFunction'
     Schwartz space: 'SchwartzMap'
     Distributions: 'Distribution'
+    tempered distributions: 'TemperedDistribution'
 
   Fourier analysis:
     Fourier transform as an integral: 'Real.fourier_eq'
