@@ -83,7 +83,7 @@ variable [Abelian C] {X : C} (R : ProjectiveResolution X)
 
 instance : QuasiIso R.π' := by dsimp [π']; infer_instance
 
-instance : R.cochainComplex.IsLE 0 := by
+instance : R.cochainComplex.IsGE 0 := by
   simp only [HomologicalComplex.isSupported_iff_of_quasiIso R.π']
   infer_instance
 
