@@ -164,19 +164,19 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
       · exact (le_self_pow₀ (mod_cast hp.nat_prime.one_le) hk₀.ne').trans hbx
       · simp_all [le_rpow_inv_iff_of_pos]
     · simp
-  rw [sum_filter, sum_product]
-  refine sum_congr rfl fun k hk ↦ ?_
-  simp only [sum_ite, not_le, sum_const_zero, add_zero]
-  congr 1
-  ext p
-  simp only [mem_filter, mem_Ioc]
-  refine ⟨fun _ ↦ (by simp_all), fun h ↦ ?_⟩
-  simp_all only [mem_Icc, one_div, true_and, and_true]
-  grw [h.1.2, floor_le_floor]
-  apply rpow_le_self_of_one_le _ (by bound)
-  have := one_le_floor_iff _|>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
-  contrapose! this
-  apply rpow_lt_one hx this (by bound)
+  · rw [sum_filter, sum_product]
+    refine sum_congr rfl fun k hk ↦ ?_
+    simp only [sum_ite, not_le, sum_const_zero, add_zero]
+    congr 1
+    ext p
+    simp only [mem_filter, mem_Ioc]
+    refine ⟨fun _ ↦ (by simp_all), fun h ↦ ?_⟩
+    simp_all only [mem_Icc, one_div, true_and, and_true]
+    grw [h.1.2, floor_le_floor]
+    apply rpow_le_self_of_one_le _ (by bound)
+    have := one_le_floor_iff _|>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
+    contrapose! this
+    apply rpow_lt_one hx this (by bound)
 
 theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
     ψ x = ∑ n ∈ Icc 1 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
