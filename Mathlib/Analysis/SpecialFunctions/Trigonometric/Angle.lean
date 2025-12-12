@@ -832,13 +832,8 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
 
 lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
-  rcases eq_or_ne θ 0 with rfl | h
-  · simp
-  suffices ((2 : ℕ) • (θ + π)).sign = (θ + π).sign ↔ θ + π = π ∨ |(θ + π).toReal| < π / 2 by
-    simp only [smul_add, two_nsmul_coe_pi, add_zero, sign_add_pi, add_eq_right] at this
-    simp only [this, h, false_or]
-    simp [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]
-  exact sign_two_nsmul_eq_sign_iff
+  simpa [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]
+    using sign_two_nsmul_eq_sign_iff (θ := θ + π)
 
 lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
