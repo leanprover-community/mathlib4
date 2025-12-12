@@ -70,7 +70,7 @@ noncomputable def π' : R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).
 
 @[reassoc]
 lemma π'_f_zero :
-    R.π'.f 0 = (R.cochainComplexXIso _ _ (by simp)).hom ≫ R.π.f 0 ≫
+    R.π'.f 0 = (R.cochainComplexXIso _ _).hom ≫ R.π.f 0 ≫
       (HomologicalComplex.singleObjXSelf (.up ℤ) 0 X).inv := by
   dsimp [π']
   rw [HomologicalComplex.extendMap_f _ _ (i := 0) (by simp),
