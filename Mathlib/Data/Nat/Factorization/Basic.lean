@@ -219,10 +219,9 @@ theorem factorization_ordCompl (n p : ℕ) :
     simp [pp.factorization, hqp.symm]
 
 theorem ordProj_PrimePow_eq_self {p k : ℕ} (hp : Prime p) : ordProj[p] (p ^ k) = p ^ k := by
-  have pow_ne_zero : p ^ k ≠ 0 := pow_ne_zero k (Prime.ne_zero hp)
   apply Nat.eq_of_factorization_eq
   · exact pos_iff_ne_zero.mp (ordProj_pos (p ^ k) p)
-  · exact pow_ne_zero
+  · exact pow_ne_zero k hp.ne_zero
   · simp [Prime.factorization_pow hp]
 
 theorem ordCompl_PrimePow_eq_one {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 := by
