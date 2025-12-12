@@ -47,7 +47,6 @@ def objEquiv {n : ℕ} :
       stdSimplex.objEquiv.symm
       (SimplexCategory.Hom.mk (OrderHom.snd.comp f))⟩
   left_inv := fun ⟨x, y⟩ ↦ by simp
-  right_inv _ := rfl
 
 @[simp]
 lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
