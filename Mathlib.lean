@@ -7985,6 +7985,7 @@ public import Mathlib.Algebra.Module.ZLattice.Covolume
 public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Algebra.Module.ZMod
 public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Algebra.MonoidAlgebra.Degree
 public import Mathlib.Algebra.MonoidAlgebra.Division
