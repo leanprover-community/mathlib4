@@ -115,7 +115,7 @@ lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
   erw [Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
   rw [← op_comp_assoc, Iso.hom_inv_id_app, op_id, id_comp, Iso.hom_inv_id_app]
 
-lemma shiftFunctor_op_map (n m : ℤ) (hnm : n + m = 0) {K L : Cᵒᵖ} (φ : K ⟶ L) :
+lemma shiftFunctor_op_map {K L : Cᵒᵖ} (φ : K ⟶ L) (n m : ℤ) (hnm : n + m = 0 := by lia) :
     (shiftFunctor Cᵒᵖ n).map φ =
       (shiftFunctorOpIso C n m hnm).hom.app K ≫ ((shiftFunctor C m).map φ.unop).op ≫
         (shiftFunctorOpIso C n m hnm).inv.app L :=
@@ -227,7 +227,7 @@ lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : �
       (((shiftFunctorAdd' Cᵒᵖ n m p (by lia)).inv.app X).unop⟦p⟧').op := by
   dsimp [opShiftFunctorEquivalence]
   simp only [shiftFunctorAdd'_op_inv_app _ n m p (by lia) _ _ _ (add_neg_cancel n)
-    (add_neg_cancel m) (add_neg_cancel p), shiftFunctor_op_map _ _ (add_neg_cancel m),
+    (add_neg_cancel m) (add_neg_cancel p), shiftFunctor_op_map _ m (-m),
     Category.assoc, Iso.inv_hom_id_app_assoc]
   erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
     id_comp, id_comp, id_comp, comp_id, comp_id]
@@ -305,7 +305,7 @@ lemma shift_opShiftFunctorEquivalence_counitIso_inv_app (X : C) (m n : ℤ) (hmn
             (shiftFunctorComm Cᵒᵖ n m).inv.app (Opposite.op (X⟦n⟧)) := by
   obtain rfl : m = -n := by lia
   dsimp [opShiftFunctorEquivalence]
-  simp only [shiftFunctor_op_map (-n) n (by lia), shiftFunctor_op_map n (-n) (by lia),
+  simp only [shiftFunctor_op_map _ (-n) n, shiftFunctor_op_map _ n (-n),
     shiftFunctorComm_inv_app_of_add_eq_zero n (-n) (by lia), assoc,
     shiftFunctorCompIsoId_op_inv_app, shiftFunctorCompIsoId_op_hom_app,
     shift_shiftFunctorCompIsoId_hom_app, op_comp, unop_comp, Quiver.Hom.unop_op,
