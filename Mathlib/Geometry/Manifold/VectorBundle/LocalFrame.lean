@@ -56,9 +56,8 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
 * `IsLocalFrameOn.contMDiffOn_of_coeff hs`: a section `t` is `C^k` on `U` if each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_of_coeff hs`: a section `t` is `C^k` at `x ∈ U`
-  if all of its frame coefficients are
-* `IsLocalFrameOn.contMDiffOn_off_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
-  ff all of its frame coefficients are
+  if all of its frame coefficients are `C^k` at `x`.
+* `IsLocalFrameOn.contMDiffAt_of_coeff_aux hs`: a version of the previous lemma for open sets.
 * `MDifferentiable` versions of the previous three statements
 
 In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
@@ -69,7 +68,7 @@ the model fiber `F`.
   Use `e.localFrame b i` to access the i-th section in that frame.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
 
-# TODO
+## TODO
 
 Strengthen the proof of smoothness in terms of the local frame coefficients.
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
