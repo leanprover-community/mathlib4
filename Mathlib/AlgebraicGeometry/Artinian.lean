@@ -84,8 +84,8 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
   have : IsAffine W := hW1
   have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
-  have : IsOpen ({(⟨x, hW2⟩)} : Set W) :=
-    discreteTopology_iff_forall_isOpen.mp (IsLocallyArtinian.discreteTopology_of_isAffine W)
+  have : IsOpen ({⟨x, hW2⟩} : Set W) := discreteTopology_iff_forall_isOpen.mp
+    (IsLocallyArtinian.discreteTopology_of_isAffine W) {⟨x, hW2⟩}
   have := this.trans W.2
   have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
   rw[← this]
