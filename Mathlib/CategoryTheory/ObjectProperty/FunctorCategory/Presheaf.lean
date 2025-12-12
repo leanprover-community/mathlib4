@@ -64,7 +64,6 @@ noncomputable def coconeCompShrinkYonedaHomEquiv :
   left_inv f := hc'.hom_ext (by simp)
   right_inv u := by ext; simp
 
-
 /-- Let `F : J ⥤ Cᵒᵖ` be a functor, `c'` a colimit cocone for `F.leftOp ⋙ shrinkYoneda.{w}`.
 For any cone `c` for `F`, this is the canonical natural transformation
 `c'.pt ⟶ shrinkYoneda.{w}.obj c.pt.unop`. -/
