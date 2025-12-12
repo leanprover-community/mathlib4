@@ -24,10 +24,16 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.cosh_arcosh`, `Real.arcosh_cosh`: cosh and arcosh are inverse in the appropriate domains.
 
-- `Real.continuousOn_arcosh`: arcosh is continuous on [0, ∞)
+- `Real.cosh_bijOn`, `Real.cosh_injOn`, `Real.cosh_surjOn`: `Real.cosh` is bijective, injective and
+  surjective as a function from [0, ∞) to [1, ∞)
+
+- `Real.arcosh_bijOn`, `Real.arcosh_injOn`, `Real.arcosh_surjOn`: `Real.arcosh` is bijective,
+  injective and surjective as a function from [1, ∞) to [0, ∞)
+
+- `Real.continuousOn_arcosh`: arcosh is continuous on [1, ∞)
 
 - `Real.differentiableOn_arcosh`, `Real.contDiffOn_arcosh`: `Real.arcosh` is
-  differentiable, and continuously differentiable on (0, ∞)
+  differentiable, and continuously differentiable on (1, ∞)
 
 ## Tags
 
@@ -166,5 +172,17 @@ theorem contDiffAt_arcosh {n : ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : ContDiffAt
 
 theorem contDiffOn_arcosh {n : ℕ∞} : ContDiffOn ℝ n arcosh (Ioi 1) := fun _ hx =>
   (contDiffAt_arcosh hx).contDiffWithinAt
+
+theorem cosh_bijOn : BijOn cosh (Ici 0) (Ici 1) := coshPartialEquiv.bijOn
+
+theorem cosh_injOn : InjOn cosh (Ici 0) := coshPartialEquiv.injOn
+
+theorem cosh_surjOn : SurjOn cosh (Ici 0) (Ici 1) := coshPartialEquiv.surjOn
+
+theorem arcosh_bijOn : BijOn arcosh (Ici 1) (Ici 0) := coshPartialEquiv.symm.bijOn
+
+theorem arcosh_injOn : InjOn arcosh (Ici 1) := coshPartialEquiv.symm.injOn
+
+theorem arcosh_surjOn : SurjOn arcosh (Ici 1) (Ici 0) := coshPartialEquiv.symm.surjOn
 
 end Real
