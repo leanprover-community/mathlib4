@@ -524,7 +524,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
     npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
-  replace hk : k' ≠ 0 := by omega
+  replace hk : k' ≠ 0 := by lia
   induction k' using Nat.binaryRecFromOne generalizing n m with
   | zero => simp at hk
   | one => simp [npowRec']
