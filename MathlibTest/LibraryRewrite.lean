@@ -112,6 +112,9 @@ Pattern a + b
   add_comm
 · [n, 1].sum
   List.sum_pair
+· 0
+  ⊢ 1 + n = 0
+  IsDedekindFiniteAddMonoid.add_eq_zero_symm
 -/
 #guard_msgs in
 #rw?? n + 1
