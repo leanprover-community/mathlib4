@@ -619,6 +619,15 @@ theorem completelyNormalSpace_iff_forall_normalSpace :
   ⟨fun _ _ => inferInstance, fun h =>
     completelyNormalSpace_iff_forall_isOpen_normalSpace.2 fun s _ => h s⟩
 
+alias ⟨_, CompletelyNormalSpace.of_forall_isOpen_normalSpace⟩ :=
+  completelyNormalSpace_iff_forall_isOpen_normalSpace
+alias ⟨_, CompletelyNormalSpace.of_forall_normalSpace⟩ :=
+  completelyNormalSpace_iff_forall_normalSpace
+
+instance (priority := 100) CompletelyNormalSpace.of_regularSpace_secondCountableTopology
+    [RegularSpace X] [SecondCountableTopology X] : CompletelyNormalSpace X :=
+  .of_forall_normalSpace fun _ => .of_regularSpace_secondCountableTopology
+
 /-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 
@@ -664,6 +673,9 @@ A space is `T5Space` iff it is hereditarily `T4Space`.
 theorem t5Space_iff_forall_t4Space :
     T5Space X ↔ ∀ s : Set X, T4Space s :=
   ⟨fun _ _ => inferInstance, fun h => t5Space_iff_forall_isOpen_t4Space.2 fun s _ => h s⟩
+
+alias ⟨_, T5Space.of_forall_isOpen_t4Space⟩ := t5Space_iff_forall_isOpen_t4Space
+alias ⟨_, T5Space.of_forall_t4Space⟩ := t5Space_iff_forall_t4Space
 
 open SeparationQuotient
 
