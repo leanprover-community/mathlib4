@@ -17,7 +17,8 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.arcosh`: An inverse function of `Real.cosh` as a function from [0, ∞) to [1, ∞).
 
-- `Real.coshPartialEquiv`: `Real.cosh` as a `PartialEquiv`.
+- `Real.coshPartialEquiv`, `Real.coshOpenPartialHomeomorph`: `Real.cosh` as a `PartialEquiv` and
+  an `OpenPartialHomeomorph`.
 
 ## Main Results
 
@@ -114,5 +115,24 @@ def coshPartialEquiv : PartialEquiv ℝ ℝ where
   map_target' _ hr := arcosh_nonneg hr
   left_inv' _ hr := arcosh_cosh hr
   right_inv' _ hr := cosh_arcosh hr
+
+theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) := by
+  have {x : ℝ} (hx : x ∈ Ici 1) : 0 < x + √(x ^ 2 - 1) :=
+    add_pos_of_pos_of_nonneg (show 0 < x by grind) (sqrt_nonneg _)
+  exact continuousOn_log.comp (Continuous.continuousOn (by continuity)) (fun _ _ => by grind)
+
+def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+  toFun := cosh
+  invFun := arcosh
+  source := Ioi 0
+  target := Ioi 1
+  map_source' _ hr := one_lt_cosh.mpr (ne_of_lt hr).symm
+  map_target' _ hr := arcosh_pos hr
+  left_inv' _ hr := arcosh_cosh (le_of_lt hr)
+  right_inv' _ hr := cosh_arcosh (le_of_lt hr)
+  open_source := isOpen_Ioi
+  open_target := isOpen_Ioi
+  continuousOn_toFun := continuous_cosh.continuousOn
+  continuousOn_invFun := continuousOn_arcosh.mono Ioi_subset_Ici_self
 
 end Real
