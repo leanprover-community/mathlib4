@@ -119,8 +119,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
   replace h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits := by
-    simpa using
-      Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
+    simpa [Polynomial.map_map] using h_splits.map iso.symm.toRingHom
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Nat.card_congr
@@ -594,7 +593,7 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
   · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
-    rw [← lift_inj, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [← lift_inj, lift_adjoin, ← coe_val, hT₂.1.image_rootSet] at hT₂
     rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
       h', hT₂.2, lift_top, sup_comm, h]
 

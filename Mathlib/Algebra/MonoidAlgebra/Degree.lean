@@ -434,11 +434,11 @@ lemma supDegree_leadingCoeff_sum_eq
     (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D := by
   classical
   rw [← s.add_sum_erase _ hi]
-  by_cases hs : s.erase i = ∅
+  by_cases! hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
   suffices _ from ⟨supDegree_add_eq_left this, leadingCoeff_add_eq_left this⟩
   refine supDegree_sum_lt ?_ (fun j hj => ?_)
-  · rw [Finset.nonempty_iff_ne_empty]; exact hs
+  · exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
 
 open Finset in
@@ -457,10 +457,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   rw [(supDegree_leadingCoeff_sum_eq hi this).1]
   exact (this j hj hne).ne_bot
 
-lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
+lemma sum_ne_zero_of_injOn_supDegree (hs : s.Nonempty)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
     ∑ i ∈ s, f i ≠ 0 :=
-  let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
+  let ⟨i, hi⟩ := hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]

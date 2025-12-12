@@ -867,6 +867,10 @@ model with corners `I`. -/
 def maximalAtlas :=
   (contDiffGroupoid n I).maximalAtlas M
 
+lemma mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
+    e ∈ maximalAtlas I n M ↔ e ∈ (contDiffGroupoid n I).maximalAtlas M := by
+  rfl
+
 theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
 
@@ -926,6 +930,25 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h1 := (contDiffGroupoid n I).compatible hf1 hg1
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
+
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [OpenPartialHomeomorph.prod_symm_trans_prod,
+    OpenPartialHomeomorph.prod_symm_trans_prod]
+  constructor <;>
+    apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
+
+end
 
 section DisjointUnion
 
