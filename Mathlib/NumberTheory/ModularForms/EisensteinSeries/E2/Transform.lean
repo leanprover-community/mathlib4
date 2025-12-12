@@ -17,7 +17,18 @@ In particular, we show that it is invariant under the action of `T = [[1, 1], [0
 compute how it  transforms under the action of `S = [[0, -1], [1, 0]]` in term of a correction term
 `D2`.
 
+The key identities used to prove these transformation formulae are `tsumFilter_tsum_eq` which says
+that  `∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))` equals
+`-2 * π * I / z` while if we take the sum the other way,  `tsum_tsumFilter_eq` tells us that
+`∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0`.
+
+The idea is then to rewrite the Eisenstein series `G2` as an absolutely convergent infinite sum of
+terms of the form `(((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ(m) ` for
+`m : Fin 2 → ℤ` where `δ(m)` is a small correction term.
+
 -/
+
+@[expose] public section
 
 open UpperHalfPlane hiding I
 
