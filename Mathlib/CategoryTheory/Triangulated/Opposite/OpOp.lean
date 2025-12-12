@@ -131,7 +131,7 @@ instance : (unopUnop C).CommShift ℤ where
         (add_neg_cancel p) (add_neg_cancel q) (add_neg_cancel (p + q)),
       shiftFunctorAdd'_op_inv_app _ (-p) (-q) (-(p + q)) (by lia) p q (p + q)
         (neg_add_cancel p) (neg_add_cancel q) (neg_add_cancel (p + q)),
-      shiftFunctor_op_map (-q) q (by simp),  shiftFunctor_op_map q (-q) (by simp)]
+      shiftFunctor_op_map (-q) q (by simp), shiftFunctor_op_map q (-q) (by simp)]
     simp [← Functor.map_comp_assoc, ← unop_comp, ← unop_comp_assoc]
 
 end Opposite
