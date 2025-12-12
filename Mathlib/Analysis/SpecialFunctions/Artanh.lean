@@ -46,7 +46,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `artanh` is defined using a logarithm, `arcosh x = log √((1 + x) / (1 - x))`. -/
+/-- `artanh` is defined using a logarithm, `artanh x = log √((1 + x) / (1 - x))`. -/
 @[pp_nodot]
 def artanh (x : ℝ) :=
   log √((1 + x) / (1 - x))
