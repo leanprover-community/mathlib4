@@ -362,8 +362,7 @@ lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsT
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
 /--
-Adding an edge to an acyclic graph preserves acyclicity if there endpoints are not
-reachable.
+Adding an edge to an acyclic graph preserves acyclicity if there endpoints are not reachable.
 -/
 theorem IsAcyclic.add_edge_acyclic {G : SimpleGraph V} (hG : IsAcyclic G) (x y : V)
     (hxy : ¬ Reachable G x y) : IsAcyclic <| G ⊔ fromEdgeSet {s(x,y)} := by
@@ -382,8 +381,7 @@ theorem IsAcyclic.add_edge_acyclic {G : SimpleGraph V} (hG : IsAcyclic G) (x y :
   exact hG c' (Walk.IsCycle.transfer (qc := hc) ..)
 
 /--
-The reachability relation of a maximal acyclic subgraph agrees with that of the larger
-graph.
+The reachability relation of a maximal acyclic subgraph agrees with that of the larger graph.
 -/
 lemma reachable_eq_of_maximal_acyclic (F : SimpleGraph V)
     (h : Maximal (fun H => H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
@@ -432,7 +430,9 @@ lemma maximal_acyclic_of_reachable_eq {F : SimpleGraph V} (hF : F ≤ G ∧ F.Is
     refine sup_le_iff.mpr ⟨by grind, ?_⟩
     rw [←F'.fromEdgeSet_edgeSet]
     grind [fromEdgeSet_mono]
-  have e_ndiag : ¬ e.IsDiag := F'.edgeSet_subset_setOf_not_isDiag he.1
+  have e_ndiag : ¬ e.IsDiag := by
+    suffices e ∈ Sym2.diagSetᶜ by simpa using this
+    exact F'.edgeSet_subset_setOf_not_isDiag he.1
   have F_sdiff_eq : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by
     simpa using he.2
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
