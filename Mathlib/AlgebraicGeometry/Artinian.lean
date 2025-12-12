@@ -65,7 +65,7 @@ instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] 
 
 lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAffine X] :
     DiscreteTopology X := by
-  have F := AlgebraicGeometry.Scheme.isoSpec X
+  have F := Scheme.isoSpec X
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
   exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
 
@@ -82,12 +82,11 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   intro x
   have : x ∈ (⊤ : X.Opens) := trivial
   obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
-  have _ : IsAffine W := hW1
-  have _ : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
-  have : IsOpen ({(⟨x, hW2⟩)} : Set W) := by
-    apply discreteTopology_iff_forall_isOpen.mp
-    exact IsLocallyArtinian.discreteTopology_of_isAffine W
-  have _ := IsOpen.trans this W.2
+  have : IsAffine W := hW1
+  have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
+  have : IsOpen ({(⟨x, hW2⟩)} : Set W) :=
+    discreteTopology_iff_forall_isOpen.mp (IsLocallyArtinian.discreteTopology_of_isAffine W)
+  have := this.trans W.2
   have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
   rw[← this]
   assumption
