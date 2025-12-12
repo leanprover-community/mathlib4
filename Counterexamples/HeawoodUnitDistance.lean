@@ -21,7 +21,7 @@ very hard to describe: the minimal polynomials of their vertex coordinates go up
 Other embeddings found since then, such as the one in [hong2014], suffer from the same
 complexity issue.
 
-This file formalises a much simpler embedding, found by this file's author in August 2025
+This file formalises a much simpler embedding, found by Jeremy Tan in August 2025
 (see [this commit](https://github.com/Parcly-Taxel/Shibuya/commit/b5c86cbf1c8b2e1211b160f266480e7115a7e43a)).
 Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
@@ -72,8 +72,7 @@ lemma exists_root_in_Ioo :
 noncomputable def root : ℝ :=
   exists_root_in_Ioo.choose
 
-@[inherit_doc]
-scoped notation "c" => root
+@[inherit_doc] scoped notation "c" => root
 
 lemma root_bounds : c ∈ Set.Ioo (-1 / 3) (-5 / 16) :=
   exists_root_in_Ioo.choose_spec.1
@@ -83,15 +82,15 @@ lemma root_equation : 2 * c ^ 3 + 3 * c + 1 = 0 :=
 
 /-! ### The embedding proper -/
 
-/-- An abbreviation for the Euclidean plane. -/
-notation "E2" => EuclideanSpace ℝ (Fin 2)
+/-- Notation for the Euclidean plane. -/
+notation "Plane" => EuclideanSpace ℝ (Fin 2)
 
 lemma dist_eq_one_iff {x₀ y₀ x₁ y₁ : ℝ} :
     dist !₂[x₀, y₀] !₂[x₁, y₁] = 1 ↔ (x₀ - x₁) ^ 2 + (y₀ - y₁) ^ 2 = 1 := by
   simp [dist_eq_norm_sub, PiLp.norm_eq_of_L2]
 
 /-- The base function from graph vertices to Euclidean points in our embedding. -/
-noncomputable def udMap : Fin 14 → E2
+noncomputable def udMap : Fin 14 → Plane
   | 1 => !₂[(1+c)/2, c^2-c/2+1]
   | 0 => !₂[c, 1/2] | 7 => !₂[0, 1/2] | 2 => !₂[1, 1/2] | 9 => !₂[1-c, 1/2]
   | 10 => !₂[(1+c)/2, c^2-c/2] | 5 => !₂[(1-c)/2, c^2-c/2]
@@ -106,7 +105,7 @@ lemma udMap_reflect (i : Fin 14) : udMap i.rev = !![1, 0; 0, -1].toEuclideanLin 
   fin_cases i <;> simp only [udMap, reflect_toEuclideanLin, Fin.reduceFinMk, Fin.reduceRev] <;>
   norm_num
 
-lemma decompose_point (p : E2) : p = !₂[p.proj 0, p.proj 1] := by
+lemma decompose_point (p : Plane) : p = !₂[p.proj 0, p.proj 1] := by
   ext i; fin_cases i <;> simp
 
 /-- `udMap` is injective on indices `[0, 7, 10, 5, 2, 9]` because their x-coordinates
@@ -182,8 +181,8 @@ lemma dist_udMap_eq_one_of_eq
   · exact hd
   · rwa [dist_comm]
 
-/-- A unit-distance embedding of the Heawood graph. -/
-noncomputable def udEmbedding : UDEmbedding E2 heawoodGraph where
+/-- A unit-distance embedding of the Heawood graph in the Euclidean plane. -/
+noncomputable def unitDistEmbedding : UnitDistEmbedding Plane heawoodGraph where
   p := ⟨udMap, injective_udMap⟩
   unit_dist {i j} h := by
     simp only [Function.Embedding.coeFn_mk]
