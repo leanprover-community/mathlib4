@@ -96,7 +96,7 @@ theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a =
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
-  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R)
+  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R).toRingHom
 
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
