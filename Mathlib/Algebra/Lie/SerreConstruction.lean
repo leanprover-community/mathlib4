@@ -153,15 +153,15 @@ namespace CartanMatrix
 variable (R : Type*) [CommRing R]
 
 /-- The Lie algebra of type Aₙ₋₁, isomorphic to sl(n). -/
-noncomputable abbrev aₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (A n)
+noncomputable abbrev aₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (CartanMatrix.A n)
 
 /-- The Lie algebra of type Bₙ, isomorphic to so(2n+1). -/
-noncomputable abbrev bₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (B n)
+noncomputable abbrev bₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (CartanMatrix.B n)
 
 /-- The Lie algebra of type Cₙ, isomorphic to sp(2n). -/
-noncomputable abbrev cₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (C n)
+noncomputable abbrev cₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (CartanMatrix.C n)
 
 /-- The Lie algebra of type Dₙ, isomorphic to so(2n). Requires n ≥ 4 for non-degenerate behavior. -/
-noncomputable abbrev dₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (D n)
+noncomputable abbrev dₙ (n : ℕ) [NeZero n] := Matrix.ToLieAlgebra R (CartanMatrix.D n)
 
 end CartanMatrix
