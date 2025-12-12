@@ -55,29 +55,14 @@ import Mathlib.Tactic.ComputeDegree
 
 @[expose] public section
 
-theorem Function.nontrivial_of_nontrivial (α β : Type*) [Nontrivial (α → β)] :
-    Nontrivial β := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α → β)
-  rw [ne_eq, funext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
-
-theorem Finsupp.nontrivial_of_nontrivial (α β : Type*) [Zero β] [Nontrivial (α →₀ β)] :
-    Nontrivial β := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ β)
-  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
-
 namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
--- move this
+-- moved
 instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
 
-#find_home! IsLocalHom
 end Polynomial
 
 namespace MvPolynomial
