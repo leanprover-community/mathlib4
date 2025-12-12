@@ -172,8 +172,7 @@ theorem choose_mul (n : ℕ) {k s : ℕ} (hsk : s ≤ k) :
       rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
         Nat.mul_comm (n - k)!, Nat.mul_comm s !]
     _ = n ! := by
-      rw [choose_mul_factorial_mul_factorial hsk,
-        choose_mul_factorial_mul_factorial hkn]
+      rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
     _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
       rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
         choose_mul_factorial_mul_factorial (hsk.trans hkn)]
