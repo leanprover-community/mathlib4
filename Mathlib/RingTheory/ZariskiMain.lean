@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CFT.GoingDown
+public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Polynomial.IsIntegrallyClosed
 public import Mathlib.RingTheory.QuasiFinite
@@ -19,72 +19,6 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S] [CommRing T] [A
 open scoped TensorProduct nonZeroDivisors
 
 open Polynomial
-
-/-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
-lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
-    (t s : S) (hst : s * t = 1) (ht : IsIntegral (Algebra.adjoin R {s}) t) :
-    IsIntegral R t := by
-  nontriviality S
-  let φ := aeval (R := R) s
-  obtain ⟨q, hqm, hqt⟩ : φ.IsIntegralElem t := by
-    obtain ⟨p, hpm, hpt⟩ := ht
-    have : p.map (algebraMap _ S) ∈ lifts φ.toRingHom := (lifts_iff_coeff_lifts _).mpr
-      (by simp [← AlgHom.mem_range, φ, ← Algebra.adjoin_singleton_eq_range_aeval])
-    obtain ⟨q, hqp, hqd, hqm⟩ := lifts_and_degree_eq_and_monic this (hpm.map _)
-    exact ⟨q, hqm, by rw [← eval_map, hqp, eval_map, hpt]⟩
-  let N := q.support.sup (q.coeff · |>.natDegree)
-  have hN (i : _) : (q.coeff i).natDegree ≤ N := by
-    by_cases hi : i ∈ q.support
-    · exact Finset.le_sup (f := (q.coeff · |>.natDegree)) hi
-    · simp_all
-  let q' := q.sum fun i r ↦ X ^ i * r.reflect N
-  have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
-    letI : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
-    rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
-    simp [mul_comm, this, aeval_def]
-  refine ⟨q', ?_, ?_⟩
-  · refine monic_of_natDegree_le_of_coeff_eq_one (q.natDegree + N) ?_ ?_
-    · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
-      grw [natDegree_mul_le, natDegree_pow_le, natDegree_X_le, natDegree_reflect_le]
-      simp [max_eq_left (hN _), le_natDegree_of_mem_supp _ hi]
-    · simp only [sum, finset_sum_coeff, coeff_X_pow_mul', coeff_reflect, q']
-      rw [Finset.sum_eq_single q.natDegree]
-      · simp [hqm.leadingCoeff]
-      · intro i hi₁ hi₂
-        have : N + i < q.natDegree + N :=
-          add_comm N i ▸ add_lt_add_left ((le_natDegree_of_mem_supp _ hi₁).lt_of_ne hi₂) _
-        simpa [(le_natDegree_of_mem_supp _ hi₁).trans, revAt, this.not_ge] using
-          coeff_eq_zero_of_natDegree_lt (by grind)
-      · simp +contextual
-  · trans t ^ N * q.sum (t ^ · * φ.toRingHom ·)
-    · simp [φ, q', Polynomial.sum, ← aeval_def, this, mul_left_comm _ (t ^ N), ← Finset.mul_sum]
-    · simp_rw [mul_comm (t ^ _), ← eval₂_eq_sum, hqt, zero_mul]
-
-/-- If `t` is integral in `S[1/t]`, then it is integral in `S`. -/
-lemma IsLocalization.Away.isIntegral_of_isIntegral_map
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
-    [Algebra R Sₘ] [IsScalarTower R S Sₘ] (x : S) [IsLocalization.Away x Sₘ]
-    (hx : IsIntegral R (algebraMap S Sₘ x)) : IsIntegral R x := by
-  obtain ⟨p, hpm, hp⟩ := hx
-  simp only [IsScalarTower.algebraMap_eq R S Sₘ, IsLocalization.map_eq_zero_iff (.powers x),
-    Subtype.exists, Submonoid.mem_powers_iff, ← hom_eval₂, exists_prop, exists_exists_eq_and] at hp
-  obtain ⟨n, hn⟩ := hp
-  exact ⟨X ^ n * p, (monic_X_pow n).mul hpm, by simpa⟩
-
-/-- If `t` is `R`-integral in `S[M⁻¹]` where `M` is a submonoid of `R`,
-then `m • t` is integral in `S` for some `m ∈ M`. -/
-lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
-    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
-    [Algebra R Sₘ] [IsScalarTower R S Sₘ] (M : Submonoid R)
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] {x : S}
-    (hx : IsIntegral R (algebraMap S Sₘ x)) : ∃ m ∈ M, IsIntegral R (m • x) := by
-  obtain ⟨p, hpm, hp⟩ := hx
-  simp only [IsScalarTower.algebraMap_eq R S Sₘ, ← hom_eval₂,
-    IsLocalization.map_eq_zero_iff (Algebra.algebraMapSubmonoid S M), Algebra.algebraMapSubmonoid,
-    Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and] at hp
-  obtain ⟨m, hm, e⟩ := hp
-  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
-    RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
 
 attribute [local instance 1100] Algebra.toSMul in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where

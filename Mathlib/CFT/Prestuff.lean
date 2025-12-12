@@ -30,13 +30,6 @@ attribute [instance] RingHom.ker_isPrime
 
 open scoped nonZeroDivisors
 
-lemma RingHom.SurjectiveOnStalks.baseChange'
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R T] [Algebra R S]
-    (hf : (algebraMap R S).SurjectiveOnStalks) :
-    (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := T)).SurjectiveOnStalks := by
-  convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
-    (hf.baseChange (S := T))
-
 open TopologicalSpace Topology PrimeSpectrum in
 lemma _root_.PrimeSpectrum.sigmaToPi_preimage_basicOpen_single
     {I : Type*} (R : I → Type*) [∀ i, CommRing (R i)]
@@ -156,38 +149,6 @@ lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
   exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
     (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
 
-lemma RingEquiv.surjectiveOnStalks {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
-    e.toRingHom.SurjectiveOnStalks :=
-  RingHom.surjectiveOnStalks_of_surjective e.surjective
-
--- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
-private lemma RingHom.SurjectiveOnStalks.tensorProductMap_id
-    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
-    [Algebra R S] [Algebra R T] [Algebra R S']
-    {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
-    (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
-  letI := f.toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
-  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
-  convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp
-    Algebra.TensorProduct.includeRight).SurjectiveOnStalks
-  · congr; ext; simp
-  exact (Algebra.TensorProduct.cancelBaseChange R S S S' T).toRingEquiv.surjectiveOnStalks.comp
-    Hf.baseChange'
-
-lemma RingHom.SurjectiveOnStalks.tensorProductMap
-    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
-    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
-    {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
-    (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
-    RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
-  congr
-  ext <;> simp
 
 @[ext high]
 lemma Algebra.TensorProduct.ringHom_ext
@@ -270,50 +231,7 @@ instance Subalgebra.faithfulSMul_right
     {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [FaithfulSMul R A]
     (S : Subalgebra R A) : FaithfulSMul R S := .tower_bot R S A
 
-lemma RingEquiv.finite {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
-    e.toRingHom.Finite :=
-  .of_surjective _ e.surjective
-
--- Subsumed by `RingHom.Finite.tensorProductMap`.
-private lemma RingHom.Finite.tensorProductMap_id
-    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
-    [Algebra R S] [Algebra R T] [Algebra R S']
-    {f : S →ₐ[R] S'} (Hf : f.Finite) :
-    (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
-  letI := f.toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
-  have : Module.Finite S S' := finite_algebraMap.mp Hf
-  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
-  convert_to (((Algebra.TensorProduct.comm _ _ _).trans
-      (Algebra.TensorProduct.cancelBaseChange R S S S' T)).toAlgHom.comp
-    Algebra.TensorProduct.includeLeft).Finite
-  · ext; simp
-  exact (RingEquiv.finite _).comp (finite_algebraMap.mpr inferInstance)
-
-lemma RingHom.Finite.tensorProductMap
-    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
-    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
-    {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
-    (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
-    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
-  congr
-  ext <;> simp
-
 open scoped Polynomial
-
-@[simp]
-lemma Polynomial.reflect_reflect {R : Type*} [CommRing R] {N : ℕ} {p : R[X]} :
-    (p.reflect N).reflect N = p := by ext; simp
-
-lemma Polynomial.natDegree_reflect_le {R : Type*} [CommRing R] {N : ℕ} {p : R[X]} :
-    (p.reflect N).natDegree ≤ max N p.natDegree := by
-  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
-    revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 @[simp]
 lemma AlgHom.range_codRestrict {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
