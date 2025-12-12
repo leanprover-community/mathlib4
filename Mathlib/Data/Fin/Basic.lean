@@ -31,6 +31,19 @@ assert_not_exists Monoid Finset
 
 open Fin Nat Function
 
+namespace Fin
+protected alias val_sub := Fin.coe_sub
+alias val_neg' := Fin.coe_neg
+alias val_castSucc := coe_castSucc
+alias val_castAdd := coe_castAdd
+alias val_cast := coe_cast
+alias val_castLT := coe_castLT
+alias val_castLE := coe_castLE
+alias val_natAdd := coe_natAdd
+alias val_pred := coe_pred
+alias val_subNat := coe_subNat
+end Fin
+
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
 theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
@@ -403,7 +416,7 @@ lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
     letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
-  simp only [coe_castLE, val_natCast]
+  simp only [val_castLE, val_natCast]
   rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
@@ -464,7 +477,7 @@ alias eq_one_of_neq_zero := eq_one_of_ne_zero
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
-  rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
+  rw [Fin.val_neg', Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=

@@ -468,7 +468,7 @@ lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
   induction m with
   | zero => simp
   | succ n IH =>
-    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last, Nat.even_add_one, ite_not]
+    simp only [Fin.sum_univ_castSucc, Fin.val_castSucc, IH, Fin.val_last, Nat.even_add_one, ite_not]
     split_ifs with h
     · simp [*]
     · simp [(Nat.not_even_iff_odd.mp h).neg_pow]
@@ -527,15 +527,15 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
     rcases lt_trichotomy (i : ℕ) a with (h | h | h)
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
         succAbove_of_castSucc_lt] <;>
-      simp only [lt_def, coe_castSucc, val_succ] <;>
+      simp only [lt_def, val_castSucc, val_succ] <;>
       lia
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
         succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
-      simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
+      simp only [castSucc_lt_succ_iff, le_def, val_castSucc] <;>
       lia
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
         castSucc_succ] <;>
-      simp only [le_def, val_succ, coe_castSucc] <;>
+      simp only [le_def, val_succ, val_castSucc] <;>
       lia
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
@@ -585,7 +585,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       | succ n ih =>
         cases m
         · exact isEmptyElim (f <| Fin.last _)
-        simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
+        simp_rw [Fin.sum_univ_castSucc, Fin.val_castSucc, Fin.val_last]
         refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _
           (Fin.is_le _)).trans_eq ?_
         rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
@@ -698,7 +698,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
   rw [finSigmaFinEquiv]
   unfold finSumFinEquiv
   simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.trans_def,
-    Equiv.trans_apply, finCongr_apply, Fin.coe_cast]
+    Equiv.trans_apply, finCongr_apply, Fin.val_cast]
   by_cases him : iv < m
   · conv in Sigma.mk _ _ =>
       equals ⟨Sum.inl ⟨iv, him⟩, j⟩ => simp [Fin.addCases, him]
