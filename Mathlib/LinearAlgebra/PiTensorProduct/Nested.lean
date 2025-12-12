@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Davood Tehrani, David Gross. All rights reserved.
+Copyright (c) 2025 Davood H. H. Tehrani, David Gross. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Davood H.H. Tehrani, David Gross
 -/
@@ -116,7 +116,7 @@ def tprodFinTprodEquiv :
     -- Write index as sum; split off last summand as binary TP:
     (reindex R _ finSumFinEquiv.symm) ≪≫ₗ (tmulEquivDep R _).symm ≪≫ₗ
     -- Use `ih` on lhs; remove outer PiTP on rhs, thereby exposing inner PiTP:
-    (TensorProduct.congr ih (subsingletonEquivDep ↑0)) ≪≫ₗ
+    (TensorProduct.congr ih (subsingletonEquiv ↑0)) ≪≫ₗ
     -- Convert to single PiTP:
     (tmulEquivDep R (fun j ↦ s (sigmaFinSuccEquiv.symm j).1 (sigmaFinSuccEquiv.symm j).2)) ≪≫ₗ
     (reindex R (fun j ↦ s j.fst j.snd) sigmaFinSuccEquiv).symm
@@ -140,7 +140,7 @@ theorem tprodFinTprodEquiv_tprod (f : (k : Fin n) → (i : β k) → s k i) :
     rw [←symm_apply_eq]
     conv_lhs => apply tmulEquivDep_symm_apply
     simp only [eq_symm_apply, finSumFinEquiv_apply_left,
-      TensorProduct.congr_tmul, subsingletonEquivDep_apply_tprod]
+      TensorProduct.congr_tmul, subsingletonEquiv_apply_tprod]
     --
     exact (congr_arg (· ⊗ₜ[R] (⨂ₜ[R] i : β (Fin.last m), f (Fin.last m) i))
       (ih (fun k i ↦ f k.castSucc i)))
