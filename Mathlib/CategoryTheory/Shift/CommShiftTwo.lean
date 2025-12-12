@@ -91,6 +91,7 @@ class CommShift₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
           (((G.obj X₁).commShiftIso n).hom.app X₂)⟦m⟧' ≫
             (shiftComm ((G.obj X₁).obj X₂) m n).inv ≫ (h.ε m n).val.app _
 
+/-- This alias for `Functor.CommShift₂.comm` allows to use the dot notation. -/
 alias commShift₂_comm := CommShift₂.comm
 
 attribute [reassoc] commShift₂_comm
