@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -47,19 +48,37 @@ variable {x : M}
 
 section
 
-variable [RingHomSurjective σ₁₂] {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
-def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
-  { p.toAddSubmonoid.map f with
-    carrier := f '' p
-    smul_mem' := by
-      rintro c x ⟨y, hy, rfl⟩
-      obtain ⟨a, rfl⟩ := σ₁₂.surjective c
-      exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
+def map : Submodule R₂ M₂ := span R₂ (f '' p)
+
+  -- { p.toAddSubmonoid.map f with
+  --   carrier := f '' p
+  --   smul_mem' := by
+  --     rintro c x ⟨y, hy, rfl⟩
+  --     obtain ⟨a, rfl⟩ := σ₁₂.surjective c
+  --     exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
+
+lemma map_mem {x : M} (hx : x ∈ p) : f x ∈ p.map f := by
+  apply mem_span_of_mem
+  refine ⟨_, hx, rfl⟩
+
+lemma map_carrier_eq_of_surjective [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    (p.map f).carrier =  f '' p := by
+  ext x
+  refine ⟨fun hx ↦ ?_, mem_span_of_mem⟩
+  · let p' : Submodule R₂ M₂ :=
+    { p.toAddSubmonoid.map f with
+      carrier := f '' p
+      smul_mem' := by
+        rintro c x ⟨y, hy, rfl⟩
+        obtain ⟨a, rfl⟩ := σ₁₂.surjective c
+        exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
+    sorry
 
 @[simp]
-theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
+theorem map_coe (g : M →ₛₗ[σ₁₂] M₂)(p : Submodule R M) : ((map' g p).carrier : Set M₂) = g '' p :=
   rfl
 
 @[simp]
