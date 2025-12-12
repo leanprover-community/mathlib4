@@ -392,7 +392,7 @@ See `IsReproducing.isGenerating` and `IsGenerating.isReproducing` for details. -
   Submodule.span R (C : Set M) = ⊤
 
 /-- The whole `R`-module `M` (viewed as the top convex cone) is generating. -/
-@[simp] theorem isGenerating_top : (⊤ : ConvexCone R M).IsGenerating := by
+theorem isGenerating_top : (⊤ : ConvexCone R M).IsGenerating := by
   simp
 
 /-- A convex cone containing a generating cone is also a generating cone. -/
