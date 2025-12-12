@@ -160,6 +160,11 @@ theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
     (f : A →+* B).comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext (AlgHom.map_algebraMap f)
 
+@[simp]
+theorem _root_.AlgHom.comp_algebraMap_of_tower' (f : A →ₐ[S] B) :
+    f.toRingHom.comp (algebraMap R A) = algebraMap R B :=
+  f.comp_algebraMap_of_tower _
+
 -- conflicts with IsScalarTower.Subalgebra
 instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A :=
   of_algebraMap_eq fun _x => rfl
