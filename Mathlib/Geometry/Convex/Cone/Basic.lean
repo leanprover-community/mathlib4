@@ -469,7 +469,7 @@ Specifically, this requires strengthening the assumptions (beyond those of `IsGe
 `C` must be non-empty (to cover the degenerate case)
 and `[Semiring R] [PartialOrder R]` is replaced by `[Ring R] [LinearOrder R] [AddLeftStrictMono R]`,
 and `[AddCommMonoid M]`  is replaced by  `[AddCommGroup M]` for subtraction. -/
-theorem isGenerating_iff_isReproducing' {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
+theorem isGenerating_iff_isReproducing {R : Type*} {M : Type*} [Ring R] [LinearOrder R]
     [AddLeftStrictMono R] [AddCommGroup M] [Module R M] {C : ConvexCone R M}
     (hne : (C : Set M).Nonempty) :
     C.IsGenerating ↔ C.IsReproducing :=
