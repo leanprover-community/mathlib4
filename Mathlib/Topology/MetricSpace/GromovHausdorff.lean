@@ -679,13 +679,13 @@ instance : SecondCountableTopology GHSpace := by
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [j, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+        simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
         simp only [F, (E p).symm_apply_apply]
@@ -815,12 +815,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [i, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
+      have j' : j = (E q) (Ψ y) := by simp only [j, Ψ, Equiv.apply_symm_apply, Fin.val_cast]
       -- Express `dist x y` in terms of `F p`
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
