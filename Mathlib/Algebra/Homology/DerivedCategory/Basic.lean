@@ -255,4 +255,8 @@ lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
   apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
+lemma Q_map_eq_of_homotopy {K L : CochainComplex C ℤ} {f g : K ⟶ L} (h : Homotopy f g) :
+    DerivedCategory.Q.map f = DerivedCategory.Q.map g :=
+  HomologicalComplexUpToQuasiIso.Q_map_eq_of_homotopy h
+
 end DerivedCategory
