@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # Notation `ℕ` for the natural numbers.

@@ -5,7 +5,6 @@ Authors: Sebastian Ullrich
 -/
 module
 
-public import Mathlib.Init
 public meta import Batteries.Util.Cache
 public meta import Lean.HeadIndex
 public meta import Lean.Elab.Command

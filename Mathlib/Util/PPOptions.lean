@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 Mathlib-specific pretty printer options.

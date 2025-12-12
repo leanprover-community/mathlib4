@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Simp.Types
 public meta import Qq
 

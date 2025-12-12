@@ -5,7 +5,6 @@ Authors: Evan Lohn, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # The `substs` macro

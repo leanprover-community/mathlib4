@@ -5,7 +5,6 @@ Authors: Jiecheng Zhao
 -/
 module
 
-public import Mathlib.Init
 /-!
 # Lemmas about `Array.extract`
 

@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public import Lean.ScopedEnvExtension
 
 /-!

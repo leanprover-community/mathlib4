@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # Basic facts about `Thunk`.

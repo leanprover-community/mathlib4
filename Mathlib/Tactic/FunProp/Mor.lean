@@ -5,7 +5,6 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.CoeAttr
 
 /-!

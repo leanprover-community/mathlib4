@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Util.ExtendedBinder
 
 /-!

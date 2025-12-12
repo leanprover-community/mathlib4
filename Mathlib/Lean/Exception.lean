@@ -5,7 +5,6 @@ Authors: Edward Ayers
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Exception
 
 /-!

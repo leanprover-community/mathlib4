@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 
 /-! # The `#trans_imports` command
 

@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.DeclarationNames

@@ -6,7 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public meta import Lean.Meta.Basic
-public import Mathlib.Init
 
 /-!
 # Datatypes for bicategory like structures

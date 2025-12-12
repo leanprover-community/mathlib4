@@ -5,7 +5,6 @@ Authors: Arthur Paulino, Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.MetavarContext
 
 /-!

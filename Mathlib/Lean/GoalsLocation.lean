@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
 

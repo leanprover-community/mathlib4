@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Qq
 
 /-!

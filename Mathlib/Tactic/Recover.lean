@@ -5,7 +5,6 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # The `recover` tactic modifier

@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
 public meta import Qq.Macro
 
 /-!

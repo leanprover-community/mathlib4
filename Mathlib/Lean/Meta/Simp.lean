@@ -5,7 +5,6 @@ Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
 
 /-!

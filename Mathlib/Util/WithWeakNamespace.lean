@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # Defines `with_weak_namespace` command.

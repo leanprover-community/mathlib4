@@ -5,7 +5,6 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Init
 public import Aesop
 
 /-!

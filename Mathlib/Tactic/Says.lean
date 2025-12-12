@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Batteries.Linter.UnreachableTactic
 public meta import Qq.Match

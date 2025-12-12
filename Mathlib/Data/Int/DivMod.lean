@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Batteries.Tactic.Alias
-public import Mathlib.Init
 
 /-!
 # Basic lemmas about division and modulo for integers

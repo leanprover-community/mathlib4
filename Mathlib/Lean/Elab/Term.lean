@@ -5,7 +5,6 @@ Authors: Kyle Miller, Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Elab.Term
 
 /-!

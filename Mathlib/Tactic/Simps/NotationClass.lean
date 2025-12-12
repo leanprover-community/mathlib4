@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Exception
 public meta import Batteries.Lean.NameMapAttribute
 public meta import Batteries.Tactic.Lint

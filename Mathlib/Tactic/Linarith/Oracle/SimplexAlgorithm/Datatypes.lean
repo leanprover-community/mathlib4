@@ -5,7 +5,6 @@ Authors: Vasily Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Std.Data.HashMap.Basic
 
 /-!

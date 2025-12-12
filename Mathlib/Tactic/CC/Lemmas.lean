@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
 
 /-! Lemmas use by the congruence closure module -/
 

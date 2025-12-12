@@ -6,7 +6,6 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Environment
-public import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports

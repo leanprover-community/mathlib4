@@ -5,7 +5,6 @@ Authors: Arthur Paulino, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 /-!
 ## Definitions on Arrays
 

@@ -5,7 +5,6 @@ Authors: Thomas Murrills
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Meta.Tactic.Util
 

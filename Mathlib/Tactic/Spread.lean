@@ -5,7 +5,6 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Binders
 
 /-!

@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 
 /-!
 # The `@[push]` attribute for the `push`, `push_neg` and `pull` tactics
