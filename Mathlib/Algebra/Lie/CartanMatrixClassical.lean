@@ -3,9 +3,13 @@ Copyright (c) 2025 Jonathan Reich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jonathan Reich
 -/
-import Mathlib.Algebra.Lie.CartanMatrix
-import Mathlib.Data.Fin.Basic
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Algebra.Lie.CartanMatrix
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.LinearAlgebra.Matrix.Notation
+
+@[expose] public section
 
 /-!
 # Cartan matrices for classical Lie algebras
