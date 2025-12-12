@@ -56,7 +56,7 @@ variable {X Y}
 namespace Subcomplex
 
 /-- The underlying simplicial set of a subcomplex. -/
-abbrev toSSet (A : X.Subcomplex) : SSet.{u} := A.toPresheaf
+abbrev toSSet (A : X.Subcomplex) : SSet.{u} := A.toFunctor
 
 instance : CoeOut X.Subcomplex SSet.{u} where
   coe := fun S ↦ S.toSSet

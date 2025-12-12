@@ -222,6 +222,8 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_top_iff_isIso := eq_top_iff_isIso
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map_coe
 
 end Subfunctor
 

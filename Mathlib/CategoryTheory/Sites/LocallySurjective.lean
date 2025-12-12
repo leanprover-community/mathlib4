@@ -266,7 +266,7 @@ instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
 noncomputable def sheafificationIsoImagePresheaf (F : Cᵒᵖ ⥤ Type max u v) :
-    J.sheafify F ≅ ((Subfunctor.range (J.toSheafify F)).sheafify J).toPresheaf where
+    J.sheafify F ≅ ((Subfunctor.range (J.toSheafify F)).sheafify J).toFunctor where
   hom :=
     J.sheafifyLift (Subfunctor.toRangeSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
