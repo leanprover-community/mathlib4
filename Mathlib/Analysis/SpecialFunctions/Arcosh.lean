@@ -127,10 +127,10 @@ def coshPartialEquiv : PartialEquiv ℝ ℝ where
   left_inv' _ hr := arcosh_cosh hr
   right_inv' _ hr := cosh_arcosh hr
 
-theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) := by
+theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) :=
   have {x : ℝ} (hx : x ∈ Ici 1) : 0 < x + √(x ^ 2 - 1) :=
     add_pos_of_pos_of_nonneg (show 0 < x by grind) (sqrt_nonneg _)
-  exact continuousOn_log.comp (Continuous.continuousOn (by continuity)) (fun _ _ => by grind)
+  continuousOn_log.comp (Continuous.continuousOn (by continuity)) (fun _ _ => by grind)
 
 /-- `Real.cosh` as an `OpenPartialHomemorph`. -/
 def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
