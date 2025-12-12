@@ -53,7 +53,7 @@ abbrev SpecialLinearGroup := { u : V ≃ₗ[R] V // u.det = 1 }
 
 namespace SpecialLinearGroup
 
-lemma det_eq_one (u : SpecialLinearGroup R V) :
+theorem det_eq_one (u : SpecialLinearGroup R V) :
     LinearMap.det (u : V →ₗ[R] V) = 1 := by
   simp [← LinearEquiv.coe_det, u.prop]
 
@@ -61,11 +61,11 @@ lemma det_eq_one (u : SpecialLinearGroup R V) :
 instance : CoeFun (SpecialLinearGroup R V) (fun _ ↦ V → V) where
   coe u x := u.val x
 
-lemma ext_iff (u v : SpecialLinearGroup R V) : u = v ↔ ∀ x : V, u x = v x := by
+theorem ext_iff (u v : SpecialLinearGroup R V) : u = v ↔ ∀ x : V, u x = v x := by
   simp only [← Subtype.coe_inj, LinearEquiv.ext_iff]
 
 @[ext]
-lemma ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
+theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
   (SpecialLinearGroup.ext_iff u v).mpr
 
 section rankOne
@@ -130,39 +130,39 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup R V)
 
-lemma coe_mk (A : V ≃ₗ[R] V) (h : A.det = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup R V) = A :=
+theorem coe_mk (A : V ≃ₗ[R] V) (h : A.det = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup R V) = A :=
   rfl
 
 @[simp]
-lemma coe_mul : (A * B : SpecialLinearGroup R V) = (A * B  : V ≃ₗ[R] V) :=
+theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B  : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-lemma coe_div : (A / B : SpecialLinearGroup R V) = (A / B  : V ≃ₗ[R] V) :=
+theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B  : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-lemma coe_inv : (A : SpecialLinearGroup R V)⁻¹ = (A⁻¹ : V ≃ₗ[R] V) :=
+theorem coe_inv : (A : SpecialLinearGroup R V)⁻¹ = (A⁻¹ : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-lemma coe_one : (1 : SpecialLinearGroup R V) = (1 : V ≃ₗ[R] V) :=
+theorem coe_one : (1 : SpecialLinearGroup R V) = (1 : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-lemma det_coe : LinearEquiv.det (A : V ≃ₗ[R] V) = 1 :=
+theorem det_coe : LinearEquiv.det (A : V ≃ₗ[R] V) = 1 :=
   A.prop
 
 @[simp]
-lemma coe_pow (m : ℕ) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
+theorem coe_pow (m : ℕ) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
   rfl
 
 @[simp]
-lemma coe_zpow (m : ℤ) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
+theorem coe_zpow (m : ℤ) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
   rfl
 
 @[simp]
-lemma coe_dualMap
+theorem coe_dualMap
     [Module.Free R V] [Module.Finite R V] :
     Aᵀ = (A : V ≃ₗ[R] V).dualMap :=
   rfl
@@ -207,17 +207,17 @@ to the general linear group. -/
 def toGeneralLinearGroup : SpecialLinearGroup R V →* LinearMap.GeneralLinearGroup R V :=
   (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm.toMonoidHom.comp toLinearEquiv
 
-lemma toGeneralLinearGroup_toLinearEquiv_apply (u : SpecialLinearGroup R V) :
+theorem toGeneralLinearGroup_toLinearEquiv_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.toLinearEquiv = u.toLinearEquiv := rfl
 
-lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
+theorem coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
 
-lemma toGeneralLinearGroup_injective :
+theorem toGeneralLinearGroup_injective :
     Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) :=  by
   simp [toGeneralLinearGroup, toLinearEquiv_injective]
 
-lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
+theorem mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
     u ∈ Set.range ⇑(toGeneralLinearGroup (R := R) (V := V)) ↔
       u.toLinearEquiv.det = 1 := by
   constructor
@@ -259,24 +259,24 @@ def congr_linearEquiv (e : V ≃ₗ[R] W) :
   map_mul' f g := Subtype.coe_injective <| by aesop
 
 @[simp]
-lemma congr_linearEquiv_coe_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) :
+theorem congr_linearEquiv_coe_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) :
     (congr_linearEquiv e f : W ≃ₗ[R] W) = e.symm ≪≫ₗ f ≪≫ₗ e :=
   rfl
 
 @[simp]
-lemma congr_linearEquiv_apply_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) (x : W) :
+theorem congr_linearEquiv_apply_apply (e : V ≃ₗ[R] W) (f : SpecialLinearGroup R V) (x : W) :
     congr_linearEquiv e f x = e (f (e.symm x)) :=
   rfl
 
-lemma congr_linearEquiv_symm (e : V ≃ₗ[R] W) :
+theorem congr_linearEquiv_symm (e : V ≃ₗ[R] W) :
     (congr_linearEquiv e).symm = congr_linearEquiv e.symm :=
   rfl
 
-lemma congr_linearEquiv_trans (e : V ≃ₗ[R] W) (f : W ≃ₗ[R] X) :
+theorem congr_linearEquiv_trans (e : V ≃ₗ[R] W) (f : W ≃ₗ[R] X) :
     (congr_linearEquiv e).trans (congr_linearEquiv f) = congr_linearEquiv (e.trans f) := by
   rfl
 
-lemma congr_linearEquiv_refl :
+theorem congr_linearEquiv_refl :
     congr_linearEquiv (LinearEquiv.refl R V) = MulEquiv.refl _ := by
   rfl
 
