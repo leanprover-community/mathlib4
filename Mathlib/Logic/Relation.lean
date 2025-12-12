@@ -309,7 +309,6 @@ inductive EqvGen : α → α → Prop
   | symm x y : EqvGen x y → EqvGen y x
   | trans x y z : EqvGen x y → EqvGen y z → EqvGen x z
 
-
 attribute [mk_iff] TransGen
 attribute [refl] ReflGen.refl
 attribute [grind =] reflGen_iff
