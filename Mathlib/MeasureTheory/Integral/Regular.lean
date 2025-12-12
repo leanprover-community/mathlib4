@@ -11,7 +11,7 @@ public import Mathlib.Topology.UrysohnsLemma
 /-!
 # Integrals of continuous functions wrt regular measures
 
-When a measure is regular, one may express the integrals of compact sets and of open sets
+When a measure is regular, one may express the measure of compact sets and of open sets
 in terms of the integral of continuous functions equal to 1 on the compact set, or to 0 outside
 of the open set respectively.
 -/
