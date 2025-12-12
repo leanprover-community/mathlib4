@@ -48,8 +48,8 @@ noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : -k = n := by lia) 
 
 @[reassoc]
 lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : -k₁ = n₁ := by lia) (h₂ : -k₂ = n₂ := by lia) :
-    R.cochainComplex.d n₁ n₂ = (cochainComplexXIso _ _ _ h₁).hom ≫
-      R.complex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _ h₂).inv :=
+    R.cochainComplex.d n₁ n₂ = (cochainComplexXIso _ _ _).hom ≫
+      R.complex.d k₁ k₂ ≫ (cochainComplexXIso _ _ _).inv :=
   HomologicalComplex.extend_d_eq _ _ h₁ h₂
 
 instance : R.cochainComplex.IsStrictlyLE 0 := by
