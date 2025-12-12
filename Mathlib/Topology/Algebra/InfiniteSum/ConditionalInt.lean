@@ -11,6 +11,10 @@ public import Mathlib.Order.Filter.AtTopBot.Interval
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Tactic.FinCases
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Int.Star
 
 
 /-!
@@ -122,7 +126,7 @@ lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := 
   simpa [Finset.ext_iff] using by grind
 
 @[to_additive]
-lemma HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
+lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
     (hf : HasProd f a (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     HasProd f a (symmetricIco ℤ) := by
   simp only [HasProd, tendsto_map'_iff, symmetricIcc_eq_map_Icc_nat,
@@ -160,6 +164,26 @@ lemma hasProd_symmetricIoc_int_iff {α : Type*} [CommMonoid α] [TopologicalSpac
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIoc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
+
+lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedAddCommGroup F]
+    [NormSMulClass ℤ F] {f : ℤ → F} (hf : Summable f (symmetricIcc ℤ)) (hs : f.Even) :
+    Tendsto f atTop (𝓝 0) := by
+  rw [tendsto_zero_iff_norm_tendsto_zero]
+  obtain ⟨L, hL⟩ := hf
+  rw [HasSum, symmetricIcc_filter, tendsto_map'_iff, Function.comp_def] at hL
+  have := hL.sub (hL.comp (tendsto_atTop_add_const_right _ (-1) tendsto_id))
+  simp only [id_eq, Int.reduceNeg, Function.comp_apply, sub_self, ← sub_eq_add_neg] at this
+  rw [tendsto_zero_iff_norm_tendsto_zero] at this
+  refine (mul_zero (_ : ℝ) ▸ this.const_mul 2⁻¹).congr' ?_
+  filter_upwards [eventually_ge_atTop 1] with x hx
+  have : Finset.Icc (-x) x = Icc (-(x - 1)) (x - 1) ∪ {-x, x} := by
+    lift x to ℕ using by positivity
+    convert Finset.Icc_succ_succ (x - 1) (x - 1) <;> grind
+  rw [this, Finset.sum_union, Finset.sum_insert, Finset.sum_singleton,
+    hs x, add_comm, add_sub_cancel_right, ← two_zsmul, norm_smul, Int.norm_eq_abs,
+    Int.cast_two, abs_two, inv_mul_cancel_left₀ two_ne_zero] <;>
+  · simp only [disjoint_iff_ne, mem_insert, mem_singleton, mem_Icc]
+    omega
 
 end Int
 
