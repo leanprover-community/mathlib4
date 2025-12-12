@@ -62,6 +62,7 @@ def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) • G2
 /-- This function measures the defect in `G2` being a modular form. -/
 def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
 
+@[simp]
 lemma D2_one : D2 1 = 0 := by
   ext z
   simp [D2]
@@ -73,31 +74,25 @@ private lemma denom_aux (A B : SL(2, ℤ)) (z : ℍ) : ((A * B) 1 0) * (denom B 
     Matrix.det_fin_two B.1, Int.cast_sub, ← map_mul, h0.2.2.2]
   ring
 
+local notation "φ" => Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)
 lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B := by
   ext z
-  simp only [D2, mul_assoc, Fin.isValue, coe_mul, map_mul, ← mul_div,
-    SL_slash_def, ModularGroup.sl_moeb, Int.reduceNeg, zpow_neg, Pi.add_apply, ← mul_add,
-    mul_eq_mul_left_iff, I_ne_zero, or_false, ofReal_eq_zero, Real.pi_ne_zero, OfNat.ofNat_ne_zero]
-  have hde := denom_ne_zero B z
-  have hd := denom_aux A B z
-  simp only [Fin.isValue, coe_mul, det_coe, Int.cast_one, mul_one, ← sub_eq_iff_eq_add] at hd
-  have : denom A (num B z / denom B z) = denom A ↑(↑B • z) := by
-    simp only [specialLinearGroup_apply, algebraMap_int_eq, Fin.isValue, eq_intCast, ofReal_intCast,
-      UpperHalfPlane.coe_mk]
-    rfl
-  have H (a b c d f e : ℂ) (he : e ≠ 0) : a / b = c / d * (e ^ ( 2 : ℤ))⁻¹ + f / e ↔
-    a * e ^ 2 / b = c / d +  e * f := by field_simp
-  rw [H _ _ _ _ _ _ hde]
-  simp only [Fin.isValue, pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero,
-    mul_div_mul_right _ _ hde, ← hd, sub_div, Fin.isValue, this, ModularGroup.sl_moeb]
-  nth_rw 3 [mul_comm]
-  rw [← mul_assoc, mul_div_cancel_right₀ _ (by exact denom_ne_zero A (B • z))]
+  simp only [D2, mul_assoc, coe_mul, map_mul, ← mul_div, SL_slash_def,
+    ModularGroup.sl_moeb, Int.reduceNeg, zpow_neg, Pi.add_apply, ← mul_add, mul_eq_mul_left_iff,
+    I_ne_zero, or_false, ofReal_eq_zero, pi_ne_zero, OfNat.ofNat_ne_zero]
+  have hd : (A.1 * B.1) 1 0 * denom (φ B) z - B 1 0 * denom (φ A * φ B) z = A 1 0 := by
+    simpa [sub_eq_iff_eq_add] using denom_aux A B z
+  have : denom A (num B z / denom B z) = denom A ↑(B • z) := by
+    simp [specialLinearGroup_apply, denom, num]
+  rw [(by intros; field_simp : ∀ {a b c d f e : ℂ} (he : e ≠ 0), a / b =
+    c / d * (e ^ (2 : ℤ))⁻¹ + f / e ↔ a * e ^ 2 / b = c / d + e * f) (denom_ne_zero B z)]
+  simp only [pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero, this,
+    ModularGroup.sl_moeb, ← hd]
+  field_simp [denom_ne_zero A (toGL (φ B) • z)]
   ring
 
-lemma D2_inv (A : SL(2, ℤ)) : (D2 A)∣[(2 : ℤ)] A⁻¹ = - D2 A⁻¹ := by
-  have := D2_mul A A⁻¹
-  simp only [mul_inv_cancel, SL_slash, D2_one] at this
-  exact eq_neg_of_add_eq_zero_left (_root_.id (this.symm))
+lemma D2_inv (A) : (D2 A)∣[(2 : ℤ)] A⁻¹ = -D2 A⁻¹ := by
+  simpa [eq_neg_iff_add_eq_zero] using (D2_mul A A⁻¹).symm
 
 lemma D2_T : D2 ModularGroup.T = 0 := by
   ext z

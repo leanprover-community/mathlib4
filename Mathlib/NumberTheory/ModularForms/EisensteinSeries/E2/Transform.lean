@@ -101,7 +101,7 @@ lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
   have := (Asymptotics.isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b z)).2
   simpa [← Nat.map_cast_int_atTop, Asymptotics.isBigO_map] using this
 
-lemma tendsto_zero_inv_linear_sub (z : ℍ) (b : ℤ) :
+lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
     Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z - d)) atTop (𝓝 0) := by
   have := (tendsto_zero_inv_linear z (-b)).neg
   simp only [Int.cast_neg, neg_mul, one_div, neg_zero, ← inv_neg] at *
@@ -116,7 +116,7 @@ private lemma G2_S_action' (z : ℍ) :
   rw [Summable.tsum_finsetSum]
   exact fun i hi => by simpa using linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
-lemma tsum_symmetricIco_eq_zero (z : ℍ) (m : ℤ) :
+private lemma tsum_symmetricIco_eq_zero (z : ℍ) (m : ℤ) :
     ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   apply HasSum.tsum_eq
   rw [hasSum_symmetricIco_int_iff]
@@ -198,7 +198,7 @@ private lemma aux_tendsto_tsum_cexp_pnat (z : ℍ) :
   congr
   grind [one_div, coe_mk_subtype, mul_neg, smul_neg, nsmul_eq_mul, Nat.cast_mul, neg_inj]
 
-private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ ↦ 2 / z *
+private lemma aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ ↦ 2 / z *
     ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m))) atTop (𝓝 (-2 * π * I / z)) := by
   suffices Tendsto (fun n : ℕ+ ↦ (2 / (z : ℂ) * ∑' (m : ℕ+),
       (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * π * I / z)) by
@@ -381,7 +381,7 @@ private lemma tsum_prod_G2Term_eq' (z : ℍ) : ∑' (m : Fin 2 → ℤ), (G2Term
 lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z := by
   rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z , ← tsum_prod_G2Term_eq', tsum_prod_G2Term_eq]
 
-lemma G2_T_transform : (G2 ∣[(2 : ℤ)] T) = G2 := by
+lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]
   simp only [G2_eq_tsum_cexp, coe_vadd, ofReal_one, T, denom_apply, Fin.isValue, Matrix.of_apply,
