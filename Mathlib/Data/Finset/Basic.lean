@@ -329,8 +329,7 @@ theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   s.disjoint_filter_filter' t disjoint_compl_right
 
-@[deprecated (since := "2025-12-08")]
-alias disjoint_filter_filter_neg := disjoint_filter_filter_not
+@[deprecated (since := "2025-12-12")] alias disjoint_filter_filter_neg := disjoint_filter_filter_not
 
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
@@ -426,8 +425,7 @@ theorem filter_union_filter_not_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
 
-@[deprecated (since := "2025-12-12")]
-alias filter_union_filter_neg_eq := filter_union_filter_not_eq
+@[deprecated (since := "2025-12-12")] alias filter_union_filter_neg_eq := filter_union_filter_not_eq
 
 end
 
