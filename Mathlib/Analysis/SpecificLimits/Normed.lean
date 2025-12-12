@@ -493,7 +493,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
     have dP : P.natDegree = k := by
       simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
     have A : (n + k).descFactorial k = P.eval n := by
-      have : n + 1 + k - 1 = n + k := by omega
+      have : n + 1 + k - 1 = n + k := by lia
       simp [P, ascPochhammer_nat_eq_descFactorial, this]
     conv_lhs => rw [A, mP.as_sum, dP]
     simp [eval_finset_sum]
