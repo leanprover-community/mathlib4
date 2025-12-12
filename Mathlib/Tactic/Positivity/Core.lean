@@ -36,6 +36,11 @@ namespace Mathlib.Meta.Positivity
 
 variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
 
+/-- The strictness-levels that `positivity` uses (without argument). -/
+inductive StrictnessLevel where
+  | positive | nonnegative | nonzero | none
+  deriving Repr, BEq
+
 /-- The result of `positivity` running on an expression `e` of type `α`. -/
 inductive Strictness (e : Q($α)) where
   | positive (pf : Q(0 < $e))
@@ -374,17 +379,20 @@ variable {zα pα} in
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
+def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e))
+    (bestResult : StrictnessLevel := .positive) :
     MetaM (Strictness zα pα e) := do
   match t₁ with
   | .none => catchNone t₂
-  | p@(.positive _) => pure p
+  | .positive _ => pure t₁
   | .nonnegative p₁ =>
+    if bestResult == .nonnegative then return t₁
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
     | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
     | _ => pure (.nonnegative p₁)
   | .nonzero p₁ =>
+    if bestResult == .nonzero then return t₁
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
     | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
@@ -400,7 +408,7 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
   result ← orElse result <| normNumPositivity zα pα e
-  result ← orElse result <| positivityCanon zα pα e
+  result ← orElse result (positivityCanon zα pα e) .nonnegative
   if let .positive _ := result then
     trace[Tactic.positivity] "{e} => {result.toString}"
     return result
