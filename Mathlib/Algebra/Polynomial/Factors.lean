@@ -376,6 +376,28 @@ theorem Splits.adjoin_rootSet_eq_range {A B : Type*} [CommRing A] [CommRing B]
   rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective g.injective).eq_iff
 
+theorem Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots (hf : Splits f) :
+    f.coeff 0 = (-1) ^ f.natDegree * f.leadingCoeff * f.roots.prod := by
+  conv_lhs => rw [hf.eq_prod_roots]
+  simp [coeff_zero_eq_eval_zero, eval_multiset_prod, hf.natDegree_eq_card_roots,
+    mul_assoc, mul_left_comm]
+
+/-- If `f` is a monic polynomial that splits, then `coeff f 0` equals the product of the roots. -/
+theorem Splits.coeff_zero_eq_prod_roots_of_monic (hf : Splits f) (hm : Monic f) :
+    coeff f 0 = (-1) ^ f.natDegree * f.roots.prod := by
+  simp [hf.coeff_zero_eq_leadingCoeff_mul_prod_roots, hm]
+
+theorem Splits.nextCoeff_eq_neg_sum_roots_mul_leadingCoeff (hf : Splits f) :
+    f.nextCoeff = -f.leadingCoeff * f.roots.sum := by
+  conv_lhs => rw [hf.eq_prod_roots]
+  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
+
+/-- If `f` is a monic polynomial that splits, then `f.nextCoeff` equals the negative of the sum
+of the roots. -/
+theorem Splits.nextCoeff_eq_neg_sum_roots_of_monic (hf : Splits f) (hm : Monic f) :
+    f.nextCoeff = -f.roots.sum := by
+  simp [hf.nextCoeff_eq_neg_sum_roots_mul_leadingCoeff,hm]
+
 theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := by
   refine ⟨fun hf ↦ ?_, ((Splits.X_sub_C _).mul ·)⟩
   by_cases hf₀ : f = 0
@@ -517,6 +539,18 @@ theorem Splits.degree_eq_one_of_irreducible {f : R[X]} (hf : Splits f)
 theorem Splits.natDegree_eq_one_of_irreducible {f : R[X]} (hf : Splits f)
     (h : Irreducible f) : natDegree f = 1 :=
   natDegree_eq_of_degree_eq_some (hf.degree_eq_one_of_irreducible h)
+
+theorem Splits.eval_derivative_eq_eval_mul_sum (hf : Splits f) {x : R} (hx : f.eval x ≠ 0) :
+    f.derivative.eval x = f.eval x * (f.roots.map fun z ↦ 1 / (x - z)).sum := by
+  classical
+  simp only [hf.eval_derivative, hf.eval_eq_prod_roots, ← Multiset.sum_map_mul_left, mul_assoc]
+  refine congr_arg Multiset.sum (Multiset.map_congr rfl fun z hz ↦ ?_)
+  rw [← Multiset.prod_map_erase hz, mul_one_div, mul_div_cancel_left₀]
+  aesop (add simp sub_eq_zero)
+
+theorem Splits.eval_derivative_div_eval_of_ne_zero (hf : Splits f) {x : R} (hx : f.eval x ≠ 0) :
+    f.derivative.eval x / f.eval x = (f.roots.map fun z ↦ 1 / (x - z)).sum := by
+  rw [hf.eval_derivative_eq_eval_mul_sum hx, mul_div_cancel_left₀ _ hx]
 
 theorem Splits.mem_subfield_of_isRoot (F : Subfield R) {f : F[X]} (hf : Splits f) (hf0 : f ≠ 0)
     {x : R} (hx : (f.map F.subtype).IsRoot x) : x ∈ F := by
