@@ -127,13 +127,13 @@ variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : S
 
 variable {M : SheafOfModules.{u'} R} (P : Presentation M)
   (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-  (η : F.obj (unit R) ≅ unit S) (I : Type u')
+  (η : F.obj (unit R) ≅ unit S)
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 @[simp]
-def Presentation.map_relations : free P.relations.I (R := S) ⟶ free P.generators.I :=
+def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
   (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
     F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
 
@@ -141,12 +141,12 @@ def Presentation.map_relations : free P.relations.I (R := S) ⟶ free P.generato
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
 @[simp]
-def Presentation.map_generators : free P.generators.I ⟶ F.obj M :=
+def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
   (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
 
 theorem Presentation.map_relations_generators :
-    P.map_relations F η ≫ P.map_generators F η = 0 := by
-  simp only [map_relations, map_generators, Category.assoc, Iso.hom_inv_id_assoc,
+    P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
+  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
@@ -154,7 +154,7 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 `Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
-  presentationOfIsCokernelFree (P.map_relations F η) (P.map_generators F η)
+  presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.map_relations_generators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitOfPreserves F P.isColimit)
     · exact (NatIso.ofComponents
