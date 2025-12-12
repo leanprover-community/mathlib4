@@ -832,13 +832,6 @@ lemma subsingletonEquiv_symm_apply' (x : M) :
 
 end subsingleton
 
-@[simp]
-theorem subsingletonEquiv_symm_apply (x : M) :
-    (subsingletonEquiv i₀).symm x = (tprod R fun _ ↦ x) := by
-  simp [LinearEquiv.symm_apply_eq]
-
-end subsingleton
-
 variable (R M)
 
 section tmulEquivDep
