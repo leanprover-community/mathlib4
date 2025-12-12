@@ -180,7 +180,7 @@ theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
   refine Vector3.recOn t (fun e => ?_) (@fun k b t IH _ => ?_) e
   · rfl
-  have e' : (n + 1) + k = (n + k) + 1 := by omega
+  have e' : (n + 1) + k = (n + k) + 1 := by lia
   change
     insert a (b :: t +-+ v)
       (Eq.recOn (congr_arg (· + 1) e' : _ + 1 = _) (fs (add i k))) =
