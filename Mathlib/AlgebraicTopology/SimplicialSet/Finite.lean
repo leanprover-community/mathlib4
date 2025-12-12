@@ -93,11 +93,9 @@ variable {X}
 lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.Finite := by
   obtain ⟨d, _⟩ := Y.hasDimensionLT_of_finite
   have := hasDimensionLT_of_mono f d
-  refine finite_of_hasDimensionLT _ d (fun i hi ↦ ?_)
-  apply Finite.of_injective (f := fun a ↦ f.app _ a.1)
-  rintro ⟨x, _⟩ ⟨y, _⟩ h
-  obtain rfl : x = y := injective_of_mono _ h
-  rfl
+  exact finite_of_hasDimensionLT _ d
+    (fun _ _ ↦ Finite.of_injective _
+      ((injective_of_mono (f.app _)).comp Subtype.val_injective))
 
 lemma finite_of_epi {Y : SSet.{u}} [X.Finite] (f : X ⟶ Y) [hf : Epi f] : Y.Finite := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
