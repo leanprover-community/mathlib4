@@ -422,9 +422,12 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
   (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
 
-theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
+theorem filter_union_filter_not_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
+
+@[deprecated (since := "2025-12-12")]
+alias filter_union_filter_neg_eq := filter_union_filter_not_eq
 
 end
 

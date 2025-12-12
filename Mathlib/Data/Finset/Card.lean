@@ -644,7 +644,7 @@ theorem filter_card_add_filter_neg_card_eq_card
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     #(s.filter p) + #(s.filter fun a ↦ ¬ p a) = #s := by
   classical
-  rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_neg_eq]
+  rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_not_eq]
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/

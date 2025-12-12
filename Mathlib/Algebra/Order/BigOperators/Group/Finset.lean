@@ -433,7 +433,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   classical calc
     ∏ x ∈ s, f x = (∏ x ∈ s with f x = 1, f x) * ∏ x ∈ s with f x ≠ 1, f x := by
-      rw [← prod_union, filter_union_filter_neg_eq]
+      rw [← prod_union, filter_union_filter_not_eq]
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le
