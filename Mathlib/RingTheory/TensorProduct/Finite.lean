@@ -177,3 +177,33 @@ lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
       have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
       rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R'))
+
+-- Subsumed by `RingHom.Finite.tensorProductMap`.
+private lemma RingHom.Finite.tensorProductMap_id
+    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
+    [Algebra R S] [Algebra R T] [Algebra R S']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) :
+    (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
+  letI := f.toRingHom.toAlgebra
+  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
+  have : Module.Finite S S' := finite_algebraMap.mp Hf
+  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
+  convert_to (((Algebra.TensorProduct.comm _ _ _).trans
+      (Algebra.TensorProduct.cancelBaseChange R S S S' T)).toAlgHom.comp
+    Algebra.TensorProduct.includeLeft).Finite
+  · ext; simp
+  exact (RingEquiv.finite _).comp (finite_algebraMap.mpr inferInstance)
+
+lemma RingHom.Finite.tensorProductMap
+    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
+    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
+    (Algebra.TensorProduct.map f g).toRingHom.Finite := by
+  convert RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
+    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
+  congr
+  ext <;> simp
