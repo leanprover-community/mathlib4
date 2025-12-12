@@ -23,7 +23,7 @@ public import MathlibInit.Linter.UnusedTactic
 public import MathlibInit.Linter.UnusedInstancesInType
 public import MathlibInit.Linter.Style
 -- This import makes the `#min_imports` command available globally.
-public import MathlibInit.MinImports
+public import MathlibInit.Tactic.MinImports
 public import MathlibInit.TacticAnalysis.Declarations
 
 /-!
