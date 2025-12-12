@@ -370,8 +370,6 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
-    intro w hw
-    simp only [mem_setOf_eq]
     grind
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
