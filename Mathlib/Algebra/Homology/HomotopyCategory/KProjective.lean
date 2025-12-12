@@ -35,7 +35,7 @@ variable {C : Type*} [Category C] [Abelian C]
 -- is acyclic, then `HomComplex K L` is acyclic. (The condition below
 -- is equivalent to the acyclicity of `HomComplex K L` in degree
 -- `0`, and the general case follows by shifting `L`.)
-/-- A cochain complex `K` is K-injective if any morphism `K ⟶ L`
+/-- A cochain complex `K` is K-projective if any morphism `K ⟶ L`
 with `L` acyclic is homotopic to zero. -/
 class IsKProjective (K : CochainComplex C ℤ) : Prop where
   nonempty_homotopy_zero {L : CochainComplex C ℤ} (f : K ⟶ L) :
