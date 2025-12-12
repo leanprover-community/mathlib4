@@ -17,6 +17,8 @@ public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
+map.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -108,7 +110,6 @@ instance instCoeToTemperedDistribution :
     Coe 𝓢(E, F) 𝓢'(E, F) where
   coe := toTemperedDistributionCLM E F volume
 
-@[simp]
 theorem coe_apply (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
     (f : 𝓢'(E, F)) g = ∫ (x : E), g x • f x :=
   toTemperedDistributionCLM_apply_apply volume f g
