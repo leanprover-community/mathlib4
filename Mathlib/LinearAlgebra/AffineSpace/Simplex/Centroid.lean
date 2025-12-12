@@ -144,7 +144,6 @@ theorem eq_centroid_iff_sum_vsub_eq_zero [CharZero k] {s : Simplex k P n} {p : P
 
 /-- The centroid of a face of a simplex as the centroid of a subset of
 the points. -/
-@[simp]
 theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
     (h : #fs = m + 1) : Finset.univ.centroid k (s.face h).points = fs.centroid k s.points := by
   convert (Finset.univ.centroid_map k (fs.orderEmbOfFin h).toEmbedding s.points).symm
@@ -249,7 +248,8 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_sum_vsub [CharZero k] (s : Affin
       simp
     rw [h i]
     rw [smul_sum]
-  simp [sum_const, card_compl]
+  simp only [sum_const, card_compl, Fintype.card_fin, card_singleton, add_tsub_cancel_right,
+    nsmul_eq_mul]
   rw [mul_inv_cancel₀ (NeZero.ne (n : k))]
 
 /-- The `faceOppositeCentroid` equals the average displacement from a vertex plus that vertex. -/
@@ -456,7 +456,8 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
     set p : Fin (n + 1) → P := fun x => if x = i₀ then s.centroid else s.points x
     have hindep : AffineIndependent k p := by
       have := affineIndependent_points_update_centroid s i₀
-      unfold Function.update at this; simp at this; exact this
+      unfold Function.update at this
+      grind
     have h1 := (affineIndependent_iff_linearIndependent_vsub k p i₀).mp hindep
     simp_rw [ne_eq, p] at h1
     set f : {x // x ∈ ({i₀}ᶜ : Finset (Fin (n+1)))} → {x // x ≠ i₀} :=
@@ -473,7 +474,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
       rw [Finset.card_compl, Fintype.card_fin, card_singleton, add_tsub_cancel_right]
     have hcard' : 1 < #s' := by grind
     rw [Finset.one_lt_card_iff] at hcard'
-    grind
+    tauto
   choose i j hij using he
   have h_ij : Disjoint ({i} : Set {x // x ∈ s'}) {j} := by simp [hij]
   have h_disjoint : Disjoint (Submodule.span k {u i}) (Submodule.span k {u j}) := by
