@@ -59,7 +59,7 @@ instance : R.cochainComplex.IsStrictlyLE 0 := by
 instance (n : ℤ) : Projective (R.cochainComplex.X n) := by
   by_cases hn : n ≤ 0
   · obtain ⟨k, rfl⟩ := Int.exists_eq_neg_ofNat hn
-    exact Projective.of_iso (R.cochainComplexXIso (-k) k rfl).symm inferInstance
+    exact Projective.of_iso (R.cochainComplexXIso (-k) k).symm inferInstance
   · exact IsZero.projective (CochainComplex.isZero_of_isStrictlyLE _ 0 _)
 
 /-- The quasi-isomorphism `R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).obj X`
