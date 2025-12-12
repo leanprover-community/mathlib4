@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import MathlibInit.Linter.DirectoryDependency
 
 /-!
 # The "header" linter

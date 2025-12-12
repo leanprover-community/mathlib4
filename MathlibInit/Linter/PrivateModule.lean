@@ -10,7 +10,7 @@ public import Lean.Linter.Basic
 public import Lean.Environment
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import MathlibInit.Linter.Header
 
 /-!
 # Private module linter

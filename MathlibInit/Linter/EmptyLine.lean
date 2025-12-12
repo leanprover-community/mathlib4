@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 module
-public meta import Mathlib.Tactic.Linter.Header
+public meta import MathlibInit.Linter.Header
 
 /-!
 # The "emptyLine" linter

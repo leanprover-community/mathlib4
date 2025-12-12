@@ -8,7 +8,7 @@ Authors: Damiano Testa
 -- this file has a valid copyright header and module docstring.
 module
 
-public meta import Mathlib.Tactic.Linter.Header
+public meta import MathlibInit.Linter.Header
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
