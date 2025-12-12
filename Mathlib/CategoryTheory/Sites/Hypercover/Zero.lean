@@ -213,6 +213,20 @@ def add (E : PreZeroHypercover.{w} S) {T : C} (f : T ⟶ S) : PreZeroHypercover.
     (E.add f).presieve₀ = E.presieve₀ ⊔ .singleton f := by
   simp [add, presieve₀_reindex, presieve₀_sum]
 
+/-- The single object pre-`0`-hypercover obtained from taking the coproduct of the components. -/
+@[simps I₀ X]
+def sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
+    PreZeroHypercover.{w} S where
+  I₀ := PUnit
+  X _ := c.pt
+  f _ := Cofan.IsColimit.desc hc E.f
+
+@[reassoc (attr := simp)]
+lemma inj_sigmaOfIsColimit_f (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c)
+    (i : E.I₀) (r : PUnit) :
+    c.inj i ≫ (E.sigmaOfIsColimit hc).f r = E.f i := by
+  simp [PreZeroHypercover.sigmaOfIsColimit]
+
 section Category
 
 variable {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}

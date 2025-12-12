@@ -33,7 +33,7 @@ reasons:
 
 * In the ring version of Hahn embedding theorem, the subtype `FiniteArchimedeanClass R` of non-top
   elements in `ArchimedeanClass R` naturally becomes the additive abelian group for the ring
-  `HahnSeries (FiniteArchimedeanClass R) ℝ`.
+  `ℝ⟦FiniteArchimedeanClass R⟧`.
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/

@@ -1186,9 +1186,8 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rwa [Finset.exists_mem_insert]
       rcases s.eq_empty_or_nonempty with hse | hsne
       · subst hse
-        rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
-        have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
-        exact absurd h this
+        rw [Finset.coe_empty, Set.biUnion_empty] at h
+        exact (h I.zero_mem).elim
       · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.notMem_erase i s, Finset.insert_erase his⟩

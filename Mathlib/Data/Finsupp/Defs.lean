@@ -139,6 +139,8 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
 instance instInhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
 
+@[simp] lemma default_eq_zero : (default : α →₀ M) = 0 := rfl
+
 @[simp, grind =]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
   @(f.mem_support_toFun)

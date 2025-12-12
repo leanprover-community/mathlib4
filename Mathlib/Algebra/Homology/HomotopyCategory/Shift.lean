@@ -54,7 +54,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
         intro hij'
         apply hij
         dsimp at hij' ⊢
-        omega }
+        lia }
   map φ :=
     { f := fun _ => φ.f _
       comm' := by
@@ -280,15 +280,15 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [h.zero, smul_zero]
     intro hij'
     dsimp at hij hij'
-    omega
+    lia
   comm := fun i => by
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
     simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul,
       Int.units_mul_self, one_smul,
-      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; omega),
-      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; omega)]
+      dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; lia),
+      prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; lia)]
         using h.comm (i + n)
 
 end Homotopy

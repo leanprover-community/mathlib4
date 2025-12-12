@@ -301,7 +301,7 @@ theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
   have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
       (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
     simp [MvPolynomial.aeval_monomial, map_pow]
-  rw [this, show n + 1 = (n - i) + 1 + i by omega, pow_add, mul_comm]
+  rw [this, show n + 1 = (n - i) + 1 + i by lia, pow_add, mul_comm]
   gcongr
   · exact hx i (Nat.le_of_lt_succ hi)
   · exact ((n - i).lt_two_pow_self).succ_le.trans

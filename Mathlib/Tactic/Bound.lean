@@ -181,7 +181,7 @@ end Guessing
 /-!
 ### Closing tactics
 
-TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/

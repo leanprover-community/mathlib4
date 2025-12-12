@@ -255,6 +255,9 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
     rfl
 
+@[deprecated (since := "2025-12-10")]
+alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
+
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -273,6 +276,9 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
   · rw [ENat.coe_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
+
+@[deprecated (since := "2025-12-10")]
+alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by

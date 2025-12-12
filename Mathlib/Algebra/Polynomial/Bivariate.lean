@@ -230,8 +230,6 @@ theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
 
--- TODO: fix non-terminal simp
-set_option linter.flexible false in
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
   simp [← C_mul_X_pow_eq_monomial]; ac_rfl
@@ -307,6 +305,9 @@ lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [map_nsmul]
 
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_zero_equivMvPolynomial := pderiv_zero_equivMvPolynomial
+
 lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
   induction p using Polynomial.induction_on' with
@@ -317,6 +318,9 @@ lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
   | monomial m a =>
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [derivative_pow]
+
+@[deprecated (since := "2025-12-09")]
+alias Polynomial.Bivariate.pderiv_one_equivMvPolynomial := pderiv_one_equivMvPolynomial
 
 end MvPolynomial
 

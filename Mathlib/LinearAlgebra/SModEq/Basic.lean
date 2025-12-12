@@ -21,8 +21,9 @@ open Submodule
 open Polynomial
 
 variable {R : Type*} [Ring R]
+variable {S : Type*} [Ring S]
 variable {A : Type*} [CommRing A]
-variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
@@ -53,6 +54,11 @@ theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
 @[mono]
 theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
   (Submodule.Quotient.eq U₂).2 <| HU <| (Submodule.Quotient.eq U₁).1 hxy
+
+lemma of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
+    (h : U.toAddSubgroup ≤ V.toAddSubgroup) {x y : M} (hxy : x ≡ y [SMOD U]) : x ≡ y [SMOD V] := by
+  simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
+  exact h hxy
 
 @[refl]
 protected theorem refl (x : M) : x ≡ x [SMOD U] :=

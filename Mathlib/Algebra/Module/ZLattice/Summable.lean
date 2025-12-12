@@ -115,6 +115,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     simp only [Fintype.mem_piFinset, s] at hx ⊢
     exact fun i ↦ Icc_subset_Icc (by simpa) (by simpa) (hx i)
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
+    -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
     trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
     · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
       simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ]

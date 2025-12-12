@@ -13,10 +13,16 @@ public import Mathlib.Logic.Function.ULift
 /-!
 # The Yoneda embedding
 
-The Yoneda embedding as a functor `yoneda : C ⥤ (Cᵒᵖ ⥤ Type v₁)`,
-along with an instance that it is `FullyFaithful`.
+Let `C : Type u₁` be a category (with `Category.{v₁} C`). We define
+the Yoneda embedding as a fully faithful functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`,
+In addition to `yoneda`, we also define `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁)`
+with the additional universe parameter `w`. When `C` is locally `w`-small,
+one may also use `shrinkYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type w` from the file
+`CategoryTheory.ShrinkYoneda`.
 
-Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation C)`.
+The naturality of the bijection `yonedaEquiv` involved in the
+Yoneda lemma is also expressed as a natural isomorphism
+`yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
