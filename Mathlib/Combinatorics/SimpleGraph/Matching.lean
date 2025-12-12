@@ -516,7 +516,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
         rw [Walk.mem_verts_toSubgraph] at hv
         refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)
         rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]
-        omega
+        lia
       refine @Classical.ofNonempty _ ?_
       rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         h this, hp.1.ncard_neighborSet_toSubgraph_eq_two (p.mem_verts_toSubgraph.mp hv)])

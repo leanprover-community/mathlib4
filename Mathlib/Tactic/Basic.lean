@@ -12,6 +12,7 @@ public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.TypeStar
 public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -113,7 +114,11 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
+/-- Deprecated: use `guard_target =~ t` instead. -/
+@[deprecated "Use `guard_target =~` instead." (since := "2025-12-11")]
 elab "match_target " t:term : tactic => do
+  logWarningAt t <|
+    m!"deprecation warning: replace `match_target {t}` with `guard_target =~ {t}`."
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
@@ -157,39 +162,3 @@ def withResetServerInfo {α : Type} (t : TacticM α) :
     return { result?, msgs, trees }
 
 end Mathlib.Tactic
-
-/-- A mathlib library note: the note's content should be contained in its doc-string. -/
-@[expose] def LibraryNote := Unit
-
-open Lean in
-/-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
-in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
-You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
--/
-macro "library_note2 " name:ident ppSpace dc:docComment : command =>
-  `($dc:docComment def $(mkIdent (`_root_.Mathlib.LibraryNote ++ name.getId)) : LibraryNote := ())
-
-open Lean Elab Command in
-/-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/
-elab "library_note2 " name:str ppSpace dc:docComment : command => do
-  logWarningAt name <|
-    "deprecation warning: library_note2 now takes an identifier instead of a string.\n" ++
-    "Hint: replace the double quotes with «french quotes»."
-  let name := Name.mkSimple name.getString
-  let stx ← `(library_note2 $(mkIdent name):ident $dc:docComment)
-  elabCommandTopLevel stx
-
-library_note2 «partially-applied ext lemmas»
-/--
-When possible, `ext` lemmas are stated without a full set of arguments. As an example, for bundled
-homs `f`, `g`, and `of`, `f.comp of = g.comp of → f = g` is a better `ext` lemma than
-`(∀ x, f (of x) = g (of x)) → f = g`, as the former allows a second type-specific extensionality
-lemmas to be applied to `f.comp of = g.comp of`.
-If the domain of `of` is `ℕ` or `ℤ` and `of` is a `RingHom`, such a lemma could then make the goal
-`f (of 1) = g (of 1)`.
-
-For bundled morphisms, there is a `ext` lemma that always applies of the form
-`(∀ x, ⇑f x = ⇑g x) → f = g`. When adding type-specific `ext` lemmas like the one above, we want
-these to be tried first. This happens automatically since the type-specific lemmas are inevitably
-defined later.
--/
