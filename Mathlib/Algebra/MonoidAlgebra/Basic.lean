@@ -420,7 +420,7 @@ noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
-scoped[AlgebraMonoidAlgebra] attribute [instance] AddMonoidAlgebra.algebraAddMonoidAlgebra
+  AddMonoidAlgebra.algebraAddMonoidAlgebra
 
 open scoped AlgebraMonoidAlgebra
 
@@ -433,7 +433,7 @@ lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
   .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
 
 scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
-scoped[AlgebraMonoidAlgebra] attribute [instance] AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
+  AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
 
 end MonoidAlgebra
 
