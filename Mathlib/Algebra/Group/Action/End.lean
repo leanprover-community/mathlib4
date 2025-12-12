@@ -195,11 +195,11 @@ def MonoidAction.toPermHom : G →* Equiv.Perm α where
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : G) u₂
 
 lemma MonoidAction.coe_toPermHom :
-    ⇑(MulAction.toPermHom G α) = MonoidAction.toPerm :=
+    ⇑(MonoidAction.toPermHom G α) = MonoidAction.toPerm :=
   rfl
 
 lemma MonoidAction.toPerm_one :
-    (MulAction.toPerm (1 : G))  = (1 : Equiv.Perm α) := by
+    (MonoidAction.toPerm (1 : G))  = (1 : Equiv.Perm α) := by
   aesop
 
 end Group
@@ -210,14 +210,14 @@ variable (G α) [AddGroup G] [AddMonoidAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
+def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MonoidAction.toPermHom ..).toAdditiveRight
 
 lemma AddMonoidAction.coe_toPermHom :
-    ⇑(AddAction.toPermHom G α) = AddMonoidAction.toPerm :=
+    ⇑(AddMonoidAction.toPermHom G α) = AddMonoidAction.toPerm :=
   rfl
 
 theorem AddMonoidAction.toPerm_zero :
-    (AddAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
+    (AddMonoidAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
   aesop
 
 end AddGroup

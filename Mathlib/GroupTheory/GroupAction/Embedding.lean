@@ -30,11 +30,11 @@ namespace Function.Embedding
 
 @[to_additive]
 instance smul [Group G] [MonoidAction G β] : SMul G (α ↪ β) :=
-  ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
+  ⟨fun g f => f.trans (MonoidAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
 theorem smul_def [Group G] [MonoidAction G β] (g : G) (f : α ↪ β) :
-    g • f = f.trans (MulAction.toPerm g).toEmbedding :=
+    g • f = f.trans (MonoidAction.toPerm g).toEmbedding :=
   rfl
 
 @[to_additive (attr := simp)]

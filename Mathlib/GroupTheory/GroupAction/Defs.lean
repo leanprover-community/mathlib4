@@ -243,7 +243,7 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
 
 @[to_additive]
 instance instMonoidAction (H : Subgroup G) : MonoidAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
+  inferInstanceAs (MonoidAction H.toSubmonoid α)
 
 @[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
@@ -298,7 +298,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
   · rintro ⟨b, hb, hab⟩
@@ -319,7 +319,7 @@ theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
       h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩

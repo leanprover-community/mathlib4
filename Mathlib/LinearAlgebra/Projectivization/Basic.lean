@@ -40,7 +40,7 @@ variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
-  (MulAction.orbitRel Kˣ V).comap (↑)
+  (MonoidAction.orbitRel Kˣ V).comap (↑)
 
 /-- The projectivization of the `K`-vector space `V`.
 The notation `ℙ K V` is preferred. -/

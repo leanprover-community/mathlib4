@@ -433,7 +433,7 @@ variable [Group R] [MonoidAction R M]
 
 @[to_additive]
 lemma orbitRel_of_subMul (p : SubMulAction R M) :
-    MonoidAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
+    MonoidAction.orbitRel R p = (MonoidAction.orbitRel R M).comap Subtype.val := by
   refine Setoid.ext_iff.2 (fun x y ↦ ?_)
   rw [Setoid.comap_rel]
   exact mem_orbit_subMul_iff
@@ -587,7 +587,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   carrier := MonoidAction.fixedPoints H α
   smul_mem' := smul_mem_fixedPoints_of_normal
 
-instance [hH : H.Normal] : MonoidAction G (MulAction.fixedPoints H α) :=
+instance [hH : H.Normal] : MonoidAction G (MonoidAction.fixedPoints H α) :=
   SubMulAction.mulAction' fixedPointsSubMulOfNormal
 
 @[simp]

@@ -485,8 +485,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     rfl
 
 noncomputable instance : MonoidAction (HNNExtension G A B φ) (NormalWord d) :=
-  MonoidAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
-    (HNNExtension.lift (MulAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
+  MonoidAction.ofEndHom <| (MonoidAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
+    (HNNExtension.lift (MonoidAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
       intro a
       ext : 1
       simp [unitsSMul_one_group_smul])

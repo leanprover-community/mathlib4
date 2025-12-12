@@ -852,7 +852,7 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
     rw [F.map_apply K]
     exact IsCompact.measure_lt_top <| (Homeomorph.isCompact_preimage (Homeomorph.smul a)).2 hK
   toIsOpenPosMeasure :=
-    (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
+    (continuous_const_smul a).isOpenPosMeasure_map (MonoidAction.surjective a)
 
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
 @[to_additive isHaarMeasure_map_add_right

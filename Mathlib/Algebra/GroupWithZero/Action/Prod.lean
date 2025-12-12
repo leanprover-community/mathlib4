@@ -86,7 +86,7 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
   toFun _ :=
     letI instM := DistribMulAction.compHom α (.inl M N)
     letI instN := DistribMulAction.compHom α (.inr M N)
-    ⟨instM, instN, (MulAction.prodEquiv M N α inferInstance).2.2⟩
+    ⟨instM, instN, (MonoidAction.prodEquiv M N α inferInstance).2.2⟩
   invFun _insts :=
     letI := _insts.1; letI := _insts.2.1; have := _insts.2.2
     DistribMulAction.prodOfSMulCommClass M N α

@@ -40,31 +40,31 @@ add_decl_doc AddMonoidAction.toPerm
 /-- `MonoidAction.toPerm` is injective on faithful actions. -/
 @[to_additive /-- `AddMonoidAction.toPerm` is injective on faithful actions. -/]
 lemma MonoidAction.toPerm_injective [FaithfulSMul α β] :
-    Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
+    Function.Injective (MonoidAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MonoidAction.toPerm) from smul_left_injective').of_comp
 
 @[to_additive]
 protected lemma MonoidAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
-  (MulAction.toPerm g).bijective
+  (MonoidAction.toPerm g).bijective
 
 @[to_additive]
 protected lemma MonoidAction.injective (g : α) : Function.Injective (g • · : β → β) :=
-  (MulAction.bijective g).injective
+  (MonoidAction.bijective g).injective
 
 @[to_additive]
 protected lemma MonoidAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
-  (MulAction.bijective g).surjective
+  (MonoidAction.bijective g).surjective
 
 @[to_additive]
 lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y := MonoidAction.injective g h
 
 @[to_additive (attr := simp)]
 lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
-  (MulAction.injective g).eq_iff
+  (MonoidAction.injective g).eq_iff
 
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
-  (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
+  (MonoidAction.toPerm g).apply_eq_iff_eq_symm_apply
 
 @[to_additive]
 lemma isCancelSMul_iff_eq_one_of_smul_eq :

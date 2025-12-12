@@ -184,7 +184,7 @@ theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : �
 theorem smul_of_comm {G' : Type*} [Group G'] [MonoidAction G' α] [MeasurableSpace G']
     [MeasurableSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
     (h : IsFundamentalDomain G s μ) (g : G') : IsFundamentalDomain G (g • s) μ :=
-  h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
+  h.image_of_equiv (MonoidAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
     (Equiv.refl _) <| smul_comm g
 
 variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
@@ -201,7 +201,7 @@ theorem restrict_restrict (h : IsFundamentalDomain G s μ) (g : G) (t : Set α) 
 
 @[to_additive]
 theorem smul (h : IsFundamentalDomain G s μ) (g : G) : IsFundamentalDomain G (g • s) μ :=
-  h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
+  h.image_of_equiv (MonoidAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
     ⟨fun g' => g⁻¹ * g' * g, fun g' => g * g' * g⁻¹, fun g' => by simp [mul_assoc], fun g' => by
       simp [mul_assoc]⟩
     fun g' x => by simp [smul_smul, mul_assoc]

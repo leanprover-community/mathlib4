@@ -80,7 +80,7 @@ variable [MonoidAction G α]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
-  Cardinal.mk_image_eq_of_injOn _ _ (MulAction.injective a).injOn
+  Cardinal.mk_image_eq_of_injOn _ _ (MonoidAction.injective a).injOn
 
 @[to_additive (attr := simp)]
 lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by

@@ -188,7 +188,7 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
 
 @[to_additive]
 theorem smul_closure_orbit_subset (c : M) (x : α) :
-    c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
+    c • closure (MonoidAction.orbit M x) ⊆ closure (MonoidAction.orbit M x) :=
   (smul_closure_subset c _).trans <| closure_mono <| MonoidAction.smul_orbit_subset _ _
 
 end Monoid
@@ -480,13 +480,13 @@ instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
 action is an open quotient. -/]
 theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     letI := MonoidAction.orbitRel Γ T
-    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
+    IsOpenMap (Quotient.mk' : T → Quotient (MonoidAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MonoidAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 
 @[to_additive]
 theorem MonoidAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
-    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+    IsOpenQuotientMap (Quotient.mk (MonoidAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
@@ -494,9 +494,9 @@ theorem MonoidAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
 space is t2. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
-    T2Space (Quotient (MulAction.orbitRel Γ T)) := by
+    T2Space (Quotient (MonoidAction.orbitRel Γ T)) := by
   letI := MonoidAction.orbitRel Γ T
-  set Q := Quotient (MulAction.orbitRel Γ T)
+  set Q := Quotient (MonoidAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
@@ -529,7 +529,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
 @[to_additive /-- The quotient of a second countable space by an additive group action is second
 countable. -/]
 theorem ContinuousConstSMul.secondCountableTopology [SecondCountableTopology T]
-    [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
+    [ContinuousConstSMul Γ T] : SecondCountableTopology (Quotient (MonoidAction.orbitRel Γ T)) :=
   TopologicalSpace.Quotient.secondCountableTopology isOpenMap_quotient_mk'_mul
 
 section nhds

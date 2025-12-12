@@ -112,7 +112,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/]
 instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
-    T2Space (Quotient (MulAction.orbitRel G X)) := by
+    T2Space (Quotient (MonoidAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MonoidAction.orbitRel G X
   let π : X → Quotient R := Quotient.mk'

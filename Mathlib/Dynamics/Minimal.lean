@@ -32,14 +32,14 @@ open Pointwise
 of every point `x : α` is dense. -/
 class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddMonoidAction M α] :
     Prop where
-  dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
+  dense_orbit : ∀ x : α, Dense (AddMonoidAction.orbit M x)
 
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
 class MonoidAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MonoidAction M α] :
     Prop where
-  dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
+  dense_orbit : ∀ x : α, Dense (MonoidAction.orbit M x)
 
 open MonoidAction Set
 
@@ -88,7 +88,7 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul
 theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
     (hsmul : ∀ c : M, c • s ⊆ s) : Dense s :=
   let ⟨x, hx⟩ := hne
-  (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
+  (MonoidAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
 
 @[to_additive]
 theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} (hs : IsClosed s)

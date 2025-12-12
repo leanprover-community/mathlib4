@@ -82,11 +82,11 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
       _ = card ((a : G) × { b // Commute a b }) :=
             card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute)
       _ = ∑ i, card { b // Commute i b } := card_sigma
-      _ = ∑ x, card (MulAction.fixedBy G x) :=
+      _ = ∑ x, card (MonoidAction.fixedBy G x) :=
             sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
-              (fun g ↦ card (MulAction.fixedBy G g))
+              (fun g ↦ card (MonoidAction.fixedBy G g))
               fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq
-      _ = card (Quotient (MulAction.orbitRel (ConjAct G) G)) * card (ConjAct G) :=
+      _ = card (Quotient (MonoidAction.orbitRel (ConjAct G) G)) * card (ConjAct G) :=
              MonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_group _ _
       _ = card (ConjClasses G) * card G := by
              congr 1; apply card_congr'; congr; ext

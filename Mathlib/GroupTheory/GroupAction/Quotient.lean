@@ -285,7 +285,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
         simp only [Quotient.eq, orbitRel_apply, mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
-      (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
+      (Quotient.mk''_surjective.comp (MonoidAction.surjective_smul _ _)))
 
 variable {β} in
 /-- A bijection between the quotient of the action of a subgroup `H` on an orbit, and a
@@ -386,10 +386,10 @@ See `MonoidAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
 to the product of the quotient of `β` by `α` and `α`.
 See `AddMonoidAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/]
 noncomputable def selfEquivOrbitsQuotientProd'
-    {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
+    {φ : Quotient (MonoidAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
     (h : ∀ b : β, MonoidAction.stabilizer α b = ⊥) :
-    β ≃ Quotient (MulAction.orbitRel α β) × α :=
-  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
+    β ≃ Quotient (MonoidAction.orbitRel α β) × α :=
+  (MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
     (Equiv.sigmaCongrRight <| fun _ ↦
       (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
     Equiv.sigmaEquivProd _ _
@@ -400,7 +400,7 @@ noncomputable def selfEquivOrbitsQuotientProd'
   /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
 `α` and `α`. -/]
 noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MonoidAction.stabilizer α b = ⊥) :
-    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+    β ≃ Quotient (MonoidAction.orbitRel α β) × α :=
   MonoidAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
 
 end MonoidAction
@@ -408,7 +408,7 @@ end MonoidAction
 theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
     [Fintype (ConjClasses.mk g).carrier] [Fintype <| MonoidAction.stabilizer (ConjAct G) g] :
     Fintype.card (ConjClasses.mk g).carrier =
-      Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
+      Fintype.card G / Fintype.card (MonoidAction.stabilizer (ConjAct G) g) := by
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
   rw [← MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
@@ -419,24 +419,24 @@ namespace Subgroup
 
 variable {G : Type*} [Group G] (H : Subgroup G)
 
-theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
+theorem normalCore_eq_ker : H.normalCore = (MonoidAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
     refine fun q ↦ QuotientGroup.induction_on q ?_
-    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
+    refine fun g' => (MonoidAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
   · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
-    exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
+    exact (MonoidAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 
 open QuotientGroup
 
 /-- Cosets of the centralizer of an element embed into the set of commutators. -/
 noncomputable def quotientCentralizerEmbedding (g : G) :
     G ⧸ centralizer {g} ↪ commutatorSet G :=
-  ((MulAction.orbitEquivQuotientStabilizer (ConjAct G) g).trans
+  ((MonoidAction.orbitEquivQuotientStabilizer (ConjAct G) g).trans
             (quotientEquivOfEq (ConjAct.stabilizer_eq_centralizer g))).symm.toEmbedding.trans
     ⟨fun x =>
       ⟨x * g⁻¹,

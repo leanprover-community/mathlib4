@@ -25,9 +25,9 @@ namespace Set
 variable [GroupWithZero G₀] [Zero M₀] [MonoidActionWithZero G₀ M₀] {a : G₀}
 
 lemma _root_.Cardinal.mk_smul_set₀ (ha : a ≠ 0) (s : Set M₀) : #↥(a • s) = #s :=
-  Cardinal.mk_image_eq_of_injOn _ _ (MulAction.injective₀ ha).injOn
+  Cardinal.mk_image_eq_of_injOn _ _ (MonoidAction.injective₀ ha).injOn
 
 lemma natCard_smul_set₀ (ha : a ≠ 0) (s : Set M₀) : Nat.card ↥(a • s) = Nat.card s :=
-  Nat.card_image_of_injective (MulAction.injective₀ ha) _
+  Nat.card_image_of_injective (MonoidAction.injective₀ ha) _
 
 end Set

@@ -66,7 +66,7 @@ the quotient `F.obj X / Aut X` has exactly one element. -/
 noncomputable def quotientByAutTerminalEquivUniqueQuotient
     (X : C) [IsConnected X] :
     IsTerminal (colimit <| SingleObj.functor <| Aut.toEnd X) ≃
-    Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
+    Unique (MonoidAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
   let J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
   let e : (F ⋙ FintypeCat.incl).obj (colimit J) ≅ _ :=
     preservesColimitIso (F ⋙ FintypeCat.incl) J ≪≫
@@ -85,7 +85,7 @@ the natural action of `Aut X` on `F.obj X` is transitive. -/
 theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
     IsGalois X ↔ MonoidAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
-  exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
+  exact (MonoidAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
 /-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
@@ -100,7 +100,7 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
   infer_instance
 
 lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
-    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+    Subgroup.Normal (MonoidAction.stabilizer (Aut F) x) where
   conj_mem n ninstab g := by
     rw [MonoidAction.mem_stabilizer_iff]
     change g • n • (g⁻¹ • x) = x

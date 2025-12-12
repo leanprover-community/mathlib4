@@ -120,7 +120,7 @@ instance [Zero S] [Zero M] [Add M] [SMulWithZero S M] (c : ModuleCon S M) :
   inferInstanceAs (SMulWithZero S c.toSMulCon.Quotient)
 
 instance [Monoid S] [Add M] [MonoidAction S M] (c : ModuleCon S M) : MonoidAction S c.Quotient :=
-  inferInstanceAs (MulAction S c.toSMulCon.Quotient)
+  inferInstanceAs (MonoidAction S c.toSMulCon.Quotient)
 
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl

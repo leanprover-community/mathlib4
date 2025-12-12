@@ -29,7 +29,7 @@ section
 variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
 
 /-- `ℙ k V` is equivalent to the quotient of the non-zero elements of `V` by `kˣ`. -/
-def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
+def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MonoidAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
   Quotient.congr (Equiv.refl _) (fun x y ↦ (Units.orbitRel_nonZero_iff k V x y).symm)
 
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/

@@ -346,7 +346,7 @@ theorem intNorm_coe (a : integerSet K) :
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
 def quotIntNorm :
-    Quotient (MulAction.orbitRel (torsion K) (integerSet K)) → ℕ :=
+    Quotient (MonoidAction.orbitRel (torsion K) (integerSet K)) → ℕ :=
   Quotient.lift (fun x ↦ intNorm x) fun a b ⟨u, hu⟩ ↦ by
     rw [← Nat.cast_inj (R := ℝ), intNorm_coe, intNorm_coe, ← hu, integerSetTorsionSMul_smul_coe,
       norm_unit_smul]
@@ -393,7 +393,7 @@ theorem integerSetToAssociates_eq_iff (a b : integerSet K) :
 variable (K) in
 /-- The equivalence between `integerSet K` modulo `torsion K` and `Associates (𝓞 K)⁰`. -/
 def integerSetQuotEquivAssociates :
-    Quotient (MulAction.orbitRel (torsion K) (integerSet K)) ≃ Associates (𝓞 K)⁰ :=
+    Quotient (MonoidAction.orbitRel (torsion K) (integerSet K)) ≃ Associates (𝓞 K)⁰ :=
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
@@ -423,7 +423,7 @@ variable (K) in
 ideals of `K` and the torsion of `K`. -/
 def integerSetEquiv :
     integerSet K ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.val} × torsion K :=
-  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integerSet K)).trans
+  (MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integerSet K)).trans
     ((Equiv.sigmaEquivProdOfEquiv (by
         intro _
         simp_rw [integerSetTorsionSMul_stabilizer]

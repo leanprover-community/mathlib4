@@ -105,7 +105,7 @@ noncomputable def orbitZPowersEquiv : orbit (zpowers a) b ≃ ZMod (minimalPerio
 noncomputable def _root_.AddMonoidAction.orbitZMultiplesEquiv {α β : Type*} [AddGroup α] (a : α)
     [AddMonoidAction α β] (b : β) :
     AddMonoidAction.orbit (zmultiples a) b ≃ ZMod (minimalPeriod (a +ᵥ ·) b) :=
-  (AddAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
+  (AddMonoidAction.orbitEquivQuotientStabilizer (zmultiples a) b).trans
     (zmultiplesQuotientStabilizerEquiv a b).toEquiv
 
 attribute [to_additive existing] orbitZPowersEquiv
@@ -124,7 +124,7 @@ theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
 
 theorem _root_.AddMonoidAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
     [AddMonoidAction α β] (b : β) (k : ℤ) :
-    (AddAction.orbitZMultiplesEquiv a b).symm k =
+    (AddMonoidAction.orbitZMultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddMonoidAction.mem_orbit_self b⟩ := by
   rw [AddMonoidAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
   -- Making `a` explicit turns this from ~190000 heartbeats to ~700.
@@ -158,7 +158,7 @@ variable {α : Type*} [Group α] (a : α)
 /-- See also `Fintype.card_zpowers`. -/
 @[to_additive (attr := simp) /-- See also `Fintype.card_zmultiples`. -/]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
-  have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
+  have := Nat.card_congr (MonoidAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
 
 variable {a}

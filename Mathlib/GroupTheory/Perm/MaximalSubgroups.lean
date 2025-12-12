@@ -242,7 +242,7 @@ lemma _root_.IsBlock.subsingleton_of_stabilizer_lt_of_subset
         absurd hg's
         rw [← hBs', h]
       · -- case `g' • B` disjoint from `B`
-        apply Set.subsingleton_of_image (MulAction.injective g') B
+        apply Set.subsingleton_of_image (MonoidAction.injective g') B
         apply hB_not_le_sc (g' • B) (hB.translate g')
         rw [← hBs']
         apply Disjoint.subset_compl_right h

@@ -46,7 +46,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
   refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
-  exact ((MulAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
+  exact ((MonoidAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
 
 @[to_additive]
 lemma map_stabilizer_le (f : G →* H) (s : Set G) :

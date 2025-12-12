@@ -49,7 +49,7 @@ instance instContinuousConstSMul : ContinuousConstSMul M (SeparationQuotient X) 
 instance instIsPretransitiveSMul [MonoidAction.IsPretransitive M X] :
     MonoidAction.IsPretransitive M (SeparationQuotient X) where
   exists_smul_eq := surjective_mk.forall₂.2 fun x y ↦
-    (MulAction.exists_smul_eq M x y).imp fun _ ↦ congr_arg mk
+    (MonoidAction.exists_smul_eq M x y).imp fun _ ↦ congr_arg mk
 
 @[to_additive]
 instance instIsCentralScalar [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] :

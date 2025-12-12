@@ -675,7 +675,7 @@ theorem isComplement'_of_coprime [Finite G]
 
 theorem isComplement'_stabilizer {α : Type*} [MonoidAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
-    IsComplement' H (MulAction.stabilizer G a) := by
+    IsComplement' H (MonoidAction.stabilizer G a) := by
   refine isComplement_iff_existsUnique.mpr fun g => ?_
   obtain ⟨h, hh⟩ := h2 g
   have hh' : (↑h * g) • a = a := by rwa [mul_smul]

@@ -92,7 +92,7 @@ instance [Zero R] : SMulZeroClass PUnit R where
   smul_zero _ := rfl
 
 instance [AddMonoid R] : DistribMulAction PUnit R where
-  __ := inferInstanceAs (MulAction PUnit R)
+  __ := inferInstanceAs (MonoidAction PUnit R)
   __ := inferInstanceAs (SMulZeroClass PUnit R)
   smul_add _ _ _ := rfl
 

@@ -61,10 +61,10 @@ protected lemma MonoidAction.bijective₀ (ha : a ≠ 0) : Bijective (a • · :
   MonoidAction.bijective <| Units.mk0 a ha
 
 protected lemma MonoidAction.injective₀ (ha : a ≠ 0) : Injective (a • · : α → α) :=
-  (MulAction.bijective₀ ha).injective
+  (MonoidAction.bijective₀ ha).injective
 
 protected lemma MonoidAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
-  (MulAction.bijective₀ ha).surjective
+  (MonoidAction.bijective₀ ha).surjective
 
 end GroupWithZero
 

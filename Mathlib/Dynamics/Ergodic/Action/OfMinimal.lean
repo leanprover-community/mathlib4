@@ -105,7 +105,7 @@ theorem ErgodicSMul.trans_isMinimal (N : Type*) [MonoidAction M N]
     simpa only [smul_one_smul] using SMulInvariantMeasure.measure_preimage_smul (c • 1 : N) hsm
   aeconst_of_forall_preimage_smul_ae_eq {s} hsm hs := by
     refine aeconst_of_dense_setOf_preimage_smul_ae (M := N) hsm.nullMeasurableSet ?_
-    refine (MulAction.dense_orbit M 1).mono ?_
+    refine (MonoidAction.dense_orbit M 1).mono ?_
     rintro _ ⟨g, rfl⟩
     simpa using hs g
 
@@ -120,7 +120,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousInv G]
 
 @[to_additive]
 theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
-    (hd : Dense (MulAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
+    (hd : Dense (MonoidAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
   aeconst_of_dense_setOf_preimage_smul_ae hsm <| (hd.preimage (isOpenMap_inv _)).mono fun g hg ↦ by
     simpa only [preimage_smul] using hg
 

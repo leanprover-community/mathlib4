@@ -627,7 +627,7 @@ lemma finite_quotient_of_finite_quotient_of_index_ne_zero {X : Type*} [MonoidAct
 lemma finite_quotient_of_pretransitive_of_index_ne_zero {X : Type*} [MonoidAction G X]
     [MonoidAction.IsPretransitive G X] (hi : H.index ≠ 0) :
     Finite <| MonoidAction.orbitRel.Quotient H X := by
-  have := (MulAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
+  have := (MonoidAction.pretransitive_iff_subsingleton_quotient G X).1 inferInstance
   exact finite_quotient_of_finite_quotient_of_index_ne_zero hi
 
 @[to_additive]
@@ -896,7 +896,7 @@ variable (G : Type*) {X : Type*} [Group G] [MonoidAction G X] (x : X)
 
 @[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
-  (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
+  (Nat.card_congr (MonoidAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Nat.card_coe_set_eq (orbit G x))
 
 @[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
@@ -941,6 +941,6 @@ variable {G A : Type*} [Group G] [AddGroup A] [DistribMulAction G A]
 
 @[simp]
 lemma index_smul (a : G) (S : AddSubgroup A) : (a • S).index = S.index :=
-  index_map_of_bijective (MulAction.bijective _) _
+  index_map_of_bijective (MonoidAction.bijective _) _
 
 end AddSubgroup

@@ -356,7 +356,7 @@ instance [SMul L X] [FaithfulSMul L X] (F : IntermediateField K L) : FaithfulSMu
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [MonoidAction L X] (F : IntermediateField K L) : MonoidAction F X :=
-  inferInstanceAs (MulAction F.toSubfield X)
+  inferInstanceAs (MonoidAction F.toSubfield X)
 
 /-- The action by an intermediate field is the action by the underlying field. -/
 instance [AddMonoid X] [DistribMulAction L X] (F : IntermediateField K L) : DistribMulAction F X :=

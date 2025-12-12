@@ -82,7 +82,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.nonempty_orbit a).ne_empty ha
+    exact (MonoidAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
@@ -148,10 +148,10 @@ theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
   cases hB with
   | inl h =>
     left
-    exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
+    exact (Function.Injective.subsingleton_image_iff (MonoidAction.injective g)).mpr h
   | inr h =>
     right
-    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
+    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MonoidAction.surjective g)]
 
 @[to_additive]
 theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
@@ -383,7 +383,7 @@ theorem _root_.AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
     simp only [this]
     apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
     · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
+    · exact Set.disjoint_image_of_injective (AddMonoidAction.injective g)
   suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
     exact this
   rw [← hh, vadd_vadd, vadd_vadd]
@@ -399,7 +399,7 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
     simp only [this]
     apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
     · intro; congr
-    · exact Set.disjoint_image_of_injective (MulAction.injective g)
+    · exact Set.disjoint_image_of_injective (MonoidAction.injective g)
   suffices (h' : G) • g • B = g • h • B by
     rw [← this]; rfl
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
@@ -543,7 +543,7 @@ section Stabilizer
 /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
 @[to_additive /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/]
 theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
-    IsBlock G (MulAction.orbit H a) := by
+    IsBlock G (MonoidAction.orbit H a) := by
   rw [isBlock_iff_smul_eq_of_nonempty]
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, h₂, rfl⟩
   suffices g ∈ H by

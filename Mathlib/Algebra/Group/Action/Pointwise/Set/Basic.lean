@@ -48,7 +48,7 @@ lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MonoidAction G (α i)]
     (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
-  smul_set_pi_of_surjective c I s fun _ _ ↦ (MulAction.bijective c).surjective
+  smul_set_pi_of_surjective c I s fun _ _ ↦ (MonoidAction.bijective c).surjective
 
 @[to_additive]
 lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MonoidAction M (α i)]
@@ -190,7 +190,7 @@ variable [Group α] [MonoidAction α β] {s t A B : Set β} {a b : α} {x : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
-  (MulAction.injective _).mem_set_image
+  (MonoidAction.injective _).mem_set_image
 
 @[to_additive]
 theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
@@ -206,7 +206,7 @@ lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
-  ((MulAction.toPerm a).image_symm_eq_preimage _).symm
+  ((MonoidAction.toPerm a).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
@@ -220,12 +220,12 @@ theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
 theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
   refine image_subset_iff.trans ?_
   congr! 1
-  exact ((MulAction.toPerm _).image_symm_eq_preimage _).symm
+  exact ((MonoidAction.toPerm _).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
   refine (image_subset_iff.trans ?_ ).symm; congr! 1;
-  exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
+  exact ((MonoidAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
@@ -234,16 +234,16 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
 @[to_additive]
 theorem smul_set_iInter {ι : Sort*}
     (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
-  image_iInter (MulAction.bijective a) t
+  image_iInter (MonoidAction.bijective a) t
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective a) _ _
+  image_diff (MonoidAction.injective a) _ _
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff (MulAction.injective a) _ _
+  image_symmDiff (MonoidAction.injective a) _ _
 
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=

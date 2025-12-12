@@ -474,7 +474,7 @@ instance [AddZeroClass Y] [SMul M X] [DistribSMul N Y] [DistribSMul R Y] [SMulCo
 instance [AddMonoid Y] [Monoid R] [SMul M X] [DistribSMul N Y]
     [DistribMulAction R Y] [SMulCommClass N R Y] :
     DistribMulAction R (X →ₑ[σ] Y) where
-  __ := inferInstanceAs (MulAction _ _)
+  __ := inferInstanceAs (MonoidAction _ _)
   __ := inferInstanceAs (DistribSMul _ _)
 
 instance [AddCommMonoid Y] [Semiring R] [SMul M X] [DistribSMul N Y]

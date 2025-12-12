@@ -186,7 +186,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
   `b ↦ ∑' (a : α), f(a • b)`. -/]
 noncomputable def MonoidAction.automorphize [Group α] [MonoidAction α β] (f : β → M) :
-    Quotient (MulAction.orbitRel α β) → M := by
+    Quotient (MonoidAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   simp only
@@ -203,17 +203,17 @@ noncomputable def MonoidAction.automorphize [Group α] [MonoidAction α β] (f :
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : β → M)
-    (g : Quotient (MulAction.orbitRel α β) → R) :
+    (g : Quotient (MonoidAction.orbitRel α β) → R) :
     MonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
+      = g • (MonoidAction.automorphize f : Quotient (MonoidAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn' β (MonoidAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
+  set π : β → Quotient (MonoidAction.orbitRel α β) := Quotient.mk (MonoidAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a • b) = π b := by
     intro a
-    apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
+    apply (@Quotient.eq _ (MonoidAction.orbitRel α β) (a • b) b).mpr
     use a
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
   simp_rw [H₁]
@@ -222,17 +222,17 @@ lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : �
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma AddMonoidAction.automorphize_smul_left [AddGroup α] [AddMonoidAction α β] (f : β → M)
-    (g : Quotient (AddAction.orbitRel α β) → R) :
+    (g : Quotient (AddMonoidAction.orbitRel α β) → R) :
     AddMonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
+      = g • (AddMonoidAction.automorphize f : Quotient (AddMonoidAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn' β (AddMonoidAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
+  set π : β → Quotient (AddMonoidAction.orbitRel α β) := Quotient.mk (AddMonoidAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by
     intro a
-    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
+    apply (@Quotient.eq _ (AddMonoidAction.orbitRel α β) (a +ᵥ b) b).mpr
     use a
   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]

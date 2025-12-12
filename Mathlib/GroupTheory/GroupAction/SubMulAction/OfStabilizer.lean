@@ -113,7 +113,7 @@ variable {G}
 the stabilizer of a point and that of its translate. -/
 def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddMonoidActionHom (AddAction.stabilizerEquivStabilizer hg)
+    AddMonoidActionHom (AddMonoidAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_vadd' := fun ⟨k, hk⟩ x ↦ by
@@ -139,8 +139,8 @@ theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
 theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
     {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
-    CompTriple (AddAction.stabilizerEquivStabilizer hg)
-      (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
+    CompTriple (AddMonoidAction.stabilizerEquivStabilizer hg)
+      (AddMonoidAction.stabilizerEquivStabilizer hh) (AddMonoidAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
     simp [AddMonoidAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
@@ -181,7 +181,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
-    apply (MulAction.injective g)
+    apply (MonoidAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
   · intro x
     exact ⟨conjMap _ x, inv_conjMap_comp_apply _ x⟩

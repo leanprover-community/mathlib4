@@ -305,7 +305,7 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
     rw [← Set.mem_singleton_iff]
     suffices orbit N a = {a} by rw [← this]; use n
     ext b
-    rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
+    rw [Set.Subsingleton.eq_singleton_of_mem h (MonoidAction.mem_orbit_self a)]
 
 end Normal
 

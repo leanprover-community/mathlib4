@@ -299,9 +299,9 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
     (p.primesOver S).ncard * Nat.card (P.toAddSubgroup.inertia G) *
       Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
-  trans (p.primesOver S).ncard * Nat.card (MulAction.stabilizer G P); swap
+  trans (p.primesOver S).ncard * Nat.card (MonoidAction.stabilizer G P); swap
   · rw [← IsInvariant.orbit_eq_primesOver R S G p P]
-    simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
+    simpa using Nat.card_congr (MonoidAction.orbitProdStabilizerEquivGroup G P)
   rw [mul_assoc]
   have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
   have := Ideal.Quotient.finite_of_isInvariant G p P

@@ -377,7 +377,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
     Function.Surjective (stabilizerHom G P Q K L) := by
   let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
-  obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
+  obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MonoidAction.stabilizer G Q) L
     (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 

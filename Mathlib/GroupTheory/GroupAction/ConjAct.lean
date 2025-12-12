@@ -212,7 +212,7 @@ theorem stabilizer_eq_centralizer (g : G) :
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
-      (MulAction.stabilizer (ConjAct G) g) := by
+      (MonoidAction.stabilizer (ConjAct G) g) := by
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction

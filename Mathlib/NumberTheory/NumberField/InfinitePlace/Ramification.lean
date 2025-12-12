@@ -161,7 +161,7 @@ lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
 the infinite places of the base field. -/
 noncomputable
 def orbitRelEquiv [IsGalois k K] :
-    Quotient (MulAction.orbitRel Gal(K/k) (InfinitePlace K)) ≃ InfinitePlace k := by
+    Quotient (MonoidAction.orbitRel Gal(K/k) (InfinitePlace K)) ≃ InfinitePlace k := by
   refine Equiv.ofBijective (Quotient.lift (comap · (algebraMap k K))
     fun _ _ e ↦ (mem_orbit_iff.mp e).symm) ⟨?_, ?_⟩
   · rintro ⟨w⟩ ⟨w'⟩ e
@@ -482,7 +482,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     rw [mem_filter_univ] at hw
-    trans #(MulAction.orbit Gal(K/k) w).toFinset
+    trans #(MonoidAction.orbit Gal(K/k) w).toFinset
     · congr; ext w'
       rw [mem_filter, mem_filter_univ, Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _),
         and_iff_right_iff_imp]
@@ -506,7 +506,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
   · refine sum_congr rfl (fun w hw ↦ ?_)
     obtain ⟨w, rfl⟩ := comap_surjective (K := K) w
     rw [compl_filter, mem_filter_univ] at hw
-    trans Finset.card (MulAction.orbit Gal(K/k) w).toFinset
+    trans Finset.card (MonoidAction.orbit Gal(K/k) w).toFinset
     · congr; ext w'
       rw [mem_filter, compl_filter, mem_filter_univ, @eq_comm _ (comap w' _), Set.mem_toFinset,
         mem_orbit_iff, and_iff_right_iff_imp]

@@ -800,7 +800,7 @@ instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S �
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [MonoidAction A α] (S : Subalgebra R A) : MonoidAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+  inferInstanceAs (MonoidAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=

@@ -161,7 +161,7 @@ variable [DecidableEq β] [Group α] [MonoidAction α β] {s t : Finset β} {a :
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
-  (MulAction.injective _).mem_finset_image
+  (MonoidAction.injective _).mem_finset_image
 
 @[to_additive (attr := simp)]
 lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :

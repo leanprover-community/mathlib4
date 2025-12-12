@@ -117,14 +117,14 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MonoidAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MonoidAction G (FintypeCat.of T) := inferInstanceAs <| MonoidAction G ↑(MulAction.orbit G x)
+    letI : MonoidAction G (FintypeCat.of T) := inferInstanceAs <| MonoidAction G ↑(MonoidAction.orbit G x)
     let T' : Action FintypeCat G := Action.FintypeCat.ofMonoidAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
-      exact Set.Nonempty.coe_sort (MulAction.nonempty_orbit x)
+      exact Set.Nonempty.coe_sort (MonoidAction.nonempty_orbit x)
     have hb : Function.Bijective i.hom := by
       apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
       exact map_isIso (forget₂ _ FintypeCat) i
@@ -163,12 +163,12 @@ variable {G}
 /-- If `X` is a connected `G`-set and `x` is an element of `X`, `X` is isomorphic
 to the quotient of `G` by the stabilizer of `x` as `G`-sets. -/
 noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
-    [IsConnected X] (x : X.V) [Fintype (G ⧸ (MulAction.stabilizer G x))] :
+    [IsConnected X] (x : X.V) [Fintype (G ⧸ (MonoidAction.stabilizer G x))] :
     X ≅ G ⧸ₐ MonoidAction.stabilizer G x :=
   haveI : MonoidAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MonoidAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
-      (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      (Equiv.setCongr ((MonoidAction.orbit_eq_univ G x).symm)).trans <|
       MonoidAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
     ext (a : G ⧸ MonoidAction.stabilizer G x)

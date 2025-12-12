@@ -508,7 +508,7 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
 @[simp]
 theorem single_isCycle₁_iff (g : G) (a : A) :
     IsCycle₁ (single g a) ↔ g • a = a := by
-  rw [← (MulAction.bijective g⁻¹).1.eq_iff]
+  rw [← (MonoidAction.bijective g⁻¹).1.eq_iff]
   simp [IsCycle₁, eq_comm]
 
 theorem single_isCycle₁_of_mem_fixedPoints
@@ -525,7 +525,7 @@ theorem single_isCycle₂_iff_inv (g : G × G) (a : A) :
 theorem single_isCycle₂_iff (g : G × G) (a : A) :
     IsCycle₂ (single g a) ↔
       single g.2 a + single g.1 (g.1 • a) = single (g.1 * g.2) (g.1 • a) := by
-  rw [← (Finsupp.mapRange_injective (α := G) _ (smul_zero _) (MulAction.bijective g.1⁻¹).1).eq_iff]
+  rw [← (Finsupp.mapRange_injective (α := G) _ (smul_zero _) (MonoidAction.bijective g.1⁻¹).1).eq_iff]
   simp [mapRange_add, IsCycle₂]
 
 end

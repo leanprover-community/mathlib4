@@ -202,7 +202,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
       rw [show s = g⁻¹ • s' from by simp [hs'],
-        ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
+        ← Set.image_smul, (MonoidAction.injective g⁻¹).encard_image, hst]
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
 

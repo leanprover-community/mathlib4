@@ -32,7 +32,7 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
   map between `SubMulAction.ofFixingSubgroup M (Set.insert a s)`
-  and `SubMulAction.ofFixingSubgroup (MulAction.stabilizer M a) s`.
+  and `SubMulAction.ofFixingSubgroup (MonoidAction.stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
   the multiplicative equivalence between `SubMulAction.ofFixingSubgroup M s`

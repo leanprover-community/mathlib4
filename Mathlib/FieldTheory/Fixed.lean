@@ -117,7 +117,7 @@ theorem coe_algebraMap :
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndepOn (FixedPoints.subfield G F) id (s : Set F)) →
-      LinearIndepOn F (MulAction.toFun G F) s := by
+      LinearIndepOn F (MonoidAction.toFun G F) s := by
   classical
   have : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_

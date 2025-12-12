@@ -62,7 +62,7 @@ private local instance fintypeQuotient (H : OpenSubgroup (G)) :
 
 private local instance fintypeQuotientStabilizer {X : Type*} [MonoidAction G X]
     [TopologicalSpace X] [ContinuousSMul G X] [DiscreteTopology X] (x : X) :
-    Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
+    Fintype (G ⧸ (MonoidAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MonoidAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
