@@ -188,6 +188,8 @@ theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
     (hpl : 0 < p.degree) : ¬ IsUnit p :=
   not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
 
+#check IsLocalHom
+
 end CommRing
 
 section CommAlgebra

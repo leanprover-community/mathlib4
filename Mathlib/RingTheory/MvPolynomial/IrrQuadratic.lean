@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
+Authors: Antoine Chambert-Loir, Johan Commelin
 -/
 module
 
@@ -77,6 +77,7 @@ variable {R : Type*} [CommRing R]
 instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
 
+#find_home! IsLocalHom
 end Polynomial
 
 namespace MvPolynomial
