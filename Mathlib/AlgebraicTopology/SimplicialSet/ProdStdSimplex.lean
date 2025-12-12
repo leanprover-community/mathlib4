@@ -39,8 +39,8 @@ variable {p q : ℕ}
 def objEquiv {n : ℕ} :
     (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌ ≃ (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)) where
   toFun := fun ⟨x, y⟩ ↦ OrderHom.prod
-      ((stdSimplex.objEquiv x).toOrderHom)
-      ((stdSimplex.objEquiv y).toOrderHom)
+      (stdSimplex.objEquiv x).toOrderHom
+      (stdSimplex.objEquiv y).toOrderHom
   invFun f :=
     ⟨stdSimplex.objEquiv.symm
       (SimplexCategory.Hom.mk (OrderHom.fst.comp f)),
