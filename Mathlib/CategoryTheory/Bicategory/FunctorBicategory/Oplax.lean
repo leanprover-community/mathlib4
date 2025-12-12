@@ -18,7 +18,6 @@ Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖ�
 
 @[expose] public section
 
-
 namespace CategoryTheory.Oplax
 
 open Category Bicategory
