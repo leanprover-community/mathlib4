@@ -11780,6 +11780,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Norm
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeProduct.Basic
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Goursat
@@ -11833,6 +11834,7 @@ public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.LDL
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -13901,6 +13903,7 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.ProdAssoc
+public import Mathlib.Tactic.Propose
 public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
@@ -14280,6 +14283,7 @@ public import Mathlib.Topology.ContinuousMap.Weierstrass
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.GeneratedBy
+public import Mathlib.Topology.Covering
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
