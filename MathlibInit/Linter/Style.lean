@@ -10,7 +10,7 @@ public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import MathlibInit.Linter.Header
-public meta import Mathlib.Tactic.DeclarationNames
+public meta import MathlibInit.Tactic.DeclarationNames
 
 /-!
 ## Style linters

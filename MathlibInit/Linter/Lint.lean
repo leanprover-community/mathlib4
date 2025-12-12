@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public meta import Batteries.Tactic.Lint
-public meta import Mathlib.Tactic.DeclarationNames
+public meta import MathlibInit.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib

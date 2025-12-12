@@ -30,7 +30,7 @@ Here is an example where the command fails to notice a dependency:
 import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
 import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
 
-import Mathlib.Tactic.MinImports
+import MathlibInit.Tactic.MinImports
 
 -- import Aesop.Frontend.Attribute
 #min_imports in

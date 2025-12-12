@@ -10,7 +10,7 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.Cleanup
 public meta import Lean.PrettyPrinter
 public meta import Batteries.Lean.Meta.Inaccessible
-public meta import Mathlib.Tactic.MinImports
+public meta import MathlibInit.Tactic.MinImports
 
 /-!
 # `extract_goal`: Format the current goal as a stand-alone example
