@@ -886,13 +886,13 @@ lemma toReal_add_of_sign_eq_neg_sign {θ ψ : Angle} (hψ : θ ≠ π ∨ ψ ≠
   obtain (h | h | h) := ψ.sign.trichotomy
   all_goals
     simp [h] at hs
-    grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff, toReal_zero]
+    grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff]
 
 lemma toReal_add_eq_toReal_add_toReal {θ ψ : Angle} (hθ : θ ≠ π) (hψ : ψ ≠ π)
     (hs : θ.sign ≠ ψ.sign ∨ θ.sign = (θ + ψ).sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
   obtain (hs | hs) := hs
   · obtain (h | h | h) := ψ.sign.trichotomy <;> obtain (h | h | h) := θ.sign.trichotomy
-    all_goals grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff, toReal_zero]
+    all_goals grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff]
   · rw [← neg_neg θ.sign, ← sign_neg] at hs
     have := toReal_add_of_sign_eq_neg_sign (.inr <| by simpa [neg_eq_iff_eq_neg]) hs.symm
     simpa [toReal_neg_eq_neg_toReal_iff.mpr, hθ, ← sub_eq_add_neg, eq_sub_iff_add_eq', eq_comm]
