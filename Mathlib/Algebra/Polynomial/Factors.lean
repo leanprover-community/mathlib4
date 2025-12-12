@@ -207,6 +207,17 @@ theorem Splits.comp_of_degree_le_one_of_monic {f g : R[X]} (hf : f.Splits)
 theorem Splits.comp_X_add_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X + C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_add_C.trans_le natDegree_X_le) (monic_X_add_C a)
 
+theorem Splits.of_algHom {f : R[X]} {A B : Type*} [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (hf : Splits (f.map (algebraMap R A))) (e : A →ₐ[R] B) :
+    Splits (f.map (algebraMap R B)) := by
+  rw [← e.comp_algebraMap, ← map_map]
+  apply hf.map
+
+theorem Splits.of_isScalarTower {f : R[X]} {A : Type*} (B : Type*) [CommSemiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (hf : Splits (f.map (algebraMap R A))) : Splits (f.map (algebraMap R B)) :=
+  hf.of_algHom (IsScalarTower.toAlgHom R A B)
+
 end CommSemiring
 
 section Ring

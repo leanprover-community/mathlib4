@@ -148,7 +148,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
       intro i
       rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
       exact (h i).splits' (inclusion (iInf_le t i) x)
-    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    simp only [splits_iff_mem (Splits.of_isScalarTower K (hx hι.some))] at hx ⊢
     rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
     exact hx i y hy
 

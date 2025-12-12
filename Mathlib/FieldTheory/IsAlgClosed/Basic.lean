@@ -531,7 +531,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Fie
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
   (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
     IntermediateField.algHomEquivAlgHomOfSplits A (IsScalarTower.toAlgHom F L A).fieldRange
-    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+    fun x ↦ Splits.of_algHom (hL x) (AlgHom.rangeRestrict _)
 
 theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
