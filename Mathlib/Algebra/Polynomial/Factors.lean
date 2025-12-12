@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
 
 /-!
@@ -335,6 +336,14 @@ theorem Splits.of_splits_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing
   refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i i.injective ?_⟩
   conv_lhs => rw [hf.eq_prod_roots]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
+
+theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
+    {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
+    f ∈ Polynomial.lifts i := by
+  rw [hf.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
+  refine Subring.multiset_prod_mem _ _ fun g hg => ?_
+  obtain ⟨x, hx, rfl⟩ := Multiset.mem_map.mp hg
+  exact Subring.sub_mem _ (X_mem_lifts i) (C'_mem_lifts (hr x hx))
 
 theorem Splits.eq_X_sub_C_of_single_root (hf : Splits f) {x : R} (hr : f.roots = {x}) :
     f = C f.leadingCoeff * (X - C x) := by

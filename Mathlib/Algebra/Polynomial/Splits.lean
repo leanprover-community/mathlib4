@@ -211,14 +211,8 @@ alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_
 @[deprecated (since := "2025-12-06")]
 alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
-variable (R) in
-theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
-    (hs : f.Splits) (hm : f.Monic)
-    (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) : f ∈ Polynomial.lifts (algebraMap R K) := by
-  rw [hs.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
-  refine Subring.multiset_prod_mem _ _ fun P hP => ?_
-  obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
-  exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
+@[deprecated (since := "2025-12-06")]
+alias mem_lift_of_splits_of_roots_mem_range := Splits.mem_lift_of_roots_mem_range
 
 /--
 A polynomial of degree `2` with a root splits.
