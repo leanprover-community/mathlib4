@@ -141,14 +141,14 @@ noncomputable def extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n 
     Ext X Y n :=
   R.extEquivCohomologyClass.symm
     (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
-      m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])))
+      m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])))
 
 @[simp]
 lemma extEquivCohomologyClass_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     R.extEquivCohomologyClass (R.extMk f m hm hf) =
       (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
-        m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) := by
+        m (by lia) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) := by
   simp [extMk]
 
 lemma add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
@@ -194,7 +194,7 @@ lemma extMk_eq_zero_iff (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
   simp only [← R.extEquivCohomologyClass.apply_eq_iff_eq,
     extEquivCohomologyClass_extMk, extEquivCohomologyClass_zero,
     CohomologyClass.mk_eq_zero_iff]
-  rw [Cocycle.fromSingleMk_mem_coboundaries_iff _ _ _ _ _ p (by cutsat),
+  rw [Cocycle.fromSingleMk_mem_coboundaries_iff _ _ _ _ _ p (by lia),
     R.cochainComplex_d _ _ _ _ rfl rfl]
   exact ⟨fun ⟨g, hg⟩ ↦ ⟨g ≫ (R.cochainComplexXIso p p rfl).hom,
       by simp only [← cancel_mono (R.cochainComplexXIso n n rfl).inv, Category.assoc, hg]⟩,
@@ -205,7 +205,7 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
       R.extMk f m hm hf = α := by
   obtain ⟨x, rfl⟩ := R.extEquivCohomologyClass.symm.surjective α
   obtain ⟨x, rfl⟩ := x.mk_surjective
-  obtain ⟨f, hf, rfl⟩ := Cocycle.fromSingleMk_surjective x n (by simp) m (by cutsat)
+  obtain ⟨f, hf, rfl⟩ := Cocycle.fromSingleMk_surjective x n (by simp) m (by lia)
   exact ⟨f ≫ (R.cochainComplexXIso n n rfl).hom,
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
