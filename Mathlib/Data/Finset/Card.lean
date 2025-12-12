@@ -565,13 +565,6 @@ lemma card_union_eq_card_add_card : #(s ∪ t) = #s + #t ↔ Disjoint s t := by
 
 @[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_card_add_card
 
-omit [DecidableEq α] in
-theorem card_filter_add_card_filter_not (p : α → Prop) [DecidablePred p] :
-    #(s.filter p) + #(s.filter (fun a => ¬p a)) = #s := by
-  classical
-  rw [← card_union_of_disjoint (disjoint_filter_filter_not s s p)]
-  congr
-  grind
 
 @[grind =]
 theorem card_sdiff_of_subset (h : s ⊆ t) : #(t \ s) = #t - #s := by
