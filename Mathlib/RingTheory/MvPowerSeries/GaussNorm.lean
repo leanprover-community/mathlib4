@@ -25,6 +25,8 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
   Gauss norm is non-archimedean.
 -/
 
+@[expose] public section
+
 open MvPowerSeries
 
 variable {R F σ : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : σ → ℝ) (f : MvPowerSeries σ R)
