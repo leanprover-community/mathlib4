@@ -288,7 +288,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
-lemma Factors.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
+lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
     (p.scaleRoots r).Splits := by
   cases subsingleton_or_nontrivial R
   · rwa [Subsingleton.elim (p.scaleRoots r) p]
@@ -307,6 +307,8 @@ lemma Factors.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
         exact (monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).ne_zero
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
+
+@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
 
 end CommSemiring
 

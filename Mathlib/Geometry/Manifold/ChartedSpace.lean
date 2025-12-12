@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
@@ -1310,6 +1310,8 @@ protected instance instChartedSpace : ChartedSpace H s where
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
+
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/
