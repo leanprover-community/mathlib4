@@ -132,7 +132,7 @@ def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ := by
   refine edge n i j.castSucc j.succ ?_ ?_
-  · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
+  · simp only [← Fin.val_fin_le, Fin.val_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
   obtain rfl | hn : n = 2 ∨ 2 < n := by
     rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; lia
