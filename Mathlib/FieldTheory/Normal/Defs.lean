@@ -226,7 +226,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
 namespace IsScalarTower
 
 /-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` normal over `F`, the group homomorphism
-given by restricting algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
+which restricts algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
 the group homomorphism given by restricting an algebra isomorphism of `K₃` to `K₂` and
 the group homomorphism given by restricting an algebra isomorphism of `K₂` to `K₁`. -/
 theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
