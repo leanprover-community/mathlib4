@@ -143,6 +143,7 @@ generators of `Presentation (F.obj M)`. -/
 def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
   (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
 
+@[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
   simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
