@@ -153,7 +153,7 @@ theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [Lin
     exact (le_total (U false x) (U true y)).elim
       (fun h => hdj false x y h) (fun h => (hdj true y x h).symm)
 
-theorem UniformSpace.completelyNormalSpace_of_isCountablyGenerated_uniformity
+instance (priority := 100) UniformSpace.completelyNormalSpace_of_isCountablyGenerated_uniformity
     [(uniformity α).IsCountablyGenerated] : CompletelyNormalSpace α :=
   (has_seq_basis α).elim fun _ hB =>
     UniformSpace.completelyNormalSpace_of_hasAntitoneBasis hB.1
