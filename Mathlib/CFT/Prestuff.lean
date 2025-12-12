@@ -210,23 +210,6 @@ lemma _root_.Ideal.algebraMap_localization_residueField_surjective
     Function.Surjective (algebraMap (Localization.AtPrime I) I.ResidueField) :=
   .of_comp I.algebraMap_residueField_surjective
 
-lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [SMul R T] [MulAction S T]
-    [IsScalarTower R S S] [IsScalarTower R T T]
-    [IsScalarTower R S T] [FaithfulSMul R T] : FaithfulSMul R S := by
-  rw [faithfulSMul_iff_injective_smul_one]
-  refine .of_comp (f := (· • (1 : T))) ?_
-  simpa [Function.comp_def, one_smul, ← faithfulSMul_iff_injective_smul_one]
-
-lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [IsScalarTower R S S] [MulAction S T] [IsScalarTower S T T]
-    [SMul R T] [IsScalarTower R T T] [IsScalarTower R S T] [FaithfulSMul R S]
-    [FaithfulSMul S T] : FaithfulSMul R T := by
-  rw [faithfulSMul_iff_injective_smul_one]
-  convert ((faithfulSMul_iff_injective_smul_one S T).mp ‹_›).comp
-    ((faithfulSMul_iff_injective_smul_one R S).mp ‹_›) with x
-  simp
-
 instance Subalgebra.faithfulSMul_right
     {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [FaithfulSMul R A]
     (S : Subalgebra R A) : FaithfulSMul R S := .tower_bot R S A
