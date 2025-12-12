@@ -93,8 +93,7 @@ lemma residueFieldMapCAlgEquiv_symm_X [J.LiesOver I] (hJ : J = I.map C) :
 
 /-- `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I` -/
 noncomputable
-def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
-    (P : Ideal S) [P.IsPrime] (p : Ideal R) [P.LiesOver p] [p.IsPrime] :
+def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : Ideal R) [p.IsPrime] :
     p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField[X] ⧸
       ((RingHom.ker (f : R[X] →+* S)).map (mapRingHom (algebraMap R p.ResidueField))) := by
   refine .ofAlgHom (Algebra.TensorProduct.lift (Algebra.ofId _ _) (AlgHom.liftOfSurjective _ hf
