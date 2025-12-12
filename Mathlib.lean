@@ -1014,6 +1014,7 @@ public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
@@ -3885,7 +3886,6 @@ public import Mathlib.Data.Real.Pi.Wallis
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Data.Real.StandardPart
 public import Mathlib.Data.Real.Star
 public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
