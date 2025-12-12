@@ -22,6 +22,12 @@ In this file we define an inverse of tanh as a function from ℝ to (-1, 1).
 
 - `Real.tanh_artanh`, `Real.artanh_tanh`: tanh and artanh are inverse in the appropriate domains.
 
+- `Real.tanh_bijOn`, `Real.tanh_injOn`, `Real.tanh_injective`, `Real.tanh_surjOn`: `Real.tanh` is
+  bijective, injective and surjective as a function from ℝ to (-1, 1)
+
+- `Real.artanh_bijOn`, `Real.artanh_injOn`, `Real.artanh_surjOn`: `Real.artanh` is bijective,
+  injective and surjective as a function from (-1, 1) to ℝ
+
 ## Tags
 
 artanh, arctanh, argtanh, atanh
@@ -126,5 +132,19 @@ def tanhPartialEquiv : PartialEquiv ℝ ℝ where
   map_target' _ _ := trivial
   left_inv' r _ := artanh_tanh r
   right_inv' _ hr := tanh_artanh hr
+
+theorem tanh_bijOn : BijOn tanh univ (Ioo (-1) 1) := tanhPartialEquiv.bijOn
+
+theorem tanh_injOn : InjOn tanh univ := tanhPartialEquiv.injOn
+
+theorem tanh_injective : Injective tanh := fun _ _ ↦ tanh_injOn trivial trivial
+
+theorem tanh_surjOn : SurjOn tanh univ (Ioo (-1) 1) := tanhPartialEquiv.surjOn
+
+theorem artanh_bijOn : BijOn artanh (Ioo (-1) 1) univ := tanhPartialEquiv.symm.bijOn
+
+theorem artanh_injOn : InjOn artanh (Ioo (-1) 1) := tanhPartialEquiv.symm.injOn
+
+theorem artanh_surjOn : SurjOn artanh (Ioo (-1) 1) univ := tanhPartialEquiv.symm.surjOn
 
 end Real
