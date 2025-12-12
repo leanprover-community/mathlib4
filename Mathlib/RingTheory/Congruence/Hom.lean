@@ -193,21 +193,21 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk
     g = c.lift f H :=
   Quotient.hom_ext (by aesop)
 
-/-- Surjective ring homomorphisms constant on a the equivalence classes
+/-- Surjective ring homomorphisms constant on the equivalence classes
 of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_iff {h : c ≤ ker f} :
     Surjective (c.lift f h) ↔ Surjective f := by
   refine ⟨fun H ↦ (Quot.surjective_lift fun x x_1 h_1 ↦ h h_1).mp H,
     fun H ↦ AddCon.lift_surjective_of_surjective h H⟩
 
-/-- Surjective ring homomorphisms constant on a the equivalence classes
+/-- Surjective ring homomorphisms constant on the equivalence classes
 of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
     Surjective (c.lift f h) :=
   lift_surjective_iff.mpr hf
 
 /-- Given a ring homomorphism `f` from `M` to `P` whose kernel contains `c`,
-the lift of `M`to `N` is injective iff `ker f = c`. -/
+the lift of `M` to `P` is injective iff `ker f = c`. -/
 theorem lift_injective_iff {h : c ≤ ker f} :
     Function.Injective (c.lift f h) ↔ c = ker f := by
   refine ⟨fun H ↦ ext'' (Setoid.ker_eq_lift_of_injective f h H).symm, ?_⟩
@@ -314,7 +314,7 @@ noncomputable def quotientKerEquivOfSurjective (f : M →+* P) (hf : Surjective 
 @[simp] theorem quotientKerEquivOfSurjective_mk (f : M →+* P) (hf : Surjective f) (x : M) :
     quotientKerEquivOfSurjective f hf x = f x := rfl
 
-/-- A surjective ring homomorphisms`f : M →+* N` induces
+/-- A surjective ring homomorphism `f : M →+* N` induces
 a ring equivalence `d.Quotient ≃+* c.Quotient`,
 whenever `c : RingCon M` and `d : RingCon N` are such that `d = c.comap f`. -/
 noncomputable def comapQuotientEquivOfSurj
