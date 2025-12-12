@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Topology.MetricSpace.Defs
 
 /-!
@@ -18,19 +18,43 @@ vertices to not be distance 1 apart as [hong2014] does.
 
 ## Main definitions
 
-* `UnitDistEmbedding E G` is a unit-distance embedding of `G` into `E`.
+* `G.UnitDistEmbedding E` is a unit-distance embedding of `G` into `E`.
+* `UnitDistEmbedding.copy`, `UnitDistEmbedding.embed`, `UnitDistEmbedding.iso`: transfer a
+  unit-distance embedding down a `Copy`, graph embedding or graph isomorphism respectively.
 -/
 
 @[expose] public section
 
 namespace SimpleGraph
 
+variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {E : Type*} [MetricSpace E]
+
+variable (G E) in
 /-- A unit-distance embedding of a graph into a metric space is a vertex embedding
 such that adjacent vertices are at distance 1 from each other. -/
-structure UnitDistEmbedding {V : Type*} (E : Type*) [MetricSpace E] (G : SimpleGraph V) where
+structure UnitDistEmbedding where
   /-- The embedding itself (position of vertices) -/
   p : V ↪ E
   /-- The distance between any two adjacent vertices is 1. -/
   unit_dist {u v} (ha : G.Adj u v) : dist (p u) (p v) = 1
+
+namespace UnitDistEmbedding
+
+variable (U : G.UnitDistEmbedding E)
+
+/-- Derive a unit-distance embedding of `H` from a unit-distance embedding of `G` containing `H`. -/
+def copy (f : H.Copy G) : H.UnitDistEmbedding E where
+  p := f.toEmbedding.trans U.p
+  unit_dist ha := U.unit_dist (f.toHom.map_adj ha)
+
+/-- `U.copy` specialised to graph embeddings. -/
+def embed (emb : H ↪g G) : H.UnitDistEmbedding E :=
+  U.copy emb.toCopy
+
+/-- Transfer a unit-distance embedding across a graph isomorphism. -/
+def iso (e : G ≃g H) : H.UnitDistEmbedding E :=
+  U.copy e.symm.toCopy
+
+end UnitDistEmbedding
 
 end SimpleGraph

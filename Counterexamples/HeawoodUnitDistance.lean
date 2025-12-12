@@ -184,7 +184,7 @@ lemma dist_udMap_eq_one_of_eq
   · rwa [dist_comm]
 
 /-- A unit-distance embedding of the Heawood graph in the Euclidean plane. -/
-noncomputable def unitDistEmbedding : UnitDistEmbedding Plane heawoodGraph where
+noncomputable def unitDistEmbedding : heawoodGraph.UnitDistEmbedding Plane where
   p := ⟨udMap, injective_udMap⟩
   unit_dist {i j} h := by
     simp only [Function.Embedding.coeFn_mk]
