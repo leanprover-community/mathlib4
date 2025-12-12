@@ -146,10 +146,10 @@ theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1
 
 theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (hk : k ≠ 0) :
     ∃ m < k, n * m % k = r % k := by
-  obtain rfl | hk : k = 1 ∨ 1 < k := by omega
+  obtain rfl | hk : k = 1 ∨ 1 < k := by lia
   · simp [mod_one]
   obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hkn hk
-  use (m * r) % k, mod_lt _ (by omega)
+  use (m * r) % k, mod_lt _ (by lia)
   rw [mul_mod, mod_mod, ← mul_mod, ← mul_assoc, mul_mod, hm, one_mul, mod_mod]
 
 end Nat
@@ -259,13 +259,37 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
 
 end Int
 
-@[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
-    x ^ m.gcd n = 1 := by
-  rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
-  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
-  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+section Monoid
+variable {M : Type*} [Monoid M] {a : M} {m n : ℕ}
+
+@[to_additive (attr := simp) gcd_nsmul_eq_zero]
+lemma pow_gcd_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 where
+  mp hmn := by
+    constructor
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_left n), pow_mul, hmn, one_pow]
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_right n), pow_mul, hmn, one_pow]
+  mpr
+  | ⟨hm, hn⟩ => by
+    obtain _ | m := m
+    · simpa
+    obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
+    rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+    rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+
+@[to_additive]
+lemma pow_eq_one_iff_of_coprime (hmn : m.Coprime n) : a ^ m = 1 ∧ a ^ n = 1 ↔ a = 1 := by
+  simp [← pow_gcd_eq_one, hmn]
+
+end Monoid
+
+section Group
+variable {M : Type*} [Group M] {a : M} {m n : ℤ}
+
+@[to_additive (attr := simp) intGCD_nsmul_eq_zero]
+lemma pow_intGCD_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 := by
+  obtain m | m := m <;> obtain n | n := n <;> simp
+
+end Group
 
 variable {α : Type*}
 
