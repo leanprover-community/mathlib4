@@ -61,9 +61,9 @@ def nonneg : Subsemiring R where
 
 @[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ 0 ≤ x := .rfl
 
+variable (R) in
 @[simp]
-theorem nonneg_toAddSubmonoid :
-  (nonneg R).toAddSubmonoid = AddSubmonoid.nonneg R := by ext; simp
+theorem nonneg_toAddSubmonoid : (nonneg R).toAddSubmonoid = AddSubmonoid.nonneg R := rfl
 
 end nonneg
 
