@@ -306,7 +306,7 @@ theorem isRemainder_range {ι : Type*} (f : MvPolynomial σ R)
           simp [idx] at ha'
           convert_to i = Set.rangeSplitting b ⟨b i, hbi⟩
           simp [← ha'.1, Set.apply_rangeSplitting]
-        · exact Finsupp.embDomain_apply idx g ⟨b i, hbi⟩
+        · exact Finsupp.embDomain_apply_self idx g ⟨b i, hbi⟩
     · intro i hi b hb
       aesop
   · rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
@@ -1055,7 +1055,7 @@ theorem remainder_eq_zero_iff_mem_ideal_of_isGroebnerBasis
     simp_intro ..
   · intro h_p_mem
     by_contra hr_ne_zero
-    have h₃: m.leadingTerm r ∉ Ideal.span (m.leadingTerm '' ↑G) := by
+    have h₃ : m.leadingTerm r ∉ Ideal.span (m.leadingTerm '' ↑G) := by
       apply term_notMem_span_leadingTerm_of_isRemainder hG hr
       exact (m.degree_mem_support_iff r).mpr hr_ne_zero
     rcases h with ⟨h_G', h_span⟩
@@ -1138,8 +1138,7 @@ theorem ideal_eq_span_of_isGroebnerBasis {G : Set (MvPolynomial σ R)} {I : Idea
     rcases g with ⟨g, gG'⟩
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span gG')
   · intro p hp
-    suffices Ideal.span ↑G ≤ I by
-      exact this hp
+    suffices Ideal.span ↑G ≤ I from this hp
     apply Ideal.span_le.mpr
     intro p hp'
     rw [SetLike.mem_coe]
@@ -1370,14 +1369,24 @@ remainder of echo sPolynomial between two polynomials on the basis. -/
 theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial σ k)) :
     m.IsGroebnerBasis G (Ideal.span G) ↔
     ∀ (g₁ g₂ : G), m.IsRemainder (m.sPolynomial g₁ g₂ : MvPolynomial σ k) G 0 := by
+  /- The informal proof is attached in comment blocks (`/- -/`), where math expressions are written
+  in `$ $` or `$$ $$` like in LaTeX or Markdown, while we tend to use unicode symbols like Lean code
+  instead of LaTeX commands are used for readability. And every block roughly corresponds with codes
+  below it and above the next comment block (if it exists). And inline comments are technical
+  details in formalization. -/
   classical
   constructor
-  · intro h g₁ g₂
+  · /- (←) Easy to prove. -/
+    intro h g₁ g₂
     rw [m.isGroebnerBasis_iff_subset_ideal_and_isRemainder_zero'] at h
     apply h.2
-    apply m.sPolynomial_mem_ideal
-    <;> exact Set.mem_of_mem_of_subset (by simp) h.1
-  intro hG
+    apply m.sPolynomial_mem_ideal <;> exact Set.mem_of_mem_of_subset (by simp) h.1
+  /- (→)
+  We only need to prove for all $p ∈ ⟨G⟩$ (`p ∈ Ideal.span G`),
+  $0$ is a remainder of $p$ on division by $G$ (`m.IsRemainder p G 0`), i.e.
+  to prove that these exists finite subset $G'$ of $G$ and $f$
+  s.t. $p = ∑_{g ∈ G'} f(g) * g$ and $∀ g ∈ G', degree(f(g) * g) ≤ degree(p)$. -/
+  intro hsPoly
   rw [isGroebnerBasis_iff_subset_ideal_and_isRemainder_zero']
   exists Ideal.subset_span
   intro p hp
@@ -1385,207 +1394,245 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
   refine ⟨?_, by simp⟩
   -- todo: Ideal.mem_span_iff_exists_finset_subset
   apply Submodule.mem_span_iff_exists_finset_subset.mp at hp
-  obtain ⟨f, T, hT, ⟨hf', hf⟩⟩ := hp
-  refine WellFoundedLT.induction
-      (C := fun (a : m.syn) ↦
-        (∃ (g : MvPolynomial σ k → MvPolynomial σ k) (G' : Finset (MvPolynomial σ k)),
-          ↑G' ⊆ G ∧
-          p = ∑ g' ∈ G', (g g') * g' ∧
-          ∀ g' ∈ G', (m.toSyn <| m.degree <| g' * g g') ≤ a) →
-        ∃ (g : MvPolynomial σ k → MvPolynomial σ k) (G' : Finset (MvPolynomial σ k)),
-          ↑G' ⊆ G ∧
-          p = ∑ g' ∈ G', (g g') * g' ∧
-          ∀ g' ∈ G', (m.toSyn <| m.degree <| g' * g g') ≤ m.toSyn (m.degree p))
-      (T.sup fun g' ↦ (m.toSyn <| m.degree <| g' * (f g'))) ?_ ?_
-  · intro a h ⟨g, G', hG', hg, hg₂⟩
-    by_cases ha : m.toSyn (m.degree p) < a
-    · simp_rw [← and_imp, ← exists_imp] at h
-      apply h
-      clear h
-      let gg'deg := fun g' ↦ m.toSyn <| m.degree <| g g' * g'
-      have hp := calc
-        p = ∑ g' ∈ G', g g' * g' := hg
-        _ = ∑ g' ∈ G',
-              (if gg'deg g' = a then m.leadingTerm (g g') else 0) * g' +
-            ∑ g' ∈ G',
-              (if gg'deg g' = a then g g' - m.leadingTerm (g g') else g g') * g' := by
-          simp [← Finset.sum_add_distrib, ← add_mul, ite_add_ite]
-        _ = ∑ g' ∈ G',
-              monomial (m.degree (g g')) (if gg'deg g' = a then m.leadingCoeff (g g') else 0) * g'
-            + _ := by
-          congr 2
-          rw [funext_iff]
-          intro x
-          by_cases h : gg'deg x = a <;> simp [h, leadingTerm]
+  /- From $p ∈ ⟨G⟩$, we get immediately that all condition we needed above except for
+  $∀ g ∈ G', degree(f(g) * g) ≤ degree(p)$.
+  We assume it doesn't hold, i.e. $max_{g ∈ G'} degree(f(g) * g) > degree(p)$. -/
+  obtain ⟨f₀, G'₀, hG', ⟨hG'subsetG, hsumf⟩⟩ := hp
+  by_cases! h : G'₀.sup (fun g ↦ (m.toSyn <| m.degree <| g * (f₀ g))) ≤ m.toSyn (m.degree p)
+  · exact ⟨f₀, G'₀, hG', hsumf.symm, by simpa using h⟩
+  /- We have now $P(max_{g ∈ G'} degree(f(g) * g))$ where
+  $P(a) : ∃ finite G' ⊆ G and f, p = ∑ g ∈ G', f(g) * g ∧ ∀ g ∈ G', degree(f(g) * g) ≤ a$,
+  and we will prove an assertion that, for each $a > degree(p)$, if $P(a)$, then there exists
+  $degree(g) ≤ a' < a$ s.t. $P(a')$ also holds. With this assertion, we can get $P(degree(p))$ by
+  well-founded induction on $a$. -/
+  refine WellFounded.induction_bot (WellFoundedLT.toWellFoundedRelation.wf)
+    (a := G'₀.sup fun g ↦ (m.toSyn <| m.degree <| g * (f₀ g))) (bot := m.toSyn (m.degree p))
+    (C := fun a ↦ m.toSyn (m.degree p) ≤ a ∧
+      ∃ (f : MvPolynomial σ k → MvPolynomial σ k) (G' : Finset (MvPolynomial σ k)),
+        ↑G' ⊆ G ∧
+        p = ∑ g ∈ G', (f g) * g ∧
+        ∀ g ∈ G', (m.toSyn <| m.degree <| g * f g) ≤ a)
+    (fun a ha ⟨ha', ⟨f, G', hG'subsetG, hsumf, h_deg_le⟩⟩ ↦ ?_)
+    ⟨le_of_lt h, ⟨f₀, G'₀, hG', hsumf.symm, by apply Finset.le_sup⟩⟩ |>.2
+  /- We start to prove the assertion. Assume $a > degree(p)$ (`ha`), $G' ⊆ G$ (`hG'subsetG`),
+  $f$ (`f`) s.t. $p = ∑ g ∈ G', f(g) g$ (`hsumf`), and
+  $∀ g ∈ G', degree(f(g) g) ≤ a$ (`h_deg_le`).
+  Without loss of generality, we can assume $f(g)$ vanishes when $g ∉ G'$.  -/
+  clear! f₀ G'₀
+  wlog hf₀support : ∀ g, g ∉ G' → f g = 0 generalizing f
+  · specialize this (fun g ↦ if g ∈ G' then f g else 0); simp_all
+  apply lt_of_le_of_ne' ha' at ha
+  /- Let $lt'(g) := leadingTerm(g) if degree(f(g) * g) = a, or else 0$ (`lt'`).
+  $$ p = ∑ g ∈ G', f(g) * g
+       = ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g +
+        ∑ g ∈ G', (f(g) - lt'(g)) * g.$$ (`hp`) -/
+  let degFgEqA g := (m.toSyn <| m.degree <| f g * g) = a
+  let lt' g := if degFgEqA g then m.leadingTerm (f g) else 0
+  have hp := calc
+    p = ∑ g ∈ G', f g * g := hsumf
+    _ = ∑ g ∈ G' with degFgEqA g, m.leadingTerm (f g) * g +
+        ∑ g ∈ G', (f g - lt' g) * g := by
+      simp [← Finset.sum_add_distrib, ← add_mul, ← ite_zero_mul, Finset.sum_filter, -ite_mul, lt']
+  /- For any $g ∈ G'$, it can be easily seen that $degree (f(g) - lt'(g)) g$ is either less than $a$
+  or equal to $0$, so $degree( (f(g) - lt'(g)) * g ) < a$, and $∑ g ∈ G', (f(g) - lt'(g)) * g < a$.
+  Since $$degree( ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g +
+      ∑ g ∈ G', (f(g) - lt'(g)) * g )
+    = degree(p) < a,$$
+  we can obtain $degree( ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g ) < a$.
+  Obviously, for all $g ∈ G'$ s.t. $degree(f(g) g) = a$, $degree(leadingTerm(f(g)) g))$ is also $a$.
+  So this sum can be decomposed into a sum of S-polynomials: there exists $c(g₁, g₂) ∈ k$ (`c`)
+  for each $g₁, g₂ ∈ {g ∈ G' | degree(f(g) * g) = a}$, s.t.
+  $$∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g
+    = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+          c(g₁, g₂) * sPoly(leadingTerm(f(g₁)) g₁, leadingTerm(f(g₂)) g₂)
+    = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+          c(g₁, g₂) * leadingCoeff(g₁ g₂) *
+            (lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) *
+          sPoly(g₁, g₂),$$ (`h_sum_sPoly`)
+  where $lm(g)$ is leading monomial of $g$ ($x^degree(g)$ if we ignore edge case that $g = 0$),
+  and $lcm(lm(g₁), lm(g₂))$ is least common multiple of $lm(g₁)$ and $lm(g₂)$.
+  Formalization of $lcm$ is mainly based on operations on `Finsupp` instead of `MvPolynomial`.
+  (For more formalization details, see the docstring of `MonomialOrder.sPolynomial`.) -/
+  have h_a_gt_zero : 0 < a := bot_lt_of_lt ha
+  obtain ⟨c, h_sum_sPoly⟩ := m.sPolynomial_decomposition' (d := a) (B := G'.filter degFgEqA)
+    (fun g ↦ m.leadingTerm (f g) * g) (by simp_intro .. [degFgEqA, Finset.mem_filter]) <| by
+      simp [← sub_eq_iff_eq_add.mpr hp]
+      apply lt_of_le_of_lt m.degree_sub_le
+      simp [ha]
+      apply lt_of_le_of_lt m.degree_sum_le
+      simp only [Finset.sup_lt_iff h_a_gt_zero, lt']
+      intro g hg
+      wlog h : degFgEqA g
+      · simpa [h] using lt_of_le_of_ne (mul_comm g _ ▸ h_deg_le g hg) h
+      simp [h]
+      wlog! +distrib h' : f g - m.leadingTerm (f g) ≠ 0 ∧ g ≠ 0
+      · obtain h' | h' := h' <;> simp [h_a_gt_zero, h']
+      apply lt_of_le_of_lt' (h_deg_le g hg)
+      rw [mul_comm g, m.degree_mul_lt_iff_left_lt_of_ne_zero h'.1 h'.2]
+      exact m.degree_sub_leadingTerm_lt_degree (m.degree_ne_zero_of_sub_leadingTerm_ne_zero h'.1)
+  conv at h_sum_sPoly =>
+    rhs
+    simp only [m.sPolynomial_mul_leadingTerm', ← G'.filter degFgEqA |>.sum_coe_sort]
+  /- For echo $g₁, g₂ ∈ G$, $0$ is a remainder of $sPoly(g₁, g₂)$ on division
+  by G, and thus we obtain its "quotient" in form of a finitely supported function $q_{g₁, g₂}$
+  s.t. it satisfies the following conditions (`hq`):
+    - $supp(q_{g₁, g₂}) ⊆ G$ (`h_q_support_subset_G`),
+    - $sPoly(g₁, g₂) = ∑ g ∈ G, q_{g₁, g₂}(g) * g$,
+    - $∀ g ∈ G, degree(q_{g₁, g₂}(g) * g) ≤ degree(sPoly(g₁, g₂))$, and
+    - if $sPoly(g₁, g₂) = 0$ then $q_{g₁, g₂} = 0$. -/
+  simp [isRemainder_def'₁, -Subtype.forall] at hsPoly
+  replace hsPoly (g₁ g₂ : G'.filter degFgEqA) :=
+    hsPoly ⟨g₁, hG'subsetG <| G'.mem_of_mem_filter _ g₁.2⟩
+      ⟨g₂, hG'subsetG <| G'.mem_of_mem_filter _ g₂.2⟩
+  let q (g₁ g₂ : G'.filter degFgEqA) := (hsPoly g₁ g₂).choose
+  have hq (g₁ g₂ : G'.filter degFgEqA) := (hsPoly g₁ g₂).choose_spec
+  -- I'd like to get rid of `.choose` in following formalization.
+  simp_rw [show _ = q _ _ by unfold q; rfl] at hq
+  -- TODO: a variant of `generalize` tactic that can replace with arguments
+  clear_value q -- clear its value to ensure we will not use it (optional)
+  have h_q_support_subset_G (g₁ g₂) := (hq g₁ g₂).1
+  /- Let $G''$ be $G' ∪ (∪ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\}, supp(q_{g₁, g₂})).$
+  Obviously, $G''$ is a finite subset of $G$, and
+  $support(q_{g₁, g₂}) ⊆ G''$ for all $g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\}$.
+  Then for all $g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\}$,
+  $sPoly(g₁, g₂) = ∑ g ∈ G'', q_{g₁, g₂}(g) * g$. -/
+  let G'' : Finset (MvPolynomial σ k) := G' ∪
+    (G'.filter degFgEqA).attach.biUnion fun b₁ ↦
+      (G'.filter degFgEqA).attach.biUnion fun b₂ ↦ (q b₁ b₂).support
+  conv at hq =>
+    ext g₁ g₂
+    simp [Finsupp.linearCombination_apply_of_mem_supported
+        (l := (q g₁ g₂)) (s := G'')
+        (hs := by
+          simp [Finsupp.mem_supported, G'']
+          apply Set.subset_union_of_subset_right
+          exact Set.subset_iUnion₂_of_subset g₁ g₂ subset_rfl)]
+  /- Substituting them into our decomposition by S-polynomials, we have:
+  $$∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g
+    = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+        c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂) *
+          (lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * sPoly(g₁, g₂).$$
 
-      have a_gt_zero : 0 < a := bot_lt_of_lt ha
+  For simplify we denote $c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂)$ as $c'$. Then
+  $$∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g
+    = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+        c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) *
+        ∑ g ∈ G'', q_{g₁, g₂}(g) * g
+    = ∑ g ∈ G'',
+        (∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+          c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g)) *
+        g. $$ (`h_sum_sPoly`)
 
-      obtain ⟨c, hc⟩ := by
-        apply m.sPolynomial_decomposition' (ι:=MvPolynomial σ k) (d:=a) (B:=G')
-          (fun g' ↦ monomial (m.degree (g g'))
-            (if gg'deg g' = a then m.leadingCoeff (g g') else 0) * g')
-        · intro g' hg'
-          simp
-          by_cases hg'₂ : g' = 0 <;> simp [hg'₂]
-          by_cases hg'₃ : g g' = 0 <;> simp [hg'₃]
-          by_cases hg'₄ : gg'deg g' = a <;> simp [hg'₄]
-          have := m.leadingCoeff_ne_zero_iff.mpr hg'₃
-          rw [← hg'₄, EmbeddingLike.apply_eq_iff_eq,
-            degree_mul (monomial_eq_zero.not.mpr this) hg'₂,
-            degree_mul hg'₃ hg'₂, degree_monomial]
-          simp [this]
-        · contrapose! ha
-          rw [hp, m.degree_add_of_lt]
-          ·exact ha
-          refine lt_of_lt_of_le ?_ ha
-          apply lt_of_le_of_lt m.degree_sum_le
-          rw [Finset.sup_lt_iff a_gt_zero]
-          intro g' hg'
-          by_cases hg'₂ : g' = 0
-          · simp [hg'₂, a_gt_zero]
-          by_cases hg'₃ : g g' = 0
-          · simp [hg'₃, a_gt_zero]
-          by_cases hg'₄ : gg'deg g' = a
-          · simp [hg'₄]
-            by_cases h : g g' - m.leadingTerm (g g') = 0
-            · simp [h, a_gt_zero]
-            refine lt_of_lt_of_le ?_ (hg₂ g' hg')
-            rw [degree_mul h hg'₂, degree_mul hg'₂ hg'₃, add_comm,
-              AddEquiv.map_add, AddEquiv.map_add, add_lt_add_iff_left]
-            exact m.degree_sub_leadingTerm_lt_degree <|
-              m.degree_ne_zero_of_sub_leadingTerm_ne_zero h
-          · simp [hg'₄]
-            apply lt_of_le_of_ne (mul_comm (g g') g' ▸ hg₂ g' hg')
-            exact hg'₄
-
-      simp_rw [hc, m.sPolynomial_mul_monomial] at hp
-      rw [← G'.sum_coe_sort] at hp
-      conv at hp =>
-        rhs
-        arg 1
-        arg 2
-        intro g'
-        rw [← G'.sum_coe_sort]
-
-      simp_rw [isRemainder_def'₁] at hG
-      simp [-Subtype.forall] at hG
-      let q' (g'₁ g'₂ : G') := (hG ⟨g'₁, hG' g'₁.2⟩ ⟨g'₂, hG' g'₂.2⟩).choose
-      have hq' (g'₁ g'₂ : G') := (hG ⟨g'₁, hG' g'₁.2⟩ ⟨g'₂, hG' g'₂.2⟩).choose_spec
-      simp_rw
-        [show ∀ (g'₁ g'₂ : G'), (hG ⟨g'₁, hG' g'₁.2⟩ ⟨g'₂, hG' g'₂.2⟩).choose = q' g'₁ g'₂ by
-          intros; rfl] at hq'
-      have hq'₁ (g'₁ g'₂) := (hq' g'₁ g'₂).1
-
-      let G'' : Finset (MvPolynomial σ k) :=
-        G'.attach.biUnion (fun b₁ ↦ G'.attach.biUnion fun b₂ ↦ (q' b₁ b₂).support) ∪ G'
-      conv at hq' =>
-        ext g'₁ g'₂
-        simp [Finsupp.linearCombination_apply_of_mem_supported
-            (l := (q' ↑g'₁ ↑g'₂)) (s := G'')
-            (hs := by
-              simp [Finsupp.mem_supported]
-              simp [G'', Finset.subset_iff, ← Decidable.not_imp_not (a := Or _ _)]
-              simp_intro ..)]
-      clear_value q'
-      clear hG
-      simp_rw [(hq' _ _).2.1] at hp
-      replace hq' (g'₁ g'₂ : G') := (hq' g'₁ g'₂).2.2
-
-      simp_rw [Finset.mul_sum, ← mul_assoc, Finset.smul_sum,
-        ←smul_mul_assoc, smul_monomial, Finset.sum_comm (t:=G''),
-        ← Finset.sum_mul] at hp
-      convert_to
-        p = _ + ∑ g' ∈ G'',
-          (if g' ∈ G' then
-            if gg'deg g' = a then g g' - m.leadingTerm (g g') else g g'
-          else 0) * g' using 2 at hp
-      · simp [G'']
-      simp_rw [← Finset.sum_add_distrib, ← add_mul] at hp
-      letI g₂ := (?_ : MvPolynomial σ k → MvPolynomial σ k)
-      replace hp : p = ∑ g' ∈ G'', g₂ g' * g' := by exact hp
-
-      refine ⟨(G''.sup fun g' ↦ m.toSyn <| m.degree <| g₂ g' * g'), ?_, g₂, G'', ?_, hp, ?_⟩
-      · simp [g₂, Finset.sup_lt_iff a_gt_zero, add_mul]
-        clear hp g₂
-        intro g' hg'
-        apply lt_of_le_of_lt degree_add_le
-        apply max_lt
-        · simp_rw [Finset.sum_mul]
-          refine lt_of_le_of_lt m.degree_sum_le <| (Finset.sup_lt_iff a_gt_zero).mpr ?_
-          simp
-          intro g'₁ hg'₁
-          refine lt_of_le_of_lt m.degree_sum_le <| (Finset.sup_lt_iff a_gt_zero).mpr ?_
-          simp
-          intro g'₂ hg'₂
-          obtain ⟨hq', hq'0⟩ := hq' ⟨g'₁, hg'₁⟩ ⟨g'₂, hg'₂⟩ g' <| by
-            simp [G'', -Subtype.exists, -Finset.mem_attach, -Finsupp.mem_support_iff] at hg'
-            rcases hg' with ⟨a, -, b, -, hh'⟩ | hg'
-            · exact hq'₁ _ _ hh'
-            · exact Set.mem_of_subset_of_mem hG' hg'
-          by_cases hgg'₂ : gg'deg g'₂ ≠ a
-          · simp [hgg'₂, a_gt_zero]
-          by_cases hgg'₁ : gg'deg g'₁ ≠ a
-          · simp [hgg'₁, a_gt_zero]
-          by_cases hspoly : m.sPolynomial g'₁ g'₂ = 0
-          · simp [hspoly] at hq'0
-            simp [hq'0, a_gt_zero]
-          simp at hq'
-          rw [mul_assoc]
-          apply lt_of_le_of_lt degree_mul_le
-          rw [AddEquiv.map_add]
-          refine add_lt_of_add_lt_right ?_ (degree_monomial_le _)
-          apply lt_of_le_of_lt (add_le_add_right (mul_comm g' (q' _ _ g') ▸ hq') _)
-          apply lt_of_lt_of_le (add_lt_add_right (m.degree_sPolynomial_lt_sup_degree hspoly) _)
-          push_neg at hgg'₁ hgg'₂
-          unfold gg'deg at hgg'₁ hgg'₂
-          rw [← AddEquiv.map_add]
-          have :
-              (m.degree (g g'₁) + m.degree g'₁) ⊔ (m.degree (g g'₂) + m.degree g'₂)
-                - m.degree g'₁ ⊔ m.degree g'₂ + m.degree g'₁ ⊔ m.degree g'₂
-              = (m.degree (g g'₁) + m.degree g'₁) ⊔ (m.degree (g g'₂) + m.degree g'₂) := by
-            rw [Finsupp.ext_iff]
-            intro x
-            simp
-            apply Nat.sub_add_cancel
-            apply max_le_max <;> simp
-          rw [this]
-          rw [m.degree_mul'] at hgg'₁ hgg'₂
-          · rw [← hgg'₁, m.toSyn.injective.eq_iff] at hgg'₂
-            simp [← hgg'₁, hgg'₂]
-          · contrapose! hgg'₂
-            simp [hgg'₂, ne_of_lt a_gt_zero]
-          · contrapose! hgg'₁
-            simp [hgg'₁, ne_of_lt a_gt_zero]
-        · by_cases hg'G' : g' ∉ G'
-          · simp [hg'G', a_gt_zero]
-          push_neg at hg'G'
-          simp [hg'G']
-          by_cases h : gg'deg g' ≠ a
-          · simp [h]
-            exact lt_of_le_of_ne (mul_comm (g g') g' ▸ hg₂ g' hg'G') h
-          push_neg at h
-          simp [h]
-          by_cases hLTgg' : g g' - m.leadingTerm (g g') = 0
-          · simp [hLTgg', a_gt_zero]
-          unfold gg'deg at h
-          rw [← h] at ⊢ a_gt_zero
-          apply ne_of_lt at a_gt_zero
-          rw [ne_eq, eq_comm, toSyn_eq_zero_iff] at a_gt_zero
-          obtain ⟨gg'_ne_zero, g_ne_zero⟩ := mul_ne_zero_iff.mp <|
-            m.ne_zero_of_degree_ne_zero a_gt_zero
-          rw [degree_mul hLTgg' g_ne_zero, AddEquiv.map_add,
-            degree_mul gg'_ne_zero g_ne_zero, AddEquiv.map_add]
-          simp [m.degree_sub_leadingTerm_lt_degree
-            (m.degree_ne_zero_of_sub_leadingTerm_ne_zero hLTgg')]
-      · simp [G'', hG', hq'₁]
-      · intro g'
-        rw [mul_comm]
-        exact Finset.le_sup (α:=m.syn) (f:=fun g' ↦ m.toSyn <| m.degree <| g₂ g' * g')
-    · exists g, G', hG', hg
-      exact fun g' hg' ↦ le_trans (hg₂ g' hg') (not_lt.mp ha)
-  · exists f, T, hT, hf.symm
-    intro g' hg'
-    apply Finset.le_sup hg'
+  Note: degree(s) of $(f(g) - lt'(g)) * g$ and
+    $c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂} * g$ are
+    both less than $a$. It is a key to complete the proof. We will proof it at the end. -/
+  simp_rw [(hq _ _).2.1] at h_sum_sPoly
+  replace hq (g₁ g₂ : G'.filter degFgEqA) := (hq g₁ g₂).2.2
+  clear hsPoly -- clear the infoview (optional)
+  let c' g₁ g₂ := c g₁ g₂ • (m.leadingCoeff (f g₁) * m.leadingCoeff (f g₂))
+  simp_rw [Finset.mul_sum, ← mul_assoc, Finset.smul_sum,
+    ← smul_mul_assoc, smul_monomial, Finset.sum_comm (t:=G''), ← Finset.sum_mul,
+    show _ = c' _ _ by unfold c'; exact rfl] at h_sum_sPoly
+  clear_value c'
+  /- With the assumption that $f(g)$ vanishes when $g ∉ G'$ and $G'' ⊆ G'$, we have
+  $$p = ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g + ∑ g ∈ G', (f(g) - lt'(g)) * g
+    = ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g + ∑ g ∈ G'', (f(g) - lt'(g)) * g
+    = ∑ g ∈ G'',
+        (∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+           c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g)) *
+        g +
+      ∑ g ∈ G'', (f(g) - lt'(g)) * g
+    = ∑ g ∈ G'',
+        (∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+           c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g) +
+         (f(g) - lt'(g))) *
+        g.$$ -/
+  convert_to p = _ + ∑ g ∈ G'', (f g - lt' g) * g using 2 at hp
+  · exact Finset.sum_subset (by simp [G'']) (by simp_intro .. [hf₀support, lt'])
+  simp_rw [h_sum_sPoly, ← Finset.sum_add_distrib, ← add_mul] at hp
+  /- Let $f'(g)$ be
+  $$∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
+      c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g)
+    + (f(g) - lt'(g)),$$
+  and $a'$ be $max(degree(p), max_{g ∈ G''} f'(g) * g$. Than we have $p = ∑ g ∈ G'', f'(g) * g$,
+  and apparently $degree(p) ≤ a'$ and $∀ g ∈ G'', a' ≤ f'(g) * g$.
+  We will show $P(a')$ hold on $a'$ by $f'$, $G''$. -/
+  -- use `by exact hp` to assign a long expression (which we don't want to write) to `?f'`
+  refine ⟨m.toSyn (m.degree p) ⊔ G''.sup fun g ↦ m.toSyn <| m.degree <| ?f' g * g, (?_ : _ < _),
+    by simp, ?f', G'', by simp [G'', hG'subsetG, h_q_support_subset_G], by exact hp, ?le_max⟩
+  case le_max =>
+    intro h g
+    rw [mul_comm]
+    exact le_trans (Finset.le_sup (f := fun g ↦ m.toSyn <| m.degree <| ?f' g * g) g) le_sup_right
+  /- It remains to be proved that $a' < a$.
+  It suffices that $degree(f'(g) * g) < a$ for all $g ∈ G''$. Then it suffices that, degree(s) of
+  the left side (too long...) and the right side $f(g) - lt'(g)$ of the outermost $+$ in $f'$
+  multiplied by $g$ respective are both less than $a$ for all $g ∈ G''$.
+  -/
+  clear hp h_sum_sPoly -- remove them since they're long and will not be used anymore
+  simp [ha, Finset.sup_lt_iff h_a_gt_zero, add_mul]
+  intro g hg'
+  apply lt_of_le_of_lt degree_add_le
+  apply max_lt
+  · /- To prove the left side, it suffices to show
+    $degree(c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) *
+      q_{g₁, g₂}(g) * g) < a$
+    for all $g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\}$ (`g₁`, `g₂`). -/
+    simp_rw [Finset.sum_mul]
+    refine lt_of_le_of_lt m.degree_sum_le <| (Finset.sup_lt_iff h_a_gt_zero).mpr ?_
+    simp [-Finset.mem_filter, -Subtype.forall]
+    intro g₁
+    refine lt_of_le_of_lt m.degree_sum_le <| (Finset.sup_lt_iff h_a_gt_zero).mpr ?_
+    simp [-Finset.mem_filter, -Subtype.forall]
+    intro g₂
+    /- Without loss of generality, we assume $sPoly(g₁, g₂) ≠ 0$.
+    (If it is $0$, then $q_{g₁, g₂} = 0$).
+    $$degree(
+      c'(g₁, g₂) • (lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g) * g)
+    ≤ degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))) - degree(lcm(lm(g₁), lm(g₂))) +
+        degree(q_{g₁, g₂}(g) * g)$$ -/
+    obtain ⟨h_deg_gq_le_sPoly, h_q_eq_0_of_sPoly_eq_0⟩ := hq g₁ g₂ g <| by
+      simp [G'', -Subtype.exists, -Finset.mem_attach, -Finsupp.mem_support_iff] at hg'
+      rcases hg' with hg' | ⟨a, -, b, -, hh'⟩
+      · exact Set.mem_of_subset_of_mem hG'subsetG hg'
+      · exact h_q_support_subset_G _ _ hh'
+    wlog! hsPoly_ne_0 : m.sPolynomial g₁.val g₂.val ≠ 0
+    · simp [h_q_eq_0_of_sPoly_eq_0 hsPoly_ne_0, h_a_gt_zero]
+    rw [mul_assoc]
+    apply lt_of_le_of_lt degree_mul_le
+    rw [AddEquiv.map_add]
+    refine add_lt_of_add_lt_right ?_ (degree_monomial_le _)
+    /- $$... ≤ degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))) - degree(lcm(lm(g₁), lm(g₂))) +
+                degree(sPoly(g₁, g₂))$$ -/
+    apply lt_of_le_of_lt (add_le_add_right (mul_comm g (q _ _ g) ▸ h_deg_gq_le_sPoly) _)
+    /- $$... < degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))) - degree(lcm(lm(g₁), lm(g₂))) +
+                degree(lcm(lm(g₁), lm(g₂)))$$ -/
+    apply lt_of_lt_of_le (add_lt_add_right (m.degree_sPolynomial_lt_sup_degree hsPoly_ne_0) _)
+    /- $$... = degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))).$$ -/
+    have hfgg₁ := (G'.mem_filter.mp g₁.2).2
+    have hfgg₂ := (G'.mem_filter.mp g₂.2).2
+    simp [degFgEqA, eq_comm] at hfgg₁ hfgg₂
+    rw [← AddEquiv.map_add, tsub_add_cancel_of_le <| sup_le_sup _ _]
+    /- $$... ≤ a.$$ -/
+    · simp_all
+    · simp [m.degree_mul' <|
+        ne_zero_of_degree_ne_zero <| m.toSyn.map_ne_zero_iff.mp <| hfgg₁ ▸ h_a_gt_zero.ne']
+    · simp [m.degree_mul' <|
+        ne_zero_of_degree_ne_zero <| m.toSyn.map_ne_zero_iff.mp <| hfgg₂ ▸ h_a_gt_zero.ne']
+  · /- It is easy to prove $degree(f(g) - lt'(g)) < a$. -/
+    wlog h : degFgEqA g
+    · by_cases hg'G' : g ∈ G'
+      · simp [h, lt', lt_of_le_of_ne (mul_comm (f g) g ▸ h_deg_le g hg'G') h]
+      · simp [hg'G', h_a_gt_zero, lt', hf₀support]
+    simp [h, lt']
+    wlog! +distrib hLTgg' : f g - m.leadingTerm (f g) ≠ 0
+    · simp [hLTgg', h_a_gt_zero]
+    rw [← h] at ⊢ h_a_gt_zero
+    apply ne_of_lt at h_a_gt_zero
+    rw [ne_eq, eq_comm, toSyn_eq_zero_iff] at h_a_gt_zero
+    obtain ⟨gg'_ne_zero, g_ne_zero⟩ := mul_ne_zero_iff.mp (m.ne_zero_of_degree_ne_zero h_a_gt_zero)
+    simp [degree_mul hLTgg' g_ne_zero, degree_mul gg'_ne_zero g_ne_zero,
+      m.degree_sub_leadingTerm_lt_degree (m.degree_ne_zero_of_sub_leadingTerm_ne_zero hLTgg')]
 
 /-- Buchberger Criterion: a basis of an ideal is a Gröbner basis of it if and only if any
 remainder of echo sPolynomial between two polynomials on the basis is 0.
