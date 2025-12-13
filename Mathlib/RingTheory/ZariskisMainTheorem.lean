@@ -33,7 +33,7 @@ def ZariskisMainProperty (p : Ideal S) : Prop :=
   ∃ r : integralClosure R S, r.1 ∉ p ∧ Function.Bijective
     (Localization.awayMap (integralClosure R S).val.toRingHom r)
 
-lemma ZariskisMainProperty_iff {p : Ideal S} [p.IsPrime] :
+lemma ZariskisMainProperty_iff {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, IsIntegral R r ∧ ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
   simp only [ZariskisMainProperty, Subtype.exists, ← exists_prop, @exists_comm (_ ∉ p)]
   refine exists₃_congr fun r hr hrp ↦ ?_
@@ -42,7 +42,7 @@ lemma ZariskisMainProperty_iff {p : Ideal S} [p.IsPrime] :
     Localization.awayMap_surjective_iff]
   simp [mem_integralClosure_iff]
 
-lemma ZariskisMainProperty_iff' {p : Ideal S} [p.IsPrime] :
+lemma ZariskisMainProperty_iff' {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
   refine ZariskisMainProperty_iff.trans (exists_congr fun r ↦ and_congr_right fun hrp ↦
     and_iff_right_of_imp fun H ↦ ?_)
@@ -50,14 +50,14 @@ lemma ZariskisMainProperty_iff' {p : Ideal S} [p.IsPrime] :
   rw [← pow_succ] at hn
   exact (IsIntegral.pow_iff (by simp)).mp hn
 
-lemma ZariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} [p.IsPrime] :
+lemma ZariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
       (integralClosure R S).saturation (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
   simp [ZariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
     Submonoid.mem_powers_iff, mem_integralClosure_iff]
 
 lemma ZariskisMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
-    [Algebra.IsIntegral R S] {p : Ideal T} [p.IsPrime] (H : ZariskisMainProperty S p) :
+    [Algebra.IsIntegral R S] {p : Ideal T} (H : ZariskisMainProperty S p) :
     ZariskisMainProperty R p := by
   rw [ZariskisMainProperty_iff'] at H ⊢
   obtain ⟨r, hrp, H⟩ := H
