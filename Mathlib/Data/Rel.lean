@@ -263,8 +263,20 @@ lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := b
 
 @[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
+variable (R) in
+lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by aesop
+
+variable (R) in
+lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by aesop
+
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
+
+variable (R) in
+lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by aesop
+
+variable (R) in
+lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by aesop
 
 variable (s) in
 @[simp] lemma image_id : image .id s = s := by aesop
