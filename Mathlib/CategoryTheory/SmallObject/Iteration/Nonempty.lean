@@ -30,7 +30,7 @@ namespace SuccStruct
 
 open Category Limits
 
-variable {C : Type*} [Category C] (Φ : SuccStruct C)
+variable {C : Type*} [Category* C] (Φ : SuccStruct C)
   {J : Type u} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape J C]
 

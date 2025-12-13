@@ -29,7 +29,7 @@ open Limits Sheaf GrothendieckTopology Opposite
 
 section
 
-variable {A C J : Type*} [Category A] [Category C] [Category J]
+variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
