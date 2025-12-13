@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner
