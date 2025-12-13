@@ -150,7 +150,7 @@ section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R)
 
-/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
+/-- For an `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
 to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
