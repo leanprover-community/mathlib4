@@ -249,10 +249,19 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 
 open Lean Meta Elab Tactic
 
+/-- `mem_tac_aux` tries to prove goals of the form `x ∈ 𝒜 i` when `x` has the form of:
+* `y ^ n` where `i = n • j` and `y ∈ 𝒜 j`;
+* a natural number `n`.
+-/
 macro "mem_tac_aux" : tactic =>
   `(tactic| first | exact pow_mem_graded _ (SetLike.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
+/-- `mem_tac` tries to prove goals of the form `x ∈ 𝒜 i` when `x` has the form of:
+* `y * z` where `i = j + k`, `y ∈ 𝒜 j` and `z ∈ 𝒜 k`;
+* `y ^ n` where `i = n • j` and `y ∈ 𝒜 j`;
+* a natural number `n`.
+-/
 macro "mem_tac" : tactic =>
   `(tactic| first | mem_tac_aux |
     repeat (all_goals (apply SetLike.GradedMonoid.toGradedMul.mul_mem)); mem_tac_aux)
