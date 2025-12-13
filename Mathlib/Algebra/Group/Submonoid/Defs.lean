@@ -249,6 +249,10 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
 
 @[to_additive (attr := simp)]
+lemma mk_eq_top (toSubsemigroup : Subsemigroup M) (one_mem') :
+    mk toSubsemigroup one_mem' = ⊤ ↔ toSubsemigroup = ⊤ := by simp [← SetLike.coe_injective'.eq_iff]
+
+@[to_additive (attr := simp)]
 lemma mk_eq_bot (toSubsemigroup : Subsemigroup M) (one_mem') :
     mk toSubsemigroup one_mem' = ⊥ ↔ (toSubsemigroup : Set M) = {1} := by
   simp [← SetLike.coe_injective'.eq_iff]

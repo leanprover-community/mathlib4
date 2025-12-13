@@ -152,6 +152,9 @@ lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
 lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
 
+@[simp] lemma mk_eq_top (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊤ : Submodule R M) ↔ carrier = ⊤ := by simp [← toAddSubmonoid_inj]
+
 instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
 
