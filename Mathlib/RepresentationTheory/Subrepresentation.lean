@@ -97,6 +97,8 @@ instance : BoundedOrder (Subrepresentation ρ) where
   bot := ⟨⊥, by simp⟩
   bot_le _ _ := by simp +contextual
 
+/-- A subrepresentation of `ρ` can be thought of as an `A[G]` submodule of `ρ.asModule`.
+-/
 def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
   carrier := σ.toSubmodule.carrier
   add_mem' := σ.toSubmodule.add_mem'
@@ -110,6 +112,8 @@ def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
         rw [Representation.single_smul]
         exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
 
+/-- A subrepresentation of `ofModule M` can be thought of as an `A[G]` submodule of `M`.
+-/
 def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)) :
     Submodule A[G] M where
   carrier := σ.toSubmodule.carrier
@@ -131,6 +135,8 @@ def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G :=
         rw [this]
         exact σ.toSubmodule.smul_mem' ((algebraMap A A) a) h
 
+/-- A submodule of an `A[G]`-module `M` can be thought of as a subrepresentation of `ofModule M`.
+-/
 def ofSubmodule (N : Submodule A[G] M) :
     Subrepresentation (Representation.ofModule (k := A) (G := G) M) where
   toSubmodule :={
@@ -146,6 +152,8 @@ def ofSubmodule (N : Submodule A[G] M) :
     dsimp [Representation.ofModule, RestrictScalars.lsmul]
     exact Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
 
+/-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
+-/
 def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
   toSubmodule := {
     carrier := N.carrier
@@ -165,6 +173,8 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
     rw [Representation.single_smul, one_smul] at h
     exact h
 
+/-- An order-preserving equivalence between subrepresentations of `ρ` and submodules of
+`ρ.asModule`. -/
 def subrepresentationSubmoduleOrderIso : Subrepresentation ρ ≃o Submodule A[G] ρ.asModule where
   toFun := asSubmodule
   invFun := ofSubmodule'
@@ -180,6 +190,8 @@ def subrepresentationSubmoduleOrderIso : Subrepresentation ρ ≃o Submodule A[G
     intro σ τ
     rfl
 
+/-- An order-preserving equivalence between `A[G]`-submodules of an `A[G]`-module M and
+subrepresentations of `ρ`. -/
 def submoduleSubrepresentationOrderIso : Submodule A[G] M ≃o
     Subrepresentation (Representation.ofModule (k := A) (G := G) M) where
   toFun := ofSubmodule
