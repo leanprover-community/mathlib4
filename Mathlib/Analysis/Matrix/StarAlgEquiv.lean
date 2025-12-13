@@ -7,13 +7,20 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.UnitaryGroup
 
+import Mathlib.Algebra.Central.Matrix
+import Mathlib.Algebra.Central.Basic
+import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 
 /-!
 
-# Star homomorphisms differ by a unit iff they differ by a unitary
+# Star algebra equivalences on matrices are unitary inner
 
 -/
 
@@ -68,7 +75,8 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
     nth_rw 2 [thisα]
     simp [smul_smul, ← RCLike.ofReal_mul, ← Real.rpow_add_one (NeZero.of_pos this2).out]
   set U : unitary A := ⟨_, isU⟩
-  have Uinv : ((((RCLike.re α : ℝ) ^ ((1 / 2 : ℝ)) : ℝ) : 𝕜) • ((y⁻¹ : Aˣ) : A)) = (U⁻¹ : unitary A) := by
+  have Uinv : ((((RCLike.re α : ℝ) ^ ((1 / 2 : ℝ)) : ℝ) : 𝕜) • ((y⁻¹ : Aˣ) : A)) =
+      (U⁻¹ : unitary A) := by
     rw [← neg_neg (1 / 2 : ℝ), Real.rpow_neg_eq_inv_rpow, Real.inv_rpow this2.le]
     set α' : 𝕜ˣ := Units.mk0 αa <| by
       simp only [one_div, ne_eq, map_eq_zero, αa]
@@ -82,3 +90,28 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
   use U
   rw [← Unitary.coe_star, Unitary.star_eq_inv, ← Uinv]
   simp [αa, Algebra.smul_mul_assoc, U, smul_smul, ← RCLike.ofReal_mul, ← Real.rpow_add this2, hy]
+
+public theorem Matrix.AlgEquiv.eq_mulSemiringActionToAlgEquiv {n : Type*} [Fintype n]
+    [DecidableEq n] (f : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜) :
+    ∃ U : GL n 𝕜, f = MulSemiringAction.toAlgEquiv 𝕜 (G := ConjAct (GL n 𝕜)) _ U := by
+  obtain ⟨U, hU⟩ := ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv').eq_linearEquivConjAlgEquiv
+  use GeneralLinearGroup.toLin.symm (.ofLinearEquiv U)
+  ext1 x
+  have := by simpa using congr((toLinAlgEquiv'.trans $hU).trans toLinAlgEquiv'.symm x)
+  simp only [this, LinearMap.toMatrixAlgEquiv', toLinAlgEquiv', AlgEquiv.ofLinearEquiv_symm,
+    LinearMap.toMatrix'_symm, AlgEquiv.ofLinearEquiv_apply, LinearEquiv.conjAlgEquiv_apply,
+    LinearMap.toMatrix'_comp, LinearMap.toMatrix'_toLin', ← mul_assoc,
+    MulSemiringAction.toAlgEquiv_apply, ConjAct.units_smul_def, coe_units_inv]
+  congr
+  refine (inv_eq_right_inv ?_).symm
+  simp [ConjAct.ofConjAct, GeneralLinearGroup.toLin, LinearMap.GeneralLinearGroup.ofLinearEquiv,
+    LinearMap.toMatrixAlgEquiv', ← LinearMap.toMatrix'_comp]
+
+open Matrix ComplexOrder MatrixOrder in
+public theorem Matrix.StarAlgEquiv.eq_unitaryConjStarAlgAut {n : Type*} [Fintype n]
+    [DecidableEq n] (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+    ∃ U : unitaryGroup n 𝕜, f = Unitary.conjStarAlgAut 𝕜 _ U := by
+  obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv
+  have := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := 𝕜) 1 f (by simp)
+  obtain ⟨U, hU⟩ := this.mp ⟨g, congr($hg)⟩
+  exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩

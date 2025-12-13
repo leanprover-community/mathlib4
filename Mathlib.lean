@@ -1856,6 +1856,7 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.Analysis.Matrix.StarAlgEquiv
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.MellinInversion
@@ -4709,7 +4710,6 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.StarHom
 public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
