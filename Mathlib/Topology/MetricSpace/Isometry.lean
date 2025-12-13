@@ -450,6 +450,9 @@ def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
 initialize_simps_projections IsometryEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
+theorem coe_symm_toEquiv (h : α ≃ᵢ β) : ⇑h.toEquiv.symm = h.symm := rfl
+
+@[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 
 theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
