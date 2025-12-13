@@ -11,8 +11,6 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Embedding.Basic
 
-import Mathlib.Data.Int.Cast.Lemmas
-
 /-!
 # Diagonal matrices
 
