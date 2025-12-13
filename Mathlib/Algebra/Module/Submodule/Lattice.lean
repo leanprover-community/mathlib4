@@ -76,6 +76,9 @@ variable (R) in
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
 
+@[simp] lemma mk_eq_bot (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊥ : Submodule R M) ↔ carrier = ⊥ := by simp [← toAddSubmonoid_inj]
+
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 
@@ -148,6 +151,9 @@ lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
 @[simp]
 lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
+
+@[simp] lemma mk_eq_top (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊤ : Submodule R M) ↔ carrier = ⊤ := by simp [← toAddSubmonoid_inj]
 
 instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
