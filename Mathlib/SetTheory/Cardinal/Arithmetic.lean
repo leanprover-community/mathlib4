@@ -464,6 +464,10 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
   rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
   exact ⟨by grw [h.1], mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
+lemma add_lt_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
+    α + γ < β + γ ↔ α < β := by
+  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 γ₀]
+
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
@@ -471,6 +475,55 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
+
+lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
+    (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
+  rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
+  · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
+    apply lt_of_le_of_lt
+    · exact (add_le_add_iff_of_lt_aleph0 (hμ.trans hfin_.right)).mpr hκ.le
+    · simpa [add_comm] using (add_lt_add_iff_of_lt_aleph0 hfin_.left).mpr hμ
+
+lemma nat_mul_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun κ : Cardinal ↦ n * κ := by
+  match n, hneq0 with
+  | 1, _ => simpa using strictMono_id
+  | (n + 1) + 1, hneq1 =>
+    intro κ μ hlt
+    push_cast
+    conv_lhs => rw [add_mul, one_mul]
+    conv_rhs => rw [add_mul, one_mul]
+    refine Cardinal.add_lt_add_of_lt_of_lt ?_ hlt
+    simpa using (nat_mul_strictMono (Nat.succ_ne_zero n) hlt)
+
+lemma mul_nat_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun κ : Cardinal ↦ κ * n := by
+  intro κ μ hlt
+  have := nat_mul_strictMono hneq0 hlt
+  simpa [mul_comm] using this
+
+@[simp]
+lemma nat_mul_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ = n * μ ↔ κ = μ :=
+  (nat_mul_strictMono hneq0).injective.eq_iff
+
+@[simp]
+lemma mul_nat_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n = μ * n ↔ κ = μ :=
+  (mul_nat_strictMono hneq0).injective.eq_iff
+
+@[simp]
+lemma nat_mul_le_iff_le {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ ≤ n * μ ↔ κ ≤ μ :=
+  (nat_mul_strictMono hneq0).le_iff_le
+
+@[simp]
+lemma mul_nat_le_iff_le {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n ≤ μ * n ↔ κ ≤ μ :=
+  (mul_nat_strictMono hneq0).le_iff_le
+
+@[simp]
+lemma nat_mul_lt_iff_lt {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ < n * μ ↔ κ < μ :=
+  (nat_mul_strictMono hneq0).lt_iff_lt
+
+@[simp]
+lemma mul_nat_lt_iff_lt {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n < μ * n ↔ κ < μ :=
+  (mul_nat_strictMono hneq0).lt_iff_lt
 
 end aleph
 
