@@ -431,15 +431,15 @@ theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
     LinearEquiv.det ((e.symm.trans f).trans e) = LinearEquiv.det f := by
   rw [← Units.val_inj, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
 
+attribute [irreducible] LinearEquiv.det
+
+end LinearEquiv
+
 variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W] in
 @[simp] theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
     (f x).det = x.det :=
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
   h ▸ LinearMap.det_conj _ _
-
-attribute [irreducible] LinearEquiv.det
-
-end LinearEquiv
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
