@@ -68,19 +68,12 @@ def centerAndRescale : SatelliteConfig E N τ where
   c i := (a.r (last N))⁻¹ • (a.c i - a.c (last N))
   r i := (a.r (last N))⁻¹ * a.r i
   rpos i := by positivity
-  h i j hij := by
-    simp (disch := positivity) only [dist_smul₀, dist_sub_right, mul_left_comm τ,
-      Real.norm_of_nonneg]
-    rcases a.h hij with (⟨H₁, H₂⟩ | ⟨H₁, H₂⟩) <;> [left; right] <;> constructor <;> gcongr
-  hlast i hi := by
-    simp (disch := positivity) only [dist_smul₀, dist_sub_right, mul_left_comm τ,
-      Real.norm_of_nonneg]
-    have ⟨H₁, H₂⟩ := a.hlast i hi
-    constructor <;> gcongr
-  inter i hi := by
-    simp (disch := positivity) only [dist_smul₀, ← mul_add, dist_sub_right, Real.norm_of_nonneg]
-    gcongr
-    exact a.inter i hi
+  r_le_dist hlt := by simp (disch := positivity) [dist_smul₀, abs_of_nonneg, a.r_le_dist hlt]
+  r_le_tau_mul_of_lt hlt := by
+    simp (disch := positivity) [mul_left_comm τ, a.r_le_tau_mul_of_lt hlt]
+  dist_last_le_add_of_lt hlt := by
+    simpa (disch := positivity) [norm_smul, abs_of_nonneg, dist_eq_norm_sub, field]
+      using a.dist_last_le_add_of_lt hlt
 
 theorem centerAndRescale_center : a.centerAndRescale.c (last N) = 0 := by
   simp [SatelliteConfig.centerAndRescale]
@@ -312,10 +305,8 @@ where both of them are `> 2`.
 theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1)
     (i j : Fin N.succ) (inej : i ≠ j) : 1 - δ ≤ ‖a.c i - a.c j‖ := by
-  have ah :
-      Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
-        a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
-    simpa only [dist_eq_norm] using a.h
+  wlog hlt : i < j generalizing i j
+  · simpa [norm_sub_rev] using this j i inej.symm (by grind)
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
   have τpos : 0 < τ := _root_.zero_lt_one.trans_le hτ
@@ -330,13 +321,8 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have hτ' : ∀ k, τ⁻¹ ≤ a.r k := by
     intro k
     rw [inv_eq_one_div, div_le_iff₀ τpos, ← lastr, mul_comm]
-    exact a.hlast' k hτ
-  rcases ah inej with (H | H)
-  · apply le_trans _ H.1
-    exact hτ' i
-  · rw [norm_sub_rev]
-    apply le_trans _ H.1
-    exact hτ' j
+    exact a.r_le_tau_mul k.le_last hτ
+  simpa only [dist_eq_norm] using (hτ' i).trans <| a.r_le_dist hlt
 
 variable [NormedSpace ℝ E]
 
@@ -344,30 +330,27 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
     1 - δ ≤ ‖a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
-  have ah :
-      Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
-        a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
-    simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
   have D : 0 ≤ 1 - δ / 4 := by linarith only [hδ2]
-  have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
+  have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by
+    simpa only [lastc, lastr, dist_zero_right] using a.dist_last_le_add j
   have I : a.r i ≤ 2 := by
-    rcases lt_or_ge i (last N) with (H | H)
-    · apply (a.hlast i H).1.trans
+    rcases i.le_last.eq_or_lt with rfl | H
+    · simp [lastr]
+    · apply (a.r_le_dist H).trans
       simpa only [dist_eq_norm, lastc, sub_zero] using hi
-    · have : i = last N := top_le_iff.1 H
-      rw [this, lastr]
-      exact one_le_two
   have J : (1 - δ / 4) * τ ≤ 1 :=
     calc
       (1 - δ / 4) * τ ≤ (1 - δ / 4) * (1 + δ / 4) := by gcongr
       _ = (1 : ℝ) - δ ^ 2 / 16 := by ring
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have A : a.r j - δ ≤ ‖a.c i - a.c j‖ := by
-    rcases ah inej.symm with (H | H); · rw [norm_sub_rev]; linarith [H.1]
+    rcases inej.symm.lt_or_gt with H | H
+    · grw [a.r_le_dist H, dist_eq_norm_sub']
+      linear_combination δnonneg
     have C : a.r j ≤ 4 :=
       calc
-        a.r j ≤ τ * a.r i := H.2
+        a.r j ≤ τ * a.r i := a.r_le_tau_mul_of_lt H
         _ ≤ τ * 2 := by gcongr
         _ ≤ 5 / 4 * 2 := by gcongr; linarith only [hδ1, hδ2]
         _ ≤ 4 := by norm_num
@@ -376,9 +359,11 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         gcongr _ - ?_
         exact mul_le_of_le_one_left δnonneg (by linarith only [C])
       _ = (1 - δ / 4) * a.r j := by ring
-      _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
+      _ ≤ (1 - δ / 4) * (τ * a.r i) := by grw [a.r_le_tau_mul_of_lt H]
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
-      _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
+      _ ≤ ‖a.c i - a.c j‖ := by
+        rw [one_mul, ← dist_eq_norm_sub]
+        exact a.r_le_dist H
   set d := (2 / ‖a.c j‖) • a.c j with hd
   have : a.r j - δ ≤ ‖a.c i - d‖ + (a.r j - 1) :=
     calc
@@ -397,21 +382,14 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (i j : Fin N.succ) (inej : i ≠ j) (hi : 2 < ‖a.c i‖) (hij : ‖a.c i‖ ≤ ‖a.c j‖) :
     1 - δ ≤ ‖(2 / ‖a.c i‖) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
-  have ah :
-      Pairwise fun i j => a.r i ≤ ‖a.c i - a.c j‖ ∧ a.r j ≤ τ * a.r i ∨
-        a.r j ≤ ‖a.c j - a.c i‖ ∧ a.r i ≤ τ * a.r j := by
-    simpa only [dist_eq_norm] using a.h
   have δnonneg : 0 ≤ δ := by linarith only [hτ, hδ1]
-  have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa only [lastc, lastr, dist_zero_right] using a.inter' j
+  have hcrj : ‖a.c j‖ ≤ a.r j + 1 := by simpa [lastc, lastr] using a.dist_last_le_add j
   have A : a.r i ≤ ‖a.c i‖ := by
     have : i < last N := by
-      apply lt_top_iff_ne_top.2
-      intro iN
-      change i = last N at iN
-      rw [iN, lastc, norm_zero] at hi
-      exact lt_irrefl _ (zero_le_two.trans_lt hi)
-    convert (a.hlast i this).1 using 1
-    rw [dist_eq_norm, lastc, sub_zero]
+      rw [lt_last_iff_ne_last]
+      rintro rfl
+      simp [lastc, not_lt_of_ge] at hi
+    simpa [lastc, lastr] using a.r_le_dist this
   have hj : 2 < ‖a.c j‖ := hi.trans_le hij
   set s := ‖a.c i‖
   have spos : 0 < s := zero_lt_two.trans hi
@@ -427,15 +405,15 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
   have J : a.r j - ‖a.c j - a.c i‖ ≤ s / 2 * δ :=
     calc
       a.r j - ‖a.c j - a.c i‖ ≤ s * (τ - 1) := by
-        rcases ah inej.symm with (H | H)
+        rcases inej.lt_or_gt with H | H
         · calc
-            a.r j - ‖a.c j - a.c i‖ ≤ 0 := sub_nonpos.2 H.1
-            _ ≤ s * (τ - 1) := mul_nonneg spos.le (sub_nonneg.2 hτ)
-        · rw [norm_sub_rev] at H
-          calc
-            a.r j - ‖a.c j - a.c i‖ ≤ τ * a.r i - a.r i := sub_le_sub H.2 H.1
+            a.r j - ‖a.c j - a.c i‖ ≤ τ * a.r i - a.r i := by
+              grw [a.r_le_tau_mul_of_lt H, ← dist_eq_norm_sub', ← a.r_le_dist H]
             _ = a.r i * (τ - 1) := by ring
             _ ≤ s * (τ - 1) := mul_le_mul_of_nonneg_right A (sub_nonneg.2 hτ)
+        · calc
+            a.r j - ‖a.c j - a.c i‖ ≤ 0 := by simpa [dist_eq_norm_sub] using a.r_le_dist H
+            _ ≤ s * (τ - 1) := mul_nonneg spos.le (sub_nonneg.2 hτ)
       _ ≤ s * (δ / 2) := (mul_le_mul_of_nonneg_left (by linarith only [δnonneg, hδ1]) spos.le)
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)

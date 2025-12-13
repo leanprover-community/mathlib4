@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Covering.Differentiation
+import Mathlib.Data.Fin.Tuple.Sort
 
 /-!
 # Besicovitch covering theorems
@@ -123,14 +124,13 @@ by keeping only one side of the alternative in `hlast`.
 -/
 structure Besicovitch.SatelliteConfig (α : Type*) [MetricSpace α] (N : ℕ) (τ : ℝ) where
   /-- Centers of the balls -/
-  c : Fin N.succ → α
+  c : Fin (N + 1) → α
   /-- Radii of the balls -/
-  r : Fin N.succ → ℝ
+  r : Fin (N + 1) → ℝ
   rpos : ∀ i, 0 < r i
-  h : Pairwise fun i j =>
-    r i ≤ dist (c i) (c j) ∧ r j ≤ τ * r i ∨ r j ≤ dist (c j) (c i) ∧ r i ≤ τ * r j
-  hlast : ∀ i < last N, r i ≤ dist (c i) (c (last N)) ∧ r (last N) ≤ τ * r i
-  inter : ∀ i < last N, dist (c i) (c (last N)) ≤ r i + r (last N)
+  r_le_dist {i j} (h : i < j) : r i ≤ dist (c i) (c j)
+  r_le_tau_mul_of_lt {i j} (h : i < j) : r j ≤ τ * r i
+  dist_last_le_add_of_lt {i} (hi : i < last N) : dist (c i) (c (last N)) ≤ r i + r (last N)
 
 namespace Mathlib.Meta.Positivity
 
@@ -160,11 +160,9 @@ instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
   ⟨{  c := default
       r := fun _ => 1
       rpos := fun _ => zero_lt_one
-      h := fun i j hij => (hij (Subsingleton.elim (α := Fin 1) i j)).elim
-      hlast := fun i hi => by
-        rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim
-      inter := fun i hi => by
-        rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim }⟩
+      r_le_dist := by simp
+      r_le_tau_mul_of_lt := by simp
+      dist_last_le_add_of_lt := by simp }⟩
 
 namespace Besicovitch
 
@@ -172,19 +170,16 @@ namespace SatelliteConfig
 
 variable {α : Type*} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
 
-theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
-  rcases lt_or_ge i (last N) with (H | H)
-  · exact a.inter i H
-  · have I : i = last N := top_le_iff.1 H
-    have := (a.rpos (last N)).le
-    simp only [I, add_nonneg this this, dist_self]
+theorem dist_last_le_add (i : Fin (N + 1)) :
+    dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
+  cases i using Fin.lastCases with
+  | last => simp [(a.rpos _).le]
+  | cast i => exact a.dist_last_le_add_of_lt i.castSucc_lt_last
 
-theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
-  rcases lt_or_ge i (last N) with (H | H)
-  · exact (a.hlast i H).2
-  · have : i = last N := top_le_iff.1 H
-    rw [this]
-    exact le_mul_of_one_le_left (a.rpos _).le h
+theorem r_le_tau_mul {i j : Fin (N + 1)} (hle : i ≤ j) (h : 1 ≤ τ) : a.r j ≤ τ * a.r i := by
+  rcases hle.eq_or_lt with rfl | hlt
+  · exact le_mul_of_one_le_left (by positivity) h
+  · exact a.r_le_tau_mul_of_lt hlt
 
 end SatelliteConfig
 
@@ -416,32 +411,31 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       rcases ht with ⟨u, hu⟩
       rw [← hu.2]
       exact p.r_le _
+  set e : Equiv.Perm (Fin (N + 1)) := Tuple.sort (G ·)
+  have he_mono : StrictMono fun k : Fin (N + 1) ↦ G (e k) := by
+    intro a b hlt
+    refine lt_of_le_of_ne (Tuple.monotone_sort (G ∘ Fin.val) hlt.le) ?_
+    apply_fun p.color
+    simp [color_G, (e _).is_le, Fin.val_inj, hlt.ne]
+  have he_last : e (last N) = last N := by
+    refine (eq_or_ne (e (last N)) (last N)).elim id fun hne ↦ ?_
+    rw [e.apply_eq_iff_eq_symm_apply, eq_comm, ← last_le_iff, ← he_mono.le_iff_le,
+      e.apply_symm_apply, val_last]
+    simpa [G, (val_lt_last hne).ne] using (hg _ (val_lt_last hne)).1.le
+  set ind : Fin (N + 1) → β := fun k ↦ p.index (G (e k))
   -- therefore, one may use them to construct a satellite configuration with `N+1` points
   let sc : SatelliteConfig α N p.τ :=
-    { c := fun k => p.c (p.index (G k))
-      r := fun k => p.r (p.index (G k))
-      rpos := fun k => p.rpos (p.index (G k))
-      h := by
-        intro a b a_ne_b
-        wlog G_le : G a ≤ G b generalizing a b
-        · exact (this a_ne_b.symm (le_of_not_ge G_le)).symm
-        have G_lt : G a < G b := by
-          rcases G_le.lt_or_eq with (H | H); · exact H
-          have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b
-          rw [← color_G a (Nat.lt_succ_iff.1 a.2), ← color_G b (Nat.lt_succ_iff.1 b.2), H] at A
-          exact (A rfl).elim
-        exact Or.inl (Gab a b G_lt)
-      hlast := by
-        intro a ha
-        have I : (a : ℕ) < N := ha
-        have : G a < G (Fin.last N) := by simp [G, I.ne, (hg a I).1]
-        exact Gab _ _ this
-      inter := by
-        intro a ha
-        have I : (a : ℕ) < N := ha
-        have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true]
-        have K : G a = g a := by simp [G, I.ne]
-        convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
+    { c k := p.c (ind k)
+      r k := p.r (ind k)
+      rpos k := p.rpos (ind k)
+      r_le_dist hlt := (Gab _ _ <| he_mono hlt).1
+      r_le_tau_mul_of_lt hlt := (Gab _ _ <| he_mono hlt).2
+      dist_last_le_add_of_lt {k} hk := by
+        apply dist_le_add_of_nonempty_closedBall_inter_closedBall
+        have : (e k : ℕ) < N := by
+          replace hk := hk.ne
+          rwa [← e.injective.ne_iff, he_last, ← lt_last_iff_ne_last] at hk
+        simpa [ind, G, this.ne, he_last] using (hg (e k) this).2.1 }
   -- this is a contradiction
   exact hN.false sc
 
