@@ -610,7 +610,11 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
-`IntermediateField.adjoin F t = S`. -/
+`IntermediateField.adjoin F t = S`.
+
+We also use the class `Algebra.EssFiniteType F E` to say that
+`E` is finitely generated as a `F` extension.
+See `IntermediateField.fg_top_iff`. -/
 @[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
