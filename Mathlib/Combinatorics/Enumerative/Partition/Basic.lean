@@ -229,6 +229,32 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
+/-- If `r` is a positive integer, then we have a correspondence between:
+1. Partitions of `n + r` that contain `r` as a part and have all parts ≤ `r`
+2. Partitions of `n` whose largest part is ≤ `r`.
+The correspondence is to erase `r` to go from 1 to 2, and to add `r` to go from 2 to 1.
+-/
+def eraseEquiv (n r : ℕ) (hr : 0 < r) :
+    {π : Partition (n + r) // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} ≃
+    {π : Partition n // π.parts.sup ≤ r} where
+  toFun s := ⟨⟨s.1.1.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
+    (add_right_inj r).1 <| by rw [Multiset.sum_erase s.2.1,  s.1.3, add_comm]⟩,
+    Multiset.sup_le.mpr (s.2.2 · <| Multiset.mem_of_mem_erase ·)⟩
+  invFun s := ⟨⟨r ::ₘ s.1.1, by cases s.1; aesop, by cases s.1; aesop (add unsafe add_comm)⟩,
+    by aesop, by aesop⟩
+  left_inv s := by aesop
+  right_inv s := by aesop
+
+/--
+The number of partitions of `n` that contain `r` as a part and have all parts ≤ `r`
+equals the number of partitions of `n - r` whose largest part is ≤ `r`. This is a result of
+`eraseEquiv`.
+-/
+theorem partition_max_equals_bound (n r : ℕ) (h₁ : r ≤ n) (h₂ : r ≠ 0) :
+    Fintype.card {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} =
+    Fintype.card {π : Partition (n - r) // π.parts.sup ≤ r} := by
+  convert Fintype.card_congr (eraseEquiv (n - r) r (by omega)) <;> omega
+
 end Partition
 
 end Nat
