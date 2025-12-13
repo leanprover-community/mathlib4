@@ -6,7 +6,7 @@ Authors: Jannis Limperg
 module
 
 public import Mathlib.Init
-public meta import Aesop
+public import Aesop
 
 /-!
 # Continuity Rule Set

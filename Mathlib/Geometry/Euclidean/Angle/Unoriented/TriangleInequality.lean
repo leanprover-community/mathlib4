@@ -5,7 +5,6 @@ Authors: Ilmārs Cīrulis, Alex Meiburg, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.Normalize
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 import Mathlib.Geometry.Euclidean.Triangle

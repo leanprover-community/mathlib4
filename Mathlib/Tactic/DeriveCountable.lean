@@ -9,8 +9,10 @@ public meta import Lean.Meta.Transform
 public meta import Lean.Meta.Inductive
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.Deriving.Util
-public meta import Mathlib.Data.Countable.Defs
-public meta import Mathlib.Data.Nat.Pairing
+public meta import Aesop
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Nat.Pairing
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `Countable` deriving handler

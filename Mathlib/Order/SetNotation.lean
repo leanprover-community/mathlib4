@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Util.Notation3
+public meta import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum

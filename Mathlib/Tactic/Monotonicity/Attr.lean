@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Lean.LabelAttribute
+public import Lean.LabelAttribute
 
 /-! # The @[mono] attribute -/
 

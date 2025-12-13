@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Normal field extensions

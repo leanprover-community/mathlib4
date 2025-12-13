@@ -6,8 +6,9 @@ Authors: Luigi Massacci, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Continuously differentiable functions with compact support
@@ -56,9 +57,9 @@ distributions, test function
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 
-variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
+variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
   {n : ℕ∞}
 
 variable (Ω F n) in

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Casts of rational numbers into linear ordered fields.

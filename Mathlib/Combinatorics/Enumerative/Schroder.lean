@@ -11,9 +11,9 @@ public import Mathlib.Order.Interval.Finset.Nat
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # Schröder numbers

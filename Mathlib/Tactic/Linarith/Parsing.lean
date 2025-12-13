@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Parsing input expressions into linear form

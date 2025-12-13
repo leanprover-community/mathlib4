@@ -5,8 +5,9 @@ Authors: Kevin Buzzard
 -/
 module
 
-public meta import Batteries.Tactic.Init
 public meta import Mathlib.Tactic.Push
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.Push
 
 /-!
 # The `by_contra` tactic

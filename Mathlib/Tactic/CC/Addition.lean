@@ -7,6 +7,9 @@ module
 
 public meta import Mathlib.Data.Option.Defs
 public meta import Mathlib.Tactic.CC.MkProof
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.CC.Lemmas
+public import Mathlib.Tactic.CC.MkProof
 
 /-!
 # Process when a new equation is added to a congruence closure

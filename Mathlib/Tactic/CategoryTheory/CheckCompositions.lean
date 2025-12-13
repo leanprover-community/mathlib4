@@ -5,7 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Category.Basic
+public meta import Aesop
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 The `check_compositions` tactic,

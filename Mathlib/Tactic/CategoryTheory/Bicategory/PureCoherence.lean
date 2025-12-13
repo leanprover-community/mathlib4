@@ -7,6 +7,8 @@ module
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 
 /-!
 # Coherence tactic for bicategories

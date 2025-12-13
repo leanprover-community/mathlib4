@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Order.Filter.AtTopBot.Interval
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Tactic.FinCases
 
 
 /-!

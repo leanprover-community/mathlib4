@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Interval arithmetic

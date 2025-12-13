@@ -5,11 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Tactic.Peel
-public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure
