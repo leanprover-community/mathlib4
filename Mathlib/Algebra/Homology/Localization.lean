@@ -32,7 +32,7 @@ open CategoryTheory Limits
 
 section
 
-variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
+variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
@@ -85,7 +85,7 @@ end
 
 section
 
-variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [Preadditive C]
+variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [Preadditive C]
   [CategoryWithHomology C]
 
 lemma HomologicalComplexUpToQuasiIso.Q_inverts_homotopyEquivalences
@@ -143,7 +143,7 @@ end HomotopyCategory
 /-- The condition on a complex shape `c` saying that homotopic maps become equal in
 the localized category with respect to quasi-isomorphisms. -/
 class ComplexShape.QFactorsThroughHomotopy {ι : Type*} (c : ComplexShape ι)
-    (C : Type*) [Category C] [Preadditive C]
+    (C : Type*) [Category* C] [Preadditive C]
     [CategoryWithHomology C] : Prop where
   areEqualizedByLocalization {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : Homotopy f g) :
     AreEqualizedByLocalization (HomologicalComplex.quasiIso C c) f g
@@ -213,12 +213,12 @@ end
 section Cylinder
 
 variable {ι : Type*} (c : ComplexShape ι) (hc : ∀ j, ∃ i, c.Rel i j)
-  (C : Type*) [Category C] [Preadditive C] [HasBinaryBiproducts C]
+  (C : Type*) [Category* C] [Preadditive C] [HasBinaryBiproducts C]
 include hc
 
 /-- The homotopy category satisfies the universal property of the localized category
 with respect to homotopy equivalences. -/
-def ComplexShape.strictUniversalPropertyFixedTargetQuotient (E : Type*) [Category E] :
+def ComplexShape.strictUniversalPropertyFixedTargetQuotient (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (HomotopyCategory.quotient C c)
       (HomologicalComplex.homotopyEquivalences C c) E where
   inverts := HomotopyCategory.quotient_inverts_homotopyEquivalences C c
@@ -248,7 +248,7 @@ end Cylinder
 
 section ChainComplex
 
-variable (C : Type*) [Category C] {ι : Type*} [Preadditive C]
+variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C]
   [AddRightCancelSemigroup ι] [One ι] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.down ι)).IsLocalization
@@ -274,7 +274,7 @@ end ChainComplex
 
 section CochainComplex
 
-variable (C : Type*) [Category C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
+variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
@@ -298,7 +298,7 @@ end CochainComplex
 
 namespace CategoryTheory.Functor
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   {ι : Type*} (c : ComplexShape ι)
 
 section

@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 namespace Localization
 

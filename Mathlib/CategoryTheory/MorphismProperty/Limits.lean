@@ -371,7 +371,7 @@ end
 
 section LimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are limits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -389,7 +389,7 @@ lemma limitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X�
   exact ⟨_, _, _, _, h₁, _, _, hf⟩
 
 lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
@@ -456,7 +456,7 @@ end LimitsOfShape
 
 section ColimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are colimits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -474,13 +474,13 @@ lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Coc
   exact ⟨_, _, _, _, _, h₂, _, hf⟩
 
 lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 variable {J} in
-lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
+lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
   intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
@@ -495,7 +495,7 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
   exact ⟨_, _, _, _, h₁', h₂', _, fun _ ↦ hf _⟩
 
 variable {J} in
-lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
+lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category* J'] (e : J ≌ J') :
     W.colimitsOfShape J = W.colimitsOfShape J' :=
   le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
     (W.colimitsOfShape_le_of_final e.functor)

@@ -32,7 +32,7 @@ namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [MonoidalCategory C] [Category D]
+variable [Category* C] [MonoidalCategory C] [Category* D]
 
 namespace MonoidalLeftAction
 open scoped MonoidalLeftAction MonoidalRightAction

@@ -156,7 +156,7 @@ include K e in
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J K e A)
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
 include K e in

@@ -50,7 +50,7 @@ open Limits
 
 namespace Triangulated
 
-variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type _) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 open Pretriangulated

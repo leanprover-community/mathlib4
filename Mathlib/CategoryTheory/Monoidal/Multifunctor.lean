@@ -24,8 +24,8 @@ by phrasing the pentagon axiom as an equality of natural transformations between
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-  {D : Type*} [Category D] [MonoidalCategory D]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
+  {D : Type*} [Category* D] [MonoidalCategory D]
 
 namespace MonoidalCategory
 

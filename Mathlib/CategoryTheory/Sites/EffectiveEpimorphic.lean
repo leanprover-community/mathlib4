@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- A sieve is effective epimorphic if the associated cocone is a colimit cocone. -/
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=

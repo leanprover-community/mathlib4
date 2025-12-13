@@ -21,7 +21,7 @@ namespace CategoryTheory.MorphismProperty
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 variable {P Q W : MorphismProperty C}
 

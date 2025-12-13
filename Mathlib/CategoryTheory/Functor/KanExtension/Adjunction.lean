@@ -32,7 +32,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) {H : Type*} [Category H]
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) {H : Type*} [Category* H]
 
 section lan
 

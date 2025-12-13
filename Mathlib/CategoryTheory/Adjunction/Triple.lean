@@ -49,7 +49,7 @@ bundle the adjunctions in a structure `Triple F G H`.
 
 open CategoryTheory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
 
 /-- Structure containing the two adjunctions of an adjoint triple `F ⊣ G ⊣ H`. -/

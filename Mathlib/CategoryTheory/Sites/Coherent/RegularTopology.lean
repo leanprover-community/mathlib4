@@ -24,7 +24,7 @@ namespace CategoryTheory.regularTopology
 
 open Limits
 
-variable {C : Type*} [Category C] [Preregular C] {X : C}
+variable {C : Type*} [Category* C] [Preregular C] {X : C}
 
 /--
 For a preregular category, any sieve that contains an `EffectiveEpi` is a covering sieve of the

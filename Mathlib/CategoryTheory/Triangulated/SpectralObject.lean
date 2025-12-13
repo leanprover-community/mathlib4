@@ -34,9 +34,9 @@ namespace CategoryTheory
 
 open Limits Pretriangulated ComposableArrows
 
-variable (C ι : Type*) [Category C] [Category ι] [HasZeroObject C]
+variable (C ι : Type*) [Category* C] [Category* ι] [HasZeroObject C]
   [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  {D : Type*} [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+  {D : Type*} [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
 
 namespace Triangulated
@@ -155,7 +155,7 @@ variable {C}
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 noncomputable def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    (ι : Type*) [Category ι] :
+    (ι : Type*) [Category* ι] :
     Triangulated.SpectralObject C ι ⥤ Triangulated.SpectralObject D ι where
   obj X := X.mapTriangulatedFunctor F
   map α :=

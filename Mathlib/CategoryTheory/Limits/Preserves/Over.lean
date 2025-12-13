@@ -20,7 +20,7 @@ See `Mathlib/CategoryTheory/Adjunction/Over.lean`
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 

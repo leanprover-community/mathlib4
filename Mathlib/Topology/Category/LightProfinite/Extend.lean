@@ -93,7 +93,7 @@ theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (func
 
 section Limit
 
-variable {C : Type*} [Category C] (G : LightProfinite ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
@@ -128,7 +128,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : LightProfiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on

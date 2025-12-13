@@ -75,7 +75,7 @@ theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = 
   cases h'
   simp
 
-theorem conj_eqToHom_iff_heq' {C} [Category C] {W X Y Z : C}
+theorem conj_eqToHom_iff_heq' {C} [Category* C] {W X Y Z : C}
     (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : Z = X) :
     f = eqToHom h ≫ g ≫ eqToHom h' ↔ f ≍ g := conj_eqToHom_iff_heq _ _ _ h'.symm
 
@@ -89,35 +89,35 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
   { mp := fun h => h ▸ by simp
     mpr := fun h => h ▸ by simp }
 
-theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
+theorem eqToHom_comp_heq {C} [Category* C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : eqToHom h ≫ f ≍ f := by
   rw [← conj_eqToHom_iff_heq _ _ h rfl, eqToHom_refl, Category.comp_id]
 
-@[simp] theorem eqToHom_comp_heq_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem eqToHom_comp_heq_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
     eqToHom h ≫ f ≍ g ↔ f ≍ g :=
   ⟨(eqToHom_comp_heq ..).symm.trans, (eqToHom_comp_heq ..).trans⟩
 
-@[simp] theorem heq_eqToHom_comp_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem heq_eqToHom_comp_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
     g ≍ eqToHom h ≫ f ↔ g ≍ f :=
   ⟨(·.trans (eqToHom_comp_heq ..)), (·.trans (eqToHom_comp_heq ..).symm)⟩
 
-theorem comp_eqToHom_heq {C} [Category C] {X Y Z : C}
+theorem comp_eqToHom_heq {C} [Category* C] {X Y Z : C}
     (f : X ⟶ Y) (h : Y = Z) : f ≫ eqToHom h ≍ f := by
   rw [← conj_eqToHom_iff_heq' _ _ rfl h, eqToHom_refl, Category.id_comp]
 
-@[simp] theorem comp_eqToHom_heq_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem comp_eqToHom_heq_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
     f ≫ eqToHom h ≍ g ↔ f ≍ g :=
   ⟨(comp_eqToHom_heq ..).symm.trans, (comp_eqToHom_heq ..).trans⟩
 
-@[simp] theorem heq_comp_eqToHom_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem heq_comp_eqToHom_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
     g ≍ f ≫ eqToHom h ↔ g ≍ f :=
   ⟨(·.trans (comp_eqToHom_heq ..)), (·.trans (comp_eqToHom_heq ..).symm)⟩
 
-theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
+theorem heq_comp {C} [Category* C] {X Y Z X' Y' Z' : C}
     {f : X ⟶ Y} {g : Y ⟶ Z} {f' : X' ⟶ Y'} {g' : Y' ⟶ Z'}
     (eq1 : X = X') (eq2 : Y = Y') (eq3 : Z = Z')
     (H1 : f ≍ f') (H2 : g ≍ g') :

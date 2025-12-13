@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 open Opposite Pretriangulated.Opposite Limits
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace Pretriangulated
 

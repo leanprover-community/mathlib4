@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Category MonoidalCategory
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C]
 
 namespace MorphismProperty
@@ -68,7 +68,7 @@ lemma tensorHom_mem {X₁ X₂ : C} (f : X₁ ⟶ X₂) {Y₁ Y₂ : C} (g : Y�
 
 /-- The inverse image under a monoidal functor of a monoidal morphism property which respects
 isomorphisms is monoidal. -/
-instance {C' : Type*} [Category C'] [MonoidalCategory C'] (F : C' ⥤ C) [F.Monoidal]
+instance {C' : Type*} [Category* C'] [MonoidalCategory C'] (F : C' ⥤ C) [F.Monoidal]
     [W.RespectsIso] : (W.inverseImage F).IsMonoidal := .mk' _ fun f g hf hg ↦ by
   simp only [inverseImage_iff] at hf hg ⊢
   rw [Functor.Monoidal.map_tensor _ f g]
