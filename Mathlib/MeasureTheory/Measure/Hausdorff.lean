@@ -1113,7 +1113,7 @@ theorem exists_accPt_of_pos_hausdorffMeasure {n : ℕ} {s : ℝ} {E : Set (Eucli
     (hs : 0 < s) (hE : 0 < μH[s] E) : ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   have h_discrete : DiscreteTopology E := by
-    have h_isolated : ∀ x ∈ E, ∃ U : Set (EuclideanSpace ℝ (Fin n)), 
+    have h_isolated : ∀ x ∈ E, ∃ U : Set (EuclideanSpace ℝ (Fin n)),
     IsOpen U ∧ x ∈ U ∧ U ∩ E = {x} := by
       intro x hx
       specialize h x
