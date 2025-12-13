@@ -11,7 +11,7 @@ public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.PartialHomeomorph
 public import Mathlib.Topology.Order.T5
 
 /-!
@@ -289,12 +289,6 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
 @[deprecated (since := "2025-08-29")] noncomputable alias
   partialHomeomorphCoe := openPartialHomeomorphCoe
 
-lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
-    IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
-  intro a
-  obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
-  exact ⟨openPartialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
-
 end Continuity
 
 /-- The image of the closed-open interval `[a, a + p)` under the quotient map `𝕜 → AddCircle p` is
@@ -533,6 +527,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
+
 omit [Fact (0 < p)]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite := by
