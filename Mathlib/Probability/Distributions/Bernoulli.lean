@@ -34,44 +34,44 @@ variable (u p) in
 such that each element of `u` is taken with probability `p`, and the elements outside of `u` are
 never taken. -/
 @[expose]
-noncomputable def bernoulliOn : Measure (Set ι) :=
+noncomputable def setBernoulli : Measure (Set ι) :=
   .comap (fun s i ↦ i ∈ s) <| infinitePi fun i ↦
     toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False
 
-@[inherit_doc] scoped notation "Ber(" u ", " p ")" => bernoulliOn u p
+@[inherit_doc] scoped notation "Ber(" u ", " p ")" => setBernoulli u p
 
 instance : IsProbabilityMeasure Ber(u, p) :=
   MeasurableEquiv.setOf.symm.measurableEmbedding.isProbabilityMeasure_comap <| .of_forall fun P ↦
     ⟨{a | P a}, rfl⟩
 
 variable (u p) in
-lemma bernoulliOn_eq_map :
+lemma setBernoulli_eq_map :
     Ber(u, p) = .map (fun p ↦ {i | p i})
       (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False) :=
   MeasurableEquiv.setOf.comap_symm
 
-lemma bernoulliOn_apply (S : Set (Set ι)) :
+lemma setBernoulli_apply (S : Set (Set ι)) :
     Ber(u, p) S = (infinitePi fun a ↦ toNNReal p • dirac (a ∈ u) + toNNReal (σ p) • dirac False)
       ((fun t a ↦ a ∈ t) '' S) := by
   convert MeasurableEquiv.setOf.symm.measurableEmbedding.comap_apply ..
 
-lemma bernoulliOn_apply' (S : Set (Set ι)) :
+lemma setBernoulli_apply' (S : Set (Set ι)) :
     Ber(u, p) S = (infinitePi fun a ↦ toNNReal p • dirac (a ∈ u) + toNNReal (σ p) • dirac False)
       ((fun p ↦ {a | p a}) ⁻¹' S) := by
   convert MeasurableEquiv.setOf.symm.comap_apply ..
 
 variable (u) in
-@[simp] lemma bernoulliOn_zero : Ber(u, 0) = dirac ∅ := by simp [bernoulliOn_eq_map]
+@[simp] lemma setBernoulli_zero : Ber(u, 0) = dirac ∅ := by simp [setBernoulli_eq_map]
 
 variable (u) in
-@[simp] lemma bernoulliOn_one : Ber(u, 1) = dirac u := by simp [bernoulliOn_eq_map]
+@[simp] lemma setBernoulli_one : Ber(u, 1) = dirac u := by simp [setBernoulli_eq_map]
 
 section Countable
 variable [Countable ι]
 
 -- TODO: Does this hold if `ι` isn't countable? Note: the current proof only needs `u` cocountable,
 -- but we don't bother doing this minigeneralisation.
-lemma bernoulliOn_ae_subset : ∀ᵐ s ∂Ber(u, p), s ⊆ u := by
+lemma setBernoulli_ae_subset : ∀ᵐ s ∂Ber(u, p), s ⊆ u := by
   classical
   change _ = _
   simp only [Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem, Set.setOf_exists, Set.setOf_and,
@@ -84,14 +84,14 @@ lemma bernoulliOn_ae_subset : ∀ᵐ s ∂Ber(u, p), s ⊆ u := by
     _ = Ber(u, p) {s | a ∈ s} := by simp [ha]
     _ = infinitePi (fun a ↦ toNNReal p • dirac (a ∈ u) + toNNReal (σ p) • dirac False)
             (cylinder {a} {fun _ ↦ True}) := by
-      rw [bernoulliOn_apply']
+      rw [setBernoulli_apply']
       congr!
       ext
       simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder _ (.singleton _), ha]
 
 variable (u p) in
-@[simp] lemma bernoulliOn_singleton (hsu : s ⊆ u) (hu : u.Finite) :
+@[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     Ber(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical
   lift u to Finset ι using hu
@@ -99,7 +99,7 @@ variable (u p) in
     Ber(u, p) {s}
     _ = ∏' i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ENNReal) else 0) +
           if i ∈ s then 0 else (toNNReal (σ p) : ENNReal)) := by
-      simp [bernoulliOn_apply, Set.image_singleton, Set.indicator]
+      simp [setBernoulli_apply, Set.image_singleton, Set.indicator]
       simp [ENNReal.smul_def]
     _ = ∏ i ∈ u, (if i ∈ s then (toNNReal p : ENNReal) else (toNNReal (σ p) : ENNReal)) := by
       rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
@@ -115,14 +115,14 @@ end Countable
 variable (X u p P) in
 /-- A random variable `X : Ω → Set ι` is `p`-bernoulli on a set `u : Set ι` if its distribution is
 the product over `u` of `p`-bernoulli random variables. -/
-abbrev IsBernoulliOn : Prop := HasLaw X Ber(u, p) P
+abbrev IssetBernoulli : Prop := HasLaw X Ber(u, p) P
 
-lemma isBernoulliOn_congr (hXY : X =ᵐ[P] Y) : IsBernoulliOn X u p P ↔ IsBernoulliOn Y u p P :=
+lemma issetBernoulli_congr (hXY : X =ᵐ[P] Y) : IssetBernoulli X u p P ↔ IssetBernoulli Y u p P :=
   hasLaw_congr hXY
 
 variable [Countable ι]
 
-lemma IsBernoulliOn.ae_subset (hX : IsBernoulliOn X u p P) : ∀ᵐ ω ∂P, X ω ⊆ u :=
-  (hX.ae_iff <| by fun_prop).2 bernoulliOn_ae_subset
+lemma IssetBernoulli.ae_subset (hX : IssetBernoulli X u p P) : ∀ᵐ ω ∂P, X ω ⊆ u :=
+  (hX.ae_iff <| by fun_prop).2 setBernoulli_ae_subset
 
 end ProbabilityTheory
