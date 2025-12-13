@@ -57,6 +57,13 @@ abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState AtomM
 
+def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
+  match ← (← get).keys.findM? (withReducible <| isDefEq · type) with
+  | none =>
+    modify fun res => res.insert type #[]
+    pure type
+  | some t => pure t
+
 /-- Adds `fact` to the state. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
   modify fun res => res.modify type fun facts => facts.push fact
@@ -65,7 +72,6 @@ def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
 Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type #[]
   match ← AtomM.containsThenAddQ x with
   | (true, idx, _) => return idx
   | (false, idx, ⟨x', _⟩) =>
@@ -113,29 +119,35 @@ where
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .eq xIdx yIdx expr
     | ~q(@LE.le $α $inst $x $y) =>
+      let α ← addType α
       let xIdx ← addAtom α x
       let yIdx ← addAtom α y
       addFact α <| .le xIdx yIdx expr
     | ~q(@LT.lt $α $inst $x $y) =>
+      let α ← addType α
       let xIdx ← addAtom α x
       let yIdx ← addAtom α y
       addFact α <| .lt xIdx yIdx expr
     | ~q(@Ne ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .ne xIdx yIdx expr
     | ~q(Not $p) =>
       match p with
       | ~q(@LE.le $α $inst $x $y) =>
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .nle xIdx yIdx expr
       | ~q(@LT.lt $α $inst $x $y) =>
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
