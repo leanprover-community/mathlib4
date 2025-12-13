@@ -235,6 +235,7 @@ lemma isPullback_iff :
       grind [Function.Bijective, Function.Injective, Function.Surjective]
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
+
 end
 
 end CategoryTheory.Limits.Types
