@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Batteries.Data.String.Matcher
 public meta import Std.Time.Format
 public import Mathlib.Init
 
@@ -133,6 +134,14 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.deprecated.module (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
+    return
+  -- Exempt Mathlib.lean since it's auto-generated and imports all modules
+  -- for backwards compatibility
+  if (← getFileName).endsWith "Mathlib.lean" then
+    return
+  -- Exempt Mathlib/Tactic since deprecated modules may still need to be imported
+  -- for their tactics to work
+  if (← getFileName).containsSubstr "Mathlib/Tactic" then
     return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
