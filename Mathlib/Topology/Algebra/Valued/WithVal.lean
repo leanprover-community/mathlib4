@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
@@ -202,6 +202,25 @@ def IsEquiv.uniformEquiv (hv : ∀ γ : Γ₀ˣ, ∃ r s, 0 < v r ∧ 0 < v s �
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
+
+private theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)
+    (γ : Γ₀ˣ) : ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ := by
+  obtain ⟨r, hr⟩ := hv γ
+  exact ⟨r, 1, by simp [hr]⟩
+
+open UniformSpace.Completion in
+theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
+    {w : Valuation K Γ₀'} (h : v.IsEquiv w) (hv : Function.Surjective v)
+    (hw : Function.Surjective w) {x : v.Completion} :
+    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (exists_div_eq_of_surjective hv)
+      (exists_div_eq_of_surjective hw)) x) ≤ 1 := by
+  induction x using induction_on with
+  | hp =>
+    exact (mapEquiv (h.uniformEquiv _ _)).toHomeomorph.isClosed_setOf_iff
+      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+  | ih a =>
+    simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
 
 end Equivalence
 
