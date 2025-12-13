@@ -696,31 +696,38 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
-lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {r a b : ℕ}
-    (h : a ≡ b [MOD r]) (hx : x ^ r = 1) : x ^ a = x ^ b := by
+lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {n a b : ℕ}
+    (h : a ≡ b [MOD n]) (hx : x ^ n = 1) : x ^ a = x ^ b := by
   obtain hle | hle := le_total a b
   all_goals
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle
-    obtain ⟨c, rfl⟩ : r ∣ c := by simpa using h
+    obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h
     simp [pow_add, pow_mul, hx]
 
 /-- Equivalence of coprime powers of primitive roots. -/
-def equivPrimitiveRootsOfCoprimePow {a b r : ℕ} (h : a * b ≡ 1 [MOD r]) :
-    primitiveRoots r R ≃ primitiveRoots r R where
+def equivPrimitiveRootsOfCoprimePow' {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
+    primitiveRoots n R ≃ primitiveRoots n R where
   toFun x := ⟨x.1 ^ a,
-    have hr : 0 < r := by by_contra! h; cases x; simp_all
-    have hr' : a.Coprime r := by
-      simpa [(a.gcd_dvd_left r).trans] using h.dvd_iff (Nat.gcd_dvd_right a r)
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : a.Coprime n := by
+      simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
     (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
   invFun x := ⟨x.1 ^ b,
-    have hr : 0 < r := by by_contra! h; cases x; simp_all
-    have hr' : b.Coprime r := by
-      simpa [(b.gcd_dvd_left r).trans] using h.dvd_iff (Nat.gcd_dvd_right b r)
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : b.Coprime n := by
+      simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
     (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
   left_inv x := by ext; simp [← pow_mul,
     pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
   right_inv x := by ext; simp [← pow_mul, mul_comm b,
     pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+
+/-- Equivalence of coprime powers of primitive roots. -/
+def equivPrimitiveRootsOfCoprimePow {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+    primitiveRoots n R ≃ primitiveRoots n R :=
+  have h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
+  have h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
+  equivPrimitiveRootsOfCoprimePow' h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
