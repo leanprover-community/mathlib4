@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Subobject.Basic
 /-!
 # Comparison between `Subpresheaf`, `MonoOver` and `Subobject`
 
-Given a presheaf of types `F : Cᵒᵖ ⥤ Type w`, we define an equivalence
+Given a presheaf of types `F : C ⥤ Type w`, we define an equivalence
 of categories `Subpresheaf.equivalenceMonoOver F : Subpresheaf F ≌ MonoOver F`
 and an order isomorphism `Subpresheaf.orderIsoSubject F : Subpresheaf F ≃o Subobject F`.
 
@@ -23,7 +23,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type w)
+variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
 namespace Subpresheaf
 

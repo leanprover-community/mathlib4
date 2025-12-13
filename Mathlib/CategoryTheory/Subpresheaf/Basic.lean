@@ -35,15 +35,15 @@ variable {C : Type u} [Category.{v} C]
 /-- A subpresheaf of a presheaf consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
-structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
+structure Subpresheaf (F : C ⥤ Type w) where
   /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
   `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
   /-- If `G` is a sub-presheaf of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
   `F i x` is in `F(V)`. -/
-  map : ∀ {U V : Cᵒᵖ} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
+  map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
+variable {F F' F'' : C ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
@@ -98,33 +98,33 @@ lemma le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := I
 
 variable (F)
 
-@[simp] lemma top_obj (i : Cᵒᵖ) : (⊤ : Subpresheaf F).obj i = ⊤ := rfl
-@[simp] lemma bot_obj (i : Cᵒᵖ) : (⊥ : Subpresheaf F).obj i = ⊥ := rfl
+@[simp] lemma top_obj (i : C) : (⊤ : Subpresheaf F).obj i = ⊤ := rfl
+@[simp] lemma bot_obj (i : C) : (⊥ : Subpresheaf F).obj i = ⊥ := rfl
 
 variable {F}
 
-lemma sSup_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
+lemma sSup_obj (S : Set (Subpresheaf F)) (U : C) :
     (sSup S).obj U = sSup (Set.image (fun T ↦ T.obj U) S) := rfl
 
-lemma sInf_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
+lemma sInf_obj (S : Set (Subpresheaf F)) (U : C) :
     (sInf S).obj U = sInf (Set.image (fun T ↦ T.obj U) S) := rfl
 
 @[simp]
-lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
+lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : C) :
     (⨆ i, S i).obj U = ⋃ i, (S i).obj U := by
   simp [iSup, sSup_obj]
 
 @[simp]
-lemma iInf_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
+lemma iInf_obj {ι : Type*} (S : ι → Subpresheaf F) (U : C) :
     (⨅ i, S i).obj U = ⋂ i, (S i).obj U := by
   simp [iInf, sInf_obj]
 
 @[simp]
-lemma max_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+lemma max_obj (S T : Subpresheaf F) (i : C) :
     (S ⊔ T).obj i = S.obj i ∪ T.obj i := rfl
 
 @[simp]
-lemma min_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+lemma min_obj (S T : Subpresheaf F) (i : C) :
     (S ⊓ T).obj i = S.obj i ∩ T.obj i := rfl
 
 lemma max_min (S₁ S₂ T : Subpresheaf F) :
@@ -140,7 +140,7 @@ instance : Nonempty (Subpresheaf F) :=
 
 /-- The subpresheaf as a presheaf. -/
 @[simps!]
-def toPresheaf : Cᵒᵖ ⥤ Type w where
+def toPresheaf : C ⥤ Type w where
   obj U := G.obj U
   map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
   map_id X := by
@@ -199,7 +199,7 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
-theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
+theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
