@@ -19,6 +19,7 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Lean.Meta.CoeAttr
 
 /-!
@@ -175,6 +176,11 @@ structure TranslateData : Type where
     translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
+  /-- The `dont_unfold` attribute is used to create an abstraction boundary for the tagged constant
+  when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
+  morally self-dual, but their definition is not self-dual. So, in order to allow these constants
+  to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
+  unfoldBoundaries : Option UnfoldBoundary.UnfoldBoundaryExt := none
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -530,13 +536,21 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
+  let translateValue (v : Expr) : MetaM Expr := do
+    let v ← match t.unfoldBoundaries with
+      | some b => b.cast (← b.insertBoundaries v) decl.type
+      | none => pure v
+    reorderLambda reorder <| ← applyReplacementLambda t dont v
+  let type ← match t.unfoldBoundaries with
+    | some b => b.insertBoundaries decl.type
+    | none => pure decl.type
   decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
-    renameBinderNames t decl.type
+    renameBinderNames t type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
+    decl := decl.updateValue <| ← translateValue v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
+      value :=  ← translateValue info.value }
   return decl
 
 /--
@@ -858,7 +872,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  let srcType ← applyReplacementForall t cfg.dontTranslate srcDecl.type
+  let srcType ← match t.unfoldBoundaries with
+    | some b => b.insertBoundaries srcDecl.type
+    | none => pure srcDecl.type
+  let srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
