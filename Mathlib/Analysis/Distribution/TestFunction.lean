@@ -126,6 +126,10 @@ protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f 
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
 
+@[fun_prop]
+protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
+  f.contDiff.continuous
+
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
@@ -368,5 +372,99 @@ instance : T3Space 𝓓^{n}(Ω, F) :=
     (ContinuousLinearMap.continuous _)
 
 end ToBoundedContinuousFunctionCLM
+
+section Integral
+
+open MeasureTheory
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+@[fun_prop]
+protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
+    StronglyMeasurable f := by
+  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+
+@[fun_prop]
+protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    AEStronglyMeasurable f μ :=
+  f.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    MemLp f ⊤ μ :=
+  f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
+
+protected theorem integrable {μ : Measure E}
+    (H : ∀ K : Set E, IsCompact K → K ⊆ Ω → IsFiniteMeasure (μ.restrict K)) -- TODO
+    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
+  specialize H (tsupport f) f.hasCompactSupport f.tsupport_subset
+  exact f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
+
+protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) (f : 𝓓^{n}(Ω, F₁)) :
+    Integrable (fun x ↦ B (f x) (φ x)) μ := by
+  suffices IntegrableOn (fun x ↦ B (f x) (φ x)) (tsupport f) μ by
+    rwa [integrableOn_iff_integrable_of_support_subset] at this
+    refine subset_trans ?_ (subset_tsupport f)
+    exact fun x hx hfx ↦ hx (by simp [hfx])
+  replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
+  exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
+
+noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}(Ω, F₁) →ₗ[𝕜] F₃ where
+  toFun f := open scoped Classical in
+    if LocallyIntegrableOn φ Ω μ then ∫ x, B (f x) (φ x) ∂μ else 0
+  map_add' f g := by
+    split_ifs with hφ
+    · simp_rw [coe_add, Pi.add_apply, map_add, ContinuousLinearMap.add_apply,
+        integral_add (f.integrable_bilin B hφ) (g.integrable_bilin B hφ)]
+    · simp
+  map_smul' c f := by
+    split_ifs with hφ
+    · simp_rw [coe_smul, Pi.smul_apply, map_smul, ContinuousLinearMap.smul_apply,
+        integral_smul c, RingHom.id_apply]
+    · simp
+
+@[simp]
+lemma integralAgainstBilinLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ := by
+  simp [integralAgainstBilinLM, hφ]
+
+lemma integralAgainstBilinLM_eq_zero {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : ¬ LocallyIntegrableOn φ Ω μ) :
+    (integralAgainstBilinLM B μ φ : 𝓓^{n}(Ω, F₁) →ₗ[𝕜] F₃) = 0 := by
+  ext
+  simp [integralAgainstBilinLM, hφ]
+
+lemma integralAgainstBilinLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinLM B μ φ (ofSupportedIn K_sub_Ω f) =
+      ContDiffMapSupportedIn.integralAgainstBilinLM B μ φ f := by
+  have hφ' := hφ.integrableOn_compact_subset K_sub_Ω K.isCompact
+  simp [hφ, hφ']
+
+variable [NormedSpace ℝ F₂]
+
+-- TODO: generalize to 𝕜
+noncomputable def integralAgainstBilinCLM (B : F₁ →L[ℝ] F₂ →L[ℝ] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}(Ω, F₁) →L[ℝ] F₃ where
+  toLinearMap := integralAgainstBilinLM B μ φ
+  cont := show Continuous (integralAgainstBilinLM B μ φ) by
+    rw [TestFunction.continuous_iff_continuous_comp]
+    intro K K_sub_Ω
+    by_cases hφ : LocallyIntegrableOn φ Ω μ
+    · refine .congr ?_ fun f ↦ (integralAgainstBilinLM_ofSupportedIn hφ K_sub_Ω).symm
+      exact ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ |>.continuous
+    · simpa [integralAgainstBilinLM_eq_zero hφ] using continuous_zero
+
+end Integral
 
 end TestFunction
