@@ -311,39 +311,38 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 
+open Function in
 /-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
-  `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
-  that covers `f⁻¹(V)` such that for every `i`, (1) `f` is injective on `Uᵢ`, (2) `V` is
-  contained in the image `f(Uᵢ)`, and (3) the open sets in `V` are determined by their preimages
-  in `Uᵢ`. Then `f` admits a `Trivialization` over the base set `V`. -/
-noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjective)
+`V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
+that covers `f⁻¹(V)` such that for every `i`, (1) `f` is injective on `Uᵢ`, (2) `V` is
+contained in the image `f(Uᵢ)`, and (3) the open sets in `V` are determined by their preimages
+in `Uᵢ`. Then `f` admits a `Trivialization` over the base set `V`. -/
+noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
     {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
     (inj : ∀ i, (U i).InjOn f) (surj : ∀ i, (U i).SurjOn f V)
-    (disjoint : ∀ {i j}, i ≠ j → Disjoint (U i) (U j)) (exhaustive : f ⁻¹' V ⊆ ⋃ i, U i) :
+    (disjoint : Pairwise (Disjoint on U)) (exhaustive : f ⁻¹' V ⊆ ⋃ i, U i) :
     Trivialization ι f := by
   have exhaustive' := exhaustive
   simp_rw [Set.subset_def, Set.mem_iUnion] at exhaustive
   choose idx idx_U using exhaustive
   choose inv inv_U f_inv using surj
   classical
-  let F : PartialEquiv E (X × ι) := by
-    refine
-    { toFun := fun e ↦ (f e, if he : f e ∈ V then idx e he else Classical.arbitrary ι),
-      invFun := fun x ↦ if hx : x.1 ∈ V then inv x.2 hx else
-        if h : Nonempty E then Classical.arbitrary E else (hE.resolve_left h x.1).choose,
-      source := f ⁻¹' V,
-      target := V ×ˢ Set.univ,
-      map_source' := fun x hx ↦ ⟨hx, trivial⟩
-      map_target' := fun x ⟨hx, _⟩ ↦ by rw [dif_pos hx]; apply (f_inv _ hx).symm ▸ hx,
-      left_inv' := fun e he ↦ ?_,
-      right_inv' := fun x hx ↦ ?_ }
-    · change f e ∈ V at he; simp_rw [dif_pos he]
+  let F : PartialEquiv E (X × ι) :=
+  { toFun e := (f e, if he : f e ∈ V then idx e he else Classical.arbitrary ι),
+    invFun x := if hx : x.1 ∈ V then inv x.2 hx else Classical.arbitrary (X → E) x.1,
+    source := f ⁻¹' V,
+    target := V ×ˢ Set.univ,
+    map_source' x hx := ⟨hx, ⟨⟩⟩
+    map_target' x hx := by rw [dif_pos hx.1]; apply (f_inv _ hx.1).symm ▸ hx.1,
+    left_inv' e he := by
+      simp_rw [dif_pos (id he : f e ∈ V)]
       exact inj _ (inv_U _ he) (idx_U e he) (f_inv _ _)
-    · rw [dif_pos hx.1]
+    right_inv' x hx := by
+      rw [dif_pos hx.1]
       refine Prod.ext (f_inv _ hx.1) ?_
       rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
-      by_contra h; exact (disjoint h).le_bot ⟨idx_U _ _, inv_U _ _⟩
+      by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
   have open_preim {W} (hWV: W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
     convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
     rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
@@ -363,13 +362,13 @@ noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjecti
     open_baseSet := open_V,
     source_eq := rfl,
     target_eq := rfl,
-    proj_toFun := fun _ _ ↦ rfl }
+    proj_toFun _ _ := rfl }
   · by_contra h; apply (disjoint h).le_bot
-    · dsimp only; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U _ _⟩
+    · dsimp only; rw [dif_pos (by exact he'.2)]; exact ⟨he'.1, idx_U ..⟩
   · rwa [Set.inter_comm, ← open_iff _ subset_rfl]
   · simp_rw [F, Set.prodMk_mem_set_prod_eq, Set.mem_univ, and_true]
     refine (continuousOn_open_iff open_V).mpr fun W open_W ↦ ?_
     rw [open_iff i Set.inter_subset_left]
     convert ((open_iff i subset_rfl).mp open_V).inter open_W using 1
-    ext e; refine and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
+    refine Set.ext fun e ↦ and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
     rw [Set.mem_preimage, dif_pos hV, inj i (inv_U i _) hU (f_inv i _)]

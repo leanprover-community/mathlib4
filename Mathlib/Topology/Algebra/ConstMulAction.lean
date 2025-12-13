@@ -36,7 +36,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 
 * `isOpenMap_quotient_mk'_mul` : The quotient map by a group action is open.
 * `t2Space_of_properlyDiscontinuousSMul_of_t2Space` : The quotient by a discontinuous group
-  action of a locally compact t2 space is t2.
+  action of a locally compact T₂ space is T₂.
 
 ## Tags
 
@@ -469,10 +469,11 @@ export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
 section
 
-variable (Γ T : Type*) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
+variable (Γ : Type*) {T : Type*}
+variable [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
-  simp_rw [←mem_singleton_iff, ←singleton_inter_nonempty, ←image_singleton]
+  simp_rw [← mem_singleton_iff, ← singleton_inter_nonempty, ← image_singleton]
   exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.disjoint_image_nhds
@@ -518,9 +519,9 @@ theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
     IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
   ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
-/-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
-@[to_additive /-- The quotient by a discontinuous group action of a locally compact t2
-space is t2. -/]
+/-- The quotient by a discontinuous group action of a locally compact T₂ space is T₂. -/
+@[to_additive /-- The quotient by a discontinuous group action of a locally compact T₂
+space is T₂. -/]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [ContinuousConstSMul Γ T] [ProperlyDiscontinuousSMul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by

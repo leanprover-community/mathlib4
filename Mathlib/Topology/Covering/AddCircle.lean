@@ -16,6 +16,8 @@ public import Mathlib.Topology.Instances.AddCircle.Defs
 
 @[expose] public section
 
+open AddSubgroup (zmultiples)
+
 namespace AddCircle
 
 section AddCommGroup
@@ -23,8 +25,12 @@ section AddCommGroup
 variable {𝕜 : Type*} [AddCommGroup 𝕜] (p : 𝕜) [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜]
   [DiscreteTopology (AddSubgroup.zmultiples p)]
 
+theorem isQuotientCoveringMap_coe :
+    IsAddQuotientCoveringMap ((↑) : 𝕜 → AddCircle p) (zmultiples p) :=
+  AddSubgroup.isQuotientCoveringMap_of_comm _ DiscreteTopology.isDiscrete
+
 theorem isCoveringMap_coe : IsCoveringMap ((↑) : 𝕜 → AddCircle p) :=
-  AddSubgroup.isCoveringMap _ DiscreteTopology.isDiscrete
+  (isQuotientCoveringMap_coe p).isCoveringMap
 
 theorem isLocalHomeomorph_coe : IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) :=
   (isCoveringMap_coe p).isLocalHomeomorph
@@ -40,29 +46,32 @@ open Topology
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace ℚ 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   (p : 𝕜)
 
-theorem isCoveringMap_zsmul {n : ℤ} (hn : n ≠ 0) :
-    IsCoveringMap fun x : AddCircle p ↦ n • x := by
-  refine IsQuotientMap.isCoveringMap_of_isDiscrete_ker_addMonoidHom
-    (f := DistribMulAction.toAddMonoidHom _ n) ?_ (Set.Finite.isDiscrete ?_)
+open DistribMulAction
+
+theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : n ≠ 0) :
+    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
+  refine IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_addMonoidHom
+    (f := toAddMonoidHom ..) ?_ (Set.Finite.isDiscrete ?_) rfl
   · /- To show that (n • ·) on AddCircle p is a quotient map, it suffices to show
       its composition with ℝ → AddCircle p is a quotient map. -/
     apply IsQuotientMap.of_comp (f := ((↑) : 𝕜 → _)) continuous_quotient_mk' (continuous_zsmul n)
     /- This composition is equal to the composition with (n • ·) on ℝ (a homeomorphism)
       and the quotient map ℝ → AddCircle p. -/
-    convert isQuotientMap_quotient_mk'.comp
-      (affineHomeomorph (n : 𝕜) 0 <| by exact_mod_cast hn).isQuotientMap
-    ext x; dsimp only [Function.comp_apply]
-    rw [affineHomeomorph_apply, add_zero, ← zsmul_eq_mul]; rfl
+    convert isQuotientMap_quotient_mk'.comp (affineHomeomorph (n : 𝕜) 0 (mod_cast hn)).isQuotientMap
+    ext x
+    simp_rw [Function.comp_apply, affineHomeomorph_apply, add_zero, ← zsmul_eq_mul]
+    rfl
   rw [AddMonoidHom.coe_ker, Set.preimage, ← n.sign_mul_natAbs]
-  simp_rw [DistribMulAction.toAddMonoidHom_apply, Set.mem_singleton_iff]
+  simp_rw [toAddMonoidHom_apply, Set.mem_singleton_iff]
   obtain neg | pos := hn.lt_or_gt
   on_goal 1 => simp_rw [n.sign_eq_neg_one_of_neg neg, neg_mul, one_mul, neg_smul, neg_eq_zero]
   on_goal 2 => rw [n.sign_eq_one_of_pos pos, one_mul]
   all_goals simpa using finite_torsion p (n.natAbs_pos.mpr hn)
 
-theorem isCoveringMap_nsmul {n : ℕ} (hn : n ≠ 0) :
-    IsCoveringMap fun x : AddCircle p ↦ n • x := by
-  simpa using isCoveringMap_zsmul p (n := n) (by exact_mod_cast hn)
+theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : n ≠ 0) :
+    IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
+  convert isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
+  all_goals ext; simp
 
 end Field
 
