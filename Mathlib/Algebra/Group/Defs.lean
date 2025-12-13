@@ -222,6 +222,9 @@ variable [CommMagma G] {a : G}
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
+@[to_additive]
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
@@ -312,8 +315,32 @@ class AddZero (M : Type*) extends Zero M, Add M
 
 /-- Bundling a `Mul` and `One` structure together without any axioms about their
 compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
-@[to_additive, ext]
+@[to_additive (attr := ext)]
 class MulOne (M : Type*) extends One M, Mul M
+
+/-- An additive monoid is Dedekind-finite if every left inverse is also a right inverse.
+Also called von Neumann-finite or directly finite. -/
+class IsDedekindFiniteAddMonoid (M : Type*) [AddZero M] : Prop where
+  add_eq_zero_symm {a b : M} : a + b = 0 → b + a = 0
+
+/-- A monoid is Dedekind-finite if every left inverse is also a right inverse.
+It is more common to talk about Dedekind-finite rings, but https://arxiv.org/abs/2102.01598
+does define Dedekind-finite monoids in §2.2. -/
+@[to_additive (attr := mk_iff)] class IsDedekindFiniteMonoid (M : Type*) [MulOne M] : Prop where
+  mul_eq_one_symm {a b : M} : a * b = 1 → b * a = 1
+
+export IsDedekindFiniteMonoid (mul_eq_one_symm)
+export IsDedekindFiniteAddMonoid (add_eq_zero_symm)
+attribute [to_additive existing] isDedekindFiniteMonoid_iff
+
+@[to_additive] theorem mul_eq_one_comm {M} [MulOne M] [IsDedekindFiniteMonoid M] {a b : M} :
+    a * b = 1 ↔ b * a = 1 where
+  mp := mul_eq_one_symm
+  mpr := mul_eq_one_symm
+
+@[to_additive] instance (priority := low) (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (Std.Commutative.comm ..).trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -322,7 +349,6 @@ class AddZeroClass (M : Type u) extends AddZero M where
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
-
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -524,7 +550,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
     npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
-  replace hk : k' ≠ 0 := by omega
+  replace hk : k' ≠ 0 := by lia
   induction k' using Nat.binaryRecFromOne generalizing n m with
   | zero => simp at hk
   | one => simp [npowRec']
@@ -667,6 +693,40 @@ lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul
 lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 
+@[to_additive] protected lemma IsLeftRegular.mul_eq_one_symm {a b : M} (reg : IsLeftRegular a)
+    (eq : a * b = 1) : b * a = 1 :=
+  reg <| by simp [← mul_assoc, eq]
+
+@[to_additive] protected lemma IsRightRegular.mul_eq_one_symm {a b : M} (reg : IsRightRegular a)
+    (eq : b * a = 1) : a * b = 1 :=
+  reg <| by simp [mul_assoc, eq]
+
+variable (M)
+
+@[to_additive] instance [IsLeftCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsLeftCancelMul.mul_left_cancel _).mul_eq_one_symm
+
+@[to_additive] instance [IsRightCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsRightCancelMul.mul_right_cancel _).mul_eq_one_symm
+
+namespace IsDedekindFiniteMonoid
+
+/-- A monoid is Dedekind-finite if every element with a left inverse also has a right inverse. -/
+@[to_additive] lemma of_exists_self_mul_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, y * z = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show x = z by simpa [← mul_assoc, h] using congr_arg (x * ·) hz.symm]
+
+/-- A monoid is Dedekind-finite if every element with a right inverse also has a left inverse. -/
+@[to_additive] lemma of_exists_mul_self_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, z * x = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show y = z by simpa [mul_assoc, h] using congr_arg (· * y) hz.symm]
+
+end IsDedekindFiniteMonoid
+
 end Monoid
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
@@ -688,6 +748,11 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+/- This is assigned default rather than low priority because it gives the most common examples
+of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
+priority performs better than low or high priority. -/
+@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 

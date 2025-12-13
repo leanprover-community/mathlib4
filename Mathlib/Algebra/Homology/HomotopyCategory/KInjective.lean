@@ -18,7 +18,6 @@ and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
 * Provide an API for computing `Ext`-groups using an injective resolution
-* Dualize everything
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
