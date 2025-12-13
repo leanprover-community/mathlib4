@@ -556,6 +556,10 @@ theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     (quotientKerEquivRangeₐ f x : P) = f x := by
   rfl
 
+theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
+    ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker (φ : M →+* N)).mkₐ R)) = φ.rangeRestrict :=
+  rfl
+
 /-- The **second isomorphism theorem for algebras**. -/
 noncomputable def comapQuotientEquivRangeₐ (f : N →ₐ[R] M) {d : RingCon N} (h : d = comap c f) :
     d.Quotient ≃ₐ[R] AlgHom.range ((c.mkₐ _).comp f) :=

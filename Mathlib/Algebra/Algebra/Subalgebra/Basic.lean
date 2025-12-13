@@ -569,6 +569,9 @@ This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
+theorem val_comp_rangeRestrict :
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
+
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
     let ⟨x, hx⟩ := hy
@@ -678,6 +681,11 @@ theorem inclusion_right (x : T) (m : (x : A) ∈ S) : inclusion h ⟨x, m⟩ = x
 theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
     inclusion htu (inclusion hst x) = inclusion (le_trans hst htu) x :=
   Subtype.ext rfl
+
+@[simp]
+theorem val_comp_inclusion (hst : S ≤ T) :
+    T.val.comp (inclusion hst) = S.val :=
+  rfl
 
 @[simp]
 theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
