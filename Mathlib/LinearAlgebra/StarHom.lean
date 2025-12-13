@@ -5,7 +5,11 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Analysis.RCLike.Basic
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 
