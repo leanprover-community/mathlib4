@@ -157,11 +157,11 @@ theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :
 theorem hasDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : HasDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x :=
   (hasStrictDerivAt_arcosh hx).hasDerivAt
 
-theorem differentiableAt {x : ℝ} (hx : x ∈ Ioi 1) : DifferentiableAt ℝ arcosh x :=
+theorem differentiableAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : DifferentiableAt ℝ arcosh x :=
   (hasDerivAt_arcosh hx).differentiableAt
 
 theorem differentiableOn_arcosh : DifferentiableOn ℝ arcosh (Ioi 1) := fun _ hx =>
-  (differentiableAt hx).differentiableWithinAt
+  (differentiableAt_arcosh hx).differentiableWithinAt
 
 theorem contDiffAt_arcosh {n : ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : ContDiffAt ℝ n arcosh x := by
   refine coshOpenPartialHomeomorph.contDiffAt_symm_deriv ?_ hx (hasDerivAt_cosh _)
