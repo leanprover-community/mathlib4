@@ -249,7 +249,12 @@ lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
 lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source := by
   rw [IsImmersionAtOfComplement_def] at h
-  exact LiftSourceTargetPropertyAt.source_subset_preimage_source h
+  exact h.source_subset_preimage_source
+
+lemma mapsto_domChart_source_codChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+    MapsTo f h.domChart.source h.codChart.source := by
+  rw [IsImmersionAtOfComplement_def] at h
+  exact h.source_subset_preimage_source
 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
@@ -396,9 +401,8 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
 `continuousAt` is part of the public API -/
 private theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContinuousOn f h.domChart.source := by
-  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
-    fun x hx ↦ h.source_subset_preimage_source hx
-  rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl mapsto (I' := J) (I := I),
+  rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl
+      h.mapsto_domChart_source_codChart_source (I' := J) (I := I),
     ← h.domChart.extend_target_eq_image_source]
   have : ContinuousOn (h.equiv ∘ fun x ↦ (x, 0)) (h.domChart.extend I).target := by fun_prop
   exact this.congr h.writtenInCharts
