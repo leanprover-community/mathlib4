@@ -143,7 +143,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
         Disjoint (M : Set R) ↑(Ideal.comap (algebraMap R S) J) := by
   constructor
   · refine fun h =>
-      ⟨⟨?_, ?_⟩,
+      ⟨.of_comm ?_ ?_,
         Set.disjoint_left.mpr fun m hm1 hm2 =>
           h.ne_top (Ideal.eq_top_of_isUnit_mem _ hm2 (map_units S ⟨m, hm1⟩))⟩
     · refine fun hJ => h.ne_top ?_
@@ -152,7 +152,7 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
     · intro x y hxy
       rw [Ideal.mem_comap, map_mul] at hxy
       exact h.mem_or_mem hxy
-  · refine fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
+  · refine fun h => .of_comm (fun hJ => h.left.ne_top (eq_top_iff.2 ?_)) ?_
     · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
       obtain ⟨a, s, ha⟩ := exists_mk'_eq M x

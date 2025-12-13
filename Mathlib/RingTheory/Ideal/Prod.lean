@@ -151,11 +151,8 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
   · contrapose! h
     rw [h, prod_top_top, isPrime_iff]
     simp
-  · intro x y hxy
-    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
-      rw [Prod.mk_mul_mk, mul_one, mem_prod]
-      exact ⟨hxy, trivial⟩
-    simpa using h.mem_or_mem this
+  · intro x y
+    simpa using h.mem_or_mem_of_forall (x := ⟨x, 1⟩) (y := ⟨y, 1⟩)
 
 theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal R) I).IsPrime) :
     I.IsPrime := by
@@ -165,6 +162,11 @@ theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
 
 theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime where
+  ne_top' := by simpa using h.ne_top
+  mem_or_mem_of_forall' {x y} := by simpa using h.mem_or_mem_of_forall
+
+theorem isCompletelyPrime_ideal_prod_top {I : Ideal R} [h : I.IsCompletelyPrime] :
+    (prod I (⊤ : Ideal S)).IsCompletelyPrime where
   ne_top' := by simpa using h.ne_top
   mem_or_mem' {x y} := by simpa using h.mem_or_mem
 

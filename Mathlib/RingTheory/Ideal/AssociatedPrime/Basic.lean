@@ -93,7 +93,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     set_has_maximal_iff_noetherian.mpr H
       { P | ker (toSpanSingleton R M x) ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = ker (toSpanSingleton R M y) }
       ⟨_, rfl.le, this, x, rfl⟩
-  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
+  refine ⟨_, ⟨.of_comm h₁ ?_, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
