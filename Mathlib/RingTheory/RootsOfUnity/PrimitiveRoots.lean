@@ -31,8 +31,8 @@ monoids, expressing that an element is a primitive root of unity.
   a primitive `k`-th root of unity is equal to the `k`-th roots of unity.
 * `IsPrimitiveRoot.card_primitiveRoots`: if an integral domain
   has a primitive `k`-th root of unity, then it has `φ k` of them.
-* `equivPrimitiveRootsOfCoprimePow`: An equivalence between `primitiveRoots k R` that takes
-  each root to a coprime power `e`.
+* `equivPrimitiveRootsOfCoprime`: An equivalence between `primitiveRoots k R` that takes each root
+  to a coprime power `a`.
 
 ## Implementation details
 
@@ -704,9 +704,10 @@ lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {n a b : ℕ}
     obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h
     simp [pow_add, pow_mul, hx]
 
-/-- Equivalence of coprime powers of primitive roots. -/
+/-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
+    x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
 @[simps]
-def equivPrimitiveRootsOfCoprimePow' {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
+def equivPrimitiveRootsModEqOne {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
   toFun x := ⟨x.1 ^ a,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
@@ -723,12 +724,13 @@ def equivPrimitiveRootsOfCoprimePow' {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
   right_inv x := by ext; simp [← pow_mul, mul_comm b,
     pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
 
-/-- Equivalence of coprime powers of primitive roots. -/
-def equivPrimitiveRootsOfCoprimePow {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+/-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
+    `a`-th power given that `n` and `a` are coprime. -/
+def equivPrimitiveRootsOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
     primitiveRoots n R ≃ primitiveRoots n R :=
   have h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
   have h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
-  equivPrimitiveRootsOfCoprimePow' h3
+  equivPrimitiveRootsModEqOne h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
