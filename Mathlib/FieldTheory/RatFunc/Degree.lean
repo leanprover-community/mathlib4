@@ -82,6 +82,10 @@ theorem intDegree_mul {x y : RatFunc K} (hx : x ≠ 0) (hy : y ≠ 0) :
 theorem intDegree_inv (x : RatFunc K) : intDegree (x⁻¹) = - intDegree x := by
   by_cases hx : x = 0 <;> simp [hx, eq_neg_iff_add_eq_zero, ← intDegree_mul (inv_ne_zero hx) hx]
 
+lemma intDegree_div {x y : RatFunc K} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (x / y).intDegree = x.intDegree - y.intDegree := by
+  rw [div_eq_mul_inv, intDegree_mul, intDegree_inv, ← sub_eq_add_neg] <;> grind
+
 @[simp]
 theorem intDegree_neg (x : RatFunc K) : intDegree (-x) = intDegree x := by
   by_cases hx : x = 0
