@@ -312,7 +312,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
-@[to_additive] lemma Subgroup.disjoint_nhds_of_isDiscrete
+@[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_inter_nonempty
     (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
     ∃ U ∈ 𝓝 (1 : G), ∀ g ∈ S,
       ((g * ·) '' U ∩ U).Nonempty ∨ ((· * g) '' U ∩ U).Nonempty → g = 1 := by

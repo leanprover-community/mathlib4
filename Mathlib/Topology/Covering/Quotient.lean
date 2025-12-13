@@ -182,7 +182,7 @@ end MulAction
     IsQuotientCoveringMap f G where
   __ := hf
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.rightRel_apply.symm
-  disjoint e := have ⟨U, hU, disj⟩ := G.disjoint_nhds_of_isDiscrete hG
+  disjoint e := have ⟨U, hU, disj⟩ := hG.exists_nhds_eq_one_of_image_inter_nonempty
     ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.2 <| .inl <| by
       obtain ⟨_, ⟨_, ⟨x, hx, _, rfl, rfl⟩, rfl⟩, y, hy, g, rfl, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_right_cancel ((mul_assoc ..).trans he.symm)⟩, hy⟩⟩
@@ -192,7 +192,7 @@ end MulAction
     IsQuotientCoveringMap f G.op where
   __ := hf
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.leftRel_apply.symm
-  disjoint e := have ⟨U, hU, disj⟩ := G.disjoint_nhds_of_isDiscrete hG
+  disjoint e := have ⟨U, hU, disj⟩ := hG.exists_nhds_eq_one_of_image_inter_nonempty
     ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
         MulOpposite.unop_injective <| disj _ hS <| .inr <| by
       obtain ⟨_, ⟨_, ⟨_, rfl, x, hx, rfl⟩, rfl⟩, g, rfl, y, hy, he⟩ := hs

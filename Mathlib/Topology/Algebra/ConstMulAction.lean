@@ -444,7 +444,7 @@ end IsUnit
 
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
-`γ:Γ` move `K` to have nontrivial intersection with `L`.
+`γ : Γ` move `K` to have nontrivial intersection with `L`.
 -/
 class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] :
     Prop where
@@ -454,7 +454,7 @@ class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [S
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
-`γ:Γ` move `K` to have nontrivial intersection with `L`.
+`γ : Γ` move `K` to have nontrivial intersection with `L`.
 -/
 class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
