@@ -20,8 +20,8 @@ very hard to describe: the minimal polynomials of their vertex coordinates go up
 Other embeddings found since then, such as the one in [hong2014], suffer from the same
 complexity issue.
 
-This file formalises a much simpler embedding, found by Jeremy Tan in August 2025
-(see [this commit](https://github.com/Parcly-Taxel/Shibuya/commit/b5c86cbf1c8b2e1211b160f266480e7115a7e43a)).
+This file formalises a much simpler embedding, independently found by Moritz Firsching [in July 2016](https://mathoverflow.net/q/244604)
+and Jeremy Tan [in August 2025](https://github.com/Parcly-Taxel/Shibuya/commit/b5c86cbf1c8b2e1211b160f266480e7115a7e43a).
 Its coordinates are polynomials in the unique real root of `2c^3 + 3c + 1`.
 -/
 
