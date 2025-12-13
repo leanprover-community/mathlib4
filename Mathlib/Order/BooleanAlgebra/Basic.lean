@@ -615,29 +615,33 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedBooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] [Bot α] [SDiff α]
-    [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α]
+    [LE α] [LT α] [Bot α] [SDiff α] [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     GeneralizedBooleanAlgebra α where
-  __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
-  __ := hf.distribLattice f map_sup map_inf
+  __ := hf.generalizedCoheytingAlgebra f le lt map_sup map_inf map_bot map_sdiff
+  __ := hf.distribLattice f le lt map_sup map_inf
   sup_inf_sdiff a b := hf <| by rw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
   inf_inf_sdiff a b := hf <| by rw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [HasCompl α]
-    [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
+    [HasCompl α] [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) :
     BooleanAlgebra α where
-  __ := hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff
-  le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot_le _ := map_bot.le.trans bot_le
-  inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le
-  top_le_sup_compl a := ((map_sup _ _).trans <| by rw [map_compl, sup_compl_eq_top, map_top]).ge
+  __ := hf.generalizedBooleanAlgebra f le lt map_sup map_inf map_bot map_sdiff
+  le_top _ := le.1 <| (@le_top β _ _ _).trans map_top.ge
+  bot_le _ := le.1 <| map_bot.le.trans bot_le
+  inf_compl_le_bot a := le.1 ((map_inf _ _).trans <| by
+    rw [map_compl, inf_compl_eq_bot, map_bot]).le
+  top_le_sup_compl a := le.1 ((map_sup _ _).trans <| by
+    rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := hf <| (map_sdiff _ _).trans <| sdiff_eq.trans <| by rw [map_inf, map_compl]
   himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
 
