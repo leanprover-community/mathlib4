@@ -6,6 +6,7 @@ Authors: Luigi Massacci, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
@@ -323,6 +324,20 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
+protected theorem continuous_seminorm_iff_continuous_comp [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+    (p : Seminorm 𝕜 (𝓓^{n}(Ω, F))) :
+    Continuous p ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (p.comp (ofSupportedInCLM 𝕜 K_sub_Ω).toLinearMap) := by
+  simp_rw [Seminorm.coe_comp, ← p.coe_restrictScalars ℝ]
+  -- have key : Continuous (p.restrictScalars ℝ) ↔ TestFunction.topologicalSpace Ω F n ≤ tp :=
+  --   sorry
+  set tp := (p.restrictScalars ℝ).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace
+  have : @IsTopologicalAddGroup _ tp _ := inferInstance
+  have : @ContinuousSMul ℝ _ _ _ tp := sorry
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ tp := sorry
+  -- rw [key, topologicalSpace_le_iff]
+  sorry
+
 variable (𝕜) in
 /-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
 custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
@@ -338,6 +353,13 @@ protected def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V
   letI Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] V := ⟨⟨toFun, map_add⟩, map_smul⟩
   { toLinearMap := Φ
     cont := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
+
+instance [NormedAlgebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+    [∀ K : Compacts E, BarrelledSpace 𝕜 (𝓓^{n}_{K}(E, F))] : BarrelledSpace 𝕜 (𝓓^{n}(Ω, F)) := by
+  refine ⟨fun p hp ↦ ?_⟩
+  rw [TestFunction.continuous_seminorm_iff_continuous_comp]
+  intro K K_sub_Ω
+  exact Seminorm.continuous_of_lowerSemicontinuous _ <| hp.comp <| continuous_ofSupportedIn K_sub_Ω
 
 end Topology
 
