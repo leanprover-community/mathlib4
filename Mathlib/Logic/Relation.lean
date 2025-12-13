@@ -287,7 +287,7 @@ end Map
 variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff ReflTransGen.cases_tail_iff]
+@[mk_iff ReflTransGen.cases_tail_iff, grind]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
   | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
@@ -295,7 +295,7 @@ inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
 attribute [refl] ReflTransGen.refl
 
 /-- `ReflGen r`: reflexive closure of `r` -/
-@[mk_iff]
+@[mk_iff, grind]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
@@ -313,8 +313,6 @@ attribute [mk_iff] TransGen
 attribute [grind] TransGen
 attribute [refl] ReflGen.refl
 attribute [grind =] reflGen_iff
-attribute [grind] ReflGen
-attribute [grind] ReflTransGen
 
 namespace ReflGen
 
