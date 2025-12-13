@@ -291,14 +291,11 @@ open Asymptotics Filter MeasureTheory
 theorem integrable_theta_div_id_mul_log_sq (x : ℝ) :
     IntegrableOn (fun t ↦ (θ t) / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
-  apply integrableOn_mul_sum_Icc _ (by norm_num)
-  apply ContinuousOn.integrableOn_Icc
-  intro x hx
-  apply ContinuousAt.continuousWithinAt
+  refine integrableOn_mul_sum_Icc _ (by norm_num) <| ContinuousOn.integrableOn_Icc fun x hx ↦
+    ContinuousAt.continuousWithinAt ?_
   have : x ≠ 0 := by linarith [hx.1]
   have : x * log x ^ 2 ≠ 0 := by
-    apply mul_ne_zero this
-    apply pow_ne_zero _ <| log_ne_zero_of_pos_of_ne_one _ _ <;> linarith [hx.1]
+    apply mul_ne_zero this <| pow_ne_zero _ <| log_ne_zero_of_pos_of_ne_one _ _ <;> linarith [hx.1]
   fun_prop (disch := assumption)
 
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
@@ -307,16 +304,15 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero,
     ← add_sum_erase (a := 2) _ _ (by simp [prime_two, le_floor hx])]
-  trans 1 + ∑ x ∈ Ioc 2 ⌊x⌋₊ with x.Prime, 1
-  · norm_cast
-    congr
-    ext p
+  have : {x ∈ Icc 0 ⌊x⌋₊ | Nat.Prime x}.erase 2 = {x ∈ Ioc 2 ⌊x⌋₊ | Nat.Prime x} := by
+    ext
     constructor <;> intro h
     · simp_all only [mem_erase, mem_filter, mem_Icc, _root_.zero_le, true_and, mem_Ioc,
       and_true]
       exact lt_of_le_of_ne h.2.2.two_le h.1.symm
     · grind
-  rw [sum_filter]
+  rw [this, sum_filter]
+  push_cast
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n => log n)
   trans 1 + ∑ n ∈ Ioc 2 ⌊x⌋₊, (log n)⁻¹ * a n
   · congr 1
@@ -330,7 +326,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       field
     · simp [h]
   rw [(by simp : 2 = ⌊(2 : ℝ)⌋₊), sum_mul_eq_sub_sub_integral_mul a (f := fun n ↦ (log n)⁻¹)
-    (by linarith) hx, ← intervalIntegral.integral_of_le hx]
+    zero_le_two hx, ← intervalIntegral.integral_of_le hx]
   · have int_deriv (f : ℝ → ℝ) :
       ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
@@ -368,7 +364,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
   refine ContinuousOn.intervalIntegrable fun x hx ↦ ContinuousAt.continuousWithinAt ?_
   rw [Set.mem_uIcc] at hx
-  have : x ≠ 0 := by bound
+  have : x ≠ 0 := by grind
   have : log x ^ 2 ≠ 0 := pow_ne_zero _ (log_ne_zero.mpr (by grind))
   fun_prop (disch := assumption)
 
