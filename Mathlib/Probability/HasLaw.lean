@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Moments.Variance
+public import Mathlib.Tactic.ToFun
 
 /-!
 # Law of a random variable
