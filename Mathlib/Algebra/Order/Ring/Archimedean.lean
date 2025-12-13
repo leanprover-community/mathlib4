@@ -54,14 +54,8 @@ instance : Zero (ArchimedeanClass R) where
 
 @[simp] theorem mk_one : mk (1 : R) = 0 := rfl
 
-@[simp]
-theorem top_ne_zero [Nontrivial R] : (⊤ : ArchimedeanClass R) ≠ 0 := by
-  rw [← mk_one, ne_eq, top_eq_mk_iff]
-  exact one_ne_zero
-
-@[simp]
-theorem zero_ne_top [Nontrivial R] : 0 ≠ (⊤ : ArchimedeanClass R) :=
-  top_ne_zero.symm
+@[simp] lemma top_ne_zero : (⊤ : ArchimedeanClass R) ≠ 0 := by simp [← mk_one]
+@[simp] lemma zero_ne_top : 0 ≠ (⊤ : ArchimedeanClass R) := top_ne_zero.symm
 
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
