@@ -68,7 +68,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E, ← map_map] at hhx
-    exact ⟨hx.tower_top, hhx.splits_of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
+    exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=

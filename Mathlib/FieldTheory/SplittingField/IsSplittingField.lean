@@ -120,7 +120,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
-    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩, hf.splits_of_dvd (map_ne_zero hf0)
+    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩, hf.of_dvd (map_ne_zero hf0)
       ((map_dvd_map' _).mpr (minpoly.dvd K y this))⟩)) Algebra.toTop
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L := by
