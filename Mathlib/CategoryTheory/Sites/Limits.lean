@@ -83,7 +83,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         intro ii
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).val.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
-        dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
         cat_disch }
 
@@ -111,8 +110,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      rw [Presheaf.IsSheaf.amalgamate_map]
-      rfl)
+      rw [Presheaf.IsSheaf.amalgamate_map])
     (by
       intro S m hm
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).hom_ext

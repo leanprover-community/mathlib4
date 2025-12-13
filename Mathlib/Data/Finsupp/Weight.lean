@@ -210,7 +210,14 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
+@[deprecated (since := "2025-12-09")] alias degree_add := map_add
+
+@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
+
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
+
+@[deprecated (since := "2025-12-09")]
+alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp
@@ -246,5 +253,13 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
+lemma range_single_one :
+    Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
+  refine subset_antisymm ?_ ?_
+  · simp [Set.range_subset_iff]
+  · intro p (hp : p.sum (fun a k ↦ k) = 1)
+    obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
+    use a
 
 end Finsupp

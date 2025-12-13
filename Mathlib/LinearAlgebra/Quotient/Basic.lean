@@ -81,13 +81,10 @@ variable {p}
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
 
 @[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
-  obtain ⟨x, _, notMem_s⟩ := SetLike.exists_of_lt h
-  refine ⟨⟨mk x, 0, ?_⟩⟩
-  simpa using notMem_s
+theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h.ne
 
 @[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.2 h
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h
 
 end Quotient
 
