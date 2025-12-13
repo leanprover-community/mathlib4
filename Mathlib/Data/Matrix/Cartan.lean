@@ -129,7 +129,7 @@ section Properties
 
 variable (n : ℕ)
 
-@[simp] theorem A_diag (i : Fin n) : A n i i = 2 := by simp [A, Matrix.of_apply]
+@[simp] theorem A_diag : (A n).diag = 2 := by ext; simp [A]
 @[simp] theorem B_diag (i : Fin n) : B n i i = 2 := by simp [B, Matrix.of_apply]
 @[simp] theorem C_diag (i : Fin n) : C n i i = 2 := by simp [C, Matrix.of_apply]
 @[simp] theorem D_diag (i : Fin n) : D n i i = 2 := by simp [D, Matrix.of_apply]
