@@ -120,7 +120,7 @@ theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) 
   exacts [(toEuclidean (E := G)).contDiff.comp hf,
     (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
 
-theorem image_closedBall_eq_metric_closedBall [Nontrivial G] (x : G) (r : ℝ) :
+lemma image_closedBall_eq_metric_closedBall [Nontrivial G] (x : G) (r : ℝ) :
   toEuclidean '' Euclidean.closedBall x r = Metric.closedBall (toEuclidean x) r := by
   simp only [Euclidean.closedBall, Euclidean.dist]
   apply Set.eq_of_subset_of_subset
@@ -131,7 +131,7 @@ theorem image_closedBall_eq_metric_closedBall [Nontrivial G] (x : G) (r : ℝ) :
     · simp_all [Metric.mem_closedBall, mem_setOf_eq, ContinuousLinearEquiv.apply_symm_apply]
     · apply ContinuousLinearEquiv.apply_symm_apply
 
-theorem diam_closed_ball_eq_two_mul_radius' [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+lemma diam_closed_ball_eq_two_mul_radius' [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
   Metric.diam (Metric.closedBall (toEuclidean x) r) = 2 * r := by
   apply le_antisymm (Metric.diam_closedBall hr)
   let x₁ := (toEuclidean x) + EuclideanSpace.single ⟨0, Module.finrank_pos⟩ r
