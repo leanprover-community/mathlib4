@@ -57,7 +57,7 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-def exp (z : ℂ) : ℂ :=
+irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -171,7 +171,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
-  dsimp [exp]
+  simp only [exp]
   rw [← lim_conj]
   refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
@@ -453,6 +453,13 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
     _ ≤ ‖x‖ ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = ‖x‖ ^ 2 := by rw [mul_one]
 
+theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ = ‖x‖ ^ 2 := by simp
+
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖
       ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
@@ -557,6 +564,8 @@ noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
 @[simp]
 theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
+-- Non-terminal simp: should ac_rfl be considered normalising?
+set_option linter.flexible false in
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_add_one, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
@@ -572,8 +581,10 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   · simp [field]
-  · cutsat
+  · lia
 
+-- TODO: fix non-terminal simp
+set_option linter.flexible false in
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :
@@ -598,7 +609,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   simp
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; lia]
   simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
