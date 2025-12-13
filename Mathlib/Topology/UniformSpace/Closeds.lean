@@ -182,6 +182,36 @@ theorem uniformContinuous_union : UniformContinuous (fun x : Set α × Set α =>
   filter_upwards [entourageProd_mem_uniformity (Filter.mem_lift' hU) (Filter.mem_lift' hU)]
     with _ ⟨h₁, h₂⟩ using union_mem_hausdorffEntourage U h₁ h₂
 
+theorem uniformContinuous_closure : UniformContinuous (closure (X := α)) := by
+  simp_rw [UniformContinuous, (𝓤 α).basis_sets.uniformity_hausdorff.tendsto_iff
+    (𝓤 α).basis_sets.uniformity_hausdorff, Function.comp_id, mem_hausdorffEntourage]
+  intro U hU
+  obtain ⟨V : SetRel α α, hV, hVU⟩ := comp_mem_uniformity_sets hU
+  refine ⟨V, hV, fun ⟨s, t⟩ ⟨hst, hts⟩ => ?_⟩
+  simp only at *
+  constructor
+  · grw [closure_subset_preimage hV s, hst, ← subset_closure, ← hVU, SetRel.preimage_comp]
+  · grw [closure_subset_image hV t, hts, ← subset_closure, ← hVU, SetRel.image_comp]
+
+@[fun_prop]
+theorem continuous_closure : Continuous (closure (X := α)) :=
+  uniformContinuous_closure.continuous
+
+theorem isUniformInducing_closure : IsUniformInducing (closure (X := α)) := by
+  refine ⟨le_antisymm ?_ <| Filter.map_le_iff_le_comap.mp uniformContinuous_closure⟩
+  rw [(𝓤 α).basis_sets.uniformity_hausdorff.comap _ |>.le_basis_iff
+    (𝓤 α).basis_sets.uniformity_hausdorff, Function.comp_id]
+  intro U hU
+  obtain ⟨V : SetRel α α, hV, hVU⟩ := comp_mem_uniformity_sets hU
+  refine ⟨V, hV, fun ⟨s, t⟩ ⟨hst, hts⟩ => ?_⟩
+  simp only [mem_hausdorffEntourage] at *
+  constructor
+  · grw [subset_closure (s := s), hst, closure_subset_preimage hV t, ← hVU, SetRel.preimage_comp]
+  · grw [subset_closure (s := t), hts, closure_subset_image hV s, ← hVU, SetRel.image_comp]
+
+theorem nhds_closure (s : Set α) : 𝓝 (closure s) = 𝓝 s := by
+  simp_rw +singlePass [isUniformInducing_closure.isInducing.nhds_eq_comap, closure_closure]
+
 end UniformSpace.hausdorff
 
 /-- When `Set` is equipped with the Hausdorff uniformity, taking the image under a uniformly
@@ -309,6 +339,17 @@ instance : T0Space (Closeds α) := by
     mem_of_mem_nhds <| h.nhds_le_uniformity <| Filter.preimage_mem_comap <| Filter.mem_lift' hU
   obtain ⟨y, hy, hxy⟩ := h hx₁
   exact ⟨(x, y), hxy, y, rfl, hy⟩
+
+theorem isUniformInducing_closure : IsUniformInducing (Closeds.closure (α := α)) :=
+  isUniformEmbedding_coe.isUniformInducing_comp_iff.mp
+    UniformSpace.hausdorff.isUniformInducing_closure
+
+theorem uniformContinuous_closure : UniformContinuous (Closeds.closure (α := α)) :=
+  isUniformInducing_closure.uniformContinuous
+
+@[fun_prop]
+theorem continuous_closure : Continuous (Closeds.closure (α := α)) :=
+  uniformContinuous_closure.continuous
 
 end TopologicalSpace.Closeds
 
