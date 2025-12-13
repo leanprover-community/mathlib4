@@ -70,10 +70,6 @@ theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x
     exact Set.IsWF.min_of_subset_not_lt_min
       (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
-theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
-    x.orderTop ≤ (r • x).orderTop :=
-  le_of_not_gt <| orderTop_smul_not_lt r x
-
 theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : V⟦Γ⟧) :
     x.orderTop ≤ (r • x).orderTop :=
   le_of_not_gt <| orderTop_smul_not_lt r x
