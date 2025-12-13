@@ -143,7 +143,7 @@ noncomputable def map :
   ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g'.hom).obj (KaehlerDifferential f'))
   { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp
-    map_smul' := by simp }
+    map_smul' _ _ := by simp; rfl }
 
 @[simp]
 lemma map_d (b : B) : map fac (d b) = d (g' b) := by
