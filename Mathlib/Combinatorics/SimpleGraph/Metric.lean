@@ -276,8 +276,8 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   · grind [dist_eq_zero_iff_eq_or_not_reachable, Reachable.trans, Adj.reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
-  have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
-  have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
+  have : G.dist u w ≤ G.dist u v + G.dist v w := hadj.reachable.dist_triangle_right u
+  have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
