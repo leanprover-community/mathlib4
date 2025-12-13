@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner
@@ -62,18 +60,3 @@ public theorem Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective :
   intro f
   have ⟨T, hT⟩ := f.eq_linearEquivConjAlgEquiv
   exact ⟨.ofLinearEquiv T, hT.symm⟩
-
-section trace_det
-variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
-
-@[simp] public theorem LinearMap.trace_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
-    (f x).trace K W = x.trace K V :=
-  have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ LinearMap.trace_conj' _ _
-
-@[simp] public theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
-    (f x).det = x.det :=
-  have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ LinearMap.det_conj _ _
-
-end trace_det
