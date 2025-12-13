@@ -62,12 +62,9 @@ theorem exists_mem_stabilizer_isThreeCycle
     ∃ g ∈ stabilizer (Perm α) s, g.IsThreeCycle := by
   rcases Nat.lt_or_ge 2 (ncard s) with hs | hs
   · exact exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard hs
-  · suffices hs' : 2 < sᶜ.ncard by
-      rw [← stabilizer_compl]
-      exact exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard hs'
-    contrapose! hα
-    rw [← ncard_add_ncard_compl s]
-    grind
+  · have := ncard_add_ncard_compl s
+    rw [← stabilizer_compl]
+    exact exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard (by grind)
 
 theorem alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (Perm α)) [hG' : IsPreprimitive G α] {s : Set α}
