@@ -1262,6 +1262,22 @@ lemma lTensor_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (
 
 variable {M}
 
+theorem lTensor_comp_comm (f : M →ₗ[R] P) :
+    lTensor N f ∘ₗ TensorProduct.comm R M N = TensorProduct.comm R P N ∘ₗ rTensor N f :=
+  TensorProduct.map_comp_comm_eq _ _
+
+theorem rTensor_comp_comm (f : M →ₗ[R] P) :
+    rTensor N f ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R N P ∘ₗ lTensor N f :=
+  TensorProduct.map_comp_comm_eq _ _
+
+theorem lTensor_comm (f : M →ₗ[R] P) (x : M ⊗[R] N) :
+    lTensor N f (TensorProduct.comm R M N x) = TensorProduct.comm R P N (rTensor N f x) :=
+  congr($(LinearMap.lTensor_comp_comm f) _)
+
+theorem rTensor_comm (f : M →ₗ[R] P) (x : N ⊗[R] M) :
+    rTensor N f (TensorProduct.comm R N M x) = TensorProduct.comm R N P (lTensor N f x) :=
+  congr($(LinearMap.rTensor_comp_comm f) _)
+
 @[simp]
 theorem rTensor_pow (f : M →ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
   have h := TensorProduct.map_pow f (id : N →ₗ[R] N) n
