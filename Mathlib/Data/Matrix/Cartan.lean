@@ -134,7 +134,7 @@ variable (n : ℕ)
 @[simp] theorem C_diag (i : Fin n) : C n i i = 2 := by simp [C, Matrix.of_apply]
 @[simp] theorem D_diag (i : Fin n) : D n i i = 2 := by simp [D, Matrix.of_apply]
 
-theorem A_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : A n i j ≤ 0 := by
+theorem A_apply_le_zero_of_ne (i j : Fin n) (h : i ≠ j) : A n i j ≤ 0 := by
   simp only [A, Matrix.of_apply]; split_ifs <;> omega
 
 theorem B_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : B n i j ≤ 0 := by
