@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
@@ -13,6 +12,8 @@ public import Batteries.Tactic.Trans
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Int.Notation
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties
