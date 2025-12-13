@@ -379,7 +379,7 @@ theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
 
 @[simp]
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-    (U R n).leadingCoeff = 2^n := by
+    (U R n).leadingCoeff = 2 ^ n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
     change leadingCoeff (C 2) = 2
     rw [leadingCoeff_C]
