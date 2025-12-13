@@ -5,8 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Grpd
-public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Data.Set.Subsingleton
