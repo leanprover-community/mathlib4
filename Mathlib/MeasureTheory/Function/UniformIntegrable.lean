@@ -16,7 +16,7 @@ as well as the probability theory sense). This file also contains the Vitali con
 which establishes a relation between uniform integrability, convergence in measure and
 Lp convergence.
 
-Uniform integrability plays a vital role in the theory of martingales most notably is used to
+Uniform integrability plays a vital role in the theory of martingales and most notably is used to
 formulate the martingale convergence theorem.
 
 ## Main definitions
