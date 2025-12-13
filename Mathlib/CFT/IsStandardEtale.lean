@@ -1,12 +1,10 @@
-import Mathlib.CFT.Locus
 import Mathlib.CFT.HardCore
 import Mathlib.CFT.Stuff2
 import Mathlib.RingTheory.Etale.StandardEtale
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.ZariskiMain
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.RingTheory.Extension.Presentation.Core
+import Mathlib.RingTheory.Etale.Locus
 
 open Polynomial TensorProduct
 open IsLocalRing
@@ -254,7 +252,7 @@ lemma Algebra.FormallyEtale.isStandardEtale_of_finite_of_adjoin_eq_top
       refine .trans ?_ (basicOpen_subset_etaleLocus_iff.mpr hf.formallyEtale)
       refine (PrimeSpectrum.basicOpen_le_basicOpen_iff _ _).mpr
         (Ideal.le_radical (Ideal.mem_span_singleton.mpr (by simp)))
-    finitePresentation := .of_isLocalization (aeval x (derivative q * f)) }
+    finitePresentation := .of_isLocalizationAway (aeval x (derivative q * f)) }
   exact ⟨_, by simpa using Ideal.IsPrime.mul_notMem ‹_› hqx hfQ, .of_surjective _ _ _ _ this⟩
 
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
@@ -373,11 +371,6 @@ lemma Localization.exists_awayMap_injective_of_localRingHom_injective
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr ⟨⟨_, k + n, rfl⟩, ?_⟩
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]
-
-example {L : Type*} [Field L] [CharZero L] (K : IntermediateField ℚ L) :
-    (Field.toGrindField.toInv : Inv K) = InvMemClass.inv := by
-  delta InvMemClass.inv -- fails without this
-  with_reducible_and_instances rfl
 
 lemma Localization.exists_awayMap_surjective_of_localRingHom_surjective
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
@@ -660,6 +653,7 @@ lemma ZariskiMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     ← IsLocalization.mk'_pow]
 
 attribute [local instance high] Module.Free.of_divisionRing in
+set_option synthInstance.maxHeartbeats 0 in
 lemma Algebra.QuasiFinite.of_formallyUnramified
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.FormallyUnramified R S] [Algebra.EssFiniteType R S] : Algebra.QuasiFinite R S where

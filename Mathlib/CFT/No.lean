@@ -1,7 +1,14 @@
-import Mathlib
--- import Mathlib.CFT.Resultant
--- import Mathlib.CFT.StandardEtale
-import Mathlib.CFT.UniversalFactorizationRing
+module
+
+public import Mathlib.CFT.UniversalFactorizationRing
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.CFT.NewNo
+
+/-! #foo -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -9,151 +16,42 @@ attribute [local instance] RingHom.ker_isPrime
 
 open scoped nonZeroDivisors
 
-open Algebra.TensorProduct in
-noncomputable
-def tensorResidueFieldEquiv
-    {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
-    S ⊗[R] p.ResidueField ≃ₐ[S ⧸ Ideal.map (algebraMap R S) p]
-    ((S ⧸ Ideal.map (algebraMap R S) p) ⊗[R ⧸ p] p.ResidueField) :=
-  letI e : S ⊗[R] p.ResidueField ≃ₐ[R]
-    ((S ⧸ Ideal.map (algebraMap R S) p) ⊗[R ⧸ p] p.ResidueField) := by
-    refine (Algebra.TensorProduct.comm _ _ _).trans ?_
-    refine ((cancelBaseChange R (R ⧸ p) (R ⧸ p) _ _).restrictScalars R).symm.trans ?_
-    refine .trans ?_ ((Algebra.TensorProduct.comm _ _ _).restrictScalars R)
-    refine (congr (S := R ⧸ p) .refl ?_).restrictScalars R
-    refine AlgEquiv.extendScalarsOfSurjective (R := R) Ideal.Quotient.mk_surjective ?_
-    refine (Algebra.TensorProduct.comm _ _ _).trans ?_
-    exact (quotIdealMapEquivTensorQuot S p).symm.restrictScalars R
-  { __ := e, commutes' := Ideal.Quotient.mk_surjective.forall.mpr fun x ↦ by simp [e] }
+lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
+    {R S ι : Type*} [CommRing R] [CommRing S] [Fintype ι] (f : R →+* S) (e₀ : R)
+    (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
+    (e : ι → S) (he : CompleteOrthogonalIdempotents e) (he : ∀ i, e i ∈ f.range) :
+    ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
+  choose e' he' using he
+  choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+  refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
+  · rintro (_|i) (_|j) h
+    · simp at h
+    · dsimp; linear_combination - he₀.eq * e' j
+    · dsimp; linear_combination - he₀.eq * e' i
+    · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+      dsimp
+      rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
+  · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+    simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
+      sub_eq_iff_eq_add.mp hk]
+    linear_combination - he₀.eq * k
+  · have : f e₀ = 0 := by simpa using hfe₀.ge (Ideal.mem_span_singleton_self _)
+    aesop
+  · dsimp [IsIdempotentElem]
+    linear_combination congr($(he₀.eq) * ((e' i) ^ 2 - k i) + (1 - e₀) * $(hk i))
 
-@[simp]
-lemma tensorResidueFieldEquiv_tmul
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-        (a : S) (b : p.ResidueField) :
-    tensorResidueFieldEquiv S p (a ⊗ₜ b) = (Ideal.Quotient.mk _ a) ⊗ₜ b := by
-  simp [tensorResidueFieldEquiv]
-
-@[simp]
-lemma tensorResidueFieldEquiv_symm_tmul
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-        (a : S) (b : p.ResidueField) :
-    (tensorResidueFieldEquiv S p).symm (a ⊗ₜ b) = a ⊗ₜ b :=
-  (tensorResidueFieldEquiv S p).symm_apply_eq.mpr (by simp)
-
-@[simp]
-lemma tensorResidueFieldEquiv_symm_one_tmul
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-        (b : p.ResidueField) :
-    (tensorResidueFieldEquiv S p).symm (1 ⊗ₜ b) = 1 ⊗ₜ b :=
-  (tensorResidueFieldEquiv S p).symm_apply_eq.mpr (by simp)
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
-    IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ Ideal.map (algebraMap R S) p) (R ⧸ p)⁰)
-      (S ⊗[R] p.ResidueField) :=
-  have := IsLocalization.tensor p.ResidueField (R ⧸ p)⁰ (S := S ⧸ p.map (algebraMap R S))
-  .isLocalization_of_algEquiv _ (tensorResidueFieldEquiv S p).symm
-
-@[simp]
-lemma MonicDegreeEq.coe_mk {R : Type*} [CommRing R] {n : ℕ} (p : Polynomial R) (hp : p.Monic)
-  (hp' : p.natDegree = n) : (Polynomial.MonicDegreeEq.mk p hp hp').1 = p := rfl
-
-instance {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    {e : S} (he : IsIdempotentElem e) : Algebra R he.Corner where
-  smul r x := ⟨r • x.1, by
-    simp [he, Subsemigroup.mem_corner_iff, (Subsemigroup.mem_corner_iff he).mp x.2]⟩
-  algebraMap :=
-  { toFun r := ⟨r • e, by simp [he, Subsemigroup.mem_corner_iff, he.eq]⟩
-    map_one' := by simp; rfl
-    map_mul' a b := Subtype.ext <| show (a * b) • e = (a • e) * (b • e) by
-      simp [he.eq, ← mul_smul, mul_comm]
-    map_zero' := by simp; rfl
-    map_add' a b := Subtype.ext (add_smul _ _ _) }
-  commutes' r x := Subtype.ext (show r • e * x.1 = x.1 * r • e by
-    simp [(Subsemigroup.mem_corner_iff he).mp x.2])
-  smul_def' r x := Subtype.ext (show r • x.1 = (r • e) * x.1 by
-    simp [(Subsemigroup.mem_corner_iff he).mp x.2])
-
-instance {R R' S : Type*} [CommSemiring R] [CommSemiring R'] [Semiring S] [Algebra R S]
-    [Algebra R R'] [Algebra R' S] [IsScalarTower R R' S]
-    {e : S} (he : IsIdempotentElem e) : IsScalarTower R R' he.Corner :=
-  .of_algebraMap_eq fun _ ↦ Subtype.ext (IsScalarTower.algebraMap_smul _ _ _).symm
-
-attribute [-simp] FaithfulSMul.ker_algebraMap_eq_bot in
-attribute [instance high] CommRing.toCommMonoid Algebra.toModule
-  CommMonoid.toMonoid Monoid.toSemigroup Semigroup.toMul in
-open Polynomial in
-lemma exists_etale_isIdempotentElem_forall_liesOver_eq.{u, v}
-    {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
-      (_ : P.IsPrime) (_ : P.LiesOver p) (e : R' ⊗[R] S) (_ : IsIdempotentElem e)
-      (P' : Ideal (R' ⊗[R] S)) (_ : P'.IsPrime) (_ : P'.LiesOver P), P'.comap
-        Algebra.TensorProduct.includeRight.toRingHom = q ∧ e ∉ P' ∧
-      Function.Bijective (Ideal.ResidueField.mapₐ p P (Algebra.ofId _ _) (P.over_def p)) ∧
-      ∀ P'' : Ideal (R' ⊗[R] S), P''.IsPrime → P''.LiesOver P →
-      (e ∉ P'' ∨ P''.comap Algebra.TensorProduct.includeRight.toRingHom = q) → P'' = P' := by
-  classical
-  obtain ⟨s, hsq, hs⟩ := exists_not_mem_forall_mem_of_ne_of_liesOver p q
-  obtain ⟨m, f, b, hfm, hbm, hab, hfab, hf⟩ : ∃ (m : ℕ) (f : R[X])
-      (b : p.ResidueField[X]), f.Monic ∧ b.Monic ∧ IsCoprime (X ^ (m + 1)) b ∧
-        f.map (algebraMap _ _) = X ^ (m + 1) * b ∧ aeval s f = 0 := by
-    have hs := Algebra.IsIntegral.isIntegral (R := R) s
-    let f := X * minpoly R s
-    obtain ⟨q, hq, hq'⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd
-      ((minpoly R s).map (algebraMap R p.ResidueField)) ((minpoly.monic hs).map _).ne_zero 0
-    have hqm : q.Monic := by
-      simpa [((minpoly.monic hs).map _).leadingCoeff] using congr(leadingCoeff $hq).symm
-    set m' := rootMultiplicity 0 ((minpoly R s).map (algebraMap R p.ResidueField))
-    refine ⟨m', f, q, monic_X.mul (minpoly.monic hs), hqm, ?_,
-      by simp [f, hq, pow_succ', mul_assoc], by simp [f]⟩
-    simpa [IsCoprime.pow_left_iff,
-      (prime_X (R := p.ResidueField)).irreducible.coprime_iff_not_dvd] using hq'
-  obtain ⟨R', _, _, _, P, _, _, a', b', hP, ha'm, hb'm, hfab', ⟨c, d, hcd⟩, ha', hb'⟩ :=
-    exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_isCoprime p f
-      (X ^ (m + 1)) b hfm (monic_X.pow _) hbm hfab hab
-  let s' : R' ⊗[R] S := 1 ⊗ₜ s
-  have hs'f : aeval s' f = 0 :=
-    show aeval (Algebra.TensorProduct.includeRight s) f = 0 by rw [aeval_algHom_apply, hf, map_zero]
-  let e := aeval s' (c * a')
-  have he : IsIdempotentElem e := by
-    dsimp only [e, IsIdempotentElem]
-    nth_rw 2 [eq_sub_iff_add_eq.mpr hcd]
-    rw [← map_mul, mul_sub, mul_one, mul_mul_mul_comm, ← hfab']
-    simp only [map_mul, map_sub, aeval_map_algebraMap, hs'f, mul_zero, sub_zero]
-  let φ := AlgEquiv.ofBijective _ hP
-  let ψ : R' ⊗[R] S →ₐ[R] q.ResidueField := tensorToResidueFieldOfBijectiveMap hP q
-  have hψs' : ψ s' = algebraMap S q.ResidueField s := by simp [ψ, s']
-  have hψe : ψ e = 1 := by
-    have hψa : a'.map ((RingHomClass.toRingHom ψ).comp (algebraMap R' _)) = X ^ (m + 1) := by
-      trans (X ^ (m + 1)).map (Ideal.ResidueField.map p q _ (q.over_def p))
-      · ext1 i
-        simpa [ψ, tensorToResidueFieldOfBijectiveMap,
-          (Ideal.ResidueField.map p q _ (q.over_def p)).injective.eq_iff,
-          AlgEquiv.symm_apply_eq, -Polynomial.map_pow, -MonoidWithZeroHom.map_ite_one_zero] using
-          congr(($ha').coeff i).symm
-      · simp
-    have : ψ (aeval s' a') ≠ 0 := by
-      rw [aeval_def, ← AlgHom.coe_toRingHom, hom_eval₂, ← eval_map, hψa]; simpa [hψs']
-    have : ψ (aeval s' b') = 0 := mul_right_injective₀ this <| by
-      simp only [← map_mul, ← hfab', mul_zero, aeval_algebraMap_apply, aeval_map_algebraMap,
-        ← aeval_algHom_apply, hψs', hf, map_zero]
-    simp only [e, eq_sub_iff_add_eq.mpr hcd, map_sub, map_one]
-    simp only [map_mul, this, mul_zero, sub_zero]
-  let P' := RingHom.ker ψ.toRingHom
-  have : P'.LiesOver P := ⟨(under_ker_tensorToResidueFieldOfBijectiveMap ..).symm⟩
-  have hP'₁ : P'.comap Algebra.TensorProduct.includeRight.toRingHom = q := by ext; simp [ψ, P']
-  refine ⟨_, inferInstance, inferInstance, inferInstance, P, ‹_›, ‹_›,
-    e, he, P', inferInstance, ‹_›, hP'₁, by simp [P', hψe], hP, fun P'' _ _ H ↦ ?_⟩
-  apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hP
-  rw [hP'₁]
-  refine H.elim (not_imp_comm.mp <| fun h ↦ ?_) id
-  have : s' ∈ P'' := hs _ inferInstance h (by simp [Ideal.liesOver_iff, Ideal.under,
-    Ideal.comap_comap, Ideal.over_def P p, Ideal.over_def P'' P, ← IsScalarTower.algebraMap_eq])
-  rw [← Ideal.algebraMap_residueField_eq_zero, ← aeval_algebraMap_apply,
-    Ideal.algebraMap_residueField_eq_zero.mpr this, ← eval_map_algebraMap, Polynomial.map_mul,
-    mul_comm, ← (Ideal.ResidueField.mapₐ P P'' (Algebra.ofId _ _) (P''.over_def P)).comp_algebraMap,
-    ← Polynomial.map_map, ← ha']
-  simp
+lemma Ideal.mem_map_span_singleton_iff_of_isIdempotentElem
+    {R : Type*} [CommRing R] {e r : R} (he : IsIdempotentElem e) {I : Ideal R} :
+    Ideal.Quotient.mk _ r ∈ I.map (Ideal.Quotient.mk (Ideal.span {e})) ↔ (1 - e) * r ∈ I := by
+  simp only [Ideal.mem_map_iff_of_surjective _ Ideal.Quotient.mk_surjective,
+    Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton]
+  refine ⟨?_, fun H ↦ ⟨_, H, by simp [sub_mul]⟩⟩
+  rintro ⟨s, hs, t, hrst⟩
+  convert I.mul_mem_left (1 - e) hs using 1
+  linear_combination he.eq * t - (1 - e) * hrst
 
 attribute [ext high] Ideal.Quotient.algHom_ext
 
@@ -337,7 +235,7 @@ lemma exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'.{u, v}
     have he''e'' (i : _) : e₁ (e' i) = e'' i := congr_fun he''e' i
     have hψe'' (i : _) : (e' i) = e₁.symm (e'' i) := e₁.eq_symm_apply.mpr (he''e'' i)
     refine exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux p q R' P e P'
-      hP'q heP' hpP (fun P'' h₁ h₂ heP'' ↦ H P'' h₁ h₂ (.inl heP'')) R'' Q n _
+      hP'q heP' hpP (fun P'' h₁ h₂ heP'' ↦ H P'' h₁ h₂ heP'') R'' Q n _
       ((CompleteOrthogonalIdempotents.equiv (finSuccEquiv _)).mpr he'') rfl
       (Q' · |>.comap (e₁.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _))) hPQ
       (fun i ↦ by rw [Function.comp_def]; simpa [← hψe''] using hQ' i) ?_

@@ -2171,7 +2171,6 @@ public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumOverResidueClass
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
-public import Mathlib.CFT.GoingDown
 public import Mathlib.CFT.Prestuff
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Abelian.CommSq

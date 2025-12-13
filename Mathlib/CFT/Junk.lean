@@ -3,6 +3,7 @@ import Mathlib
 import Mathlib.CFT.No
 import Mathlib.CFT.SeparableResidueStruct
 import Mathlib.CFT.IsStandardEtale
+import Mathlib.CFT.Stuff
 
 open Polynomial TensorProduct
 
@@ -11,7 +12,6 @@ open IsLocalRing
 universe u
 
 variable {R : Type*} [CommRing R] [IsLocalRing R]
--- variable [IsAdicComplete (maximalIdeal R) R]
 
 local notation "𝓀[" R "]" => ResidueField R
 local notation "𝓂[" R "]" => maximalIdeal R
@@ -21,14 +21,6 @@ open Polynomial TensorProduct KaehlerDifferential
 open nonZeroDivisors
 
 attribute [ext high] Ideal.Quotient.algHom_ext
-
--- @[simps!]
--- noncomputable def PrimeSpectrum.primesOverOrderIsoTensorResidueField (R S : Type*) [CommRing R]
---     [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
---     p.asIdeal.primesOver S ≃o PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) :=
---   .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
---     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
---     (PrimeSpectrum.preimageOrderIsoTensorResidueField' R S p)
 
 lemma Ideal.isMaximal_of_isMaximal_under_of_formallyUnramified
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]

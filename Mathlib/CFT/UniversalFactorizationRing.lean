@@ -1,11 +1,7 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Centralizer
-import Mathlib.CFT.Stuff
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+module
+public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
+
+@[expose] public section
 
 open scoped Polynomial
 open TensorProduct
