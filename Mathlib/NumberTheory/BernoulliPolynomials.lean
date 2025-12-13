@@ -140,7 +140,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     · conv =>
       apply_congr
       · skip
-      · rw [← Nat.cast_mul, choose_mul _ (le.intro rfl), Nat.cast_mul, add_tsub_cancel_left,
+      · rw [← Nat.cast_mul, choose_mul (le.intro rfl), Nat.cast_mul, add_tsub_cancel_left,
           mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
   simp_rw [← sum_smul]
   rw [sum_range_succ_comm]

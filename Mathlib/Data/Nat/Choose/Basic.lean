@@ -157,28 +157,17 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
     · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
-theorem choose_mul (n : ℕ) {k s : ℕ} (hsk : s ≤ k) :
+theorem choose_mul {n k s : ℕ} (hsk : s ≤ k) :
     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
-  by_cases! hkn : n < k
-  · rw [choose_eq_zero_of_lt hkn, Nat.zero_mul]
-    by_cases! hns : n < s
-    · rw [choose_eq_zero_of_lt hns, Nat.zero_mul]
-    · rw [choose_eq_zero_of_lt (Nat.sub_lt_sub_right hns hkn), Nat.mul_zero]
+  obtain hnk | hkn := lt_or_ge n k
+  · grind [Nat.choose_eq_zero_of_lt]
   have h : 0 < (n - k)! * (k - s)! * s ! := by apply_rules [factorial_pos, Nat.mul_pos]
   apply Nat.mul_right_cancel h
   calc
-    n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
-        n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! := by
-      rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
-        Nat.mul_comm (n - k)!, Nat.mul_comm s !]
-    _ = n ! := by
-      rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
     _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
-      rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
-        choose_mul_factorial_mul_factorial (hsk.trans hkn)]
+      grind [choose_mul_factorial_mul_factorial]
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) := by
-      rw [Nat.sub_sub_sub_cancel_right hsk, Nat.mul_assoc, Nat.mul_left_comm s !, Nat.mul_assoc,
-        Nat.mul_comm (k - s)!, Nat.mul_comm s !, Nat.mul_right_comm, ← Nat.mul_assoc]
+      grind
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
     choose n k = n ! / (k ! * (n - k)!) := by
