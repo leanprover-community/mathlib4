@@ -8,6 +8,7 @@ module
 import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
@@ -143,31 +144,25 @@ theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
     (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsSeqCompact s := sorry
 
-/-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in
-a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
-theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
-    IsSeqCompact (WeakDual.polar 𝕜 s) := sorry
-
-/-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
-normed space `V` are sequentially compact in the weak-* topology. -/
-theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
-    IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) := sorry
+-- /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
+-- normed space `V` are sequentially compact in the weak-* topology. -/
+-- theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
+--     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) := sorry
 
 end SeqBA
 
 omit [BorelSpace X] in
-lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
-    HasFiniteIntegral ⇑f ↑μprob := by
+lemma fin_integral_prob_meas {μ : ProbabilityMeasure X} {f : C(X, ℝ)} :
+    HasFiniteIntegral ⇑f ↑μ := by
   let f' := BoundedContinuousFunction.mkOfCompact f
   obtain ⟨c, hf'⟩ := BoundedContinuousFunction.bddAbove_range_norm_comp f'
-  change HasFiniteIntegral f' μprob
+  change HasFiniteIntegral f' μ
   simp_rw [mem_upperBounds,Set.mem_range, Function.comp_apply, forall_exists_index,
       forall_apply_eq_imp_iff] at hf'
   exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
 
+-- #set_option max heartbeats 0 in
 /- ### This depends on PR #31292 (the sequential Banach-Alaoglu theorem)-/
-
--- #info_trees in
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -213,24 +208,19 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         rw [← ContinuousLinearMap.map_sub, ← cont_map_dist]; exact hφ_nonneg
       simpa using (le_of_sub_nonneg this) }
   have IsPMeas (φ : Φ) : IsProbabilityMeasure <| RealRMK.rieszMeasure (Λ φ) := by
-    constructor
-    apply (ENNReal.toReal_eq_one_iff (RealRMK.rieszMeasure (Λ φ) Set.univ)).mp
+    refine isProbabilityMeasure_iff.mpr ?_
+    rw [← ENNReal.toReal_eq_one_iff, ← MeasureTheory.Measure.real_def]
     let c1 := CompactlySupportedContinuousMap.continuousMapEquiv
-      ⟨(fun (x : X) => (1 : ℝ)), continuous_const⟩
-    calc
-      (RealRMK.rieszMeasure (Λ φ) Set.univ).toReal
-      _ = (RealRMK.rieszMeasure (Λ φ)).real Set.univ • 1 := by
-          simp [smul_eq_mul, mul_one, MeasureTheory.Measure.real_def]
-      _ = ∫ (x : X), 1 ∂(RealRMK.rieszMeasure (Λ φ)) :=
-          (integral_const (μ := RealRMK.rieszMeasure (Λ φ)) 1).symm
-      _ = Λ φ c1 := (RealRMK.integral_rieszMeasure (Λ φ) c1)
-      _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := rfl
+        ⟨(fun (x : X) => (1 : ℝ)), continuous_const⟩
+    calc (RealRMK.rieszMeasure (Λ φ)).real Set.univ
+      _ = ∫ (x : X), 1 ∂(RealRMK.rieszMeasure (Λ φ)) := by rw [integral_const, smul_eq_mul, mul_one]
+      _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := (RealRMK.integral_rieszMeasure (Λ φ) c1)
       _ = 1 := φ.2.2.1
-  have hΛ (φ : Φ) : ∀ (f : CompactlySupportedContinuousMap X ℝ), 0 ≤ f → 0 ≤ Λ φ f := φ.2.2.2
   let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
     .ofMeasure ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
   have : Set.univ = Set.range T := by
-    ext μ; simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
+    ext μ
+    simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := LevyProkhorov.toMeasureEquiv.toFun μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
     let liftL : C(X, ℝ) →ₚ[ℝ] ℝ :=
@@ -243,11 +233,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
           · exact ⟨by measurability,fin_integral_prob_meas⟩
           constructor --I should be able to solve both goals at once with
           -- all_goals simp [Integrable] exact ⟨by measurability,fin_integral_prob_meas⟩ here, but
-          -- it is reaching max heartbeats idk why??
-          · simp_all only [coe_toStrongDual, Set.coe_setOf, Set.mem_setOf_eq, Subtype.forall,
-             forall_and_index, Φ, Λ, μprob]
-            apply Measurable.aestronglyMeasurable
-            exact ContinuousMap.measurable g
+          -- it times out and I am unsure why.
+          · simp [μprob, Measurable.aestronglyMeasurable, (ContinuousMap.measurable g)]
           exact fin_integral_prob_meas
         map_smul' := by simp [L]; exact fun a b ↦ integral_const_mul a b
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
@@ -274,20 +261,50 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         simp only [coe_toContinuousMap]
         exact integral_nonneg hgpos
     let φ_fin : ↑Φ := by use φ_weak
-    use φ_fin
-    refine (Equiv.symm_apply_eq (LevyProkhorov.toMeasureEquiv)).mpr ?_
-    apply Subtype.ext
-    apply RealRMK.rieszMeasure_integralPositiveLinearMap
+    exact ⟨φ_fin, (Equiv.symm_apply_eq (LevyProkhorov.toMeasureEquiv)).mpr <|
+        Subtype.ext RealRMK.rieszMeasure_integralPositiveLinearMap⟩
   simp only [this]
-  have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project (Seq. banach alaoglu thm)
+  have hbounded : Bornology.IsBounded
+      (StrongDual.toWeakDual ⁻¹' (Φ : Set (WeakDual ℝ C(X, ℝ)))) := by
+    -- preimage of `Φ` is contained in the closed ball of radius `1`
+    have hsubset : StrongDual.toWeakDual ⁻¹' (Φ : Set (WeakDual ℝ C(X, ℝ))) ⊆
+        Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1 := by
+      intro ψ hψ
+      have hmemA : StrongDual.toWeakDual ψ ∈ A := by
+        have hABC : StrongDual.toWeakDual ψ ∈ A ∩ B ∩ C := by simpa [Φ_decomp] using hψ
+        exact hABC.1.1
+      have hAeq : A = toStrongDual ⁻¹' Metric.closedBall 0 1 := by
+        ext x; simp [A]
+      simpa [hAeq] using hmemA
+    have hbBall : Bornology.IsBounded (Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1) := by
+      simpa using (Metric.isBounded_closedBall (x := (0 : StrongDual ℝ C(X, ℝ))) (r := (1 : ℝ)))
+    exact hbBall.subset hsubset
+
+  have hΦseq : IsSeqCompact (Φ : Set (WeakDual ℝ C(X, ℝ))) :=
+    isSeqCompact_of_bounded_of_closed (𝕜 := ℝ) (V := C(X, ℝ))
+      (hb := hbounded) (hc := IsCompact.isClosed <| isCompact_iff_compactSpace.2 hΦ1)
+
+  have hΦ2 : SeqCompactSpace Φ := by
+    refine ⟨?_⟩
+    intro x hx
+    have hx' : ∀ n, ((x n : Φ) : WeakDual ℝ C(X, ℝ)) ∈ (Φ : Set (WeakDual ℝ C(X, ℝ))) :=
+      fun n => (x n).property
+    rcases hΦseq hx' with ⟨a, haΦ, φ, hφmono, hφlim⟩
+    refine ⟨⟨a, haΦ⟩, trivial, φ, hφmono, ?_⟩
+    -- translate convergence in the ambient space to convergence in the subtype
+    have hφlim' : Tendsto (fun n => (x (φ n) : WeakDual ℝ C(X, ℝ))) atTop (nhds a) := hφlim
+    exact (tendsto_subtype_rng (p := fun φ => φ ∈ (Φ : Set (WeakDual ℝ C(X, ℝ))))).2 hφlim'
     --obtain ⟨ds⟩ := hΦ1
-    refine (seqCompactSpace_iff ↑Φ).mpr ?_
+    --refine (seqCompactSpace_iff ↑Φ).mpr ?_
     -- rw [Φ_decomp]
-    refine FirstCountableTopology.seq_compact_of_compact (X := )
-    apply IsCompact.isSeqCompact h
-    have Sep : SeparableSpace C(X, ℝ) := sorry
-    refine isSeqCompact_of_bounded_of_closed ?_ ?_ (𝕜 := ℝ) (V := C(X, ℝ)) (s := Φ)
-    sorry
+  -- have : (fun (φ : WeakDual ℝ C(X, ℝ)) ↦ ∀ (f : X →C_c ℝ), 0 ≤ f → 0 ≤ φ ↑f)
+  --     = fun φ ↦ ‖toStrongDual φ‖ ≤ 1 := by grind
+
+    -- refine FirstCountableTopology.seq_compact_of_compact (X := Φ)
+    -- apply IsCompact.isSeqCompact h
+    -- have Sep : SeparableSpace C(X, ℝ) := sorry
+    -- refine isSeqCompact_of_bounded_of_closed ?_ ?_ (𝕜 := ℝ) (V := C(X, ℝ)) (s := Φ)
+    -- sorry
   apply IsSeqCompact.range
   refine Continuous.seqContinuous ?_
   simp [T]
