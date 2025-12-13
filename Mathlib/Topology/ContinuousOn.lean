@@ -476,6 +476,7 @@ theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t
     (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
   subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs
 
+@[fun_prop]
 theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
     (hg : ContinuousAt g (f x)) (hf : ContinuousWithinAt f s x) : ContinuousWithinAt (g ∘ f) s x :=
   hg.continuousWithinAt.comp hf (mapsTo_univ _ _)
