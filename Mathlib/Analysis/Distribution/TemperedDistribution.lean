@@ -17,6 +17,8 @@ public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
+tempered distribution.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -28,7 +30,7 @@ distribution.
 
 noncomputable section
 
-open SchwartzMap ContinuousLinearMap
+open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
@@ -74,6 +76,22 @@ theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
   rfl
 
 end MeasureTheory.Measure
+
+namespace Function.HasTemperateGrowth
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+
+/-- A function of temperate growth `f` defines a tempered distribution via integration, namely
+`g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
+    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
+    toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
+
+end Function.HasTemperateGrowth
 
 end Embeddings
 
