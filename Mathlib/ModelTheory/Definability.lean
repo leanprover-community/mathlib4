@@ -263,7 +263,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
           rangeFactorization_coe]
 
 /-- Finite existential quantifiers preserve definablity. -/
-lemma Definable.exists_fintype [Finite β] {S : Set ((α ⊕ β) → M)}
+lemma Definable.exists_of_fintype [Finite β] {S : Set ((α ⊕ β) → M)}
     (hS : A.Definable L S) :
     A.Definable L { v : α → M | ∃ u : β → M, Sum.elim v u ∈ S } := by
   obtain ⟨φ, hφ⟩ := hS
@@ -286,6 +286,11 @@ theorem Definable.singleton (a : M) :
     ({a} : Set M).Definable₁ L {a} := by
   simp only [Definable₁, Definable]
   exists (Term.var 0).equal (L.con (⟨a, rfl⟩ : ↑({a} : Set M))).term
+
+/-- A singleton `{a}` is definable over any set `A` that contains `a`. -/
+theorem Definable.singleton_of_mem {a : M} {A : Set M} (h : a ∈ A) :
+    A.Definable₁ L {a}  :=
+  (Definable.singleton L a).mono (Set.singleton_subset_iff.mpr h)
 
 /-- The 2-dimensional diagonal is ∅-definable. -/
 theorem Definable.diagonal :
@@ -424,7 +429,7 @@ variable {L A}
 namespace DefinableFun
 
 /-- A function symbol is a definable function. -/
-theorem definable_fun_of_fun_symbol {n : ℕ} (f : L.Functions n) :
+theorem fun_symbol {n : ℕ} (f : L.Functions n) :
     DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) := by
   refine empty_definable_iff.mpr ?_
   let t_out : L.Term (Fin n ⊕ Unit) := Term.var (Sum.inr ())
@@ -433,7 +438,7 @@ theorem definable_fun_of_fun_symbol {n : ℕ} (f : L.Functions n) :
   exists φ
 
 /-- A term is a definable function. -/
-theorem definable_fun_of_term (t : L.Term α) :
+theorem term (t : L.Term α) :
     DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
   refine empty_definable_iff.mpr ?_
   let t_lifted : L.Term (α ⊕ Unit) := t.relabel Sum.inl
@@ -446,7 +451,7 @@ theorem definable_fun_of_term (t : L.Term α) :
 variable (L A)
 
 /-- A constant function is a definable function. -/
-theorem definable_fun_of_const_fun (γ : Type*) (a : M) :
+theorem const (γ : Type*) (a : M) :
     DefinableFun L ({a} : Set M) (fun _ : γ → M => a) := by
   simp only [DefinableFun]
   convert Definable.preimage_comp (fun _ : Fin 1 => Sum.inr ()) (Definable.singleton L a) using 1
@@ -464,7 +469,7 @@ variable {L A}
 lemma definable_preimage_of_definableMap
     {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : DefinableMap L A F)
     {S : Set (β → M)} (hS : A.Definable L S) :
-    A.Definable L { v : α → M | F v ∈ S } := by
+    A.Definable L (F ⁻¹' S) := by
   letI := Fintype.ofFinite β
   let graph := { w : α ⊕ β → M | ∀ i, (F (w ∘ Sum.inl)) i = w (Sum.inr i) }
   have h_graph : A.Definable L graph := by
@@ -480,7 +485,7 @@ lemma definable_preimage_of_definableMap
     simp
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
-  have hS' := Definable.exists_fintype (Definable.inter h_graph h_cyl)
+  have hS' := Definable.exists_of_fintype (Definable.inter h_graph h_cyl)
   simp only [graph, inter_def] at hS'
   convert hS' using 1
   ext v
@@ -491,7 +496,8 @@ lemma definable_preimage_of_definableMap
     grind
   · rintro ⟨u,hFv,hu⟩
     have : F v = u := by exact (eqOn_univ (F v) u).mp fun ⦃x⦄ a ↦ hFv x
-    rwa [this]
+    subst this
+    exact hu
 
 /-- The equalizer of two definable functions is a definable. -/
 lemma definable_equalizer {f g : (α → M) → M}
@@ -510,16 +516,8 @@ lemma definable_equalizer {f g : (α → M) → M}
 /-- The fiber of a definable function is definable. -/
 lemma definable_fiber {f : (α → M) → M} (hf : DefinableFun L A f) (a : A) :
     A.Definable L {v : α → M | f v = a} := by
-  let F : (α → M) → Fin 2 → M := fun v => ![f v, a]
-  have hF : DefinableMap L A F := by
-    intro i
-    fin_cases i
-    · exact hf
-    · simp only [F]
-      exact Definable.mono (definable_fun_of_const_fun L α (a : M)) (by grind)
-  have hDiag : A.Definable L { v : Fin 2 → M | v 0 = v 1 } :=
-    Set.Definable.mono (Set.Definable.diagonal L) (empty_subset A)
-  convert definable_preimage_of_definableMap hF hDiag
+  refine definable_equalizer hf ?_
+  exact Definable.mono (const L α (a : M)) (by grind)
 
 end DefinableFun
 
