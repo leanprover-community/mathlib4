@@ -85,7 +85,7 @@ theorem eventually_uniformity_iterate_comp_subset {s : SetRel α α} (hs : s ∈
     rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
     refine (ihn htU).mono fun U hU => ?_
     rw [Function.iterate_succ_apply']
-    have : SetRel.IsRefl t := SetRel.id_subset_iff.1 <| refl_le_uniformity htU
+    have := isRefl_of_mem_uniformity htU
     exact ⟨hU.1.trans <| SetRel.left_subset_comp.trans hts,
      (SetRel.comp_subset_comp hU.1 hU.2).trans hts⟩
 
