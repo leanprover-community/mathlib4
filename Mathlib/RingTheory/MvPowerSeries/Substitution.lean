@@ -404,7 +404,7 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
 
 theorem le_weightedOrder_subst_of_forall_ne_zero
-    (ha : MvPowerSeries.HasSubst a) (ha0 : ∀ i, a i ≠ 0) (f : MvPowerSeries σ R) :
+    (ha : HasSubst a) (ha0 : ∀ i, a i ≠ 0) (f : MvPowerSeries σ R) :
     f.weightedOrder (ENat.toNat ∘ weightedOrder w ∘ a) ≤ (f.subst a).weightedOrder w := by
   refine .trans ?_ (le_weightedOrder_subst w ha f)
   simp only [ne_eq, le_iInf_iff]
