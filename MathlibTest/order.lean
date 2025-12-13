@@ -1,30 +1,5 @@
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.LinearAlgebra.Matrix.Rank
-import Mathlib.Order.BourbakiWitt
 import Mathlib.Tactic.Order
-
-section equal_but_not_syntactically_equal_types
--- TODO: minimize this example and imports
-
-set_option linter.unusedVariables false
-
-axiom test_sorry (α : Sort*) : α
-
-def foo (R : Type*) [Ring R] : Subsemiring R → Prop := ⊤
-
-def bar (α : Type*) (_ : α → Prop) : Prop := ∀ _ : α, False
-
-theorem exists_ge (R : Type*) [CommRing R] (P : Subsemiring R) : ∃ O, P ≤ O := ⟨P, fun _ ↦ id⟩
-
-example {R : Type*} [CommRing R] {O : Subsemiring R} : bar _ (foo R) := by
-  intro P
-  have := exists_ge R P
-  clear O
-  rcases this with ⟨Q, hQ⟩
-  have : P ≤ Q := by order
-  apply test_sorry
-
-end equal_but_not_syntactically_equal_types
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
@@ -180,6 +155,10 @@ Additional diagnostic information may be available using the `set_option trace.o
 -/
 #guard_msgs in
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
+  order
+
+-- check that order treats defeq types the same
+example (a : Fin 3) (b : Fin (2 + 1)) (h : a ≤ b) : LE.le (α := Fin (2 + 1)) a b := by
   order
 
 -- Contrived example for universes not of the form `Sort (u + 1)`.

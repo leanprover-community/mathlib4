@@ -59,7 +59,7 @@ abbrev CollectFactsM := StateT CollectFactsState AtomM
 
 /-- Adds `type` to the state. -/
 def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
-  match ← (← get).keys.findM? (withReducible <| isDefEq · type) with
+  match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq · type) with
   | none =>
     modify fun res => res.insert type #[]
     pure type
