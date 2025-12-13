@@ -58,7 +58,7 @@ theorem NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightI
 
 end ContinuousLinearMap
 
-variable {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomIsometric σ] [RingHomIsometric σ']
+variable {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomIsometric σ']
 
 /-- Given a continuous linear equivalence, the inverse is in particular an instance of
 `ContinuousLinearMap.NonlinearRightInverse` (which turns out to be linear). -/
@@ -77,19 +77,10 @@ noncomputable instance [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
 /-! ### Proof of the Banach open mapping theorem -/
 
 
-variable [CompleteSpace F]
-
 namespace ContinuousLinearMap
 
-include σ' in
-/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
-by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
-Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
-images of elements of norm at most `C * ‖y‖`.
-For further use, we will only need such an element whose image
-is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
-theorem exists_approx_preimage_norm_le (surj : Surjective f) :
-    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+lemma noempty_interior_of_surj (surj : Surjective f) [CompleteSpace F] :
+    ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty :=
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
     refine Subset.antisymm (subset_univ _) fun y _ => ?_
     rcases surj y with ⟨x, hx⟩
@@ -97,15 +88,23 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     refine mem_iUnion.2 ⟨n, subset_closure ?_⟩
     refine (mem_image _ _ _).2 ⟨x, ⟨?_, hx⟩⟩
     rwa [mem_ball, dist_eq_norm, sub_zero]
-  have : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
-    nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
-  simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
-  rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
+  nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
+
+include σ' in
+theorem exists_approx_preimage_norm_le'
+    (h : ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty) :
+    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+  rcases h with ⟨n, a, h⟩
+  simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at h
+  rcases h with ⟨ε, εpos, H⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
   · simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
+  · have : RingHomIsometric σ :=
+      have := RingHomInvPair.symm σ σ'
+      RingHomIsometric.inv σ'
+    have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
     have δpos : 0 < δ := by positivity
@@ -116,8 +115,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     rw [← xz₁] at h₁
     rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
     have : a ∈ ball a ε := by
-      simp only [mem_ball, dist_self]
-      exact εpos
+      simpa only [mem_ball, dist_self]
     rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
     rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
     rw [← xz₂] at h₂
@@ -151,16 +149,25 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
     exact ⟨σ' d⁻¹ • x, J, K⟩
 
+include σ' in
+/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
+by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
+Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
+images of elements of norm at most `C * ‖y‖`.
+For later use, we will only need such an element whose image
+is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
+theorem exists_approx_preimage_norm_le (surj : Surjective f) [CompleteSpace F] :
+    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
+  f.exists_approx_preimage_norm_le' <| f.noempty_interior_of_surj surj
+
 variable [CompleteSpace E]
 
 section
-include σ'
 
-/-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
-any point has a preimage with controlled norm. -/
-theorem exists_preimage_norm_le (surj : Surjective f) :
+include σ'
+theorem exists_preimage_norm_le' (h : ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty) :
     ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ := by
-  obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le f surj
+  obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le' f h
   /- Second step of the proof: starting from `y`, we want an exact preimage of `y`. Let `g y` be
     the approximate preimage of `y` given by the first step, and `h y = y - f(g y)` the part that
     has no preimage yet. We will iterate this process, taking the approximate preimage of `h y`,
@@ -223,11 +230,16 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
 
-/-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
-open. -/
-protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
+/-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
+any point has a preimage with controlled norm. -/
+theorem exists_preimage_norm_le (surj : Surjective f) [CompleteSpace F] :
+    ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ :=
+  f.exists_preimage_norm_le' <| f.noempty_interior_of_surj surj
+
+protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
+    IsOpenMap f := by
   intro s hs
-  rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
+  rcases exists_preimage_norm_le' f h with ⟨C, Cpos, hC⟩
   refine isOpen_iff.2 fun y yfs => ?_
   rcases yfs with ⟨x, xs, fxy⟩
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
@@ -246,7 +258,12 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
       _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
   exact Set.mem_image_of_mem _ (hε this)
 
-theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
+/-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
+open. -/
+protected theorem isOpenMap (surj : Surjective f) [CompleteSpace F] : IsOpenMap f :=
+  f.isOpenMap' <| f.noempty_interior_of_surj surj
+
+theorem isQuotientMap (surj : Surjective f) [CompleteSpace F] : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
 
 end
@@ -262,6 +279,9 @@ theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpa
 /-! ### Applications of the Banach open mapping theorem -/
 
 section
+
+variable [CompleteSpace F]
+
 include σ'
 
 theorem interior_preimage (hsurj : Surjective f) (s : Set F) :
@@ -293,11 +313,11 @@ end
 controlled right inverse. In general, it is not possible to ensure that such a right inverse
 is linear (take for instance the map from `E` to `E/F` where `F` is a closed subspace of `E`
 without a closed complement. Then it doesn't have a continuous linear right inverse.) -/
-noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
+noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →SL[σ] F) [CompleteSpace F]
   (hsurj : LinearMap.range f = ⊤) : NonlinearRightInverse f :=
   Classical.choose (exists_nonlinearRightInverse_of_surjective f hsurj)
 
-theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F)
+theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F) [CompleteSpace F]
     (hsurj : LinearMap.range f = ⊤) : 0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm := by
   rw [nonlinearRightInverseOfSurjective]
   exact Classical.choose_spec (exists_nonlinearRightInverse_of_surjective f hsurj)
@@ -306,7 +326,7 @@ end ContinuousLinearMap
 
 namespace LinearEquiv
 
-variable [CompleteSpace E] [RingHomInvPair σ' σ]
+variable [CompleteSpace E] [CompleteSpace F] [RingHomInvPair σ' σ]
 
 /-- If a bounded linear map is a bijection, then its inverse is also a bounded linear map. -/
 @[continuity]
@@ -339,7 +359,7 @@ end LinearEquiv
 
 namespace ContinuousLinearMap
 
-variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
+variable [CompleteSpace E] [CompleteSpace F] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
@@ -410,7 +430,7 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 
-variable [CompleteSpace E] [RingHomInvPair σ' σ]
+variable [CompleteSpace E] [CompleteSpace F] [RingHomInvPair σ' σ]
 
 /-- Convert a bijective continuous linear map `f : E →SL[σ] F` from a Banach space to a normed space
 to a continuous linear equivalence. -/
@@ -589,7 +609,7 @@ lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : 
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
   IsClosed.completeSpace_coe (hs := hf.isClosed_range f.uniformContinuous)
 
-variable [RingHomInvPair σ' σ] [RingHomIsometric σ] [RingHomIsometric σ']
+variable [RingHomInvPair σ' σ] [RingHomIsometric σ']
 
 open Function
 lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
