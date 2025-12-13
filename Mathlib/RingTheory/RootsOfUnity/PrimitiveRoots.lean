@@ -705,6 +705,7 @@ lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {n a b : ℕ}
     simp [pow_add, pow_mul, hx]
 
 /-- Equivalence of coprime powers of primitive roots. -/
+@[simps]
 def equivPrimitiveRootsOfCoprimePow' {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
   toFun x := ⟨x.1 ^ a,
