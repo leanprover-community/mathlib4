@@ -23,7 +23,7 @@ The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
-* The so called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
+* The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`

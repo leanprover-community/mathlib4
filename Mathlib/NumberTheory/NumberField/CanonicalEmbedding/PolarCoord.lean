@@ -226,7 +226,7 @@ noncomputable section polarSpace
 open MeasurableEquiv
 
 /--
-The space `ℝ^(r₁+r₂) × ℝ^r₂`, it is homeomorph to the `realMixedSpace`, see
+The space `ℝ^(r₁+r₂) × ℝ^r₂`, it is homeomorphic to the `realMixedSpace`, see
 `homeoRealMixedSpacePolarSpace`.
 -/
 abbrev polarSpace := ((InfinitePlace K) → ℝ) × ({w : InfinitePlace K // w.IsComplex} → ℝ)
