@@ -260,7 +260,7 @@ theorem subst_X (ha : HasSubst a) :
 section
 
 theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeries R) :
-    f.order * (a.weightedOrder w) ≤ (f.subst a).weightedOrder w := by
+    f.order * a.weightedOrder w ≤ (f.subst a).weightedOrder w := by
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
   simp only [ne_eq, Function.comp_const, le_iInf_iff]
   intro i hi
