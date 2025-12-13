@@ -34,12 +34,12 @@ structure IsAddQuotientCoveringMap (G) [AddGroup G] [AddAction G E]
 topological space `X` is a quotient covering map if it is a quotient map, the action is
 continuous and transitive on fibers, and every point of `E` has a neighborhood whose translates
 by the group elements are pairwise disjoint. -/
-@[mk_iff, to_additive IsAddQuotientCoveringMap]
+@[mk_iff, to_additive]
 structure IsQuotientCoveringMap extends IsQuotientMap f, ContinuousConstSMul G E where
   apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂
   disjoint (e : E) : ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1
 
-attribute [to_additive isAddQuotientCoveringMap_iff] isQuotientCoveringMap_iff
+attribute [to_additive] isQuotientCoveringMap_iff
 
 namespace IsQuotientCoveringMap
 
@@ -127,8 +127,7 @@ omit hf hfG
       exact ⟨U, hU, fun g hg ↦ by rw [hGU g hg, one_smul]⟩
 
 omit [ContinuousConstSMul G E] in
-@[to_additive isAddQuotientCoveringMap_iff_isCoveringMap_and]
-theorem _root_.isQuotientCoveringMap_iff_isCoveringMap_and :
+@[to_additive] theorem _root_.isQuotientCoveringMap_iff_isCoveringMap_and :
     IsQuotientCoveringMap f G ↔ IsCoveringMap f ∧ f.Surjective ∧ ContinuousConstSMul G E ∧
       IsCancelSMul G E ∧ ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂ where
   mp h := have := h.toContinuousConstSMul
