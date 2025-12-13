@@ -142,7 +142,7 @@ alias Splits.def := splits_iff_splits
 alias splits_of_splits_mul := splits_mul_iff
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_of_dvd := Splits.of_dvd
+alias splits_of_splits_of_dvd := Splits.of_dvd
 
 @[deprecated "Use `Splits.of_dvd` directly." (since := "2025-11-30")]
 theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0)
