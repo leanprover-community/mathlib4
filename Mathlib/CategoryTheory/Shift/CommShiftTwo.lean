@@ -66,7 +66,7 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    cutsat
+    lia
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 
