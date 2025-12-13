@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Building GCD out of unique factorization
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 ## Main results
 * `UniqueFactorizationMonoid.toGCDMonoid`: choose a GCD monoid structure given unique factorization.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

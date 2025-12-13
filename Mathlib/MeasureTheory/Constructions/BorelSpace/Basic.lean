@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta.MetrizableSpace
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Instances.Rat
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # Borel (measurable) space
@@ -31,6 +33,8 @@ import Mathlib.Topology.Instances.Rat
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -126,7 +130,7 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
 /-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
-def addBorelInstance (e : Expr) : TacticM Unit := do
+meta def addBorelInstance (e : Expr) : TacticM Unit := do
   let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
@@ -136,7 +140,7 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
 
 /-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
 replace `i` with `borel e`. -/
-def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+meta def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
   let te ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $te _ _ _)
@@ -157,7 +161,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := withMainContext <| do
+meta def borelize (t : Term) : TacticM Unit := withMainContext do
   let u ← mkFreshLevelMVar
   let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
@@ -364,6 +368,21 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
+/-- This is not covered by `Pi.opensMeasurableSpace` as it does not require second countability. -/
+instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) where
+  borel_le := by
+    obtain h | h := isEmpty_or_nonempty ι
+    · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
+    have := Classical.choice (nonempty_unique ι)
+    rw [borel, MeasurableSpace.pi, ciSup_unique]
+    refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
+    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+      Set.mem_setOf_eq] at hs
+    obtain ⟨t, ht, rfl⟩ := hs
+    exact ⟨t, ht.measurableSet, rfl⟩
+
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
 the two spaces has second countable topology. This is the right assumption to ensure that continuous
 maps from `α` to `β` are strongly measurable. -/
@@ -526,7 +545,7 @@ instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSp
 
 section Homeomorph
 
-@[measurability]
+@[fun_prop]
 protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 
@@ -550,7 +569,7 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 
 end Homeomorph
 
-@[measurability]
+@[fun_prop]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 
@@ -593,6 +612,9 @@ instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalS
     [ContinuousSMul M α] : MeasurableSMul₂ M α :=
   ⟨continuous_smul.measurable⟩
 
+instance [SecondCountableTopology α] [T2Space α] : MeasurableEq α :=
+  ⟨isClosed_diagonal.measurableSet⟩
+
 end
 
 section BorelSpace
@@ -617,6 +639,12 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
 
 instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
+  ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
+
+/-- This is not covered by `Pi.borelSpace` as it does not require second countability. -/
+instance Pi.borelSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
     BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 

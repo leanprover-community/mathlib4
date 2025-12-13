@@ -3,15 +3,24 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Algebra instance on adic completion
 
 In this file we provide an algebra instance on the adic completion of a ring. Then the adic
 completion of any module is a module over the adic completion of the ring.
+
+## Main definitions
+
+- `evalₐ`: the canonical algebra map from the adic completion to `R ⧸ I ^ n`.
+
+- `AdicCompletion.liftRingHom`: given a compatible family of ring maps
+  `R →+* S ⧸ I ^ n`, the lift ring map `R →+* AdicCompletion I S`.
 
 ## Implementation details
 
@@ -22,6 +31,8 @@ providing as much API as possible.
 
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 open Submodule
@@ -31,7 +42,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace AdicCompletion
 
-attribute [-simp] smul_eq_mul Algebra.id.smul_eq_mul
+attribute [-simp] smul_eq_mul
 
 @[local simp]
 theorem transitionMap_ideal_mk {m n : ℕ} (hmn : m ≤ n) (x : R) :
@@ -121,10 +132,56 @@ def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
     (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
 
+theorem factor_evalₐ_eq_eval {n : ℕ} (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n • ⊤) :
+    Ideal.Quotient.factor h (evalₐ I n x) = eval I R n x := by
+  simp [evalₐ]
+
+theorem factor_eval_eq_evalₐ {n : ℕ} (x : AdicCompletion I R) (h : I ^ n • ⊤ ≤ I ^ n) :
+    factor h (eval I R n x) = evalₐ I n x := by
+  simp [evalₐ]
+
+/--
+The composition map `R →+* AdicCompletion I R →+* R ⧸ I ^ n` equals to the natural quotient map.
+-/
+@[simp]
+theorem evalₐ_of (n : ℕ) (x : R) :
+    evalₐ I n (of I R x) = Ideal.Quotient.mk _ x := by
+  simp [evalₐ]
+
+theorem surjective_evalₐ (n : ℕ) : Function.Surjective (evalₐ I n) := by
+  simp only [evalₐ, smul_eq_mul, Ideal.quotientEquivAlgOfEq_coe_eq_factorₐ,
+    AlgHom.coe_comp]
+  apply Function.Surjective.comp
+  · exact factor_surjective Ideal.mul_le_right
+  · exact eval_surjective I R n
+
 @[simp]
 theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
   simp [evalₐ]
+
+variable {I} in
+lemma ext_evalₐ {x y : AdicCompletion I R} (H : ∀ n, evalₐ I n x = evalₐ I n y) : x = y := by
+  ext n
+  have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
+  exact (Ideal.quotientEquivAlgOfEq R h).injective (H n)
+
+/-- The canonical projection from the `I`-adic completion to `R ⧸ I`. -/
+def evalOneₐ : AdicCompletion I R →ₐ[R] R ⧸ I :=
+  (Ideal.Quotient.factorₐ _ (by simp)).comp (evalₐ _ 1)
+
+@[simp]
+lemma evalOneₐ_of (x : R) : evalOneₐ I (of I R x) = x := rfl
+
+@[simp]
+lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
+    Ideal.Quotient.factor (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
+  rfl
+
+lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
+  dsimp [evalOneₐ]
+  exact (Ideal.Quotient.factor_surjective (show I ^ 1 ≤ I by simp)).comp
+    (AdicCompletion.surjective_evalₐ I 1)
 
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
@@ -275,5 +332,148 @@ Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
     (AdicCompletion I R) _ _ (Algebra.id _) := by
   with_reducible_and_instances rfl
+
+section liftRingHom
+
+open Ideal Quotient
+
+variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
+
+/--
+The universal property of `AdicCompletion` for rings.
+The lift ring map `R →+* AdicCompletion I S` of a compatible family of
+ring maps `R →+* S ⧸ I ^ n`.
+-/
+def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m) :
+    R →+* AdicCompletion I S where
+  toFun := fun x ↦ ⟨fun n ↦ (factor (le_of_eq (Ideal.mul_top _).symm)) (f n x),
+    fun hkl ↦ by simp [transitionMap, Submodule.factorPow, ← hf hkl]⟩
+  map_add' x y := by
+    simp only [map_add]
+    ext; simp
+  map_zero' := by
+    simp only [map_zero]
+    ext; simp
+  map_mul' x y := by
+    simp only [mapQ_eq_factor, factor_eq_factor, map_mul]
+    ext; simp
+  map_one' := by
+    simp only [map_one]
+    ext; simp
+
+variable (f : (n : ℕ) → R →+* S ⧸ I ^ n)
+  (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m)
+
+theorem factor_eval_liftRingHom (n : ℕ) (x : R) (h : I ^ n • ⊤ ≤ I ^ n) :
+    factor h (eval I S n (liftRingHom I f hf x)) = f n x := by
+  simp [liftRingHom, eval]
+
+@[simp]
+theorem evalₐ_liftRingHom (n : ℕ) (x : R) :
+    evalₐ I n (liftRingHom I f hf x) = f n x := by
+  rw [← factor_eval_eq_evalₐ I _ (le_of_eq (Ideal.mul_top _))]
+  simp [liftRingHom, eval]
+
+@[simp]
+theorem evalₐ_comp_liftRingHom (n : ℕ) :
+    (evalₐ I n : _ →+* _).comp (liftRingHom I f hf) = f n := by
+  ext; simp
+
+section
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Algebra R S]
+
+/-- `AlgHom` version of `AdicCompletion.liftRingHom`. -/
+def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n),
+      (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
+    A →ₐ[R] AdicCompletion I S where
+  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; exact congr($(hf hle) x)
+  commutes' r := ext_evalₐ fun n ↦ by
+    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
+
+variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
+  (hf : ∀ {m n : ℕ} (hle : m ≤ n),
+    (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m)
+
+@[simp]
+lemma evalₐ_liftAlgHom (n : ℕ) (x : A) :
+    evalₐ I n (liftAlgHom I f hf x) = f n x :=
+  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; exact congr($(hf hle) x)) _ _
+
+@[simp]
+lemma evalOneₐ_liftAlgHom (x : A) :
+    evalOneₐ I (liftAlgHom I f hf x) = Ideal.Quotient.factorₐ R (by simp) (f 1 x) := by
+  simp [evalOneₐ]
+
+end
+
+variable [IsAdicComplete I S]
+
+/--
+When `S` is `I`-adic complete, the canonical map from `S` to
+its `I`-adic completion is an `S`-algebra isomorphism.
+-/
+noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
+  __ := ofLinearEquiv I S
+  map_mul' _ _ := by ext; simp
+  commutes' _ := rfl
+
+@[simp]
+theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
+  rfl
+
+@[simp]
+theorem of_ofAlgEquiv_symm (x : AdicCompletion I S) :
+    of I S ((ofAlgEquiv I).symm x) = x := by
+  simp [ofAlgEquiv]
+
+@[simp]
+theorem ofAlgEquiv_symm_of (x : S) :
+    (ofAlgEquiv I).symm (of I S x) = x := by
+  simp [ofAlgEquiv]
+
+theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
+  nth_rw 2 [← of_ofAlgEquiv_symm I x]
+  simp [-of_ofAlgEquiv_symm, eval]
+
+@[simp]
+theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
+  simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
+  rw [← mk_smul_top_ofAlgEquiv_symm I n x]
+  simp
+
+@[simp]
+lemma mk_ofAlgEquiv_symm_eq_evalOneₐ (x : AdicCompletion I S) :
+    Ideal.Quotient.mk I ((ofAlgEquiv I).symm x) = evalOneₐ I x := by
+  simp [evalOneₐ, ← mk_ofAlgEquiv_symm]
+
+end liftRingHom
+
+section
+
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra R S]
+
+/-- The canonical projection from the `I`-adic completion of `S` to `S ⧸ I`. Defined
+in terms of a surjective map `S →ₐ[R] A`. -/
+noncomputable def kerProj {f : S →ₐ[R] A} (hf : Function.Surjective f) :
+    AdicCompletion (RingHom.ker f) S →ₐ[R] A :=
+  (Ideal.quotientKerAlgEquivOfSurjective hf).toAlgHom.comp <|
+    (AdicCompletion.evalOneₐ <| RingHom.ker f).restrictScalars R
+
+@[simp]
+lemma kerProj_of {f : S →ₐ[R] A} (hf : Function.Surjective f) (x : S) :
+    kerProj hf (.of _ _ x) = f x :=
+  rfl
+
+lemma kerProj_surjective {f : S →ₐ[R] A} (hf : Function.Surjective f) :
+    Function.Surjective (kerProj hf) := by
+  dsimp [kerProj]
+  exact (AlgEquiv.surjective _).comp (evalOneₐ_surjective _)
+
+end
 
 end AdicCompletion

@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Homological complexes.
@@ -33,6 +35,8 @@ Similarly we have `C.xPrev j`.
 Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 `C.dTo j : C.xPrev j ⟶ C.X j`, which are either defined as `C.d i j`, or zero, as needed.
 -/
+
+@[expose] public section
 
 
 universe v u

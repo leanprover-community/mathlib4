@@ -3,10 +3,11 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.Combinatorics.Quiver.Path.Vertices
-import Mathlib.Data.Matrix.Mul
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.Combinatorics.Quiver.Path.Vertices
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Irreducibility and primitivity of nonnegative matrices
@@ -16,7 +17,7 @@ matrices.
 
 We associate a directed graph (quiver) with a matrix `A`, where an edge `i ⟶ j` exists if and only
 if the entry `A i j` is strictly positive. This allows translating algebraic properties of the
-matrix (like powers) into graph-theoretic properties of its quiver (like theexistence of paths).
+matrix (like powers) into graph-theoretic properties of its quiver (like the existence of paths).
 
 ## Main definitions
 
@@ -57,6 +58,8 @@ like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix power
 
 matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, perron-frobenius
 -/
+
+@[expose] public section
 namespace Matrix
 
 open Quiver Quiver.Path
@@ -95,7 +98,7 @@ lemma IsIrreducible.exists_pos [Nontrivial n]
   have h_le : 1 ≤ p.length := Nat.succ_le_of_lt hp_pos
   have ⟨v, p₁, p₂, _hp_eq, hp₁_len⟩ := p.exists_eq_comp_of_le_length (n := 1) h_le
   have hlen_ne : p₁.length ≠ 0 := by simp [hp₁_len]
-  obtain ⟨c, p', e, rfl⟩ := (Quiver.Path.length_ne_zero_iff_eq_cons (p := p₁)).1 (by omega)
+  obtain ⟨c, p', e, rfl⟩ := (Quiver.Path.length_ne_zero_iff_eq_cons (p := p₁)).1 (by lia)
   obtain ⟨rfl⟩ : i = c := Quiver.Path.eq_of_length_zero p' (by aesop)
   exact (no_out _).false e
 

@@ -3,11 +3,13 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+module
+
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.Group.Cyclic
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Discrete Valuations
@@ -57,6 +59,8 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
+
+@[expose] public section
 
 namespace Valuation
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Unramified.Basic
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -44,6 +46,8 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
 
 -/
 
+@[expose] public section
+
 open scoped TensorProduct
 open Algebra.Extension KaehlerDifferential MvPolynomial
 
@@ -62,7 +66,7 @@ An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(
 For the infinitesimal lifting definition,
 see `FormallySmooth.lift` and `FormallySmooth.iff_comp_surjective`.
 -/
-@[stacks 00TI "Also see 031J (6) for the the equivalence with the definition given here.", mk_iff]
+@[stacks 00TI "Also see 031J (6) for the equivalence with the definition given here.", mk_iff]
 class FormallySmooth : Prop where
   projective_kaehlerDifferential : Module.Projective A Ω[A⁄R]
   subsingleton_h1Cotangent : Subsingleton (H1Cotangent R A)
@@ -91,7 +95,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
   have H (x : P.Ring) : ↑(aeval (σ ∘ f) x) = f (algebraMap _ A x) := by
     rw [← Ideal.Quotient.algebraMap_eq, ← aeval_algebraMap_apply, P.algebraMap_eq,
       AlgHom.coe_toRingHom, comp_aeval_apply, ← Function.comp_assoc, Function.comp_surjInv,]
-    rfl
+    simp [P]
   let l : P.Ring ⧸ (RingHom.ker (algebraMap P.Ring A)) ^ 2 →ₐ[R] B :=
     Ideal.Quotient.liftₐ _ (aeval (σ ∘ f)) <|
       have : RingHom.ker (algebraMap P.Ring A) ≤ I.comap (aeval (σ ∘ f)).toRingHom := fun x hx ↦ by
@@ -128,8 +132,7 @@ theorem exists_lift
   · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
   · intro B _ I J hIJ h₁ h₂ _ g
     let this : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
-      {
-        (DoubleQuot.quotQuotEquivQuotSup I J).trans
+      { (DoubleQuot.quotQuotEquivQuotSup I J).trans
           (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
         commutes' := fun x => rfl }
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
@@ -236,7 +239,7 @@ lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R A} 
 lemma H1Cotangent.equivOfFormallySmooth_apply {P₁ P₂ : Extension R A} (f : P₁.Hom P₂)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] (x) :
     H1Cotangent.equivOfFormallySmooth P₁ P₂ x = map f x := by
-  rw [← equivOfFormallySmooth_toLinearMap]; rfl
+  rw [← equivOfFormallySmooth_toLinearMap, LinearEquiv.coe_coe]
 
 lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R A)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
@@ -288,7 +291,7 @@ theorem iff_split_injection
   convert (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
     (g := (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out 0 1) using 2
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
-    simp only [LinearMap.ext_iff]; rfl
+    simp [LinearMap.ext_iff]
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]
 
 /--

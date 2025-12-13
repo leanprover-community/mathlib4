@@ -3,18 +3,23 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Tactic.Order
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Tactic.Order
 
 /-!
 # More operations on modules and ideals
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
@@ -86,7 +91,7 @@ protected theorem mul_smul : (I * J) • N = I • J • N :=
 theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
     (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
   suffices LinearMap.range (LinearMap.toSpanSingleton R M x) ≤ M' by
-    rw [← LinearMap.toSpanSingleton_one R M x]
+    rw [← LinearMap.toSpanSingleton_apply_one R M x]
     exact this (LinearMap.mem_range_self _ 1)
   rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
   exact fun r hr ↦ H ⟨r, hr⟩
@@ -117,6 +122,13 @@ theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : 
   rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
+
+lemma comap_smul'' {f : M →ₗ[R] M'} (hf : Function.Injective f) {p : Submodule R M'}
+    (hp : p ≤ LinearMap.range f) {I : Ideal R} :
+    Submodule.comap f (I • p) = I • Submodule.comap f p := by
+  refine le_antisymm ?_ (by simp)
+  conv_lhs => rw [← Submodule.map_comap_eq_self hp, ← Submodule.map_smul'']
+  rw [Submodule.comap_map_eq_of_injective hf]
 
 variable {I}
 
@@ -558,7 +570,7 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
   · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    cutsat
+    lia
 
 variable (I J) in
 protected theorem mul_comm : I * J = J * I :=
@@ -1174,9 +1186,8 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rwa [Finset.exists_mem_insert]
       rcases s.eq_empty_or_nonempty with hse | hsne
       · subst hse
-        rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
-        have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
-        exact absurd h this
+        rw [Finset.coe_empty, Set.biUnion_empty] at h
+        exact (h I.zero_mem).elim
       · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.notMem_erase i s, Finset.insert_erase his⟩

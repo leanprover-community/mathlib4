@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # The factorization axiom
@@ -30,6 +32,8 @@ and `W₂ p` and show that `W₁.comp W₂ = ⊤` iff `HasFactorization W₁ W�
 is `MorphismProperty.comp_eq_top_iff`).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

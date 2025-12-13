@@ -3,16 +3,20 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.NeZero
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.NeZero
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Cast of natural numbers: lemmas about order
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -92,7 +96,7 @@ theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 
-@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; cutsat
+@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; lia
 
 section
 variable [m.AtLeastTwo]

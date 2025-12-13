@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Quotients of semirings
@@ -19,6 +21,8 @@ definition, which is made irreducible for this purpose.
 
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -36,9 +40,18 @@ instance (c : RingCon A) : Algebra S c.Quotient where
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
+variable (S) in
+/-- The algebra morphism from `A` to the quotient by a ring congruence. -/
+@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
+
+theorem mkₐ_surjective (c : RingCon A) :
+    Function.Surjective (c.mkₐ (S := S)) :=
+  mk'_surjective c
+
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon A) (s : S) :
-    (algebraMap S A s : c.Quotient) = algebraMap S _ s :=
+    (algebraMap S A s : c.Quotient) = algebraMap S c.Quotient s :=
   rfl
 
 end RingCon
@@ -483,7 +496,7 @@ def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* R
       · rintro y ⟨a, b, h, su⟩
         symm at su
         rw [← sub_eq_iff_eq_add] at su
-        rw [← su, RingHom.map_sub, mkRingHom_rel h, sub_self]
+        rw [← su, map_sub, mkRingHom_rel h, sub_self]
       · simp
       · intro a b _ _ ha hb
         simp [ha, hb]
@@ -499,7 +512,7 @@ theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
 /-- The ring equivalence between `RingQuot r` and `(Ideal.ofRel r).quotient`
 -/
 def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ Ideal.ofRel r :=
-  RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
+  RingEquiv.ofRingHom (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
       simp)

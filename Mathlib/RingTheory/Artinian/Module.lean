@@ -3,18 +3,20 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Units.Opposite
-import Mathlib.Algebra.Regular.Opposite
-import Mathlib.Data.SetLike.Fintype
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Jacobson.Semiprimary
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Opposite
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.RingTheory.Ideal.Prod
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Jacobson.Semiprimary
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Artinian rings and modules
@@ -59,6 +61,8 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
 
 -/
+
+@[expose] public section
 
 open Set Filter Pointwise
 
@@ -425,6 +429,12 @@ theorem Ring.isArtinian_of_zero_eq_one {R} [Semiring R] (h01 : (0 : R) = 1) : Is
 
 instance (R) [Ring R] [IsArtinianRing R] (I : Ideal R) [I.IsTwoSided] : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
+
+instance (priority := low) (R) [Semiring R] [IsArtinianRing R] : IsDedekindFiniteMonoid R where
+  mul_eq_one_symm {a b} hab := by
+    have ⟨c, hca⟩ := IsArtinian.surjective_of_injective_endomorphism
+      (.toSpanSingleton R R a) (isRightRegular_of_mul_eq_one hab) 1
+    rwa [← left_inv_eq_right_inv hca hab]
 
 open Submodule Function
 

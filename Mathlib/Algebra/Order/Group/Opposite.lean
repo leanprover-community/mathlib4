@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 This file transfers order instances and ordered monoid/group instances from `α` to `αᵐᵒᵖ` and
 `αᵃᵒᵖ`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -32,7 +36,7 @@ section OrderedCommMonoid
 variable [CommMonoid α] [PartialOrder α]
 
 @[to_additive] instance [IsOrderedMonoid α] : IsOrderedMonoid αᵐᵒᵖ where
-  mul_le_mul_left a b hab c := mul_le_mul_right' (by simpa) c.unop
+  mul_le_mul_left a b hab c := mul_le_mul_right (by simpa) c.unop
 
 @[to_additive (attr := simp)] lemma unop_le_one {a : αᵐᵒᵖ} : unop a ≤ 1 ↔ a ≤ 1 := .rfl
 @[to_additive (attr := simp)] lemma one_le_unop {a : αᵐᵒᵖ} : 1 ≤ unop a ↔ 1 ≤ a := .rfl
@@ -61,7 +65,7 @@ section OrderedCommMonoid
 variable [CommMonoid α] [PartialOrder α]
 
 instance [IsOrderedMonoid α] : IsOrderedMonoid αᵃᵒᵖ where
-  mul_le_mul_left a b hab c := mul_le_mul_left' (by simpa) c.unop
+  mul_le_mul_left a b hab c := mul_le_mul_left (by simpa) c.unop
 
 @[simp] lemma unop_le_one {a : αᵃᵒᵖ} : unop a ≤ 1 ↔ a ≤ 1 := .rfl
 @[simp] lemma one_le_unop {a : αᵃᵒᵖ} : 1 ≤ unop a ↔ 1 ≤ a := .rfl

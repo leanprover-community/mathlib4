@@ -3,13 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Order.Filter.AtTopBot.Interval
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Order.Filter.AtTopBot.Interval
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Tactic.FinCases
 
 
 /-!
@@ -22,6 +23,8 @@ In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symm
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 -/
+
+@[expose] public section
 
 open Finset Topology Function Filter SummationFilter
 
@@ -125,7 +128,7 @@ lemma HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
   simp only [HasProd, tendsto_map'_iff, symmetricIcc_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, symmetricIco] at *
   apply tendsto_of_div_tendsto_one _ hf
-  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by omega)]
+  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by lia)]
     using hf2
 
 @[to_additive]

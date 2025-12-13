@@ -3,9 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+module
+
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -47,6 +49,8 @@ Special cases :
   `L` is Galois.
 
 -/
+
+@[expose] public section
 
 variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 
@@ -104,6 +108,10 @@ lemma fixedField_bot [IsGalois k K] :
 theorem mem_bot_iff_fixed [IsGalois k K] (x : K) :
     x ∈ (⊥ : IntermediateField k K) ↔ ∀ (f : Gal(K/k)), f x = x := by
   simp [← fixedField_bot, IntermediateField.mem_fixedField_iff]
+
+theorem mem_range_algebraMap_iff_fixed [IsGalois k K] (x : K) :
+    x ∈ Set.range (algebraMap k K) ↔ ∀ f : Gal(K/k), f x = x :=
+  mem_bot_iff_fixed x
 
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
@@ -211,6 +219,21 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   gc E H := (IntermediateField.le_iff_le H E).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
+
+open IntermediateField in
+/-- If `H` is a closed normal subgroup of `Gal(K / k)`,
+then `Gal(fixedField H / k)` is isomorphic to `Gal(K / k) ⧸ H`. -/
+noncomputable def normalAutEquivQuotient [IsGalois k K]
+    (H : ClosedSubgroup Gal(K/k)) [H.Normal] :
+    Gal(K/k) ⧸ H.1 ≃* Gal(fixedField H.1/k) :=
+  (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
+    (fixedField H.1).restrictNormalHom_ker.symm)).trans <|
+      QuotientGroup.quotientKerEquivOfSurjective _ <| restrictNormalHom_surjective K
+
+open IntermediateField in
+lemma normalAutEquivQuotient_apply [IsGalois k K]
+    (H : ClosedSubgroup Gal(K/k)) [H.Normal] (σ : Gal(K/k)) :
+    normalAutEquivQuotient H σ = restrictNormalHom (fixedField H.1) σ := rfl
 
 open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :

@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Charted spaces
@@ -107,6 +109,8 @@ can be several model spaces for a given topological space. For instance, a compl
 In the scope `Manifold`, we denote the composition of open partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -1306,6 +1310,8 @@ protected instance instChartedSpace : ChartedSpace H s where
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
+
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/

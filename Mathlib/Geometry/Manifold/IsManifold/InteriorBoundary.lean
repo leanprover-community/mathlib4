@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-!
 # Interior and boundary of a manifold
@@ -23,6 +24,13 @@ Define the interior and boundary of a manifold.
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
 - `ModelWithCorners.Boundaryless.boundary_eq_empty` and `of_boundary_eq_empty`:
 `M` is boundaryless if and only if its boundary is empty
+
+- `ModelWithCorners.interior_open`: the interior of `u : Opens M` is the preimage of the interior
+  of `M` under the inclusion
+- `ModelWithCorners.boundary_open`: the boundary of `u : Opens M` is the preimage of the boundary
+  of `M` under the inclusion
+- `ModelWithCorners.BoundarylessManifold.open`: if `M` is boundaryless, so is `u : Opens M`
+
 - `ModelWithCorners.interior_prod`: the interior of `M × N` is the product of the interiors
 of `M` and `N`.
 - `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
@@ -50,6 +58,8 @@ this requires a definition of submanifolds
 - if `M` is finite-dimensional, its boundary has measure zero
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology
@@ -187,6 +197,39 @@ lemma Boundaryless.of_boundary_eq_empty (h : I.boundary M = ∅) : BoundarylessM
 
 end BoundarylessManifold
 
+/-! Interior and boundary of open subsets of a manifold. -/
+section opens
+
+open TopologicalSpace
+
+/-- For `u : Opens M`, `x : u` is an interior point iff `x.val : M` is. -/
+lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
+    I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
+  simpa [I.isInteriorPoint_iff, u.chartAt_eq,
+    OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using
+    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
+
+/-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
+lemma isBoundaryPoint_iff_isBoundaryPoint_val {u : Opens M} {x : u} :
+    I.IsBoundaryPoint x ↔ I.IsBoundaryPoint x.1 := by
+  simpa [I.isInteriorPoint_iff_not_isBoundaryPoint, not_iff_not] using
+    I.isInteriorPoint_iff_isInteriorPoint_val
+
+/-- The interior of `u : Opens M` is the preimage of the interior of `M` under the inclusion. -/
+lemma interior_open {u : Opens M} : I.interior u = (↑) ⁻¹' I.interior M := by
+  ext1; exact I.isInteriorPoint_iff_isInteriorPoint_val
+
+/-- The boundary of `u : Opens M` is the preimage of the boundary of `M` under the inclusion. -/
+lemma boundary_open {u : Opens M} : I.boundary u = (↑) ⁻¹' I.boundary M := by
+  simp [← I.compl_interior, I.interior_open]
+
+/-- Open subsets of boundaryless manifolds are boundaryless. -/
+instance BoundarylessManifold.open [BoundarylessManifold I M] (u : Opens M) :
+    BoundarylessManifold I u :=
+  ⟨fun _ ↦ I.isInteriorPoint_iff_isInteriorPoint_val.2 BoundarylessManifold.isInteriorPoint⟩
+
+end opens
+
 /-! Interior and boundary of the product of two manifolds. -/
 section prod
 
@@ -247,11 +290,11 @@ instance BoundarylessManifold.prod [BoundarylessManifold I M] [BoundarylessManif
 
 end prod
 
+/-! Interior and boundary of the disjoint union of two manifolds. -/
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
 
 open Topology

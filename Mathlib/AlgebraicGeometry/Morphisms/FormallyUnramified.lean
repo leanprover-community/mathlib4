@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.RingTheory.Ideal.IdempotentFG
-import Mathlib.RingTheory.RingHom.Unramified
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.RingHom.Unramified
 
 /-!
 # Formally unramified morphisms
@@ -16,6 +18,8 @@ A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U
 We show that these properties are local, and are stable under compositions and base change.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

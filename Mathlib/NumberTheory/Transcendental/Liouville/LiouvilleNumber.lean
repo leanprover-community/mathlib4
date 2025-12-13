@@ -3,7 +3,9 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 
 /-!
 
@@ -29,6 +31,8 @@ is a transcendental number. Classically, the Liouville number for $m = 2$ is the
 The indexing $m$ is eventually a natural number satisfying $2 ≤ m$. However, we prove the first few
 lemmas for $m \in \mathbb{R}$.
 -/
+
+@[expose] public section
 
 
 noncomputable section

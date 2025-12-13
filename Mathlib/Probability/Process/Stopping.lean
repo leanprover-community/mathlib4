@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Adapted
-import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
+module
+
+public import Mathlib.Probability.Process.Adapted
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -49,6 +51,8 @@ property.
 stopping time, stochastic process
 
 -/
+
+@[expose] public section
 
 open Filter Order TopologicalSpace WithTop
 
@@ -327,7 +331,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : Is
     simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     cases τ ω with
     | top => simp
-    | coe a => simp only [ENat.some_eq_coe]; norm_cast; cutsat
+    | coe a => simp only [ENat.some_eq_coe]; norm_cast; lia
 
 -- generalize to certain countable type?
 theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}
@@ -347,7 +351,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}
       | coe b =>
         simp only [ENat.some_eq_coe, Nat.cast_inj, exists_eq_left', iff_and_self]
         norm_cast
-        omega
+        lia
   rw [h]
   exact MeasurableSet.iUnion fun k =>
     MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
@@ -785,8 +789,7 @@ theorem stoppedProcess_stoppedProcess :
     · refine le_trans ?_ hστ
       simp [untopA_eq_untop]
   · nth_rewrite 2 [untopA_eq_untop]
-    · rw [coe_untop, min_assoc]
-      rfl
+    · rw [coe_untop, min_assoc, Pi.inf_apply]
     · exact (lt_of_le_of_lt (min_le_right _ _) <| lt_top_iff_ne_top.2 hσ).ne
 
 theorem stoppedProcess_stoppedProcess' :
@@ -1247,11 +1250,12 @@ theorem isStoppingTime_piecewise_const (hij : i ≤ j) (hs : MeasurableSet[𝒢 
   (isStoppingTime_const 𝒢 i).piecewise_of_le (isStoppingTime_const 𝒢 j) (fun _ => le_rfl)
     (fun _ => mod_cast hij) hs
 
-theorem stoppedValue_piecewise_const {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const {ι' α : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) = s.piecewise (f i) (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
 
-theorem stoppedValue_piecewise_const' {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddCommGroup α]
+    [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) =
     s.indicator (f i) + sᶜ.indicator (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]

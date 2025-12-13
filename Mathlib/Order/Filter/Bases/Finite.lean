@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Finite
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Finite
 
 /-!
 # Finiteness results on filter bases
@@ -13,6 +15,8 @@ A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of s
 such that the intersection of two elements of this collection contains some element of
 the collection.
 -/
+
+@[expose] public section
 
 open Set Filter
 

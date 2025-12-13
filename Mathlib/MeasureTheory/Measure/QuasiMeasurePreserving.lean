@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+module
+
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
 # Quasi-Measure-Preserving Functions
@@ -20,6 +22,8 @@ absolutely continuous with respect to `μb`).
   respect to `μa` and `μb`.
 
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*}
 

@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion
@@ -22,6 +24,8 @@ space in this file.
 
 inversion, derivative
 -/
+
+@[expose] public section
 
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology RealInnerProductSpace

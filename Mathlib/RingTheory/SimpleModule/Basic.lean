@@ -3,18 +3,20 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Order.Atoms.Finite
-import Mathlib.Order.CompactlyGenerated.Intervals
-import Mathlib.Order.JordanHolder
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Order.Atoms.Finite
+public import Mathlib.Order.CompactlyGenerated.Intervals
+public import Mathlib.Order.JordanHolder
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Simple Modules
@@ -48,6 +50,8 @@ import Mathlib.RingTheory.Noetherian.Defs
 * Unify with the work on Schur's Lemma in a category theory context
 
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
@@ -460,7 +464,7 @@ theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Idea
     ∃ e : R, IsIdempotentElem e ∧ I = .span {e} := by
   obtain ⟨J, h⟩ := exists_isCompl I
   obtain ⟨f, idem, rfl⟩ := I.isIdempotentElemEquiv.symm (I.isComplEquivProj ⟨J, h⟩)
-  exact ⟨f 1, LinearMap.isIdempotentElem_apply_one_iff.mpr idem, by
+  exact ⟨f 1, LinearMap.isIdempotentElem_map_one_iff.mpr idem, by
     rw [LinearMap.range_eq_map, ← Ideal.span_one, ← Ideal.submodule_span_eq, LinearMap.map_span,
       Set.image_one, Ideal.submodule_span_eq]⟩
 

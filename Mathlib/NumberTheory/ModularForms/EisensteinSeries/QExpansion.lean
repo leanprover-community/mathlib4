@@ -3,12 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.SummableUniformlyOn
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-import Mathlib.NumberTheory.LSeries.Dirichlet
-import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
+module
+
+public import Mathlib.Analysis.Complex.SummableUniformlyOn
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
 # Eisenstein series q-expansions
@@ -29,6 +31,8 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
@@ -65,7 +69,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
   ring
 
 open BoundedContinuousFunction in
-/-- The infinte sum of `k`-th iterated derivative of the complex exponential multiplied by a
+/-- The infinite sum of `k`-th iterated derivative of the complex exponential multiplied by a
 function that grows polynomially is absolutely and uniformly convergent. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :

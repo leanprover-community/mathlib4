@@ -3,9 +3,10 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Patrick Massot
 -/
+module
 
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.PartitionOfUnity
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
 # Approximation of continuous functions by smooth functions
@@ -42,10 +43,10 @@ More precisely, we strengthen this result in three ways :
 
 ## Implementation notes
 
-With minor work, we could strenghten the statements in the following ways:
+With minor work, we could strengthen the statements in the following ways:
 - the precision function `ε : M → ℝ` may be assumed `LowerSemicontinuous` instead of `Continuous`,
 - the condition `support g ⊆ support f`, which translates to `∀ x, f x = 0 → g x = 0`,
-  may be strenghtened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.
+  may be strengthened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.
 
 This file depends on the manifold library, which may be annoying if you only need the normed space
 statements. **Please do not let this refrain you from using them** if they apply naturally in your
@@ -60,6 +61,8 @@ about the need for a non-manifold version of `SmoothPartitionOfUnity`.
   (we currently do `M = E` only).
 
 -/
+
+@[expose] public section
 
 open Set Function
 open scoped Topology ContDiff Manifold

@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Order.Fin.Tuple
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Order.Fin.Tuple
 
 /-!
 # Collections of tuples of naturals with the same sum
@@ -38,6 +40,8 @@ In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` fur
 support finitely-supported functions, as is done with `cut` in
 `archive/100-theorems-list/45_partition.lean`.
 -/
+
+@[expose] public section
 
 
 /-! ### Lists -/

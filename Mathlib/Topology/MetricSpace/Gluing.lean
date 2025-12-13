@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Topology.MetricSpace.Isometry
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Metric space gluing
@@ -46,6 +48,8 @@ identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all 
 isometrically and in a way compatible with `f n`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -446,7 +450,7 @@ variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [Nonempty Z] [MetricSpace Z] [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y}
   {ε : ℝ}
 
-/-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudo metric space
+/-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudometric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
 def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ 0

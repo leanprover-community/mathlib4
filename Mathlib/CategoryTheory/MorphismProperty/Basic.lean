@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Properties of morphisms
@@ -19,6 +21,8 @@ The following meta-property is defined
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
 
 -/
+
+@[expose] public section
 
 
 universe w v v' u u'
@@ -114,6 +118,17 @@ def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := 
 lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     P.inverseImage F f ↔ P (F.map f) := by rfl
 
+@[simp]
+lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
+    (P.inverseImage F).op = P.op.inverseImage F.op := rfl
+
+/-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
+inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
+  | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
+
+lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    (P.strictMap F) (F.map f) := ⟨hf⟩
+
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
@@ -142,6 +157,16 @@ variable (P : MorphismProperty C)
 
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+
+lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
+
+lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
+    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+  ext
+  simp [mem_toSet_iff]
+
+lemma toSet_max (W₁ W₂ : MorphismProperty C) :
+    (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
 
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
@@ -241,6 +266,11 @@ def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+
+@[simp]
+lemma op_isomorphisms : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
+  ext
+  apply isIso_unop_iff
 
 section
 

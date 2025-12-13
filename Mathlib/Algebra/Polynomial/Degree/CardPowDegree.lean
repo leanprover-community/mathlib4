@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Absolute value on polynomials over a finite field.
@@ -24,6 +26,8 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
   Euclidean domain structure on the ring of polynomials
 
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -46,7 +50,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
     nonneg' := fun p => by
       split_ifs
       · rfl
-      exact pow_nonneg (Int.ofNat_zero_le _) _
+      exact pow_nonneg (Int.natCast_nonneg _) _
     eq_zero' := fun p =>
       ite_eq_left_iff.trans
         ⟨fun h => by
@@ -59,7 +63,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · simp only [hpq, hp, hq, if_true, if_false]
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, if_false]
-      exact le_trans (pow_right_mono₀ (by cutsat) (Polynomial.natDegree_add_le _ _)) (by grind)
+      exact le_trans (pow_right_mono₀ (by lia) (Polynomial.natDegree_add_le _ _)) (by grind)
     map_mul' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
@@ -68,9 +72,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
 
 theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
     cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p := by
-  rw [cardPowDegree]
-  dsimp
-  convert rfl
+  simp [cardPowDegree]
 
 @[simp]
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl

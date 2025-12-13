@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Extended charts in smooth manifolds
@@ -38,6 +40,8 @@ in general, but we can still register them as `PartialEquiv`.
   on a finite-dimensional space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -314,6 +318,9 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
+
+lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
 
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 

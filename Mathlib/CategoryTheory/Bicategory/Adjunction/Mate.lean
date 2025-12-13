@@ -3,8 +3,10 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mates in bicategories
@@ -41,6 +43,8 @@ To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean`
 polymorphic, so they are not simple specializations of the definitions in this file.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -503,6 +507,7 @@ lemma conjugateEquiv_whiskerRight
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
   simp [conjugateEquiv_apply, this]
 
+set_option linter.flexible false in -- simp followed by bicategory
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)

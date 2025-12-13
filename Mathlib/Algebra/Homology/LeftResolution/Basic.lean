@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Left resolutions
@@ -20,6 +22,8 @@ This is used in order to construct a resolution functor
 This shall be used in order to construct functorial flat resolutions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Abelian
 
@@ -95,7 +99,7 @@ attribute [irreducible] chainComplex
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
-    (ComplexShape.prev_eq' _ (by dsimp; omega)) (by simp),
+    (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
   convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]
