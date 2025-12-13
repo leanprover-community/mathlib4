@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 instance : Abelian Cᵒᵖ :=
   { normalMonoOfMono f := ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩

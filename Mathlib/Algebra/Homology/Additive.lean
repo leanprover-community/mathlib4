@@ -26,8 +26,8 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalCom
 
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-variable {W : Type*} [Category W] [Preadditive W]
-variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
+variable {W : Type*} [Category* W] [Preadditive W]
+variable {W₁ W₂ : Type*} [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
 variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
 variable (f : C ⟶ D) (i : ι)
 
@@ -222,7 +222,7 @@ variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
 
-instance (W : Type*) [Category W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
+instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
     (single W c j).Additive where
   map_add {_ _ f g} := by ext; simp [single]
 

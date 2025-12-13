@@ -28,7 +28,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroObject C]
 
 section
 
@@ -322,7 +322,7 @@ end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
+variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C]
 
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is
 the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which

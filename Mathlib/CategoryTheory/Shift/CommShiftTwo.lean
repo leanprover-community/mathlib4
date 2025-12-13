@@ -36,8 +36,8 @@ the twisted shift.
 
 namespace CategoryTheory
 
-variable {C₁ C₁' C₂ C₂' D : Type*} [Category C₁] [Category C₁']
-  [Category C₂] [Category C₂'] [Category D]
+variable {C₁ C₁' C₂ C₂' D : Type*} [Category* C₁] [Category* C₁']
+  [Category* C₂] [Category* C₂'] [Category* D]
 
 variable (D) in
 /-- Given a category `D` equipped with a shift by an additive monoid `M`, this

@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
 
 namespace ShortComplex
 

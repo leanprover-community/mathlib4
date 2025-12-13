@@ -25,7 +25,7 @@ presheaves.
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace
   Topology
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 -- We could enable:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
@@ -376,7 +376,7 @@ variable {C}
 
 namespace CategoryTheory
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 namespace Functor
 

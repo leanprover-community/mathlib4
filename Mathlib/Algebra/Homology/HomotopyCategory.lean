@@ -87,10 +87,10 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Full :=
   Quotient.full_whiskeringLeft_functor _ _
 
-instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
+instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (quotient V c)).Faithful :=
   Quotient.faithful_whiskeringLeft_functor _ _
 
 variable {V c}
@@ -210,7 +210,7 @@ end HomotopyCategory
 
 namespace CategoryTheory
 
-variable {V} {W : Type*} [Category W] [Preadditive W]
+variable {V} {W : Type*} [Category* W] [Preadditive W]
 
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]

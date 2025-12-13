@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace Functor
 

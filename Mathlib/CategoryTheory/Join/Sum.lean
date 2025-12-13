@@ -21,7 +21,7 @@ We also provide `Faithful` and `EssSurj` instances on this functor.
 
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The canonical functor from the sum to the join.
 It sends `inl c` to `left c` and `inr d` to `right d`. -/

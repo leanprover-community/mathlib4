@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Limits GrothendieckTopology Sieve
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
   exists_fac {X Y Z} f g _ := by

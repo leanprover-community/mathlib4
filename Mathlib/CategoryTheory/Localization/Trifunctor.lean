@@ -27,9 +27,9 @@ namespace CategoryTheory
 open Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ D₁ D₂ D₃ D₁₂ D₂₃ C D E : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
-  [Category C₁₂] [Category C₂₃] [Category D₁₂] [Category D₂₃]
-  [Category C] [Category D] [Category E]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]
+  [Category* C₁₂] [Category* C₂₃] [Category* D₁₂] [Category* D₂₃]
+  [Category* C] [Category* D] [Category* E]
 
 namespace MorphismProperty
 

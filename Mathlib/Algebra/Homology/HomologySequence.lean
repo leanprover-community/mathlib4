@@ -39,7 +39,7 @@ namespace HomologicalComplex
 
 section HasZeroMorphisms
 
-variable {C ι : Type*} [Category C] [HasZeroMorphisms C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L) (i j : ι)
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
@@ -98,7 +98,7 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
   (K : HomologicalComplex C c) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
@@ -167,7 +167,7 @@ end Preadditive
 
 section Abelian
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 
 /-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
 `X₁.opcycles i ⟶ X₂.opcycles i ⟶ X₃.opcycles i ⟶ 0` is exact. This lemma states
@@ -268,7 +268,7 @@ namespace CategoryTheory
 
 open HomologicalComplex HomologySequence
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 

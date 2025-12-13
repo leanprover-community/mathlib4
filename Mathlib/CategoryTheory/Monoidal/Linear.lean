@@ -25,7 +25,7 @@ open CategoryTheory.Limits
 open CategoryTheory.MonoidalCategory
 
 variable (R : Type*) [Semiring R]
-variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
+variable (C : Type*) [Category* C] [Preadditive C] [Linear R C]
 variable [MonoidalCategory C]
 
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
@@ -51,7 +51,7 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
-theorem MonoidalLinear.ofFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
+theorem MonoidalLinear.ofFaithful {D : Type*} [Category* D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
     [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by

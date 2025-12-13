@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y}
+variable {C : Type*} [Category* C] {X Y : C} {f : X ⟶ Y}
 
 section Mono
 

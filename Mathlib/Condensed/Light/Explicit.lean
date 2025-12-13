@@ -32,7 +32,7 @@ universe v u w
 
 open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
-variable {A : Type*} [Category A]
+variable {A : Type*} [Category* A]
 
 namespace LightCondensed
 

@@ -147,7 +147,7 @@ theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
 /-- Composition in the category of categories equals functor composition. -/
 theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
 
-@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
+@[simp] theorem of_α (C) [Category* C] : (of C).α = C := rfl
 
 @[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
 
@@ -160,12 +160,13 @@ def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
     Cat.of C ⟶ Cat.of D := F
 
 /-- Arrows in `Cat` define functors. -/
-def ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
+def ofCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
 
-@[simp] theorem to_ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) :
+@[simp] theorem to_ofCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
+    (F : Cat.of C ⟶ Cat.of D) :
     (ofCatHom F).toCatHom = F := rfl
 
-@[simp] theorem of_toCatHom {C D : Type} [Category C] [Category D] (F : C ⥤ D) :
+@[simp] theorem of_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
     ofCatHom (F.toCatHom) = F := rfl
 
 end Functor

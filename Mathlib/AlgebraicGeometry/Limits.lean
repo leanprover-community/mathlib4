@@ -541,7 +541,7 @@ instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 section IsAffine
 
-lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}}
     (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
     IsAffine c.pt := by
   let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit

@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 open CategoryTheory Category BraidedCategory MonoidalCategory
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
+variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
 
 namespace CategoryTheory.BraidedCategory
 

@@ -27,8 +27,8 @@ namespace CategoryTheory
 
 open Category Functor
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [Category C₅] [Category C₆]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
+  [Category* C₅] [Category* C₆]
 
 /-- `CatCommSq T L R B` expresses that there is a 2-commutative square of functors, where
 the functors `T`, `L`, `R` and `B` are respectively the left, top, right and bottom functors

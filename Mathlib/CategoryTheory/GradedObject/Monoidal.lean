@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Limits MonoidalCategory Category
 
-variable {I : Type u} [AddMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type u} [AddMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 

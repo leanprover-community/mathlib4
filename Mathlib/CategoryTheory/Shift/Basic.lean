@@ -677,7 +677,7 @@ end AddCommMonoid
 
 namespace Functor.FullyFaithful
 
-variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
+variable {D : Type*} [Category* D] [AddMonoid A] [HasShift D A]
 variable {F : C ⥤ D} (hF : F.FullyFaithful)
 variable (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 

@@ -23,7 +23,7 @@ universe u
 
 open CategoryTheory Limits
 
-instance {J C : Type*} [Category J] [Category C] [HasColimitsOfShape J C] [Preadditive C] :
+instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]

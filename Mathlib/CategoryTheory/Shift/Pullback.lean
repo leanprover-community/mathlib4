@@ -38,7 +38,7 @@ namespace CategoryTheory
 
 open Limits Category
 
-variable (C : Type*) [Category C] {A B : Type*} [AddMonoid A] [AddMonoid B]
+variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
   (φ : A →+ B) [HasShift C B]
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
@@ -139,7 +139,7 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
-variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+variable {D : Type*} [Category* D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
 /--
 The functor `F`, seen as a functor from `PullbackShift C φ` to `PullbackShift D φ`.
@@ -237,7 +237,7 @@ instance : NatTrans.CommShift (PullbackShift.natIsoId C φ).hom A where
     ext
     simp [PullbackShift.natIsoId, Functor.commShiftPullback_iso_eq]
 
-variable (F) {E : Type*} [Category E] [HasShift E B] (G : D ⥤ E) [G.CommShift B]
+variable (F) {E : Type*} [Category* E] [HasShift E B] (G : D ⥤ E) [G.CommShift B]
 
 /-- The natural isomorphism between the pullback of `F ⋙ G` and the
 composition of the pullbacks of `F` and `G`.

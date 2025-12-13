@@ -34,7 +34,7 @@ namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 

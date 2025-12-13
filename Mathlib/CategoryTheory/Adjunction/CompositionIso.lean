@@ -28,7 +28,7 @@ in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
 
 namespace CategoryTheory
 
-variable {C₀ C₁ C₂ C₃ : Type*} [Category C₀] [Category C₁] [Category C₂] [Category C₃]
+variable {C₀ C₁ C₂ C₃ : Type*} [Category* C₀] [Category* C₁] [Category* C₂] [Category* C₃]
 
 open Functor
 

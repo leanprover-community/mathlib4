@@ -151,7 +151,7 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan J}
 /-- Construct a natural isomorphism between functors out of a walking multicospan from its
 components. -/
 @[simps!]
-def functorExt {C : Type*} [Category C] {F G : WalkingMulticospan J ⥤ C}
+def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
     (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
     (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
     (wl : ∀ i, F.map (WalkingMulticospan.Hom.fst i) ≫ (right i).hom =
@@ -213,7 +213,7 @@ lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
 /-- Construct a natural isomorphism between functors out of a walking multispan from its
 components. -/
 @[simps!]
-def functorExt {C : Type*} [Category C] {F G : WalkingMultispan J ⥤ C}
+def functorExt {C : Type*} [Category* C] {F G : WalkingMultispan J ⥤ C}
     (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
     (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
     (wl : ∀ i, F.map (WalkingMultispan.Hom.fst i) ≫ (right _).hom =

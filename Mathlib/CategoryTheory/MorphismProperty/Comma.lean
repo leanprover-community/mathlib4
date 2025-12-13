@@ -43,7 +43,7 @@ open Limits
 
 section Comma
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] {T : Type*} [Category T]
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] {T : Type*} [Category* T]
   (L : A ⥤ T) (R : B ⥤ T)
 
 lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
@@ -336,7 +336,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
 @[simps obj_toComma map_hom]
-def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
+def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
     (hW : ∀ {X Y} (f : X ⟶ Y), W (F.map f).right) :
@@ -373,7 +373,7 @@ end Comma
 
 section Over
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
@@ -438,7 +438,7 @@ end Over
 
 section Under
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
@@ -502,7 +502,7 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
 end Under
 
 instance HasFactorization.over
-    {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+    {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :
     (W₁.over (X := S)).HasFactorization W₂.over where
   nonempty_mapFactorizationData {X Y} f := by

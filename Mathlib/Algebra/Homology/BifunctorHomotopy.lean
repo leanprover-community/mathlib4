@@ -25,7 +25,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits
 
-variable {C₁ C₂ D I₁ I₂ J : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D I₁ I₂ J : Type*} [Category* C₁] [Category* C₂] [Category* D]
   [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
 

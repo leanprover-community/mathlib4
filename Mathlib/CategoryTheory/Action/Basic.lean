@@ -32,7 +32,7 @@ universe u v
 
 open CategoryTheory Limits
 
-variable (V : Type*) [Category V]
+variable (V : Type*) [Category* V]
 
 -- Note: this is _not_ a categorical action of `G` on `V`.
 /-- An `Action V G` represents a bundled action of
@@ -384,7 +384,7 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type*} [Category W]
+variable {V} {W : Type*} [Category* W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
@@ -427,7 +427,7 @@ variable (G : Type*) [Monoid G]
 
 /-- `Functor.mapAction` is functorial in the functor. -/
 @[simps! hom inv]
-def mapActionComp {T : Type*} [Category T] (F : V ⥤ W) (F' : W ⥤ T) :
+def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -442,7 +442,7 @@ end Functor
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/
 @[simps functor inverse]
-def Equivalence.mapAction {V W : Type*} [Category V] [Category W] (G : Type*) [Monoid G]
+def Equivalence.mapAction {V W : Type*} [Category* V] [Category* W] (G : Type*) [Monoid G]
     (E : V ≌ W) : Action V G ≌ Action W G where
   functor := E.functor.mapAction G
   inverse := E.inverse.mapAction G

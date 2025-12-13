@@ -43,7 +43,7 @@ open CategoryTheory Category ComplexShape Limits
 
 namespace HomologicalComplex₂
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/

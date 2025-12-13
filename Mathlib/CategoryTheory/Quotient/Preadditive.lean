@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {C : Type _} [Category C] [Preadditive C] (r : HomRel C) [Congruence r]
+variable {C : Type _} [Category* C] [Preadditive C] (r : HomRel C) [Congruence r]
 
 namespace Preadditive
 

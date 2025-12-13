@@ -25,8 +25,8 @@ open CategoryTheory CategoryTheory.Functor
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
-  {D : Type*} [Category D]
+variable {C : Type*} [Category* C]
+  {D : Type*} [Category* D]
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :

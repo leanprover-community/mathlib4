@@ -27,11 +27,11 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 noncomputable section Equivalence
 
-variable {D : Type*} [Category D] (e : C ≌ D) {B : C}
+variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
@@ -83,7 +83,7 @@ end Equivalence
 
 namespace Functor
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 section Preserves
 

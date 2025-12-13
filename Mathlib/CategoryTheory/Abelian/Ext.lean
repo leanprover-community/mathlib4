@@ -33,7 +33,7 @@ noncomputable section
 
 open CategoryTheory Limits
 
-variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
+variable (R : Type*) [Ring R] (C : Type*) [Category* C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in

@@ -27,7 +27,7 @@ open Category
 
 namespace SmallObject
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J] [SuccOrder J] {j : J} (hj : ¬IsMax j)
   (F : Set.Iic j ⥤ C) {X : C} (τ : F.obj ⟨j, by simp⟩ ⟶ X)
 

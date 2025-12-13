@@ -27,7 +27,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category ComplexShape Limits
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 namespace CochainComplex
 
