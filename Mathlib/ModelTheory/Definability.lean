@@ -500,7 +500,7 @@ lemma definable_preimage_of_definableMap
     exact hu
 
 /-- The equalizer of two definable functions is a definable. -/
-lemma definable_equalizer {f g : (α → M) → M}
+lemma equalizer {f g : (α → M) → M}
     (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
     A.Definable L {v : α → M | f v = g v} := by
   let F : (α → M) → Fin 2 → M := fun v => ![f v, g v]
@@ -514,9 +514,9 @@ lemma definable_equalizer {f g : (α → M) → M}
   convert definable_preimage_of_definableMap hF hDiag
 
 /-- The fiber of a definable function is definable. -/
-lemma definable_fiber {f : (α → M) → M} (hf : DefinableFun L A f) (a : A) :
+lemma fiber {f : (α → M) → M} (hf : DefinableFun L A f) (a : A) :
     A.Definable L {v : α → M | f v = a} := by
-  refine definable_equalizer hf ?_
+  refine equalizer hf ?_
   exact Definable.mono (const L α (a : M)) (by grind)
 
 end DefinableFun
