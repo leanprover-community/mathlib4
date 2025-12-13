@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.Light.CartesianClosed
 public import Mathlib.Condensed.Light.TopCatAdjunction
+public import Mathlib.CategoryTheory.Sites.Coherent.PreservesCoproducts
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
@@ -84,3 +85,6 @@ noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
     rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]
     infer_instance
   exact this.some
+
+instance : PreservesFiniteCoproducts lightProfiniteToLightCondSet.{u} :=
+  Subcanonical.preservesFiniteCoproductsYoneda
