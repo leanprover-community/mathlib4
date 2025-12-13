@@ -9,6 +9,8 @@ public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.Tactic.MoveAdd
 
+public import Mathlib.Tactic.Linter.PrivateModule
+
 /-!
 
 # Density of smooth compactly supported functions in `Lp`
