@@ -496,7 +496,7 @@ instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [N
   exact Infinite.of_injective f f.injective
 
 lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Nonempty M] :
-    Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
+    Language.order.age M = {M : Language.order.StrucType |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   classical
   rw [age]
@@ -511,13 +511,13 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
 class of finite models of the theory of linear orders. -/
 theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
     [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
-    IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+    IsFraisseLimit {M : Language.order.StrucType |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
 
 /-- The class of finite models of the theory of linear orders is Fraïssé. -/
 theorem isFraisse_finite_linear_order :
-    IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
+    IsFraisse {M : StrucType.{0, 0, 0} Language.order |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   letI : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
