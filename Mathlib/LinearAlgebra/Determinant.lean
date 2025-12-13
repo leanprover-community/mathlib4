@@ -439,7 +439,7 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
 @[simp] theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
     (f x).det = x.det :=
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ LinearMap.det_conj _ _
+  h ▸ det_conj _ _
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]

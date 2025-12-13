@@ -310,7 +310,7 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
 @[simp] theorem trace_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
     (f x).trace K W = x.trace K V :=
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ LinearMap.trace_conj' _ _
+  h ▸ trace_conj' _ _
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
