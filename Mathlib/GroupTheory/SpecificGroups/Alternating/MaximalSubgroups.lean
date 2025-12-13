@@ -83,30 +83,34 @@ namespace AlternatingGroup
 theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
   classical
-  suffices ∃ k : Perm (sᶜ : Set α), sign k = -1 by
-    obtain ⟨k, hk_sign⟩ := this
-    have hks : ofSubtype k • s = s := by
-      rw [← mem_stabilizer_iff, mem_stabilizer_set_iff_subset_smul_set s.toFinite]
-      intro x hx
-      exact ⟨x, hx, by simp [ofSubtype_apply_of_not_mem k (notMem_compl_iff.mpr hx)]⟩
-    intro g
-    rcases Int.units_eq_one_or (sign g) with hsg | hsg
-    · use! ofSubtype g
-      · simp [mem_alternatingGroup, hsg]
-      · rw [mem_stabilizer_iff, Submonoid.mk_smul]
-        exact ofSubtype_mem_stabilizer g
-      · aesop
-    use! ofSubtype g * ofSubtype k
-    · simp [mem_alternatingGroup, hk_sign, hsg]
-    · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks]
+  have : ∃ k : Perm α, IsSwap k ∧ _root_.Disjoint s k.support := by
+    obtain ⟨a, ha, b, hb, hab⟩ := hs
+    use Equiv.swap a b
+    rw [swap_isSwap_iff]; aesop
+  obtain ⟨k, hk_swap, hk_support⟩ := this
+  have hks : k • s = s := by
+    rw [← mem_stabilizer_iff, mem_stabilizer_set_iff_smul_set_subset s.toFinite]
+    intro _
+    simp only [mem_smul_set]
+    rintro ⟨x, hx, rfl⟩
+    convert hx
+    rw [Perm.smul_def, ← Perm.notMem_support]
+    exact (Set.disjoint_left.mp hk_support) hx
+  intro g
+  rcases Int.units_eq_one_or (sign g) with hsg | hsg
+  · use! ofSubtype g
+    · simp [mem_alternatingGroup, hsg]
+    · rw [mem_stabilizer_iff, Submonoid.mk_smul]
       exact ofSubtype_mem_stabilizer g
+    · aesop
+  · use! ofSubtype g * k
+    · simp [mem_alternatingGroup, hk_swap.sign_eq, hsg]
+    · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks, ofSubtype_mem_stabilizer]
     · ext x
-      simp [ofSubtype_apply_of_not_mem k]
-  -- `∃ k : Equiv.Perm (sᶜ : Set α), Equiv.Perm.sign k = -1`,
-  obtain ⟨a, ha, b, hb, hab⟩ := hs
-  use Equiv.swap ⟨a, ha⟩ ⟨b, hb⟩
-  rw [sign_swap _]
-  simp [← Function.Injective.ne_iff Subtype.coe_injective, hab]
+      suffices k x = x by simp [this]
+      rw [Set.disjoint_left] at hk_support
+      rw [← notMem_support]
+      exact hk_support x.prop
 
 /-- In the alternating group, the stabilizer of a set acts
 primitively on that set if the complement is nontrivial. -/
@@ -305,9 +309,8 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
     {G : Subgroup (alternatingGroup α)} (hG : stabilizer (alternatingGroup α) s < G) :
     IsPreprimitive G α := by
   have h1 : sᶜ.Nontrivial := by
-    rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
-    apply lt_of_le_of_lt _ hs
-    exact h0.nonempty.ncard_pos
+    rw [← one_lt_ncard_iff_nontrivial]
+    exact lt_of_le_of_lt h0.nonempty.ncard_pos hs
   -- G acts transitively
   have : IsPretransitive G α := by
     have hG' : stabilizer (alternatingGroup α) s ≤ G := le_of_lt hG
