@@ -4960,6 +4960,7 @@ public import Mathlib.MeasureTheory.Integral.MeanInequalities
 public import Mathlib.MeasureTheory.Integral.PeakFunction
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Regular
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
@@ -6249,6 +6250,7 @@ public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
