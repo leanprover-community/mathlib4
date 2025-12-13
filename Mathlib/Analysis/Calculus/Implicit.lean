@@ -214,6 +214,24 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
+theorem eq_implicitFunction_of_prodFun_eq :
+    ∀ᶠ xyz in 𝓝 (φ.pt, φ.prodFun φ.pt),
+      have ⟨x, y, z⟩ := xyz
+      φ.prodFun x = (y, z) → x = φ.implicitFunction y z := by
+  rw [nhds_prod_eq]
+  apply φ.implicitFunction_apply_image.prod_mk φ.prod_map_implicitFunction |>.mono
+  rintro ⟨x, y, z⟩ ⟨hx, -⟩ hprod
+  rw [Prod.ext_iff] at hprod
+  dsimp at hx hprod
+  rw [← hx, hprod.1, hprod.2]
+
+theorem implicitFunction_unique {ψ : F → G → E}
+    (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
+    ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ψ yz.1 yz.2 = φ.implicitFunction yz.1 yz.2 := by
+  rw [implicitFunction, toOpenPartialHomeomorph, ← HasStrictFDerivAt.localInverse]
+  simp_rw [Function.curry_apply, ← Function.uncurry_apply_pair ψ]
+  exact HasStrictFDerivAt.localInverse_unique _ h
+
 end ImplicitFunctionData
 
 namespace HasStrictFDerivAt
