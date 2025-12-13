@@ -163,14 +163,32 @@ theorem differentiableAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : DifferentiableAt 
 theorem differentiableOn_arcosh : DifferentiableOn ℝ arcosh (Ioi 1) := fun _ hx =>
   (differentiableAt_arcosh hx).differentiableWithinAt
 
-theorem contDiffAt_arcosh {n : ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : ContDiffAt ℝ n arcosh x := by
+theorem contDiffAt_arcosh {n : WithTop ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : ContDiffAt ℝ n arcosh x := by
   refine coshOpenPartialHomeomorph.contDiffAt_symm_deriv ?_ hx (hasDerivAt_cosh _)
     contDiff_cosh.contDiffAt
   rw [ne_eq, sinh_eq_zero]
   exact ne_of_gt (arcosh_pos hx)
 
-theorem contDiffOn_arcosh {n : ℕ∞} : ContDiffOn ℝ n arcosh (Ioi 1) := fun _ hx =>
+theorem contDiffOn_arcosh {n : WithTop ℕ∞} : ContDiffOn ℝ n arcosh (Ioi 1) := fun _ hx =>
   (contDiffAt_arcosh hx).contDiffWithinAt
+
+/-- The function `Real.arcosh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : AnalyticAt ℝ arcosh x :=
+  (contDiffAt_arcosh hx).analyticAt
+
+/-- The function `Real.arcosh` is real analytic. -/
+lemma analyticWithinAt_arcosh {s : Set ℝ} {x : ℝ} (hx : x ∈ Ioi 1) :
+    AnalyticWithinAt ℝ arcosh s x :=
+  (contDiffAt_arcosh hx).contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.arcosh` is real analytic. -/
+theorem analyticOnNhd_arcosh {s : Set ℝ} (hs : s ⊆ Ioi 1) : AnalyticOnNhd ℝ arcosh s :=
+  fun _ hx ↦ analyticAt_arcosh (hs hx)
+
+/-- The function `Real.arcosh` is real analytic. -/
+lemma analyticOn_arcosh {s : Set ℝ} (hs : s ⊆ Ioi 1) : AnalyticOn ℝ arcosh s :=
+  contDiffOn_arcosh.analyticOn.mono hs
 
 theorem cosh_bijOn : BijOn cosh (Ici 0) (Ici 1) := coshPartialEquiv.bijOn
 
