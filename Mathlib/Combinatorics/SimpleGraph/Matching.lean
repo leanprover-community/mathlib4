@@ -442,6 +442,8 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
 
+-- `Fintype V` is necessary for use in the termination measure, `Finite V` does not suffice.
+set_option linter.unusedFintypeInType false in
 private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
