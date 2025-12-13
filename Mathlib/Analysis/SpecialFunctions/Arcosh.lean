@@ -149,12 +149,10 @@ def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
 
 theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :
     HasStrictDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x := by
-  convert coshOpenPartialHomeomorph.hasStrictDerivAt_symm hx ?_
-    (hasStrictDerivAt_cosh _) using 2
-  · exact (sinh_arcosh (le_of_lt hx)).symm
-  · rw [ne_eq, sinh_eq_zero, coshOpenPartialHomeomorph, OpenPartialHomeomorph.mk_coe_symm,
-      PartialEquiv.coe_symm_mk]
-    exact ne_of_gt (arcosh_pos hx)
+  rw [← sinh_arcosh (le_of_lt hx)]
+  refine coshOpenPartialHomeomorph.hasStrictDerivAt_symm hx ?_ (hasStrictDerivAt_cosh _)
+  rw [ne_eq, sinh_eq_zero]
+  exact ne_of_gt (arcosh_pos hx)
 
 theorem hasDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : HasDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x :=
   (hasStrictDerivAt_arcosh hx).hasDerivAt
