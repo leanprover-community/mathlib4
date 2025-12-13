@@ -56,7 +56,7 @@ namespace Finite
 
 @[simp] theorem mem_finite_iff {x : K} : x ∈ ArchimedeanClass.Finite K ↔ 0 ≤ mk x := .rfl
 
-theorem mem_map_of_archimedean (f : R →+*o K) (r : R) : f r ∈ ArchimedeanClass.Finite K := by
+theorem map_mem_finite_of_archimedean (f : R →+*o K) (r : R) : f r ∈ ArchimedeanClass.Finite K := by
   obtain rfl | hr := eq_or_ne r 0
   · simp
   · rw [mem_finite_iff, mk_map_of_archimedean' f hr]
@@ -110,7 +110,7 @@ private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
 noncomputable instance : LinearOrder (FiniteResidueField K) :=
-  @Quotient.linearOrder _ _ _ ordConnected_preimage_mk' (Classical.decRel _)
+  @Quotient.instLinearOrder _ _ _ ordConnected_preimage_mk' (Classical.decRel _)
 
 /-- The quotient map from finite elements on the field to the associated residue field. -/
 def mk : ArchimedeanClass.Finite K →+*o FiniteResidueField K where
@@ -193,15 +193,17 @@ instance : Archimedean (FiniteResidueField K) where
 `FiniteResidueField K`. -/
 @[simps!]
 def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
-  toFun r := mk ⟨f r, Finite.mem_map_of_archimedean f r⟩
+  toFun r := mk ⟨f r, Finite.map_mem_finite_of_archimedean f r⟩
   map_zero' := by simp
   map_one' := by simp
   map_add' x y := by
     simp_rw [map_add]
-    exact mk.map_add ⟨_, Finite.mem_map_of_archimedean f x⟩ ⟨_, Finite.mem_map_of_archimedean f y⟩
+    exact mk.map_add ⟨_, Finite.map_mem_finite_of_archimedean f x⟩
+      ⟨_, Finite.map_mem_finite_of_archimedean f y⟩
   map_mul' x y := by
     simp_rw [map_mul]
-    exact mk.map_mul ⟨_, Finite.mem_map_of_archimedean f x⟩ ⟨_, Finite.mem_map_of_archimedean f y⟩
+    exact mk.map_mul ⟨_, Finite.map_mem_finite_of_archimedean f x⟩
+      ⟨_, Finite.map_mem_finite_of_archimedean f y⟩
   monotone' x y h := mk.monotone' <| f.monotone' h
 
 end FiniteResidueField
