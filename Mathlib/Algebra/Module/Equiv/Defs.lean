@@ -488,9 +488,11 @@ theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) =
 theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ ↦ rfl
 
+@[simp high]
 protected theorem map_add (a b : M) : e (a + b) = e a + e b :=
   map_add e a b
 
+@[simp high]
 protected theorem map_zero : e 0 = 0 :=
   map_zero e
 

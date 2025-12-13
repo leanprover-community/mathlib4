@@ -193,10 +193,12 @@ end coe
 section map
 
 /-- A ring isomorphism preserves multiplication. -/
+@[simp high]
 protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
   map_mul e x y
 
 /-- A ring isomorphism preserves addition. -/
+@[simp high]
 protected theorem map_add (e : R ≃+* S) (x y : R) : e (x + y) = e x + e y :=
   map_add e x y
 
