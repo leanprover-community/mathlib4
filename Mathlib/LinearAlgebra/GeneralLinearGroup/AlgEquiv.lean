@@ -66,12 +66,12 @@ public theorem Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective :
 section trace_det
 variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
 
-public theorem LinearMap.trace_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
+@[simp] public theorem LinearMap.trace_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
     (f x).trace K W = x.trace K V :=
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
   h ▸ LinearMap.trace_conj' _ _
 
-public theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
+@[simp] public theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
     (f x).det = x.det :=
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
   h ▸ LinearMap.det_conj _ _
