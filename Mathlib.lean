@@ -2177,7 +2177,6 @@ public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 public import Mathlib.CategoryTheory.Abelian.Exact
-public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.CategoryTheory.Abelian.FreydMitchell
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
@@ -2200,6 +2199,7 @@ public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Abelian.Indization
 public import Mathlib.CategoryTheory.Abelian.Injective.Basic
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.CategoryTheory.Abelian.Injective.Ext
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
@@ -2208,6 +2208,7 @@ public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 public import Mathlib.CategoryTheory.Abelian.Pseudoelements

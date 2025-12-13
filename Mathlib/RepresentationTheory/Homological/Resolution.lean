@@ -5,9 +5,9 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
-public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
@@ -382,17 +382,6 @@ def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
 @[deprecated (since := "2025-06-06")]
 alias groupCohomology.projectiveResolution := Rep.standardResolution
 
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
-`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k` called `standardComplex k G`. -/
-def standardResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((standardComplex k G).linearYonedaObj k V).homology n :=
-  (standardResolution k G).isoExt n V
-
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.extIso := Rep.standardResolution.extIso
-
 namespace barComplex
 
 open Rep Finsupp
@@ -461,13 +450,5 @@ def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barComplex k G
   projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
-
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
-`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-bar resolution of `k`. -/
-def barResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((barComplex k G).linearYonedaObj k V).homology n :=
-  (barResolution k G).isoExt n V
 
 end Rep
