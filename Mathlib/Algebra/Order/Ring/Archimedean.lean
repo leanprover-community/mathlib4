@@ -47,21 +47,15 @@ section Ring
 variable [CommRing R]
 
 section IsOrderedRing
-variable [IsOrderedRing R]
+variable [IsStrictOrderedRing R]
 
 instance : Zero (ArchimedeanClass R) where
   zero := mk 1
 
 @[simp] theorem mk_one : mk (1 : R) = 0 := rfl
 
-@[simp]
-theorem top_ne_zero [Nontrivial R] : (⊤ : ArchimedeanClass R) ≠ 0 := by
-  rw [← mk_one, ne_eq, top_eq_mk_iff]
-  exact one_ne_zero
-
-@[simp]
-theorem zero_ne_top [Nontrivial R] : 0 ≠ (⊤ : ArchimedeanClass R) :=
-  top_ne_zero.symm
+@[simp] lemma top_ne_zero : (⊤ : ArchimedeanClass R) ≠ 0 := by simp [← mk_one]
+@[simp] lemma zero_ne_top : 0 ≠ (⊤ : ArchimedeanClass R) := top_ne_zero.symm
 
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
@@ -72,7 +66,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
-/-- Multipilication in `R` transfers to Addition in `ArchimedeanClass R`. -/
+/-- Multiplication in `R` transfers to Addition in `ArchimedeanClass R`. -/
 instance : Add (ArchimedeanClass R) where
   add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦
     (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
@@ -119,8 +113,16 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     rw [← mk_mul, ← mk_mul]
     exact mk_mul_le_of_le h le_rfl
 
+lemma isAddRegular_mk {x : R} (hx : x ≠ 0) : IsAddRegular (mk x) := by
+  rw [← isAddLeftRegular_iff_isAddRegular]
+  rintro y z hyz
+  induction y with | mk y =>
+  induction z with | mk z =>
+  simpa [← mk_mul, mk_eq_mk, mul_left_comm _ (|x|), abs_pos.2 hx] using hyz
+
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
+  isAddLeftRegular_of_ne_top x := by induction x with | mk x => simp +contextual [isAddRegular_mk]
 
 variable (R) in
 /-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `R`. -/
@@ -129,7 +131,7 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
-variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
+variable {S : Type*} [LinearOrder S] [CommRing S] [IsStrictOrderedRing S]
 
 @[simp]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
@@ -238,7 +240,8 @@ private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
 
 noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) where
   neg_top := by simp [← mk_zero, ← mk_inv]
-  add_neg_cancel x h := by
+  top_add' := by simp
+  add_neg_cancel_of_ne_top x h := by
     induction x with | mk x
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
   zsmul n x := n • x
