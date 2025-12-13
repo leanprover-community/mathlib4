@@ -6,10 +6,11 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Int.Star
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Order.Filter.AtTopBot.Interval
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 
 /-!
