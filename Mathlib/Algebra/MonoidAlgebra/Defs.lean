@@ -288,17 +288,8 @@ lemma mul_def (x y : R[M]) :
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   zero_mul := by simp [mul_def]
   mul_zero := by simp [mul_def]
-  -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
-  left_distrib f g h := by
-    classical
-    simp only [mul_def]
-    refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
-      simp only [mul_add, mul_zero, single_zero, single_add, forall_true_iff, sum_add]
-  right_distrib f g h := by
-    classical
-    simp only [mul_def]
-    refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
-      simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
+  left_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, mul_add]
+  right_distrib := by classical simp [mul_def]; simp [MonoidAlgebra, sum_add_index, add_mul]
 
 @[to_additive (dont_translate := R) mul_apply]
 lemma mul_apply [DecidableEq M] (x y : R[M]) (m : M) :
@@ -386,15 +377,7 @@ variable [Semigroup M]
 
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
-  mul_assoc f g h := by
-    -- Porting note: `reducible` cannot be `local` so proof gets long.
-    simp only [mul_def]
-    rw [sum_sum_index] <;> congr; on_goal 1 => ext a₁ b₁
-    rw [sum_sum_index, sum_sum_index] <;> congr; on_goal 1 => ext a₂ b₂
-    rw [sum_sum_index, sum_single_index] <;> congr; on_goal 1 => ext a₃ b₃
-    on_goal 1 => rw [sum_single_index, mul_assoc, mul_assoc]
-    all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
-      mul_add, zero_mul, mul_zero, sum_zero, sum_add]
+  mul_assoc := by simp [mul_def]; simp [MonoidAlgebra, sum_sum_index, mul_add, add_mul, mul_assoc]
 
 end Semigroup
 
@@ -447,11 +430,10 @@ def singleHom : R × M →* R[M] where
 /-- `MonoidAlgebra.single 1` as a `RingHom` -/
 @[to_additive (attr := simps) (dont_translate := R)
 /-- `AddMonoidAlgebra.single 1` as a `RingHom` -/]
-def singleOneRingHom : R →+* R[M] :=
-  { singleAddHom 1 with
-    toFun := single 1
-    map_one' := rfl
-    map_mul' := fun x y => by simp }
+def singleOneRingHom : R →+* R[M] where
+  __ := singleAddHom 1
+  map_one' := rfl
+  map_mul' := by simp
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1` and
 `single 1 r`, then they are equal. -/
@@ -496,15 +478,12 @@ lemma induction_on {p : R[M] → Prop} (x : R[M])
 
 @[to_additive (dont_translate := R)]
 instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M := M)) where
-  map_nonunit x hx := by
-    obtain ⟨⟨x, xi, hx, hxi⟩, rfl⟩ := hx
-    simp_rw [MonoidAlgebra.ext_iff, singleOneRingHom_apply] at hx hxi ⊢
-    specialize hx 1
-    specialize hxi 1
-    classical
-    simp_rw [single_one_mul_apply, one_def, single_apply, if_pos] at hx
-    simp_rw [mul_single_one_apply, one_def, single_apply, if_pos] at hxi
-    exact ⟨⟨x, xi 1, hx, hxi⟩, rfl⟩
+  map_nonunit := by
+    simp_rw [isUnit_iff_exists]
+    rintro a ⟨x, hax, hxa⟩
+    refine ⟨x 1, ?_, ?_⟩
+    · simpa [single_one_mul_apply, one_def] using congr($hax 1)
+    · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
 end Monoid
 
@@ -623,14 +602,13 @@ variable (R M : Type*) [Semiring R]
 /-- The embedding of an additive magma into its additive magma algebra. -/
 @[simps]
 def ofMagma [Add M] : Multiplicative M →ₙ* R[M] where
-  toFun a := single a 1
-  map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero]; rfl
+  toFun a := single a.toAdd 1
+  map_mul' := by simp
 
 /-- Embedding of a magma with zero into its magma algebra. -/
-def of [AddZeroClass M] : Multiplicative M →* R[M] :=
-  { ofMagma R M with
-    toFun := fun a => single a 1
-    map_one' := rfl }
+def of [AddZeroClass M] : Multiplicative M →* R[M] where
+  __ := ofMagma R M
+  map_one' := rfl
 
 /-- Embedding of a magma with zero `M`, into its magma algebra, having `M` as source. -/
 def of' : M → R[M] := fun m => single m 1

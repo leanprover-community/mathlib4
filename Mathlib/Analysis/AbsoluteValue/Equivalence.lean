@@ -108,8 +108,7 @@ alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
 
--- TODO: non-terminal simp_all with no obvious fix
-set_option linter.flexible false in
+set_option linter.flexible false in -- TODO: non-terminal simp_all with no obvious fix
 theorem isEquiv_iff_lt_one_iff :
     v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
   refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
