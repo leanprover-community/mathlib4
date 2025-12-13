@@ -31,7 +31,7 @@ monoids, expressing that an element is a primitive root of unity.
   a primitive `k`-th root of unity is equal to the `k`-th roots of unity.
 * `IsPrimitiveRoot.card_primitiveRoots`: if an integral domain
   has a primitive `k`-th root of unity, then it has `φ k` of them.
-* `equiv_primitiveRoots_of_coprimePow`: An equivalence between `primitiveRoots k R` that takes
+* `equivPrimitiveRootsOfCoprimePow`: An equivalence between `primitiveRoots k R` that takes
   each root to a coprime power `e`.
 
 ## Implementation details
@@ -696,58 +696,31 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
+lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {r a b : ℕ}
+    (h : a ≡ b [MOD r]) (hx : x ^ r = 1) : x ^ a = x ^ b := by
+  obtain hle | hle := le_total a b
+  all_goals
+    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle
+    obtain ⟨c, rfl⟩ : r ∣ c := by simpa using h
+    simp [pow_add, pow_mul, hx]
+
 /-- Equivalence of coprime powers of primitive roots. -/
-def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
-    (primitiveRoots r R) ≃ (primitiveRoots r R) := by
-  -- Show that the exponent is positive.
-  have pos_exp : 0 ≤ ((r : ℤ) * Nat.gcdA e r + 1) * Nat.gcdA e r := by
-    cases le_or_gt 0 (e.gcdA r) with
-    | inl hc =>
-      positivity
-    | inr hc =>
-      have hr : (0 : ℤ) < r := by exact_mod_cast r.pos_of_neZero
-      apply Int.mul_nonneg_of_nonpos_of_nonpos _ (Int.le_of_lt hc)
-      rw [Int.add_le_zero_iff_le_neg', Int.neg_mul_eq_mul_neg]
-      exact one_le_mul_of_one_le_of_one_le hr (Int.neg_pos_of_neg hc)
-  have exp_cancel (a : R) (ha : a ∈ primitiveRoots r R) : a ^ (e * ((r * e.gcdA r + 1) *
-      e.gcdA r).toNat) = a := by
-    rw [mem_primitiveRoots] at ha
-    swap
-    · exact Nat.pos_of_neZero r
-    lift a to Rˣ using ha.isUnit NeZero.out
-    rw [← Units.val_pow_eq_pow_val, Units.ext_iff.mp]
-    rw [← zpow_natCast]
-    push_cast
-    have h1 : (↑e * ((r * e.gcdA r + 1) * e.gcdA r)) = r * (e * (e.gcdA r) ^ 2) + e * e.gcdA r := by
-      ring
-    rw [Int.toNat_of_nonneg pos_exp, h1, zpow_add, zpow_mul, IsPrimitiveRoot.zpow_eq_one, one_zpow,
-      one_mul, eq_sub_of_add_eq (Nat.gcd_eq_gcd_ab e r).symm, zpow_sub, zpow_mul]
-    swap
-    · exact IsPrimitiveRoot.coe_units_iff.mp ha
-    rw [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
-    have last: ((a ^ r) ^ e.gcdB r)⁻¹ = 1 := by
-      grind [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.pow_eq_one, one_zpow, inv_one]
-    simp [h, last]
-  refine Equiv.mk (fun μ => ⟨ μ ^ e , ?_ ⟩)
-    (fun ν => ⟨ ν.1 ^ (( r * (Nat.gcdA e r) + 1) * (Nat.gcdA e r)).toNat , ?_ ⟩) ?_ ?_
-  · have primr := μ.2
-    rw [mem_primitiveRoots] at *
-    all_goals try exact Nat.pos_of_neZero r
-    exact IsPrimitiveRoot.pow_of_coprime primr e h
-  · have primr := ν.2
-    rw [mem_primitiveRoots] at *
-    all_goals try exact Nat.pos_of_neZero r
-    refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
-    rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib,
-      one_mul, mul_assoc, Int.isCoprime_iff_gcd_eq_one]
-    simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd, ← Int.isCoprime_iff_gcd_eq_one]
-    exact Int.isCoprime_gcdA (Nat.Coprime.isCoprime h)
-  · simp only [Function.LeftInverse, Subtype.forall, Subtype.mk.injEq]
-    intro a ha
-    rw [← pow_mul, exp_cancel a ha]
-  · simp only [Function.RightInverse, Function.LeftInverse, Subtype.forall, Subtype.mk.injEq]
-    intro a ha
-    rw [← pow_mul, mul_comm, exp_cancel a ha]
+def equivPrimitiveRootsOfCoprimePow {a b r : ℕ} (h : a * b ≡ 1 [MOD r]) :
+    primitiveRoots r R ≃ primitiveRoots r R where
+  toFun x := ⟨x.1 ^ a,
+    have hr : 0 < r := by by_contra! h; cases x; simp_all
+    have hr' : a.Coprime r := by
+      simpa [(a.gcd_dvd_left r).trans] using h.dvd_iff (Nat.gcd_dvd_right a r)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.1 ^ b,
+    have hr : 0 < r := by by_contra! h; cases x; simp_all
+    have hr' : b.Coprime r := by
+      simpa [(b.gcd_dvd_left r).trans] using h.dvd_iff (Nat.gcd_dvd_right b r)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  left_inv x := by ext; simp [← pow_mul,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+  right_inv x := by ext; simp [← pow_mul, mul_comm b,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
