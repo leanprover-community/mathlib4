@@ -17,6 +17,7 @@ public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
+* `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -78,6 +79,49 @@ end MeasureTheory.Measure
 end Embeddings
 
 namespace TemperedDistribution
+
+/-! ### FDerivatives -/
+
+section deriv
+
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+variable (F) in
+/-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
+def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
+  PointwiseConvergenceCLM.precomp F (-SchwartzMap.derivCLM ℂ)
+
+@[simp]
+theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
+    derivCLM F f g = f (-SchwartzMap.derivCLM ℂ g) := rfl
+
+end deriv
+
+section lineDeriv
+
+open LineDeriv
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+
+/-- The partial derivative (or directional derivative) in the direction `m : E` as a
+continuous linear map on tempered distributions. -/
+instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+
+instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+
+instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
+
+instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_lineDerivOp m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
+
+theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
+  PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
+
+end lineDeriv
 
 /-! ### Fourier transform -/
 
