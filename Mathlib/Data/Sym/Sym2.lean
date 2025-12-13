@@ -472,7 +472,7 @@ lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s
 
 /-! ### Diagonal -/
 
-variable {e : Sym2 α} {f : α → β}
+variable {z : Sym2 α} {f : α → β}
 
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
 of this diagonal in `Sym2 α`.
@@ -494,10 +494,10 @@ theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag (Sym2.mk z) ↔ z.1 = z.2 :=
   Prod.recOn z fun _ _ => mk_isDiag_iff
 
-protected lemma IsDiag.map : e.IsDiag → (e.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) e
+protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
-lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
-  Sym2.ind (fun _ _ ↦ hf.eq_iff) e
+lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
+  Sym2.ind (fun _ _ ↦ hf.eq_iff) z
 
 @[simp]
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
@@ -507,9 +507,9 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
 theorem isDiag_of_subsingleton [Subsingleton α] (e : Sym2 α) : e.IsDiag := e.ind Subsingleton.elim
 
 /-- The set of all `Sym2 α` elements on the diagonal. -/
-def diagSet : Set (Sym2 α) := {e | e.IsDiag}
+def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
-@[simp] lemma mem_diagSet : e ∈ diagSet ↔ e.IsDiag := .rfl
+@[simp] lemma mem_diagSet : z ∈ diagSet ↔ z.IsDiag := .rfl
 
 @[deprecated mem_diagSet (since := "2025-12-10")]
 theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rfl
