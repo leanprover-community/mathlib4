@@ -234,6 +234,15 @@ theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
   μ.coeFn_univ
 
+@[simp] lemma range_toFiniteMeasure :
+    range toFiniteMeasure = {μ : FiniteMeasure Ω | μ.mass = 1} := by
+  ext μ
+  simp only [mem_range, mem_setOf_eq]
+  refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
+  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
+  ext s hs
+  rfl
+
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
 
