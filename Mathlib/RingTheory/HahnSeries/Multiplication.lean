@@ -584,10 +584,10 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : R⟦
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
   zero_mul _ := by
     ext
-    simp [coeff_mul]
+    simp
   mul_zero _ := by
     ext
-    simp [coeff_mul]
+    simp
 
 end mul
 
@@ -720,23 +720,22 @@ theorem orderTop_pow_of_nonzero {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrde
       ih, succ_nsmul]
 
 theorem orderTop_nsmul_le_orderTop_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ]
-    [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : HahnSeries Γ R} {n : ℕ} :
+    [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :
     n • x.orderTop ≤ (x ^ n).orderTop := by
   induction n with
   | zero =>
     simp only [zero_smul, pow_zero]
-    by_cases h : (0 : R) = 1
-    · have : Subsingleton R := subsingleton_iff_zero_eq_one.mp h
+    by_cases h : NeZero (1 : R)
+    · simp
+    · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp fun _ ↦ h NeZero.one
       simp
-    · haveI : Nontrivial R := nontrivial_of_ne 0 1 h
-      rw [orderTop_one]
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
-      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by
-        exact add_le_add_right ih (1 • x.orderTop)
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
+        add_le_add_left ih (1 • x.orderTop)
       (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
-      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := by exact orderTop_add_le_mul
+      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring R⟦Γ⟧ where
@@ -755,7 +754,7 @@ theorem orderTop_prod_le_sum {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrdered
   · rw [sum_empty, prod_empty, ← single_zero_one]
     exact LE.le.trans (Preorder.le_refl 0) orderTop_single_le
   · rw [sum_cons, prod_cons]
-    exact (add_le_add_left ih (x a).orderTop).trans orderTop_add_le_mul
+    exact (add_le_add_right ih (x a).orderTop).trans orderTop_add_le_mul
 
 theorem order_prod_le_sum {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     {α : Type*} [CommSemiring R] {x : α → HahnSeries Γ R} {s : Finset α}
@@ -764,7 +763,7 @@ theorem order_prod_le_sum {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCan
   refine cons_induction ?_ (fun a t ha ih => ?_) s
   · simp only [sum_empty, prod_empty, order_one, le_refl]
   · rw [sum_cons, prod_cons]
-    refine (add_le_add_left ih (x a).order).trans (order_add_le_mul ?_)
+    refine (add_le_add_right ih (x a).order).trans (order_add_le_mul ?_)
     rw [← prod_cons ha]
     exact hx _
 
@@ -776,24 +775,6 @@ instance [NonUnitalCommRing R] : NonUnitalCommRing R⟦Γ⟧ where
 instance [CommRing R] : CommRing R⟦Γ⟧ where
 
 end Ring
-
-theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
-    [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :
-    n • x.orderTop ≤ (x ^ n).orderTop := by
-  induction n with
-  | zero =>
-    simp only [zero_smul, pow_zero]
-    by_cases h : NeZero (1 : R)
-    · simp
-    · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp fun _ ↦ h NeZero.one
-      simp
-  | succ n ih =>
-    rw [add_nsmul, pow_add]
-    calc
-      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by gcongr
-      (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
-      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
-      (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 theorem orderTop_self_sub_one_pos_iff [LinearOrder Γ] [Zero Γ] [NonAssocRing R] [Nontrivial R]
     (x : R⟦Γ⟧) :
@@ -932,7 +913,7 @@ def rightTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] 
         isPWO_support' := by
           refine Set.IsPWO.mono ((of R).symm x).isPWO_support ?_
           intro g hg
-          simp_all only [mem_support, ne_eq, HahnSeries.mem_support]
+          simp_all only [Function.mem_support, ne_eq, HahnSeries.mem_support]
           contrapose! hg
           exact hg ▸ zero_tmul U v }
       map_add' := by
@@ -959,7 +940,7 @@ def leftTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
         isPWO_support' := by
           refine Set.IsPWO.mono ((of R).symm x).isPWO_support ?_
           intro g hg
-          simp_all only [mem_support, ne_eq, HahnSeries.mem_support]
+          simp_all only [Function.mem_support, ne_eq, HahnSeries.mem_support]
           contrapose! hg
           exact hg ▸ tmul_zero V u }
       map_add' := by

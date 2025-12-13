@@ -327,30 +327,6 @@ theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (
   simp only [leadingCoeff_of_ne_zero hs, coeff_hsum, untop_orderTop_of_ne_zero hs, this]
   rw [finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
 
-theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hg' : g' ∈ s.hsum.support) : g ≤ g' := by
-  rw [mem_support, coeff_hsum_eq_sum] at hg'
-  obtain ⟨i, _, hi⟩ := Finset.exists_ne_zero_of_sum_ne_zero hg'
-  exact hg i g' hi
-
-theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
-    s.hsum.orderTop = g :=
-  orderTop_eq_of_le (ne_of_eq_of_ne (by rw [coeff_hsum, finsum_eq_single (fun i ↦ (s i).coeff g) a
-    hna]) (coeff_orderTop_ne ha.symm)) fun _ hg' => le_hsum_support_mem hg hg'
-
-theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
-    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
-    s.hsum.leadingCoeff = (s a).coeff g := by
-  have := hsum_orderTop_of_le ha hg hna
-  rw [orderTop] at this
-  have hs : s.hsum ≠ 0 := by
-    by_contra h
-    simp [h] at this
-  simp only [hs, ↓reduceDIte, WithTop.coe_eq_coe] at this
-  simp only [leadingCoeff_of_ne_zero hs, coeff_hsum, untop_orderTop_of_ne_zero hs, this]
-  rw [finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
-
 end AddCommMonoid
 
 section AddCommGroup

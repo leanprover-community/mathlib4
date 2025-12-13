@@ -116,16 +116,18 @@ instance [CommGroup α] [CommGroup β] : CommGroup (α ×ᵣ β) where
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
     [CommMonoid β] [PartialOrder β] [MulLeftStrictMono β] :
     IsOrderedMonoid (α ×ᵣ β) where
-  mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
-    (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    (fun hxy => le_iff.2 <| Or.inr
-      ⟨by simp only [ofRevLex_mul, snd_mul, hxy.1],  mul_le_mul_left' hxy.2 _⟩)
+  mul_le_mul_left _ _ hxy z :=
+    (le_iff.1 hxy).elim
+      (fun hxy => left _ _ <| mul_lt_mul_left hxy (ofRevLex z).2)
+      (fun hxy => le_iff.2 <| Or.inr
+      ⟨by simp only [ofRevLex_mul, snd_mul, hxy.1],
+        (by rw [ofRevLex_mul, fst_mul]; exact mul_le_mul_left hxy.2 (ofRevLex z).1)⟩)
 
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
     [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (α ×ᵣ β) where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
   le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)

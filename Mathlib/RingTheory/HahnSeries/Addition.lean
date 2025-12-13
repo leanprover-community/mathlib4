@@ -91,10 +91,6 @@ theorem single_smul {g : Γ} {r : R} {s : V} : single g (r • s) = r • single
   · simp [h]
   · simp [coeff_single_of_ne (fun a ↦ h a.symm)]
 
-theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
-    x.orderTop ≤ (r • x).orderTop :=
-  le_of_not_gt <| orderTop_smul_not_lt r x
-
 theorem truncLT_smul [DecidableLT Γ] (c : Γ) (r : R) (x : V⟦Γ⟧) :
     truncLT c (r • x) = r • truncLT c x := by ext; simp
 
@@ -416,12 +412,6 @@ theorem leadingCoeff_neg {x : R⟦Γ⟧} : (-x).leadingCoeff = -x.leadingCoeff :
   obtain rfl | hx := eq_or_ne x 0 <;> simp [leadingCoeff_of_ne_zero, *]
 
 @[simp]
-theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
-  cases n with
-  | ofNat n => simp [Int.ofNat_eq_natCast, natCast_zsmul]
-  | negSucc _ => simp [negSucc_zsmul]
-
-@[simp]
 theorem zsmul_coeff {x : R⟦Γ⟧} {n : ℤ} : (n • x).coeff = n • x.coeff := by
   cases n with
   | ofNat n => simp [Int.ofNat_eq_natCast, natCast_zsmul]
@@ -452,7 +442,7 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧}
 theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
     (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
     (x - y).orderTop ≠ g := by
-  refine orderTop_ne_of_coeff_zero ?_
+  refine orderTop_ne_of_coeff_eq_zero ?_
   have hx : x ≠ 0 := by
     rw [← orderTop_ne_top, hxg]
     exact WithTop.coe_ne_top
