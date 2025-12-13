@@ -14,7 +14,18 @@ public import Mathlib.Data.Matrix.Cartan
 
 This file provides the Serre construction of Lie algebras from Cartan matrices.
 Given a Cartan matrix `A`, we construct a Lie algebra as a quotient of the free Lie algebra
-on generators `{H_i, E_i, F_i}` by the Serre relations.
+on generators `{H_i, E_i, F_i}` by the Serre relations:
+$$
+\begin{align}
+  [H_i, H_j] &= 0\\
+  [E_i, F_i] &= H_i\\
+  [E_i, F_j] &= 0 \quad\text{if $i \ne j$}\\
+  [H_i, E_j] &= A_{ij}E_j\\
+  [H_i, F_j] &= -A_{ij}F_j\\
+  ad(E_i)^{1 - A_{ij}}(E_j) &= 0 \quad\text{if $i \ne j$}\\
+  ad(F_i)^{1 - A_{ij}}(F_j) &= 0 \quad\text{if $i \ne j$}\\
+\end{align}
+$$
 
 ## Main definitions
 
