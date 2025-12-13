@@ -213,6 +213,29 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
   cases hf hw'.symm
   rw [hv'.2 w' hw]
 
+lemma IsMatching.matching_restricted {G' : Subgraph G} (hM : M.IsMatching) (hle : M ≤ G') :
+    (Subgraph.restrict (G' := G') M).IsMatching := by
+  rintro ⟨v, hvG'⟩ hvM
+  obtain ⟨w, hadj, hw⟩ := hM hvM
+  suffices h : ∀ u ∈ G'.verts, G'.Adj v u → M.Adj v u → u = w from
+    ⟨⟨w, hle.left <| M.edge_vert hadj.symm⟩, ⟨⟨hle.right hadj, hadj⟩, by simpa using h⟩⟩
+  intro u _ _ hvuM
+  exact hw u hvuM
+
+lemma isMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, w} ∧ M.Adj v w) :
+    M.IsMatching := by
+  obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
+  intro a ha
+  simp_all
+  suffices he : ∃ b : V, M.Adj a b from by
+    obtain ⟨b, hadj⟩ := he
+    refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
+    have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
+    have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
+    cases hb <;> cases hb' <;> rcases ha
+    all_goals (simp_all <;> exfalso <;> exact G.loopless _ <| M.adj_sub (by assumption))
+  exact Or.elim ha (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
+
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
