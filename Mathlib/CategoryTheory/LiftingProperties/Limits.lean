@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y Z W : C}
+variable {C : Type*} [Category* C] {X Y Z W : C}
   {f : X ⟶ Y} {s : X ⟶ Z} {g : Z ⟶ W} {t : Y ⟶ W}
 
 lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)
