@@ -5,6 +5,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Transvection
 import Qq
 
 set_option linter.style.commandStart false
@@ -189,3 +190,24 @@ example (ι : Type*) [Inhabited ι] : Matrix.replicateCol ι (fun (_ : Fin 3) =>
   rfl
 
 end Matrix
+
+section GaussPivot
+
+open Matrix
+
+example {r : ℕ} {𝕜 : Type*} [Field 𝕜]
+    (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜):
+    ((Matrix.Pivot.listTransvecCol M).prod * M * (Matrix.Pivot.listTransvecRow M).prod)
+        (Sum.inr ()) (Sum.inr ())
+      = M (Sum.inr ()) (Sum.inr ()) := by
+  simp [Matrix.Pivot.listTransvecCol_mul_mul_listTransvecRow_pivot]
+
+example {r : ℕ} {𝕜 : Type*} [Field 𝕜]
+    (M : Matrix (Fin r ⊕ Unit) (Fin r ⊕ Unit) 𝕜)
+    (h : M (Sum.inr ()) (Sum.inr ()) ≠ 0) :
+    det M =
+      det (Matrix.toBlocks₁₁ ((Matrix.Pivot.listTransvecCol M).prod * M
+        * (Matrix.Pivot.listTransvecRow M).prod)) * M (Sum.inr ()) (Sum.inr ()) := by
+  simpa using Matrix.Pivot.det_eq_detTopLeft_mul_pivot (M := M) h
+
+end GaussPivot
