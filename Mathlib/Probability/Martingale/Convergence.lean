@@ -107,7 +107,7 @@ submartingale converges to its `limitProcess` almost everywhere.
 -/
 
 
-/-- If a stochastic process has bounded upcrossing from below `a` to above `b`,
+/-- If a stochastic process has a finite number of upcrossings from below `a` to above `b`,
 then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
@@ -265,7 +265,7 @@ equivalence is provided by `MeasureTheory.uniformIntegrable_iff`.
 (b) follows since given $n$, we have for all $m \ge n$,
 $$
   \|f_n - \mathbb{E}[g \mid \mathcal{F}_n]\|_1 =
-    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|\|f_m - g\|_1.
+    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|f_m - g\|_1.
 $$
 Thus, taking $m \to \infty$ provides the almost everywhere equality.
 
@@ -277,12 +277,12 @@ $\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
 $\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
 inequality, we have for all $n$,
 $$
-  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb|g| < \delta,
+  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb{E}|h| < \delta,
 $$
 we have for sufficiently large $\lambda$, for all $n$,
 $$
   \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
-    \mathbb|g|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
+    \mathbb{E}|h|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
 $$
 implying $(f_n)_n$ is uniformly integrable. Now, to prove $f_n \to h$ almost everywhere and in
 L¹, it suffices to show that $h = g$ almost everywhere where $g$ is the almost everywhere and L¹
@@ -292,7 +292,7 @@ $$
   \mathbb{E}g\mathbf{1}_s = \mathbb{E}[\mathbb{E}[g \mid \mathcal{F}_n]\mathbf{1}_s] =
     \mathbb{E}[\mathbb{E}[h \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}h\mathbf{1}_s
 $$
-where $\mathbb{E}[g \mid \mathcal{F}_n = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
+where $\mathbb{E}[g \mid \mathcal{F}_n] = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
 by part (b); the equality also holds for all $s \in \mathcal{F}_\infty$ by Dynkin's theorem.
 Thus, as both $h$ and $g$ are $\mathcal{F}_\infty$-measurable, $h = g$ almost everywhere as
 required.

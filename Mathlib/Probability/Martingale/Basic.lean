@@ -33,7 +33,7 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
 
 ### Results
 
-* `MeasureTheory.martingale_condExp f ℱ μ`: the sequence `fun i => μ[f | ℱ i, ℱ.le i])` is a
+* `MeasureTheory.martingale_condExp f ℱ μ`: the sequence `fun i => μ[f | ℱ i]` is a
   martingale with respect to `ℱ` and `μ`.
 
 -/
