@@ -1107,6 +1107,60 @@ theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
     μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
   simpa using K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
 
+/-- If a set has positive `s`-dimensional Hausdorff measure, then it has an accumulation point. -/
+theorem exists_accPt_of_pos_hausdorffMeasure {n : ℕ} {s : ℝ} {E : Set (EuclideanSpace ℝ (Fin n))}
+    [MeasurableSpace (EuclideanSpace ℝ (Fin n))] [BorelSpace (EuclideanSpace ℝ (Fin n))]
+    (hs : 0 < s) (hE : 0 < μH[s] E) : ∃ x, AccPt x (𝓟 E) := by
+  by_contra! h
+  have h_discrete : DiscreteTopology E := by
+    have h_isolated : ∀ x ∈ E, ∃ U : Set (EuclideanSpace ℝ (Fin n)), 
+    IsOpen U ∧ x ∈ U ∧ U ∩ E = {x} := by
+      intro x hx
+      specialize h x
+      rw [accPt_iff_frequently] at h
+      simp_all only [ne_eq, not_frequently, not_and]
+      rw [Metric.eventually_nhds_iff] at h
+      simp_all only [gt_iff_lt]
+      obtain ⟨w, h⟩ := h
+      obtain ⟨left, right⟩ := h
+      exact ⟨Metric.ball x w, Metric.isOpen_ball, Metric.mem_ball_self left,
+        Set.eq_singleton_iff_unique_mem.mpr ⟨⟨Metric.mem_ball_self left, hx⟩,
+        fun y hy => Classical.not_not.1 fun h => right hy.1 (by simp_all only [dist_self,
+          mem_inter_iff, not_false_eq_true]) hy.2⟩⟩
+    refine discreteTopology_iff_isOpen_singleton.mpr ?_
+    intro x
+    specialize h_isolated x x.2
+    obtain ⟨val, property⟩ := x
+    obtain ⟨w, h_1⟩ := h_isolated
+    obtain ⟨left, right⟩ := h_1
+    obtain ⟨left_1, right⟩ := right
+    simp_all only
+    rw [Set.eq_singleton_iff_unique_mem] at right
+    simp_all only [mem_inter_iff, and_self, and_imp, true_and]
+    exact ⟨w, left, by
+      ext x : 1
+      simp_all only [mem_preimage, mem_singleton_iff]
+      obtain ⟨val_1, property_1⟩ := x
+      simp_all only [Subtype.mk.injEq]
+      apply Iff.intro
+      · intro a
+        simp_all only
+      · intro a
+        subst a
+        simp_all only⟩
+  have h_countable : Countable E := countable_of_Lindelof_of_discrete
+  have h_hausdorff_zero : ∀ x ∈ E, μH[s] {x} = 0 := fun x _ => by
+    rw [MeasureTheory.Measure.hausdorffMeasure_apply]
+    refine le_antisymm ?_ (zero_le _)
+    refine iSup_le fun r => iSup_le fun hr => ?_
+    apply iInf_le_of_le fun _ => {x}; simp [EMetric.diam_singleton]
+    exact hs
+  have : μH[s] E = 0 := by
+    convert MeasureTheory.measure_iUnion_null fun x : E => h_hausdorff_zero x x.2
+    simp_all only [countable_coe_iff, iUnion_singleton_eq_range, Subtype.range_coe_subtype,
+      setOf_mem_eq]
+  exact absurd this (ne_of_gt hE)
+
 end Geometric
 
 end MeasureTheory
