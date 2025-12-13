@@ -120,7 +120,7 @@ theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) 
   exacts [(toEuclidean (E := G)).contDiff.comp hf,
     (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
 
-lemma image_closedBall_eq_metric_closedBall [Nontrivial G] (x : G) (r : ℝ) :
+lemma image_closedBall_eq_metric_closedBall (x : G) (r : ℝ) :
   toEuclidean '' Euclidean.closedBall x r = Metric.closedBall (toEuclidean x) r := by
   simp only [Euclidean.closedBall, Euclidean.dist]
   apply Set.eq_of_subset_of_subset
