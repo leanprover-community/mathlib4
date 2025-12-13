@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Stepan Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Stepan Nesterov
+Authors: Stepan Nesterov
 -/
 module
 
