@@ -185,3 +185,11 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
     cases n with
     | ofNat => simp [mul_smul, Nat.cast_smul_eq_nsmul]
     | negSucc => simp [mul_smul, add_smul, Nat.cast_smul_eq_nsmul]
+
+variable (M) in
+/-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
+zero as well. Usually `M` is an `R`-algebra. -/
+lemma CharZero.of_module [Semiring R] [AddCommMonoidWithOne M] [CharZero M] [Module R M] :
+    CharZero R := by
+  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
+  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
