@@ -132,7 +132,7 @@ lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
     using hf2
 
 @[to_additive]
-lemma multipliable_symmetricIco_of_multiplible_symmetricIcc
+lemma multipliable_symmetricIco_of_multipliable_symmetricIcc
     (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (symmetricIco ℤ) :=
   (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).multipliable
