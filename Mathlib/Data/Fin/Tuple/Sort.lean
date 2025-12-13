@@ -121,7 +121,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     apply hw.ne'
     have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by lia
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by omega
     rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h
@@ -139,15 +139,15 @@ theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm).eq_of_pairwise'
-      hfσ.sortedLE_ofFn.pairwise hfτ.sortedLE_ofFn.pairwise
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
 
 /-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
 theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm).eq_of_pairwise'
-      hfσ.sortedGE_ofFn.pairwise hfτ.sortedGE_ofFn.pairwise
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
 
@@ -198,5 +198,15 @@ theorem antitone_pair_of_not_sorted' (h : f ∘ σ ≠ f ∘ sort f) :
 entries. -/
 theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j ∧ f j < f i :=
   antitone_pair_of_not_sorted' (id h : f ∘ Equiv.refl _ ≠ _)
+
+/-- The sorted version of a permutation `σ` is its inverse `σ⁻¹`. -/
+@[simp]
+theorem sort_of_perm (σ : Equiv.Perm (Fin n)) :
+    sort σ = σ⁻¹ := by
+  apply Eq.symm (eq_sort_iff.2 ⟨?_, ?_⟩)
+  · intro _ _ _
+    simpa only [Equiv.Perm.coe_inv, Function.comp_apply, Equiv.apply_symm_apply]
+  · intros
+    simp_all [(Equiv.bijective σ⁻¹).1 ((Equiv.bijective σ).1 _)]
 
 end Tuple
