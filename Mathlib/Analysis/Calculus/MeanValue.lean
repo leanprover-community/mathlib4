@@ -143,7 +143,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
   have Hr : ∀ x ∈ Icc a b, ∀ r > 0, f x ≤ B x + r * (x - a) := fun x hx r hr => by
     apply image_le_of_liminf_slope_right_lt_deriv_boundary' hf bound
     · rwa [sub_self, mul_zero, add_zero]
-    · exact hB.add (continuousOn_const.mul (continuousOn_id.sub continuousOn_const))
+    · exact hB.add (ContinuousOn.const.mul (continuousOn_id.sub ContinuousOn.const))
     · intro x hx
       exact (hB' x hx).add (((hasDerivWithinAt_id x (Ici x)).sub_const a).const_mul r)
     · intro x _ _
@@ -310,7 +310,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
     (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ C) : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
   let g x := f x - f a
-  have hg : ContinuousOn g (Icc a b) := hf.sub continuousOn_const
+  have hg : ContinuousOn g (Icc a b) := hf.sub ContinuousOn.const
   have hg' : ∀ x ∈ Ico a b, HasDerivWithinAt g (f' x) (Ici x) x := by
     intro x hx
     simp [g, hf' x hx]
