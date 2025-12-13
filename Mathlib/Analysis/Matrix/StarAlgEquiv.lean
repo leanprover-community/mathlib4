@@ -12,8 +12,8 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.UnitaryGroup
 
-import Mathlib.Algebra.Central.Matrix
 import Mathlib.Algebra.Central.Basic
+import Mathlib.Algebra.Central.Matrix
 import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
