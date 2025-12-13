@@ -60,12 +60,12 @@ section ArchimedeanOrder
 variable {M : Type*}
 
 variable (M) in
-/-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
+/-- Type synonym to equip an ordered group with a new `Preorder` defined by the infinitesimal order
 of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`, or more precisely,
 `∀ n, |b|ₘ ^ n < |a|ₘ`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
 in this order. -/
 @[to_additive ArchimedeanOrder
-/-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
+/-- Type synonym to equip an ordered group with a new `Preorder` defined by the infinitesimal order
 of elements. `a` is said less than `b` if `b` is infinitesimal comparing to `a`, or more precisely,
 `∀ n, n • |b| < |a|`. If `a` and `b` are neither infinitesimal to each other, they are equivalent
 in this order. -/]

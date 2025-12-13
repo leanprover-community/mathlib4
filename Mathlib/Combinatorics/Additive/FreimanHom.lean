@@ -416,8 +416,8 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
   · simp [← bot_eq_zero]
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
   convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
-  · simp [lt_def, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
-      aux hm hkmn']
+  · simp only [Nat.cast_add, Nat.cast_one, mem_Iio, lt_def, mem_Iic, le_iff_val_le_val,
+      val_natCast, aux hm hkmn', Nat.mod_eq_of_lt]
     simp_rw [← Nat.cast_add_one]
     rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]
   · simp [Nat.lt_succ_iff]
