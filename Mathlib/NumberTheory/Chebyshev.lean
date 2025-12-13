@@ -46,7 +46,6 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 
 ## TODOS
 
-- Upstream the results relating `theta` and `psi` to the prime counting function.
 - Prove Chebyshev's lower bound.
 -/
 @[expose] public section
