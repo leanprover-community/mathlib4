@@ -76,11 +76,7 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
--- TODO: This is nonsense. A locally finite order is never densely ordered;
--- See `not_lt_of_denselyOrdered_of_locallyFinite`
-@[simp]
-theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
-  rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
+
 
 @[simp]
 theorem Icc_eq_empty_iff : Icc a b = ∅ ↔ ¬a ≤ b := by
@@ -94,11 +90,7 @@ theorem Ico_eq_empty_iff : Ico a b = ∅ ↔ ¬a < b := by
 theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
 
--- TODO: This is nonsense. A locally finite order is never densely ordered
--- See `not_lt_of_denselyOrdered_of_locallyFinite`
-@[simp]
-theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
-  rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
+
 
 alias ⟨_, Icc_eq_empty⟩ := Icc_eq_empty_iff
 
@@ -258,6 +250,23 @@ lemma _root_.not_lt_of_denselyOrdered_of_locallyFinite [DenselyOrdered α] (a b 
   refine ih _ ?_ c hac rfl
   exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
 
+omit [LocallyFiniteOrder α] in
+lemma Ioo_eq_empty_of_denselyOrdered_of_locallyFinite
+    [DenselyOrdered α] [LocallyFiniteOrder α] {a b : α} :
+    Ioo a b = ∅ := by
+  by_contra h_ne_empty
+  obtain ⟨x, hx_mem_Ioo⟩ := Finset.nonempty_of_ne_empty h_ne_empty
+  obtain ⟨hx_gt_a, _⟩ := Finset.mem_Ioo.mp hx_mem_Ioo
+  exact not_lt_of_denselyOrdered_of_locallyFinite a x hx_gt_a
+
+@[simp]
+theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ False := by
+  simp [Ioo_eq_empty_of_denselyOrdered_of_locallyFinite]
+
+@[simp]
+theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ True := by
+  simp [Ioo_eq_empty_of_denselyOrdered_of_locallyFinite]
+
 variable (a)
 
 theorem Ico_self : Ico a a = ∅ :=
@@ -269,7 +278,7 @@ theorem Ioc_self : Ioc a a = ∅ :=
 theorem Ioo_self : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
-variable {a}
+
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
@@ -314,7 +323,7 @@ theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] 
     [DecidablePred (· < c)] (h : a < c) : {x ∈ Iic a | x < c} = Iic a :=
   filter_true_of_mem fun _ hx => lt_of_le_of_lt (mem_Iic.1 hx) h
 
-variable (a b) [Fintype α]
+variable [Fintype α]
 
 theorem filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
     ({j | a < j ∧ j < b} : Finset _) = Ioo a b := by ext; simp
