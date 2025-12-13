@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -15,6 +15,9 @@ public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.FieldSimp
+
+import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+
 /-!
 # Determinant of families of vectors
 

@@ -6,11 +6,12 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labe
 module
 
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+
+import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 
 /-!
 # Trace of a linear map
