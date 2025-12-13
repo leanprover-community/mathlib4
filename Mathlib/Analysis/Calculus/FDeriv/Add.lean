@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Tactic.ToFun
 
 /-!
 # Additive operations on derivatives
@@ -47,77 +48,41 @@ variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [Continu
 
 /-! ### Derivative of a function multiplied by a constant -/
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_const_smul (h : HasStrictFDerivAt f f' x) (c : R) :
-    HasStrictFDerivAt (fun x => c • f x) (c • f') x :=
-  (c • (1 : F →L[𝕜] F)).hasStrictFDerivAt.comp x h
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.const_smul (h : HasStrictFDerivAt f f' x) (c : R) :
     HasStrictFDerivAt (c • f) (c • f') x :=
-  h.fun_const_smul c
+  (c • (1 : F →L[𝕜] F)).hasStrictFDerivAt.comp x h
 
-theorem HasFDerivAtFilter.fun_const_smul (h : HasFDerivAtFilter f f' x L) (c : R) :
-    HasFDerivAtFilter (fun x => c • f x) (c • f') x L :=
-  (c • (1 : F →L[𝕜] F)).hasFDerivAtFilter.comp x h tendsto_map
-
+@[to_fun]
 theorem HasFDerivAtFilter.const_smul (h : HasFDerivAtFilter f f' x L) (c : R) :
     HasFDerivAtFilter (c • f) (c • f') x L :=
-  h.fun_const_smul c
+  (c • (1 : F →L[𝕜] F)).hasFDerivAtFilter.comp x h tendsto_map
 
-@[fun_prop]
-nonrec theorem HasFDerivWithinAt.fun_const_smul (h : HasFDerivWithinAt f f' s x) (c : R) :
-    HasFDerivWithinAt (fun x => c • f x) (c • f') s x :=
-  h.const_smul c
-
-@[fun_prop]
-nonrec theorem HasFDerivWithinAt.const_smul (h : HasFDerivWithinAt f f' s x) (c : R) :
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivWithinAt.const_smul (h : HasFDerivWithinAt f f' s x) (c : R) :
     HasFDerivWithinAt (c • f) (c • f') s x :=
-  h.const_smul c
+  HasFDerivAtFilter.const_smul h c
 
-@[fun_prop]
-nonrec theorem HasFDerivAt.fun_const_smul (h : HasFDerivAt f f' x) (c : R) :
-    HasFDerivAt (fun x => c • f x) (c • f') x :=
-  h.const_smul c
-
-@[fun_prop]
-nonrec theorem HasFDerivAt.const_smul (h : HasFDerivAt f f' x) (c : R) :
+@[to_fun (attr := fun_prop)]
+theorem HasFDerivAt.const_smul (h : HasFDerivAt f f' x) (c : R) :
     HasFDerivAt (c • f) (c • f') x :=
-  h.const_smul c
+  HasFDerivAtFilter.const_smul h c
 
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_const_smul (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
-    DifferentiableWithinAt 𝕜 (fun y => c • f y) s x :=
-  (h.hasFDerivWithinAt.const_smul c).differentiableWithinAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.const_smul (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
     DifferentiableWithinAt 𝕜 (c • f) s x :=
-  h.fun_const_smul c
+  (h.hasFDerivWithinAt.const_smul c).differentiableWithinAt
 
-@[fun_prop]
-theorem DifferentiableAt.fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
-    DifferentiableAt 𝕜 (fun y => c • f y) x :=
-  (h.hasFDerivAt.const_smul c).differentiableAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableAt.const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     DifferentiableAt 𝕜 (c • f) x :=
   (h.hasFDerivAt.const_smul c).differentiableAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_const_smul (h : DifferentiableOn 𝕜 f s) (c : R) :
-    DifferentiableOn 𝕜 (fun y => c • f y) s := fun x hx => (h x hx).const_smul c
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.const_smul (h : DifferentiableOn 𝕜 f s) (c : R) :
     DifferentiableOn 𝕜 (c • f) s := fun x hx => (h x hx).const_smul c
 
-@[fun_prop]
-theorem Differentiable.fun_const_smul (h : Differentiable 𝕜 f) (c : R) :
-    Differentiable 𝕜 fun y => c • f y := fun x => (h x).const_smul c
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Differentiable.const_smul (h : Differentiable 𝕜 f) (c : R) :
     Differentiable 𝕜 (c • f) := fun x => (h x).const_smul c
 
@@ -198,17 +163,10 @@ section Add
 /-! ### Derivative of the sum of two functions -/
 
 
-@[fun_prop]
-nonrec theorem HasStrictFDerivAt.fun_add (hf : HasStrictFDerivAt f f' x)
-    (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
-    simp only [map_sub, add_apply]
-    abel
-
-@[fun_prop]
-nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
-    (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (f + g) (f' + g') x :=
-  hf.fun_add hg
+@[to_fun (attr := fun_prop)]
+theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
+    HasStrictFDerivAt (f + g) (f' + g') x :=
+  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left <| by grind [Pi.add_apply, add_apply]
 
 theorem HasFDerivAtFilter.fun_add (hf : HasFDerivAtFilter f f' x L)
     (hg : HasFDerivAtFilter g g' x L) : HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
