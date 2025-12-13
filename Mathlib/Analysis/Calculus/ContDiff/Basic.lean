@@ -1522,3 +1522,5 @@ theorem ContDiff.iterate_deriv' (n : ℕ) :
   | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
 
 end deriv
+
+set_option linter.style.longLine 1700
