@@ -75,6 +75,14 @@ are continuous on its closure. We prove the following theorems.
 - `Complex.eqOn_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `s`.
 
+We also provide versions of the above four theorems for functions that vanish at infinity on a
+potentially unbounded set in a finite-dimensional space:
+
+- `Complex.exists_mem_frontier_isMaxOn_norm_of_zero_at_infty`
+- `Complex.norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty`
+- `Complex.eqOn_closure_of_eqOn_frontier_of_zero_at_infty`
+- `Complex.eqOn_of_eqOn_frontier_of_zero_at_infty`
+
 ## Tags
 
 maximum modulus principle, complex analysis
@@ -431,5 +439,68 @@ theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounde
 theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf : DiffContOnCl ℂ f U)
     (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) : EqOn f g U :=
   (eqOn_closure_of_eqOn_frontier hU hf hg hfg).mono subset_closure
+
+/-- **Maximum modulus principle**: if `f : E → F` is complex differentiable and vanishing at
+infinity on a nonempty set `U ≠ univ` and is continuous on its closure, then there exists a point
+`z ∈ frontier U` such that `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
+theorem exists_mem_frontier_isMaxOn_norm_of_zero_at_infty [FiniteDimensional ℂ E]
+    {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hU : U ≠ univ) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
+    ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
+  obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w := by
+    by_cases h_triv : ∀ x ∈ closure U, f x = 0
+    case pos =>
+      obtain ⟨x₀, hx₀⟩ := hne
+      exact ⟨x₀, ⟨Set.mem_of_subset_of_mem subset_closure hx₀, isMaxOn_iff.mpr <| by aesop⟩⟩
+    case neg =>
+      push_neg at h_triv
+      obtain ⟨x₀, hx₀, hx₀_ne_zero⟩ := h_triv
+      refine hd.continuousOn.norm.exists_isMaxOn' isClosed_closure hx₀ ?_
+      refine htendsto.eventually (p := fun z => ‖z‖ ≤ (norm ∘ f) x₀) ?_
+      exact tendsto_norm_zero.eventually (eventually_le_nhds (norm_pos_iff.mpr hx₀_ne_zero))
+  rw [closure_eq_interior_union_frontier, mem_union, or_comm] at hwU
+  rcases hwU with (hwU | hwU); · exact ⟨w, hwU, hle⟩
+  rcases exists_mem_frontier_infDist_compl_eq_dist hwU (by aesop) with ⟨z, hzU, hzw⟩
+  refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
+  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
+  rw [dist_comm, ← hzw]
+  exact ball_infDist_compl_subset.trans interior_subset
+
+/-- **Maximum modulus principle**: if `f : E → F` is complex differentiable and vanishing at
+infinity on a set `U ≠ univ` and is continuous on its closure, and `‖f z‖ ≤ C` for any
+`z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
+theorem norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty [FiniteDimensional ℂ E]
+    {f : E → F} {U : Set E} (htendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hU : U ≠ univ) (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
+    (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
+  have hne : U.Nonempty := closure_nonempty_iff.mp ⟨z, hz⟩
+  obtain ⟨y, ⟨hy₁, hy₂⟩⟩ := exists_mem_frontier_isMaxOn_norm_of_zero_at_infty htendsto hU hne hd
+  rw [isMaxOn_iff] at hy₂
+  calc ‖f z‖ ≤ ‖f y‖ := hy₂ z hz
+    _ ≤ C := hC y hy₁
+
+/-- If two complex differentiable functions `f g : E → F` that vanish at infinity are equal on the
+boundary of a bounded set `U`, then they are equal on `closure U`. -/
+theorem eqOn_closure_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E]
+    {f g : E → F} {U : Set E} (hf_tendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hg_tendsto : Tendsto g (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hU : U ≠ univ) (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U)
+    (hfg : EqOn f g (frontier U)) : EqOn f g (closure U) := by
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
+  have htendsto : Tendsto (f - g) (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0) := by
+    simpa using hf_tendsto.sub hg_tendsto
+  exact fun z => norm_le_of_forall_mem_frontier_norm_le_of_zero_at_infty htendsto hU
+    (hf.sub hg) fun w hw => by simp [hfg hw]
+
+/-- If two complex differentiable functions `f g : E → F` that vanish at infinity
+are equal on the boundary of a set `U`, then they are equal on `U`. -/
+theorem eqOn_of_eqOn_frontier_of_zero_at_infty [FiniteDimensional ℂ E] {f g : E → F}
+    {U : Set E}
+    (hU : U ≠ univ) (hf_tendsto : Tendsto f (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hg_tendsto : Tendsto g (cocompact E ⊓ 𝓟 (closure U)) (𝓝 0))
+    (hf : DiffContOnCl ℂ f U)
+    (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) : EqOn f g U :=
+  (eqOn_closure_of_eqOn_frontier_of_zero_at_infty hf_tendsto hg_tendsto hU hf hg hfg).mono
+    subset_closure
 
 end Complex
