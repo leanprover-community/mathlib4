@@ -15,9 +15,6 @@ This file provides a `WSeq α` type representing partially defined possibly infi
 (referred here as weak sequences).
 -/
 
--- TODO: fix the errors in this file!
-set_option linter.flexible false
-
 @[expose] public section
 
 namespace Stream'
@@ -426,6 +423,7 @@ theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
     injections
   · apply Stream'.mem_cons_of_mem _ h
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
   generalize e : destruct s = c; intro h
@@ -458,6 +456,7 @@ theorem mem_cons_of_mem {s : WSeq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
 theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
   intro h; have := h; obtain ⟨n, e⟩ := h; revert s; simp only [Stream'.get]
   induction n <;> intro s <;> induction s using WSeq.recOn <;>
@@ -582,6 +581,7 @@ theorem toList'_think (l : List α) (s : WSeq α) :
         | some (some a, s') => Sum.inr (a::l, s')) (l, s)).think :=
   destruct_eq_think <| by simp [think]
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem toList'_map (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
       match Seq.destruct s with
@@ -690,6 +690,7 @@ theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq.mem_map (Option.map f)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 -- The converse is not true without additional assumptions
 theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
   suffices
@@ -731,6 +732,7 @@ theorem exists_of_mem_bind {s : WSeq α} {f : α → WSeq β} {b} (h : b ∈ bin
   let ⟨a, as, e⟩ := exists_of_mem_map tm
   ⟨a, as, by rwa [e]⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_map (f : α → β) (s : WSeq α) :
     destruct (map f s) = Computation.map (Option.map (Prod.map f (map f))) (destruct s) := by
   apply
@@ -751,6 +753,7 @@ def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (
   | none => destruct t
   | some (a, s) => Computation.pure (some (a, append s t))
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_append (s t : WSeq α) :
     destruct (append s t) = (destruct s).bind (destruct_append.aux t) := by
   apply
@@ -771,6 +774,7 @@ def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Opti
   | none => Computation.pure none
   | some (s, S) => (destruct (append s (join S))).think
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_join (S : WSeq (WSeq α)) :
     destruct (join S) = (destruct S).bind destruct_join.aux := by
   apply
@@ -786,6 +790,7 @@ theorem destruct_join (S : WSeq (WSeq α)) :
       induction S using WSeq.recOn <;> simp
       case think S => refine Or.inr ⟨S, rfl, rfl⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by
   apply
