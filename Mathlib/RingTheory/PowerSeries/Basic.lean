@@ -560,6 +560,45 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff φ =
 
 end Semiring
 
+section toSubring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a formal power series `p` and a subring `T` that contains the
+ coefficients of `p`,return the corresponding formal power series
+ whose coefficients are in `T`. -/
+def toSubring : PowerSeries T := mk (fun n => ⟨p.coeff n, hp n⟩)
+
+@[simp]
+theorem coeff_toSubring {n : ℕ} : (p.toSubring T hp).coeff n = p.coeff n := by
+  rw [toSubring, coeff_mk]
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff :=
+  coeff_zero_eq_constantCoeff_apply p
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := by
+  ext n; simp
+
+end toSubring
+
+section ofSubring
+
+variable [Ring R] (T : Subring R) (p : PowerSeries T)
+
+/-- Given a formal power series whose coefficients are in some subring, return
+the formal power series whose coefficients are in the ambient ring. -/
+def ofSubring : PowerSeries R := fun n => (p n : R)
+
+@[simp]
+theorem coeff_ofSubring {n : ℕ} : (ofSubring T p).coeff n = p.coeff n := rfl
+
+@[simp]
+theorem constantCoeff_ofSubring : (ofSubring T p).constantCoeff = p.constantCoeff := rfl
+
+end ofSubring
+
 section CommSemiring
 
 variable [CommSemiring R]

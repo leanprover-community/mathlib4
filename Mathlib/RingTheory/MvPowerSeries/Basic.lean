@@ -549,6 +549,42 @@ theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
 end Map
 
+section toSubring
+
+variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a multivariate formal power series `p` and a subring `T` that contains the
+ coefficients of `p`,return the corresponding multivariate formal power series
+ whose coefficients are in `T`. -/
+def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : σ →₀ ℕ} : (p.toSubring T hp).coeff n = p.coeff n := rfl
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff := rfl
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := rfl
+
+end toSubring
+
+section ofSubring
+
+variable [Ring R] (T : Subring R) (p : MvPowerSeries σ T)
+
+/-- Given a multivariate formal power series whose coefficients are in some subring, return
+the multivariate formal power series whose coefficients are in the ambient ring. -/
+def ofSubring : MvPowerSeries σ R := fun n => (p n : R)
+
+@[simp]
+theorem coeff_ofSubring {n : σ →₀ ℕ} : (ofSubring T p).coeff n = p.coeff n := rfl
+
+@[simp]
+theorem constantCoeff_ofSubring : (ofSubring T p).constantCoeff = p.constantCoeff := rfl
+
+end ofSubring
+
 @[simp]
 theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
     (φ : MvPowerSeries σ R) (f : R →+* S) : φ.map f = 0 ↔ φ = 0 := by
