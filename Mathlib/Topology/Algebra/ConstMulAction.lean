@@ -476,8 +476,9 @@ variable [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : 
   simp_rw [← mem_singleton_iff, ← singleton_inter_nonempty, ← image_singleton]
   exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
 
-@[to_additive] lemma ProperlyDiscontinuousSMul.disjoint_image_nhds
-    [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T) :
+variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, ((γ • ·) '' U ∩ U).Nonempty → γ • x = x := by
   obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
   let Γ₀ := {γ : Γ | ((γ • ·) '' V ∩ V).Nonempty ∧ γ • x ≠ x}
@@ -490,6 +491,12 @@ variable [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : 
   rw [mem_inter_iff, mem_iInter] at hz hγz
   let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
   exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
+    ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
+  convert ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self Γ x using 4
+  rw [← not_imp_not]
+  simp [Set.not_disjoint_iff_nonempty_inter]
 
 end
 

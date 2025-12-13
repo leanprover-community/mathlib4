@@ -152,14 +152,15 @@ variable [ProperlyDiscontinuousSMul G E] [LocallyCompactSpace E] [T2Space E]
 
 @[to_additive] lemma isCoveringMapOn_of_properlyDiscontinuousSMul :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) :=
-  hf.isCoveringMapOn_of_smul_disjoint hfG (ProperlyDiscontinuousSMul.disjoint_image_nhds G)
+  hf.isCoveringMapOn_of_smul_disjoint hfG
+    (ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self G)
 
 @[to_additive] lemma isQuotientCoveringMap_of_properlyDiscontinuousSMul [IsCancelSMul G E] :
     IsQuotientCoveringMap f G where
   __ := hf
   apply_eq_iff_mem_orbit := hfG
   disjoint e :=
-    have ⟨U, heU, hU⟩ := ProperlyDiscontinuousSMul.disjoint_image_nhds G e
+    have ⟨U, heU, hU⟩ := ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self G e
     ⟨U, heU, fun g hg ↦ isCancelSMul_iff_eq_one_of_smul_eq.mp ‹_› _ _ (hU g hg)⟩
 
 omit hf hfG
