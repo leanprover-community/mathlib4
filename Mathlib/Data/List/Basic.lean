@@ -994,6 +994,12 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
 
+@[simp]
+lemma filterMap_none (l : List α) :
+    l.filterMap (fun _ ↦ @Option.none β) = [] := by
+  induction l <;> simp [*]
+
+
 /-! ### filter -/
 
 section Filter
