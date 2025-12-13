@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
@@ -251,5 +251,31 @@ lemma trivialCofibrations_op : trivialCofibrations Cᵒᵖ = (trivialFibrations 
 lemma trivialFibrations_eq_unop : trivialFibrations C = (trivialCofibrations Cᵒᵖ).unop := rfl
 
 end
+
+section ObjectProperty
+
+variable [CategoryWithWeakEquivalences C] {P : ObjectProperty C}
+
+instance : CategoryWithWeakEquivalences P.FullSubcategory where
+  weakEquivalences := (weakEquivalences C).inverseImage P.ι
+
+instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
+    (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
+
+instance [(weakEquivalences C).IsMultiplicative] :
+    (weakEquivalences P.FullSubcategory).IsMultiplicative :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
+
+lemma weakEquivalence_iff_ι_map {X Y : P.FullSubcategory} (f : X ⟶ Y) :
+    WeakEquivalence f ↔ WeakEquivalence (P.ι.map f) := by
+  simp only [weakEquivalence_iff]
+  rfl
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence (P.ι.map f) := by
+  rwa [← weakEquivalence_iff_ι_map]
+
+end ObjectProperty
 
 end HomotopicalAlgebra

@@ -1367,9 +1367,14 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructure
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
+public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma3
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
@@ -2852,6 +2857,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
+public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 public import Mathlib.CategoryTheory.MorphismProperty.Representable
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
