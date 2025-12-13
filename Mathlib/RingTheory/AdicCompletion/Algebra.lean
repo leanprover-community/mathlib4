@@ -411,40 +411,35 @@ end
 
 variable [IsAdicComplete I S]
 
-/--
-When `S` is `I`-adic complete, the canonical map from `S` to
-its `I`-adic completion is an `S`-algebra isomorphism.
--/
-noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
-  __ := ofLinearEquiv I S
-  map_mul' _ _ := by ext; simp
-  commutes' _ := rfl
+/-- `limit` as an algebra isomorphism. -/
+@[simps! symm_apply] noncomputable def limitₐ : AdicCompletion I S ≃ₐ[S] S := by
+  refine .ofLinearEquiv (limit I S) ?_ fun x y ↦ ?_ <;>
+  rw [← LinearEquiv.eq_symm_apply] <;> ext <;> simp [smul_eq_mul]
+
+@[simp] theorem coe_symm_limitₐ : ⇑((limitₐ I).symm) = of I S := rfl
+
+@[simp] theorem toLinearMap_symm_limitₐ : (limitₐ I).symm = of I S := rfl
+
+@[simp] theorem toLinearEquiv_limitₐ : limitₐ I = limit I S := rfl
+
+@[simp] theorem coe_limitₐ : ⇑(limitₐ I) = limit I S := rfl
+
+theorem of_limitₐ (x : AdicCompletion I S) : of I S (limitₐ I x) = x := by simp
+
+theorem limitₐ_of (x : S) : limitₐ I (of I S x) = x := by simp
+
+theorem mk_smul_top_limitₐ (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n • ⊤) (limitₐ I x) = eval I S n x := by
+  simp [smul_eq_mul, eval]
+
+theorem mk_pow_limitₐ (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n) (limitₐ I x) = evalₐ I n x := by
+  rw [← Ideal.Quotient.factor_mk (show I ^ n • ⊤ ≤ I ^ n by simp), mk_smul_top_limitₐ]
+  simp [evalₐ]
 
 @[simp]
-theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
-  rfl
-
-@[simp]
-theorem of_ofAlgEquiv_symm (x : AdicCompletion I S) :
-    of I S ((ofAlgEquiv I).symm x) = x := by
-  simp [ofAlgEquiv]
-
-@[simp]
-theorem ofAlgEquiv_symm_of (x : S) :
-    (ofAlgEquiv I).symm (of I S x) = x := by
-  simp [ofAlgEquiv]
-
-theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
-    Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
-  nth_rw 2 [← of_ofAlgEquiv_symm I x]
-  simp [-of_ofAlgEquiv_symm, eval]
-
-@[simp]
-theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
-    Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
-  simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
-  rw [← mk_smul_top_ofAlgEquiv_symm I n x]
-  simp
+theorem mk_pow_limit (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n) (limit I S x) = evalₐ I n x := mk_pow_limitₐ I n x
 
 @[simp]
 lemma mk_ofAlgEquiv_symm_eq_evalOneₐ (x : AdicCompletion I S) :
