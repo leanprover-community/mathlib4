@@ -197,6 +197,9 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
+protected theorem finite [FiniteDimensional K L] [IsGaloisGroup G K L] : Finite G :=
+  Nat.finite_of_card_ne_zero (card_eq_finrank G K L ▸ Module.finrank_pos.ne')
+
 /-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G K L) (by
