@@ -364,8 +364,137 @@ theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := b
   convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
   rw [map_comap p.primeCompl]
 
+instance isMaximal_map : (p.map (algebraMap R Rₚ)).IsMaximal := by
+  rw [map_eq_maximalIdeal]
+  exact maximalIdeal.isMaximal Rₚ
+
 theorem comap_map_of_isMaximal [P.IsMaximal] [P.LiesOver p] :
     Ideal.comap (algebraMap S Sₚ) (Ideal.map (algebraMap S Sₚ) P) = P :=
   comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver S p Sₚ P).ne_top
+
+section isomorphisms
+
+attribute [local instance] Ideal.Quotient.field
+
+variable {S R : Type*} [CommRing R] (p : Ideal R) [p.IsMaximal]
+variable (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
+
+open IsLocalRing
+
+/-- The isomorphism `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
+`IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field. -/
+noncomputable
+def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
+  refine (Ideal.quotEquivOfEq ?_).trans
+    (RingHom.quotientKerEquivOfSurjective (f := algebraMap R (Rₚ ⧸ maximalIdeal Rₚ)) ?_)
+  · rw [IsScalarTower.algebraMap_eq R Rₚ, ← RingHom.comap_ker,
+      Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
+  · intro x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
+    obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
+    simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
+      Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
+    use x * s'
+    rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
+    have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
+      rw [← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
+      exact s.prop
+    refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
+    rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
+      ← map_mul, ← map_sub, ← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p,
+      mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
+      mul_inv_cancel₀, mul_one, sub_self]
+    rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
+    exact s.prop
+
+@[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
+  equivQuotMaximalIdeal
+
+variable {Sₚ : Type*} [CommRing S] [Algebra R S] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ]
+variable [Algebra Rₚ Sₚ] [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
+variable [IsScalarTower R S Sₚ]
+
+local notation "pS" => Ideal.map (algebraMap R S) p
+local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
+
+lemma comap_map_eq_map :
+    (Ideal.map (algebraMap R Sₚ) p).comap (algebraMap S Sₚ) = pS := by
+  rw [IsScalarTower.algebraMap_eq R S Sₚ, ← Ideal.map_map, eq_comm]
+  apply Ideal.le_comap_map.antisymm
+  intro x hx
+  obtain ⟨α, hα, hαx⟩ : ∃ α ∉ p, α • x ∈ pS := by
+    have ⟨⟨y, s⟩, hy⟩ := (IsLocalization.mem_map_algebraMap_iff
+      (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ).mp hx
+    rw [← map_mul,
+      IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S p.primeCompl)] at hy
+    obtain ⟨c, hc⟩ := hy
+    obtain ⟨α, hα, e⟩ := (c * s).prop
+    refine ⟨α, hα, ?_⟩
+    rw [Algebra.smul_def, e, Submonoid.coe_mul, mul_assoc, mul_comm _ x, hc]
+    exact Ideal.mul_mem_left _ _ y.prop
+  obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ β * α = 1 + γ := by
+    obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
+    refine ⟨β, β * α - 1, ?_, ?_⟩
+    · rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one,
+        map_mul, hβ, inv_mul_cancel₀, sub_self]
+      rwa [Ne, Ideal.Quotient.eq_zero_iff_mem]
+    · rw [add_sub_cancel]
+  have := Ideal.mul_mem_left _ (algebraMap _ _ β) hαx
+  rw [← Algebra.smul_def, smul_smul, hβ, add_smul, one_smul] at this
+  refine (Submodule.add_mem_iff_left pS ?_).mp this
+  rw [Algebra.smul_def]
+  apply Ideal.mul_mem_right
+  exact Ideal.mem_map_of_mem _ hγ
+
+@[deprecated (since := "2025-07-31")] alias
+  _root_.comap_map_eq_map_of_isLocalization_algebraMapSubmonoid := comap_map_eq_map
+
+variable [IsScalarTower R Rₚ Sₚ]
+
+variable (S Sₚ) in
+/--
+The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
+the complement of `p`
+-/
+noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
+    S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
+  haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
+    rw [← map_eq_maximalIdeal p, Ideal.map_map,
+      ← IsScalarTower.algebraMap_eq, Ideal.map_map, ← IsScalarTower.algebraMap_eq]
+  refine (Ideal.quotEquivOfEq ?_).trans
+    (RingHom.quotientKerEquivOfSurjective (f := algebraMap S (Sₚ ⧸ pSₚ)) ?_)
+  · rw [IsScalarTower.algebraMap_eq S Sₚ, Ideal.Quotient.algebraMap_eq, ← RingHom.comap_ker,
+      Ideal.mk_ker, h, Ideal.map_map, ← IsScalarTower.algebraMap_eq, comap_map_eq_map]
+  · intro x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
+      (Algebra.algebraMapSubmonoid S p.primeCompl) x
+    obtain ⟨α, hα : α ∉ p, e⟩ := s.prop
+    obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ α * β = 1 + γ := by
+      obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p α)⁻¹
+      refine ⟨β, α * β - 1, ?_, ?_⟩
+      · rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one,
+          map_mul, hβ, mul_inv_cancel₀, sub_self]
+        rwa [Ne, Ideal.Quotient.eq_zero_iff_mem]
+      · rw [add_sub_cancel]
+    use β • x
+    rw [IsScalarTower.algebraMap_eq S Sₚ (Sₚ ⧸ pSₚ), Ideal.Quotient.algebraMap_eq,
+      RingHom.comp_apply, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
+    rw [h, IsLocalization.mem_map_algebraMap_iff
+      (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
+    refine ⟨⟨⟨γ • x, ?_⟩, s⟩, ?_⟩
+    · rw [Algebra.smul_def]
+      apply Ideal.mul_mem_right
+      exact Ideal.mem_map_of_mem _ hγ
+    simp only
+    rw [mul_comm, mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul,
+      IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
+      hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
+
+@[deprecated (since := "2025-07-31")] alias
+    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotientMapMaximalIdeal
+
+end isomorphisms
 
 end IsLocalization.AtPrime
