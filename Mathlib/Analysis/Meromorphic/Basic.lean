@@ -504,17 +504,6 @@ include hf in
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
-include hf in
-/-- Derivatives of meromorphic functions are meromorphic. -/
-@[to_fun] -- TODO: copy generated doc-string, check statement!
-protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
-
-include hf in
-/-- Iterated derivatives of meromorphic functions are meromorphic. -/
-@[to_fun] -- TODO: copy generated doc-string, check statement!
-theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
-  fun z hz ↦ (hf z hz).iterated_deriv
-
 end arithmetic
 
 include hf in
