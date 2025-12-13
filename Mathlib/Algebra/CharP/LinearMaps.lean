@@ -56,7 +56,7 @@ end Module
 /-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
   of `D` has the same characteristic as `D` -/
 instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
-    CharP (D →ₗ[Subring.center D] D) p :=
+    CharP (D →ₗ[(Subring.center D)] D) p :=
   charP_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
 
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
