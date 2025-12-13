@@ -83,7 +83,7 @@ abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
 instance : Algebra P.Ring S := P.algebra
 
-/-- The designated section of w.r.t. a family of generators. -/
+/-- The designated section w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/

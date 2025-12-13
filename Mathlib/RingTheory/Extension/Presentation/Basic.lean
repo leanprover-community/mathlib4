@@ -24,7 +24,7 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
   1. `rels`: The type of relations.
   2. `relation : relations → MvPolynomial vars R`: The assignment of
      each relation to a polynomial in the generators.
-- `Algebra.Presentation.IsFinite`: A presentation is called finite, if both variables and relations
+- `Algebra.Presentation.IsFinite`: A presentation is called finite if both variables and relations
   are finite.
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
