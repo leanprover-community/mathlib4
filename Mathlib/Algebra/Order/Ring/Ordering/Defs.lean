@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.RingTheory.Ideal.Prime
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Ring orderings
