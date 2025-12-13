@@ -78,7 +78,7 @@ theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surject
       (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
 
 /-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
+@[simps apply]
 def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
   toFun := e.symm.toRingHom.specComap
   invFun := e.toRingHom.specComap
@@ -91,6 +91,8 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
   map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
+
+@[simp] lemma comapEquiv_symm (e : R ≃+* S) : (comapEquiv e).symm = comapEquiv e.symm := rfl
 
 section Pi
 
