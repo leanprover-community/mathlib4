@@ -88,7 +88,7 @@ variable (C1 : Type*) [Category* C1] (C2 : Type*) [Category* C2]
 
 universe a b
 
-variable [Category* (Type a)] [Category (Type b)]
+variable [Category* (Type a)] [Category* (Type b)]
 
 universe c
 

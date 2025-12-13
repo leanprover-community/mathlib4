@@ -2,7 +2,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 
 open CategoryTheory
 
-variable (C : Type) [Category C] (X Y Z W U : C)
+variable (C : Type) [Category* C] (X Y Z W U : C)
 variable (f₁ f₂ : X ⟶ Y) (g g₁ g₂ : Y ⟶ Z) (h : Z ⟶ W) (l : W ⟶ U)
 
 set_option linter.unusedTactic false in

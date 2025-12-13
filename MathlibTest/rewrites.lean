@@ -31,7 +31,7 @@ info: Try this:
   -- no goals
 -/
 #guard_msgs in
-example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
+example [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
   rw?
 
 /--

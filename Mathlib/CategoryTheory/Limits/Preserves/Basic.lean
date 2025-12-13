@@ -703,7 +703,7 @@ section
 open Functor
 
 lemma isIso_app_coconePt_of_preservesColimit
-    {C D J : Type*} [Category C] [Category D] [Category J] (K : J ⥤ C) {L L' : C ⥤ D}
+    {C D J : Type*} [Category* C] [Category* D] [Category* J] (K : J ⥤ C) {L L' : C ⥤ D}
     (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
     [PreservesColimit K L] [PreservesColimit K L'] :
     IsIso (α.app c.pt) := by
