@@ -1044,11 +1044,11 @@ open Functor
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
-  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
+  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).toFunctor.obj f⟩)
     (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
   map := fun g => StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
-      (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
+      (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.Hom.comp_obj])))
     (by
       simp only [StructuredArrow.mk_right]
       generalize_proofs
@@ -1059,15 +1059,15 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
   letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
-    ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
+    ⟨u, ⟨c, (F.map g).toFunctor.obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
   dsimp at fj fi gfi gbi gbj gfj
-  apply Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).obj f)⟩)
+  apply Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).toFunctor.obj f)⟩)
       (Grothendieck.Hom.mk gbi (𝟙 _)))
     (.of_zag (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
       (eqToHom (by simp) ≫ gfi)) (by apply Grothendieck.ext <;> simp)⟩))
-  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).obj f)⟩)
+  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).toFunctor.obj f)⟩)
       (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
     (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
       (eqToHom (by simp) ≫ gfj)) (by apply Grothendieck.ext <;> simp)⟩))
@@ -1080,28 +1080,29 @@ open Limits
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
-    {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X)] (H : Grothendieck G ⥤ Type u₂) :
-    fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
+    {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X).toFunctor]
+    (H : Grothendieck G ⥤ Type u₂) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
   NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
-      Final.colimitIso (α.app X) (ι G X ⋙ H))
+      Final.colimitIso (α.app X).toFunctor (ι G X ⋙ H))
     (fun f => colimit.hom_ext <| fun d => by
-      simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,
-        ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc, NatTrans.comp_app,
-        whiskerRight_app, Functor.comp_map, Cat.eqToHom_app, map_id, Category.comp_id,
-        associator_hom_app, colimit.ι_pre_assoc, HasColimit.isoOfNatIso_ι_hom_assoc, Iso.symm_hom,
-        isoWhiskerRight_hom, associator_inv_app, NatIso.ofComponents_hom_app, Iso.refl_hom,
-        Final.ι_colimitIso_hom, Category.id_comp, Final.ι_colimitIso_hom_assoc, colimit.ι_pre]
-      have := Functor.congr_obj (α.naturality f) d
+      simp only [map, Cat.Hom.comp_toFunctor, comp_obj, ι_obj,
+        fiberwiseColimit_map, ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc,
+        NatTrans.comp_app, whiskerRight_app, Functor.comp_map, Cat.Hom₂.eqToHom_toNatTrans,
+        eqToHom_app, map_id, Category.comp_id, associator_hom_app, colimit.ι_pre_assoc,
+        HasColimit.isoOfNatIso_ι_hom_assoc, Iso.symm_hom, isoWhiskerRight_hom, associator_inv_app,
+        NatIso.ofComponents_hom_app, Iso.refl_hom, Final.ι_colimitIso_hom, Category.id_comp,
+        Final.ι_colimitIso_hom_assoc, colimit.ι_pre]
+      have := Functor.congr_obj congr($(α.naturality f).toFunctor) d
       dsimp at this
       congr
       apply eqToHom_heq_id_dom)
 
 /-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
 private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F G : C ⥤ Cat.{u₁, u₁}}
-    (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+    (α : F ⟶ G) [hα : ∀ X, Final (α.app X).toFunctor] : Final (map α) := by
   rw [final_iff_isIso_colimit_pre]
   intro H
   let i := (colimitFiberwiseColimitIso _).symm ≪≫
@@ -1113,13 +1114,13 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
 
 /-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
 `F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
-lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] :
-    Final (map α) := by
+lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
+    [hα : ∀ X, Final (α.app X).toFunctor] : Final (map α) := by
   let sC : C ≌ AsSmall.{max u₁ u₂ v₁ v₂} C := AsSmall.equiv
   let F' : AsSmall C ⥤ Cat := sC.inverse ⋙ F ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let G' : AsSmall C ⥤ Cat := sC.inverse ⋙ G ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
-  have : ∀ X, Final (α'.app X) := fun X =>
+  have : ∀ X, Final (α'.app X).toFunctor := fun X =>
     inferInstanceAs (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
   have hα' : (map α').Final := final_map_small _
   dsimp only [α', ← Equivalence.symm_functor] at hα'
