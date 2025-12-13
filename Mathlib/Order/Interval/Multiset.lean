@@ -129,7 +129,7 @@ theorem Ioc_eq_zero_iff : Ioc a b = 0 ↔ ¬a < b := by
   rw [Ioc, Finset.val_eq_zero, Finset.Ioc_eq_empty_iff]
 
 @[simp]
-theorem Ioo_eq_zero_iff [DenselyOrdered α] : Ioo a b = 0 ↔ ¬a < b := by
+theorem Ioo_eq_zero_iff [DenselyOrdered α] : Ioo a b = 0 ↔ True := by
   rw [Ioo, Finset.val_eq_zero, Finset.Ioo_eq_empty_iff]
 
 alias ⟨_, Icc_eq_zero⟩ := Icc_eq_zero_iff
@@ -202,16 +202,19 @@ theorem right_notMem_Ioo : b ∉ Ioo a b :=
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by
-  rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_left hca]
+  rw [Ico, ← Finset.filter_val]
+  rw [Finset.Ico_filter_lt_of_le_left (a := a) (b := b) (c := c) hca]
   rfl
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
     ((Ico a b).filter fun x => x < c) = Ico a b := by
-  rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_right_le hbc]
+  rw [Ico, ← Finset.filter_val]
+  rw [Finset.Ico_filter_lt_of_right_le (a := a) (b := b) (c := c) hbc]
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
     ((Ico a b).filter fun x => x < c) = Ico a c := by
-  rw [Ico, ← Finset.filter_val, Finset.Ico_filter_lt_of_le_right hcb]
+  rw [Ico, ← Finset.filter_val]
+  rw [Finset.Ico_filter_lt_of_le_right (a := a) (b := b) (c := c) hcb]
   rfl
 
 theorem Ico_filter_le_of_le_left [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
