@@ -258,6 +258,7 @@ lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i)
   split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
 
 /-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
+@[simps]
 def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
     MonicDegreeEq R n :=
   ⟨p, by rw [← hp', ← leadingCoeff, hp], fun i hi ↦ coeff_eq_zero_of_natDegree_lt (hp'.trans_lt hi)⟩

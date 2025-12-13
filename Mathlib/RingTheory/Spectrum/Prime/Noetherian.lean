@@ -59,6 +59,27 @@ instance : Ring.KrullDimLE 0 R := .mk₀ fun _ _ ↦ inferInstance
 instance : DiscreteTopology (PrimeSpectrum R) :=
   discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨inferInstance, inferInstance⟩
 
+variable {R} in
+lemma _root_.IsArtinianRing.exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
+    ∃ r ∉ p, IsIdempotentElem r ∧ ∀ q : Ideal R, q.IsPrime → q ≠ p → r ∈ q := by
+  classical
+  obtain ⟨r, hr⟩ := PrimeSpectrum.toPiLocalization_bijective.2 (Pi.single ⟨p, inferInstance⟩ 1)
+  have : algebraMap R (Localization p.primeCompl) r = 1 := by
+    simpa [PrimeSpectrum.toPiLocalization,
+      -FaithfulSMul.algebraMap_eq_one_iff] using funext_iff.mp hr ⟨p, inferInstance⟩
+  refine ⟨r, ?_, ?_, ?_⟩
+  · rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff (Localization.AtPrime p) p, this]
+    simp
+  · apply PrimeSpectrum.toPiLocalization_bijective.injective
+    simp [map_mul, hr, ← Pi.single_mul]
+  · intro q hq e
+    have : PrimeSpectrum.mk q inferInstance ≠ ⟨p, inferInstance⟩ := ne_of_apply_ne (·.1) e
+    have : (algebraMap R (Localization.AtPrime q)) r = 0 := by
+      simpa [PrimeSpectrum.toPiLocalization, this,
+        -FaithfulSMul.algebraMap_eq_zero_iff] using funext_iff.mp hr ⟨q, inferInstance⟩
+    rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff (Localization.AtPrime q) q, this]
+    simp
+
 end IsArtinianRing
 
 end PrimeSpectrum
