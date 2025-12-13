@@ -104,14 +104,17 @@ alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 theorem lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
   (count_monotone p).reflect_lt h
 
-theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < count p n :=
+theorem count_strictMono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < count p n :=
   (count_lt_count_succ_iff.2 hm).trans_le <| count_monotone _ (Nat.succ_le_iff.2 hmn)
 
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra! h : m ≠ n
   wlog hmn : m < n
   · exact this hn hm heq.symm h.symm (by grind)
-  · simpa [heq] using count_strict_mono hm hmn
+  · simpa [heq] using count_strictMono hm hmn
+
+@[deprecated count_strictMono (since := "2025-12-04")]
+alias count_strict_mono := count_strictMono
 
 theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
   rw [count_eq_card_filter_range]

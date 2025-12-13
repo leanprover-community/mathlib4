@@ -93,7 +93,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   calc
     μ (s \ f ⁻¹' s) = ∫⁻ a in s \ f ⁻¹' s, μ.rnDeriv ν a ∂ν := (setLIntegral_rnDeriv hμν _).symm
     _ < ∫⁻ _ in s \ f ⁻¹' s, c ∂ν := by
-      apply setLIntegral_strict_mono (hsm.diff (hfμ.measurable hsm)) (hν_diff ▸ h₀) measurable_const
+      apply setLIntegral_strictMono (hsm.diff (hfμ.measurable hsm)) (hν_diff ▸ h₀) measurable_const
       · rw [setLIntegral_rnDeriv hμν]
         finiteness
       · exact .of_forall fun x hx ↦ hx.1

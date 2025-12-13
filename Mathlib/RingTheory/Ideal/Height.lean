@@ -99,7 +99,7 @@ theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp [height, minimalPrimes_top]
 
 @[gcongr]
-lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
+lemma Ideal.primeHeight_strictMono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     (h : I < J) [J.FiniteHeight] :
     I.primeHeight < J.primeHeight := by
   rw [primeHeight]
@@ -119,7 +119,7 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
-lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
+lemma Ideal.height_strictMono_of_is_prime {I J : Ideal R} [I.IsPrime]
     (h : I < J) [I.FiniteHeight] : I.height < J.height := by
   rw [Ideal.height_eq_primeHeight I]
   by_cases hJ : J = ⊤
@@ -130,6 +130,12 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     haveI := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
+
+@[deprecated Ideal.primeHeight_strictMono (since := "2025-12-04")]
+alias Ideal.primeHeight_strict_mono := Ideal.primeHeight_strictMono
+
+@[deprecated Ideal.height_strictMono_of_is_prime (since := "2025-12-04")]
+alias Ideal.height_strict_mono_of_is_prime := Ideal.height_strictMono_of_is_prime
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
@@ -179,7 +185,7 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   have := h₁.1.1
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
   exact lt_irrefl _
-     ((height_strict_mono_of_is_prime h₃).trans_le (e'.trans <| height_mono h₁.1.2))
+     ((height_strictMono_of_is_prime h₃).trans_le (e'.trans <| height_mono h₁.1.2))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
 lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
@@ -213,7 +219,7 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     exact ringKrullDim_ne_top e.symm
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
   rcases lt_or_eq_of_le hM' with (hM' | hM')
-  · have h1 := Ideal.primeHeight_strict_mono hM'
+  · have h1 := Ideal.primeHeight_strictMono hM'
     have h2 := e ▸ M.primeHeight_le_ringKrullDim
     simp [← not_lt, h1] at h2
   · exact hM' ▸ hM

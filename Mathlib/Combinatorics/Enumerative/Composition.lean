@@ -242,7 +242,7 @@ theorem sizeUpTo_succ' (i : Fin c.length) :
     c.sizeUpTo ((i : ℕ) + 1) = c.sizeUpTo i + c.blocksFun i :=
   c.sizeUpTo_succ i.2
 
-theorem sizeUpTo_strict_mono {i : ℕ} (h : i < c.length) : c.sizeUpTo i < c.sizeUpTo (i + 1) := by
+theorem sizeUpTo_strictMono {i : ℕ} (h : i < c.length) : c.sizeUpTo i < c.sizeUpTo (i + 1) := by
   rw [c.sizeUpTo_succ h]
   simp
 
@@ -254,7 +254,10 @@ a virtual point at the right of the last block, to make for a nice equiv with
 `CompositionAsSet n`. -/
 def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
-    Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
+    Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strictMono hi
+
+@[deprecated sizeUpTo_strictMono (since := "2025-12-04")]
+alias sizeUpTo_strict_mono := sizeUpTo_strictMono
 
 @[simp]
 theorem boundary_zero : c.boundary 0 = 0 := by simp [boundary]

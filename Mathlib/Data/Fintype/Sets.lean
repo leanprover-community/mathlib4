@@ -108,7 +108,10 @@ alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 
 @[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
 
-alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
+alias ⟨_, toFinset_strictMono⟩ := toFinset_ssubset_toFinset
+
+@[deprecated toFinset_strictMono (since := "2025-12-04")]
+alias toFinset_strict_mono := toFinset_strictMono
 
 @[simp]
 theorem disjoint_toFinset [Fintype s] [Fintype t] :

@@ -145,7 +145,7 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
     have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
     have : (p.map f).FiniteHeight := ⟨Or.inr (h.trans_lt (WithTop.coe_lt_top 1)).ne⟩
     rw [height_eq_primeHeight] at h
-    have := (primeHeight_strict_mono h_lt).trans_le h
+    have := (primeHeight_strictMono h_lt).trans_le h
     rw [ENat.lt_one_iff_eq_zero, primeHeight_eq_zero_iff] at this
     have := minimal_primes_comap_of_surjective hf this
     rwa [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,

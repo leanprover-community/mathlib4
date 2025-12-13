@@ -963,7 +963,7 @@ nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : 
   exact NNReal.coe_lt_coe.1 this
 
 @[mono]
-theorem hasSum_strict_mono {f g : α → ℝ≥0} {sf sg : ℝ≥0} (hf : HasSum f sf) (hg : HasSum g sg)
+theorem hasSum_strictMono {f g : α → ℝ≥0} {sf sg : ℝ≥0} (hf : HasSum f sf) (hg : HasSum g sg)
     (h : f < g) : sf < sg :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hasSum_lt hle hi hf hg
@@ -973,9 +973,15 @@ theorem tsum_lt_tsum {f g : α → ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g 
   hasSum_lt h hi (summable_of_le h hg).hasSum hg.hasSum
 
 @[mono]
-theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : ∑' n, f n < ∑' n, g n :=
+theorem tsum_strictMono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : ∑' n, f n < ∑' n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tsum_lt_tsum hle hi hg
+
+@[deprecated hasSum_strictMono (since := "2025-12-04")]
+alias hasSum_strict_mono := hasSum_strictMono
+
+@[deprecated tsum_strictMono (since := "2025-12-04")]
+alias tsum_strict_mono := tsum_strictMono
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
   simpa using tsum_lt_tsum (fun a => zero_le _) hi hg

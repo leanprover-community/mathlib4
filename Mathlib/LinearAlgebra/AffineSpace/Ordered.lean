@@ -54,7 +54,7 @@ theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lin
   gcongr
   exact sub_nonneg.2 hr
 
-theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
+theorem lineMap_strictMono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
   gcongr
   exact sub_pos.2 hr
@@ -65,17 +65,26 @@ theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ li
   gcongr
 
 omit [IsOrderedRing k] in
-theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
+theorem lineMap_strictMono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
   simp only [lineMap_apply_module]; gcongr
 
 theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r ≤ lineMap a' b' r :=
   (lineMap_mono_left ha h₁).trans (lineMap_mono_right hb h₀)
 
-theorem lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
+theorem lineMap_strictMono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r < lineMap a' b' r := by
   rcases h₀.eq_or_lt with (rfl | h₀); · simpa
-  exact (lineMap_mono_left ha.le h₁).trans_lt (lineMap_strict_mono_right hb h₀)
+  exact (lineMap_mono_left ha.le h₁).trans_lt (lineMap_strictMono_right hb h₀)
+
+@[deprecated lineMap_strictMono_left (since := "2025-12-04")]
+alias lineMap_strict_mono_left := lineMap_strictMono_left
+
+@[deprecated lineMap_strictMono_right (since := "2025-12-04")]
+alias lineMap_strict_mono_right := lineMap_strictMono_right
+
+@[deprecated lineMap_strictMono_endpoints (since := "2025-12-04")]
+alias lineMap_strict_mono_endpoints := lineMap_strictMono_endpoints
 
 variable [PosSMulReflectLT k E]
 

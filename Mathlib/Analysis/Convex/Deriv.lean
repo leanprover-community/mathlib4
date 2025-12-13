@@ -155,7 +155,7 @@ Note that we don't require differentiability, since it is guaranteed at all but 
 one point by the strict monotonicity of `f'`. -/
 theorem StrictMonoOn.strictConvexOn_of_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : StrictMonoOn (deriv f) (interior D)) : StrictConvexOn ℝ D f :=
-  strictConvexOn_of_slope_strict_mono_adjacent hD fun {x y z} hx hz hxy hyz => by
+  strictConvexOn_of_slope_strictMono_adjacent hD fun {x y z} hx hz hxy hyz => by
     -- First we prove some trivial inclusions
     have hxzD : Icc x z ⊆ D := hD.ordConnected.out hx hz
     have hxyD : Icc x y ⊆ D := (Icc_subset_Icc_right hyz.le).trans hxzD
@@ -736,7 +736,7 @@ lemma lt_slope_of_hasDerivWithinAt_Ioi (hfc : StrictConvexOn ℝ S f)
     f' < slope f x y := by
   obtain ⟨u, hxu, huy⟩ := exists_between hxy
   have hu : u ∈ S := hfc.1.ordConnected.out hx hy ⟨hxu.le, huy.le⟩
-  have := hfc.secant_strict_mono hx hu hy hxu.ne' hxy.ne' huy
+  have := hfc.secant_strictMono hx hu hy hxu.ne' hxy.ne' huy
   simp only [← slope_def_field] at this
   exact (hfc.convexOn.le_slope_of_hasDerivWithinAt_Ioi hx hu hxu hf').trans_lt this
 
@@ -788,7 +788,7 @@ lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
     slope f x y < f' := by
   obtain ⟨u, hxu, huy⟩ := exists_between hxy
   have hu : u ∈ S := hfc.1.ordConnected.out hx hy ⟨hxu.le, huy.le⟩
-  have := hfc.secant_strict_mono hy hx hu hxy.ne huy.ne hxu
+  have := hfc.secant_strictMono hy hx hu hxy.ne huy.ne hxu
   simp_rw [← slope_def_field, slope_comm _ y] at this
   exact this.trans_le <| hfc.convexOn.slope_le_of_hasDerivWithinAt_Iio hu hy huy hf'
 
