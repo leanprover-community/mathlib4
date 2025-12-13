@@ -111,6 +111,13 @@ lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x 
     MapsTo f h.domChart.source h.codChart.source :=
   h.source_subset_preimage_source
 
+/-- If `f` has local property `P`, then `f` is continuous on `domcChart.source`,
+provided the local property is sufficiently nice. -/
+lemma continuousOn (h : LocalPresentationAt I J n f x P)
+    (hP : ∀ {φ : OpenPartialHomeomorph M H}, ∀ {ψ : OpenPartialHomeomorph N G},
+      P f φ ψ → ContinuousOn f φ.source) : ContinuousOn f h.domChart.source :=
+  hP h.property
+
 end LocalPresentationAt
 
 namespace LiftSourceTargetPropertyAt

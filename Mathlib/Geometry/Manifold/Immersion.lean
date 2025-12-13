@@ -401,7 +401,15 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
 `continuousAt` is part of the public API -/
 private theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContinuousOn f h.domChart.source := by
-  rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl
+  have h' := h
+  rw [IsImmersionAtOfComplement_def] at h'
+  have aux := h'.localPresentationAt.continuousOn
+  have : h'.localPresentationAt.domChart = h.domChart := sorry
+  rw [← this]
+  apply aux
+  intro φ ψ hf
+  -- now the actual proof starts...
+  rw [← hf.domChart.continuousOn_writtenInExtend_iff le_rfl
       h.mapsto_domChart_source_codChart_source (I' := J) (I := I),
     ← h.domChart.extend_target_eq_image_source]
   have : ContinuousOn (h.equiv ∘ fun x ↦ (x, 0)) (h.domChart.extend I).target := by fun_prop
