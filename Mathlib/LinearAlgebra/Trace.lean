@@ -319,6 +319,11 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans f).trans Matrix.toLinAlgEquiv') x.toLin'
 
+@[simp] theorem _root_.Matrix.trace_starAlgEquiv_map {K m n : Type*} [Field K] [Star K]
+    [Fintype m] [Fintype n] (f : Matrix m m K ≃⋆ₐ[K] Matrix n n K) (x : Matrix m m K) :
+    (f x).trace = x.trace := by
+  classical exact Matrix.trace_map f.toAlgEquiv x
+
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
     trace R M f = (finrank R p : R) := by

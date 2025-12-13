@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
@@ -449,6 +450,11 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
     (f x).det = x.det := by
   simpa [toMatrixAlgEquiv', toLinAlgEquiv'] using
     LinearMap.det_map ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv') x.toLin'
+
+@[simp] theorem Matrix.det_starAlgEquiv_map {K m n : Type*} [Field K] [Star K]
+    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
+    (f : Matrix m m K ≃⋆ₐ[K] Matrix n n K) (x : Matrix m m K) : (f x).det = x.det :=
+  det_map f.toAlgEquiv x
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
