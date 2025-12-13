@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Order.Ring.Archimedean
 public import Mathlib.Algebra.Ring.Subring.Order
 public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Order.Quotient
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+import Mathlib.Data.Real.CompleteField
 
 /-!
 # Standard part function
