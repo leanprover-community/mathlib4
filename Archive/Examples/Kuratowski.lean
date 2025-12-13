@@ -101,7 +101,7 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
   -- The goal becomes 6 inequalities ↔ 15 inequalities.
   constructor -- Show both implications.
   · -- One implication is almost trivial as the six inequalities are among the fifteen.
-    tauto
+    grind
   · intro h -- Introduce `TheSixIneq` as an assumption.
     repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
     repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.

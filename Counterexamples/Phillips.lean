@@ -287,7 +287,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     · dsimp
       ext x
       simp only [u, not_exists, mem_iUnion, mem_diff]
-      tauto
+      grind
     · congr 1
       simp only [G, s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by

@@ -481,7 +481,7 @@ theorem discr_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (hP : (P.toPoly.map φ).S
   change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
   rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
   simp only [nodup_singleton]
-  tauto
+  grind
 
 theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.toPoly.map φ).Splits)
     (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
