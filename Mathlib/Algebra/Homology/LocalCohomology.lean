@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Basic
@@ -76,7 +77,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
 def diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  (ringModIdeals I).op ⋙ Ext R (ModuleCat.{u} R) i
+  (ringModIdeals I).op ⋙ Abelian.linearExtFunctor R (ModuleCat.{u} R) i
 
 end
 

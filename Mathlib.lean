@@ -2177,7 +2177,6 @@ public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 public import Mathlib.CategoryTheory.Abelian.Exact
-public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.CategoryTheory.Abelian.FreydMitchell
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
