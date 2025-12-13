@@ -437,6 +437,16 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
     ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
+theorem Iic_add_Ici (f : α → E) {a : α} {s : Set α} (h : a ∈ s) :
+    eVariationOn f s = eVariationOn f (s ∩ Iic a) + eVariationOn f (s ∩ Ici a) := by
+  rw [← eVariationOn.union (x := a)]
+  · rw [← inter_union_distrib_left, Iic_union_Ici, inter_univ]
+  any_goals exact ⟨⟨h, le_rfl⟩, fun b hb ↦ hb.2⟩
+
+theorem split_univ (f : α → E) (a : α) :
+    eVariationOn f univ = eVariationOn f (Iic a) + eVariationOn f (Ici a) := by
+  rw [Iic_add_Ici f (mem_univ a), univ_inter, univ_inter]
+
 theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
     (hn : ∀ i, 0 < i → i < n → E i ∈ s) :
     ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
@@ -540,6 +550,13 @@ theorem comp_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
   convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
   simp only [Equiv.image_preimage]
+
+lemma _root_.LocallyBoundedVariationOn.comp_ofDual {f : α → E} {s : Set α}
+    (hf : LocallyBoundedVariationOn f s) :
+    LocallyBoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
+  refine fun a b ha hb hT ↦ hf b a hb ha ?_
+  rw [← eVariationOn.comp_ofDual, preimage_inter]
+  convert hT; ext; apply and_comm
 
 end Monotone
 
