@@ -10,6 +10,8 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
+import Mathlib.Topology.Metrizable.Basic
+
 /-!
 ## Pseudo-metric spaces
 
