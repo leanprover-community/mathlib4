@@ -52,11 +52,50 @@ instance : CompleteLattice (Subalgebra R A) where
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
-instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
-  Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
+section
 
-instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
-  Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
+open Subalgebra
+
+variable {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C)
+  {ι : Type*} (S : ι → Subalgebra R C) (i : ι)
+
+instance : Algebra ↑(S₁ ⊓ S₂) S₁ := RingHom.toAlgebra (inclusion inf_le_left).toRingHom
+
+instance : IsScalarTower R ↑(S₁ ⊓ S₂) S₁ := inclusion.isScalarTower_left inf_le_left R
+
+instance : IsScalarTower ↑(S₁ ⊓ S₂) S₁ C := inclusion.isScalarTower_right inf_le_left C
+
+instance : Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (inclusion inf_le_right).toRingHom
+
+instance : IsScalarTower R ↑(S₁ ⊓ S₂) S₂ := inclusion.isScalarTower_left inf_le_right R
+
+instance : IsScalarTower ↑(S₁ ⊓ S₂) S₂ C := inclusion.isScalarTower_right inf_le_right C
+
+instance : Algebra S₁ ↑(S₁ ⊔ S₂) := RingHom.toAlgebra (inclusion le_sup_left).toRingHom
+
+instance : IsScalarTower R S₁ ↑(S₁ ⊔ S₂) := inclusion.isScalarTower_left le_sup_left R
+
+instance : IsScalarTower S₁ ↑(S₁ ⊔ S₂) C := inclusion.isScalarTower_right le_sup_left C
+
+instance : Algebra S₂ ↑(S₁ ⊔ S₂) := RingHom.toAlgebra (inclusion le_sup_right).toRingHom
+
+instance : IsScalarTower R S₂ ↑(S₁ ⊔ S₂) := inclusion.isScalarTower_left le_sup_right R
+
+instance : IsScalarTower S₂ ↑(S₁ ⊔ S₂) C := inclusion.isScalarTower_right le_sup_right C
+
+instance : Algebra (S i) ↑(⨆ i, S i) := RingHom.toAlgebra (inclusion (le_iSup _ i)).toRingHom
+
+instance : IsScalarTower R (S i) ↑(⨆ i, S i) := inclusion.isScalarTower_left (le_iSup _ i) R
+
+instance : IsScalarTower (S i) ↑(⨆ i, S i) C := inclusion.isScalarTower_right (le_iSup _ i) C
+
+instance : Algebra ↑(⨅ i, S i) (S i) := RingHom.toAlgebra (inclusion (iInf_le _ i)).toRingHom
+
+instance : IsScalarTower R ↑(⨅ i, S i) (S i) := inclusion.isScalarTower_left (iInf_le _ i) R
+
+instance : IsScalarTower ↑(⨅ i, S i) (S i) C := inclusion.isScalarTower_right (iInf_le _ i) C
+
+end
 
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
