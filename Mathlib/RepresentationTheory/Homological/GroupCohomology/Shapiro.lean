@@ -14,7 +14,7 @@ public import Mathlib.RepresentationTheory.Induced
 # Shapiro's lemma for group cohomology
 
 Given a commutative ring `k` and a subgroup `S ≤ G`, the file
-`RepresentationTheory/Coinduced.lean` proves that the functor `Coind_S^G : Rep k S ⥤ Rep k G`
+`Mathlib/RepresentationTheory/Coinduced.lean` proves that the functor `Coind_S^G : Rep k S ⥤ Rep k G`
 preserves epimorphisms. Since `Res(S) : Rep k G ⥤ Rep k S` is left adjoint to `Coind_S^G`, this
 means `Res(S)` preserves projective objects. Since `Res(S)` is also exact, given a projective
 resolution `P` of `k` as a trivial `k`-linear `G`-representation, `Res(S)(P)` is a projective

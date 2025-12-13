@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 # Derivative of the Cartesian product of functions
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 Cartesian products of functions, and functions into Pi-types.

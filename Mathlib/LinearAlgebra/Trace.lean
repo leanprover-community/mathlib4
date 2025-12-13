@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 
 This file defines the trace of a linear map.
 
-See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
+See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
