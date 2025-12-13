@@ -159,11 +159,9 @@ theorem finitePresentation_isStableUnderBaseChange :
     IsStableUnderBaseChange @FinitePresentation := by
   apply IsStableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
-  · introv h
-    rw [finitePresentation_algebraMap] at h
-    suffices Algebra.FinitePresentation S (S ⊗[R] T) by
-      rw [RingHom.FinitePresentation]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
-    infer_instance
+  · simp only [finitePresentation_algebraMap]
+    exact fun ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] a ↦
+      Algebra.FinitePresentation.baseChange S
 
 /-- Being finitely-presented is preserved by localizations. -/
 theorem finitePresentation_localizationPreserves : LocalizationPreserves @FinitePresentation :=
