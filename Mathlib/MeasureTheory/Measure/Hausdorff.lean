@@ -1113,7 +1113,7 @@ theorem exists_accPt_of_pos_hausdorffMeasure {n : ℕ} {s : ℝ} {E : Set (Eucli
     (hs : 0 < s) (hE : 0 < μH[s] E) : ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
   have h_discrete : DiscreteTopology E := by
-    have h_isolated : ∀ x ∈ E, ∃ U : Set (EuclideanSpace ℝ (Fin n)),
+    have h_isolated : ∀ x ∈ E, ∃ U : Set (EuclideanSpace ℝ (Fin n)), 
     IsOpen U ∧ x ∈ U ∧ U ∩ E = {x} := by
       intro x hx
       specialize h x
@@ -1153,7 +1153,11 @@ theorem exists_accPt_of_pos_hausdorffMeasure {n : ℕ} {s : ℝ} {E : Set (Eucli
     rw [MeasureTheory.Measure.hausdorffMeasure_apply]
     refine le_antisymm ?_ (zero_le _)
     refine iSup_le fun r => iSup_le fun hr => ?_
-    apply iInf_le_of_le fun _ => {x}; simp [EMetric.diam_singleton]
+    apply iInf_le_of_le fun _ => {x}; simp only [iUnion_singleton_eq_range, range_const,
+      subset_refl, diam_singleton, zero_le, implies_true, singleton_nonempty, iSup_pos,
+      ENNReal.tsum_const, ENat.card_eq_top_of_infinite, ENat.toENNReal_top, iInf_pos,
+      nonpos_iff_eq_zero, mul_eq_zero, ENNReal.top_ne_zero, ENNReal.rpow_eq_zero_iff, true_and,
+      ENNReal.zero_ne_top, false_and, or_false, false_or]
     exact hs
   have : μH[s] E = 0 := by
     convert MeasureTheory.measure_iUnion_null fun x : E => h_hausdorff_zero x x.2
