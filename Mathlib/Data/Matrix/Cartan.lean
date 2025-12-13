@@ -39,6 +39,8 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 cartan matrix, lie algebra, dynkin diagram
 -/
 
+@[expose] public section
+
 namespace CartanMatrix
 
 open Matrix
@@ -172,3 +174,5 @@ theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
 end Properties
 
 end CartanMatrix
+
+end
