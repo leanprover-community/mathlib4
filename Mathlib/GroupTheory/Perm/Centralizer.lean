@@ -31,10 +31,10 @@ based on the study of the centralizer of a permutation `g`.
 Given `g : Equiv.Perm α`, the conjugacy class of `g` is the orbit
 of `g` under the action `ConjAct (Equiv.Perm α)`, and we use the
 orbit-stabilizer theorem
-(`MulAction.card_orbit_mul_card_stabilizer_eq_card_group`) to reduce
+(`MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group`) to reduce
 the computation to the computation of the centralizer of `g`, the
 subgroup of `Equiv.Perm α` consisting of all permutations which
-commute with `g`. It is accessed here as `MulAction.stabilizer
+commute with `g`. It is accessed here as `MonoidAction.stabilizer
 (ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
 
 We compute this subgroup as follows.
@@ -104,7 +104,7 @@ open scoped Finset Pointwise
 
 namespace Equiv.Perm
 
-open MulAction Equiv Subgroup
+open MonoidAction Equiv Subgroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α] {g : Equiv.Perm α}
 
@@ -129,7 +129,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
-    MulAction (centralizer {g}) g.cycleFactorsFinset where
+    MonoidAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
     Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩
   one_smul c := by
@@ -143,12 +143,12 @@ def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     simp only [map_mul, mul_smul]
 
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
-scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
+scoped instance : MonoidAction (centralizer {g}) (g.cycleFactorsFinset) :=
   (Subgroup.Centralizer.cycleFactorsFinset_mulAction g)
 
 /-- The canonical morphism from `Subgroup.centralizer {g}`
   to the group of permutations of `g.cycleFactorsFinset` -/
-def toPermHom := MulAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
+def toPermHom := MonoidAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
 
 theorem centralizer_smul_def (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     k • c = ⟨k * c * k⁻¹,
@@ -645,7 +645,7 @@ theorem card_isConj_mul_eq :
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
-  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
+  convert MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]

@@ -72,18 +72,18 @@ instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
   one_mul := Category.comp_id
   mul_assoc := fun x y z => (Category.assoc z y x).symm
 
-section MulAction
+section MonoidAction
 
 variable {C : Type u} [Category.{v} C]
 
 open Opposite
 
-instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
+instance mulActionRight {X Y : C} : MonoidAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
-instance mulActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
+instance mulActionLeft {X Y : C} : MonoidAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
@@ -94,7 +94,7 @@ theorem smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
 theorem smul_left {X Y : C} {r : (End X)ᵐᵒᵖ} {f : X ⟶ Y} : r • f = r.unop ≫ f :=
   rfl
 
-end MulAction
+end MonoidAction
 
 /-- In a groupoid, endomorphisms form a group -/
 instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where

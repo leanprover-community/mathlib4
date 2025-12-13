@@ -29,7 +29,7 @@ and should be moved at some point.
 
 @[expose] public section
 
-assert_not_exists MulAction
+assert_not_exists MonoidAction
 
 open Mathlib
 

@@ -183,10 +183,10 @@ end invtSubmodule
 variable (R) in
 lemma span_orbit_mem_invtSubmodule {G : Type*}
     [Monoid G] [DistribMulAction G M] [SMulCommClass G R M] (x : M) (g : G) :
-    span R (MulAction.orbit G x) ∈ invtSubmodule (DistribMulAction.toLinearMap R M g) := by
+    span R (MonoidAction.orbit G x) ∈ invtSubmodule (DistribMulAction.toLinearMap R M g) := by
   rw [mem_invtSubmodule, Submodule.span_le, Submodule.comap_coe]
   intro y hy
   simp only [Set.mem_preimage, DistribMulAction.toLinearMap_apply, SetLike.mem_coe]
-  exact Submodule.subset_span <| MulAction.mem_orbit_of_mem_orbit g hy
+  exact Submodule.subset_span <| MonoidAction.mem_orbit_of_mem_orbit g hy
 
 end Module.End

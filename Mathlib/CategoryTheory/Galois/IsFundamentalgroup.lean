@@ -61,7 +61,7 @@ variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
 section
 
-variable (G : Type*) [Group G] [∀ X, MulAction G (F.obj X)]
+variable (G : Type*) [Group G] [∀ X, MonoidAction G (F.obj X)]
 
 /-- We say `G` acts naturally on the fibers of `F` if for every `f : X ⟶ Y`, the `G`-actions
 on `F.obj X` and `F.obj Y` are compatible with `F.map f`. -/
@@ -123,14 +123,14 @@ lemma toAut_continuous [TopologicalSpace G] [IsTopologicalGroup G]
   intro A hA
   obtain ⟨X, _, hX⟩ := ((nhds_one_has_basis_stabilizers F).mem_iff' A).mp hA
   rw [mem_nhds_iff]
-  exact ⟨MulAction.stabilizer G X.pt, Set.preimage_mono (f := toAut F G) hX,
+  exact ⟨MonoidAction.stabilizer G X.pt, Set.preimage_mono (f := toAut F G) hX,
     stabilizer_isOpen G X.pt, one_mem _⟩
 
 variable {G}
 
 lemma action_ext_of_isGalois {t : F ⟶ F} {X : C} [IsGalois X] {g : G} (x : F.obj X)
     (hg : g • x = t.app X x) (y : F.obj X) : g • y = t.app X y := by
-  obtain ⟨φ, (rfl : F.map φ.hom y = x)⟩ := MulAction.exists_smul_eq (Aut X) y x
+  obtain ⟨φ, (rfl : F.map φ.hom y = x)⟩ := MonoidAction.exists_smul_eq (Aut X) y x
   have : Function.Injective (F.map φ.hom) :=
     ConcreteCategory.injective_of_mono_of_preservesPullback (F.map φ.hom)
   apply this
@@ -139,14 +139,14 @@ lemma action_ext_of_isGalois {t : F ⟶ F} {X : C} [IsGalois X] {g : G} (x : F.o
 variable (G)
 
 lemma toAut_surjective_isGalois (t : Aut F) (X : C) [IsGalois X]
-    [MulAction.IsPretransitive G (F.obj X)] :
+    [MonoidAction.IsPretransitive G (F.obj X)] :
     ∃ (g : G), ∀ (x : F.obj X), g • x = t.hom.app X x := by
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F X
-  obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G a (t.hom.app X a)
+  obtain ⟨g, hg⟩ := MonoidAction.exists_smul_eq G a (t.hom.app X a)
   exact ⟨g, action_ext_of_isGalois F _ hg⟩
 
 lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite ι] (X : ι → C)
-    [∀ i, IsGalois (X i)] (h : ∀ (X : C) [IsGalois X], MulAction.IsPretransitive G (F.obj X)) :
+    [∀ i, IsGalois (X i)] (h : ∀ (X : C) [IsGalois X], MonoidAction.IsPretransitive G (F.obj X)) :
     ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.hom.app (X i) x := by
   let x (i : ι) : F.obj (X i) := (nonempty_fiber_of_isConnected F (X i)).some
   let P : C := ∏ᶜ X
@@ -173,11 +173,11 @@ of all Galois objects. This is the `if` direction. For the `only if` see
 `isPretransitive_of_surjective`. -/
 lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGroup G]
     [CompactSpace G] [∀ (X : C), ContinuousSMul G (F.obj X)]
-    (h : ∀ (X : C) [IsGalois X], MulAction.IsPretransitive G (F.obj X)) :
+    (h : ∀ (X : C) [IsGalois X], MonoidAction.IsPretransitive G (F.obj X)) :
     Function.Surjective (toAut F G) := by
   intro t
   choose gi hgi using (fun X : PointedGaloisObject F ↦ toAut_surjective_isGalois F G t X)
-  let cl (X : PointedGaloisObject F) : Set G := gi X • MulAction.stabilizer G X.pt
+  let cl (X : PointedGaloisObject F) : Set G := gi X • MonoidAction.stabilizer G X.pt
   let c : Set G := ⋂ i, cl i
   have hne : c.Nonempty := by
     rw [← Set.univ_inter c]
@@ -192,13 +192,13 @@ lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGro
       use gs
       simp only [Set.mem_iInter]
       intro X hXmem
-      rw [mem_leftCoset_iff, SetLike.mem_coe, MulAction.mem_stabilizer_iff, mul_smul,
+      rw [mem_leftCoset_iff, SetLike.mem_coe, MonoidAction.mem_stabilizer_iff, mul_smul,
         hgs ⟨X, hXmem⟩, ← hgi X, inv_smul_smul]
   obtain ⟨g, hg⟩ := hne
   refine ⟨g, Iso.ext <| natTrans_ext_of_isGalois _ <| fun X _ ↦ ?_⟩
   ext x
   simp only [toAut_hom_app_apply]
-  have : g ∈ (gi ⟨X, x, inferInstance⟩ • MulAction.stabilizer G x : Set G) := by
+  have : g ∈ (gi ⟨X, x, inferInstance⟩ • MonoidAction.stabilizer G x : Set G) := by
     simp only [Set.mem_iInter, c] at hg
     exact hg _
   obtain ⟨s, (hsmem : s • x = x), (rfl : gi ⟨X, x, inferInstance⟩ • s = _)⟩ := this
@@ -208,9 +208,9 @@ lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGro
 /-- If `toAut F G` is surjective, then `G` acts transitively on the fibers of connected objects.
 For a converse see `toAut_surjective`. -/
 lemma isPretransitive_of_surjective (h : Function.Surjective (toAut F G)) (X : C)
-    [IsConnected X] : MulAction.IsPretransitive G (F.obj X) where
+    [IsConnected X] : MonoidAction.IsPretransitive G (F.obj X) where
   exists_smul_eq x y := by
-    obtain ⟨t, ht⟩ := MulAction.exists_smul_eq (Aut F) x y
+    obtain ⟨t, ht⟩ := MonoidAction.exists_smul_eq (Aut F) x y
     obtain ⟨g, rfl⟩ := h t
     exact ⟨g, ht⟩
 
@@ -219,7 +219,7 @@ end
 section
 
 variable [GaloisCategory C]
-variable (G : Type*) [Group G] [∀ (X : C), MulAction G (F.obj X)]
+variable (G : Type*) [Group G] [∀ (X : C), MonoidAction G (F.obj X)]
 
 /-- A compact, topological group `G` with a natural action on `F.obj X` for each `X : C`
 is a fundamental group of `F`, if `G` acts transitively on the fibers of Galois objects,
@@ -227,7 +227,7 @@ the action on `F.obj X` is continuous for all `X : C` and the only trivially act
 is the identity. -/
 class IsFundamentalGroup [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G] : Prop
     extends IsNaturalSMul F G where
-  transitive_of_isGalois (X : C) [IsGalois X] : MulAction.IsPretransitive G (F.obj X)
+  transitive_of_isGalois (X : C) [IsGalois X] : MonoidAction.IsPretransitive G (F.obj X)
   continuous_smul (X : C) : ContinuousSMul G (F.obj X)
   non_trivial' (g : G) : (∀ (X : C) (x : F.obj X), g • x = x) → g = 1
 
@@ -259,7 +259,7 @@ lemma toAut_bijective : Function.Bijective (toAut F G) where
   left := toAut_injective_of_non_trivial F G IsFundamentalGroup.non_trivial'
   right := toAut_surjective_of_isPretransitive F G IsFundamentalGroup.transitive_of_isGalois
 
-instance (X : C) [IsConnected X] : MulAction.IsPretransitive G (F.obj X) :=
+instance (X : C) [IsConnected X] : MonoidAction.IsPretransitive G (F.obj X) :=
   isPretransitive_of_surjective F G (toAut_bijective F G).surjective X
 
 /-- If `G` is the fundamental group for `F`, it is isomorphic to `Aut F` as groups and

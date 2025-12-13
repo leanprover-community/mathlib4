@@ -167,15 +167,15 @@ theorem rightCoset_mem_rightCoset {a : α} (ha : a ∈ s) : op a • (s : Set α
   Set.ext fun b => by simp [mem_rightCoset_iff, mul_mem_cancel_right (s.inv_mem ha)]
 
 @[to_additive]
-theorem orbit_subgroup_eq_rightCoset (a : α) : MulAction.orbit s a = op a • s :=
+theorem orbit_subgroup_eq_rightCoset (a : α) : MonoidAction.orbit s a = op a • s :=
   Set.ext fun _b => ⟨fun ⟨c, d⟩ => ⟨c, c.2, d⟩, fun ⟨c, d, e⟩ => ⟨⟨c, d⟩, e⟩⟩
 
 @[to_additive]
-theorem orbit_subgroup_eq_self_of_mem {a : α} (ha : a ∈ s) : MulAction.orbit s a = s :=
+theorem orbit_subgroup_eq_self_of_mem {a : α} (ha : a ∈ s) : MonoidAction.orbit s a = s :=
   (orbit_subgroup_eq_rightCoset s a).trans (rightCoset_mem_rightCoset s ha)
 
 @[to_additive]
-theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
+theorem orbit_subgroup_one_eq_self : MonoidAction.orbit s (1 : α) = s :=
   orbit_subgroup_eq_self_of_mem s s.one_mem
 
 @[to_additive eq_addCosets_of_normal]
@@ -296,15 +296,15 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
   Set.ext fun z => by
     rw [mem_leftCoset_iff, Set.mem_setOf_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
 
-open MulAction in
+open MonoidAction in
 @[to_additive]
-lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by
+lemma orbit_mk_eq_smul (x : α) : MonoidAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by
   ext
   rw [orbitRel.Quotient.mem_orbit]
   simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply, Quotient.eq''] using Setoid.comm' _
 
 @[to_additive]
-lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out • s := by
+lemma orbit_eq_out_smul (x : α ⧸ s) : MonoidAction.orbitRel.Quotient.orbit x = x.out • s := by
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
 
@@ -542,7 +542,7 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
   left_inv := fun ⟨a, _⟩ => Subtype.ext <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 
-open MulAction in
+open MonoidAction in
 /-- A group is made up of a disjoint union of cosets of a subgroup. -/
 @[to_additive /-- An additive group is made up of a disjoint union of cosets of an additive
 subgroup. -/]

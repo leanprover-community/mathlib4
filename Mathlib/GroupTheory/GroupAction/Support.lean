@@ -25,7 +25,7 @@ open Pointwise
 
 variable {G H α β : Type*}
 
-namespace MulAction
+namespace MonoidAction
 
 section SMul
 
@@ -49,7 +49,7 @@ theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fu
 
 end SMul
 
-variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
+variable [Group H] [SMul G α] [SMul G β] [MonoidAction H α] [SMul H β] [SMulCommClass G H β]
   [SMulCommClass G H α] {s : Set α} {b : β}
 
 -- TODO: This should work without `SMulCommClass`
@@ -61,4 +61,4 @@ theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g •
   have := Set.forall_mem_image.1 hg' ha
   rwa [smul_comm, smul_left_cancel_iff] at this
 
-end MulAction
+end MonoidAction

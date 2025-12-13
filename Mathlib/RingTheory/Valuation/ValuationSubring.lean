@@ -673,7 +673,7 @@ end PrincipalUnitGroup
 
 /-! ### Pointwise actions
 
-This transfers the action from `Subring.pointwiseMulAction`, noting that it only applies when
+This transfers the action from `Subring.pointwiseMonoidAction`, noting that it only applies when
 the action is by a group. Notably this provides an instances when `G` is `K ≃+* K`.
 
 These instances are in the `Pointwise` locale.
@@ -715,10 +715,10 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
-def pointwiseMulAction : MulAction G (ValuationSubring K) :=
+def pointwiseMonoidAction : MonoidAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring
 
-scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseMulAction
+scoped[Pointwise] attribute [instance] ValuationSubring.pointwiseMonoidAction
 
 open scoped Pointwise
 

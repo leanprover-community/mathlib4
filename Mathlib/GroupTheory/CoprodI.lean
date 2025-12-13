@@ -468,7 +468,7 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
-instance summandAction (i) : MulAction (M i) (Word M) where
+instance summandAction (i) : MonoidAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
     apply (equivPair i).symm_apply_eq.mpr
@@ -477,8 +477,8 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     dsimp [instHSMul]
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 
-instance : MulAction (CoprodI M) (Word M) :=
-  MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
+instance : MonoidAction (CoprodI M) (Word M) :=
+  MonoidAction.ofEndHom (lift fun _ => MonoidAction.toEndHom)
 
 theorem smul_def {i} (m : M i) (w : Word M) :
     m • w = rcons { equivPair i w with head := m * (equivPair i w).head } :=
@@ -806,7 +806,7 @@ variable (f : ∀ i, H i →* G)
 variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
-variable {α : Type*} [MulAction G α]
+variable {α : Type*} [MonoidAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 variable (hXdisj : Pairwise (Disjoint on X))
@@ -951,7 +951,7 @@ variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
 
 -- A group action on α, and the ping-pong sets
-variable {α : Type*} [MulAction G α]
+variable {α : Type*} [MonoidAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
 variable (hXdisj : Pairwise (Disjoint on X))

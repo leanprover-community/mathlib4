@@ -45,7 +45,7 @@ open OreLocalization
 
 namespace OreLocalization
 
-variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
+variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MonoidAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
@@ -77,7 +77,7 @@ end OreLocalization
 @[to_additive AddOreLocalization /-- The Ore localization of an additive monoid and a submonoid
 fulfilling the Ore condition. -/]
 def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S]
-    (X : Type*) [MulAction R X] :=
+    (X : Type*) [MonoidAction R X] :=
   Quotient (OreLocalization.oreEqv S X)
 
 namespace OreLocalization
@@ -93,7 +93,7 @@ macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $S $R)
 attribute [local instance] oreEqv
 
 variable {R S}
-variable {X} [MulAction R X]
+variable {X} [MonoidAction R X]
 
 /-- The division in the Ore localization `X[S⁻¹]`, as a fraction of an element of `X` and `S`. -/
 @[to_additive /-- The subtraction in the Ore localization,
@@ -396,7 +396,7 @@ instance : Monoid R[S⁻¹] where
   npow := OreLocalization.npow
 
 @[to_additive]
-instance instMulActionOreLocalization : MulAction R[S⁻¹] X[S⁻¹] where
+instance instMonoidActionOreLocalization : MonoidAction R[S⁻¹] X[S⁻¹] where
   one_smul := OreLocalization.one_smul
   mul_smul := OreLocalization.mul_smul
 
@@ -519,7 +519,7 @@ end Monoid
 
 section SMul
 
-variable {R R' M X : Type*} [Monoid M] {S : Submonoid M} [OreSet S] [MulAction M X]
+variable {R R' M X : Type*} [Monoid M] {S : Submonoid M} [OreSet S] [MonoidAction M X]
 variable [SMul R X] [SMul R M] [IsScalarTower R M M] [IsScalarTower R M X]
 variable [SMul R' X] [SMul R' M] [IsScalarTower R' M M] [IsScalarTower R' M X]
 variable [SMul R R'] [IsScalarTower R R' M]
@@ -593,8 +593,8 @@ instance [SMul Rᵐᵒᵖ M] [SMul Rᵐᵒᵖ X] [IsScalarTower Rᵐᵒᵖ M M] 
     rw [← smul_one_oreDiv_one_smul, ← smul_one_oreDiv_one_smul, op_smul_eq_smul]
 
 @[to_additive]
-instance {R} [Monoid R] [MulAction R M] [IsScalarTower R M M]
-    [MulAction R X] [IsScalarTower R M X] : MulAction R X[S⁻¹] where
+instance {R} [Monoid R] [MonoidAction R M] [IsScalarTower R M M]
+    [MonoidAction R X] [IsScalarTower R M X] : MonoidAction R X[S⁻¹] where
   one_smul := OreLocalization.ind fun x s ↦ by
     rw [← smul_one_oreDiv_one_smul, one_smul, ← OreLocalization.one_def, one_smul]
   mul_smul s₁ s₂ x := by rw [← smul_eq_mul, smul_assoc]
@@ -626,7 +626,7 @@ end CommMonoid
 section Zero
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [Zero X]
-variable [MulAction R X]
+variable [MonoidAction R X]
 
 
 /-- `0` in the localization, defined as `0 /ₒ 1`. -/

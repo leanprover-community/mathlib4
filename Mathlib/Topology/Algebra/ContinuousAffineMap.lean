@@ -242,7 +242,7 @@ theorem coe_zero : ((0 : P →ᴬ[R] W) : P → W) = 0 := rfl
 
 theorem zero_apply (x : P) : (0 : P →ᴬ[R] W) x = 0 := rfl
 
-section MulAction
+section MonoidAction
 
 variable [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
 variable [ContinuousConstSMul S W]
@@ -258,7 +258,7 @@ theorem smul_apply (t : S) (f : P →ᴬ[R] W) (x : P) : (t • f) x = t • f x
 instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar S (P →ᴬ[R] W) where
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
-instance : MulAction S (P →ᴬ[R] W) :=
+instance : MonoidAction S (P →ᴬ[R] W) :=
   Function.Injective.mulAction _ coe_injective coe_smul
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
@@ -267,7 +267,7 @@ variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup 
 theorem smul_contLinear (t : S) (f : P →ᴬ[R] W) : (t • f).contLinear = t • f.contLinear :=
   rfl
 
-end MulAction
+end MonoidAction
 
 variable [IsTopologicalAddGroup W]
 

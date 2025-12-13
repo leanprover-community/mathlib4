@@ -38,7 +38,7 @@ scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
 
-scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
+scoped instance (X) [MonoidAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
   Subalgebra.inclusion.isScalarTower_right (algebra_adjoin_le_adjoin F S) _
 
 scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=

@@ -21,7 +21,7 @@ variable [AddMonoid α] [DistribMulAction M α]
 
 /-- The additive submonoid of elements fixed under the whole action. -/
 def FixedPoints.addSubmonoid : AddSubmonoid α where
-  carrier := MulAction.fixedPoints M α
+  carrier := MonoidAction.fixedPoints M α
   zero_mem' := smul_zero
   add_mem' ha hb _ := by rw [smul_add, ha, hb]
 

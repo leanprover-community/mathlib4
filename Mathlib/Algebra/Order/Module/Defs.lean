@@ -719,8 +719,8 @@ lemma neg_of_smul_neg_right' [PosSMulMono α β] (h : a • b < 0) (hb : 0 ≤ b
 end LinearOrder
 end SMulWithZero
 
-section MulAction
-variable [Monoid α] [Zero β] [MulAction α β]
+section MonoidAction
+variable [Monoid α] [Zero β] [MonoidAction α β]
 
 section Preorder
 variable [Preorder α] [Preorder β]
@@ -754,7 +754,7 @@ lemma lt_smul_of_one_lt_left [SMulPosStrictMono α β] (hb : 0 < b) (h : 1 < a) 
   simpa only [one_smul] using smul_lt_smul_of_pos_right h hb
 
 end Preorder
-end MulAction
+end MonoidAction
 
 section Semiring
 variable [Semiring α] [AddCommGroup β] [Module α β]
@@ -820,7 +820,7 @@ lemma SMulPosReflectLE_iff_smulPosReflectLT : SMulPosReflectLE α β ↔ SMulPos
 end Ring
 
 section GroupWithZero
-variable [GroupWithZero α] [Preorder α] [Preorder β] [MulAction α β]
+variable [GroupWithZero α] [Preorder α] [Preorder β] [MonoidAction α β]
 
 lemma inv_smul_le_iff_of_pos [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
     a⁻¹ • b₁ ≤ b₂ ↔ b₁ ≤ a • b₂ := by rw [← smul_le_smul_iff_of_pos_left ha, smul_inv_smul₀ ha.ne']

@@ -306,7 +306,7 @@ theorem smul [Star R] [Star A] [SMul R A] [StarModule R A]
   simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 
 theorem smul_iff [Monoid R] [StarMul R] [Star A]
-    [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
+    [MonoidAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
     IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
   refine ⟨fun hrx ↦ ?_, .smul hr⟩
   lift r to Rˣ using hu
@@ -479,7 +479,7 @@ instance [SMul R A] [StarModule R A] : SMul R (selfAdjoint A) where
 theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r • x) = r • (x : A) :=
   rfl
 
-instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
+instance [Monoid R] [MonoidAction R A] [StarModule R A] : MonoidAction R (selfAdjoint A) :=
   Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=

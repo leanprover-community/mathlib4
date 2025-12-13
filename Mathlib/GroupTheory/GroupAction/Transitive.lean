@@ -13,28 +13,28 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 When `f : X →ₑ[φ] Y` is an equivariant map with respect to a map
 of monoids `φ: M → N`,
 
-- `MulAction.IsPretransitive.of_surjective_map` shows that
+- `MonoidAction.IsPretransitive.of_surjective_map` shows that
   the action of `N` on `Y` is pretransitive
   if that of `M` on `X`  is pretransitive.
 
-- `MulAction.isPretransitive_congr` shows that when
+- `MonoidAction.isPretransitive_congr` shows that when
   `φ` is surjective, the action of `N` on `Y` is pretransitive
   iff that of `M` on `X`  is pretransitive.
 
-Given `MulAction G X` where `G` is a group,
-- `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
+Given `MonoidAction G X` where `G` is a group,
+- `MonoidAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
 
-- `MulAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MulAction.IsPretransitive G X`
-  iff `MulAction.orbit G a` is full.
+- `MonoidAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MonoidAction.IsPretransitive G X`
+  iff `MonoidAction.orbit G a` is full.
 
 -/
 
 @[expose] public section
 
-variable {G X : Type*} [Group G] [MulAction G X]
+variable {G X : Type*} [Group G] [MonoidAction G X]
 
-namespace MulAction
+namespace MonoidAction
 
 /-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
 @[to_additive
@@ -58,13 +58,13 @@ theorem isPretransitive_iff_orbit_eq_univ (a : X) :
   intro x
   simp_rw [Set.mem_univ, iff_true, mem_orbit_iff]
 
-variable {M N α β : Type*} [Monoid M] [Monoid N] [MulAction M α] [MulAction N β]
+variable {M N α β : Type*} [Monoid M] [Monoid N] [MonoidAction M α] [MonoidAction N β]
 
 @[to_additive]
 theorem IsPretransitive.of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) (h : IsPretransitive M α) :
     IsPretransitive N β := by
-  apply MulAction.IsPretransitive.mk
+  apply MonoidAction.IsPretransitive.mk
   intro x y
   obtain ⟨x', rfl⟩ := hf x
   obtain ⟨y', rfl⟩ := hf y
@@ -86,4 +86,4 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     apply hf.injective
     simp only [hk, map_smulₛₗ]
 
-end MulAction
+end MonoidAction

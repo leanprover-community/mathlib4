@@ -164,7 +164,7 @@ instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
     IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
+instance : MonoidAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
   Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
 
 end SMul

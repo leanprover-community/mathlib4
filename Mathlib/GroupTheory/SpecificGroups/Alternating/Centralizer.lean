@@ -37,7 +37,7 @@ and conjugacy classes in `alternatingGroup α`.
 
 @[expose] public section
 
-open Equiv Finset Function MulAction
+open Equiv Finset Function MonoidAction
 
 variable {α : Type*} [Fintype α] [DecidableEq α] {g : Perm α}
 

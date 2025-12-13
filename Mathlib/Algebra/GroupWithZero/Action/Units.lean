@@ -54,7 +54,7 @@ lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : 
 end Units
 
 section GroupWithZero
-variable [GroupWithZero α] [MulAction α β] {a : α}
+variable [GroupWithZero α] [MonoidAction α β] {a : α}
 
 @[simp] lemma inv_smul_smul₀ (ha : a ≠ 0) (x : β) : a⁻¹ • a • x = x :=
   inv_smul_smul (Units.mk0 a ha) x

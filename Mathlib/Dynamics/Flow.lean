@@ -153,7 +153,7 @@ theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) 
     restrict ϕ h t x = ϕ t x := rfl
 
 /-- Convert a flow to an additive monoid action. -/
-def toAddAction : AddAction τ α where
+def toAddMonoidAction : AddMonoidAction τ α where
   vadd      := ϕ
   add_vadd  := ϕ.map_add'
   zero_vadd := ϕ.map_zero'
@@ -171,25 +171,25 @@ theorem restrictAddSubmonoid_apply (S : AddSubmonoid τ) (t : S) (x : α) :
 section Orbit
 
 /-- The orbit of a point under a flow. -/
-def orbit (x : α) : Set α := @AddAction.orbit _ _ ϕ.toAddAction.toVAdd x
+def orbit (x : α) : Set α := @AddMonoidAction.orbit _ _ ϕ.toAddMonoidAction.toVAdd x
 
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
 theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := Iff.rfl
 
 theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x :=
-  @AddAction.mem_orbit _ _ ϕ.toAddAction.toVAdd x t
+  @AddMonoidAction.mem_orbit _ _ ϕ.toAddMonoidAction.toVAdd x t
 
-theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
+theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddMonoidAction.mem_orbit_self x
 
-theorem nonempty_orbit (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddAction.nonempty_orbit x
+theorem nonempty_orbit (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddMonoidAction.nonempty_orbit x
 
 theorem mem_orbit_of_mem_orbit {x₁ x₂ : α} (t : τ) (h : x₂ ∈ orbit ϕ x₁) : ϕ t x₂ ∈ orbit ϕ x₁ :=
-  ϕ.toAddAction.mem_orbit_of_mem_orbit t h
+  ϕ.toAddMonoidAction.mem_orbit_of_mem_orbit t h
 
 /-- The orbit of a point under a flow `ϕ` is invariant under `ϕ`. -/
 theorem isInvariant_orbit (x : α) : IsInvariant ϕ (orbit ϕ x) :=
-  fun t _ => ϕ.toAddAction.mem_orbit_of_mem_orbit t
+  fun t _ => ϕ.toAddMonoidAction.mem_orbit_of_mem_orbit t
 
 theorem orbit_restrict (s : Set α) (hs : IsInvariant ϕ s) (x : s) :
     orbit (ϕ.restrict hs) x = Subtype.val ⁻¹' orbit ϕ x :=
@@ -212,7 +212,7 @@ theorem isForwardInvariant_forwardOrbit (x : α) : IsForwardInvariant ϕ (forwar
 
 /-- The forward orbit of a point `x` is contained in the orbit of `x`. -/
 theorem forwardOrbit_subset_orbit (x : α) : forwardOrbit ϕ x ⊆ orbit ϕ x :=
-  ϕ.toAddAction.orbit_addSubmonoid_subset (AddSubmonoid.nonneg τ) x
+  ϕ.toAddMonoidAction.orbit_addSubmonoid_subset (AddSubmonoid.nonneg τ) x
 
 theorem mem_orbit_of_mem_forwardOrbit {x₁ x₂ : α} (h : x₁ ∈ forwardOrbit ϕ x₂) : x₁ ∈ orbit ϕ x₂ :=
   ϕ.forwardOrbit_subset_orbit x₂ h

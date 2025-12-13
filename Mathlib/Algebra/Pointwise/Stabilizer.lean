@@ -20,14 +20,14 @@ This file characterises the stabilizer of a set/finset under the pointwise actio
 open Function MulOpposite Set
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 variable {G H α : Type*}
 
 /-! ### Stabilizer of a set -/
 
 section Set
 section Group
-variable [Group G] [Group H] [MulAction G α] {a : G} {s t : Set α}
+variable [Group G] [Group H] [MonoidAction G α] {a : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma stabilizer_empty : stabilizer G (∅ : Set α) = ⊤ :=
@@ -46,7 +46,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
   refine mem_stabilizer_iff.trans ⟨fun h b ↦ ?_, fun h ↦ ?_⟩
   · rw [← (smul_mem_smul_set_iff : a • b ∈ _ ↔ _), h]
   simp_rw [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
-  exact ((MulAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
+  exact ((MonoidAction.toPerm a).forall_congr' <| by simp [Iff.comm]).1 h
 
 @[to_additive]
 lemma map_stabilizer_le (f : G →* H) (s : Set G) :
@@ -133,7 +133,7 @@ lemma smul_set_stabilizer_subset (ha : a ∈ s) : a • (stabilizer G s : Set G)
 end CommGroup
 end Set
 
-variable [Group G] [Group H] [MulAction G α] {a : G}
+variable [Group G] [Group H] [MonoidAction G α] {a : G}
 
 /-! ### Stabilizer of a subgroup -/
 
@@ -232,11 +232,11 @@ lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
   lift s to Finset α using hs
   classical simp [-mem_stabilizer_iff, mem_stabilizer_finset']
 
-end MulAction
+end MonoidAction
 
 /-! ### Stabilizer in a commutative group -/
 
-namespace MulAction
+namespace MonoidAction
 variable {G : Type*} [CommGroup G] (s : Set G)
 
 @[to_additive (attr := simp)]
@@ -256,4 +256,4 @@ lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   rwa [QuotientGroup.image_coe_inj, mul_smul_comm, stabilizer_mul_self] at h
 
-end MulAction
+end MonoidAction

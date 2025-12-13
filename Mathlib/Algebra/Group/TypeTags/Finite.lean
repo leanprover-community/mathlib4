@@ -15,7 +15,7 @@ public import Mathlib.Data.Fintype.Card
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 universe u
 

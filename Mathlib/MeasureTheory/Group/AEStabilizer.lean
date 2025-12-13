@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.EventuallyConst
 
 In this file we define the a.e. stabilizer of a set under a measure-preserving group action.
 
-The a.e. stabilizer `MulAction.aestabilizer G μ s` of a set `s`
+The a.e. stabilizer `MonoidAction.aestabilizer G μ s` of a set `s`
 is the set of the elements `g : G` such that `s` is a.e.-invariant under `(g • ·)`.
 
 For a measure-preserving group action, this set is a subgroup of `G`.
@@ -34,10 +34,10 @@ but we don't have the corresponding typeclass.
 open Filter Set MeasureTheory
 open scoped Pointwise
 
-variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
+variable (G : Type*) {α : Type*} [Group G] [MonoidAction G α]
   {_ : MeasurableSpace α} (μ : Measure α) [SMulInvariantMeasure G α μ]
 
-namespace MulAction
+namespace MonoidAction
 
 /-- A.e. stabilizer of a set under a group action. -/
 @[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
@@ -76,7 +76,7 @@ lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G 
   | inl h => simp [aestabilizer_congr h]
   | inr h => simp [aestabilizer_congr h]
 
-end MulAction
+end MonoidAction
 
 variable {G μ}
 variable {x y : G} {s : Set α}
@@ -86,11 +86,11 @@ namespace MeasureTheory
 @[to_additive]
 theorem smul_ae_eq_self_of_mem_zpowers (hs : (x • s : Set α) =ᵐ[μ] s)
     (hy : y ∈ Subgroup.zpowers x) : (y • s : Set α) =ᵐ[μ] s := by
-  rw [← MulAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
+  rw [← MonoidAction.mem_aestabilizer, ← Subgroup.zpowers_le] at hs
   exact hs hy
 
 @[to_additive]
 theorem inv_smul_ae_eq_self (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=
-  inv_mem (s := MulAction.aestabilizer G μ s) hs
+  inv_mem (s := MonoidAction.aestabilizer G μ s) hs
 
 end MeasureTheory

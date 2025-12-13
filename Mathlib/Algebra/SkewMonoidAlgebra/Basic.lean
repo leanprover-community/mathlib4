@@ -804,7 +804,7 @@ instance [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
 
 end Module.Free
 
-variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
+variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MonoidAction G α]
 
 /-- Scalar multiplication acting on the domain.
 
@@ -821,12 +821,12 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `comapSMul` is multiplicative -/
-def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
+def comapMonoidAction : MonoidAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
 
-attribute [local instance] comapMulAction
+attribute [local instance] comapMonoidAction
 /-- This is not an instance as it conflicts with `SkewMonoidAlgebra.distribMulAction`
   when `G = kˣ`. -/
 def comapDistribMulActionSelf [AddCommMonoid k] :

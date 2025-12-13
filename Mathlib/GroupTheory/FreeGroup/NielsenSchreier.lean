@@ -102,7 +102,7 @@ purposes.
 
 Analogous to the fact that a covering space of a graph is a graph. (A free groupoid is like a graph,
 and a groupoid of elements is like a covering space.) -/
-instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulAction G A] :
+instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MonoidAction G A] :
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩

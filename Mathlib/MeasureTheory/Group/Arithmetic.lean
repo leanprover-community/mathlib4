@@ -494,23 +494,23 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
   ⟨measurable_mul⟩
 
 @[to_additive]
-instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MulAction M α]
+instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M] [MonoidAction M α]
     [MeasurableConstSMul M α] (s : Submonoid M) : MeasurableConstSMul s α where
   measurable_const_smul c := by simpa only using measurable_const_smul (c : M)
 
 @[to_additive]
 instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
-    [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α where
+    [MonoidAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α where
   measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
 
 @[to_additive]
-instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]
+instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MonoidAction G α]
     [MeasurableConstSMul G α] (s : Subgroup G) : MeasurableConstSMul s α :=
   s.toSubmonoid.instMeasurableConstSMul
 
 @[to_additive]
 instance Subgroup.instMeasurableSMul {G α} [MeasurableSpace G] [MeasurableSpace α] [Group G]
-    [MulAction G α] [MeasurableSMul G α] (s : Subgroup G) : MeasurableSMul s α :=
+    [MonoidAction G α] [MeasurableSMul G α] (s : Subgroup G) : MeasurableSMul s α :=
   s.toSubmonoid.instMeasurableSMul
 
 section SMul
@@ -650,11 +650,11 @@ theorem measurableSMul₂_iterateMulAct : MeasurableSMul₂ (IterateMulAct f) α
 
 end IterateMulAct
 
-section MulAction
+section MonoidAction
 variable {G G₀ M β α : Type*} [MeasurableSpace β] [MeasurableSpace α] {f : α → β} {μ : Measure α}
 
 section Group
-variable {G : Type*} [Group G] [MulAction G β] [MeasurableConstSMul G β]
+variable {G : Type*} [Group G] [MonoidAction G β] [MeasurableConstSMul G β]
 
 @[to_additive]
 theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ Measurable f :=
@@ -668,7 +668,7 @@ theorem aemeasurable_const_smul_iff (c : G) :
 end Group
 
 section Monoid
-variable [Monoid M] [MulAction M β]
+variable [Monoid M] [MonoidAction M β]
 
 section MeasurableConstSMul
 variable [MeasurableConstSMul M β]
@@ -706,7 +706,7 @@ end MeasurableSMul
 end Monoid
 
 section GroupWithZero
-variable [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β] [MeasurableSMul G₀ β]
+variable [GroupWithZero G₀] [MeasurableSpace G₀] [MonoidAction G₀ β] [MeasurableSMul G₀ β]
 
 theorem measurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     (Measurable fun x => c • f x) ↔ Measurable f :=
@@ -717,7 +717,7 @@ theorem aemeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
   (IsUnit.mk0 c hc).aemeasurable_const_smul_iff
 
 end GroupWithZero
-end MulAction
+end MonoidAction
 
 /-!
 ### Opposite monoid

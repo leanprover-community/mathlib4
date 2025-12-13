@@ -106,8 +106,8 @@ instance instIsCentralScalar [SMul Rᵐᵒᵖ ℝ≥0∞] [IsCentralScalar R ℝ
 
 end SMul
 
-instance instMulAction {R : Type*} [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
-    MulAction R (OuterMeasure α) :=
+instance instMonoidAction {R : Type*} [Monoid R] [MonoidAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
+    MonoidAction R (OuterMeasure α) :=
   Injective.mulAction _ coe_fn_injective coe_smul
 
 instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=

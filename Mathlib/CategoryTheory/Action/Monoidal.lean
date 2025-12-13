@@ -227,7 +227,7 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     left_inv _ := Prod.ext rfl <| by simp
     right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
       ext _
-      simp only [tensorObj_V, tensor_ρ, types_comp_apply, tensor_apply, ofMulAction_apply]
+      simp only [tensorObj_V, tensor_ρ, types_comp_apply, tensor_apply, ofMonoidAction_apply]
       simp
 
 /-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
@@ -258,8 +258,8 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
     induction x using Fin.cases
     <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
       Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
-      leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
-    <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
+      leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMonoidAction_apply]
+    <;> simp [ofMonoidAction_V, types_tensorObj_def, Fin.tail]
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
@@ -269,14 +269,14 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
   | zero =>
     funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
-      ofMulAction_V]
+      ofMonoidAction_V]
   | succ n hn =>
     funext x
     induction x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom,
         tensorObj_V, types_comp_apply, leftRegularTensorIso_inv_hom, tensor_ρ, tensor_apply,
-        ofMulAction_apply]
-    <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
+        ofMonoidAction_apply]
+    <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMonoidAction_V]
 
 end
 

@@ -15,13 +15,13 @@ A proof of theorems of Jordan regarding primitive permutation groups.
 
 This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-1964].
 
-- `MulAction.IsPreprimitive.is_two_pretransitive` and
-  `MulAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
+- `MonoidAction.IsPreprimitive.is_two_pretransitive` and
+  `MonoidAction.IsPreprimitive.is_two_preprimitive` are technical lemmas
   that prove 2-pretransitivity / 2-preprimitivity for some group
   primitive actions given the transitivity / primitivity of
   `ofFixingSubgroup G s` (Wielandt, 13.1)
 
-- `MulAction.IsPreprimitive.isMultiplyPreprimitive`:
+- `MonoidAction.IsPreprimitive.isMultiplyPreprimitive`:
   A multiple preprimitivity criterion of Jordan (1871) for a preprimitive
   action: the hypothesis is the preprimitivity of the `SubMulAction`
   of `fixingSubgroup s` on `ofFixingSubgroup G s` (Wielandt, 13.2)
@@ -46,13 +46,13 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 
 @[expose] public section
 
-open MulAction SubMulAction Subgroup
+open MonoidAction SubMulAction Subgroup
 
 open scoped Pointwise
 
 section Jordan
 
-variable {G α : Type*} [Group G] [MulAction G α]
+variable {G α : Type*} [Group G] [MonoidAction G α]
 
 /-- In a 2-transitive action, the normal closure of stabilizers is the full group. -/
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
@@ -98,13 +98,13 @@ proof_wanted IsPreprimitive.is_two_pretransitive'
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
-open MulAction.IsPreprimitive
+open MonoidAction.IsPreprimitive
 
 open scoped Pointwise
 
-/-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
-and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
-theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
+/-- Simultaneously prove `MonoidAction.IsPreprimitive.is_two_pretransitive`
+and `MonoidAction.IsPreprimitive.is_two_preprimitive`. -/
+theorem MonoidAction.IsPreprimitive.is_two_motive_of_is_motive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α) :
     (IsPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s)
@@ -221,7 +221,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     exact IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans hsgs_ne_top
 
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
-theorem MulAction.IsPreprimitive.is_two_pretransitive
+theorem MonoidAction.IsPreprimitive.is_two_pretransitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
@@ -229,7 +229,7 @@ theorem MulAction.IsPreprimitive.is_two_pretransitive
   (hG.is_two_motive_of_is_motive hsn hsn').1 hs_trans
 
 /-- A criterion due to Jordan for being 2-preprimitive (Wielandt, 13.1) -/
-theorem MulAction.IsPreprimitive.is_two_preprimitive
+theorem MonoidAction.IsPreprimitive.is_two_preprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
@@ -244,7 +244,7 @@ proof_wanted is_two_preprimitive_strong_jordan
     IsMultiplyPreprimitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
-theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
+theorem MonoidAction.IsPreprimitive.isMultiplyPreprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
     (hprim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
@@ -311,7 +311,7 @@ theorem subgroup_eq_top_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG 
   apply (Nat.factorial_le hα).trans
   rwa [Nat.factorial_two, Nat.succ_le_iff, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
 
-theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K α]
+theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MonoidAction K α]
     (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) (n : ℕ) :
     IsMultiplyPretransitive K α n := by
   have : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
@@ -319,12 +319,12 @@ theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K
   have : Fintype α := Fintype.ofFinite α
   suffices h2 : IsMultiplyPretransitive K α 2 by
     by_cases hn : n ≤ 2
-    · apply MulAction.isMultiplyPretransitive_of_le' hn
+    · apply MonoidAction.isMultiplyPretransitive_of_le' hn
       simp [← hα]
     · suffices (IsEmpty (Fin n ↪ α)) by infer_instance
       rwa [← not_nonempty_iff, Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
         ← Nat.card_eq_fintype_card, hα]
-  let φ := MulAction.toPermHom K α
+  let φ := MonoidAction.toPermHom K α
   let f : α →ₑ[φ] α :=
     { toFun := id
       map_smul' := fun _ _ ↦ rfl }

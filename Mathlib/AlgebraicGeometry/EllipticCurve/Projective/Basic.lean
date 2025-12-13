@@ -147,12 +147,12 @@ lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f 
 /-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]
 scoped instance : Setoid <| Fin 3 → R :=
-  MulAction.orbitRel Rˣ <| Fin 3 → R
+  MonoidAction.orbitRel Rˣ <| Fin 3 → R
 
 variable (R) in
 /-- The equivalence class of a projective point representative on a Weierstrass curve. -/
 abbrev PointClass : Type r :=
-  MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
+  MonoidAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
   ⟨hu.unit, rfl⟩

@@ -14,7 +14,7 @@ public import Mathlib.Order.RelIso.Basic
 
 @[expose] public section
 
-assert_not_exists MulAction MonoidWithZero
+assert_not_exists MonoidAction MonoidWithZero
 
 variable {α : Type*} {r : α → α → Prop}
 

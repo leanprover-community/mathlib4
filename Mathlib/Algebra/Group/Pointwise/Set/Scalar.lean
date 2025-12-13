@@ -51,7 +51,7 @@ pointwise subtraction
 
 @[expose] public section
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
+assert_not_exists Set.iUnion MonoidAction MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 

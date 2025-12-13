@@ -53,12 +53,12 @@ instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar 
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
 @[to_additive]
-instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
+instance mulAction [Monoid R] [MonoidAction R M] : MonoidAction (ULift R) M where
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
 @[to_additive]
-instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
+instance mulAction' [Monoid R] [MonoidAction R M] : MonoidAction R (ULift M) where
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
 

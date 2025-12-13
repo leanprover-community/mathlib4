@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 # Complex number as a vector space over `ℝ`
 
 This file contains the following instances:
-* Any `•`-structure (`SMul`, `MulAction`, `DistribMulAction`, `Module`, `Algebra`) on
+* Any `•`-structure (`SMul`, `MonoidAction`, `DistribMulAction`, `Module`, `Algebra`) on
   `ℝ` imbues a corresponding structure on `ℂ`. This includes the statement that `ℂ` is an `ℝ`
   algebra.
 * any complex vector space is a real vector space;
@@ -76,7 +76,7 @@ instance (priority := 90) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R 
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
-instance (priority := 90) mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
+instance (priority := 90) mulAction [Monoid R] [MonoidAction R ℝ] : MonoidAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 

@@ -595,7 +595,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
     | succ n ih => simp [add_smul]
     | pred n ih => simp [sub_smul]⟩
 
-instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
+instance CompatibleSMul.units {R S : Type*} [Monoid R] [MonoidAction R M] [MonoidAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
   ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x :)⟩
 

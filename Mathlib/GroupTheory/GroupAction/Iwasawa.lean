@@ -37,11 +37,11 @@ Additivize. The issue is that it requires to additivize `commutator`
 
 @[expose] public section
 
-namespace MulAction
+namespace MonoidAction
 
 open scoped BigOperators Pointwise
 
-variable (M : Type*) [Group M] (α : Type*) [MulAction M α]
+variable (M : Type*) [Group M] (α : Type*) [MonoidAction M α]
 
 /-- The structure underlying the Iwasawa criterion -/
 structure IwasawaStructure where
@@ -62,7 +62,7 @@ namespace IwasawaStructure
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
 theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
-    (N : Subgroup M) [nN : N.Normal] (hNX : MulAction.fixedPoints N α ≠ .univ) :
+    (N : Subgroup M) [nN : N.Normal] (hNX : MonoidAction.fixedPoints N α ≠ .univ) :
     commutator M ≤ N := by
   have is_transN := IsQuasiPreprimitive.isPretransitive_of_normal hNX
   have ntα : Nontrivial α := nontrivial_of_fixedPoints_ne_univ hNX
@@ -71,7 +71,7 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   -- We have to prove that N ⊔ IwaS.T x = ⊤
   rw [eq_top_iff, ← IwaS.is_generator, iSup_le_iff]
   intro x
-  obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq N a x
+  obtain ⟨g, rfl⟩ := MonoidAction.exists_smul_eq N a x
   rw [Subgroup.smul_def, IwaS.is_conj g a]
   rintro _ ⟨k, hk, rfl⟩
   have hg' : ↑g ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_left (Subtype.mem g)
@@ -93,4 +93,4 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     exact Set.eq_univ_iff_forall.mp h x ⟨n, hn⟩
   | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
 
-end MulAction.IwasawaStructure
+end MonoidAction.IwasawaStructure

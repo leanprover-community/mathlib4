@@ -16,7 +16,7 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 
 @[expose] public section
 
-assert_not_exists DenselyOrdered MulAction Ring
+assert_not_exists DenselyOrdered MonoidAction Ring
 
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]

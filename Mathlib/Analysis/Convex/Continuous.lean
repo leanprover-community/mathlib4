@@ -136,7 +136,7 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     simp only [Filter.eventually_map] at hr ⊢
     obtain ⟨ε, hε, hr⟩ := Metric.eventually_nhds_iff.1 <| hr.and (hC.eventually_mem hx₀)
     refine Metric.eventually_nhds_iff.2 ⟨ε * δ, by positivity, fun z hz ↦ ?_⟩
-    have hx₀' : δ⁻¹ • (x - y) + y = x₀ := MulAction.injective₀ (sub_ne_zero.2 hδ₁.ne') <| by
+    have hx₀' : δ⁻¹ • (x - y) + y = x₀ := MonoidAction.injective₀ (sub_ne_zero.2 hδ₁.ne') <| by
       simp [y, smul_sub, smul_smul, hδ₀.ne', div_eq_mul_inv, sub_ne_zero.2 hδ₁.ne', mul_left_comm,
         sub_mul, sub_smul]
     let w := δ⁻¹ • (z - y) + y

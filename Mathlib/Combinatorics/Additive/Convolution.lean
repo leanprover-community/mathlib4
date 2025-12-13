@@ -18,7 +18,7 @@ well as under the left and right actions on `A`, `B`, and the function argument.
 
 @[expose] public section
 
-open MulOpposite MulAction
+open MulOpposite MonoidAction
 open scoped Pointwise RightActions
 
 namespace Finset

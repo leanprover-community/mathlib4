@@ -16,7 +16,7 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 
 ## Definitions
 
-- `MulAction.IsPreprimitive G X`
+- `MonoidAction.IsPreprimitive G X`
   A structure that says that the action of a type `G` on a type `X`
   (defined by an instance `SMul G X`) is *preprimitive*,
   namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
@@ -30,7 +30,7 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
   Moreover, the classical notion is *primitive*,
   which further assumes that `X` is not empty.
 
-- `MulAction.IsQuasiPreprimitive G X`
+- `MonoidAction.IsQuasiPreprimitive G X`
   A structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
   namely, normal subgroups of `G` which act nontrivially act pretransitively.
 
@@ -39,30 +39,30 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 
 ## Relation with stabilizers
 
-- `MulAction.isSimpleOrderBlockMem_iff_isPreprimitive`
+- `MonoidAction.isSimpleOrderBlockMem_iff_isPreprimitive`
   relates primitivity and the fact that the inclusion order on blocks containing is simple.
 
-- `MulAction.isCoatom_stabilizer_iff_preprimitive`
+- `MonoidAction.isCoatom_stabilizer_iff_preprimitive`
   An action is preprimitive iff the stabilizers of points are maximal subgroups.
 
-- `MulAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive`
+- `MonoidAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive`
   Stabilizers of points under a preprimitive action are maximal subgroups.
 
 ## Relation with normal subgroups
 
-- `MulAction.IsPreprimitive.isQuasipreprimitive`
+- `MonoidAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
 
 ## Particular results for actions on finite types
 
-- `MulAction.IsPreprimitive.of_prime_card` :
+- `MonoidAction.IsPreprimitive.of_prime_card` :
   A pretransitive action on a finite type of prime cardinal is preprimitive.
 
-- `MulAction.IsPreprimitive.of_card_lt`
+- `MonoidAction.IsPreprimitive.of_card_lt`
   Given an equivariant map from a preprimitive action,
   if the image is at least twice the codomain, then the codomain is preprimitive.
 
-- `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
+- `MonoidAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
   For a preprimitive action, a subset which is neither empty nor full has a translate
   which contains a given point and avoids another one.
 
@@ -72,17 +72,19 @@ public import Mathlib.GroupTheory.GroupAction.Transitive
 
 open Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 variable (G : Type*) (X : Type*)
 
 -- Note : if the action is degenerate, singletons may not be blocks.
 /-- An additive action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
-class _root_.AddAction.IsPreprimitive [VAdd G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsPreprimitive [VAdd G X] : Prop
+    extends AddMonoidAction.IsPretransitive G X where
   /-- An action is preprimitive if it is pretransitive and
   the only blocks are the trivial ones -/
-  isTrivialBlock_of_isBlock : ∀ {B : Set X}, AddAction.IsBlock G B → AddAction.IsTrivialBlock B
+  isTrivialBlock_of_isBlock :
+    ∀ {B : Set X}, AddMonoidAction.IsBlock G B → AddMonoidAction.IsTrivialBlock B
 
 /-- An action is preprimitive if it is pretransitive and
 the only blocks are the trivial ones -/
@@ -96,16 +98,16 @@ open IsPreprimitive
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
-class _root_.AddAction.IsQuasiPreprimitive
-    [AddGroup G] [AddAction G X] : Prop extends AddAction.IsPretransitive G X where
+class _root_.AddMonoidAction.IsQuasiPreprimitive
+    [AddGroup G] [AddMonoidAction G X] : Prop extends AddMonoidAction.IsPretransitive G X where
   isPretransitive_of_normal :
-    ∀ {N : AddSubgroup G} [N.Normal], AddAction.fixedPoints N X ≠ .univ →
-      AddAction.IsPretransitive N X
+    ∀ {N : AddSubgroup G} [N.Normal], AddMonoidAction.fixedPoints N X ≠ .univ →
+      AddMonoidAction.IsPretransitive N X
 
 /-- An action of a group is quasipreprimitive if any normal subgroup
 that has no fixed point acts pretransitively -/
 @[to_additive]
-class IsQuasiPreprimitive [Group G] [MulAction G X] : Prop extends IsPretransitive G X where
+class IsQuasiPreprimitive [Group G] [MonoidAction G X] : Prop extends IsPretransitive G X where
   isPretransitive_of_normal :
     ∀ {N : Subgroup G} [N.Normal], fixedPoints N X ≠ .univ → IsPretransitive N X
 
@@ -135,7 +137,7 @@ theorem isTrivialBlock_of_card_le_two
   have := B.ncard_le_card
   grind
 
-variable [Group G] [MulAction G X]
+variable [Group G] [MonoidAction G X]
 
 open scoped BigOperators Pointwise
 
@@ -173,7 +175,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
       intro g
       rw [← Set.mem_singleton_iff]; rw [← H]
       exact mem_orbit a g
-    · intro x; rw [← MulAction.mem_orbit_iff, H]; exact Set.mem_univ x
+    · intro x; rw [← MonoidAction.mem_orbit_iff, H]; exact Set.mem_univ x
   { isTrivialBlock_of_isBlock {B} hB := by
       obtain rfl | ⟨b, hb⟩ := B.eq_empty_or_nonempty
       · simp [IsTrivialBlock]
@@ -182,8 +184,8 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
 @[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+alias _root_.AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
+  AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
@@ -203,8 +205,8 @@ theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
 
 section EquivariantMap
 
-variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
-variable {N β : Type*} [Group N] [MulAction N β]
+variable {M : Type*} [Group M] {α : Type*} [MonoidAction M α]
+variable {N β : Type*} [Group N] [MonoidAction N β]
 variable {φ : M → N} {f : α →ₑ[φ] β}
 
 @[to_additive]
@@ -234,7 +236,7 @@ end EquivariantMap
 
 section Stabilizer
 
-variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
+variable (G : Type*) [Group G] {X : Type*} [MonoidAction G X]
 
 open scoped BigOperators Pointwise
 
@@ -284,7 +286,7 @@ end Stabilizer
 
 section Normal
 
-variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
+variable {M : Type*} [Group M] {α : Type*} [MonoidAction M α]
 
 /-- In a preprimitive action, any normal subgroup that acts nontrivially is pretransitive
 (Wielandt, th. 7.1). -/
@@ -305,7 +307,7 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
     rw [← Set.mem_singleton_iff]
     suffices orbit N a = {a} by rw [← this]; use n
     ext b
-    rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
+    rw [Set.Subsingleton.eq_singleton_of_mem h (MonoidAction.mem_orbit_self a)]
 
 end Normal
 
@@ -313,7 +315,7 @@ section Finite
 
 namespace IsPreprimitive
 
-variable {H Y : Type*} [Group H] [MulAction H Y]
+variable {H Y : Type*} [Group H] [MonoidAction H Y]
 
 /-- A pretransitive action on a set of prime order is preprimitive -/
 @[to_additive /-- A pretransitive action on a set of prime order is preprimitive -/]
@@ -400,12 +402,12 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
       rw [this, Set.smul_set_univ]
     -- ∃ (g : M), a ∈ g • A
     obtain ⟨x, hx⟩ := hA
-    obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
+    obtain ⟨g, hg⟩ := MonoidAction.exists_smul_eq G x a
     use g, x
 
 @[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
-  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
+alias _root_.AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
+  AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
@@ -414,4 +416,4 @@ end IsPreprimitive
 
 end Finite
 
-end MulAction
+end MonoidAction

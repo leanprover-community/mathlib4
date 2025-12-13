@@ -42,8 +42,8 @@ open scoped Pointwise NNReal
 
 namespace MeasurableEquiv
 
-variable {G G₀ α : Type*} [MeasurableSpace α] [Group G] [GroupWithZero G₀] [MulAction G α]
-  [MulAction G₀ α] [MeasurableConstSMul G α] [MeasurableConstSMul G₀ α]
+variable {G G₀ α : Type*} [MeasurableSpace α] [Group G] [GroupWithZero G₀] [MonoidAction G α]
+  [MonoidAction G₀ α] [MeasurableConstSMul G α] [MeasurableConstSMul G₀ α]
 
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
@@ -51,7 +51,7 @@ automorphism of `α`. -/
       /-- If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
       defines a measurable automorphism of `α`. -/]
 def smul (c : G) : α ≃ᵐ α where
-  toEquiv := MulAction.toPerm c
+  toEquiv := MonoidAction.toPerm c
   measurable_toFun := measurable_const_smul c
   measurable_invFun := measurable_const_smul c⁻¹
 
@@ -221,7 +221,7 @@ lemma _root_.measurableEmbedding_divLeft [MeasurableMul G] [MeasurableInv G] (g 
 end MeasurableEquiv
 
 namespace MeasureTheory.Measure
-variable {G A : Type*} [Group G] [MulAction G A] [MeasurableSpace A]
+variable {G A : Type*} [Group G] [MonoidAction G A] [MeasurableSpace A]
   [MeasurableConstSMul G A] {μ ν : Measure A} {g : G}
 
 noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where

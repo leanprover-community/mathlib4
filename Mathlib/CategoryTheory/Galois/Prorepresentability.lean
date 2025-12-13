@@ -413,9 +413,9 @@ end EndAutGaloisIsomorphism
 /-- The `Aut F` action on the fiber of a Galois object is transitive. See
 `pretransitive_of_isConnected` for the same result for connected objects. -/
 theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
-    MulAction.IsPretransitive (Aut F) (F.obj X) := by
+    MonoidAction.IsPretransitive (Aut F) (F.obj X) := by
   refine ⟨fun x y ↦ ?_⟩
-  obtain ⟨(φ : Aut X), h⟩ := MulAction.IsPretransitive.exists_smul_eq (M := Aut X) x y
+  obtain ⟨(φ : Aut X), h⟩ := MonoidAction.IsPretransitive.exists_smul_eq (M := Aut X) x y
   obtain ⟨a, ha⟩ := AutGalois.π_surjective F ⟨X, x, inferInstance⟩ φ
   use (autMulEquivAutGalois F).symm ⟨a⟩
   simpa [mulAction_def, ha]
@@ -423,14 +423,14 @@ theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
 /-- The `Aut F` action on the fiber of a connected object is transitive. For a version
 with less restrictive universe assumptions, see `FiberFunctor.isPretransitive_of_isConnected`. -/
 private instance FiberFunctor.isPretransitive_of_isConnected' (X : C) [IsConnected X] :
-    MulAction.IsPretransitive (Aut F) (F.obj X) := by
+    MonoidAction.IsPretransitive (Aut F) (F.obj X) := by
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_connected F X
   have hs : Function.Surjective (F.map f) := surjective_of_nonempty_fiber_of_isConnected F f
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨a, ha⟩ := hs x
   obtain ⟨b, hb⟩ := hs y
-  have : MulAction.IsPretransitive (Aut F) (F.obj A) := isPretransitive_of_isGalois F A
-  obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
+  have : MonoidAction.IsPretransitive (Aut F) (F.obj A) := isPretransitive_of_isGalois F A
+  obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MonoidAction.exists_smul_eq (Aut F) a b
   use σ
   rw [← ha, ← hb]
   change (F.map f ≫ σ.hom.app X) a = F.map f b
@@ -444,14 +444,14 @@ variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
 /-- The `Aut F` action on the fiber of a connected object is transitive. -/
 instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
-    MulAction.IsPretransitive (Aut F) (F.obj X) where
+    MonoidAction.IsPretransitive (Aut F) (F.obj X) where
   exists_smul_eq x y := by
     let F' : C ⥤ FintypeCat.{u₂} := F ⋙ FintypeCat.uSwitch.{w, u₂}
     letI : FiberFunctor F' := FiberFunctor.comp_right _
     let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).uSwitchEquiv
     set x' : F'.obj X := (e X).symm x with hx'
     set y' : F'.obj X := (e X).symm y with hy'
-    obtain ⟨g', (hg' : g'.hom.app X x' = y')⟩ := MulAction.exists_smul_eq (Aut F') x' y'
+    obtain ⟨g', (hg' : g'.hom.app X x' = y')⟩ := MonoidAction.exists_smul_eq (Aut F') x' y'
     let gapp (Y : C) : F.obj Y ≅ F.obj Y := FintypeCat.equivEquivIso <|
       (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
     let g : F ≅ F := NatIso.ofComponents gapp <| fun {X Y} f ↦ by

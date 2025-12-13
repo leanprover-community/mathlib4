@@ -112,8 +112,8 @@ end SMulWithZero
 section GroupWithZero
 variable [GroupWithZero α]
 
-section MulAction
-variable [MulAction α β] {s t : Finset β} {a : α} {b : β}
+section MonoidAction
+variable [MonoidAction α β] {s t : Finset β} {a : α} {b : β}
 
 @[simp] lemma smul_mem_smul_finset_iff₀ (ha : a ≠ 0) : a • b ∈ a • s ↔ b ∈ s :=
   smul_mem_smul_finset_iff (Units.mk0 a ha)
@@ -135,14 +135,14 @@ lemma subset_smul_finset_iff₀ (ha : a ≠ 0) : s ⊆ a • t ↔ a⁻¹ • s 
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_finset_iff
 
 lemma smul_finset_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter _ _ <| MulAction.injective₀ ha
+  image_inter _ _ <| MonoidAction.injective₀ ha
 
 lemma smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
-  image_sdiff _ _ <| MulAction.injective₀ ha
+  image_sdiff _ _ <| MonoidAction.injective₀ ha
 
 open scoped symmDiff in
 lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff _ _ <| MulAction.injective₀ ha
+  image_symmDiff _ _ <| MonoidAction.injective₀ ha
 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
@@ -156,7 +156,7 @@ lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ :
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_univ₀' hs
 
-end MulAction
+end MonoidAction
 
 variable [DecidableEq α] {s : Finset α}
 

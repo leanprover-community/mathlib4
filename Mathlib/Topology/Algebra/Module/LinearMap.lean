@@ -246,7 +246,7 @@ variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [Continuous
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
-instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
+instance mulAction : MonoidAction S₂ (M₁ →SL[σ₁₂] M₂) where
   one_smul _f := ext fun _x => one_smul _ _
   mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
 
@@ -569,7 +569,7 @@ variable [ContinuousAdd M₁]
 
 /-- The tautological action by `M₁ →L[R₁] M₁` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
   Module.compHom _ toLinearMapRingHom
 

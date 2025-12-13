@@ -383,12 +383,12 @@ lemma apply_sub_id_partialSum_eq (n : ℕ) (g : G) (x : V) :
 
 end AddCommGroup
 
-section MulAction
+section MonoidAction
 
-variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAction G H]
+variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MonoidAction G H]
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
-noncomputable def ofMulAction : Representation k G (H →₀ k) where
+noncomputable def ofMonoidAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
@@ -398,22 +398,22 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
     simp [mul_smul]
 
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
-noncomputable abbrev leftRegular := ofMulAction k G G
+noncomputable abbrev leftRegular := ofMonoidAction k G G
 
 /-- The natural `k`-linear `G`-representation on `k[Gⁿ]` induced by left multiplication in `G`. -/
-noncomputable abbrev diagonal (n : ℕ) := ofMulAction k G (Fin n → G)
+noncomputable abbrev diagonal (n : ℕ) := ofMonoidAction k G (Fin n → G)
 
 variable {k G H}
 
-theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
+theorem ofMonoidAction_def (g : G) : ofMonoidAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
 @[simp]
-theorem ofMulAction_single (g : G) (x : H) (r : k) :
-    ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
+theorem ofMonoidAction_single (g : G) (x : H) (r : k) :
+    ofMonoidAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
 
-end MulAction
+end MonoidAction
 section DistribMulAction
 
 variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]
@@ -466,26 +466,26 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 variable (ρ : Representation k G V)
 
 @[simp]
-theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
-    ofMulAction k G H g f h = f (g⁻¹ • h) := by
+theorem ofMonoidAction_apply {H : Type*} [MonoidAction G H] (g : G) (f : H →₀ k) (h : H) :
+    ofMonoidAction k G H g f h = f (g⁻¹ • h) := by
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h
-  change ofMulAction k G H g f (g • h') = f h'
+  change ofMonoidAction k G H g f (g • h') = f h'
   have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
-  simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
+  simp only [ofMonoidAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
 
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance :
-    HMul k[G] (ofMulAction k G G).asModule k[G] :=
+    HMul k[G] (ofMonoidAction k G G).asModule k[G] :=
   inferInstanceAs <| HMul k[G] k[G] k[G]
 
-theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModule) :
+theorem ofMonoidAction_self_smul_eq_mul (x : k[G]) (y : (ofMonoidAction k G G).asModule) :
     x • y = (x * y : k[G]) := by
   induction x using MonoidAlgebra.induction_on with
   | hM g =>
-    change asAlgebraHom (ofMulAction k G G) _ _ = _
+    change asAlgebraHom (ofMonoidAction k G G) _ _ = _
     ext
     -- Porting note: single_mul_apply not firing in simp without parentheses, probably due to the
     -- defeq abuse in `change` above.
@@ -497,8 +497,8 @@ theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModul
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/
 @[simps]
-noncomputable def ofMulActionSelfAsModuleEquiv : (ofMulAction k G G).asModule ≃ₗ[k[G]] k[G] :=
-  { (asModuleEquiv _).toAddEquiv with map_smul' := ofMulAction_self_smul_eq_mul }
+noncomputable def ofMonoidActionSelfAsModuleEquiv : (ofMonoidAction k G G).asModule ≃ₗ[k[G]] k[G] :=
+  { (asModuleEquiv _).toAddEquiv with map_smul' := ofMonoidAction_self_smul_eq_mul }
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.
@@ -735,7 +735,7 @@ noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (fre
         change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
-        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
+        simp [free, MonoidAlgebra, asModule, ofMonoidAction_def, mapDomain, smul_sum, single_sum] }
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
 noncomputable def freeAsModuleBasis : Basis α k[G] (free k G α).asModule where

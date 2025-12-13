@@ -141,7 +141,7 @@ theorem zero_smul : (0 : R) • f = 0 := by
 theorem one_smul : (1 : R) • f = f := by
   ext S; simp only [smul_def, Pi.smul_apply, _root_.one_smul]
 
-instance : MulAction R (M →ₚₗ[R] N) where
+instance : MonoidAction R (M →ₚₗ[R] N) where
   one_smul := one_smul
   mul_smul a b f := by ext; simp only [smul_def, mul_smul]
 

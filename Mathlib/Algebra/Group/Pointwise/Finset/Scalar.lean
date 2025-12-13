@@ -46,7 +46,7 @@ pointwise subtraction
 
 @[expose] public section
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
+assert_not_exists Cardinal Finset.dens MonoidWithZero MonoidAction IsOrderedMonoid
 
 open Function MulOpposite
 

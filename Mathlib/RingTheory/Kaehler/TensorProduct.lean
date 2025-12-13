@@ -32,7 +32,7 @@ namespace KaehlerDifferential
 
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
-abbrev mulActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
+abbrev mulActionBaseChange : MonoidAction A (S ⊗[R] Ω[A⁄R]) :=
   (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
 attribute [local instance] mulActionBaseChange

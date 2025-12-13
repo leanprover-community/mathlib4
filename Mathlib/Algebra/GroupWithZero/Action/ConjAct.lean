@@ -26,7 +26,7 @@ instance : GroupWithZero (ConjAct G₀) := ‹GroupWithZero G₀›
 @[simp] lemma ofConjAct_zero : ofConjAct 0 = (0 : G₀) := rfl
 @[simp] lemma toConjAct_zero : toConjAct (0 : G₀) = 0 := rfl
 
-instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
+instance mulAction₀ : MonoidAction (ConjAct G₀) G₀ where
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_assoc]
 

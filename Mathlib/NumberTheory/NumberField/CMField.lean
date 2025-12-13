@@ -200,7 +200,7 @@ theorem complexConj_eq_self_iff (x : K) :
     complexConj K x = x ↔ x ∈ K⁺ := by
   convert (IntermediateField.mem_fixedField_iff (⊤ : Subgroup (K ≃ₐ[K⁺] K)) x).symm using 1
   · rw [← zpowers_complexConj_eq_top, Subgroup.forall_mem_zpowers]
-    exact (MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy (g := (complexConj K))).symm
+    exact (MonoidAction.mem_fixedBy_zpowers_iff_mem_fixedBy (g := (complexConj K))).symm
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
     aesop
 

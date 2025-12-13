@@ -74,7 +74,7 @@ Instances for the following typeclasses are defined:
 * `IsTopologicalSemiring ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `ContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
-* `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
+* `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MonoidAction ℝ α`)
 
 Everything is inherited from the corresponding structures on the reals.
 -/
@@ -90,7 +90,7 @@ instance : ContinuousInv₀ ℝ≥0 := inferInstance
 
 variable {α : Type*}
 
-instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
+instance [TopologicalSpace α] [MonoidAction ℝ α] [ContinuousSMul ℝ α] :
     ContinuousSMul ℝ≥0 α where
   continuous_smul := continuous_induced_dom.fst'.smul continuous_snd
 

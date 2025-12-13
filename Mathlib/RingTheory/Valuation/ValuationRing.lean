@@ -73,7 +73,7 @@ variable (A : Type u) [CommRing A]
 variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
-def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
+def ValueGroup : Type v := Quotient (MonoidAction.orbitRel Aˣ K)
 
 instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 

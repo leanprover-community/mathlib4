@@ -29,7 +29,7 @@ namespace SubMulAction
 
 section One
 
-variable [Monoid R] [MulAction R M] [One M]
+variable [Monoid R] [MonoidAction R M] [One M]
 
 instance : One (SubMulAction R M) where
   one :=
@@ -50,7 +50,7 @@ end One
 
 section Mul
 
-variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
+variable [Monoid R] [MonoidAction R M] [Mul M] [IsScalarTower R M M]
 
 instance : Mul (SubMulAction R M) where
   mul p q :=
@@ -69,7 +69,7 @@ end Mul
 
 section MulOneClass
 
-variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
+variable [Monoid R] [MonoidAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 instance : MulOneClass (SubMulAction R M) where
   mul_one a := by
@@ -93,7 +93,7 @@ end MulOneClass
 
 section Semigroup
 
-variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
+variable [Monoid R] [MonoidAction R M] [Semigroup M] [IsScalarTower R M M]
 
 instance : Semigroup (SubMulAction R M) where
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
@@ -104,7 +104,7 @@ end Semigroup
 
 section Monoid
 
-variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
+variable [Monoid R] [MonoidAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 instance : Monoid (SubMulAction R M) := { }
 

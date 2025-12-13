@@ -53,7 +53,7 @@ variable {Q : QuadraticForm R M}
 
 section Pin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra MonoidAction
 
 open scoped Pointwise
 
@@ -286,7 +286,7 @@ end Pin
 
 section Spin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra MonoidAction
 
 open scoped Pointwise
 

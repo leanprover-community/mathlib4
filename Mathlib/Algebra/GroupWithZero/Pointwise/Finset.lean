@@ -16,7 +16,7 @@ This file proves properties of pointwise operations of finsets in a group with z
 
 @[expose] public section
 
-assert_not_exists MulAction Ring
+assert_not_exists MonoidAction Ring
 
 open scoped Pointwise
 

@@ -37,7 +37,7 @@ variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with }
+  { DistribSMul.compFun A f, MonoidAction.compHom A f with }
 
 end AddMonoid
 
@@ -48,7 +48,7 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 /-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
-  { MulAction.compHom A f with
+  { MonoidAction.compHom A f with
     smul_one := fun x => smul_one (f x),
     smul_mul := fun x => smul_mul' (f x) }
 
@@ -56,7 +56,7 @@ end Monoid
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
   smul := (· <| ·)

@@ -22,7 +22,7 @@ pointwise subtraction
 
 @[expose] public section
 
-assert_not_exists MulAction
+assert_not_exists MonoidAction
 
 open scoped Pointwise
 
