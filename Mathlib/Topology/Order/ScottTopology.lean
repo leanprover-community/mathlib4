@@ -243,7 +243,7 @@ variable (α) (D) [Preorder α] [TopologicalSpace α]
 
 lemma topology_eq [IsScott α D] : ‹_› = scott α D := topology_eq_scott
 
-variable {α} {D} {s : Set α} {a : α}
+variable {α} (D : Set (Set α)) {s : Set α} {a : α}
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open [IsScott α D] :
     IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α D] s := by rw [topology_eq α D]; rfl
