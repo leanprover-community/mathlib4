@@ -41,6 +41,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
   finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
 
+instance : Unique (Iic 0) := by
+  rw [← Nat.bot_eq_zero]
+  infer_instance
+
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
 
