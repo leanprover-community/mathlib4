@@ -221,11 +221,11 @@ alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoi
 end
 
 /-- `C` has disjoint coproducts if every coproduct is disjoint. -/
-class CoproductsOfShapeDisjoint (C : Type*) [Category C] (ι : Type*) : Prop where
+class CoproductsOfShapeDisjoint (C : Type*) [Category* C] (ι : Type*) : Prop where
   coproductDisjoint (X : ι → C) : CoproductDisjoint X
 
 /-- `C` has disjoint binary coproducts if every binary coproduct is disjoint. -/
-abbrev BinaryCoproductsDisjoint (C : Type*) [Category C] : Prop :=
+abbrev BinaryCoproductsDisjoint (C : Type*) [Category* C] : Prop :=
   CoproductsOfShapeDisjoint C WalkingPair
 
 attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint

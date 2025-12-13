@@ -39,7 +39,7 @@ open CategoryTheory Limits Functor FintypeCat
 
 namespace Condensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
 A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
@@ -165,7 +165,7 @@ end CondensedMod
 
 namespace LightCondensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
 
 /--
 A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant
