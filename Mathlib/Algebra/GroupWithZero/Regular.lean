@@ -71,7 +71,6 @@ theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 
   simp
 
 /-- A regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
-@[simp]
 theorem IsRegular.ne_zero [Nontrivial R] (la : IsRegular a) : a ≠ 0 :=
   la.left.ne_zero
 
