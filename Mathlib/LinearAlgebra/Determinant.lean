@@ -444,6 +444,14 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
   have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
   h ▸ det_conj _ _
 
+@[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
+    [DecidableEq m] [DecidableEq n] (f : Matrix m m K ≃ₐ[K] Matrix n n K) (x : Matrix m m K) :
+    (f x).det = x.det := by
+  simp_rw [← det_toLin']
+  have : (f x).toLin' = ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv') x.toLin' := by
+    simp [toMatrixAlgEquiv', toLinAlgEquiv']
+  exact this ▸ LinearMap.det_map _ _
+
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
 theorem LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
