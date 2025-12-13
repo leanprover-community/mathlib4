@@ -35,7 +35,7 @@ noncomputable section
 
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
-manifold notions from the vector spaces notions. For instance, the Lie bracket of two vector
+manifold notions from the vector space notions. For instance, the Lie bracket of two vector
 fields in a manifold is denoted with `VectorField.mlieBracket I V W x`, where `I` is the relevant
 model with corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, and `x : M` is
 the basepoint.

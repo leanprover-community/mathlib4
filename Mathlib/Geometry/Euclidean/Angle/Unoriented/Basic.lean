@@ -333,7 +333,7 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
 
-/-- The angle between normalized vector and other vector is equal to the angle
+/-- The angle between a normalized vector and another vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_left (x y : V) :
@@ -342,7 +342,7 @@ lemma angle_normalize_left (x y : V) :
   · simp [hx]
   · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
 
-/-- The angle between a vector and normalized other vector is equal to the angle
+/-- The angle between a vector and another normalized vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_right (x y : V) :

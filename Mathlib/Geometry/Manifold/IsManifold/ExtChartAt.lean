@@ -29,14 +29,14 @@ in general, but we can still register them as `PartialEquiv`.
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
   `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
-* `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
+* `contDiffOn_ext_coord_change`: for `x x' : M`, the coordinate change
   `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a locally compact space.
-* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifolds must be modelled
+* `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 
 -/
@@ -855,7 +855,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   simp only [(extChartAt I x).right_inv h'y]
   exact interior_mono (extChartAt_target_subset_range x) hy
 
-/-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
+/-- Riesz's theorem applied to manifolds: a locally compact manifold must be modelled on a
 finite-dimensional space. This is the converse to `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
     [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
