@@ -74,7 +74,7 @@ theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.
   rw [Nat.sub_add_cancel a_add_one_le_four_pow_parts_card,
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), ← add_mul]
   congr
-  rw [filter_card_add_filter_neg_card_eq_card, card_attach]
+  rw [card_filter_add_card_filter_not, card_attach]
 
 variable (hP G ε)
 

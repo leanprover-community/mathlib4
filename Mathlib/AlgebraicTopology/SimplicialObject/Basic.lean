@@ -218,7 +218,7 @@ variable (C)
 
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
-def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
 /-- Truncated simplicial objects. -/
@@ -252,7 +252,7 @@ instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -274,7 +274,7 @@ scoped macro_rules
 variable (C) in
 /-- Further truncation of truncated simplicial objects. -/
 @[simps!]
-def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+def trunc (n m : ℕ) (h : m ≤ n := by lia) : Truncated C n ⥤ Truncated C m :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
 
 end Truncated
@@ -453,7 +453,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := ((whiskering _ _).obj F).obj (drop.obj X)
       right := F.obj (point.obj X)
@@ -681,7 +681,7 @@ variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
 @[simps!]
-def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
+def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
 /-- Truncated cosimplicial objects. -/
@@ -715,7 +715,7 @@ instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
 variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -736,7 +736,7 @@ scoped macro_rules
 
 variable (C) in
 /-- Further truncation of truncated cosimplicial objects. -/
-def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+def trunc (n m : ℕ) (h : m ≤ n := by lia) : Truncated C n ⥤ Truncated C m :=
   (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
 
 end Truncated
@@ -808,7 +808,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := F.obj (point.obj X)
       right := ((whiskering _ _).obj F).obj (drop.obj X)
