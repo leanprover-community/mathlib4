@@ -319,7 +319,7 @@ theorem id_eq_id (X : Cat.{u, v}) : (𝟙 X : X ⟶ X).toFunctor = 𝟭 X := rfl
 theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
     (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
-@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
+@[simp] theorem of_α (C) [Category* C] : (of C).α = C := rfl
 
 @[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
 
