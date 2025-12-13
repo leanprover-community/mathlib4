@@ -461,12 +461,8 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
     α + γ ≤ β + γ ↔ α ≤ β := by
   refine ⟨fun h => ?_, fun h => by gcongr⟩
   contrapose h
-  rw [not_le, lt_iff_le_and_ne, Ne] at a ⊢
+  rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
   exact ⟨by grw [h.1], mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
-
-lemma add_lt_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
-    α + γ < β + γ ↔ α < β := by
-  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 γ₀]
 
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
@@ -476,9 +472,9 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 
-section mul_strictMono
-
-variable {n : ℕ} {a b : Cardinal}
+lemma add_lt_add_iff_of_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    a + c < b + c ↔ a < b := by
+  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 hc]
 
 lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
@@ -488,6 +484,12 @@ lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     apply lt_of_le_of_lt
     · exact (add_le_add_iff_of_lt_aleph0 (hμ.trans hfin_.right)).mpr hκ.le
     · simpa [add_comm] using (add_lt_add_iff_of_lt_aleph0 hfin_.left).mpr hμ
+
+end aleph
+
+section mul_strictMono
+
+variable {n : ℕ} {a b : Cardinal}
 
 lemma nat_mul_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
   match n, hneq0 with
@@ -528,6 +530,8 @@ lemma nat_mul_lt_nat_mul (hneq0 : n ≠ 0) : n * a < n * b ↔ a < b :=
 @[simp]
 lemma mul_nat_lt_mul_nat (hneq0 : n ≠ 0) : a * n < b * n ↔ a < b :=
   (mul_nat_strictMono hneq0).lt_iff_lt
+
+end mul_strictMono
 
 /-! ### Properties about `power` -/
 section power
