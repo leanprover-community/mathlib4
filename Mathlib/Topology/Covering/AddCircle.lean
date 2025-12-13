@@ -16,18 +16,18 @@ public import Mathlib.Topology.Instances.AddCircle.Defs
 
 @[expose] public section
 
-open AddSubgroup (zmultiples)
-
 namespace AddCircle
 
 section AddCommGroup
 
+open AddSubgroup
+
 variable {𝕜 : Type*} [AddCommGroup 𝕜] (p : 𝕜) [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜]
-  [DiscreteTopology (AddSubgroup.zmultiples p)]
+  [DiscreteTopology (zmultiples p)]
 
 theorem isQuotientCoveringMap_coe :
     IsAddQuotientCoveringMap ((↑) : 𝕜 → AddCircle p) (zmultiples p) :=
-  AddSubgroup.isQuotientCoveringMap_of_comm _ DiscreteTopology.isDiscrete
+  isAddQuotientCoveringMap_of_comm _ DiscreteTopology.isDiscrete
 
 theorem isCoveringMap_coe : IsCoveringMap ((↑) : 𝕜 → AddCircle p) :=
   (isQuotientCoveringMap_coe p).isCoveringMap
@@ -50,7 +50,7 @@ open DistribMulAction
 
 theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : n ≠ 0) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _) (toAddMonoidHom (AddCircle p) n).ker := by
-  refine IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_addMonoidHom
+  refine IsQuotientMap.isAddQuotientCoveringMap_of_isDiscrete_ker_addMonoidHom
     (f := toAddMonoidHom ..) ?_ (Set.Finite.isDiscrete ?_) rfl
   · /- To show that (n • ·) on AddCircle p is a quotient map, it suffices to show
       its composition with ℝ → AddCircle p is a quotient map. -/
