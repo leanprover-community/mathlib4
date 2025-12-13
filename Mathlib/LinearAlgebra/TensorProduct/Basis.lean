@@ -143,24 +143,16 @@ lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
   simp only [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
 
 /-- The `i`-th component of a tensor `x` in the right basis decomposition equals
-`(rid R M) (lTensor _ (𝒞.coord i) x)`. -/
+`TensorProduct.rid R M ((𝒞.coord i).lTensor _ x)`. -/
 lemma TensorProduct.equivFinsuppOfBasisRight_apply (x : M ⊗[R] N) (i : κ) :
-    (TensorProduct.equivFinsuppOfBasisRight 𝒞) x i =
-    (TensorProduct.rid R M) (lTensor _ (𝒞.coord i) x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
-  | tmul m n => simp
-  | add x y hx hy => simp [map_add, Finsupp.add_apply, hx, hy]
+    equivFinsuppOfBasisRight 𝒞 x i = TensorProduct.rid R M ((𝒞.coord i).lTensor _ x) := by
+  induction x <;> simp_all
 
 /-- The `i`-th component of a tensor `x` in the left basis decomposition equals
-`(lid R N) (rTensor _ (ℬ.coord i) x) `. -/
+`TensorProduct.lid R N ((ℬ.coord i).rTensor _ x)`. -/
 lemma TensorProduct.equivFinsuppOfBasisLeft_apply (x : M ⊗[R] N) (i : ι) :
-    (TensorProduct.equivFinsuppOfBasisLeft ℬ) x i =
-    (TensorProduct.lid R N) (rTensor _ (ℬ.coord i) x) := by
-  conv_lhs => rw [equivFinsuppOfBasisLeft, LinearEquiv.trans_apply]
-  rw [rTensor_def, equivFinsuppOfBasisRight_apply, lTensor_def,
-    TensorProduct.map_comm, ← TensorProduct.comm_trans_rid,
-    LinearEquiv.trans_apply]
+    equivFinsuppOfBasisLeft ℬ x i = TensorProduct.lid R N ((ℬ.coord i).rTensor _ x) := by
+  induction x <;> simp_all
 
 lemma TensorProduct.equivFinsuppOfBasisLeft_symm :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.toLinearMap =
