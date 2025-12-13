@@ -119,3 +119,55 @@ theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) 
   apply ContDiff.dist ℝ
   exacts [(toEuclidean (E := G)).contDiff.comp hf,
     (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
+
+theorem image_closedBall_eq_metric_closedBall [Nontrivial G] (x : G) (r : ℝ) :
+  toEuclidean '' Euclidean.closedBall x r = Metric.closedBall (toEuclidean x) r := by
+  simp only [Euclidean.closedBall, Euclidean.dist]
+  apply Set.eq_of_subset_of_subset
+  · rw [image_subset_iff]
+    rfl
+  · intro y hy
+    refine ⟨(toEuclidean.symm y), ?_, ?_⟩
+    · simp_all [Metric.mem_closedBall, mem_setOf_eq, ContinuousLinearEquiv.apply_symm_apply]
+    · apply ContinuousLinearEquiv.apply_symm_apply
+
+theorem diam_closed_ball_eq_two_mul_radius' [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+  Metric.diam (Metric.closedBall (toEuclidean x) r) = 2 * r := by
+  apply le_antisymm (Metric.diam_closedBall hr)
+  let x₁ := (toEuclidean x) + EuclideanSpace.single ⟨0, Module.finrank_pos⟩ r
+  let x₂ := (toEuclidean x) - EuclideanSpace.single ⟨0, Module.finrank_pos⟩ r
+  refine le_trans ?_ (Metric.dist_le_diam_of_mem (x := x₁) (y := x₂) ?_ ?_ ?_)
+  rotate_left
+  · exact Metric.isBounded_closedBall
+  · rw [Metric.mem_closedBall, dist_self_add_left,
+      EuclideanSpace.norm_single, Real.norm_eq_abs, abs_of_nonneg hr]
+  · simp only [Metric.mem_closedBall, dist_self_sub_left, EuclideanSpace.norm_eq,
+      EuclideanSpace.single_apply, Real.norm_eq_abs, sq_abs, ite_pow, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, hr,
+      Real.sqrt_sq, le_refl, x₂]
+  · norm_num [dist_eq_norm, EuclideanSpace.norm_eq]
+    rw [Finset.sum_eq_single ⟨0, Module.finrank_pos⟩]
+    · simp_all only [PiLp.add_apply, EuclideanSpace.single_apply, ↓reduceIte, PiLp.sub_apply,
+        add_sub_sub_cancel, nonneg_add_self_iff, Real.sqrt_sq, x₁, x₂]
+      linarith
+    · intro b _ hnb
+      simp only [PiLp.add_apply, EuclideanSpace.single_apply, hnb, ↓reduceIte, add_zero,
+        PiLp.sub_apply, sub_zero, sub_self, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+        zero_pow, x₁, x₂]
+    · simp only [Finset.mem_univ, not_true_eq_false, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, pow_eq_zero_iff, IsEmpty.forall_iff]
+
+/-- The diameter of a closed Euclidean ball is twice its radius. -/
+theorem diam_closed_ball_eq_two_mul_radius [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+  Metric.diam (toEuclidean '' (Euclidean.closedBall x r)) = 2 * r := by
+  rw [image_closedBall_eq_metric_closedBall, diam_closed_ball_eq_two_mul_radius' x r hr]
+
+/-- The diameter of an open Euclidean ball is twice its radius. -/
+theorem diam_ball_eq_two_mul_radius [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+    Metric.diam (toEuclidean '' (Euclidean.ball x r)) = 2 * r := by
+  simp only [Euclidean.ball_eq_preimage, image_preimage_eq_inter_range, EquivLike.range_eq_univ,
+    inter_univ, ← diam_closed_ball_eq_two_mul_radius x r hr, Euclidean.closedBall_eq_preimage]
+  by_cases hr : r = 0
+  · simp only [hr, Metric.ball_zero, Metric.diam_empty, Metric.closedBall_zero,
+    Metric.diam_singleton]
+  · rw [Metric.diam, Metric.diam, ←_root_.closure_ball _ hr, EMetric.diam_closure]
