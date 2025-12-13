@@ -1,0 +1,535 @@
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
+-/
+import Mathlib.Algebra.Lie.Basic
+import Qq
+
+/-!
+# The tactic on Lie ring - lie_ring
+
+The implementation of this tactic imitates the `ring` tactic, using the `Qq` package to implement a
+a specific elimination procedure.
+
+This part of the tactic only attempts to deal with `ℤ`-coefficients (which means only the `LieRing`
+instance will be used), reducing everything to the linear combination of elements of the Lyndon
+basis.
+
+## The elimination procedure
+
+In this section, we describe the elimination procedure used in this file.
+
+We assume that we have given a total ordering to all the variables (which corresponds to the `id`
+of `ExLie.atom` in the code), and now we try to write an expression of Lie brackets (e.g.
+`⁅⁅x, ⁅x, y⁆⁆, ⁅y, x⁆⁆`) into a certain normal form so that each value in the free Lie algebra is
+uniquely represented under this normal form. More specifically, we describe a basis of the free Lie
+algebra, and an algorithm to write a nested Lie bracket expression into linear combination of these
+elements.
+
+In the code, we use the inductive type `ExLie` to represent a nested Lie bracket expression, and
+`ExSum` to represent linear combination of nested Lie bracket expressions.
+
+For any given nested Lie bracket expression, we can "flatten" it into a list of variables. For
+example, `⁅⁅x, ⁅x, y⁆⁆, ⁅y, x⁆⁆` will be flattened to the list `[x, x, y, y, x]` (`ExLie.toListNat`)
+
+Then we can define an order on the nested Lie bracket expressions by simply comparing the list they
+are flatted to under lexicographic order. (`ExLie.cmp`)
+
+Using this order, we can define the elements in the basis in a recursive way.
+A nested Lie bracket expression is in the basis if one of the following is true:
+1. the expression is just a single variable, e.g. `x`
+2. the expression can be written as `⁅a₁, a₂⁆` (where `a₁` and `a₂` are both nested Lie brackets
+expressions), both `a₁` and `a₂` are in the basis, `a₁ < a₂` under the order described above, and
+either `a₂` is just a single variable or `a₂ = ⁅a₂₁, a₂₂⁆` and `a₂₁ <= a₁` under the order described
+above.
+(`ExLie.isLyndon` returns true if the expression represented by the `ExLie` term is in the basis)
+
+The following algorithm gives us a way to write every nested Lie bracket representation into a
+linear combination of the elements in the basis (implemented in the function `evalLieLie`):
+For a given nested Lie bracket representation `⁅a, b⁆` (if it is just a single variable then it is
+already in the basis) such that `a` and `b` are already in the basis (we can get that by recursively
+processing `a` and `b` first):
+1. If `a == b` in the order described above, then there is a theorem that guarantees different
+  elements in the basis will be flattened to different lists, so in this case we will have that `a`
+  is actually equal to `b` and the lie bracket evaluates to 0.
+2. If `a > b` under the order described above, then `⁅a, b⁆ = -⁅b, a⁆`, so we reduce to case 3.
+3. If `a < b`, then
+  3.1. If `⁅a, b⁆` is in the basis, then we have finished.
+  3.2. Otherwise we will have `b = ⁅x, y⁆`, then we write
+    `⁅a, b⁆ = ⁅a, ⁅x, y⁆⁆ = ⁅x, ⁅a, y⁆⁆ + ⁅⁅a, x⁆, y⁆`,
+    and process the two remaining terms recursively using this algorithm.
+
+The tactic implicitly relies on the following hypotheses:
+1. The theorem we referred to in case 1 of the algorithm holds, i.e. if `a` and `b` are elements in
+  the basis that flatten to the same list, then `a` is equal to `b`.
+2. The algorithm described above actually terminates.
+3. The elements we claim to be a basis actually forms a basis of the free Lie algebra.
+  (So that we know the algorithm decides whether two terms are equal in the free Lie algebra)
+
+The proof of these hypotheses can be found in the reference.
+
+## References
+
+The elimination approach implemented here follows the theory of Hall sets and Lyndon words,
+see for example, ‹https://personal.math.ubc.ca/~cass/research/pdf/Free.pdf›
+-/
+
+open Lean Meta Elab Tactic Qq Core
+
+namespace Mathlib.Tactic.LieRing
+
+attribute [local instance] Mathlib.Meta.monadLiftOptionMetaM
+
+section inductiveTypes
+
+/--
+This inductive type represents nested Lie Brackets, and the implementation of the evalLie function
+will ensure that it actually corresponds to a term in Lyndon normal form.
+-/
+inductive ExLie : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(LieRing $α) → (e : Q($α)) → Type
+  | atom {sα} {e} (id : ℕ) : ExLie sα e
+  | lie {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a b : Q($α)} :
+    ExLie sα a → ExLie sα b → ExLie sα q(⁅$a, $b⁆)
+deriving Repr
+
+/--
+This inductive type represents a simplified form of an expression produced by `lie_ring`,
+but requires the coefficients to be integer literals.
+-/
+inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(LieRing $α) → (e : Q($α)) → Type
+  | zero {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} : ExSum sα q(0 : $α)
+  | add {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)} {b : Q($α)} :
+    ExLie sα a → (coeff : ℤ) → ExSum sα b → ExSum sα q($coeff • $a + $b)
+deriving Repr
+
+end inductiveTypes
+
+section Functions
+
+/-- Check the boolean equality of two `ExLie` terms. -/
+def ExLie.eq {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a b : Q($α)} :
+    ExLie sα a → ExLie sα b → Bool
+  | .atom i, .atom j => i == j
+  | .lie a₁ a₂, .lie b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | _, _ => false
+
+/-- Check the boolean equality of two `ExSum` terms. -/
+def ExSum.eq {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a b : Q($α)} :
+    ExSum sα a → ExSum sα b → Bool
+  | .zero, .zero => true
+  | .add a₁ n₁ b₁, .add a₂ n₂ b₂ => a₁.eq a₂ && n₁ == n₂ && b₁.eq b₂
+  | _, _ => false
+
+/--
+Given a nested bracket expression, flatten it into a list of natural numbers containing
+the index of the atoms in the order they appear. (This function facilitates the `ExLie.cmp` function
+that compares two `ExLie` elements)
+-/
+def ExLie.toListNat {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)} :
+    ExLie sα a → List Nat
+  | .atom i => [i]
+  | .lie a₁ a₂ => a₁.toListNat ++ a₂.toListNat
+
+/-- Compare two `ExLie` elements using lexicographic order of their flattened list. -/
+def ExLie.cmp {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)} {b : Q($α)} :
+    ExLie sα a → ExLie sα b → Ordering := fun x y ↦ compare x.toListNat y.toListNat
+
+/--
+Check whether an `ExLie` expression satisfies the Lyndon property (which in our case means that
+the nested bracket term is already reduced). More information on this and how it's applied in
+the algorithm can be seen in the reference link in the documentation.
+-/
+def ExLie.isLyndon {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)} :
+    ExLie sα a → Bool
+  | .atom _ => true
+  | .lie a₁ a₂ => a₁.isLyndon && a₂.isLyndon && (a₁.cmp a₂).isLT &&
+    match a₂ with
+    | .atom _ => true
+    | .lie x _ => (x.cmp a₁).isLE
+
+/-- Convert an `ExLie` element `v` to the `ExSum` element `(1 : ℤ) • v + 0`. -/
+def ExLie.toExSum {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)}
+    (v : ExLie sα a) : ExSum sα q((1 : ℤ) • $a + 0) := .add v 1 .zero
+
+end Functions
+
+section Algorithm
+
+variable {u : Lean.Level}
+
+/-- A Structure to store the result of the normalization and the equality proof. -/
+structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
+  /-- The normalized result. -/
+  expr : Q($α)
+  /-- The data associated to the normalization. -/
+  val : E expr
+  /-- A proof that the original expression is equal to the normalized result. -/
+  proof : Q($e = $expr)
+
+variable {α : Q(Type u)}
+
+private lemma smul_aux {M : Type*} [AddCommGroup M] {a₁ a₂ a₃ : M} (n₁ n₂ n₃ : ℤ) :
+    n₃ = n₁ * n₂ → n₁ • a₂ = a₃ → n₁ • (n₂ • a₁ + a₂) = n₃ • a₁ + a₃ :=
+  fun _ _ ↦ (by subst_vars; simp [smul_smul])
+
+/-- This function evaluates the `ℤ`-scalar multiple of an element of `ExSum` into normal form. -/
+def evalSmul (sα : Q(LieRing $α)) {a : Q($α)} (va : ExSum sα a) (coeff : ℤ) :
+    Result (ExSum sα) q($coeff • $a) :=
+  match va with
+  | .zero => ⟨q(0), .zero, q(smul_zero $coeff)⟩
+  | .add (a := a₁) (b := a₂) va₁ n va₂ =>
+    let coeff' : ℤ := coeff * n
+    let ⟨c₁, vc₁, pc₁⟩ := evalSmul sα va₂ coeff
+    ⟨q($coeff' • $a₁ + $c₁), .add va₁ coeff' vc₁, q(smul_aux $coeff $n $coeff' rfl $pc₁)⟩
+
+section evalAdd
+
+variable {α : Q(Type u)} {L : Type*} [AddCommGroup L]
+
+variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : L}
+
+variable {n₁ n₂ n₃ : ℤ}
+
+private theorem add_pf_zero_add (b : L) : 0 + b = b := by simp
+
+private theorem add_pf_add_zero (a : L) : a + 0 = a := by simp
+
+private theorem add_pf_add_lt (a₁ : L) (_ : a₂ + (n₂ • b₁ + b₂) = c) :
+    (n₁ • a₁ + a₂) + (n₂ • b₁ + b₂) = n₁ • a₁ + c := by simp [*, add_assoc]
+
+private theorem add_pf_add_gt (b₁ : L) (_ : (n₁ • a₁ + a₂) + b₂ = c) :
+    n₁ • a₁ + a₂ + (n₂ • b₁ + b₂) = n₂ • b₁ + c := by
+  subst_vars; simp [add_left_comm]
+
+private theorem add_pf_add_overlap_zero (h₀ : n₁ + n₂ = 0) (h₁ : a₁ = b₁) (h₂ : a₂ + b₂ = c) :
+    n₁ • a₁ + a₂ + (n₂ • b₁ + b₂) = c := by
+  have : n₁ • a₁ + n₂ • b₁ = 0 := by
+    subst_vars; simp [← add_smul n₁ n₂ b₁, h₀]
+  subst_vars; rw [add_add_add_comm, this, add_pf_zero_add]
+
+private theorem add_pf_add_overlap (_ : a₁ = b₁) (_ : a₂ + b₂ = c₂) :
+    (n₁ • a₁ + a₂ : L) + (n₂ • b₁ + b₂) = (n₁ + n₂) • a₁ + c₂ := by
+  subst_vars; simp [add_assoc, add_left_comm, add_comm, add_assoc, ← add_smul]
+
+/-- This function evaluates the sum of two `ExSum` expressions and reduce it to the normal form. The
+"monomials" are sorted in the order of `ExLie.cmp`. -/
+private partial def evalAdd (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
+    CoreM <| Result (ExSum sα) q($a + $b) := do
+  checkSystem decl_name%.toString
+  match va, vb with
+  | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
+  | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
+  | .add (a := a₁) (b := _a₂) va₁ n₁ va₂, .add (a := b₁) (b := _b₂) vb₁ n₂ vb₂ =>
+    if va₁.eq vb₁ then
+      if n₁ + n₂ == 0 then
+        let ⟨c, vc, pc⟩ ← evalAdd sα va₂ vb₂
+        let n₃ : ℤ := n₁ + n₂
+        let h : Q($n₁ + $n₂ = $n₃) := q(rfl (a := $n₃))
+        let h' : Q($n₃ = (0 : ℤ)) := (q(rfl (a := $n₃)) : Expr)
+        have : $a₁ =Q $b₁ := ⟨⟩
+        return ⟨c, vc, (q(add_pf_add_overlap_zero (Eq.trans $h $h') (rfl (a := $a₁)) $pc) : Expr)⟩
+      else
+        let ⟨_, vc, pc⟩ ← evalAdd sα va₂ vb₂
+        have : $a₁ =Q $b₁ := ⟨⟩
+        return ⟨_, .add va₁ (n₁ + n₂) vc, q(add_pf_add_overlap rfl $pc)⟩
+    else
+      if let .lt := va₁.cmp vb₁ then
+        let ⟨_c, vc, (pc : Q($_a₂ + ($n₂ • $b₁ + $_b₂) = $_c))⟩ ← evalAdd sα va₂ vb
+        return ⟨_, .add va₁ n₁ vc, q(add_pf_add_lt $a₁ $pc)⟩
+      else
+        let ⟨_c, vc, (pc : Q($n₁ • $a₁ + $_a₂ + $_b₂ = $_c))⟩ ← evalAdd sα va vb₂
+        return ⟨_, .add vb₁ n₂ vc, q(add_pf_add_gt $b₁ $pc)⟩
+
+end evalAdd
+
+private lemma lie_aux1 {L : Type*} [LieRing L] {a b₁ b₂ c₁ c₂ c₃ c₄ : L} {n : ℤ} :
+    ⁅a, b₁⁆ = c₁ → n • c₁ = c₂ → ⁅a, b₂⁆ = c₃ → c₂ + c₃ = c₄ → ⁅a, n • b₁ + b₂⁆ = c₄ :=
+  fun h₁ h₂ h₃ h₄ ↦ (by subst_vars; simp)
+
+private lemma lie_aux2 {L : Type*} [LieRing L] {a₁ a₂ b c₁ c₂ c₃ c₄ : L} {n : ℤ} :
+    ⁅a₁, b⁆ = c₁ → n • c₁ = c₂ → ⁅a₂, b⁆ = c₃ → c₂ + c₃ = c₄ → ⁅n • a₁ + a₂, b⁆ = c₄ :=
+  fun h₁ h₂ h₃ h₄ ↦ (by subst_vars; simp)
+
+private lemma lie_aux3 {L : Type*} [AddCommGroup L] (a : L) : a = (1 : ℤ) • a + 0 := by simp
+
+private lemma lie_aux4 {L : Type*} [LieRing L] (a b : L) {c₁ c₂ : L} :
+    ⁅b, a⁆ = c₁ → (-1) • c₁ = c₂ → ⁅a, b⁆ = c₂ := fun h₁ h₂ ↦ (by subst_vars; simp)
+
+private lemma lie_aux5 {L : Type*} [LieRing L] {a x y c₁ c₂ c₃ c₄ c₅ : L} :
+    ⁅a, y⁆ = c₁ → ⁅x, c₁⁆ = c₂ → ⁅a, x⁆ = c₃ → ⁅c₃, y⁆ = c₄ → c₂ + c₄ = c₅ → ⁅a, ⁅x, y⁆⁆ = c₅ := by
+  intros; subst_vars; rw [LieRing.leibniz_lie a x y, add_comm]
+
+mutual
+
+/-- This function evaluates an expression of the form `⁅ExLie, ExLie⁆` into its normal form,
+which is also the main part of the whole reduction algorithm. Termination of the function can be
+actually proved, but it is written to be mutually recursive to speed up the implementation (and save
+a lot of proving work). -/
+partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExLie sα b) :
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  checkSystem decl_name%.toString
+  -- This function expects both arguments to be already in the basis.
+  if !(va.isLyndon && vb.isLyndon) then panic! "this is mathematically impossible"
+  match va.cmp vb with
+  | .eq =>
+    -- If `va` and `vb` are in the basis, and they have the same flattened list, then it can be
+    -- proved that they are in fact equal.
+    if !(va.eq vb) then panic! "this is mathematically impossible"
+    have : $a =Q $b := ⟨⟩
+    return ⟨q(0), .zero, q(lie_self $a)⟩
+  | .gt =>
+    let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα vb va
+    let ⟨_, vc₂, pc₂⟩ := evalSmul sα vc₁ (-1)
+    return ⟨_, vc₂, q(lie_aux4 $a $b $pc₁ $pc₂)⟩
+  | .lt =>
+    if (ExLie.lie va vb).isLyndon then
+      return ⟨q((1 : ℤ) • ⁅$a, $b⁆ + 0), (ExLie.lie va vb).toExSum, q(lie_aux3 ⁅$a, $b⁆)⟩
+    match vb with
+    | .atom _ => panic! "this is mathematically impossible"
+    | .lie vx vy =>
+      let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα va vy
+      let ⟨_, vc₂, pc₂⟩ ← evalLie₁ sα vx vc₁
+      let ⟨_, vc₃, pc₃⟩ ← evalLieLie sα va vx
+      let ⟨_, vc₄, pc₄⟩ ← evalLie₂ sα vc₃ vy
+      let ⟨_, vc₅, pc₅⟩ ← evalAdd sα vc₂ vc₄
+      return ⟨_, vc₅, q(lie_aux5 $pc₁ $pc₂ $pc₃ $pc₄ $pc₅)⟩
+
+/-- This function evaluates an expression of the form `⁅ExLie, ExSum⁆` into its normal form. -/
+partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExSum sα b) :
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  -- This function requires the first argument to be in the basis.
+  if !va.isLyndon then panic! "this is mathematically impossible!"
+  match vb with
+  | .zero =>
+    return ⟨_, .zero, q(lie_zero $a)⟩
+  | .add vb₁ n vb₂ =>
+    let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα va vb₁
+    let ⟨_, vc₂, pc₂⟩ := evalSmul sα vc₁ n
+    let ⟨_, vc₃, pc₃⟩ ← evalLie₁ sα va vb₂
+    let ⟨_, vc₄, pc₄⟩ ← evalAdd sα vc₂ vc₃
+    return ⟨_, vc₄, q(lie_aux1 $pc₁ $pc₂ $pc₃ $pc₄)⟩
+
+/-- This function evaluates an expression of the form `⁅ExSum, ExLie⁆` into its normal form. -/
+partial def evalLie₂ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExLie sα b) :
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  let ⟨_, vc, pc⟩ ← evalLie₁ sα vb va
+  let ⟨_, vd, pd⟩ := evalSmul sα vc (-1)
+  return ⟨_, vd, q(lie_aux4 $a $b $pc $pd)⟩
+
+end
+
+/-- This function evaluates an expression of the form `⁅ExSum, ExSum⁆` into its normal form. -/
+partial def evalLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  match va with
+  | .zero => return ⟨_, .zero, q(zero_lie $b)⟩
+  | .add va₁ n va₂ =>
+    let ⟨_, vc₁, pc₁⟩ ← evalLie₁ sα va₁ vb
+    let ⟨_, vc₂, pc₂⟩ := evalSmul sα vc₁ n
+    let ⟨_, vc₃, pc₃⟩ ← evalLie sα va₂ vb
+    let ⟨_, vc₄, pc₄⟩ ← evalAdd sα vc₂ vc₃
+    return ⟨_, vc₄, q(lie_aux2 $pc₁ $pc₂ $pc₃ $pc₄)⟩
+
+end Algorithm
+
+section execution
+
+variable {u : Lean.Level} {α : Q(Type u)}
+
+private theorem atom_pf {L : Type*} [AddCommGroup L] (a : L) :
+    a = (1 : ℤ) • a + 0 := by simp
+
+/-- Evaluation function of expression that has been identified as an atom. -/
+def evalAtom (sα : Q(LieRing ($α))) (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
+  let (i, ⟨a', _⟩) ← AtomM.addAtomQ e
+  let ve' := (ExLie.atom i (e := a')).toExSum
+  return ⟨_, ve', q(atom_pf $e)⟩
+
+private theorem add_congr {L : Type*} [AddCommGroup L] {a a' b b' c : L} (_ : a = a') (_ : b = b')
+    (_ : a' + b' = c) : a + b = c := by
+  subst_vars; rfl
+
+private lemma smul_congr {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {a : R}
+    {b b' c : M} : b = b' → a • b' = c → a • b = c := fun h₁ h₂ ↦ by subst_vars; rfl
+
+private lemma neg_congr {M : Type*} [AddCommGroup M] {a a' b : M} :
+    a = a' → (-1) • a' = b → -a = b := fun h₁ h₂ ↦ by subst_vars; simp
+
+private lemma sub_congr {M : Type*} [AddCommGroup M] {a a' b b' c₁ c₂ : M} :
+    a = a' → b = b' → (-1) • b' = c₁ → a' + c₁ = c₂ → a - b = c₂ := by
+  intros; subst_vars; simp [sub_eq_add_neg]
+
+private lemma lie_congr {L : Type*} [LieRing L] {a a' b b' c : L} :
+    a = a' → b = b' → ⁅a', b'⁆ = c → ⁅a, b⁆ = c := fun h₁ h₂ h₃ ↦ h₁ ▸ (h₂ ▸ h₃)
+
+private lemma nsmul_congr {L : Type*} [AddCommGroup L] {a a' b : L} {n : ℕ} :
+    a = a' → (n : ℤ) • a' = b → n • a = b := by intros; subst_vars; simp
+
+private lemma zsmul_congr {L : Type*} [AddCommGroup L] {a a' b : L} {n : ℤ} :
+    a = a' → (-n) • a' = b → (-n) • a = b := by intros; subst_vars; rfl
+
+/-- This function is used in the `nf` version of this tactic for identifying atoms. -/
+def isAtom {u} (α : Q(Type u)) (e : Q($α)) : AtomM Bool := do
+  let .const n _ := (← withReducible <| whnf e).getAppFn | return true
+  match n with
+  | ``HAdd.hAdd | ``Add.add | ``HSMul.hSMul | ``Neg.neg
+  | ``HSub.hSub | ``Sub.sub | ``Bracket.bracket | ``Zero.zero => return false
+  | _ => return true
+
+/--
+This function is the evaluation process that deals with the expression. It matches the outmost
+operator with certain kinds that we process, and then handle the subterms recursively.
+
+Notice that we can not `eval` the expression like `(r : ℤ) • ⁅a, b⁆` (where `r` is a variable),
+because this function is designed to only handle bracket expression like `⁅a, ⁅b, c⁆⁆` and
+(literal) `ℤ`-coefficients produced in the process.
+-/
+partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
+    (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
+  /- the function evaluates to this `els` part if no applicable operator has been identified.
+  In which case, this function will check if the expression is zero, and make the expression into
+  an atom if it's not zero. -/
+  let els := evalAtom sα e
+  -- `n` is the outmost operator here.
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  -- the following part matches `n` with operators that we can deal with.
+  match n with
+  | ``HAdd.hAdd | ``Add.add  => match e with
+    | ~q($a + $b) =>
+      let ⟨_, va, pa⟩ ← eval sα a
+      let ⟨_, vb, pb⟩ ← eval sα b
+      let ⟨c, vc, p⟩ ← evalAdd sα va vb
+      pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+  | ``HSMul.hSMul => match e with
+    | ~q(($n : ℕ) • $a) =>
+      let n' : ℕ := (← whnf n).natLit!
+      if n' == 0 then
+        return ⟨q(0), .zero, (q(zero_nsmul $a) : Expr)⟩
+      else
+        let ⟨_, va, pa⟩ ← eval sα a
+        let ⟨_, vb, pb⟩ := evalSmul sα va n'
+        return ⟨_, vb, (q(nsmul_congr $pa $pb) : Expr)⟩
+    | ~q(($n : ℤ) • $a) =>
+      let n' : ℤ := (← whnf n).intLit!
+      if n' == 0 then
+        return ⟨q(0), .zero, (q(zero_smul ℤ $a) : Expr)⟩
+      else
+        let ⟨_, va, pa⟩ ← eval sα a
+        let ⟨_, vb, pb⟩ := evalSmul sα va n'
+        return ⟨_, vb, (q(smul_congr $pa $pb) : Expr)⟩
+    | _ => els
+  | ``Neg.neg => match e with
+    | ~q(-$a) =>
+      let ⟨_, va, pa⟩ ← eval sα a
+      let ⟨_, vb, pb⟩ := evalSmul sα va (-1)
+      return ⟨_, vb, q(neg_congr $pa $pb)⟩
+    | _ => els
+  | ``HSub.hSub | ``Sub.sub => match e with
+    | ~q($a - $b) =>
+      let ⟨_, va, pa⟩ ← eval sα a
+      let ⟨_, vb, pb⟩ ← eval sα b
+      let ⟨_, vc₁, pc₁⟩ := evalSmul sα vb (-1)
+      let ⟨_, vc₂, pc₂⟩ ← evalAdd sα va vc₁
+      return ⟨_, vc₂, q(sub_congr $pa $pb $pc₁ $pc₂)⟩
+    | _ => els
+  | ``Bracket.bracket =>
+    match e with
+    | ~q(LieRing.toBracket.bracket $a $b) =>
+      let ⟨_, va, pa⟩ ← eval sα a
+      let ⟨_, vb, pb⟩ ← eval sα b
+      let ⟨_, vc, pc⟩ ← evalLie sα va vb
+      return ⟨_, vc, q(lie_congr $pa $pb $pc)⟩
+    | _ => els
+  | ``Zero.zero =>
+    match e with
+    | ~q(0) => return ⟨_, .zero, q(Eq.refl 0)⟩
+    | _ => els
+  | _ => els
+
+private theorem eq_aux {α} {a b c : α} (_ : a = c) (_ : b = c) : a = b := by subst_vars; rfl
+
+/-- Prove an equality in a `LieRing` by reducing two sides of the equation to Lyndon normal form. -/
+def proveEq (g : MVarId) : AtomM Unit := do
+  let some (α, e₁, e₂) := (← g.getType').eq? | throwError "lie_ring failed: not an equality"
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← (try u.dec catch _ => throwError "not a type{indentExpr α}")
+  have α : Q(Type v) := α
+  let sα ←
+    try Except.ok <$> synthInstanceQ q(LieRing $α)
+    catch e => pure (.error e)
+  have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
+  let eq ← match sα with
+  | .ok sα => lieCore sα e₁ e₂
+  | .error e => throw e
+  g.assign eq
+where
+  /-- Reducing two side of equation to the normal form and determine whether they are equal. -/
+  lieCore {v : Level} {α : Q(Type v)} (sα : Q(LieRing $α))
+      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
+    profileitM Exception "lie_ring" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sα e₁
+      let ⟨b, vb, pb⟩ ← eval sα e₂
+      unless va.eq vb do
+        throwError "tactic lie_ring failed, expressions are not equal, the left hand side is \
+        simplified to {a} but the right hand side is simplified to {b}\n"
+      have : $a =Q $b := ⟨⟩
+      return q(eq_aux $pa $pb)
+
+/--
+A tactic which evaluate an equality of two expressions in the `LieRing` to the Lyndon normal form,
+and check if they are equal.
+Notice that it only handle expressions consisting only of addition, subtraction, literal
+`ℤ` and `ℕ`-scalar multiplication, and Lie bracket.
+To prove an equality in an Lie algebra, please try `lie_algebra`.
+-/
+elab (name := lie_ring) "lie_ring" : tactic =>
+  withMainContext do
+    liftMetaMAtMain fun g ↦ do
+      AtomM.run .reducible (proveEq g)
+
+end execution
+
+section command
+
+/-- A Command which evaluates a `LieRing` expression to its Lyndon normal form. -/
+syntax (name := lie_reduce_cmd) "#lie_reduce" term : command
+
+open Command in
+@[command_elab lie_reduce_cmd] private def lieReduceCmdImpl :
+  Command.CommandElab :=
+  fun stx => withoutModifyingEnv <| runTermElabM fun _ => Term.withDeclName `_lie_reduce_cmd do
+    match stx with
+    | `(#lie_reduce $e) =>
+      try
+        let e ← Term.elabTerm e none
+        Term.synthesizeSyntheticMVarsNoPostponing
+        let ⟨u, α, e⟩ ← inferTypeQ' e
+        let sα ← synthInstanceQ q(LieRing $α)
+        let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
+        -- TryThis.addTermSuggestion stx a
+        logInfo m!"the term is reduced to {a}"
+        return
+      catch e => throw e
+    | _ => throwUnsupportedSyntax
+
+end command
+
+section elaborator
+
+/-- An elaborator which evaluates a `LieRing` expression to its Lyndon normal form. -/
+syntax (name := lie_reduce_term) "lie_reduce%" term : term
+
+@[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab :=
+  fun stx type => do
+    let e ← Term.elabTerm stx[1] type
+    let ⟨u, α, e⟩ ← inferTypeQ' e
+    let sα ← synthInstanceQ q(LieRing $α)
+    let a ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
+    TryThis.addTermSuggestion stx a.1
+    return a.1
+
+end elaborator
+
+end Mathlib.Tactic.LieRing
