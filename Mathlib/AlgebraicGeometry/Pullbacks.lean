@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Gluing
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -24,18 +26,19 @@ constructed via tensor products.
 
 -/
 
+@[expose] public section
 
-universe v u
+
+universe u v w
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits AlgebraicGeometry
+open CategoryTheory Functor CartesianMonoidalCategory Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
 
 namespace Pullback
 
-variable {C : Type u} [Category.{v} C]
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
@@ -468,21 +471,35 @@ theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
 @[simps! I₀ X f]
-def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
-  fapply
-    ((gluing 𝒰 f g).openCover.pushforwardIso
-          (limit.isoLimitCone ⟨_, gluedIsLimit 𝒰 f g⟩).inv).copy
-      𝒰.I₀ (fun i => pullback (𝒰.f i ≫ f) g)
-      (fun i => pullback.map _ _ _ _ (𝒰.f i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
-      (Equiv.refl 𝒰.I₀) fun _ => Iso.refl _
-  rintro (i : 𝒰.I₀)
-  simp_rw [Cover.pushforwardIso_I₀, Cover.pushforwardIso_f, GlueData.openCover_f,
-    GlueData.openCover_I₀, gluing_J]
-  exact pullback.hom_ext (by simp [p1]) (by simp [p2])
+def openCoverOfLeft (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z) :
+    OpenCover (pullback f g) where
+  I₀ := 𝒰.I₀
+  X i := pullback (𝒰.f i ≫ f) g
+  f i := pullback.map (𝒰.f i ≫ f) g f g (𝒰.f i) (𝟙 Y) (𝟙 Z) (by simp) (by simp)
+  mem₀ := by
+    rw [ofArrows_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, fun i ↦ ?_⟩
+    · letI 𝒱 := ((gluing 𝒰.ulift f g).openCover.pushforwardIso
+              (limit.isoLimitCone ⟨_, gluedIsLimit 𝒰.ulift f g⟩).inv).copy
+          𝒰.ulift.I₀ (fun i => pullback (𝒰.ulift.f i ≫ f) g)
+          (fun i => pullback.map _ _ _ _ (𝒰.ulift.f i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
+          (Equiv.refl 𝒰.ulift.I₀) (fun _ => Iso.refl _) fun i ↦ by
+        simp_rw [Cover.pushforwardIso_I₀, Cover.pushforwardIso_f, GlueData.openCover_f,
+          GlueData.openCover_I₀, gluing_J]
+        exact pullback.hom_ext (by simp [p1]) (by simp [p2])
+      obtain ⟨i, x, rfl⟩ := 𝒱.exists_eq x
+      exact ⟨_, x, rfl⟩
+    · dsimp
+      have : pullback.map (𝒰.f i ≫ f) g f g (𝒰.f i) (𝟙 Y) (𝟙 Z) (by simp) (by simp) =
+        (pullbackSymmetry _ _).hom ≫ (pullbackLeftPullbackSndIso _ _ _).inv ≫
+          pullback.fst _ _ ≫ (pullbackSymmetry _ _).hom := by aesop
+      rw [this]
+      infer_instance
 
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
 @[simps! I₀ X f]
-def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
+def openCoverOfRight (𝒰 : OpenCover.{v} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
+    OpenCover.{v} (pullback f g) := by
   fapply
     ((openCoverOfLeft 𝒰 g f).pushforwardIso (pullbackSymmetry _ _).hom).copy 𝒰.I₀
       (fun i => pullback f (𝒰.f i ≫ g))
@@ -495,8 +512,8 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 /-- Given an open cover `{ Xᵢ }` of `X` and an open cover `{ Yⱼ }` of `Y`, then
 `X ×[Z] Y` is covered by `Xᵢ ×[Z] Yⱼ`. -/
 @[simps! I₀ X f]
-def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (pullback f g).OpenCover := by
+def openCoverOfLeftRight (𝒰X : OpenCover.{v} X) (𝒰Y : OpenCover.{w} Y) (f : X ⟶ Z) (g : Y ⟶ Z) :
+    OpenCover.{max v w} (pullback f g) := by
   fapply
     Cover.copy ((openCoverOfLeft 𝒰X f g).bind fun x => openCoverOfRight 𝒰Y (𝒰X.f x ≫ f) g)
       (𝒰X.I₀ × 𝒰Y.I₀) (fun ij => pullback (𝒰X.f ij.1 ≫ f) (𝒰Y.f ij.2 ≫ g))
@@ -509,7 +526,8 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 
 /-- (Implementation). Use `openCoverOfBase` instead. -/
 @[simps! f]
-def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
+def openCoverOfBase' (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
+    OpenCover.{v} (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullback₁ f) f g).bind
   intro i
   haveI := ((IsPullback.of_hasPullback (pullback.snd g (𝒰.f i))
@@ -525,9 +543,10 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
   `Xᵢ = X ×[Z] Zᵢ` and `Yᵢ = Y ×[Z] Zᵢ` is the preimage of `Zᵢ` in `X` and `Y`. -/
 @[simps! I₀ X f]
-def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
+def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
+    OpenCover.{v} (pullback f g) := by
   apply
-    (openCoverOfBase'.{u, u} 𝒰 f g).copy 𝒰.I₀
+    (openCoverOfBase' 𝒰 f g).copy 𝒰.I₀
       (fun i =>
         pullback (pullback.snd _ _ : pullback f (𝒰.f i) ⟶ _)
           (pullback.snd _ _ : pullback g (𝒰.f i) ⟶ _))
@@ -545,7 +564,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
-variable (f : X ⟶ Y) (𝒰 : Y.OpenCover) (𝒱 : ∀ i, ((𝒰.pullback₁ f).X i).OpenCover)
+variable (f : X ⟶ Y) (𝒰 : OpenCover.{u} Y) (𝒱 : ∀ i, OpenCover.{w} ((𝒰.pullback₁ f).X i))
 
 /--
 Given `𝒰 i` covering `Y` and `𝒱 i j` covering `𝒰 i`, this is the open cover
@@ -616,6 +635,14 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   rw [pullback_map_eq_pullbackFstFstIso_inv]
   infer_instance
 
+section CartesianMonoidalCategory
+variable {S : Scheme}
+
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+
+end CartesianMonoidalCategory
+
 section Spec
 
 variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
@@ -643,6 +670,11 @@ lemma pullbackSpecIso_inv_fst :
     (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
   limit.isoLimitCone_inv_π _ _
 
+@[reassoc]
+lemma pullbackSpecIso_inv_fst' :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) :=
+  pullbackSpecIso_inv_fst ..
+
 /--
 The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
@@ -666,6 +698,11 @@ lemma pullbackSpecIso_hom_fst :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
   rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
 
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_fst' :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap S _)) = pullback.fst _ _ :=
+  pullbackSpecIso_hom_fst ..
+
 /--
 The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
@@ -676,6 +713,12 @@ is the second projection.
 lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_base :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap R _)) =
+      pullback.fst _ _ ≫ Spec.map (ofHom (algebraMap _ _)) := by
+  simp [Algebra.TensorProduct.algebraMap_def]
 
 lemma isPullback_SpecMap_of_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
     (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
@@ -707,12 +750,28 @@ lemma diagonal_SpecMap :
 
 end Spec
 
-section CartesianMonoidalCategory
-variable {S : Scheme}
+namespace Scheme
+variable {M S T : Scheme.{u}} [M.Over S] {f : T ⟶ S}
 
-instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
-instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+@[simps]
+instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
+  hom := pullback.snd (M ↘ S) f
 
-end CartesianMonoidalCategory
+@[simps! -isSimp mul one]
+instance monObjAsOverPullback [MonObj (asOver M S)] : MonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.monObjMkPullbackSnd
 
-end AlgebraicGeometry
+instance isCommMonObj_asOver_pullback [MonObj (asOver M S)] [IsCommMonObj (asOver M S)] :
+    IsCommMonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.isCommMonObj_mk_pullbackSnd
+
+instance GrpObjAsOverPullback [GrpObj (asOver M S)] : GrpObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.grpObjMkPullbackSnd
+
+instance : (pullback.fst (M ↘ S) (𝟙 S)).IsOver S := ⟨pullback.condition.trans (by simp)⟩
+
+instance isMonHom_fst_id_right [MonObj (asOver M S)] :
+    IsMonHom ((pullback.fst (M ↘ S) (𝟙 S)).asOver S) := by
+  unfold asOver OverClass.asOver at *; exact Over.isMonHom_pullbackFst_id_right
+
+end AlgebraicGeometry.Scheme

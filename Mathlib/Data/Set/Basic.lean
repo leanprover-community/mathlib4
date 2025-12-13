@@ -3,11 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Util.Delaborators
 
 /-!
 # Basic properties of sets
@@ -54,6 +55,8 @@ Definitions in the file:
 
 set, sets, subset, subsets, union, intersection, insert, singleton, powerset
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra RelIso
 
@@ -160,7 +163,7 @@ theorem set_coe_cast :
   | _, _, rfl, _, _ => rfl
 
 theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
-  Subtype.eq
+  Subtype.ext
 
 theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
   Iff.intro SetCoe.ext fun h => h ▸ rfl
@@ -476,14 +479,6 @@ theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 
-theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
-  eq_empty_of_subset_empty fun x _ => isEmptyElim x
-
-/-- There is exactly one set of a type that is empty. -/
-instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
-  default := ∅
-  uniq := eq_empty_of_isEmpty
-
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 @[push]
 theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
@@ -515,6 +510,13 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+
+lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
+  simpa using ‹IsEmpty s›
+
+/-- There is exactly one set of a type that is empty. -/
+instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
+  uniq _ := eq_empty_of_isEmpty _
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
   or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
@@ -843,6 +845,13 @@ theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a
 
 theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
+
+theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s ⊆ t) :
+    {x ∈ s | p x} = s ∩ {x ∈ t | p x} := by
+  rw [← inter_setOf_eq_sep s p, ← inter_setOf_eq_sep t p,
+    ← inter_assoc, ← left_eq_inter.mpr hst]
+
+@[deprecated (since := "2025-12-10")] alias sep_of_subset := sep_eq_inter_sep
 
 @[simp]
 theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=

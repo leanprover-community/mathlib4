@@ -3,12 +3,14 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Interval.Set.Group
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Betweenness in affine spaces
@@ -22,6 +24,8 @@ This file defines notions of a point in an affine space being between two given 
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
 
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) {V V' P P' : Type*}
@@ -40,6 +44,11 @@ def affineSegment [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V]
 
 variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
+
+lemma affineSegment_subset_affineSpan (x y : P) : affineSegment R x y ⊆ line[R, x, y] := by
+  rw [affineSegment, Set.subset_def]
+  rintro p ⟨r, -, rfl⟩
+  exact lineMap_mem_affineSpan_pair _ _ _
 
 variable {R} in
 @[simp]
@@ -168,6 +177,19 @@ theorem Function.Injective.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : F
 theorem Function.Injective.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : Function.Injective f) :
     Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
   simp_rw [Sbtw, hf.wbtw_map_iff, hf.ne_iff]
+
+lemma Set.InjOn.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} {s : AffineSubspace R P}
+    (hf : Set.InjOn f s) (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ s) :
+    Wbtw R (f x) (f y) (f z) ↔ Wbtw R x y z := by
+  refine ⟨fun h => ?_, fun h => h.map _⟩
+  rwa [Wbtw, ← affineSegment_image, hf.mem_image_iff
+    ((affineSegment_subset_affineSpan R x z).trans (affineSpan_le.2 (Set.pair_subset hx hz))) hy]
+    at h
+
+lemma Set.InjOn.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} {s : AffineSubspace R P}
+    (hf : Set.InjOn f s) (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ s) :
+    Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
+  simp_rw [Sbtw, hf.wbtw_map_iff hx hy hz, hf.ne_iff hy hx, hf.ne_iff hy hz]
 
 @[simp]
 theorem AffineEquiv.wbtw_map_iff {x y z : P} (f : P ≃ᵃ[R] P') :
@@ -643,10 +665,10 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
   congr 2
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 /-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
 weakly between its vertices. -/
@@ -697,10 +719,10 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
   congr! 4
   · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
-    · omega
+    · lia
   · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
-    · omega
+    · lia
 
 end Simplex
 
@@ -754,9 +776,13 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
     simp at h₁
-  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
+  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by lia
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
+    #adaptation_note /--
+    https://github.com/leanprover/lean4/issues/11009
+    -/
+    set_option synthInstance.maxSize 1000 in
     decide +revert
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
@@ -1045,7 +1071,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
       smul_add]
     convert (one_smul R (y -ᵥ x)).symm
-    field_simp
+    field
 
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/

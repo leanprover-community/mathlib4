@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The Hopf algebra structure on group algebras
@@ -22,6 +24,8 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   is a group scheme.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open HopfAlgebra
@@ -32,7 +36,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
-instance instHopfAlgebraStruct : HopfAlgebraStruct R (MonoidAlgebra A G) where
+instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
 @[simp]
@@ -41,7 +45,7 @@ lemma antipode_single (g : G) (a : A) :
   simp [MonoidAlgebra, antipode]
 
 open Coalgebra in
-instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
+instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
     simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)

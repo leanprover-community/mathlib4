@@ -3,11 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Order.Hom.Basic
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.BaseChange
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Solvable Lie algebras
@@ -32,6 +34,8 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 lie algebra, derived series, derived length, solvable, radical
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -438,11 +442,10 @@ theorem derivedLength_zero (I : LieIdeal R L) [IsSolvable I] :
     derivedLengthOfIdeal R L I = 0 ↔ I = ⊥ := by
   let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }
   change sInf s = 0 ↔ _
-  have hne : s ≠ ∅ := by
-    obtain ⟨k, hk⟩ := IsSolvable.solvable R I
-    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
-    rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [s, hne]
+  have hne : s.Nonempty :=
+    have ⟨k, hk⟩ := IsSolvable.solvable R I
+    ⟨k, by rwa [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk⟩
+  simp [s, hne.ne_empty]
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by

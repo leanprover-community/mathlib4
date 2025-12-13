@@ -3,11 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+module
 
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.Algebra.Category.Grp.Injective
 
 /-!
 
@@ -27,6 +28,8 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 This file is split from `Mathlib/Algebra/Category/GrpCat/Injective.lean` to prevent import loops.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

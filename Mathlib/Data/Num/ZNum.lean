@@ -3,15 +3,19 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Num.Lemmas
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Num.Lemmas
 
 /-!
 # Properties of the `ZNum` representation of integers
 
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
+
+@[expose] public section
 
 open Int
 
@@ -383,12 +387,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance linearOrder : LinearOrder ZNum where
-  lt := (· < ·)
   lt_iff_le_not_ge := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_ge
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c
@@ -409,9 +411,7 @@ instance linearOrder : LinearOrder ZNum where
   toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
-  add := (· + ·)
   add_assoc := by transfer
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   nsmul := nsmulRec
@@ -419,13 +419,11 @@ instance addMonoid : AddMonoid ZNum where
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
-    neg := Neg.neg
     zsmul := zsmulRec
     neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
-    one := 1
     natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
@@ -436,15 +434,8 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), c + a ≤ c + b := by
-  intro a b h c
-  revert h
-  transfer_rw
-  exact fun h => _root_.add_le_add_left h c
-
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
-    mul := (· * ·)
     mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
@@ -464,8 +455,8 @@ instance nontrivial : Nontrivial ZNum :=
 instance zeroLEOneClass : ZeroLEOneClass ZNum :=
   { zero_le_one := by decide }
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum :=
-  { add_le_add_left := add_le_add_left }
+instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum where
+  add_le_add_left a b h c := by revert h; transfer_rw; intro h; gcongr
 
 instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
   .of_mul_pos fun a b ↦ by
@@ -555,7 +546,7 @@ theorem divMod_to_nat (d n : PosNum) :
     simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
-    · omega
+    · lia
   | bit0 n IH =>
     unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.

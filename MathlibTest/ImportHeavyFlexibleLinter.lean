@@ -5,6 +5,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
@@ -38,11 +39,11 @@ example : (0 + 2 : Rat) + 1 = 3 := by
 /-! ## further flexible tactics -/
 
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'rw [add_comm]' uses '⊢'!
+info: 'rw [add_comm]' uses '⊢'!
 
 -/
 #guard_msgs in
@@ -71,11 +72,11 @@ example (h : False) : False ∧ True := by
 -- Currently, `positivity` is not marked as flexible (as it only applies to goals in a very
 -- particular shape). We use this test to record the current behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'positivity' uses '⊢'!
+info: 'positivity' uses '⊢'!
 -/
 #guard_msgs in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
@@ -100,7 +101,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
   abel!
 
 -- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
--- but require some simplication first.
+-- but require some simplification first.
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
@@ -111,11 +112,11 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 -- shape of the goal, and e.g. changing the goal to a defeq one could break the proof).
 -- This test documents this behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'fun_prop' uses '⊢'!
+info: 'fun_prop' uses '⊢'!
 -/
 #guard_msgs in
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
@@ -130,7 +131,7 @@ example {α : Type*} [MeasurableSpace α] {f : α → ℚ} (hf : Measurable f) :
   simp
   measurability
 
---  `ring` and `ring!` are allowed `simp`-followers.
+--  `ring`, `ring1`, `ring!` and `ring1!` are allowed `simp`-followers.
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
@@ -140,6 +141,27 @@ example {a b : Nat} : a + b = b + a + 0 := by
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
   ring!
+
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring1
+
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring1!
+
+-- So are ring1_nf and ring1_nf!.
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
+  simp
+  ring1_nf
+
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
+  simp
+  ring1_nf!
 
 -- Test that `linear_combination` is accepted as a follower of `simp`.
 example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
@@ -200,8 +222,12 @@ example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : x = z) (h' : (
   field_simp
   rw [h', one_mul, h]
 
+example {K : Type*} [Field K] (x y : K) (h : x + y = x + (y + 1)) : x + y = y + x + 0 + 1 := by
+  simp [h]
+  field
+
 --  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
--- So is `ring_nf!`.
+-- So are `ring_nf!`, `ring1_nf` and `ring1_nf!`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
   simp

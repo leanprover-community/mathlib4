@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Normed.Module.Complemented
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Normed.Module.Complemented
 
 /-!
 # Implicit function theorem
@@ -25,10 +27,11 @@ Finally, if the codomain of `f` is a finite-dimensional space, then we can autom
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
+For the version where the implicit equation is defined by a $C^n$ function `f : E × F → G` with an
+invertible derivative `∂f/∂y`, see `IsContDiffImplicitAt.implicitFunction`.
+
 ## TODO
 
-* Add a version for a function `f : E × F → G` such that $$\frac{\partial f}{\partial y}$$ is
-  invertible.
 * Add a version for `f : 𝕜 × 𝕜 → 𝕜` proving `HasStrictDerivAt` and `deriv φ = ...`.
 * Prove that in a real vector space the implicit function has the same smoothness as the original
   one.
@@ -43,6 +46,8 @@ and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`
 
 implicit function, inverse function
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -69,9 +74,7 @@ Consider two functions `f : E → F` and `g : E → G` and a point `a` such that
 Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is an open partial
 homeomorphism between `E` and `F × G`. We use this fact to define a function `φ : F → G → E`
 (see `ImplicitFunctionData.implicitFunction`) such that for `(y, z)` close enough to `(f a, g a)`
-we have `f (φ y z) = y` and `g (φ y z) = z`.
-
-We also prove a formula for $$\frac{\partial\varphi}{\partial z}.$$
+we have `f (φ y z) = y` and `g (φ y z) = z`. We also prove a formula for `∂φ / ∂z`.
 
 Though this statement is almost symmetric with respect to `F`, `G`, we interpret it in the following
 way. Consider a family of surfaces `{x | f x = y}`, `y ∈ 𝓝 (f a)`. Each of these surfaces is

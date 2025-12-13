@@ -3,16 +3,20 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Notation.Lemmas
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.Notation.Lemmas
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Pi instances for ordered groups and monoids
 
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
+
+@[expose] public section
 
 variable {I α β γ : Type*}
 
@@ -28,7 +32,7 @@ an ordered additive commutative monoid. -/]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
     [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
-  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
+  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left (w i) _
 
 @[to_additive]
 instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
@@ -58,8 +62,8 @@ instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ 
     IsOrderedRing (∀ i, f i) where
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
   zero_le_one := fun i => zero_le_one (α := f i)
-  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
+  mul_le_mul_of_nonneg_left _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
+  mul_le_mul_of_nonneg_right _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 
 end Pi
 

@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # The opposite of a property of objects
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -17,7 +21,11 @@ namespace CategoryTheory.ObjectProperty
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
+
+section
+
+variable [CategoryStruct.{v} C]
 
 /-- The property of objects of `Cᵒᵖ` corresponding to `P : ObjectProperty C`. -/
 protected def op (P : ObjectProperty C) : ObjectProperty Cᵒᵖ :=
@@ -69,24 +77,6 @@ lemma op_monotone_iff {P Q : ObjectProperty C} : P.op ≤ Q.op ↔ P ≤ Q :=
 lemma unop_monotone_iff {P Q : ObjectProperty Cᵒᵖ} : P.unop ≤ Q.unop ↔ P ≤ Q :=
   ⟨op_monotone, unop_monotone⟩
 
-instance (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
-    P.op.IsClosedUnderIsomorphisms where
-  of_iso e hX := P.prop_of_iso e.symm.unop hX
-
-instance (P : ObjectProperty Cᵒᵖ) [P.IsClosedUnderIsomorphisms] :
-    P.unop.IsClosedUnderIsomorphisms where
-  of_iso e hX := P.prop_of_iso e.symm.op hX
-
-lemma op_isoClosure (P : ObjectProperty C) :
-    P.isoClosure.op = P.op.isoClosure := by
-  ext ⟨X⟩
-  exact ⟨fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨op Y, h, ⟨e.op.symm⟩⟩,
-    fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨Y.unop, h, ⟨e.unop.symm⟩⟩⟩
-
-lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
-    P.isoClosure.unop = P.unop.isoClosure := by
-  rw [← op_injective_iff, P.unop.op_isoClosure, op_unop, op_unop]
-
 /-- The bijection `Subtype P.op ≃ Subtype P` for `P : ObjectProperty C`. -/
 def subtypeOpEquiv (P : ObjectProperty C) :
     Subtype P.op ≃ Subtype P where
@@ -116,5 +106,31 @@ lemma op_singleton (X : C) :
 lemma unop_singleton (X : Cᵒᵖ) :
     (singleton X).unop = singleton X.unop := by
   simp
+
+end
+
+section
+
+variable [Category.{v} C]
+
+instance (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
+    P.op.IsClosedUnderIsomorphisms where
+  of_iso e hX := P.prop_of_iso e.symm.unop hX
+
+instance (P : ObjectProperty Cᵒᵖ) [P.IsClosedUnderIsomorphisms] :
+    P.unop.IsClosedUnderIsomorphisms where
+  of_iso e hX := P.prop_of_iso e.symm.op hX
+
+lemma op_isoClosure (P : ObjectProperty C) :
+    P.isoClosure.op = P.op.isoClosure := by
+  ext ⟨X⟩
+  exact ⟨fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨op Y, h, ⟨e.op.symm⟩⟩,
+    fun ⟨Y, h, ⟨e⟩⟩ ↦ ⟨Y.unop, h, ⟨e.unop.symm⟩⟩⟩
+
+lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
+    P.isoClosure.unop = P.unop.isoClosure := by
+  rw [← op_injective_iff, P.unop.op_isoClosure, op_unop, op_unop]
+
+end
 
 end CategoryTheory.ObjectProperty

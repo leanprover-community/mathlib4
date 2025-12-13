@@ -1,12 +1,8 @@
-import Mathlib.Tactic.Linter.CommandStart
-import Qq
+module
+
 import Aesop.Frontend.Attribute
-import Aesop.Frontend.Command
---import Mathlib.Tactic.Lemma
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Function.Defs
-import Mathlib.adomaniLeanUtils.inspect_syntax
---import Mathlib.Util.ParseCommand
+import all Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.Lemma
 
 open Lean Elab Command Mathlib Linter Style.CommandStart in
 elab tk:"#reformat " cmd:command : command => do
@@ -526,8 +522,92 @@ example := if bool then aux else aux
 where
   /-- A separate doc-string -/
   aux : Unit := ()
+<<<<<<< HEAD
   /-- Another too -/
   bool := true
+=======
+
+-- For structure fields, all field definitions are linted.
+-- TODO: currently, only the first field is linted
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1     : Nat'
+should be written as
+  'field1 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure A where
+  field1     : Nat
+  field2 : Nat
+
+-- TODO: this is not linted yet!
+structure B where
+  field1 : Nat
+  field2     : Nat
+
+-- TODO: this is not linted yet!
+structure C where
+  field1 :     Nat
+  field2     : Nat
+
+-- Note that the linter does not attempt to recognise or respect manual alignment of fields:
+-- this is often brittle and should usually be removed.
+/--
+warning: extra space in the source
+
+This part of the code
+  'field1    :  '
+should be written as
+  'field1 : Nat'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+structure D where
+  field1    :     Nat
+  field2    : Nat
+
+-- This also applies to consecutive declarations.
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   {R}'
+should be written as
+  'instance {R} :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   {R} : Add R := sorry
+
+-- TODO: right now, defining a second private `Add` instance causes an error
+-- Once the fix for lean4#11385 lands in mathlib; revert this to an `Add` instance
+/--
+warning: declaration uses 'sorry'
+---
+warning: extra space in the source
+
+This part of the code
+  'instance   {R}'
+should be written as
+  'instance {R} :'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+instance   {R} : Sub R := sorry
+>>>>>>> master
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")

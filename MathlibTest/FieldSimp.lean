@@ -412,7 +412,7 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 x y z : ℚ
@@ -439,7 +439,7 @@ the top level, not recursively in subexpressions.
 level.) -/
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -583,7 +583,7 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
-/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+/-! Sometimes it takes iterated alternation between `ring_nf` and `field_simp` in order to
 normalize properly.
 
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
@@ -626,7 +626,7 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -640,7 +640,7 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -659,7 +659,7 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -674,7 +674,7 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ

@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Set.Equitable
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite equipartitions
@@ -22,6 +24,8 @@ difference of `1`.
   equipped with an equipartition. Indices of elements in the same part are congruent modulo
   the number of parts.
 -/
+
+@[expose] public section
 
 
 open Finset Fintype
@@ -55,7 +59,7 @@ theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t �
 theorem IsEquipartition.card_part_eq_average_iff (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #t = #s / #P.parts ↔ #t ≠ #s / #P.parts + 1 := by
   have a := hP.card_parts_eq_average ht
-  cutsat
+  lia
 
 theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #s / #P.parts ≤ #t := by
@@ -114,7 +118,7 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
   intro ⟨p, _⟩
-  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
+  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.val_cast]
   by_cases hc : #p = #s / #P.parts + 1 <;> simp [hc]
 
 /-- Given a finset equipartitioned into `k` parts, its elements can be enumerated such that
@@ -128,12 +132,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   have less : ∀ a, z a < #s := fun a ↦ by
     rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
     · calc
-        _ < #P.parts * ((f a).2 + 1) := add_lt_add_left (gl a) _
-        _ ≤ #P.parts * (#s / #P.parts) := mul_le_mul_left' (c ▸ (f a).2.2) _
+        _ < #P.parts * ((f a).2 + 1) := by simp only [z, mul_add_one]; gcongr; exact gl a
+        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.2
         _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
         _ = _ := Nat.div_add_mod ..
     · rw [← Nat.div_add_mod #s #P.parts]
-      exact add_lt_add_of_le_of_lt (mul_le_mul_left' (by cutsat) _) ((hg (f a).1).mp c)
+      exact add_lt_add_of_le_of_lt (mul_le_mul_right (by lia) _) ((hg (f a).1).mp c)
   let z' : s → Fin #s := fun a ↦ ⟨z a, less a⟩
   have bij : z'.Bijective := by
     refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩
@@ -151,12 +155,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
 /-! ### Discrete and indiscrete finpartitions -/
 
 
-variable (s) -- [Decidable (a = ⊥)]
+variable (s)
 
 theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
 
-theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
+theorem top_isEquipartition [Decidable (s = ∅)] : (⊤ : Finpartition s).IsEquipartition :=
   Set.Subsingleton.isEquipartition (parts_top_subsingleton _)
 
 theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Analysis.BoxIntegral.Box.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
@@ -35,6 +37,8 @@ We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for 
 
 rectangular box, partition
 -/
+
+@[expose] public section
 
 open Set Finset Function
 open scoped NNReal
@@ -112,7 +116,6 @@ instance : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
 instance partialOrder : PartialOrder (Prepartition I) where
-  le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
     let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁

@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Notation.Pi.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -35,6 +37,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
@@ -66,7 +70,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
@@ -84,7 +87,6 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
-  smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 
 variable (A)
@@ -122,7 +124,6 @@ instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M�
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ᵐᵒᵖ M₀ where
-  smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
 
@@ -143,7 +144,6 @@ variable [Zero M₀'] [Zero A'] [SMul M₀ A']
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 
@@ -151,7 +151,6 @@ protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Inject
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]

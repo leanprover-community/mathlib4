@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Group.Submonoid.Units
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -33,6 +35,8 @@ groups.
 
 topological space, group, topological group
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
 
@@ -369,9 +373,6 @@ variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
 theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
-
-@[deprecated (since := "2025-03-11")]
-alias IsTopologicalAddGroup.continuous_conj_sum := IsTopologicalAddGroup.continuous_addConj_prod
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)
@@ -984,7 +985,7 @@ it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See a
 @[to_additive
   /-- A subgroup `S` of an additive topological group `G` acts on `G` properly
   discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
-  `K`. (See also `DiscreteTopology`. -/]
+  `K`. (See also `DiscreteTopology`.) -/]
 theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
   { finite_disjoint_inter_image := by
@@ -994,7 +995,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       convert H
       ext x
       simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
-      exact Set.smul_inter_ne_empty_iff' }
+      exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
@@ -1021,7 +1022,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       convert H using 1
       ext x
       simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
-      exact Set.op_smul_inter_ne_empty_iff }
+      exact Set.op_smul_inter_nonempty_iff }
 
 end
 

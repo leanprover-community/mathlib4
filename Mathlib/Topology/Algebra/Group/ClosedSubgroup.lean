@@ -3,27 +3,30 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Closed subgroups of a topological group
 
-This files builds the frame of closed subgroups in a topological group `G`,
+This file builds the frame of closed subgroups in a topological group `G`,
 and its additive version `ClosedAddSubgroup`.
 
-# Main definitions and results
+## Main definitions and results
 
-* `normalCore_isClosed` : The `normalCore` of a closed subgroup is closed.
+* `normalCore_isClosed`: The `normalCore` of a closed subgroup is closed.
 
-* `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
+* `finindex_closedSubgroup_isOpen`: A closed subgroup with finite index is open.
 
 ## TODO
 
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
+
+@[expose] public section
 
 section
 

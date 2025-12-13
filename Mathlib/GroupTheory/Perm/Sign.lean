@@ -3,19 +3,21 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Int.Order.Units
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Data.Finset.Sigma
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Logic.Equiv.Fintype
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -26,6 +28,8 @@ associating a `ℤˣ` sign with a permutation.
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -82,7 +86,7 @@ The representation is nonunique and depends on the linear order structure.
 For types without linear order `truncSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
+  swapFactorsAux ((@univ α _).sort) f fun {_ _} => (mem_sort _).2 (mem_univ _)
 
 /-- This computably represents the fact that any permutation can be represented as the product of
   a list of transpositions. -/
@@ -162,7 +166,7 @@ def finPairsLT (n : ℕ) : Finset (Σ _ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
-  simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and, mem_attachFin, mem_range, mem_univ,
+  simp only [finPairsLT, Fin.lt_def, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
@@ -194,17 +198,15 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
     ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, signBijAux f b = a :=
   fun ⟨a₁, a₂⟩ ha =>
-    if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
-      ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
-        dsimp [signBijAux]
-        rw [apply_inv_self, apply_inv_self, if_pos (mem_finPairsLT.1 ha)]⟩
+    if hxa : f.symm a₂ < f.symm a₁ then
+      ⟨⟨f.symm a₁, f.symm a₂⟩, mem_finPairsLT.2 hxa, by
+       simp [signBijAux, if_pos (mem_finPairsLT.1 ha)]⟩
     else
-      ⟨⟨f⁻¹ a₂, f⁻¹ a₁⟩,
+      ⟨⟨f.symm a₂, f.symm a₁⟩,
         mem_finPairsLT.2 <|
           (le_of_not_gt hxa).lt_of_ne fun h => by
             simp [mem_finPairsLT, f⁻¹.injective h] at ha, by
-              dsimp [signBijAux]
-              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
+              simp [signBijAux, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     ∀ a : Σ _ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
@@ -217,13 +219,10 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
-  prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦
-    if h : f⁻¹ b < f⁻¹ a then by
-      simp_all [signBijAux, if_neg h.not_ge, apply_inv_self, apply_inv_self,
-        if_neg (mem_finPairsLT.1 hab).not_ge]
-    else by
-      simp_all [signBijAux, dif_neg h, apply_inv_self, apply_inv_self,
-        if_pos (mem_finPairsLT.1 hab).le]
+  prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦ by
+    by_cases h : f.symm b < f.symm a
+    · simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
+    · simp_all [signBijAux, dif_neg h, (mem_finPairsLT.1 hab).le]
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]
@@ -234,24 +233,16 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   dsimp only [signBijAux]
   rw [mul_apply, mul_apply]
   rw [mem_finPairsLT] at hab
-  by_cases h : g b < g a
-  · rw [dif_pos h]
-    simp only [not_le_of_gt hab, mul_one, Perm.inv_apply_self, if_false]
-  · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
-    by_cases h₁ : f (g b) ≤ f (g a)
-    · have : f (g b) ≠ f (g a) := by
-        rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
-        exact ne_of_lt hab
-      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_ge]
-      rfl
-    · rw [if_neg h₁, if_pos (lt_of_not_ge h₁).le]
-      rfl
+  by_cases hg : g b < g a
+  · simp [*]
+  obtain hf | hf := (f.injective.ne <| g.injective.ne hab.ne).lt_or_gt <;>
+    simp_all [le_of_lt, not_le_of_gt, not_lt_of_ge]
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ _ : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
-      simp +contextual [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
+      simp +contextual [mem_finPairsLT, Fin.zero_lt_one]) fun a ha₁ ha₂ => ?_)
     rcases a with ⟨a₁, a₂⟩
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only
@@ -372,7 +363,7 @@ variable [Fintype α]
 
 @[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
-  MonoidHom.map_mul sign f g
+  map_mul sign f g
 
 @[simp]
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
@@ -380,15 +371,15 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
 
 @[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
-  rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
+  rw [map_inv sign f, Int.units_inv_eq_self]
 
 @[simp]
 theorem sign_symm (e : Perm α) : sign e.symm = sign e :=
@@ -493,10 +484,10 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
                 rw [← h _ x.2 this]
                 exact mt (hi _ _ this x.2) x.2⟩ :
               { y // g y ≠ y }))
-          ⟨fun ⟨_, _⟩ ⟨_, _⟩ h => Subtype.eq (hi _ _ _ _ (Subtype.mk.inj h)), fun ⟨y, hy⟩ =>
+          ⟨fun ⟨_, _⟩ ⟨_, _⟩ h => Subtype.ext (hi _ _ _ _ (Subtype.mk.inj h)), fun ⟨y, hy⟩ =>
             let ⟨x, hfx, hx⟩ := hg y hy
-            ⟨⟨x, hfx⟩, Subtype.eq hx⟩⟩)
-        fun ⟨x, _⟩ => Subtype.eq (h x _ _)
+            ⟨⟨x, hfx⟩, Subtype.ext hx⟩⟩)
+        fun ⟨x, _⟩ => Subtype.ext (h x _ _)
     _ = sign g := sign_subtypePerm _ _ fun _ => id
 
 /-- If we apply `prod_extendRight a (σ a)` for all `a : α` in turn,

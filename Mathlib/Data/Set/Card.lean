@@ -3,8 +3,10 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Set.Finite.Powerset
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -21,7 +23,7 @@ one is concerned with the cardinalities of sets that may or may not be infinite.
 
 `Set.ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to
 make sure its values are meaningful.  More generally, `Set.ncard` is intended to be used over the
-obvious alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'.
+obvious alternative `Finset.card` when finiteness is 'propositional' rather than 'structural'.
 When working with sets that are finite by virtue of their definition, then `Finset.card` probably
 makes more sense. One setting where `Set.ncard` works nicely is in a type `α` with `[Finite α]`,
 where every set is automatically finite. In this setting, we use default arguments and a simple
@@ -38,11 +40,11 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 
 ## Implementation Notes
 
-The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
-instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
-`Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
-for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`
-in the future.
+The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
+`Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then
+derive most of the `Set.ncard` results as a consequence. Things are done this way to avoid reliance
+on the `Finset` API for theorems about infinite sets, and to allow for a refactor that removes or
+modifies `Set.ncard` in the future.
 
 Nearly all the theorems for `Set.ncard` require finiteness of one or more of their arguments. We
 provide this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`,
@@ -54,6 +56,8 @@ in the context of the theorem, in which case we only include the ones that are n
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
 finiteness arguments; they are true by coincidence due to junk values.
 -/
+
+@[expose] public section
 
 namespace Set
 
@@ -113,6 +117,9 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 
 protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 
+theorem encard_ne_zero_of_mem {a : α} (h : a ∈ s) : s.encard ≠ 0 :=
+  (encard_pos.mpr ⟨a, h⟩).ne.symm
+
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
   rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]
 
@@ -150,7 +157,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  contrapose!
+  rw [← lt_top_iff_ne_top, encard_lt_top_iff]
 
 alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
 
@@ -177,11 +185,20 @@ section Lattice
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
+theorem encard_le_card : s.encard ≤ ENat.card α :=
+  encard_univ _ ▸ encard_le_encard s.subset_univ
+
 theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
 
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self, union_eq_self_of_subset_right h]
+
+theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
+    (t \ s).encard = t.encard - s.encard := by
+  rw [← @Set.encard_diff_add_encard_of_subset _ s t h]
+  exact AddLECancellable.eq_tsub_of_add_eq
+    (ENat.addLECancellable_of_ne_top (encard_ne_top_iff.mpr hs)) rfl
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
@@ -262,6 +279,9 @@ variable {a b : α}
 theorem encard_insert_le (s : Set α) (x : α) : (insert x s).encard ≤ s.encard + 1 := by
   rw [← union_singleton, ← encard_singleton x]; apply encard_union_le
 
+theorem one_le_encard_insert (s : Set α) : 1 ≤ (insert a s).encard :=
+  ENat.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
+
 theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 := by
   rw [← encard_singleton x]; exact encard_le_encard inter_subset_left
 
@@ -333,10 +353,10 @@ theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
   tauto
 
 theorem one_lt_encard_iff_nontrivial : 1 < s.encard ↔ s.Nontrivial := by
-  rw [← not_iff_not, not_lt, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton]
+  contrapose!; exact encard_le_one_iff_subsingleton
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
-  rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
+  contrapose!; exact encard_le_one_iff
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
   by_contra! h'
@@ -653,6 +673,10 @@ theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard +
   rw [(hs.mono (subset_insert a s)).ncard]
   exact Nat.zero_le _
 
+theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    1 ≤ (insert a s).ncard :=
+  Nat.one_le_iff_ne_zero.mpr <| ncard_ne_zero_of_mem (mem_insert a s) (by simp [hs])
+
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
   by_cases h : a ∈ s
@@ -820,6 +844,9 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
     exact ⟨_, ha, rfl⟩
   simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
+
+theorem ncard_congr' {S : Set α} {T : Set β} (f : S ≃ T) : Set.ncard S = Set.ncard T :=
+  Cardinal.toNat_congr f
 
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
@@ -1082,7 +1109,8 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 
 lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
-  contrapose! hs; simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (s := s.toSet) hs]
+  contrapose! hs
+  simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
 
 /-! ### Explicit description of a set from its cardinality -/
 
@@ -1154,7 +1182,7 @@ lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s 
     (he : Even (s.ncard)) : 1 < s.ncard := by
   rw [← Set.ncard_pos hs] at hn
   have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
-  cutsat
+  lia
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
