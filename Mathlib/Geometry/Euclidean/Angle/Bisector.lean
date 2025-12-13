@@ -5,10 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
-public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Projection
 
 /-!
 # Angle bisectors.
@@ -210,6 +208,150 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
       ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p)) :=
   fun hne hp₁ hp₂ ↦ ⟨oangle_eq_of_dist_orthogonalProjection_eq hp' hne,
    dist_orthogonalProjection_eq_of_oangle_eq hp' hp₁ hp₂⟩
+
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
+/-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
+lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
+orthogonal projections onto the subspaces are equal. -/
+lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq {p p' : P}
+    {s₁ s₂ : AffineSubspace ℝ P} (hp' : p' ∈ s₁ ⊓ s₂) :
+    haveI : Nonempty s₁ := ⟨p', hp'.1⟩
+    haveI : Nonempty s₂ := ⟨p', hp'.2⟩
+    orthogonalProjection s₁ p ≠ p' →
+    orthogonalProjection s₂ p ≠ p' →
+    (2 : ℤ) • ∡ (orthogonalProjection s₁ p : P) p' p =
+      (2 : ℤ) • ∡ p p' (orthogonalProjection s₂ p) →
+    dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) := by
+  intro hp₁ hp₂ h
+  haveI : Nonempty s₁ := ⟨p', hp'.1⟩
+  haveI : Nonempty s₂ := ⟨p', hp'.2⟩
+  have h' : ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) :=
+    oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two h
+      (angle_self_orthogonalProjection _ hp'.1) (angle_self_orthogonalProjection _ hp'.2)
+  exact dist_orthogonalProjection_eq_of_oangle_eq hp' hp₁ hp₂ h'
+
+/-- Auxiliary lemma for the special case of `dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq`
+where the orthogonal projection of `p` to the line `p₁ p₂` is `p₁`. -/
+private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ {p p₁ p₂ p₃ : P}
+    (h₂ : p₁ ≠ p₂) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃)
+    (h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁) :
+    dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
+      dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
+  by_cases hp : p = p₁
+  · rw [h', hp, dist_self, zero_eq_dist, eq_comm, orthogonalProjection_eq_self_iff]
+    exact left_mem_affineSpan_pair _ _ _
+  · rw [← h'] at h hp
+    have hpm : p ∉ line[ℝ, p₁, p₂] := orthogonalProjection_eq_self_iff.not.1 (Ne.symm hp)
+    rw [two_zsmul_oangle_orthogonalProjection_self _ hpm (right_mem_affineSpan_pair _ _ _)
+          (h'.symm ▸ h₂.symm), eq_comm, oangle, Real.Angle.two_zsmul_eq_pi_iff, h'] at h
+    replace h := (Orientation.eq_zero_or_oangle_eq_iff_inner_eq_zero _).1 (.inr (.inr h))
+    congr 1
+    rw [h', eq_comm, coe_orthogonalProjection_eq_iff_mem]
+    refine ⟨left_mem_affineSpan_pair _ _ _, ?_⟩
+    rw [Submodule.mem_orthogonal']
+    intro u hu
+    rw [direction_affineSpan, mem_vectorSpan_pair] at hu
+    rcases hu with ⟨r, rfl⟩
+    rw [inner_smul_right, ← inner_neg_neg, inner_neg_left]
+    simp [h]
+
+/-- Auxiliary lemma for the special case of `dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq`
+where the orthogonal projection of `p` to the line `p₁ p₂` or `p₁ p₃` is `p₁`. -/
+private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₂ {p p₁ p₂ p₃ : P}
+    (h₂ : p₁ ≠ p₂) (h₃ : p₁ ≠ p₃) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃)
+    (h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁ ∨
+      orthogonalProjection line[ℝ, p₁, p₃] p = p₁) :
+    dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
+      dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
+  rcases h' with h' | h'
+  · exact dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ h₂ h h'
+  · refine (dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ h₃ ?_ h').symm
+    rw [oangle_rev, smul_neg, ← h, oangle_rev, smul_neg, neg_neg]
+
+/-- A point `p` is equidistant to two lines `p₁ p₂` and `p₁ p₃` if the oriented angles at `p₁`
+are equal modulo `π`. -/
+lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P} (h₂ : p₁ ≠ p₂)
+    (h₃ : p₁ ≠ p₃) (h : (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃) :
+    dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
+      dist p (orthogonalProjection line[ℝ, p₁, p₃] p) := by
+  by_cases h' : orthogonalProjection line[ℝ, p₁, p₂] p = p₁ ∨
+      orthogonalProjection line[ℝ, p₁, p₃] p = p₁
+  · exact dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₂ h₂ h₃ h h'
+  · rw [not_or] at h'
+    refine dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq
+      ⟨left_mem_affineSpan_pair _ _ _, left_mem_affineSpan_pair _ _ _⟩ h'.1 h'.2 ?_
+    rw [(collinear_insert_of_mem_affineSpan_pair
+          (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left h'.1 h₂.symm,
+      (collinear_insert_of_mem_affineSpan_pair
+        (orthogonalProjection_mem p)).two_zsmul_oangle_eq_right h'.2 h₃.symm, h]
+
+/-- If a point `p` is equidistant to two different lines `p₁ p₂` and `p₁ p₃`, the oriented angles
+at `p₁` are equal modulo `π`. -/
+lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
+    (ha : AffineIndependent ℝ ![p₁, p₂, p₃])
+    (h : dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
+      dist p (orthogonalProjection line[ℝ, p₁, p₃] p)) :
+    (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃ := by
+  by_cases ho : (orthogonalProjection line[ℝ, p₁, p₂] p : P) =
+      orthogonalProjection line[ℝ, p₁, p₃] p
+  · suffices p = p₁ by simp [this]
+    have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
+    have hp : orthogonalProjection (line[ℝ, p₁, p₂]) p = p₁ := by
+      suffices (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈ affineSpan ℝ {p₁} by
+        simpa using this
+      have hi : (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈
+          line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] :=
+        ⟨orthogonalProjection_mem _, ho ▸ orthogonalProjection_mem _⟩
+      convert hi
+      convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2}).symm
+      · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by
+          convert this
+          grind
+        simp
+      · simp [Set.image_insert_eq]
+      · simp [Set.image_insert_eq]
+    rw [← orthogonalProjection_sup_of_orthogonalProjection_eq ho] at hp
+    rw [← hp, eq_comm, orthogonalProjection_eq_self_iff]
+    convert AffineSubspace.mem_top ℝ V p
+    rw [← AffineSubspace.span_union]
+    convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
+    · simp
+      grind
+    · simpa using Fact.out
+  have hp := oangle_eq_of_dist_orthogonalProjection_eq
+    ⟨left_mem_affineSpan_pair _ _ _, left_mem_affineSpan_pair _ _ _⟩ ho h
+  have h₂₁ : p₂ ≠ p₁ := ha.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+  have h₃₁ : p₃ ≠ p₁ := ha.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+  have hp₁ : orthogonalProjection line[ℝ, p₁, p₂] p ≠ p₁ := by
+    intro hp
+    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
+      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
+        (left_mem_affineSpan_pair ℝ _ p₃),
+      add_eq_right, mul_eq_zero, dist_eq_zero, or_self] at h
+    grind
+  have hp₂ : orthogonalProjection line[ℝ, p₁, p₃] p ≠ p₁ := by
+    intro hp
+    rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p₁,
+      dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p
+        (left_mem_affineSpan_pair ℝ _ p₂),
+      right_eq_add, mul_eq_zero, dist_eq_zero, or_self] at h
+    grind
+  rw [← (collinear_insert_of_mem_affineSpan_pair
+           (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left hp₁ h₂₁,
+      ← (collinear_insert_of_mem_affineSpan_pair
+           (orthogonalProjection_mem p)).two_zsmul_oangle_eq_right hp₂ h₃₁, hp]
+
+/-- A point `p` is equidistant to two different lines `p₁ p₂` and `p₁ p₃` if and only if the
+oriented angles at `p₁` are equal modulo `π`. -/
+lemma dist_orthogonalProjection_eq_iff_two_zsmul_oangle_eq {p p₁ p₂ p₃ : P}
+    (ha : AffineIndependent ℝ ![p₁, p₂, p₃]) :
+    dist p (orthogonalProjection line[ℝ, p₁, p₂] p) =
+      dist p (orthogonalProjection line[ℝ, p₁, p₃] p) ↔
+        (2 : ℤ) • ∡ p₂ p₁ p = (2 : ℤ) • ∡ p p₁ p₃ := by
+  exact ⟨two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq ha,
+    dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq
+      (ha.injective.ne (by decide : (0 : Fin 3) ≠ 1))
+      (ha.injective.ne (by decide : (0 : Fin 3) ≠ 2))⟩
 
 end Oriented
 
