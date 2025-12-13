@@ -16,6 +16,8 @@ public import Mathlib.Tactic.Common
 
 @[expose] public section
 
+set_option linter.style.commandStart false -- TEMPORARY, silence some false positives
+
 open Nat Function Option
 
 namespace Stream'

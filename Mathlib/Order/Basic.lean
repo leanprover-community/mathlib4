@@ -250,7 +250,7 @@ theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
 
 @[deprecated LE.le.not_lt_iff_eq (since := "2025-06-08")]
-lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff_eq.symm
+lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬a < b := hab.not_lt_iff_eq.symm
 
 @[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
@@ -867,7 +867,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
   have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
-  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+  · have : ¬f a = f b := by rename_i h; exact inj.ne h
     contradiction
   · grind
 
