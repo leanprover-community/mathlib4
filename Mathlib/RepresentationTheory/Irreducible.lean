@@ -26,6 +26,8 @@ universe u
 variable {G k V : Type u} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
     (ρ : Representation k G V)
 
+/-- A representation `ρ` is irreducible if it has no proper non-trivial subrepresentations.
+-/
 @[mk_iff] class IsIrreducible extends
   IsSimpleOrder (Subrepresentation ρ)
 
