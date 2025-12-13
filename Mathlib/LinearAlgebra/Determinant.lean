@@ -447,10 +447,8 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n] (f : Matrix m m K ≃ₐ[K] Matrix n n K) (x : Matrix m m K) :
     (f x).det = x.det := by
-  simp_rw [← det_toLin']
-  have : (f x).toLin' = ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv') x.toLin' := by
-    simp [toMatrixAlgEquiv', toLinAlgEquiv']
-  exact this ▸ LinearMap.det_map _ _
+  simpa [toMatrixAlgEquiv', toLinAlgEquiv'] using
+    LinearMap.det_map ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv') x.toLin'
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]

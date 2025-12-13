@@ -316,11 +316,8 @@ variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n] (f : Matrix m m K ≃ₐ[K] Matrix n n K) (x : Matrix m m K) :
     (f x).trace = x.trace := by
-  simp_rw [← Matrix.trace_toLin'_eq]
-  have : (f x).toLin' =
-      ((Matrix.toLinAlgEquiv'.symm.trans f).trans Matrix.toLinAlgEquiv') x.toLin' := by
-    simp [toMatrixAlgEquiv', Matrix.toLinAlgEquiv']
-  exact this ▸ LinearMap.trace_map _ _
+  simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
+    LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans f).trans Matrix.toLinAlgEquiv') x.toLin'
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
