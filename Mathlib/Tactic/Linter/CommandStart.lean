@@ -155,7 +155,7 @@ If the expectation is correct, then it returns `some (s2 \ s1)`, otherwise, it r
 The typical application uses `f = invisible`.
 -/
 partial
-def consumeIgnoring (s1 s2 : Substring) (f : String → Bool) : Option Substring :=
+def consumeIgnoring (s1 s2 : Substring.Raw) (f : String → Bool) : Option Substring.Raw :=
   -- The expected end of the process: `s1` is fully consumed, we return `s2`.
   if s1.isEmpty || s2.isEmpty then s2 else
   -- Otherwise, we compare the first available character of each string.
@@ -205,7 +205,7 @@ def ppCategory' (cat : Name) (stx : Syntax) : CoreM Format := do
 
 /-- Replaces each consecutive run of whitespace in the input `s` with a single space. -/
 def reduceWhitespace (s : String) : String :=
-  " ".intercalate <| (s.split (·.isWhitespace)).filter (!·.isEmpty)
+  " ".intercalate <| (s.splitToList (·.isWhitespace)).filter (!·.isEmpty)
 
 /-- Converts the input syntax into a string using the pretty-printer and then collapsing
 consecuting whitespace into a single space. -/
@@ -278,7 +278,7 @@ def withVerbose {α} (v : Bool) (s : String) (a : α) : α :=
 
 /-- Answers whether a `Substring` starts with a space (` `), contains possibly more spaces,
 until there is either `/ -` (without the space between `/` and `-`) or `--`. -/
-def onlineComment (s : Substring) : Bool :=
+def onlineComment (s : Substring.Raw) : Bool :=
   (s.take 1).toString == " " &&
     #[ "/-", "--"].contains ((s.dropWhile (· == ' ')).take 2).toString
 
@@ -297,7 +297,7 @@ Checks whether `orig` is an "acceptable version" of `pp`:
 
 TODO: should item 2. actually check that there is no space and that's it?
 -/
-def validateSpaceAfter (orig pp : Substring) : Bool :=
+def validateSpaceAfter (orig pp : Substring.Raw) : Bool :=
   -- An empty `pp`ed tail sould correspond to
   -- an empty `orig`,
   -- something starting with a line break,
@@ -353,7 +353,7 @@ def validateSpaceAfter (orig pp : Substring) : Bool :=
 -/
 
 /-- Assume both substrings come from actual trails. -/
-def validateSpaceAfter' (orig pp : Substring) : Bool :=
+def validateSpaceAfter' (orig pp : Substring.Raw) : Bool :=
   -- An empty `pp`ed tail sould correspond to
   -- an empty `orig`,
   -- something starting with a line break,
@@ -420,7 +420,7 @@ def validateSpaceAfter' (orig pp : Substring) : Bool :=
 structure Exceptions where
   orig : String
   pp : String
-  pos : String.Pos
+  pos : String.Pos.Raw
   kind : SyntaxNodeKind
   reason : String
 
@@ -429,13 +429,13 @@ instance : ToString Exceptions where
   | {orig := o, pp := pp, pos := p, kind := k, reason := r} =>
     s!"Exception\npos:  {p}\nkind: '{k}'\norig: '{o.norm}'\npret: '{pp.norm}'\nreason: {r}\n---"
 
-def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos) (k : SyntaxNodeKind) (reason : String) :
+def addException (e : Array Exceptions) (orig pp : String) (p : String.Pos.Raw) (k : SyntaxNodeKind) (reason : String) :
     Array Exceptions :=
   e.push <| Exceptions.mk orig pp p k reason
 
 
-def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : SourceInfo) (s1 s2 : String) (str : Substring) :
-    Substring × Array Exceptions :=
+def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : SourceInfo) (s1 s2 : String) (str : Substring.Raw) :
+    Substring.Raw × Array Exceptions :=
   let (_l1, t1) := i1.getLeadTrail
   --let (l2, t2) := i2.getLeadTrail
   --dbg_trace "removing '{s2}'"
@@ -472,7 +472,7 @@ def exclusions : NameSet := NameSet.empty
   |>.insert ``Parser.Command.docComment
 
 def scanWatching (verbose? : Bool) :
-    Array Exceptions → SyntaxNodeKind → Syntax → Syntax → Substring → Substring × Array Exceptions
+    Array Exceptions → SyntaxNodeKind → Syntax → Syntax → Substring.Raw → Substring.Raw × Array Exceptions
   | tot, k, .ident i1 s1 n1 p1, .ident i2 s2 n2 p2, str =>
     withVerbose verbose? "idents" <|
       validateAtomOrId tot k i1 i2 s1.toString s2.toString str
@@ -504,7 +504,7 @@ def scanWatching (verbose? : Bool) :
     withVerbose verbose? "rest" <|
       (str, tot)
 
-def modifyTail (si : SourceInfo) (newTrail : Substring) : SourceInfo :=
+def modifyTail (si : SourceInfo) (newTrail : Substring.Raw) : SourceInfo :=
   match si with
   | .original lead pos _ endPos => .original lead pos newTrail endPos
   | _ => si
@@ -522,7 +522,7 @@ The main goal is to figure out what is the trailing whitespace substring
 (usually either empty `""` or a single space `" "`).
 -/
 partial
-def readWhile (s t : Substring) : Substring :=
+def readWhile (s t : Substring.Raw) : Substring.Raw :=
   if s.isEmpty || t.isEmpty then t else
   let s1 := s.take 1
   let t1 := t.take 1
@@ -558,12 +558,12 @@ def readWhile (s t : Substring) : Substring :=
   guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toSubstring) t).toString == "0"
 
-def _root_.Substring.toRange (s : Substring) : String.Range where
+def _root_.Substring.toRange (s : Substring.Raw) : Lean.Syntax.Range where
   start := s.startPos
   stop := s.stopPos
 
 structure mex where
-  rg : String.Range
+  rg : Lean.Syntax.Range
   error : String
   kinds : Array SyntaxNodeKind
 
@@ -708,32 +708,32 @@ def reportedAndUnreportedExceptions (as : Array mex) : Array mex × Array mex :=
 structure AfterAtom where
   /-- `next` is either `" ".toSubstring` or `"".toSubstring`, depending on whether the
   character following the current identifier/atom is required to be followed by a space or not. -/
-  next : Substring
+  next : Substring.Raw
   /-- `read` is the pretty-printed substring, starting from after the current identifier/atom,
   dropping also eventual leading whitespace. -/
-  strNew : Substring
+  strNew : Substring.Raw
 
 structure PPinstruction where
-  pos : String.Pos
+  pos : String.Pos.Raw
   after : Bool := true
   space : Bool := true
   deriving Inhabited
 
 structure PPref where
-  pos : String.Pos
+  pos : String.Pos.Raw
   ok : Bool
-  bracket : Option String.Pos := none
+  bracket : Option String.Pos.Raw := none
   kinds : Array SyntaxNodeKind
   deriving Inhabited
 
 /-- A mapping from each start/ending position of each atom in the string generating the original
 syntax with the corresponding start/ending position in the pretty-printed string generated by
 stripping all comments and whitespace. -/
-abbrev Correspondence := Std.HashMap String.Pos PPref
+abbrev Correspondence := Std.HashMap String.Pos.Raw PPref
 
 def atomOrIdentEndPos {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (verbose? : Bool) (k : Array SyntaxNodeKind) (orig pp : Substring) :
-    m String.Pos := do
+    (verbose? : Bool) (k : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
+    m String.Pos.Raw := do
   let ppDropOrig := readWhile orig pp
   if verbose? then
     if ppDropOrig == pp && (!ppDropOrig.isEmpty) then
@@ -749,7 +749,7 @@ def atomOrIdentEndPos {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOpt
 partial
 def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (verbose? : Bool) :
-    Correspondence → Array SyntaxNodeKind → Syntax → Substring → m (Substring × Correspondence)
+    Correspondence → Array SyntaxNodeKind → Syntax → Substring.Raw → m (Substring.Raw × Correspondence)
   | corr, k, .ident info rawVal _val _pre, str => do
     --dbg_trace "kinds:\n{k}"
     --dbg_trace "rawVal: '{rawVal}'"
@@ -770,7 +770,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     pure (
       {str with startPos := ppEndPos},
       corr.alter (info.getTrailing?.get!.startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `atom val)))
-  | corr, k, stx@(.node _info kind args), str => do
+  | corr, k, _stx@(.node _info kind args), str => do
     --let corr :=
     --  if (k.back?.getD .anonymous) == ``Parser.Term.structInst then
     --    --dbg_trace "inserting {stx} {(stx.getRange?.map fun | {start := a, stop := b} => (a, b))}\n"
@@ -792,8 +792,8 @@ def _root_.String.mkGroups (s : String) (n : Nat) : List String :=
 def byTens (s : String) (n : Nat := 9) : String :=
   "\n".intercalate <| ("".intercalate <| (List.range n).map (fun n => s!"{(n + 1) % 10}")) :: s.mkGroups n
 
-def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring) :
-    Option (String.Range × MessageData × String) := Id.run do
+def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
+    Option (Lean.Syntax.Range × MessageData × String) := Id.run do
   let origWs := orig.takeWhile (·.isWhitespace)
   --dbg_trace "here for '{(orig.take 10).toString}'\n{ks}\n"
   --dbg_trace ks
@@ -840,10 +840,10 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring) :
   return none
 
 /-- Assumes that the `startPos` of the string is where the "center" of the window will be. -/
-def mkWdw (s : Substring) (mid : String := "") : String :=
+def mkWdw (s : Substring.Raw) (mid : String := "") : String :=
   let p := s.startPos
   let fromStart := {s with startPos := 0, stopPos := p}
-  let toEnd := {s with startPos := p, stopPos := s.str.endPos}
+  let toEnd := {s with startPos := p, stopPos := s.str.rawEndPos}
   let leftWhitespaceAndWord := fromStart.trimRight.dropRightWhile (!·.isWhitespace)
   let rightWhitespaceAndWord := toEnd.trimLeft.dropWhile (!·.isWhitespace)
   s!"\
@@ -892,15 +892,13 @@ elab "#show_corr " cmd:command : command => do
     logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
   else logWarning "Error"
 
-#show_corr
---inspect
-#check (  { default := (/-  -/) }:    Inhabited   Unit
-)
-
-#check ``Nat
+-- #show_corr
+-- --inspect
+-- #check (  { default := (/-  -/) }:    Inhabited   Unit
+-- )
 
 def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (verbose? : Bool) (k : Array SyntaxNodeKind) (val str : Substring) :
+    (verbose? : Bool) (k : Array SyntaxNodeKind) (val str : Substring.Raw) :
     m (AfterAtom × PPinstruction) := do
   --dbg_trace "forceSpaceAfter.contains {k}: {forceSpaceAfter.contains k}\nStarting with '{val}'\n"
   let read := readWhile val str
@@ -942,7 +940,7 @@ This essentially converts `noSpaceStx` into a `Syntax` tree whose traversal reco
 partial
 def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (verbose? : Bool) :
-    Array SyntaxNodeKind → Syntax → Substring → m (Syntax × Substring)
+    Array SyntaxNodeKind → Syntax → Substring.Raw → m (Syntax × Substring.Raw)
   | k, .ident info rawVal val pre, str => do
     let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `ident rawVal.toString)) rawVal str
     if false then
@@ -984,7 +982,7 @@ def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax)
     return withSpaces.1
   else return none
 
-def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring) : Option mex :=
+def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) : Option mex :=
   let orig1 := (orig.take 1).toString
   if orig.toString == pp.toString then none else
   -- Case `pp = ""`
@@ -996,7 +994,7 @@ def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring) : Option mex 
   -- Case `pp = " "`
   else
     if orig.isEmpty then
-      let misformat : Substring := {orig with stopPos := orig.stopPos + ⟨1⟩}
+      let misformat : Substring.Raw := {orig with stopPos := orig.stopPos + ⟨1⟩}
       some ⟨misformat.toRange, "add space", ks⟩
     else
     -- Allow line breaks
@@ -1089,7 +1087,7 @@ of a single character, then number of characters added to `rebuilt` is the same 
 characters removed from `L`.
 -/
 partial
-def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring)
+def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring.Raw)
     (addSpace removeSpace removeLine : String) :
     String × Array FormatError :=
   if M.trim.isEmpty then (rebuilt ++ L.toString, as) else
@@ -1321,9 +1319,9 @@ The linter uses this to figure out which nodes should be ignored.
 def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
-def mkWindowSubstring (orig : Substring) (start : String.Pos) (ctx : Nat) : String :=
-  let head : Substring := {orig with stopPos := start} -- `orig`, up to the beginning of the discrepancy
-  let middle : Substring := {orig with startPos := start}
+def mkWindowSubstring (orig : Substring.Raw) (start : String.Pos.Raw) (ctx : Nat) : String :=
+  let head : Substring.Raw := {orig with stopPos := start} -- `orig`, up to the beginning of the discrepancy
+  let middle : Substring.Raw := {orig with startPos := start}
   let headCtx := head.takeRightWhile (!·.isWhitespace)
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
@@ -1338,27 +1336,27 @@ where
 
 We carve out the substring `<wordLeft><whitespaceLeft><whitespaceRight><wordRight>`.
 -/
-def mkWindowSubstring' (orig : Substring) (start : String.Pos) : String :=
+def mkWindowSubstring' (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
   -- Starting from the first discrepancy, we move to the right, consuming all subsequent
   -- contiguous whitespace and then all subsequent contiguous non-whitespace.
-  let fromError : Substring := {orig with startPos := start}
+  let fromError : Substring.Raw := {orig with startPos := start}
   let extRight := fromError.dropWhile (·.isWhitespace) |>.dropWhile (!·.isWhitespace)
   -- Ending at the first discrepancy, we move to the left, consuming all previous
   -- contiguous whitespace and then all previous contiguous non-whitespace.
-  let toError : Substring := {orig with stopPos := start}
+  let toError : Substring.Raw := {orig with stopPos := start}
   let extLeft := toError.dropRightWhile (·.isWhitespace) |>.dropRightWhile (!·.isWhitespace)
   -- Carve the substring using the starting and ending positions determined above.
   {orig with startPos := extLeft.stopPos, stopPos := extRight.startPos}.toString
 
-def mkExpectedWindow (orig : Substring) (start : String.Pos) : String :=
+def mkExpectedWindow (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
   -- Ending at the first discrepancy, we move to the left, consuming all previous
   -- contiguous whitespace and then all previous contiguous non-whitespace.
-  let toError : Substring := {orig with stopPos := start}
+  let toError : Substring.Raw := {orig with stopPos := start}
   let extLeft := toError.dropRightWhile (·.isWhitespace) |>.dropRightWhile (!·.isWhitespace)
 
   -- Starting from the first discrepancy, we move to the right, consuming all subsequent
   -- contiguous whitespace and then all subsequent contiguous non-whitespace.
-  let fromError : Substring := {orig with startPos := start}
+  let fromError : Substring.Raw := {orig with startPos := start}
   let first := fromError.take 1
   let afterWhitespace := fromError.dropWhile (·.isWhitespace) |>.takeWhile (!·.isWhitespace)
   --dbg_trace "first: '{first}'"
@@ -1377,7 +1375,7 @@ def mkExpectedWindow (orig : Substring) (start : String.Pos) : String :=
 
 #guard mkExpectedWindow "0123 abc    \n def ghi".toSubstring ⟨9⟩ == "abc def"
 
-def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring) (m : mex) (ctx : Nat := 4) : String :=
+def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring.Raw) (m : mex) (ctx : Nat := 4) : String :=
   let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
   mkWindowSubstring orig m.rg.start (ctx + lth)
 
@@ -1398,7 +1396,7 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
-def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring) : MessageData :=
+def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) : MessageData :=
   let origWindow := mkWindowSubstring' orig m.rg.start
   let expectedWindow := mkExpectedWindow orig m.rg.start
   m!"{m.error} in the source\n\n\
@@ -1407,7 +1405,7 @@ def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring) : Mes
 
 /-- If `s` is a `Substring` and `p` is a `String.Pos`, then `s.break p` is the pair consisting of
 the `Substring` `s` ending at `p` and of the `Substring` `s` starting from `p`. -/
-def _root_.Substring.break (s : Substring) (p : String.Pos) : Substring × Substring :=
+def _root_.Substring.break (s : Substring.Raw) (p : String.Pos.Raw) : Substring.Raw × Substring.Raw :=
   ({s with stopPos := p}, {s with startPos := p})
 
 /--
@@ -1433,7 +1431,7 @@ be added before that word.  Hence, the script adds a `" ".toSubstring`.
 If, instead, there is a space after a position in `ms`, then it, and all the following streak of
 whitespace, is redundant and gets trimmed.
 -/
-def mkStrings (orig : Substring) (ms : Array String.Pos) : Array Substring :=
+def mkStrings (orig : Substring.Raw) (ms : Array String.Pos.Raw) : Array Substring.Raw :=
   let (tot, orig) := ms.foldl (init := (#[], orig)) fun (tot, orig) pos =>
     let (start, follow) := orig.break pos
     let newTot := tot.push start ++ if (follow.take 1).trim.isEmpty then #[] else #[" ".toSubstring]
@@ -1441,26 +1439,26 @@ def mkStrings (orig : Substring) (ms : Array String.Pos) : Array Substring :=
   tot.push orig
 
 section Tests
-local instance : Coe String Substring := ⟨String.toSubstring⟩
+local instance : Coe String Substring.Raw := ⟨String.toSubstring⟩
 
 #guard -- empty positions, store `s` in a singleton array
   let s := "abcdef    ghi jkl"
-  let ms : Array String.Pos := #[]
+  let ms : Array String.Pos.Raw := #[]
   #[s.toSubstring] == mkStrings s.toSubstring ms
 
 #guard
   let s := "12345    ghi jkl"
-  let ms : Array String.Pos := #[⟨5⟩]
+  let ms : Array String.Pos.Raw := #[⟨5⟩]
   #["12345".toSubstring, "ghi jkl".toSubstring] == mkStrings s.toSubstring ms
 
 #guard
   let s := "12345    ghi    jkl"
-  let ms : Array String.Pos := #[⟨2⟩, ⟨5⟩, ⟨10⟩, ⟨12⟩]
+  let ms : Array String.Pos.Raw := #[⟨2⟩, ⟨5⟩, ⟨10⟩, ⟨12⟩]
   #["12".toSubstring, " ", "345", "g", " ", "hi", "jkl"] == mkStrings s.toSubstring ms
 
 #guard
   let s := "12345    ghi    jklmno pqr"
-  let ms : Array String.Pos := #[⟨6⟩, ⟨13⟩, ⟨19⟩]
+  let ms : Array String.Pos.Raw := #[⟨6⟩, ⟨13⟩, ⟨19⟩]
   #["12345 ".toSubstring, "ghi ", "jkl", " ", "mno pqr"] == mkStrings s.toSubstring ms
 
 end Tests
