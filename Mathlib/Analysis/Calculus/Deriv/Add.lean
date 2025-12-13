@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Tactic.ToFun
 
 /-!
 # One-dimensional derivatives of sums etc
@@ -40,34 +41,21 @@ section Add
 
 /-! ### Derivative of the sum of two functions -/
 
-
-nonrec theorem HasDerivAtFilter.fun_add (hf : HasDerivAtFilter f f' x L)
-    (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (fun y ↦ f y + g y) (f' + g') x L := by
-  simpa using (hf.add hg).hasDerivAtFilter
-
+@[to_fun]
 nonrec theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' x L)
     (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (f + g) (f' + g') x L := by
   simpa using (hf.add hg).hasDerivAtFilter
 
-nonrec theorem HasStrictDerivAt.fun_add
-    (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
-    HasStrictDerivAt (fun y ↦ f y + g y) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
-
+@[to_fun]
 nonrec theorem HasStrictDerivAt.add (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
     HasStrictDerivAt (f + g) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
 
-nonrec theorem HasDerivWithinAt.fun_add (hf : HasDerivWithinAt f f' s x)
-    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun y ↦ f y + g y) (f' + g') s x :=
-  hf.add hg
-
+@[to_fun]
 nonrec theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
     (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (f + g) (f' + g') s x :=
   hf.add hg
 
-nonrec theorem HasDerivAt.fun_add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun x ↦ f x + g x) (f' + g') x :=
-  hf.add hg
-
+@[to_fun]
 nonrec theorem HasDerivAt.add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
     HasDerivAt (f + g) (f' + g') x :=
   hf.add hg
