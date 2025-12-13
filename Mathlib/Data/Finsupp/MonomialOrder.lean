@@ -66,7 +66,7 @@ structure MonomialOrder (σ : Type*) where
   /-- `syn` is linearly ordered -/
   lo : LinearOrder syn := by infer_instance
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
-  iocam : IsOrderedCancelAddMonoid syn := by infer_instance
+  ioam : IsOrderedAddMonoid syn := by infer_instance
   /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
@@ -74,11 +74,16 @@ structure MonomialOrder (σ : Type*) where
   /-- `syn` is a well ordering -/
   wf : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam MonomialOrder.wf
+attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.ioam MonomialOrder.wf
 
 namespace MonomialOrder
 
 variable {σ : Type*} (m : MonomialOrder σ)
+
+instance : AddCancelCommMonoid m.syn where
+  add_left_cancel := m.toSyn.symm.injective.isLeftCancelAdd _ (map_add _) |>.add_left_cancel
+
+instance iocam : IsOrderedCancelAddMonoid m.syn := IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
