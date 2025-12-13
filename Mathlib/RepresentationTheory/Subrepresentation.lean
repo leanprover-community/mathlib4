@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 # Subrepresentations
 
 This file defines subrepresentations of a monoid representation.
+This file defines subrepresentations of a monoid representation.
 
 -/
 
@@ -20,8 +21,17 @@ This file defines subrepresentations of a monoid representation.
 open Pointwise
 open scoped MonoidAlgebra
 
-variable {A G W M : Type*} [CommRing A] [Monoid G] [AddCommMonoid W] [Module A W]
-  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
+universe u
+
+variable {A : Type u} [CommRing A]
+
+variable {G : Type u} [Monoid G]
+
+variable {W : Type u} [AddCommMonoid W] [Module A W]
+
+variable {ρ : Representation A G W}
+
+variable {M : Type u} [AddCommMonoid M] [Module A[G] M]
 
 variable (ρ) in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
@@ -86,5 +96,104 @@ instance : BoundedOrder (Subrepresentation ρ) where
   le_top _ _ := by simp
   bot := ⟨⊥, by simp⟩
   bot_le _ _ := by simp +contextual
+
+def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
+  carrier := σ.toSubmodule.carrier
+  add_mem' := σ.toSubmodule.add_mem'
+  zero_mem' := σ.toSubmodule.zero_mem'
+  smul_mem' := by
+    intro c v hv
+    induction c using MonoidAlgebra.induction_linear with
+      | zero => rw [zero_smul]; exact σ.toSubmodule.zero_mem'
+      | add x y hx hy => rw [add_smul]; exact σ.toSubmodule.add_mem' hx hy
+      | single g a =>
+        rw [Representation.single_smul]
+        exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
+
+def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)) :
+    Submodule A[G] M where
+  carrier := σ.toSubmodule.carrier
+  add_mem' := σ.toSubmodule.add_mem'
+  zero_mem' := σ.toSubmodule.zero_mem'
+  smul_mem' := by
+    intro c m hm
+    induction c using MonoidAlgebra.induction_linear with
+      | zero => rw [zero_smul]; exact σ.toSubmodule.zero_mem'
+      | add x y hx hy => rw [add_smul]; exact σ.toSubmodule.add_mem' hx hy
+      | single g a =>
+        have h := σ.apply_mem_toSubmodule g hm
+        dsimp [Representation.ofModule, RestrictScalars.lsmul] at h
+        have : MonoidAlgebra.single g a • m =
+            (algebraMap A A[G]) a • MonoidAlgebra.single g (1 : A) • m := by
+          simp only [MonoidAlgebra.coe_algebraMap, Algebra.algebraMap_self, RingHom.coe_id,
+            Function.comp_apply, id_eq, smul_smul, MonoidAlgebra.single_mul_single, one_mul,
+            mul_one]
+        rw [this]
+        exact σ.toSubmodule.smul_mem' ((algebraMap A A) a) h
+
+def ofSubmodule (N : Submodule A[G] M) :
+    Subrepresentation (Representation.ofModule (k := A) (G := G) M) where
+  toSubmodule :={
+    carrier := N.carrier
+    add_mem' := N.add_mem'
+    zero_mem' := N.zero_mem'
+    smul_mem' := fun a m hm => N.smul_mem' (algebraMap A A[G] a) hm
+  }
+  apply_mem_toSubmodule := by
+    intro g v hv
+    change v ∈ N at hv
+    change ((Representation.ofModule M) g) v ∈ N
+    dsimp [Representation.ofModule, RestrictScalars.lsmul]
+    exact Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
+
+def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
+  toSubmodule := {
+    carrier := N.carrier
+    add_mem' := N.add_mem'
+    zero_mem' := N.zero_mem'
+    smul_mem' := by
+      intro a w hw
+      simpa using (N.smul_mem (algebraMap A A[G] a) hw)
+  }
+  apply_mem_toSubmodule := by
+    intro g w hw
+    change w ∈ N at hw
+    change (ρ g) w ∈ N
+    letI _ : Module A[G] W := by exact ρ.instModuleMonoidAlgebraAsModule
+    have h : (MonoidAlgebra.single g (1 : A)) • w ∈ N :=
+      Submodule.smul_of_tower_mem N _ hw
+    rw [Representation.single_smul, one_smul] at h
+    exact h
+
+def subrepresentationSubmoduleOrderIso : Subrepresentation ρ ≃o Submodule A[G] ρ.asModule where
+  toFun := asSubmodule
+  invFun := ofSubmodule'
+  left_inv := by
+    dsimp [Function.LeftInverse]
+    intro σ
+    rfl
+  right_inv := by
+    dsimp [Function.RightInverse, Function.LeftInverse]
+    intro N
+    rfl
+  map_rel_iff' := by
+    intro σ τ
+    rfl
+
+def submoduleSubrepresentationOrderIso : Submodule A[G] M ≃o
+    Subrepresentation (Representation.ofModule (k := A) (G := G) M) where
+  toFun := ofSubmodule
+  invFun := asSubmodule'
+  left_inv := by
+    dsimp [Function.LeftInverse]
+    intro N
+    rfl
+  right_inv := by
+    dsimp [Function.RightInverse, Function.LeftInverse]
+    intro σ
+    rfl
+  map_rel_iff' := by
+    intro N K
+    rfl
 
 end Subrepresentation
