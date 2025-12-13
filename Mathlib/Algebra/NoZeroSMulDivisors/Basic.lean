@@ -24,19 +24,6 @@ section NoZeroSMulDivisors
 
 variable {R M : Type*}
 
-section Module
-
-variable [Semiring R]
-variable (R M)
-
-/-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
-zero as well. Usually `M` is an `R`-algebra. -/
-theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
-  rw [← nsmul_one, ← nsmul_one, ← Nat.cast_smul_eq_nsmul R, ← Nat.cast_smul_eq_nsmul R, h]
-
-end Module
-
 section AddCommGroup
 
 -- `R` can still be a semiring here
