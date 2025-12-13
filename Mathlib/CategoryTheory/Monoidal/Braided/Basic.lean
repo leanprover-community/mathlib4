@@ -449,18 +449,20 @@ def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D wh
   toFunctor := F.toFunctor
 
 instance : Category (LaxBraidedFunctor C D) :=
-  InducedCategory.category (toLaxMonoidalFunctor)
+  inferInstanceAs (Category (InducedCategory _ toLaxMonoidalFunctor))
 
 @[simp]
-lemma id_hom (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor.Hom.hom (𝟙 F) = 𝟙 _ := rfl
+lemma id_hom (F : LaxBraidedFunctor C D) :
+    LaxMonoidalFunctor.Hom.hom (InducedCategory.Hom.hom (𝟙 F)) = 𝟙 _ := rfl
 
 @[reassoc, simp]
 lemma comp_hom {F G H : LaxBraidedFunctor C D} (α : F ⟶ G) (β : G ⟶ H) :
     (α ≫ β).hom = α.hom ≫ β.hom := rfl
 
 @[ext]
-lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom = β.hom) : α = β :=
-  LaxMonoidalFunctor.hom_ext h
+lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = β.hom.hom) :
+    α = β :=
+  InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
 /-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
 @[simps]
@@ -501,12 +503,18 @@ def isoOfComponents :
     (LaxMonoidalFunctor.isoOfComponents e naturality unit tensor)
 
 @[simp]
-lemma isoOfComponents_hom_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).hom.hom.app X = (e X).hom := rfl
+lemma isoOfComponents_hom_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).hom.hom.hom.app X = (e X).hom := rfl
 
 @[simp]
-lemma isoOfComponents_inv_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).inv.hom.app X = (e X).inv := rfl
+lemma isoOfComponents_inv_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
+
+@[deprecated (since := "2025-06-26")] alias isoOfComponents_hom_hom_app :=
+  isoOfComponents_hom_hom_hom_app
+
+@[deprecated (since := "2025-06-26")] alias isoOfComponents_inv_hom_app :=
+  isoOfComponents_inv_hom_hom_app
 
 end
 

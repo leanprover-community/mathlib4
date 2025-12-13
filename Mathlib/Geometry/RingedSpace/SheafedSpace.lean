@@ -76,17 +76,17 @@ instance : Category (SheafedSpace C) :=
     infer_instance
 
 @[ext (iff := false)]
-theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
-    (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
-  PresheafedSpace.ext α β w h
+theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.hom.base = β.hom.base)
+    (h : α.hom.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.hom.c) : α = β :=
+  InducedCategory.hom_ext (PresheafedSpace.ext _ _ w h)
 
 /-- Constructor for isomorphisms in the category `SheafedSpace C`. -/
 @[simps]
 def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpace) : X ≅ Y where
-  hom := e.hom
-  inv := e.inv
-  hom_inv_id := e.hom_inv_id
-  inv_hom_id := e.inv_hom_id
+  hom := InducedCategory.homMk e.hom
+  inv := InducedCategory.homMk e.inv
+  hom_inv_id := InducedCategory.hom_ext e.hom_inv_id
+  inv_hom_id := InducedCategory.hom_ext e.inv_hom_id
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
 @[simps! obj map]
@@ -95,13 +95,25 @@ def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
-instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
-  map_surjective f := ⟨f, rfl⟩
+/-- The functor `forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C`
+is fully faithful. -/
+def fullyFaithfulForgetToPresheafedSpace :
+    (forgetToPresheafedSpace (C := C)).FullyFaithful where
+  preimage f := InducedCategory.homMk f
 
-instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
+@[simp]
+lemma fullyFaithfulForgetToPresheafedSpace_preimage_hom {X Y : SheafedSpace C}
+    (f : forgetToPresheafedSpace.obj X ⟶ forgetToPresheafedSpace.obj Y) :
+    (fullyFaithfulForgetToPresheafedSpace.preimage f).hom = f := rfl
+
+instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full :=
+  fullyFaithfulForgetToPresheafedSpace.full
+
+instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful :=
+  fullyFaithfulForgetToPresheafedSpace.faithful
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
-    @IsIso (PresheafedSpace C) _ _ _ f :=
+    IsIso f.hom :=
   SheafedSpace.forgetToPresheafedSpace.map_isIso f
 
 section
@@ -109,41 +121,55 @@ section
 attribute [local simp] id comp
 
 @[simp]
-theorem id_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
-  rfl
-
-theorem id_c (X : SheafedSpace C) :
-    (𝟙 X : X ⟶ X).c = eqToHom (Presheaf.Pushforward.id_eq X.presheaf).symm :=
+theorem id_hom (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom = 𝟙 X.toPresheafedSpace :=
   rfl
 
 @[simp]
-theorem id_c_app (X : SheafedSpace C) (U) :
-    (𝟙 X : X ⟶ X).c.app U = 𝟙 _ := rfl
+theorem id_hom_base (X : SheafedSpace C) : (𝟙 X : X ⟶ X).hom.base = 𝟙 (X : TopCat) :=
+  rfl
 
-@[simp]
-theorem comp_base {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).base = f.base ≫ g.base :=
+theorem id_hom_c (X : SheafedSpace C) :
+    (𝟙 X : X ⟶ X).hom.c = eqToHom (Presheaf.Pushforward.id_eq X.presheaf).symm :=
   rfl
 
 @[simp]
-theorem comp_c_app {X Y Z : SheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U) :
-    (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
+theorem id_hom_c_app (X : SheafedSpace C) (U) :
+    (𝟙 X : X ⟶ X).hom.c.app U = 𝟙 _ := rfl
+
+@[simp]
+theorem comp_hom_base {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom.base = f.hom.base ≫ g.hom.base :=
   rfl
 
-theorem comp_c_app' {X Y Z : SheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U) :
-    (α ≫ β).c.app (op U) = β.c.app (op U) ≫ α.c.app (op ((Opens.map β.base).obj U)) :=
+@[simp]
+theorem comp_hom_c_app {X Y Z : SheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U) :
+    (α ≫ β).hom.c.app U =
+      β.hom.c.app U ≫ α.hom.c.app (op ((Opens.map β.hom.base).obj (unop U))) :=
   rfl
 
-theorem congr_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
-    α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) :=
-  PresheafedSpace.congr_app h U
+theorem comp_hom_c_app' {X Y Z : SheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U) :
+    (α ≫ β).hom.c.app (op U) =
+      β.hom.c.app (op U) ≫ α.hom.c.app (op ((Opens.map β.hom.base).obj U)) :=
+  rfl
+
+theorem congr_hom_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
+    α.hom.c.app U = β.hom.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) :=
+  (PresheafedSpace.congr_app (by rw [h]) U)
+
+@[deprecated (since := "2025-07-04")] alias id_base := id_hom_base
+@[deprecated (since := "2025-07-04")] alias id_c := id_hom_c
+@[deprecated (since := "2025-07-04")] alias id_c_app := id_hom_c_app
+@[deprecated (since := "2025-07-04")] alias comp_base := comp_hom_base
+@[deprecated (since := "2025-07-04")] alias comp_c_app := comp_hom_c_app
+@[deprecated (since := "2025-07-04")] alias comp_c_app' := comp_hom_c_app'
+@[deprecated (since := "2025-07-04")] alias congr_app := congr_hom_app
 
 variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
 def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
-  map {_ _} f := f.base
+  map {_ _} f := f.hom.base
 
 end
 
@@ -159,7 +185,8 @@ def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : IsO
 -/
 @[simps!]
 def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
-    (h : IsOpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
+    (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
+  InducedCategory.homMk (X.toPresheafedSpace.ofRestrict h)
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
@@ -183,10 +210,10 @@ theorem Γ_obj_op (X : SheafedSpace C) : Γ.obj (op X) = X.presheaf.obj (op ⊤)
   rfl
 
 @[simp]
-theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.c.app (op ⊤) :=
+theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.hom.c.app (op ⊤) :=
   rfl
 
-theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
+theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.hom.c.app (op ⊤) :=
   rfl
 
 noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
@@ -222,8 +249,8 @@ variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
 attribute [local ext] DFunLike.ext in
 include instCC in
-lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
-    (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
+lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.hom.base = g.hom.base)
+    (h' : ∀ x, f.hom.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.hom.stalkMap x) :
     f = g := by
   obtain ⟨f, fc⟩ := f
   obtain ⟨g, gc⟩ := g
@@ -238,30 +265,32 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
-    (h₁ : Function.Injective f.base)
-    (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by
+    (h₁ : Function.Injective f.hom.base)
+    (h₂ : ∀ x, Epi (f.hom.stalkMap x)) : Mono f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
-  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun x ↦ h₁ congr(($e).base x)
+  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun x ↦ h₁ congr(($e).hom.base x)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
-  rw [← cancel_epi (f.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
-    ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
+  rw [← cancel_epi (f.hom.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
+    ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f.hom, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f.hom]
+  replace e := congr_arg InducedCategory.Hom.hom e
   congr 1
 
 attribute [local ext] DFunLike.ext in
 include instCC in
 lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
-    (h₁ : Function.Surjective f.base)
-    (h₂ : ∀ x, Mono (f.stalkMap x)) : Epi f := by
+    (h₁ : Function.Surjective f.hom.base)
+    (h₂ : ∀ x, Mono (f.hom.stalkMap x)) : Epi f := by
   constructor
   intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  rw [InducedCategory.hom_ext_iff] at e
   obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
     rw [← (h₁ y).choose_spec]
     simpa using congr(($e).base.hom (h₁ y).choose)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun y ↦ ?_
-  rw [← (h₁ y).choose_spec, ← cancel_mono (f.stalkMap (h₁ y).choose), stalkCongr_hom,
-    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f ⟨g, gc⟩,
-    ← PresheafedSpace.stalkMap.comp f ⟨g, hc⟩]
+  rw [← (h₁ y).choose_spec, ← cancel_mono (f.hom.stalkMap (h₁ y).choose), stalkCongr_hom,
+    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f.hom ⟨g, gc⟩,
+    ← PresheafedSpace.stalkMap.comp f.hom ⟨g, hc⟩]
   congr 1
 
 end ConcreteCategory

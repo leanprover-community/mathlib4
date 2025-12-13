@@ -49,9 +49,9 @@ instance final_toCostructuredArrow
   rw [Functor.final_iff_of_isFiltered]
   refine ⟨fun f ↦ ?_, fun {f j} g₁ g₂ ↦ ?_⟩
   · obtain ⟨j, g, hg⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit f.hom
-    exact ⟨j, ⟨CostructuredArrow.homMk g⟩⟩
-  · obtain ⟨k, a, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ p.isColimit g₁.left g₂.left
-      ((CostructuredArrow.w g₁).trans (CostructuredArrow.w g₂).symm)
+    exact ⟨j, ⟨CostructuredArrow.homMk (ObjectProperty.homMk g)⟩⟩
+  · obtain ⟨k, a, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ p.isColimit
+      g₁.left.hom g₂.left.hom ((CostructuredArrow.w g₁).trans (CostructuredArrow.w g₂).symm)
     exact ⟨k, a, by cat_disch⟩
 
 instance [IsCardinalAccessibleCategory C κ] :

@@ -62,11 +62,7 @@ This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
-def MonoOver (X : C) :=
-  ObjectProperty.FullSubcategory (Over.isMono X)
-
-instance (X : C) : Category (MonoOver X) :=
-  ObjectProperty.FullSubcategory.category _
+abbrev MonoOver (X : C) := (Over.isMono X).FullSubcategory
 
 namespace MonoOver
 
@@ -74,12 +70,14 @@ instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
 
 /-- Construct a `MonoOver X`. -/
 @[simps]
-def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
+def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   obj := Over.mk f
   property := hf
 
+@[deprecated (since := "2025-07-03")] alias mk' := mk
+
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
-def forget (X : C) : MonoOver X ⥤ Over X :=
+abbrev forget (X : C) : MonoOver X ⥤ Over X :=
   ObjectProperty.ι _
 
 instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
@@ -89,16 +87,19 @@ theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
   rfl
 
 @[simp]
-theorem mk'_coe' {X A : C} (f : A ⟶ X) [Mono f] : (mk' f : C) = A :=
+theorem mk_coe {X A : C} (f : A ⟶ X) [Mono f] : (mk f : C) = A :=
   rfl
+
+@[deprecated (since := "2025-07-03")] alias mk'_coe' := mk_coe
 
 /-- Convenience notation for the underlying arrow of a monomorphism over X. -/
-abbrev arrow (f : MonoOver X) : (f : C) ⟶ X :=
-  ((forget X).obj f).hom
+abbrev arrow (f : MonoOver X) : (f : C) ⟶ X := f.obj.hom
 
 @[simp]
-theorem mk'_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk' f).arrow = f :=
+theorem mk_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk f).arrow = f :=
   rfl
+
+@[deprecated (since := "2025-07-03")] alias mk'_arrow := mk_arrow
 
 @[simp]
 theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
@@ -107,12 +108,6 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
 /-- The forget functor `MonoOver X ⥤ Over X` is fully faithful. -/
 def fullyFaithfulForget (X : C) : (forget X).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
-
-instance : (forget X).Full :=
-  ObjectProperty.full_ι _
-
-instance : (forget X).Faithful :=
-  ObjectProperty.faithful_ι _
 
 instance mono (f : MonoOver X) : Mono f.arrow :=
   f.property
@@ -124,19 +119,20 @@ which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
     intro h₁ h₂
+    apply InducedCategory.hom_ext
     apply Over.OverMorphism.ext
     rw [← cancel_mono g.arrow]
-    erw [Over.w h₁]
-    erw [Over.w h₂]⟩
+    erw [Over.w h₁.hom]
+    erw [Over.w h₂.hom]⟩
 
 @[reassoc]
-theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
+theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
   Over.w _
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by cat_disch) : f ⟶ g :=
-  Over.homMk h w
+    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
+  InducedCategory.homMk (Over.homMk h w)
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
@@ -148,25 +144,28 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
 package it as an isomorphism. -/
 @[simps!]
-def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
+def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
-instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.left :=
+@[deprecated (since := "2025-07-03")] alias mk'ArrowIso := mkArrowIso
+
+instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.hom.left :=
   inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
 
-lemma isIso_iff_isIso_left {A B : MonoOver X} (f : A ⟶ B) :
-    IsIso f ↔ IsIso f.left :=
+lemma isIso_iff_isIso_hom_left {A B : MonoOver X} (f : A ⟶ B) :
+    IsIso f ↔ IsIso f.hom.left :=
   (isIso_iff_of_reflects_iso _ (MonoOver.forget X ⋙ Over.forget _)).symm
+
+@[deprecated (since := "2025-07-03")] alias isIso_iff_isIso_left := isIso_iff_isIso_hom_left
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
 -/
-@[simps]
+@[simps!]
 def lift {Y : D} (F : Over Y ⥤ Over X)
     (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) :
-    MonoOver Y ⥤ MonoOver X where
-  obj f := ⟨_, h f⟩
-  map k := (MonoOver.forget Y ⋙ F).map k
+    MonoOver Y ⥤ MonoOver X :=
+  ObjectProperty.lift _ (forget _ ⋙ F) h
 
 /-- Isomorphic functors `Over Y ⥤ Over X` lift to isomorphic functors `MonoOver Y ⥤ MonoOver X`.
 -/
@@ -251,28 +250,13 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     Cocone F where
-  pt := {
-    obj := .mk <| (strongEpiMonoFactorisationSigmaDesc F).m
-    property := (strongEpiMonoFactorisationSigmaDesc F).m_mono
-  }
-  ι := {
-    app j := {
-      left := Sigma.ι (fun i ↦ (F.obj i : C)) j ≫ (strongEpiMonoFactorisationSigmaDesc F).e
-      right := 𝟙 _
-    }
-  }
+  pt := MonoOver.mk ((strongEpiMonoFactorisationSigmaDesc F).m)
+  ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
+    (strongEpiMonoFactorisationSigmaDesc F).e)
 
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
-    CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
-  w := by
-    apply Sigma.hom_ext
-    intro j
-    simp only [colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt, Cofan.mk_ι_app,
-      MonoFactorisation.fac, colimit.ι_desc]
-    convert (c.ι.app j).w
-    simp only [const_obj_obj, CostructuredArrow.right_eq_id, const_obj_map, comp_id]
-    exact rfl
 
 /-- A helper function, providing the lift structure used to construct colimits. -/
 def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
@@ -284,13 +268,8 @@ def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone
 /-- The cocone `coconeOfHasStrongEpiMonoFactorisation F` is a colimit -/
 def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     IsColimit (coconeOfHasStrongEpiMonoFactorisation F) where
-  desc c := {
-    left := (liftStructOfHasStrongEpiMonoFactorisation F c).l
-    right := 𝟙 _
-    w := by
-      simp only [id_obj, const_obj_obj, Functor.id_map, Discrete.functor_map_id, comp_id];
-      exact (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
-  }
+  desc c := homMk (liftStructOfHasStrongEpiMonoFactorisation F c).l
+    (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
 
 instance hasColimitsOfSize_of_hasStrongEpiMonoFactorisations :
     HasColimitsOfSize.{w, w'} (MonoOver Y) where
@@ -352,7 +331,7 @@ def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : Mon
     (T : MonoOver Y) (f' : (T : C) ⟶ (S : C))
     (h : IsPullback f' T.arrow S.arrow f) :
     (pullback f).obj S ≅ T :=
-  isoMk ((IsPullback.isoPullback h).symm) (by simp)
+  isoMk ((IsPullback.isoPullback h).symm)
 
 end IsPullback
 
@@ -383,7 +362,7 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
-    refine ⟨homMk e.left ?_, rfl⟩
+    refine ⟨homMk e.hom.left ?_, rfl⟩
     · rw [← cancel_mono f, assoc]
       apply w e
 
@@ -444,7 +423,7 @@ variable (f : X ⟶ Y) [HasImage f]
 /-- The `MonoOver Y` for the image inclusion for a morphism `f : X ⟶ Y`.
 -/
 def imageMonoOver (f : X ⟶ Y) [HasImage f] : MonoOver Y :=
-  MonoOver.mk' (image.ι f)
+  MonoOver.mk (image.ι f)
 
 @[simp]
 theorem imageMonoOver_arrow (f : X ⟶ Y) [HasImage f] : (imageMonoOver f).arrow = image.ι f :=
@@ -478,21 +457,19 @@ def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun f g =>
         { toFun := fun k => by
-            apply Over.homMk (factorThruImage f.hom ≫ k.left) _
-            change (factorThruImage f.hom ≫ k.left) ≫ _ = f.hom
-            rw [assoc, Over.w k]
+            apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
+            change (factorThruImage f.hom ≫ k.hom.left) ≫ _ = f.hom
+            rw [assoc, Over.w k.hom]
             apply image.fac
-          invFun := fun k => by
-            refine Over.homMk ?_ ?_
-            · exact
-                image.lift
-                  { I := g.obj.left
-                    m := g.arrow
-                    e := k.left
-                    fac := Over.w k }
-            · apply image.lift_fac
-          left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by simp } }
+          invFun k :=
+            homMk
+              (image.lift
+                { I := g.obj.left
+                  m := g.arrow
+                  e := k.left
+                  fac := Over.w k }) (image.lift_fac _)
+          left_inv _ := Subsingleton.elim _ _
+          right_inv k := by ext; simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

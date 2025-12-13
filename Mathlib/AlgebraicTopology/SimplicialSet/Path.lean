@@ -153,12 +153,14 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : P
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ObjectProperty.ιOfLE_map,
+      ← tr_comp, ObjectProperty.homMk_hom, δ_one_mkOfSucc]
   arrow_tgt i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ObjectProperty.ιOfLE_map,
+      ← tr_comp, ObjectProperty.homMk_hom, δ_zero_mkOfSucc]
 
 /-- Further truncating `X` above `m` does not change the `m`-spine. -/
 lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
@@ -183,9 +185,9 @@ lemma spine_arrow (Δ : X _⦋m⦌ₙ₊₁) (i : Fin m) :
 lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     (φ : ⦋a⦌ₙ₊₁ ⟶ ⦋m⦌ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
-      (X.spine m hₘ Δ).vertex (φ.toOrderHom i) := by
+      (X.spine m hₘ Δ).vertex (φ.hom.toOrderHom i) := by
   dsimp only [spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp',
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
@@ -327,7 +329,7 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
+    |>.spine_map_vertex n (by omega) Δ m (by omega) (InducedCategory.homMk φ) i
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=

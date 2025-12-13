@@ -43,14 +43,11 @@ structure FullSubcategory where
   property : P obj
 
 instance FullSubcategory.category : Category.{v} P.FullSubcategory :=
-  InducedCategory.category FullSubcategory.obj
+  inferInstanceAs (Category (InducedCategory _ FullSubcategory.obj))
 
--- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
-
-lemma FullSubcategory.id_def (X : P.FullSubcategory) : 𝟙 X = 𝟙 X.obj := rfl
-
-lemma FullSubcategory.comp_def {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
+@[ext]
+lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
+  InducedCategory.hom_ext h
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -63,13 +60,30 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
   rfl
 
 @[simp]
-theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f :=
+theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
   rfl
+
+@[simp]
+lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
+    InducedCategory.Hom.hom (𝟙 X) = 𝟙 X.obj := rfl
+
+@[simp, reassoc]
+lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
+@[deprecated (since := "2025-06-26")] alias FullSubcategory.id_def := FullSubcategory.id_hom
+@[deprecated (since := "2025-06-26")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
+
+variable {P} in
+/-- Constructor for morphisms in a full subcategory. -/
+@[simps]
+def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
+  hom := f
 
 /-- The inclusion of a full subcategory is fully faithful. -/
 abbrev fullyFaithfulι :
-    P.ι.FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+    P.ι.FullyFaithful where
+  preimage f := homMk _
 
 instance full_ι : P.ι.Full := P.fullyFaithfulι.full
 instance faithful_ι : P.ι.Faithful := P.fullyFaithfulι.faithful
@@ -77,26 +91,35 @@ instance faithful_ι : P.ι.Faithful := P.fullyFaithfulι.faithful
 /-- Constructor for isomorphisms in `P.FullSubcategory` when
 `P : ObjectProperty C`. -/
 @[simps]
-def isoMk {X Y : P.FullSubcategory} (e : P.ι.obj X ≅ P.ι.obj Y) : X ≅ Y where
-  hom := e.hom
-  inv := e.inv
-  hom_inv_id := e.hom_inv_id
-  inv_hom_id := e.inv_hom_id
+def isoMk {X Y : P.FullSubcategory} (e : X.obj ≅ Y.obj) : X ≅ Y where
+  hom := homMk e.hom
+  inv := homMk e.inv
 
+variable {P}
 
-variable {P} {P' : ObjectProperty C}
+@[reassoc (attr := simp)]
+lemma isoHom_inv_id_hom {X Y : P.FullSubcategory} (e : X ≅ Y) :
+    e.hom.hom ≫ e.inv.hom = 𝟙 _ :=
+  P.ι.congr_map e.hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoInv_hom_id_hom {X Y : P.FullSubcategory} (e : X ≅ Y) :
+    e.inv.hom ≫ e.hom.hom = 𝟙 _ :=
+  P.ι.congr_map e.inv_hom_id
+
+variable {P' : ObjectProperty C}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
 an induced functor `P.FullSubcategory ⥤ P'.FullSubcategory`. -/
 @[simps]
 def ιOfLE (h : P ≤ P') : P.FullSubcategory ⥤ P'.FullSubcategory where
   obj X := ⟨X.1, h _ X.2⟩
-  map f := f
+  map f := homMk f.hom
 
 /-- If `h : P ≤ P'`, then `ιOfLE h` is fully faithful. -/
 def fullyFaithfulιOfLE (h : P ≤ P') :
     (ιOfLE h).FullyFaithful where
-  preimage f := f
+  preimage f := homMk f.hom
 
 instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h).full
 instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
@@ -117,7 +140,7 @@ variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
 @[simps]
 def lift : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map f := F.map f
+  map f := homMk (F.map f)
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. This is actually true definitionally. -/

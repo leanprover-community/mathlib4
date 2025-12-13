@@ -71,8 +71,8 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       intro Z g₁ g₂ h
       let Y' : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ f), g₁, rfl⟩
-      let g₁' : Z' ⟶ Y' := Over.homMk g₁
-      let g₂' : Z' ⟶ Y' := Over.homMk g₂ (by simp [Y', Z', h])
+      let g₁' : Z' ⟶ Y' := ObjectProperty.homMk (Over.homMk g₁)
+      let g₂' : Z' ⟶ Y' := ObjectProperty.homMk (Over.homMk g₂ (by simp [Y', Z', h]))
       change F.map g₁' ≫ _ = F.map g₂' ≫ _
       simp only [Y', F, S.w]
     fac := by
@@ -81,7 +81,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       nth_rewrite 1 [← hT, Category.assoc, Hf.fac]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let x : D := ⟨Over.mk T.hom, g, hT⟩
-      let g' : x ⟶ y := Over.homMk g
+      let g' : x ⟶ y := ObjectProperty.homMk (Over.homMk g)
       change F.map g' ≫ _ = _
       rw [S.w]
       rfl
@@ -108,7 +108,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       ι := {
         app := fun ⟨_,hT⟩ => hT.choose ≫ e
         naturality := by
-          rintro ⟨A,hA⟩ ⟨B,hB⟩ (q : A ⟶ B)
+          rintro ⟨A,hA⟩ ⟨B,hB⟩ ⟨q : A ⟶ B⟩
           dsimp; simp only [← Category.assoc, Category.comp_id]
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
@@ -182,8 +182,8 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       let A₁ : D := ⟨Over.mk (π a₁), a₁, 𝟙 _, by simp⟩
       let A₂ : D := ⟨Over.mk (π a₂), a₂, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ π a₁), a₁, g₁, rfl⟩
-      let i₁ : Z' ⟶ A₁ := Over.homMk g₁
-      let i₂ : Z' ⟶ A₂ := Over.homMk g₂
+      let i₁ : Z' ⟶ A₁ := ObjectProperty.homMk (Over.homMk g₁)
+      let i₂ : Z' ⟶ A₂ := ObjectProperty.homMk (Over.homMk g₂)
       change F.map i₁ ≫ _ = F.map i₂ ≫ _
       simp only [F, A₁, A₂, S.w]
     fac := by
@@ -192,7 +192,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       nth_rewrite 1 [← hT, Category.assoc, H.fac]
       let A : D := ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       let B : D := ⟨Over.mk T.hom, a, g, hT⟩
-      let i : B ⟶ A := Over.homMk g
+      let i : B ⟶ A := ObjectProperty.homMk (Over.homMk g)
       change F.map i ≫ _ = _
       rw [S.w]
       rfl
@@ -220,7 +220,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
       ι := {
         app := fun ⟨_,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
-          intro ⟨A,a,(g₁ : A.left ⟶ _),ha⟩ ⟨B,b,(g₂ : B.left ⟶ _),hb⟩ (q : A ⟶ B)
+          rintro ⟨A,a,(g₁ : A.left ⟶ _),ha⟩ ⟨B,b,(g₂ : B.left ⟶ _),hb⟩ ⟨q : A ⟶ B⟩
           dsimp; rw [Category.comp_id, ← Category.assoc]
           apply h; rw [Category.assoc]
           generalize_proofs h1 h2 h3 h4

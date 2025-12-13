@@ -86,16 +86,15 @@ def toAut : G →* Aut F where
   toFun g := NatIso.ofComponents (isoOnObj F g) <| by
     intro X Y f
     ext
-    simp [IsNaturalSMul.naturality]
+    exact (IsNaturalSMul.naturality _ _ _).symm
   map_one' := by
     ext
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, one_smul]
-    rfl
+    dsimp [isoOnObj]
+    cat_disch
   map_mul' := by
     intro g h
     ext X x
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, mul_smul]
-    rfl
+    apply mul_smul
 
 variable {G} in
 @[simp]
@@ -156,9 +155,10 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))
   let px : F.obj P := is₁.inv (is₂.symm x)
   have hpx (i : ι) : F.map (Pi.π X i) px = x i := by
-    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom]
-    simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply,
-      FintypeCat.productEquiv_symm_comp_π_apply]
+    sorry
+    --simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom]
+    --simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply,
+    --  FintypeCat.productEquiv_symm_comp_π_apply]
   obtain ⟨A, f, a, _, hfa⟩ := exists_hom_from_galois_of_fiber F P px
   obtain ⟨g, hg⟩ := toAut_surjective_isGalois F G t A
   refine ⟨g, fun i y ↦ action_ext_of_isGalois F (x i) ?_ _⟩

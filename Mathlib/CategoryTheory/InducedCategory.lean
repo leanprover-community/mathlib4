@@ -52,23 +52,50 @@ def InducedCategory (_F : C → D) : Type u₁ :=
 
 variable {D}
 
-instance InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
+namespace InducedCategory
+
+instance hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
 
-instance InducedCategory.category : Category.{v} (InducedCategory D F) where
-  Hom X Y := F X ⟶ F Y
-  id X := 𝟙 (F X)
-  comp f g := f ≫ g
+variable {F}
 
-variable {F} in
+/-- The type of morphisms in `InducedCategory D F` between `X` and `Y`
+is a 1-field structure which identifies to `F X ⟶ F Y`. -/
+@[ext]
+structure Hom (X Y : InducedCategory D F) where
+  hom : F X ⟶ F Y
+
+@[simps id_hom comp_hom]
+instance : Category.{v} (InducedCategory D F) where
+  Hom X Y := Hom X Y
+  id X := { hom := 𝟙 _}
+  comp f g := { hom := f.hom ≫ g.hom }
+
+attribute [reassoc] comp_hom
+
+@[ext]
+lemma hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
+  Hom.ext h
+
+/-- Construct a morphism in the induced category
+from a morphism in the original category. -/
+@[simps] def homMk {X Y : InducedCategory D F} (f : F X ⟶ F Y) : X ⟶ Y where
+  hom := f
+
+/-- Morphisms in `InducedCategory D F` identify to morphisms in `D`. -/
+@[simps!]
+def homEquiv {X Y : InducedCategory D F} : (X ⟶ Y) ≃ (F X ⟶ F Y) where
+  toFun f := f.hom
+  invFun f := homMk f
+
 /-- Construct an isomorphism in the induced category
 from an isomorphism in the original category. -/
-@[simps] def InducedCategory.isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
-  hom := f.hom
-  inv := f.inv
-  hom_inv_id := f.hom_inv_id
-  inv_hom_id := f.inv_hom_id
+@[simps] def isoMk {X Y : InducedCategory D F} (f : F X ≅ F Y) : X ≅ Y where
+  hom := homMk f.hom
+  inv := homMk f.inv
+
+end InducedCategory
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -76,11 +103,11 @@ forgetting the extra data.
 @[simps]
 def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
-  map f := f
+  map f := f.hom
 
 /-- The induced functor `inducedFunctor F : InducedCategory D F ⥤ D` is fully faithful. -/
 def fullyFaithfulInducedFunctor : (inducedFunctor F).FullyFaithful where
-  preimage f := f
+  preimage f := InducedCategory.homMk f
 
 instance InducedCategory.full : (inducedFunctor F).Full :=
   (fullyFaithfulInducedFunctor F).full
