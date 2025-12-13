@@ -407,15 +407,21 @@ That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
-attribute [local instance] algebraMonoidAlgebra
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
+  AddMonoidAlgebra.algebraAddMonoidAlgebra
+
+open scoped AlgebraMonoidAlgebra
 
 @[to_additive (attr := simp)]
 lemma algebraMap_def : algebraMap R[M] S[M] = mapRangeRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
-instance [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
-    IsScalarTower R S[M] T[M] :=
+lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
   .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
+
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
+  AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
 
 end MonoidAlgebra
 
