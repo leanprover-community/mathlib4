@@ -93,7 +93,7 @@ variable (R) in
 /-- Equivalent monoids have additively isomorphic monoid algebras.
 
 `MonoidAlgebra.mapDomain` as an `AddEquiv`. -/
-@[to_additive (dont_translate := R) (attr := simps apply symm_apply)
+@[to_additive (dont_translate := R)
 /-- Equivalent additive monoids have additively isomorphic additive monoid algebras.
 
 `AddMonoidAlgebra.mapDomain` as an `AddEquiv`. -/]
@@ -105,20 +105,27 @@ def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   map_add' x y := by ext; simp
 
 @[to_additive (attr := simp)]
+lemma mapDomainAddEquiv_apply (e : M ≃ N) (x : R[M]) (n : N) :
+    mapDomainAddEquiv R e x n = x (e.symm n) := by simp [mapDomainAddEquiv]
+
+@[to_additive (attr := simp)]
+lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :
+    mapDomainAddEquiv R e (single m r) = single (e m) r := by simp [mapDomainAddEquiv]
+
+@[to_additive (attr := simp)]
 lemma symm_mapDomainAddEquiv (e : M ≃ N) :
     (mapDomainAddEquiv R e).symm = mapDomainAddEquiv R e.symm := rfl
 
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_trans (e₁ : M ≃ N) (e₂ : N ≃ O) :
     mapDomainAddEquiv R (e₁.trans e₂) =
-      (mapDomainAddEquiv R e₁).trans (mapDomainAddEquiv R e₂) := by
-  ext; simp [Finsupp.mapDomain_comp]
+      (mapDomainAddEquiv R e₁).trans (mapDomainAddEquiv R e₂) := by ext; simp
 
 variable (M) in
 /-- Additively isomorphic rings have additively isomorphic monoid algebras.
 
 `Finsupp.mapRange` as an `AddEquiv`. -/
-@[to_additive (dont_translate := R S) (attr := simps)
+@[to_additive (dont_translate := R S)
 /-- Additively isomorphic rings have additively isomorphic additive monoid algebras.
 
 `Finsupp.mapRange` as an `AddEquiv`. -/]
@@ -128,6 +135,14 @@ def mapRangeAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
   left_inv x := by ext; simp
   right_inv x := by ext; simp
   map_add' x y := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeAddEquiv_apply (e : R ≃+ S) (x : R[M]) (m : M) :
+    mapRangeAddEquiv M e x m = e (x m) := by simp [mapRangeAddEquiv]
+
+@[to_additive (attr := simp)]
+lemma mapRangeAddEquiv_single (e : R ≃+ S) (r : R) (m : M) :
+    mapRangeAddEquiv M e (single m r) = single m (e r) := by simp [mapRangeAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma symm_mapRangeAddEquiv (e : R ≃+ S) :
@@ -205,11 +220,19 @@ lemma mapRangeRingHom_comp_mapDomainRingHom (f : R →+* S) (g : M →* N) :
 
 variable (R) in
 /-- Isomorphic monoids have isomorphic monoid algebras. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R)
 /-- Isomorphic monoids have isomorphic additive monoid algebras. -/]
 def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
   .ofRingHom (MonoidAlgebra.mapDomainRingHom R e) (MonoidAlgebra.mapDomainRingHom R e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
+
+@[to_additive (attr := simp)]
+lemma mapDomainRingEquiv_apply (e : M ≃* N) (x : R[M]) (n : N) :
+    mapDomainRingEquiv R e x n = x (e.symm n) := mapDomainAddEquiv_apply ..
+
+@[to_additive (attr := simp)]
+lemma mapDomainRingEquiv_single (e : M ≃* N) (r : R) (m : M) :
+    mapDomainRingEquiv R e (single m r) = single (e m) r := by simp [mapDomainRingEquiv]
 
 @[to_additive]
 lemma toRingHom_mapDomainRingEquiv (e : M ≃* N) :
@@ -222,16 +245,23 @@ lemma symm_mapDomainRingEquiv (e : M ≃* N) :
 @[to_additive (attr := simp)]
 lemma mapDomainRingEquiv_trans (e₁ : M ≃* N) (e₂ : N ≃* O) :
     mapDomainRingEquiv R (e₁.trans e₂) =
-      (mapDomainRingEquiv R e₁).trans (mapDomainRingEquiv R e₂) := by
-  ext; simp [Finsupp.mapDomain_comp]
+      (mapDomainRingEquiv R e₁).trans (mapDomainRingEquiv R e₂) := by ext; simp
 
 variable (M) in
 /-- Isomorphic rings have isomorphic monoid algebras. -/
-@[to_additive (dont_translate := R S) (attr := simps! apply symm_apply)
+@[to_additive (dont_translate := R S)
 /-- Isomorphic rings have isomorphic additive monoid algebras. -/]
 def mapRangeRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
   .ofRingHom (MonoidAlgebra.mapRangeRingHom M e) (MonoidAlgebra.mapRangeRingHom M e.symm)
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
+
+@[to_additive (attr := simp)]
+lemma mapRangeRingEquiv_apply (e : R ≃+* S) (x : R[M]) (m : M) :
+    mapRangeRingEquiv M e x m = e (x m) := by simp [mapRangeRingEquiv]
+
+@[to_additive (attr := simp)]
+lemma mapRangeRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
+    mapRangeRingEquiv M e (single m r) = single m (e r) := by simp [mapRangeRingEquiv]
 
 @[to_additive]
 lemma toRingHom_mapRangeRingEquiv (e : R ≃+* S) :
