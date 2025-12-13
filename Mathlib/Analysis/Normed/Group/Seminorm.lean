@@ -254,8 +254,50 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+open Classical in
+@[to_additive]
+noncomputable instance : SupSet (GroupSeminorm E) :=
+  ⟨fun s =>
+    if h : BddAbove s then
+      { toFun := fun x => ⨆ p : s, p.1 x
+        map_one' := by
+          simp only [map_one_eq_zero]
+          by_cases hs : s.Nonempty
+          · haveI : Nonempty s := hs.to_subtype
+            rw [ciSup_const]
+          · rw [not_nonempty_iff_eq_empty] at hs
+            subst hs
+            simp only [iSup, range_eq_empty, Real.sSup_empty]
+        mul_le' := fun x y => by
+          by_cases hs : s.Nonempty
+          · haveI : Nonempty s := hs.to_subtype
+            apply ciSup_le
+            intro p
+            apply le_trans (map_mul_le_add p.1 x y)
+            apply add_le_add
+            · have : BddAbove (range fun p : s => p.1 x) := by
+                 rw [bddAbove_def] at h
+                 rcases h with ⟨q, hq⟩
+                 use q x
+                 rintro r ⟨p', rfl⟩
+                 exact hq p' p'.2 x
+              refine le_ciSup this p
+            · have : BddAbove (range fun p : s => p.1 y) := by
+                 rw [bddAbove_def] at h
+                 rcases h with ⟨q, hq⟩
+                 use q y
+                 rintro r ⟨p', rfl⟩
+                 exact hq p' p'.2 y
+              refine le_ciSup this p
+          · rw [not_nonempty_iff_eq_empty] at hs
+            subst hs
+            simp only [iSup, range_eq_empty, Real.sSup_empty, add_zero, le_refl]
+        inv' := fun x => by
+          congr
+          ext p
+          exact map_inv_eq_map p.1 x }
+    else 0⟩
+
 @[to_additive]
 instance : Max (GroupSeminorm E) :=
   ⟨fun p q =>
@@ -488,8 +530,49 @@ theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
 instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+open Classical in
+noncomputable instance : SupSet (NonarchAddGroupSeminorm E) :=
+  ⟨fun s =>
+    if h : BddAbove s then
+      { toFun := fun x => ⨆ p : s, p.1 x
+        map_zero' := by
+          simp only [map_zero]
+          by_cases hs : s.Nonempty
+          · haveI : Nonempty s := hs.to_subtype
+            rw [ciSup_const]
+          · rw [not_nonempty_iff_eq_empty] at hs
+            subst hs
+            simp only [iSup, range_eq_empty, Real.sSup_empty]
+        add_le_max' := fun x y => by
+          by_cases hs : s.Nonempty
+          · haveI : Nonempty s := hs.to_subtype
+            apply ciSup_le
+            intro p
+            apply le_trans (map_add_le_max p.1 x y)
+            apply max_le_max
+            · have : BddAbove (range fun p : s => p.1 x) := by
+                 rw [bddAbove_def] at h
+                 rcases h with ⟨q, hq⟩
+                 use q x
+                 rintro r ⟨p', rfl⟩
+                 exact hq p' p'.2 x
+              refine le_ciSup this p
+            · have : BddAbove (range fun p : s => p.1 y) := by
+                 rw [bddAbove_def] at h
+                 rcases h with ⟨q, hq⟩
+                 use q y
+                 rintro r ⟨p', rfl⟩
+                 exact hq p' p'.2 y
+              refine le_ciSup this p
+          · rw [not_nonempty_iff_eq_empty] at hs
+            subst hs
+            simp only [iSup, range_eq_empty, Real.sSup_empty, max_self, le_refl]
+        neg' := fun x => by
+          congr
+          ext p
+          exact map_neg_eq_map p.1 x }
+    else 0⟩
+
 instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
@@ -698,7 +781,9 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
--- TODO: define `SupSet`
+-- Note: SupSet for GroupNorm requires a canonical "bottom" norm for sSup ∅.
+-- The zero function fails definiteness; the discrete norm needs complex proofs.
+-- See https://github.com/leanprover-community/mathlib/pull/11329 for context.
 @[to_additive]
 instance : Max (GroupNorm E) :=
   ⟨fun p q =>
