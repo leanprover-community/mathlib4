@@ -444,7 +444,8 @@ theorem isRemainder_sdiff_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   · simp [h]
 
 variable {m B} in
-theorem isRemainder_zero {r : MvPolynomial σ R} (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b))
+theorem isRemainder_zero {r : MvPolynomial σ R}
+    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _)
     (h : m.IsRemainder 0 B r) : r = 0 := by
   unfold IsRemainder at h
   obtain ⟨⟨g, h0sumg, hg⟩, hr⟩ := h
@@ -476,28 +477,28 @@ theorem isRemainder_zero {r : MvPolynomial σ R} (hB : ∀ b ∈ B, IsRegular (m
   specialize hg b
   specialize h0sumg b b.2 hb
   contrapose! hg
-  rw [m.degree_mul_of_isRegular_right hg <| hB ↑b (by simp)]
+  rw [m.degree_mul_of_right_mem_nonZeroDivisors hg <| hB ↑b (by simp)]
   simp [h0sumg]
 
 variable {m B} in
 theorem isRemainder_zero₀ {r : MvPolynomial σ R}
-    (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b) ∨ b = 0) (h : m.IsRemainder 0 B r) : r = 0 := by
+    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _ ∨ b = 0) (h : m.IsRemainder 0 B r) :
+      r = 0 := by
   rw [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
   refine m.isRemainder_zero ?_ h
   simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
 
 variable {m B} in
-theorem isRemainder_zero' [IsCancelMulZero R] {r : MvPolynomial σ R} (h : m.IsRemainder 0 B r) :
+theorem isRemainder_zero' [NoZeroDivisors R] {r : MvPolynomial σ R} (h : m.IsRemainder 0 B r) :
     r = 0 := by
   refine isRemainder_zero₀ ?_ h
   intro b _
   rw [or_iff_not_imp_right]
-  intro hb
-  exact isRegular_of_ne_zero <| leadingCoeff_ne_zero_iff.mpr hb
+  exact (mem_nonZeroDivisors_of_ne_zero <| m.leadingCoeff_ne_zero_iff.mpr ·)
 
 variable {m} in
 theorem isRemainder_finset₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
-    (hB' : ∀ b' ∈ B', IsRegular (m.leadingCoeff b'))
+    (hB' : ∀ b' ∈ B', m.leadingCoeff b' ∈ nonZeroDivisors _)
     (r : MvPolynomial σ R) :
     m.IsRemainder p B' r ↔
       (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
@@ -521,7 +522,7 @@ theorem isRemainder_finset₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial
 
 variable {m} in
 theorem isRemainder_finset₀₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
-    (hB' : ∀ b' ∈ B', IsRegular (m.leadingCoeff b') ∨ b' = 0)
+    (hB' : ∀ b' ∈ B', m.leadingCoeff b' ∈ nonZeroDivisors _ ∨ b' = 0)
     (r : MvPolynomial σ R) :
     m.IsRemainder p B' r ↔
       (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
@@ -544,7 +545,7 @@ theorem isRemainder_finset₀₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynom
     exact ⟨⟨g, h₁, h₂⟩, h₃⟩
 
 variable {m} in
-theorem isRemainder_finset'₁ [IsCancelMulZero R] (p : MvPolynomial σ R)
+theorem isRemainder_finset'₁ [NoZeroDivisors R] (p : MvPolynomial σ R)
     (B' : Finset (MvPolynomial σ R)) (r : MvPolynomial σ R) :
     m.IsRemainder p B' r ↔
       (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
@@ -566,7 +567,7 @@ theorem isRemainder_finset'₁ [IsCancelMulZero R] (p : MvPolynomial σ R)
     rw [isRemainder_finset]
     exact ⟨⟨g, h₁, h₂⟩, h₃⟩
 
-theorem isRemainder_def'₁ [IsCancelMulZero R] (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
+theorem isRemainder_def'₁ [NoZeroDivisors R] (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
     (r : MvPolynomial σ R) : m.IsRemainder p B r ↔
       (∃ (g : MvPolynomial σ R →₀ MvPolynomial σ R),
         ↑g.support ⊆ B ∧
@@ -716,7 +717,7 @@ lemma isGroebnerBasis_insert_zero (G : Set (MvPolynomial σ R))
 variable {m} in
 lemma exists_degree_le_degree_of_isRemainder_zero
     (p : MvPolynomial σ R) (hp : p ≠ 0) (B : Set (MvPolynomial σ R))
-    (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b))
+    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _)
     (h : m.IsRemainder p B 0) :
     ∃ b ∈ B, m.degree b ≤ m.degree p := by
   classical
@@ -738,14 +739,14 @@ lemma exists_degree_le_degree_of_isRemainder_zero
     rw [mul_comm b] at this
     apply le_antisymm this at hb₂
     simp at hb₂
-    rw [degree_mul_of_isRegular_right hgbne0] at hb₂
+    rw [degree_mul_of_right_mem_nonZeroDivisors hgbne0] at hb₂
     · exact le_of_add_le_right (le_of_eq hb₂)
     exact hB b (Set.mem_of_mem_of_subset hb₁ h₁)
 
 variable {m} in
 lemma exists_degree_le_degree_of_isRemainder_zero₀
     (p : MvPolynomial σ R) (hp : p ≠ 0) (B : Set (MvPolynomial σ R))
-    (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b) ∨ b = 0)
+    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _ ∨ b = 0)
     (h : m.IsRemainder p B 0) :
     ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p := by
   rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
@@ -1162,7 +1163,7 @@ theorem isGroebnerBasis_iff_span_eq_and_degree_le (G : Set (MvPolynomial σ R))
     exists (m.ideal_eq_span_of_isGroebnerBasis hG h).symm
     intro p hp hp0
     apply m.exists_degree_le_degree_of_isRemainder_zero _ hp0 ↑G
-      (by simp_intro .. [(hG _ _).isRegular])
+      (by simp_intro .. [(hG _ _).mem_nonZeroDivisors])
     exact (m.isRemainder_zero_iff_mem_ideal_of_isGroebnerBasis hG h).mpr hp
   · rintro ⟨hG', h_degree⟩
     constructor
@@ -1218,7 +1219,7 @@ theorem isGroebnerBasis_iff_subset_ideal_and_isRemainder_zero
       simp
     · intro p hp hp0
       exact m.exists_degree_le_degree_of_isRemainder_zero p hp0 G
-        (by simp_intro .. [(hG _ _).isRegular]) <|
+        (by simp_intro .. [(hG _ _).mem_nonZeroDivisors]) <|
           h_remainder p hp
 
 /-- A set of polynomials is a Gröbner basis of an ideal if and only if it is a subset of this ideal
@@ -1352,7 +1353,7 @@ lemma isRemainder_zero_iff_mem_ideal_of_isGroebnerBasis' {p : MvPolynomial σ k}
 lemma exists_degree_le_degree_of_isRemainder_zero' (p : MvPolynomial σ k) (hp : p ≠ 0)
     (B : Set (MvPolynomial σ k)) (h : m.IsRemainder p B 0) :
     ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p :=
-  m.exists_degree_le_degree_of_isRemainder_zero₀ p hp B (by simp [isRegular_iff_ne_zero, em']) h
+  m.exists_degree_le_degree_of_isRemainder_zero₀ p hp B (by simp [em']) h
 
 /-- A set of polynomials is a Gröbner basis of an ideal if and only if it is a subset of this ideal
 and 0 is a remainder of each member of this ideal on division by this set.
