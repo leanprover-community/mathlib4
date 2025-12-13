@@ -49,12 +49,12 @@ open Matrix
 
 /-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
-  !![2, 0, -1, 0, 0, 0;
-    0, 2, 0, -1, 0, 0;
-    -1, 0, 2, -1, 0, 0;
-    0, -1, -1, 2, -1, 0;
-    0, 0, 0, -1, 2, -1;
-    0, 0, 0, 0, -1, 2]
+  !![ 2,  0, -1,  0,  0,  0;
+      0,  2,  0, -1,  0,  0;
+     -1,  0,  2, -1,  0,  0;
+      0, -1, -1,  2, -1,  0;
+      0,  0,  0, -1,  2, -1;
+      0,  0,  0,  0, -1,  2]
 
 /-- The Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
 def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
