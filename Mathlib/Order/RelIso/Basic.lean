@@ -541,6 +541,8 @@ def toRelEmbedding (f : r ≃r s) : r ↪r s :=
 theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
 
+instance : CoeOut (r ≃r s) (α ≃ β) := ⟨toEquiv⟩
+
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
@@ -679,12 +681,11 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
-  ⟨f, f.map_rel_iff⟩
+  ⟨f.toEquiv, f.map_rel_iff⟩
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
-@[simps!]
 protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
-  ⟨f, f.map_rel_iff.not⟩
+  ⟨f.toEquiv, f.map_rel_iff.not⟩
 
 @[simp]
 theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=
