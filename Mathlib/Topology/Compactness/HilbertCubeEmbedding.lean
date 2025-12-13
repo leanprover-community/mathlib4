@@ -17,6 +17,8 @@ embedded into the Hilbert cube (`ℕ → unitInterval`).
 @[expose] public section
 
 /-- Every compact metric space can be embedded into the Hilbert cube. -/
+@[deprecated "This theorem is deprecated in favor of using the more general
+Metric.PiNatEmbed.exists_embedding_to_hilbert_cube" (since := "2025-11-27")]
 theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [CompactSpace X] :
     ∃ f : X → (ℕ → unitInterval), Topology.IsClosedEmbedding f := by
   obtain _ | _ := subsingleton_or_nontrivial X

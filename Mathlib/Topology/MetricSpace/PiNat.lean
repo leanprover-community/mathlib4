@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -1081,6 +1083,72 @@ lemma TopologicalSpace.MetrizableSpace.of_countable_separating (f : ∀ i, X →
   (Metric.PiNatEmbed.toPiNatHomeo X Y f continuous_f separating_f).isEmbedding.metrizableSpace
 
 end CompactSpace
+
+open TopologicalSpace Filter unitInterval
+
+variable [MetricSpace X] [SeparableSpace X]
+
+variable (X) in
+/-- Given a separable metric space `X`, `denseSeq X : ℕ → X` gives a countable
+dense sequence. This measures the distance between `denseSeq X n` and `x`, truncated to the unit
+interval `I` so that the distances remain bounded.
+
+The function `(fun x n ↦ distDenseSeq n x) : X → ℕ → I` is a mapping from `X` to the Hilbert cube.
+-/
+noncomputable abbrev distDenseSeq (n : ℕ) (x : X) : I :=
+  have : Nonempty X := ⟨x⟩
+  projIcc _ _ zero_le_one <| dist x (denseSeq X n)
+
+lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
+  cases isEmpty_or_nonempty X
+  · exact continuous_of_discreteTopology
+  refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
+  convert continuous_const (y := denseSeq X n)
+
+lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
+    ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by
+  let ε : ℝ := min (infDist x (closure Cᶜ)) 1
+  obtain hC | hC := (closure Cᶜ).eq_empty_or_nonempty
+  · simp_all
+  have : Nonempty X := ⟨x⟩
+  obtain ⟨n, hn⟩ := denseRange_iff.mp (denseRange_denseSeq X) x (ε / 2)
+    (by simp_all [ε, ← IsClosed.notMem_iff_infDist_pos, mem_interior_iff_mem_nhds])
+  refine ⟨n, ball 0 (ε / 2), isOpen_ball.mem_nhds ?_, ?_⟩
+  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, hn]
+  · intro y hy
+    replace hy : dist y (denseSeq X n) < ε / 2 := by
+      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, not_lt_of_ge, ε, div_le_iff₀] using hy
+    have : dist x y < infDist x (closure Cᶜ) :=
+      ((dist_triangle_right x y (denseSeq X n)).trans_lt (add_lt_add hn hy)).trans_le (by simp [ε])
+    simpa using notMem_of_notMem_closure (mt infDist_le_dist_of_mem this.not_ge)
+
+lemma injective_distDenseSeq (x y : X) (hxy : x ≠ y) :
+    ∃ n, distDenseSeq X n x ≠ distDenseSeq X n y := by
+  obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
+  exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
+
+variable (A : Type*) [TopologicalSpace A]
+
+lemma continuous_distDenseSeq_inv :
+    Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by
+  refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_
+  obtain ⟨i, t, ht, hts⟩ := separation hs
+  rw [(isUniformEmbedding_embed injective_distDenseSeq).isEmbedding.nhds_eq_comap, nhds_pi]
+  exact ⟨_, Filter.mem_pi_of_mem _ ht, fun x hx ↦ hts hx⟩
+
+theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding F := by
+  let firststep : X ≃ₜ PiNatEmbed X (fun i => I) (distDenseSeq X) := {
+    toFun := toPiNat
+    invFun := ofPiNat
+    left_inv _ := rfl
+    right_inv _ := rfl
+    continuous_toFun := continuous_toPiNat <| fun i ↦ continuous_distDenseSeq i
+    continuous_invFun := continuous_distDenseSeq_inv}
+  let secondstep : PiNatEmbed X (fun i => I) (distDenseSeq X) → ℕ → I := embed _ _ _
+  let isEmbedding_secondstep : IsEmbedding secondstep :=
+      (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
+  exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
+
 end MetricSpace
 end PiNatEmbed
 end Metric
