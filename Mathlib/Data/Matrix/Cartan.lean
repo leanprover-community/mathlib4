@@ -169,7 +169,7 @@ theorem A_two : A 2 = !![2, -1; -1, 2] := by
   ext i j; fin_cases i <;> fin_cases j <;> simp [A, Matrix.of_apply]
 
 theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [A, Matrix.of_apply]
+  ext i j; fin_cases i <;> fin_cases j <;> simp [A]
 
 end Properties
 
