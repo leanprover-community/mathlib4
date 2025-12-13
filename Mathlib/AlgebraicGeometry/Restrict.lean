@@ -484,7 +484,7 @@ lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x
   simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp]
   congr
   ext x
-  exact (IsLocalization.Away.awayToAwayRight_eq f g x).symm
+  exact (IsLocalization.Away.awayToAwayRight_eq f g x (S := Localization.Away f)).symm
 
 section MorphismRestrict
 
