@@ -169,6 +169,11 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
   simp only [variance, evariance_zero, ENNReal.toReal_zero]
 
+theorem variance_eq_zero_iff [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
+    variance X μ = 0 ↔ X =ᵐ[μ] fun _ => μ[X] := by
+  simp [variance, ENNReal.toReal_eq_zero_iff, evariance_eq_zero_iff, evariance_eq_top_iff,
+    hX, hX.1.aemeasurable, hX.1]
+
 lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
     cov[X, X; μ] = Var[X; μ] := by
   rw [covariance, variance_eq_integral hX]
@@ -261,6 +266,13 @@ lemma variance_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) 
 lemma variance_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
     Var[fun ω ↦ X ω - Y ω; μ] = Var[X; μ] - 2 * cov[X, Y; μ] + Var[Y; μ] :=
   variance_sub hX hY
+
+/-- Polarization identity for the covariance and variance. -/
+lemma covariance_eq_variance_add_sub_div_two [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+    cov[X, Y; μ] = (Var[X + Y; μ] - Var[X; μ] - Var[Y; μ]) / 2 := by
+  rw [variance_add hX hY]
+  ring
 
 variable {ι : Type*} {s : Finset ι} {X : (i : ι) → Ω → ℝ}
 
