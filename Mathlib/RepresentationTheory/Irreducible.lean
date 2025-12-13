@@ -1,0 +1,44 @@
+/-
+Copyright (c) 2025 Stepan Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Stepan Nesterov
+-/
+module
+
+public import Mathlib.RepresentationTheory.Subrepresentation
+public import Mathlib.RingTheory.SimpleModule.Basic
+
+/-!
+# Irreducible representations
+
+This file defines irreducible monoid representations.
+
+-/
+
+namespace Representation
+
+@[expose] public section
+
+open scoped MonoidAlgebra
+
+universe u
+
+variable {G k V : Type u} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
+    (ρ : Representation k G V)
+
+@[mk_iff] class IsIrreducible extends
+  IsSimpleOrder (Subrepresentation ρ)
+
+theorem irreducible_iff_is_simple_module_as_module :
+    IsIrreducible ρ ↔ IsSimpleModule k[G] ρ.asModule := by
+  rw [isSimpleModule_iff, isIrreducible_iff]
+  exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
+
+theorem is_simple_module_iff_irreducible_of_module (M : Type u) [AddCommGroup M] [Module k[G] M] :
+    IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by
+  rw [isSimpleModule_iff, isIrreducible_iff]
+  exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso
+
+end
+
+end Representation
