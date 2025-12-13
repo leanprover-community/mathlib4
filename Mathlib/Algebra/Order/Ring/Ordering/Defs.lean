@@ -121,6 +121,80 @@ theorem copy_eq : P.copy S hS = S := rfl
 
 end copy
 
+variable {P : RingPreordering R}
+
+/-!
+#### Support
+-/
+
+section supportAddSubgroup
+
+variable (P) in
+/--
+The support of a ring preordering `P` in a commutative ring `R` is
+the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
+-/
+@[deprecated AddSubmonoid.supportAddSubgroup (since := "2025-12-13")]
+def supportAddSubgroup : AddSubgroup R where
+  carrier := P ∩ -P
+  zero_mem' := by aesop
+  add_mem' := by aesop
+  neg_mem' := by aesop
+
+@[deprecated AddSubmonoid.mem_supportAddSubgroup (since := "2025-12-13")]
+theorem mem_supportAddSubgroup {x} : x ∈ P.supportAddSubgroup ↔ x ∈ P ∧ -x ∈ P := .rfl
+
+@[deprecated AddSubmonoid.coe_supportAddSubgroup (since := "2025-12-13")]
+theorem coe_supportAddSubgroup : P.supportAddSubgroup = (P ∩ -P : Set R) := rfl
+
+end supportAddSubgroup
+
+/-- Typeclass to track whether the support of a preordering forms an ideal. -/
+@[deprecated AddSubmonoid.HasIdealSupport (since := "2025-12-13")]
+class HasIdealSupport (P : RingPreordering R) : Prop where
+  smul_mem_support (P) (x : R) {a : R} (ha : a ∈ P.supportAddSubgroup) :
+    x * a ∈ P.supportAddSubgroup
+
+export HasIdealSupport (smul_mem_support)
+
+@[deprecated AddSubmonoid.hasIdealSupport_iff (since := "2025-12-13")]
+theorem hasIdealSupport_iff :
+    P.HasIdealSupport ↔ ∀ x a : R, a ∈ P → -a ∈ P → x * a ∈ P ∧ -(x * a) ∈ P where
+  mp _ := by simpa [mem_supportAddSubgroup] using P.smul_mem_support
+  mpr _ := ⟨by simpa [mem_supportAddSubgroup]⟩
+
+@[deprecated Subsemiring.instHasIdealSupportToAddSubmonoidOfHasMemOrNegMem (since := "2025-12-13")]
+instance [HasMemOrNegMem P] : P.HasIdealSupport where
+  smul_mem_support x a ha :=
+    match mem_or_neg_mem P x with
+    | .inl hx => ⟨by simpa using mul_mem hx ha.1, by simpa using mul_mem hx ha.2⟩
+    | .inr hx => ⟨by simpa using mul_mem hx ha.2, by simpa using mul_mem hx ha.1⟩
+
+section support
+
+variable [P.HasIdealSupport]
+
+variable (P) in
+/--
+The support of a ring preordering `P` in a commutative ring `R` is
+the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
+-/
+@[deprecated AddSubmonoid.support (since := "2025-12-13")]
+def support : Ideal R where
+  __ := P.supportAddSubgroup
+  smul_mem' := by simpa using smul_mem_support P
+
+@[deprecated AddSubmonoid.mem_support (since := "2025-12-13")]
+theorem mem_support {x} : x ∈ P.support ↔ x ∈ P ∧ -x ∈ P := .rfl
+
+@[deprecated AddSubmonoid.coe_support (since := "2025-12-13")]
+theorem coe_support : P.support = (P : Set R) ∩ -(P : Set R) := rfl
+
+@[simp, deprecated AddSubmonoid.supportAddSubgroup_eq (since := "2025-12-13")]
+theorem supportAddSubgroup_eq : P.supportAddSubgroup = P.support.toAddSubgroup := rfl
+
+end support
+
 instance (P : RingPreordering R) [HasMemOrNegMem P] : HasMemOrNegMem P.toSubsemiring where
   mem_or_neg_mem := mem_or_neg_mem P
 
