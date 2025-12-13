@@ -16,7 +16,7 @@ entourage.
 A `U`-cover of a set `s` is a set `N` such that every element of `s` is `U`-close to some element of
 `N`.
 
-The concept of uniform covers can be used to define two further notions of covering:
+The concept of uniform covers is used to define two further notions of covering:
 * Metric covers: `Metric.IsCover`, defined using the distance entourage.
 * Dynamical covers: `Dynamics.IsDynCoverOf`, defined using the dynamical entourage.
 
@@ -64,6 +64,10 @@ lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover U t N) : IsCover U s N := fun _
 lemma IsCover.mono_entourage (hUV : U ⊆ V) (hU : IsCover U s N) : IsCover V s N :=
   fun _x hx ↦ let ⟨y, hy, hxy⟩ := hU hx; ⟨y, hy, hUV hxy⟩
 
+lemma IsCover.union (hs : IsCover U s N₁) (ht : IsCover U t N₂) : IsCover U (s ∪ t) (N₁ ∪ N₂) := fun
+  | _x, .inl hx => let ⟨y, hy, hxy⟩ := hs hx; ⟨y, .inl hy, hxy⟩
+  | _x, .inr hx => let ⟨y, hy, hxy⟩ := ht hx; ⟨y, .inr hy, hxy⟩
+
 /-- A maximal `U`-separated subset of a set `s` is a `U`-cover of `s`.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/
@@ -74,6 +78,6 @@ lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
   simpa [U.rfl] using h _ <| hN.2 (y := insert x N) ⟨by simp [insert_subset_iff, hx, hN.1.1],
     hN.1.2.insert fun y hy hxy ↦ (h y hy hxy).elim⟩ (subset_insert _ _) (mem_insert _ _)
 
-@[simp] lemma isCover_relId : IsCover .id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
+@[simp] lemma isCover_id : IsCover .id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
 
 end SetRel
