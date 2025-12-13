@@ -20,7 +20,7 @@ variable {𝕜 A B F : Type*} [RCLike 𝕜] [Ring A] [Algebra 𝕜 A] [StarRing 
 
 /-- Given ⋆-homomorphisms `f` and `g`, where the centralizer of the range of `f` is trivial,
 `f` and `g` differ by a unit iff they differ by a unitary. -/
-public theorem StarHom.coe_eq_unit_conjugate_iff_coe_eq_unitary_conjugate
+public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
     (f g : F) (hf : Subalgebra.centralizer 𝕜 (Set.range f) = ⊥) :
     (∃ (x : Aˣ), ⇑g = fun b ↦ ↑x * f b * ↑x⁻¹) ↔
     ∃ (u : unitary A), ⇑g = fun b ↦ u * f b * (star u : A) := by
