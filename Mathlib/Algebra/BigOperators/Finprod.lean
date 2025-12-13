@@ -1156,6 +1156,55 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
     simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 
+theorem finite_finsum_on_fiber {M : Type*} [AddCommMonoid M] (f : α → β) (g : α → M)
+    (hg : (Function.support g).Finite) :
+    (Function.support fun b ↦ ∑ᶠ (a : α) (_ : f a = b), g a).Finite := by
+  have := Set.finite_coe_iff.mpr hg
+  refine Set.Finite.subset (Finite.Set.finite_image (Function.support g) f) ?_
+  intro b hb
+  obtain ⟨a, hab, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero hb
+  use a
+  exact ⟨ha, hab⟩
+
+theorem support_finsum_subset_image_support {M : Type*} [AddCommMonoid M] (f : α → β) (g : α → M)
+    (hg : (Function.support g).Finite) :
+    (Function.support fun b ↦ ∑ᶠ (a : α) (_ : f a = b), g a) ⊆
+      (Set.Finite.image f hg).toFinset := by
+  intro b hb
+  obtain ⟨a, h, ha⟩ := exists_ne_zero_of_finsum_mem_ne_zero hb
+  refine Finset.mem_coe.mpr ?_
+  refine (Set.Finite.mem_toFinset (Set.Finite.image f hg)).mpr ?_
+  refine (Set.mem_image f (Function.support g) b).mpr ?_
+  use a
+  exact ⟨ha, h⟩
+
+theorem finsum_map_eq {M : Type*} [AddCommMonoid M] (f : α → β) (g : α → M)
+    (hg : (Function.support g).Finite) :
+    ∑ᶠ (b : β) (a : α) (_ : f a = b), g a = ∑ᶠ (a : α), g a := by
+  rw [finsum_eq_sum g hg]
+  have : (f '' (Function.support g)).Finite := Set.Finite.image f hg
+  rw [finsum_eq_sum_of_support_subset (s := (Set.Finite.image f hg).toFinset)]
+  swap; · exact support_finsum_subset_image_support f g hg
+  have (i : β) : (Function.support fun a ↦ ∑ᶠ (_ : f a = i), g a).Finite := by
+    refine (Set.Finite.subset hg fun a ha ha0 ↦ ?_)
+    rw [Function.mem_support, ha0, finsum_zero] at ha
+    exact ha rfl
+  have _ (a : α) (b : β) := Classical.propDecidable (f a = b)
+  simp_rw [finsum_eq_sum _ (this _), finsum_eq_if]
+  rw [Finset.sum_sigma']
+  refine Eq.symm (Finset.sum_of_injOn (fun x ↦ ⟨f x, x⟩) (fun _ _ _ _ _ ↦ by simp_all) ?_ ?_
+    (fun _ _ ↦ by simp))
+  · intro a h
+    simp only [Finset.coe_sigma, Set.Finite.coe_toFinset, Set.mem_sigma_iff, Set.mem_image,
+      Function.mem_support, ↓reduceIte]
+    have : g a ≠ 0 := by simpa using h
+    exact ⟨Exists.intro a ⟨this, rfl⟩, this⟩
+  · intro ⟨_, a⟩ _ h
+    simp only [Set.Finite.coe_toFinset, Set.mem_image, Function.mem_support, not_exists] at h
+    simp only [ite_eq_right_iff]
+    contrapose
+    simpa using h a
+
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
 we can simplify the right-hand side of this lemma. However the form stated here is more useful for
 iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/
