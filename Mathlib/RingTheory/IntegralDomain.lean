@@ -163,7 +163,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp
-    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div]
 
 end Polynomial
 

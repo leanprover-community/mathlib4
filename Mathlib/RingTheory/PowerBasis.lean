@@ -254,8 +254,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     (f : A[X]) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (aeval pb.gen f) = aeval y f := by
   cases subsingleton_or_nontrivial A
   · rw [(Subsingleton.elim _ _ : f = 0), aeval_zero, map_zero, aeval_zero]
-  rw [← aeval_modByMonic_eq_self_of_root (minpoly.monic pb.isIntegral_gen) (minpoly.aeval _ _), ←
-    @aeval_modByMonic_eq_self_of_root _ _ _ _ _ f _ (minpoly.monic pb.isIntegral_gen) y hy]
+  rw [← aeval_modByMonic_eq_self_of_root (minpoly.aeval _ _), ← aeval_modByMonic_eq_self_of_root hy]
   by_cases hf : f %ₘ minpoly A pb.gen = 0
   · simp only [hf, map_zero]
   have : (f %ₘ minpoly A pb.gen).natDegree < pb.dim := by
@@ -434,7 +433,7 @@ theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
   apply mem_span_pow'.mpr _
   have := minpoly.monic hx
   refine ⟨f %ₘ minpoly R x, (degree_modByMonic_lt _ this).trans_le degree_le_natDegree, ?_⟩
-  conv_lhs => rw [← modByMonic_add_div f this]
+  conv_lhs => rw [← modByMonic_add_div f (minpoly R x)]
   simp only [add_zero, zero_mul, minpoly.aeval, aeval_add, map_mul]
 
 namespace PowerBasis
