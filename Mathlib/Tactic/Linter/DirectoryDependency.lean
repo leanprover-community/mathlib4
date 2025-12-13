@@ -227,6 +227,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Util.MemoFix),
 
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Util.ExtendedBinder),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
