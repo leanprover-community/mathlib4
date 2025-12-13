@@ -177,6 +177,18 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
     · exact ha.symm
     · exact ha.symm
 
+theorem Sigma.apply_curry_update {γ : (a : α) → β a → Type*} {δ : α → Type*}
+    [DecidableEq α] [(a : α) → DecidableEq (β a)]
+    (f : (a : α) → ((b : β a) → (γ a b)) → δ a) (g : (i : Σ a, β a) → γ i.1 i.2)
+    (i : Σ a, β a) (x : γ i.1 i.2) (a : α) :
+    f a (Sigma.curry (Function.update g i x) a) =
+      Function.update (fun a ↦ f a (Sigma.curry g a)) i.1
+      (f i.1 (fun j : β i.1 ↦ Sigma.curry (Function.update g i x) i.1 j)) a := by
+  by_cases h : a = i.1
+  · subst h
+    simp
+  · simp [h, Sigma.curry_update]
+
 /-- Convert a product type to a Σ-type. -/
 def Prod.toSigma {α β} (p : α × β) : Σ _ : α, β :=
   ⟨p.1, p.2⟩
