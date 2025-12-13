@@ -6,9 +6,13 @@ import Mathlib.Tactic.Order
 section equal_but_not_syntactically_equal_types
 -- TODO: minimize this example and imports
 
+set_option linter.unusedVariables false
+
+axiom test_sorry (α : Sort*) : α
+
 def foo (R : Type*) [Ring R] : Subsemiring R → Prop := ⊤
 
-def bar (α : Type*) (P : α → Prop) : Prop := ∀ y : α, False
+def bar (α : Type*) (_ : α → Prop) : Prop := ∀ _ : α, False
 
 theorem exists_ge (R : Type*) [CommRing R] (P : Subsemiring R) : ∃ O, P ≤ O := ⟨P, fun _ ↦ id⟩
 
@@ -18,7 +22,7 @@ example {R : Type*} [CommRing R] {O : Subsemiring R} : bar _ (foo R) := by
   clear O
   rcases this with ⟨Q, hQ⟩
   have : P ≤ Q := by order
-  sorry
+  apply test_sorry
 
 end equal_but_not_syntactically_equal_types
 

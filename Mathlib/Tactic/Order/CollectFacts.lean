@@ -57,6 +57,7 @@ abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 /-- Monad for the fact collection procedure. -/
 abbrev CollectFactsM := StateT CollectFactsState AtomM
 
+/-- Adds `type` to the state. -/
 def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
   match ← (← get).keys.findM? (withReducible <| isDefEq · type) with
   | none =>
