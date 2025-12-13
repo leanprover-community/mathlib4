@@ -90,13 +90,13 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 open LaurentPolynomial
 
 @[ext]
-theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
-  Finsupp.ext h
+theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p.coeff a = q.coeff a) :
+    p = q := by ext; exact h _
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
-  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R)
+  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R).toRingHom
 
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
@@ -122,8 +122,7 @@ section Semiring
 
 variable [Semiring R]
 
-theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) :=
-  rfl
+theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = 1 := rfl
 
 /-!  ### The functions `C` and `T`. -/
 
@@ -145,18 +144,17 @@ theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap 
 
 theorem single_eq_C (r : R) : .single 0 r = C r := rfl
 
-@[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
-  rw [← single_eq_C, Finsupp.single_apply]; aesop
+@[simp] lemma C_apply (t : R) (n : ℤ) : (C t).coeff n = if n = 0 then t else 0 := by
+  simp [← single_eq_C]; aesop
 
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
 is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
 For these reasons, the definition of `T` is as a sequence. -/
-def T (n : ℤ) : R[T;T⁻¹] :=
-  .single n 1
+def T (n : ℤ) : R[T;T⁻¹] := .single n 1
 
-@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
+@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]).coeff m = if n = m then 1 else 0 :=
   Finsupp.single_apply
 
 @[simp]
@@ -241,16 +239,17 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
-  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
+  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.coeff n) * T n) := by
     apply Finset.induction
     · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
-  convert B p.support
+  convert B p.coeff.support
   ext a
   simp_rw [← single_eq_C_mul_T]
+  simp only [AddMonoidAlgebra.coeff_sum, coeff_single]
   rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
   · intro b _ hb
     rw [single_eq_of_ne' hb]
