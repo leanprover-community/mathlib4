@@ -1523,4 +1523,4 @@ theorem ContDiff.iterate_deriv' (n : ℕ) :
 
 end deriv
 
-set_option linter.style.longLine 1700
+set_option linter.style.longFile 1700
