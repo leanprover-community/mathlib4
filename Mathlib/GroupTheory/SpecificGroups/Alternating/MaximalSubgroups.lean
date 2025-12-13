@@ -73,20 +73,17 @@ theorem alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (Perm α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (Perm α) s ⊓ alternatingGroup α ≤ G) :
     alternatingGroup α ≤ G := by
-  -- We need to prove that `alternatingGroup α ≤ ⊤`
   -- G contains a three_cycle
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem hG' hg3
-  apply hG
-  simp only [Subgroup.mem_inf, hg, true_and]
-  exact IsThreeCycle.mem_alternatingGroup hg3
+  exact hG ⟨hg, IsThreeCycle.mem_alternatingGroup hg3⟩
 
 end Equiv.Perm
 
 namespace AlternatingGroup
 
-theorem stabilizer.surjective_toPerm {s : Set α} (hs : (sᶜ : Set α).Nontrivial) :
+theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
   classical
   suffices ∃ k : Perm (sᶜ : Set α), sign k = -1 by
@@ -107,11 +104,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : (sᶜ : Set α).Nontrivi
     · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks]
       exact ofSubtype_mem_stabilizer g
     · ext x
-      simp only [toPerm_apply, SMul.smul_stabilizer_def, Subgroup.mk_smul, Perm.smul_def,
-        coe_mul, Function.comp_apply]
-      rw [ofSubtype_apply_of_not_mem k]
-      · exact ofSubtype_apply_coe g x
-      · simp
+      simp [ofSubtype_apply_of_not_mem k]
   -- `∃ k : Equiv.Perm (sᶜ : Set α), Equiv.Perm.sign k = -1`,
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   use Equiv.swap ⟨a, ha⟩ ⟨b, hb⟩
@@ -150,19 +143,10 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
     stabilizer (alternatingGroup α) s ≠ ⊤ := by
   obtain ⟨a, ha⟩ := hs
   obtain ⟨b, hb, c, hc, hbc⟩ := hsc
-  rw [mem_compl_iff] at hb hc
-  have hac : a ≠ c := ne_of_mem_of_not_mem ha hc
-  have hab : a ≠ b := ne_of_mem_of_not_mem ha hb
-  contrapose hc with h
-  let g := Equiv.swap a b * Equiv.swap a c
-  suffices g • s = s by
-    rw [← this]
-    use a, ha
-    dsimp [g]
-    rw [Equiv.swap_apply_left, Equiv.swap_apply_of_ne_of_ne hac.symm hbc.symm]
-  have hg : g ∈ alternatingGroup α := by aesop
-  rw [← Subgroup.mk_smul g hg, ← MulAction.mem_stabilizer_iff, h]
-  apply Subgroup.mem_top
+  suffices ∃ g, g ∉ stabilizer (alternatingGroup α) s by contrapose! this; simp [this]
+  use ⟨Equiv.swap a b * Equiv.swap a c, by aesop⟩
+  simp_rw [mem_stabilizer_set, Subgroup.mk_smul, mul_smul, Perm.smul_def]
+  grind
 
 end AlternatingGroup
 
@@ -281,75 +265,43 @@ theorem moves_in (hα : 4 ≤ Nat.card α) {t : Set α} {a b : α}
     (ha : a ∈ t) (hb : b ∈ t) :
     ∃ g ∈ stabilizer (alternatingGroup α) t, g • a = b := by
   by_cases hab : a = b
-  · -- If `a = b`, then we take `g = 1`,
-    use 1
-    simp only [hab, Subgroup.one_mem, one_smul, and_self]
-  -- If `a ≠ b`, ...
-  rcases le_or_gt (ncard t) 2 with ht | ht'
-  · -- If `ncard t ≤ 2`, then we take the product of `swap a b` with a swap in `tᶜ`.
-    have h : 1 < ncard (tᶜ : Set α) := by
-      rw [← not_lt, ← ncard_add_ncard_compl t] at hα
+  · use 1
+    simpa
+  by_cases ht : 2 < t.ncard
+  · rw [← Set.ncard_pair hab] at ht
+    replace ht := Set.diff_nonempty_of_ncard_lt_ncard ht
+    obtain ⟨c, hct, hc⟩ := ht
+    simp only [mem_insert_iff, not_or] at hc
+    refine ⟨⟨swap c a * swap a b, by simp [hab, hc.1]⟩, ?_, ?_⟩
+    · simp only [mem_stabilizer_set' t.toFinite, Subgroup.mk_smul, Perm.smul_def, coe_mul]
       grind
-    rw [one_lt_ncard_iff] at h
-    obtain ⟨c, d, hc, hd, hcd⟩ := h
-    use ⟨Equiv.swap a b * Equiv.swap c d, by
-      apply mul_mem_alternatingGroup_of_isSwap <;> rwa [swap_isSwap_iff]⟩
-    constructor
-    · rw [mem_stabilizer_set_iff_subset_smul_set t.toFinite, subset_smul_set_iff]
-      rintro _ ⟨x, hx, rfl⟩
-      simp only [Subgroup.smul_def, Subgroup.coe_inv, mul_inv_rev, Perm.smul_def, swap_inv,
-        Perm.coe_mul, Function.comp_apply]
+    · simp only [Subgroup.mk_smul, Perm.smul_def, coe_mul]
       grind
-    · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul, Function.comp_apply]
+  · have := ncard_add_ncard_compl t
+    obtain ⟨c, d, hc, hd, hcd⟩ := (one_lt_ncard_iff tᶜ.toFinite).mp (by grind)
+    refine ⟨⟨swap a b * swap c d, by simp [hab, hcd]⟩, ?_, ?_⟩
+    · simp only [mem_stabilizer_set' t.toFinite, Subgroup.mk_smul, Perm.smul_def, coe_mul]
       grind
-  · -- If `card t ≥ 3`, then there is a 3-cycle with support in `t`
-    suffices ∃ c ∈ t, c ≠ a ∧ c ≠ b by
-      obtain ⟨c, hc, hca, hcb⟩ := this
-      use ⟨swap a c * swap a b, by aesop⟩
-      constructor
-      · rw [mem_stabilizer_set_iff_subset_smul_set t.toFinite, subset_smul_set_iff]
-        simp only [Subgroup.smul_def, Subgroup.coe_inv, mul_inv_rev, swap_inv]
-        suffices ∀ (a b) (ha : a ∈ t) (hb : b ∈ t), swap a b • t ⊆ t by
-          rw [mul_smul]
-          apply subset_trans _ (this a b ha hb)
-          exact smul_set_mono (this a c ha hc)
-        rintro a b ha hb _ ⟨x, hx, rfl⟩
-        simp only [Perm.smul_def]
-        by_cases hxa : x = a
-        · simpa [hxa]
-        by_cases hxb : x = b
-        · simpa [hxb]
-        simpa [swap_apply_of_ne_of_ne hxa hxb]
-      · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul, Function.comp_apply,
-          swap_apply_left, swap_apply_of_ne_of_ne (Ne.symm hab) (Ne.symm hcb)]
-    suffices (t \ {a, b}).Nonempty by
-      obtain ⟨c, h⟩ := this
-      simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or] at h
-      use c
-    apply Set.diff_nonempty_of_ncard_lt_ncard (hs := toFinite _)
-    rwa [ncard_pair hab]
+    · simp only [Subgroup.smul_def, Perm.smul_def, Perm.coe_mul]
+      grind
 
 theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (alternatingGroup α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
     G = ⊤ := by
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
-  suffices alternatingGroup α ≤ G.map (Subgroup.subtype _) by
-    rw [Subgroup.eq_top_iff']
-    intro x
-    simpa using this x.prop
+  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
+    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem  _ hg3
-  · lift g to alternatingGroup α using hg3.mem_alternatingGroup
-    use g
+  · use ⟨g, hg3.mem_alternatingGroup⟩
     simpa only [SetLike.mem_coe, Subgroup.subtype_apply, and_true] using hG hg
-  · let φ : G → Subgroup.map (alternatingGroup α).subtype G := fun g ↦ ⟨g, by simp⟩
+  · let φ := (alternatingGroup α).subtype.subgroupMap G
     let f : α →ₑ[φ] α := {
       toFun := id
       map_smul' g a := rfl  }
-    rwa [← isPreprimitive_congr (φ := φ) (f:= f) ?_ Function.bijective_id]
-    · rintro ⟨_, ⟨g, hg⟩, hg', rfl⟩
-      exact ⟨⟨⟨g, hg⟩, hg'⟩, rfl⟩
+    rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
+      Function.bijective_id]
 
 theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
     {s : Set α} (h0 : s.Nontrivial) (hs : ncard s < ncard sᶜ)
@@ -375,8 +327,7 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
   apply IsPreprimitive.mk
   -- We reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
-  unfold IsTrivialBlock
-  rw [or_iff_not_imp_left]
+  rw [IsTrivialBlock, or_iff_not_imp_left]
   intro hB'
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
