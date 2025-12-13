@@ -120,18 +120,18 @@ namespace HasIdealSupport
 
 theorem smul_mem [P.HasIdealSupport]
     (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
-  rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp [*]
+  rw [AddSubmonoid.hasIdealSupport_iff] at ‹P.HasIdealSupport›
+  simp_all
 
 theorem neg_smul_mem [P.HasIdealSupport]
     (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
-  rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp [*]
+  rw [AddSubmonoid.hasIdealSupport_iff] at ‹P.HasIdealSupport›
+  simp_all
 
 end HasIdealSupport
 
 theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := by
-  rw [hasIdealSupport_iff]
+  rw [AddSubmonoid.hasIdealSupport_iff]
   intro x a _ _
   rcases h.exists_right_inv with ⟨half, h2⟩
   set y := (1 + x) * half
@@ -156,7 +156,7 @@ protected theorem eq_zero_of_mem_of_neg_mem {x} (h : x ∈ P) (h2 : -x ∈ P) : 
   exact RingPreordering.neg_one_notMem P mem
 
 theorem supportAddSubgroup_eq_bot : P.supportAddSubgroup = ⊥ := by
-  ext; aesop (add simp mem_supportAddSubgroup)
+  ext; aesop (add simp AddSubmonoid.mem_supportAddSubgroup)
 
 instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
@@ -174,8 +174,8 @@ theorem isOrdering_iff :
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
     have : a ∈ P.support ∨ b ∈ P.support :=
-      Ideal.IsPrime.mem_or_mem inferInstance (by simp_all [mem_support])
-    simp_all [mem_support]
+      Ideal.IsPrime.mem_or_mem inferInstance (by simp_all [AddSubmonoid.mem_support])
+    simp_all [AddSubmonoid.mem_support]
   · have : HasMemOrNegMem P := ⟨by simp [h]⟩
     refine IsOrdering.mk' P (fun {x y} _ => ?_)
     by_contra
@@ -183,5 +183,5 @@ theorem isOrdering_iff :
     have := h (-x) (-y)
     have := h x y
     have := h x (-y)
-    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
+    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [AddSubmonoid.mem_support]
 end RingPreordering
