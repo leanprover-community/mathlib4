@@ -40,6 +40,8 @@ bilinear, tensor, tensor product
 
 @[expose] public section
 
+set_option linter.style.longFile 1700
+
 section Semiring
 
 variable {R R₂ R₃ R' R'' : Type*}
