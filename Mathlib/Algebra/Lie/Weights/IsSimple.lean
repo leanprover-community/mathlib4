@@ -306,42 +306,6 @@ lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
       use i.val; aesop;
       simpa [ smul_smul, hi ] using q.smul_mem ( β ( coroot val ) ) ⁻¹ h_alpha_i_in_q
 
-lemma LieAlgebra.IsKilling.coroot_ne_zero
-    {α : Weight K H L} (hα : α.IsNonZero) :
-    coroot α ≠ 0 := by
-      aesop
-
-open Weight in
-lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_le_invtSubmoduleToLieIdeal
-    (q : Submodule K (Dual K H))
-    (_hq : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    {α : Weight K H L} (hα : α.IsNonZero) (hαq : ↑α ∈ q) :
-    (sl2SubmoduleOfRoot hα).toSubmodule ≤
-      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, (sl2SubmoduleOfRoot α.2.2).toSubmodule := by
-      exact le_iSup_of_le ⟨ α, hαq, hα ⟩ le_rfl
-
-
-
-lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
-    {α : Weight K H L} (hα : α.IsNonZero) :
-    sl2SubmoduleOfRoot hα ≠ ⊥ := by
-      -- Since the coroot α is non-zero, the corootSubmodule α is not the zero submodule.
-      have h_corootSubmodule_ne_bot : corootSubmodule α ≠ ⊥ := by
-        intro h_eq
-        have h_mem : (coroot α : L) ∈ corootSubmodule α := by
-          rw [corootSubmodule, LieSubmodule.mem_map]
-          exact ⟨coroot α, coroot_mem_corootSpace α, rfl⟩
-        rw [h_eq, LieSubmodule.mem_bot] at h_mem
-        have : coroot α = 0 := by exact_mod_cast h_mem
-        exact coroot_ne_zero hα this
-      -- Since the corootSubmodule α is non-zero, the sum of the three submodules (genWeightSpace L α, genWeightSpace L (-α), and corootSubmodule α) must also be non-zero.
-      have h_sum_ne_bot : genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α ≠ ⊥ := by
-        exact ne_bot_of_gt ( lt_of_lt_of_le ( lt_of_le_of_ne bot_le ( Ne.symm h_corootSubmodule_ne_bot ) ) ( le_sup_right ) );
-      -- Since sl2SubmoduleOfRoot hα is defined as the sum of the three submodules, it follows directly that sl2SubmoduleOfRoot hα is also not the bottom submodule.
-      convert h_sum_ne_bot using 1;
-      exact sl2SubmoduleOfRoot_eq_sup α hα
-
-
 lemma LieAlgebra.IsKilling.exists_orthogonal_element_of_ne_top
     (q : Submodule K (Dual K H)) (hq : q ≠ ⊤) :
     ∃ y : H, y ≠ 0 ∧ ∀ f ∈ q, f y = 0 := by
@@ -436,15 +400,22 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     (h₁ : q ≠ ⊥) : q = ⊤ := by
   let J := (invtSubmoduleToLieIdeal q h₀)
   have r_j2 : J ≠ ⊥ := by
+    unfold J invtSubmoduleToLieIdeal
+    simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
+               iSup_eq_bot, not_forall]
     obtain ⟨α, hα_root, hα_q⟩ := LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot q h₀ h₁
-    have hα := LieAlgebra.IsKilling.root_isNonZero α hα_root
-    have h_le : (sl2SubmoduleOfRoot hα).toSubmodule ≤ J := by
-      convert LieAlgebra.IsKilling.sl2SubmoduleOfRoot_le_invtSubmoduleToLieIdeal q h₀ hα hα_q using 1
-      simp [J, invtSubmoduleToLieIdeal]
-    intro hJ_zero
-    rw [hJ_zero] at h_le
-    have : (sl2SubmoduleOfRoot hα).toSubmodule = ⊥ := le_bot_iff.mp h_le
-    simp [LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot hα] at this
+    have hα : α.IsNonZero := LieAlgebra.IsKilling.root_isNonZero α hα_root
+    refine ⟨⟨α, hα_q, hα⟩, ?_⟩
+    intro h_eq_bot
+    obtain ⟨e, he_mem, he_ne⟩ := α.exists_ne_zero
+    have he_in_sl2 : e ∈ sl2SubmoduleOfRoot hα := by
+      rw [sl2SubmoduleOfRoot_eq_sup]
+      have h1 : genWeightSpace L α ≤ genWeightSpace L α ⊔ genWeightSpace L (-α) := le_sup_left
+      have h2 : genWeightSpace L α ⊔ genWeightSpace L (-α) ≤
+                genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := le_sup_left
+      exact h2 (h1 he_mem)
+    rw [Submodule.eq_bot_iff] at h_eq_bot
+    exact he_ne (h_eq_bot e he_in_sl2)
   have : IsSimple K L := inferInstance
   have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
   have c₂ : J ≠ ⊥ := r_j2
