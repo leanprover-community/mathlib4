@@ -26,8 +26,8 @@ open Cardinal
 
 namespace Algebra.IsAlgebraic
 
-variable (R : Type u) [CommRing R] (L : Type v) [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
+variable (R : Type u) [CommRing R] [IsDomain R] (L : Type v) [CommRing L] [IsDomain L] [Algebra R L]
+variable [Module.IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem lift_cardinalMk_le_sigma_polynomial :
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
@@ -60,7 +60,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
     _ = _ := by simp
 
 variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
+variable [Module.IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem cardinalMk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by

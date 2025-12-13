@@ -41,7 +41,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type*} {P : α → Prop}
+variable {R α : Type*} {P : α → Prop}
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -53,8 +53,8 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 
-theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+theorem smul_extend [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [Module.IsTorsionFree R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
     c • extend m = extend fun s h => c • m s h := by
   classical
   ext1 s
