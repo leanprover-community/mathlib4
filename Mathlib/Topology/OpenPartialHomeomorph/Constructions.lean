@@ -277,6 +277,13 @@ theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
   rw [s.openPartialHomeomorphSubtypeCoe_target, mem_preimage, e.leftInvOn hxe]
   exact x.prop
 
+lemma subtypeRestr_target_subset (hs : Nonempty s) : (e.subtypeRestr hs).target ⊆ e.target := by
+  rw [← e.image_source_eq_target, ← OpenPartialHomeomorph.image_source_eq_target,
+    e.subtypeRestr_source]
+  rintro z ⟨z₀, hz₀, rfl⟩
+  use z₀.val
+  simpa
+
 /-- This lemma characterizes the transition functions of an open subset in terms of the transition
 functions of the original space. -/
 theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) :

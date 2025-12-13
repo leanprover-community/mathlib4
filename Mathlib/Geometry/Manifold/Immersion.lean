@@ -390,22 +390,6 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
--- unused, but useful
-lemma _root_.OpenPartialHomeomorph.chartAt_subtypeRestr_target {s : TopologicalSpace.Opens M} (y : s) :
-    ((chartAt H y.val).subtypeRestr (Nonempty.intro y)).target = (chartAt H y).target := by
-  ext x
-  exact ⟨fun h ↦ h, fun h ↦ h⟩
-
--- unused, but useful
-omit [ChartedSpace H M] in
-lemma _root_.OpenPartialHomeomorph.subtypeRestr_target_subset (φ : OpenPartialHomeomorph M H)
-    {s : TopologicalSpace.Opens M} (hs : Nonempty s) : (φ.subtypeRestr hs).target ⊆ φ.target := by
-  rw [← φ.image_source_eq_target, ← OpenPartialHomeomorph.image_source_eq_target,
-    φ.subtypeRestr_source]
-  rintro z ⟨z₀, hz₀, rfl⟩
-  use z₀.val
-  simpa
-
 open IsManifold in
 lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
