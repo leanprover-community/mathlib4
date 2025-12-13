@@ -295,7 +295,7 @@ theorem diag_card : (diag s).card = s.card := by
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
   suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; lia
   by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
+     conv_rhs => rw [← card_filter_add_card_filter_not (fun a => a.1 = a.2)]
 
 @[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
@@ -319,7 +319,7 @@ theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
+  disjoint_filter_filter_not (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
 
 theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
 

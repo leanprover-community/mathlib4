@@ -149,7 +149,7 @@ theorem prod_filter_mul_prod_filter_not
     (s : Finset ι) (p : ι → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : ι → M) :
     (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, f x = ∏ x ∈ s, f x := by
   have := Classical.decEq ι
-  rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
+  rw [← prod_union (disjoint_filter_filter_not s s p), filter_union_filter_not_eq]
 
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [DecidablePred p]

@@ -452,7 +452,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
           · simp_all
         _ = l * #A + (#S - l) * (K - 1) * #A := by
           simp [hk, ← not_lt, mul_assoc,
-            ← S.filter_card_add_filter_neg_card_eq_card fun z ↦ (K - 1) * #A < r z]
+            ← S.card_filter_add_card_filter_not fun z ↦ (K - 1) * #A < r z]
         _ = ((2 - K) * l + (K - 1) * #S) * #A := by ring
     -- By cancelling `|A|` on both sides, we get `|A| ≤ (2 - K)l + (K - 1)|S|`.
     -- By composing with `|S| ≤ K|A|`, we get `|S| ≤ (2 - K)Kl + (K - 1)K|S|`.
