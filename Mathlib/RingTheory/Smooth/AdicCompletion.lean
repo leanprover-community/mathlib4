@@ -101,7 +101,7 @@ public lemma exists_mkₐ_comp_eq_of_isAdicComplete {I : Ideal S} [IsAdicComplet
 /-- If `A` is formally smooth over `R`, the projection from the adic completion of
 `S` at the kernel of `f : S →ₐ[R] A` has a section. -/
 public lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjective f) :
-    ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
+    ∃ (g : A →ₐ[R] AdicCompletion f.ker S),
     (AdicCompletion.kerProj hf).comp g = AlgHom.id R A := by
   obtain ⟨g, hg⟩ := exists_adicCompletionEvalOneₐ_comp_eq
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom

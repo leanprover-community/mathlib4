@@ -109,17 +109,16 @@ lemma coeffs_q_subset (i) :
 
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
-        MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
+        MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker (AlgHom.toRingHom f₀) ^ 2)),
       (AlgHom.kerSquareLift f₀).comp σ₀ =
         .id (D.subalgebra R) (Presentation.ModelOfHasCoeffs (D.subalgebra R)) := by
   choose p hp using fun i ↦ (D.h i).mem_range_map_iff_coeffs_subset.mpr (D.coeffs_h_subset R i)
   refine ⟨?_, ?_⟩
   · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
-    simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
+    simp_rw [← AlgHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
     intro i
     simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
-    rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,
-      ← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker]
+    rw [Ideal.Quotient.mkₐ_ker, Ideal.Quotient.mkₐ_ker]
     have hinj : Function.Injective
         (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) :=
       map_injective _ (FaithfulSMul.algebraMap_injective (D.subalgebra R) A)
@@ -136,10 +135,8 @@ lemma exists_kerSquareLift_comp_eq_id :
     refine MvPolynomial.algHom_ext fun i ↦ ?_
     suffices h : ∃ p', p'.IsHomogeneous 1 ∧ (eval (D.P.relationOfHasCoeffs (D.subalgebra R))) p' =
         p i - X i by
-      -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
-      -- Can be fixed after #25138.
-      apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
-      simpa [Ideal.mem_span_iff_exists_isHomogeneous, hp]
+      simpa [AlgHom.kerSquareLift_mk, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
+        Ideal.mem_span_iff_exists_isHomogeneous, hp]
     have hinj : Function.Injective
         (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) :=
       map_injective _ (FaithfulSMul.algebraMap_injective (D.subalgebra R) A)
@@ -165,15 +162,15 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
       FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   let P := Presentation.ofFinitePresentation A B
   let f : P.Ring →ₐ[A] B := IsScalarTower.toAlgHom _ _ _
-  have hkerf : RingHom.ker f = Ideal.span (.range P.relation) :=
+  have hkerf : f.ker = Ideal.span (.range P.relation) :=
     P.span_range_relation_eq_ker.symm
-  obtain ⟨(σ : B →ₐ[A] MvPolynomial _ A ⧸ RingHom.ker f ^ 2), hsig⟩ :=
+  obtain ⟨(σ : B →ₐ[A] MvPolynomial _ A ⧸ f.ker ^ 2), hsig⟩ :=
     (FormallySmooth.iff_split_surjection f P.algebraMap_surjective).mp inferInstance
   have (i : _) := Ideal.Quotient.mk_surjective (σ <| P.val i)
   choose h hh using this
   have hdiag : (Ideal.Quotient.mkₐ _ _).comp (aeval h) = σ.comp (aeval P.val) :=
     algHom_ext (by simp [hh])
-  have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
+  have (j : _) : Ideal.Quotient.mk (f.ker ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
       convert ho
       exact congr($hdiag _)
@@ -182,10 +179,8 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
     Ideal.mem_span_pow_iff_exists_isHomogeneous] at this
   choose p homog hp using this
   have hsig (i : _) : f (h i) = P.val i := by
-    rw [← AlgHom.kerSquareLift_mk]
-    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
-    -- Can be fixed after #25138.
-    exact hh i ▸ congr($hsig (P.val i))
+    rw [← AlgHom.kerSquareLift_mk, hh]
+    exact congr($hsig (P.val i))
   have (i : Fin (Presentation.ofFinitePresentationVars A B)) :
       h i - X i ∈ Ideal.span (.range P.relation) := by
     simpa [P.span_range_relation_eq_ker, sub_eq_zero, f] using hsig i

@@ -398,7 +398,7 @@ theorem Quotient.mkₐ_surjective (I : Ideal A) [I.IsTwoSided] :
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
 theorem Quotient.mkₐ_ker (I : Ideal A) [I.IsTwoSided] :
-    RingHom.ker (Quotient.mkₐ R₁ I : A →+* A ⧸ I) = I :=
+    (Quotient.mkₐ R₁ I).ker = I :=
   Ideal.mk_ker
 
 lemma Quotient.mk_bijective_iff_eq_bot (I : Ideal A) [I.IsTwoSided] :
@@ -499,17 +499,17 @@ theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.k
 This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightInverse`) /
 is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
-def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f) →ₐ[R₁] B :=
+def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ f.ker →ₐ[R₁] B :=
   AlgHom.mk' (RingHom.kerLift (f : A →+* B)) fun _ _ => KerLift.map_smul f _ _
 
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
-    kerLiftAlg f (Quotient.mk (RingHom.ker f) a) = f a := by
+    kerLiftAlg f (Quotient.mk f.ker a) = f a := by
   rfl
 
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    (kerLiftAlg f : A ⧸ ker f →+* B) = RingHom.kerLift (f : A →+* B) :=
+    (kerLiftAlg f : A ⧸ f.ker →+* B) = RingHom.kerLift (f : A →+* B) :=
   rfl
 
 /-- The induced algebra morphism from the quotient by the kernel is injective. -/
@@ -519,14 +519,14 @@ theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLif
 /-- The **first isomorphism** theorem for algebras, computable version. -/
 @[simps!]
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f) ≃ₐ[R₁] B :=
+    (hf : Function.RightInverse g f) : (A ⧸ f.ker) ≃ₐ[R₁] B :=
   { RingHom.quotientKerEquivOfRightInverse hf,
     kerLiftAlg f with }
 
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps! -isSimp apply]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
-    (A ⧸ (RingHom.ker f)) ≃ₐ[R₁] B :=
+    (A ⧸ f.ker) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
 @[simp]
@@ -759,7 +759,7 @@ lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal 
 noncomputable def quotientKerEquivRange
     {R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
     (f : A →ₐ[R] B) :
-    (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
+    (A ⧸ f.ker) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
     Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
