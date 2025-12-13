@@ -951,6 +951,30 @@ def g_bilim (i p : B) :
 
 #check Function.comp (FiberBundle.trivializationAt EB (fun (b : B) ↦ (TangentSpace IB b))) sorry
 
+#check ContMDiffVectorBundle ∞ EB (fun (b : B) ↦ (TangentSpace IB b)) IB
+#synth ContMDiffVectorBundle ∞ EB (fun (b : B) ↦ (TangentSpace IB b)) IB
+
+#check ContMDiffVectorBundle ∞ (EB →L[ℝ] ℝ) (fun (b : B) ↦ TangentSpace IB b →L[ℝ] ℝ) IB
+#synth ContMDiffVectorBundle ∞ (EB →L[ℝ] ℝ) (fun (b : B) ↦ TangentSpace IB b →L[ℝ] ℝ) IB
+
+#check ContMDiffVectorBundle ∞
+  (EB →L[ℝ] EB →L[ℝ] ℝ)
+  (fun b ↦ TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ)
+
+#synth TopologicalSpace (TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+                   (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)))
+
+#synth TopologicalSpace (TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+ (fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ))
+
+#check ContMDiffVectorBundle ∞
+  (EB →L[ℝ] EB →L[ℝ] ℝ)
+  (fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) IB
+
+#synth ContMDiffVectorBundle ∞
+  (EB →L[ℝ] EB →L[ℝ] ℝ)
+  (fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) IB
+
 #check (extChartAt IB).comp sorry
 
 #check fun (i : B) => PartialEquiv.prod (extChartAt IB i) (extChartAt IB i)
@@ -999,7 +1023,7 @@ def g_bilin_ng (i b : B) :
     }
     exact cast this innerOnTangent
   let ψ := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) b
+    (fun (x : B) ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) i
   ψ.invFun (b, innerAtP)
 
 #check (FiberBundle.trivializationAt EB (fun (b : B) ↦ (TangentSpace IB b)))
@@ -1028,22 +1052,43 @@ example (p : TangentBundle IB B) : ContMDiffOn (IB.prod 𝓘(ℝ, EB)) (IB.prod 
   (extChartAt (IB.prod 𝓘(ℝ, EB)) p).source := by
   exact sorry
 
+example (i : B) :
+  let ψ := FiberBundle.trivializationAt (B := B) (F := EB →L[ℝ] EB →L[ℝ] ℝ)
+    (E := (fun (x : B) ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ))
+    (b := i)
+  ContMDiffOn (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    ψ.toPartialEquiv.symm ψ.target :=
+  Trivialization.contMDiffOn_symm _
+
 lemma g_bilin_ng_smooth_on_chart (i : B) :
   ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
     (g_bilin_ng (EB := EB) (IB := IB) i)
     (extChartAt IB i).source := by
+  -- intro b hb
+  have h0 : (trivializationAt
+    (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun b ↦ TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) i).baseSet =
+    (extChartAt IB i).source := baseSet_eq_extChartAt_source i
+
   let χ : Trivialization EB TotalSpace.proj :=
-    FiberBundle.trivializationAt EB (fun (x : B) ↦ (TangentSpace IB x)) i
-  unfold g_bilin_ng
-  intro b hb
-  have : ContMDiffOn (IB.prod 𝓘(ℝ, EB)) (IB.prod 𝓘(ℝ, EB)) ∞ χ χ.source :=
-    Trivialization.contMDiffOn χ
-  let innerAtP : EB →L[ℝ] EB →L[ℝ] ℝ := by
-    have : (TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) = (EB →L[ℝ] EB →L[ℝ] ℝ) := rfl
-    let innerOnTangent : (TangentSpace IB b) →L[ℝ] (TangentSpace IB b) →L[ℝ] ℝ :=
+    trivializationAt EB (fun (x : B) ↦ (TangentSpace IB x)) i
+
+
+  let innerAtP (c : B) (hc : c ∈ χ.baseSet) : EB →L[ℝ] EB →L[ℝ] ℝ := by
+    have : (TangentSpace IB c →L[ℝ] TangentSpace IB c →L[ℝ] ℝ) = (EB →L[ℝ] EB →L[ℝ] ℝ) := rfl
+    let innerOnTangent : (TangentSpace IB c) →L[ℝ] (TangentSpace IB c) →L[ℝ] ℝ :=
     { toFun := fun u => {
         toFun := fun v => innerSL ℝ (χ u).2 (χ v).2,
-        map_add' := sorry,
+        map_add' := by
+          have h1 := χ.linear ℝ hc
+          intro x y
+
+          have h2 : (χ { proj := c, snd := x + y }).2 =
+                 (χ { proj := c, snd := x}).2 + (χ { proj := c, snd := y}).2 := h1.map_add x y
+          rw [h2]
+          exact ContinuousLinearMap.map_add
+                 ((innerSL ℝ) (χ { proj := c, snd := u }).2)
+                 (χ { proj := c, snd := x }).2 (χ { proj := c, snd := y }).2
         map_smul' := sorry,
         cont := sorry
       },
@@ -1052,7 +1097,22 @@ lemma g_bilin_ng_smooth_on_chart (i : B) :
       cont := sorry
     }
     exact cast this innerOnTangent
-  have : ContMDiffOn IB 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ) ∞ (fun (b : B) => innerAtP)
-                     (extChartAt IB i).source :=
-    contMDiffOn_const (n := ∞) (c := innerAtP) (I := IB) (I' := 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ))
+
+  let ψ := FiberBundle.trivializationAt (B := B) (F := EB →L[ℝ] EB →L[ℝ] ℝ)
+    (E := (fun (x : B) ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ))
+    (b := i)
+
+  have h2 : ContMDiffOn (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    ψ.toPartialEquiv.symm ψ.target := Trivialization.contMDiffOn_symm _
+
+  let foo := fun b => ψ.toPartialEquiv.symm.toFun (b, innerAtP b sorry)
+
+  have h3 : g_bilin_ng i = foo := by
+    funext b
+    unfold g_bilin_ng foo innerAtP χ ψ
+    simp
+
+  have h4 : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun b => (b, innerAtP b sorry)) (extChartAt IB i).source := sorry
+
   exact sorry
