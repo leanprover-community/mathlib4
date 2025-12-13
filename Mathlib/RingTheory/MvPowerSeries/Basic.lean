@@ -565,25 +565,9 @@ theorem coeff_toSubring {n : σ →₀ ℕ} : (p.toSubring T hp).coeff n = p.coe
 theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff := rfl
 
 @[simp]
-theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := rfl
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := rfl
 
 end toSubring
-
-section ofSubring
-
-variable [Ring R] (T : Subring R) (p : MvPowerSeries σ T)
-
-/-- Given a multivariate formal power series whose coefficients are in some subring, return
-the multivariate formal power series whose coefficients are in the ambient ring. -/
-def ofSubring : MvPowerSeries σ R := fun n => (p n : R)
-
-@[simp]
-theorem coeff_ofSubring {n : σ →₀ ℕ} : (ofSubring T p).coeff n = p.coeff n := rfl
-
-@[simp]
-theorem constantCoeff_ofSubring : (ofSubring T p).constantCoeff = p.constantCoeff := rfl
-
-end ofSubring
 
 @[simp]
 theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
