@@ -18,25 +18,25 @@ import Mathlib.Tactic.ComputeDegree
   a multivariate polynomial of `totalDegree` one is irreducible
   if its coefficients are relatively prime.
 
-* For `c : n →₀ R`, `MvPolynomial.sum_smul_X c` is the linear polynomial
+* For `c : n →₀ R`, `MvPolynomial.sumSMulX c` is the linear polynomial
   $\sum_i c_i X_i$ of $R[X_1\dots,X_n]$.
 
-* `MvPolynomial.irreducible_sum_smul_X` : if the support of `c` is nontrivial,
+* `MvPolynomial.irreducible_sumSMulX` : if the support of `c` is nontrivial,
   if `R` is a domain,
   and if the only common divisors to all `c i` are units,
-  then `MvPolynomial.sum_smul_X c` is irreducible.
+  then `MvPolynomial.sumSMulX c` is irreducible.
 
-* For `c : n →₀ R`, `MvPolynomial.sum_X_mul_Y c` is the quadratic polynomial
+* For `c : n →₀ R`, `MvPolynomial.sumXSMulY c` is the quadratic polynomial
   $\sum_i c_i X_i Y_i$ of $R[X_1\dots,X_n,Y_1,\dots,Y_n]$.
   It is constructed as an object of `MvPolynomial (n ⊕ n) R`,
   the first component of `n ⊕ n` represents the `X` indeterminates,
   and the second component represents the `Y` indeterminates.
 
-* `MvPolynomial.irreducible_sum_smul_X_mul_Y` :
+* `MvPolynomial.irreducible_sumSMulXSMulY` :
   if the support of `c` is nontrivial,
   the ring `R` is a domain,
   and the only divisors common to all `c i` are units,
-  then `MvPolynomial.sum_smul_X_mul_Y c` is irreducible.
+  then `MvPolynomial.sumSMulXSMulY c` is irreducible.
 
 ## TODO
 
@@ -149,17 +149,18 @@ theorem irreducible_of_totalDegree_eq_one
       simpa [totalDegree_mul_of_isDomain, ha₀, hb₀, hp] using congr(($hab).totalDegree).symm
     obtain ⟨r, rfl⟩ : ∃ r, a = C r := ⟨_, (totalDegree_eq_zero_iff_eq_C (p := a)).mp (by cutsat)⟩
     simp [hp' r fun i ↦ by simp [hab]]
+
 variable (c : n →₀ R)
 
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
-noncomputable def sum_smul_X :
+noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
 
-theorem coeff_sum_smul_X (i : n) :
-    (sum_smul_X c).coeff (Finsupp.single i 1) = c i := by
+theorem coeff_sumSMulX (i : n) :
+    (sumSMulX c).coeff (Finsupp.single i 1) = c i := by
   classical
-  rw [sum_smul_X, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum]
+  rw [sumSMulX, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum]
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
@@ -167,13 +168,13 @@ theorem coeff_sum_smul_X (i : n) :
   · aesop
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
-theorem irreducible_sum_smul_X [IsDomain R]
+theorem irreducible_sumSMulX [IsDomain R]
     (hc_nonempty : c.support.Nonempty)
     (hc_gcd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
-    Irreducible (sum_smul_X c) := by
+    Irreducible (sumSMulX c) := by
   apply irreducible_of_totalDegree_eq_one
   · apply le_antisymm
-    · simp only [sum_smul_X, Finsupp.linearCombination_apply, Finsupp.sum]
+    · simp only [sumSMulX, Finsupp.linearCombination_apply, Finsupp.sum]
       apply totalDegree_finsetSum_le
       intros
       apply le_trans (totalDegree_smul_le ..)
@@ -183,37 +184,37 @@ theorem irreducible_sum_smul_X [IsDomain R]
       obtain ⟨i, hi⟩ := hc_nonempty
       simp only [Finsupp.mem_support_iff] at hi
       specialize h (Finsupp.single i 1) (by
-        rwa [mem_support_iff, coeff_sum_smul_X]) i
+        rwa [mem_support_iff, coeff_sumSMulX]) i
       simp only [Finsupp.single_eq_same, one_ne_zero] at h
   · intro r hr
     apply hc_gcd
     intro i
-    simpa [coeff_sum_smul_X] using hr (Finsupp.single i 1)
+    simpa [coeff_sumSMulX] using hr (Finsupp.single i 1)
 
 /-- The quadratic polynomial $$\sum_i c_i X_i Y_i$$. -/
-noncomputable def sum_smul_X_mul_Y :
+noncomputable def sumSMulXSMulY :
     (n →₀ R) →ₗ[R] MvPolynomial (n ⊕ n) R :=
   Finsupp.linearCombination R (fun i ↦ X (.inl i) * X (.inr i))
 
 variable (c : n →₀ R)
 
-theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
+theorem irreducible_sumSMulXSMulY [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
-    Irreducible (sum_smul_X_mul_Y c) := by
+    Irreducible (sumSMulXSMulY c) := by
   classical
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
      fun i j ↦ by classical simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
   -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sum_smul_X_mul_Y c = c.embDomain ι := by
+  have aux : sumSMulXSMulY c = c.embDomain ι := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
-    simp [Finsupp.sum_embDomain, sum_smul_X_mul_Y, X, monomial_mul,
+    simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
       Finsupp.linearCombination_apply, smul_monomial, ι]
     rfl
-  have hcoeff (i : n) : coeff (ι i) (sum_smul_X_mul_Y c) = c i := by
+  have hcoeff (i : n) : coeff (ι i) (sumSMulXSMulY c) = c i := by
     simp [aux, coeff, Finsupp.embDomain_apply]
-  have hsupp : (sum_smul_X_mul_Y c).support = c.support.map ι := by
+  have hsupp : (sumSMulXSMulY c).support = c.support.map ι := by
     rw [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc.nonempty
   apply irreducible_of_disjoint_support (d := ι a) (i := .inl a)
