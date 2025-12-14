@@ -175,6 +175,19 @@ theorem A_two : A 2 = !![2, -1; -1, 2] := by
 theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
   ext i j; fin_cases i <;> fin_cases j <;> simp [A]
 
+
+/-- The Cartan matrix B in explicit form. -/
+theorem B_two : B 2 = !![2, -2; -1, 2] := by
+  ext i j; fin_cases i <;> fin_cases j <;> simp [B, Matrix.of_apply]
+
+/-- The Cartan matrix C in explicit form. -/
+theorem C_two : C 2 = !![2, -1; -2, 2] := by
+  ext i j; fin_cases i <;> fin_cases j <;> simp [C, Matrix.of_apply]
+
+/-- The Cartan matrix D in explicit form. -/
+theorem D_four : D 4 = !![2, -1, 0, 0; -1, 2, -1, -1; 0, -1, 2, 0; 0, -1, 0, 2] := by
+  ext i j; fin_cases i <;> fin_cases j <;> simp [D, Matrix.of_apply]
+
 end Properties
 
 end CartanMatrix
