@@ -280,7 +280,9 @@ noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
   map := F.partialRightAdjointMap
   map_id X := by
     apply F.partialRightAdjointHomEquiv.injective
-    simp [ObjectProperty.FullSubcategory.id_def]
+    dsimp
+    rw [partialRightAdjointHomEquiv_map]
+    erw [comp_id]
   map_comp {X Y Z} f g := by
     apply F.partialRightAdjointHomEquiv.injective
     dsimp

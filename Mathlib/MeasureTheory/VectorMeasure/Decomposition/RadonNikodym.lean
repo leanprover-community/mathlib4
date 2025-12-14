@@ -33,10 +33,10 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
   · ext1 i hi
     rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
       setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
-    · conv_rhs =>
-        rw [← s.toSignedMeasure_toJordanDecomposition]
-        simp [JordanDecomposition.toSignedMeasure]
-      simp [hi]
+    · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
+      erw [VectorMeasure.sub_apply]
+      rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi, measureReal_def,
+        measureReal_def]
     all_goals
       refine Integrable.integrableOn ?_
       refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩

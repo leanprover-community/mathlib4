@@ -112,7 +112,7 @@ lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
   rw [← cancel_epi ((shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X), Iso.hom_inv_id_app,
     shiftFunctorAdd'_op_hom_app X a₁ a₂ a₃ h b₁ b₂ b₃ h₁ h₂ h₃,
     assoc, assoc, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app]
-  simp only [Functor.op_obj, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
+  erw [Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
   rw [← op_comp_assoc, Iso.hom_inv_id_app, op_id, id_comp, Iso.hom_inv_id_app]
 
 lemma shiftFunctor_op_map (n m : ℤ) (hnm : n + m = 0) {K L : Cᵒᵖ} (φ : K ⟶ L) :
