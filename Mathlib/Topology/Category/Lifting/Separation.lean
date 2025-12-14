@@ -59,25 +59,6 @@ open CategoryTheory
 open TopCat
 open Limits Topology TopologicalSpace Set
 
--- lemma _root_.Set.ne_empty_of_mem {X : Type*} {s : Set X} {x : X} (hx : x ∈ s) : s ≠ ∅ := by
---   intro h; simp [h] at hx
-
-lemma _root_.Set.ne_univ_of_notMem {X : Type*} {s : Set X} {x : X} (hx : x ∉ s) : s ≠ univ := by
-  intro h; simp [h] at hx
-
--- lemma TopCat.range_homOfElement {X : TopCat} (x : X) :
---     range (terminal.homOfElement x) = {x} := by
---   ext y; constructor <;> simp +contextual
-
--- lemma Concrete.pushout_exists_rep
---     {C : Type u} [Category.{v} C] {FC : C → C → Type _} {CC : C → Type w}
---     [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
---     {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [PreservesColimit (span f g) (forget C)]
---     (w : ToType (pushout f g)) : (∃ y, pushout.inl f g y = w) ∨ ∃ z, pushout.inr f g z = w := by
---   obtain ⟨_ | _ | _, x, rfl⟩ := Concrete.colimit_exists_rep _ w
---   focus rw [← colimit.cocone_ι, PushoutCocone.condition_zero]
---   all_goals simp
-
 @[simp]
 lemma Concrete.HasPushout.range_inl_union_range_inr
     {C : Type u} [Category.{v} C] {FC : C → C → Type _} {CC : C → Type w}
@@ -88,11 +69,6 @@ lemma Concrete.HasPushout.range_inl_union_range_inr
   ext x; obtain ⟨y, rfl⟩ | ⟨z, rfl⟩ := Concrete.pushout_exists_rep f g x <;> simp
 
 variable {X : TopCat.{u}}
-
-namespace CategoryTheory
-scoped infix:25 " ⧄ " => HasLiftingProperty
-
-end CategoryTheory
 
 namespace T0Space
 
