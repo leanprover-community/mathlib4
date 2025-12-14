@@ -80,38 +80,17 @@ private theorem ext_cauchy {x y : ℝ} : x.cauchy = y.cauchy → x = y :=
 @[no_expose] noncomputable instance : Inv ℝ :=
   ⟨fun ⟨a⟩ ↦ ⟨a⁻¹⟩⟩
 
-@[simp] private theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 := by
-  rfl
-
-@[simp] private theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 := by
-  rfl
-
-@[simp] private theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ := by
-  rfl
-
-@[simp] private theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ := by
-  rfl
-
-@[simp] private theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ := by
- rfl
-
-@[simp] private theorem ofCauchy_inv (a) : (⟨a⁻¹⟩ : ℝ) = ⟨a⟩⁻¹ := by
-  rfl
-
-@[simp] private theorem cauchy_zero : (0 : ℝ).cauchy = 0 := by
-  rfl
-
-@[simp] private theorem cauchy_one : (1 : ℝ).cauchy = 1 := by
-  rfl
-
-@[simp] private theorem cauchy_add (a b) : (a + b : ℝ).cauchy = a.cauchy + b.cauchy := by
-  rfl
-
-@[simp] private theorem cauchy_neg (a) : (-a : ℝ).cauchy = -a.cauchy := by
-  rfl
-
-@[simp] private theorem cauchy_mul (a b) : (a * b : ℝ).cauchy = a.cauchy * b.cauchy := by
-  rfl
+@[simp] private theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 := rfl
+@[simp] private theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 := rfl
+@[simp] private theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ := rfl
+@[simp] private theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ := rfl
+@[simp] private theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ := rfl
+@[simp] private theorem ofCauchy_inv (a) : (⟨a⁻¹⟩ : ℝ) = ⟨a⟩⁻¹ := rfl
+@[simp] private theorem cauchy_zero : (0 : ℝ).cauchy = 0 := rfl
+@[simp] private theorem cauchy_one : (1 : ℝ).cauchy = 1 := rfl
+@[simp] private theorem cauchy_add (a b) : (a + b : ℝ).cauchy = a.cauchy + b.cauchy := rfl
+@[simp] private theorem cauchy_neg (a) : (-a : ℝ).cauchy = -a.cauchy := rfl
+@[simp] private theorem cauchy_mul (a b) : (a * b : ℝ).cauchy = a.cauchy * b.cauchy := rfl
 
 @[no_expose] instance instRatCast : RatCast ℝ where ratCast q := ⟨q⟩
 instance instNNRatCast : NNRatCast ℝ where nnratCast q := (q : ℚ)
@@ -156,41 +135,41 @@ These short-circuits have an additional property of ensuring that a computable p
 `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
 version of them. -/
 
-instance instRing : Ring ℝ := by infer_instance
+instance : Sub ℝ := fast_instance% inferInstance
 
-instance : CommSemiring ℝ := by infer_instance
+instance instRing : Ring ℝ := fast_instance% inferInstance
 
-instance semiring : Semiring ℝ := by infer_instance
+instance : CommSemiring ℝ := fast_instance% inferInstance
 
-instance : CommMonoidWithZero ℝ := by infer_instance
+instance semiring : Semiring ℝ := fast_instance% inferInstance
 
-instance : MonoidWithZero ℝ := by infer_instance
+instance : CommMonoidWithZero ℝ := fast_instance% inferInstance
 
-instance : AddCommGroup ℝ := by infer_instance
+instance : MonoidWithZero ℝ := fast_instance% inferInstance
 
-instance : AddGroup ℝ := by infer_instance
+instance : AddCommGroup ℝ := fast_instance% inferInstance
 
-instance : AddCommMonoid ℝ := by infer_instance
+instance : AddGroup ℝ := fast_instance% inferInstance
 
-instance : AddMonoid ℝ := by infer_instance
+instance : AddCommMonoid ℝ := fast_instance% inferInstance
 
-instance : AddLeftCancelSemigroup ℝ := by infer_instance
+instance : AddMonoid ℝ := fast_instance% inferInstance
 
-instance : AddRightCancelSemigroup ℝ := by infer_instance
+instance : AddLeftCancelSemigroup ℝ := fast_instance% inferInstance
 
-instance : AddCommSemigroup ℝ := by infer_instance
+instance : AddRightCancelSemigroup ℝ := fast_instance% inferInstance
 
-instance : AddSemigroup ℝ := by infer_instance
+instance : AddCommSemigroup ℝ := fast_instance% inferInstance
 
-instance : CommMonoid ℝ := by infer_instance
+instance : AddSemigroup ℝ := fast_instance% inferInstance
 
-instance : Monoid ℝ := by infer_instance
+instance : CommMonoid ℝ := fast_instance% inferInstance
 
-instance : CommSemigroup ℝ := by infer_instance
+instance : Monoid ℝ := fast_instance% inferInstance
 
-instance : Semigroup ℝ := by infer_instance
+instance : CommSemigroup ℝ := fast_instance% inferInstance
 
-instance : Sub ℝ := by infer_instance
+instance : Semigroup ℝ := fast_instance% inferInstance
 
 instance : Inhabited ℝ :=
   ⟨0⟩
