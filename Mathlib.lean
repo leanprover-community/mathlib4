@@ -6934,6 +6934,8 @@ public import Mathlib.Topology.Category.CompactlyGenerated
 public import Mathlib.Topology.Category.Compactum
 public import Mathlib.Topology.Category.DeltaGenerated
 public import Mathlib.Topology.Category.FinTopCat
+public import Mathlib.Topology.Category.Lifting.Defs
+public import Mathlib.Topology.Category.Lifting.Separation
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.LightProfinite.Basic
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
@@ -6976,6 +6978,7 @@ public import Mathlib.Topology.Category.TopCat.Sphere
 public import Mathlib.Topology.Category.TopCat.ULift
 public import Mathlib.Topology.Category.TopCat.Yoneda
 public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.Category.UProp
 public import Mathlib.Topology.Category.UniformSpace
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.ClopenBox
@@ -7025,6 +7028,7 @@ public import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
+public import Mathlib.Topology.ContinuousMap.Constructions
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Topology.ContinuousMap.Defs
