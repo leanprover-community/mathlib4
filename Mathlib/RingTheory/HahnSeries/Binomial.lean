@@ -144,6 +144,64 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
     apply (StrictMono.injective (nsmul_left_strictMono hg)) hn.symm
   · by_cases hr : r = 0 <;> simp [hr, hg]
 
+/- These don't seem to be necessary.
+omit [BinomialRing R] in
+theorem support_toOrderTopSubOnePos_orderTopSubOnePos {g : Γ} (hg : 0 < g) (r : R) :
+     ((toOrderTopSubOnePos (orderTop_sub_pos hg r)).val.val).support ⊆ {0, g} := by
+  simp only [val_toOrderTopSubOnePos_coe]
+  refine (support_add_subset (x := (1 : R⟦Γ⟧))).trans ?_
+  refine Set.union_subset ?_ (support_single_subset.trans (Set.subset_insert 0 {g}))
+  obtain (_| h ) := subsingleton_or_nontrivial R
+  · simp [(Subsingleton.eq_one (0 : R⟦Γ⟧)).symm]
+  · simp
+
+omit [BinomialRing R] in
+theorem support_toOrderTopSubOnePos_orderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
+    ((toOrderTopSubOnePos (orderTop_sub_pos hg r)).val.val ^ n).support ⊆
+      AddSubmonoid.closure {g} := by
+    refine (support_pow_subset_closure (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val.val
+      n).trans ?_
+    rw [SetLike.coe_subset_coe, val_toOrderTopSubOnePos_coe, AddSubmonoid.closure_le]
+    exact (support_toOrderTopSubOnePos_orderTopSubOnePos hg r).trans
+      (Set.pair_subset (zero_mem (AddSubmonoid.closure {g}))
+      (SetLike.mem_coe.mpr (AddSubmonoid.mem_closure_of_mem rfl)))
+-/
+
+theorem coeff_toOrderTopSubOnePos_pow_not_nsmul {g g' : Γ} (hg : 0 < g) (r s : R)
+    (hgg' : ¬ ∃ n : ℕ, g' = n • g) :
+    HahnSeries.coeff ((toOrderTopSubOnePos (orderTop_sub_pos hg r)) ^ s).val g' = (0 : R) := by
+  rw [binomial_power, val_toOrderTopSubOnePos_coe, val_toOrderTopSubOnePos_coe, coeff_hsum,
+    finsum_eq_zero_of_forall_eq_zero]
+  intro i
+  rw [binomialFamily_apply (orderTop_sub_pos hg r), coeff_smul, add_sub_cancel_left, single_pow]
+  rw [not_exists] at hgg'
+  exact smul_eq_zero_of_right (Ring.choose s i) (coeff_single_of_ne (hgg' i))
+
+theorem heval_single_binomialSeries {g : Γ} (hg : 0 < g) (r s : R) :
+    PowerSeries.heval (single g r) (PowerSeries.binomialSeries R s) =
+    ((toOrderTopSubOnePos (orderTop_sub_pos hg r)) ^ s).val := by
+  ext g'
+  simp only [PowerSeries.heval_apply, coeff_hsum, smulFamily_toFun,
+    PowerSeries.binomialSeries_coeff, smul_eq_mul, mul_one, powers_toFun, ite_pow, single_pow,
+    smul_ite, smul_single]
+  by_cases h : ∃ k : ℕ, g' = k • g
+  · obtain ⟨k, hk⟩ := h
+    rw [hk, coeff_toOrderTopSubOnePos_pow hg r s k]
+    have : (0 : WithTop Γ) < (single g r).orderTop := lt_orderTop_single hg
+    simp only [this, ↓reduceIte, coeff_single, smul_eq_mul]
+    rw [finsum_eq_single _ k]
+    · simp
+    · intro i hi
+      contrapose! hi
+      simp only [ne_eq, ite_eq_right_iff, Classical.not_imp] at hi
+      exact Nat.le_antisymm ((smul_le_smul_iff_of_pos_right hg).mp (ge_of_eq hi.1))
+        ((smul_le_smul_iff_of_pos_right hg).mp (le_of_eq hi.1)) -- missing API?
+  · rw [finsum_eq_zero_of_forall_eq_zero, coeff_toOrderTopSubOnePos_pow_not_nsmul hg r s h]
+    intro i
+    simp only [lt_of_lt_of_le (WithTop.coe_pos.mpr hg) orderTop_single_le, ↓reduceIte]
+    rw [not_exists] at h
+    refine coeff_single_of_ne (h i)
+
 /-
 (xy-1)^n = ((x-1)(y-1) + (x-1) + (y-1))^n
   = ∑(i+j+k=n) trinomial{n}{i,j,k} (x-1)^(i+j) (y-1)^(i+k)
