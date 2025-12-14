@@ -91,9 +91,16 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
   rw [← Unitary.coe_star, Unitary.star_eq_inv, ← Uinv]
   simp [αa, Algebra.smul_mul_assoc, U, smul_smul, ← RCLike.ofReal_mul, ← Real.rpow_add this2, hy]
 
-theorem Matrix.AlgEquiv.eq_mulSemiringActionToAlgEquiv {n : Type*} [Fintype n]
-    [DecidableEq n] (f : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜) :
-    ∃ U : GL n 𝕜, f = MulSemiringAction.toAlgEquiv 𝕜 (G := ConjAct (GL n 𝕜)) _ U := by
+open Matrix
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+-- TODO: change `Matrix` to any central and simple finite algebra
+-- and then also add the `AlgHom` version of this
+-- and then also move this file outside of the `Matrix` folder
+public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct {K : Type*} [Field K]
+    (f : Matrix n n K ≃ₐ[K] Matrix n n K) :
+    ∃ U : GL n K, f = MulSemiringAction.toAlgEquiv K (G := ConjAct (GL n K)) _ U := by
   obtain ⟨U, hU⟩ := ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv').eq_linearEquivConjAlgEquiv
   use GeneralLinearGroup.toLin.symm (.ofLinearEquiv U)
   ext1 x
@@ -107,11 +114,12 @@ theorem Matrix.AlgEquiv.eq_mulSemiringActionToAlgEquiv {n : Type*} [Fintype n]
   simp [ConjAct.ofConjAct, GeneralLinearGroup.toLin, LinearMap.GeneralLinearGroup.ofLinearEquiv,
     LinearMap.toMatrixAlgEquiv', ← LinearMap.toMatrix'_comp]
 
-open Matrix ComplexOrder MatrixOrder in
-public theorem Matrix.StarAlgEquiv.eq_unitaryConjStarAlgAut {n : Type*} [Fintype n]
-    [DecidableEq n] (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+-- TODO: change `Matrix` to any central, simple and star-ordered finite algebra
+-- and then also add the `StarAlgHom` version of this
+open ComplexOrder MatrixOrder in
+public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
     ∃ U : unitaryGroup n 𝕜, f = Unitary.conjStarAlgAut 𝕜 _ U := by
-  obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv
+  obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct
   have := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := 𝕜) 1 f (by simp)
   obtain ⟨U, hU⟩ := this.mp ⟨g, congr($hg)⟩
   exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
