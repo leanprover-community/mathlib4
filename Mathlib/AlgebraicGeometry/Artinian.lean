@@ -122,8 +122,6 @@ instance IsArtinianScheme.finite [IsArtinianScheme X] :
 
 instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
     IsNoetherian X where
-  toIsLocallyNoetherian := inferInstance,
-  toCompactSpace := inferInstance
 
 /-- A scheme is Artinian if and only if it is Noetherian and has the discrete topology. -/
 theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
