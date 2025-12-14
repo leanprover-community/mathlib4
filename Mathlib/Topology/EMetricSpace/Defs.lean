@@ -229,7 +229,7 @@ def WeakPseudoEMetricSpace.toPseudoEMetricSpace
 theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
     (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
     (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
-    (uniformSpaceOfEDist edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
+    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
