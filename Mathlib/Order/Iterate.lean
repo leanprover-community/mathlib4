@@ -41,6 +41,7 @@ lemmas in this section formalize this fact for different inequalities made stric
 -/
 
 
+@[to_dual self (reorder := x y, hx hy)]
 theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k < n, x (k + 1) ≤ f (x k))
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
   induction n with
@@ -90,23 +91,16 @@ variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
 
+@[to_dual iterate_comp_le_of_le]
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
   apply hf.seq_le_seq n <;>
     aesop (add simp [iterate_succ']) (erase simp [iterate_succ])
 
-theorem iterate_comp_le_of_le (hf : Monotone f) (H : f ∘ h ≤ h ∘ g) (n : ℕ) :
-    f^[n] ∘ h ≤ h ∘ g^[n] :=
-  hf.dual.le_iterate_comp_of_le H n
-
 /-- If `f ≤ g` and `f` is monotone, then `f^[n] ≤ g^[n]`. -/
+@[to_dual le_iterate_of_le /-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/]
 theorem iterate_le_of_le {g : α → α} (hf : Monotone f) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   hf.iterate_comp_le_of_le h n
-
-/-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/
-@[to_dual existing iterate_le_of_le]
-theorem le_iterate_of_le {g : α → α} (hg : Monotone g) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
-  hg.dual.iterate_le_of_le h n
 
 end Monotone
 
