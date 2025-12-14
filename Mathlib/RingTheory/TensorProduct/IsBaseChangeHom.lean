@@ -18,12 +18,12 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.linearMapLeftRight`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.end`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
@@ -36,9 +36,9 @@ open LinearMap TensorProduct Module
 
 variable {R : Type*} [CommSemiring R]
     (S : Type*) [CommSemiring S] [Algebra R S]
-    (M : Type*) [AddCommMonoid M] [Module R M] -- [Module S M] [IsScalarTower R S M]
+    (M : Type*) [AddCommMonoid M] [Module R M]
     {N : Type*} [AddCommMonoid N] [Module R N]
-    {P : Type*} [AddCommMonoid P] [Module R P] -- [Module S P] [IsScalarTower R S P]
+    {P : Type*} [AddCommMonoid P] [Module R P]
 
 section LinearMapRight
 
@@ -123,6 +123,11 @@ theorem linearMapLeftRightHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
     linearMapLeftRightHom j β f (α m) = β (f m) := by
   simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
+
+@[simp] theorem linearMapLeftRightHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom j β f).restrictScalars R ∘ₗ α = β ∘ₗ f := by
+  ext; simp [linearMapLeftRightHom_comp_apply]
 
 variable [Free R M] [Module.Finite R M]
 

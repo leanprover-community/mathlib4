@@ -96,6 +96,9 @@ theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c
   simp_rw [Pi.add_apply, Pi.add_def _ _]
   exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
 
+lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
+  ext; simp [ofScalars, sub_smul]
+
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
   unfold ofScalars
   simp [Pi.smul_def x _, smul_smul]

@@ -138,18 +138,17 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
-        withoutModifyingStateWithInfoAndMessages do
-          instantiateMVarDeclMVars mvar.mvarId!
+        instantiateMVarDeclMVars mvar.mvarId!
 
-          let _ ←
-            withSynthesize (postpone := .no) do
-              Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+        let _ ←
+          withSynthesize (postpone := .no) do
+            Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
-          let result ← instantiateMVars mvar
-          if result.hasExprMVar then
-            return none
-          else
-            return some result
+        let result ← instantiateMVars mvar
+        if result.hasExprMVar then
+          return none
+        else
+          return some result
       catch _ =>
         return none
     let (result?, _) ← runTac?.run {} {}

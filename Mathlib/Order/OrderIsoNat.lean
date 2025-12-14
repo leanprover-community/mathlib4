@@ -179,9 +179,9 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         have h := hm _ (Nat.le_add_left m n)
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
-        refine ⟨n + n' - n - m, by cutsat, ?_⟩
+        refine ⟨n + n' - n - m, by lia, ?_⟩
         convert hn2
-        omega
+        lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
