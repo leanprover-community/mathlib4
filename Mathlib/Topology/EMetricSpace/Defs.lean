@@ -216,6 +216,21 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
       rw [UniformSpace.mem_uniformity_ofCore_iff, inst.6]
     rwa [e]
 
+def WeakPseudoEMetricSpace.toPseudoEMetricSpace
+    (α : Type u) [TopologicalSpace α] [inst : WeakPseudoEMetricSpace α] :
+    PseudoEMetricSpace α where
+  edist := inst.edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace : UniformSpace α := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  uniformity_edist := rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
+    (uniformSpaceOfEDist edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
+
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
@@ -699,6 +714,15 @@ instance EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] 
   topology_le := inst.toWeakPseudoEMetricSpace.5
   topology_eq_on_restrict := inst.toWeakPseudoEMetricSpace.6
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
+
+def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : WeakEMetricSpace α] :
+    EMetricSpace α where
+  edist := edist
+  edist_self := inst.edist_self
+  edist_comm := inst.edist_comm
+  edist_triangle := inst.edist_triangle
+  uniformity_edist := uniformSpaceOfEDist inst.edist edist_self edist_comm edist_triangle
+  eq_of_edist_eq_zero := inst.eq_of_edist_eq_zero
 
 @[ext]
 protected theorem EMetricSpace.ext
