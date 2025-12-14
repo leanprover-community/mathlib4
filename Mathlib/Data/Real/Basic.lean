@@ -113,10 +113,10 @@ private theorem ext_cauchy {x y : ℝ} : x.cauchy = y.cauchy → x = y :=
 @[simp] private theorem cauchy_mul (a b) : (a * b : ℝ).cauchy = a.cauchy * b.cauchy := by
   rfl
 
-@[no_expose] instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
-@[no_expose] instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
-@[no_expose] instance instNNRatCast : NNRatCast ℝ where nnratCast q := ⟨q⟩
 @[no_expose] instance instRatCast : RatCast ℝ where ratCast q := ⟨q⟩
+instance instNNRatCast : NNRatCast ℝ where nnratCast q := (q : ℚ)
+instance instIntCast : IntCast ℝ where intCast z := (z : ℚ)
+instance instNatCast : NatCast ℝ where natCast n := (n : ℚ)
 
 @[simp] private lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
 @[simp] private lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
