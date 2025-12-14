@@ -136,8 +136,8 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem Scheme.isArtinianRing_iff_isArtinianScheme (R : Type*) [CommRing R] :
-    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := ⟨fun _ =>
-    (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
+    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) :=
+  ⟨fun _ ↦ (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
     ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩,
   fun _ => RingEquiv.isArtinianRing
     (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv⟩
