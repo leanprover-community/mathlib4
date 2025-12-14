@@ -89,7 +89,7 @@ private lemma nat_unpair_lt_2 {n : ℕ} (h : (Nat.unpair n).1 ≠ 0) : (Nat.unpa
   unfold Nat.pair
   have := Nat.le_mul_self a
   have := Nat.le_mul_self b
-  split <;> omega
+  split <;> lia
 
 private def S.decode (n : ℕ) : S :=
   let p := Nat.unpair n

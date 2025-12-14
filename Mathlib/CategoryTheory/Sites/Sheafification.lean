@@ -85,7 +85,7 @@ instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf 
 
 end
 
-variable {D : Type*} [Category D] [HasWeakSheafify J D]
+variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=

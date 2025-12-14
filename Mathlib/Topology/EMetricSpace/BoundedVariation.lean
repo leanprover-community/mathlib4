@@ -447,10 +447,10 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     by_cases hn₀ : n = 0
     · simp [hn₀]
     rw [← Icc_add_Icc (b := E n)]
-    · rw [← ih (by intros; apply hn <;> omega), Finset.sum_range_succ]
+    · rw [← ih (by intros; apply hn <;> lia), Finset.sum_range_succ]
     · apply hE; lia
     · apply hE; lia
-    · apply hn <;> omega
+    · apply hn <;> lia
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))
@@ -482,7 +482,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rw [Finset.mem_range] at hx
   dsimp only [Subtype.coe_mk, Function.comp_apply]
   rw [edist_comm]
-  congr 4 <;> omega
+  congr 4 <;> lia
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by

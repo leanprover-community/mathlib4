@@ -982,7 +982,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
-      omega
+      lia
     suffices p'.length ≤ height p'.last by
       simpa [p', hlast'] using this
     apply length_le_height_last

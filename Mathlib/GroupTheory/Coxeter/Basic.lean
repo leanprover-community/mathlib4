@@ -442,7 +442,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     | zero =>
       simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
     | succ k h' =>
-      have hk : k < 2 * p := by omega
+      have hk : k < 2 * p := by lia
       apply h' at hk
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
