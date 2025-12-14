@@ -587,6 +587,9 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
+instance (priority := 100) : RelHomClass (r ≃r s) r s where
+  map_rel f := map_rel_iff' f |>.mpr
+
 instance (priority := 100) : RelEmbeddingClass (r ≃r s) r s where
   map_rel_iff f _ _ := map_rel_iff' f |>.symm
 
