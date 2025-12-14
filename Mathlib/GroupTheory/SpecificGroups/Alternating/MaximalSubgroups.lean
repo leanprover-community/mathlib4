@@ -51,8 +51,7 @@ theorem exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard
     ∃ g ∈ stabilizer (Perm α) s, g.IsThreeCycle := by
   rw [two_lt_ncard_iff] at hs
   obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := hs
-  use swap a b * swap a c
-  refine ⟨?_, isThreeCycle_swap_mul_swap_same hab hac hbc⟩
+  refine ⟨swap a b * swap a c, ?_, isThreeCycle_swap_mul_swap_same hab hac hbc⟩
   rw [mem_stabilizer_set_iff_subset_smul_set s.toFinite, subset_smul_set_iff]
   rintro _ ⟨x, hx, rfl⟩
   aesop
@@ -208,7 +207,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
   · let φ := (alternatingGroup α).subtype.subgroupMap G
     let f : α →ₑ[φ] α := {
       toFun := id
-      map_smul' g a := rfl  }
+      map_smul' _ _ := rfl  }
     rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
       Function.bijective_id]
 
@@ -230,8 +229,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     apply stabilizer_ne_top h0.nonempty h1
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   intro G hG
-  suffices IsPreprimitive G α by
-    apply subgroup_eq_top_of_isPreprimitive hα _ hG.le
+  suffices IsPreprimitive G α from subgroup_eq_top_of_isPreprimitive hα G hG.le
   -- G acts transitively
   have : IsPretransitive G α := by
     apply IsPretransitive.of_partition (s := s)

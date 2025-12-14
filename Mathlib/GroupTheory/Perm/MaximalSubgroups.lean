@@ -60,7 +60,7 @@ theorem isPreprimitive_stabilizer_of_surjective
     map_smul' _ _ := rfl }
   have hf : Function.Bijective f := Function.bijective_id
   rw [isPreprimitive_congr hs hf]
-  · infer_instance
+  infer_instance
 
 /-- A (mostly trivial) primitivity criterion for stabilizers. -/
 theorem isPreprimitive_stabilizer_subgroup
@@ -105,25 +105,19 @@ lemma _root_.MulAction.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
   apply Set.Subsingleton.image
   suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
     apply Or.resolve_right this
-    intro hB'
-    apply ne_of_lt hB_ss_sc
-    apply subset_antisymm (by grind)
-    intro x hx
-    rw [← Subtype.coe_mk x hx, ← Set.mem_preimage, hB']
-    apply Set.mem_univ
+    rw [preimage_eq_univ_iff, Subtype.range_coe_subtype]
+    exact not_subset_of_ssubset hB_ss_sc
   suffices IsPreprimitive (stabilizer G (sᶜ : Set α)) (sᶜ : Set α) by
     apply this.isTrivialBlock_of_isBlock
     let φ' : stabilizer G (sᶜ : Set α) → G := Subtype.val
     let f' : (sᶜ : Set α) →ₑ[φ'] α := {
       toFun := Subtype.val
-      map_smul' := fun ⟨m, _⟩ x => by
-        simp only [SMul.smul_stabilizer_def, φ'] }
+      map_smul' _ _ := rfl }
     exact hB.preimage f'
   let φ : stabilizer G (sᶜ : Set α) → Perm (sᶜ : Set α) := MulAction.toPerm
   let f : (sᶜ : Set α) →ₑ[φ] (sᶜ : Set α) := {
     toFun := id
-    map_smul' := fun g x => by
-      simp only [φ, id, Perm.smul_def, toPerm_apply] }
+    map_smul' _ _ := rfl }
   have hf : Function.Bijective f := Function.bijective_id
   rw [isPreprimitive_congr hG hf]
   infer_instance
@@ -284,20 +278,13 @@ lemma _root_.MulAction.IsBlock.subsingleton_of_stabilizer_lt_of_subset
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
       have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
-      have : ∃ g' : G, g' • s ≠ s := by
-        by_contra! h
-        apply hG.not_ge
-        aesop
-      obtain ⟨g', hg's⟩ := this
-      rcases MulAction.isBlock_iff_smul_eq_or_disjoint.mp hB g' with h | h
-      · -- case `g' • B = B` : absurd, since `B = s` and choice of `g'`
-        absurd hg's
-        rw [← hBs', h]
-      · -- case `g' • B` disjoint from `B`
-        apply Set.subsingleton_of_image (MulAction.injective g') B
-        apply hB_not_le_sc (g' • B) (hB.translate g')
-        rw [← hBs']
-        apply Disjoint.subset_compl_right h
+      subst hBs'
+      obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
+      have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
+      suffices (g' • B).Subsingleton by
+        exact subsingleton_of_image (MulAction.injective g') B this
+      apply hB_not_le_sc (⟨g', hg'⟩ • B) (hB.translate _)
+      exact Disjoint.subset_compl_right h
   -- `IsTrivialBlock (Subtype.val ⁻¹' B : Set s)`
   suffices IsPreprimitive (stabilizer G s) s by
     apply this.isTrivialBlock_of_isBlock
@@ -305,8 +292,7 @@ lemma _root_.MulAction.IsBlock.subsingleton_of_stabilizer_lt_of_subset
     let φ' : stabilizer G s → G := Subtype.val
     let f' : s →ₑ[φ'] α := {
       toFun := Subtype.val
-      map_smul' := fun ⟨m, _⟩ x => by
-        simp only [SMul.smul_stabilizer_def, φ'] }
+      map_smul' _ _ := rfl }
     apply MulAction.IsBlock.preimage f' hB
   infer_instance
 
@@ -325,13 +311,11 @@ lemma _root_.MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_no
   obtain ⟨b, hb, hb'⟩ := this
   intro x hx'
   suffices ∃ k : fixingSubgroup M s, k • b = x by
-    obtain ⟨⟨k, hk⟩, hkbx : k • b = x⟩ := this
-    suffices k • B = B by
-      rw [← hkbx, ← this, Set.smul_mem_smul_set_iff]
-      exact hb
+    obtain ⟨⟨k, hk⟩, rfl⟩ := this
+    suffices k • B = B from this.le (smul_mem_smul_set hb)
     -- `k • B = B`
     apply isBlock_iff_smul_eq_of_nonempty.mp hB (g := ⟨k, ?_⟩)
-    · refine ⟨a, ⟨?_, ha⟩⟩
+    · refine ⟨a, ?_, ha⟩
       rw [mem_fixingSubgroup_iff] at hk
       rw [← hk a ha']
       exact Set.smul_mem_smul_set ha
@@ -339,14 +323,10 @@ lemma _root_.MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_no
       apply hG
       exact MulAction.fixingSubgroup_le_stabilizer _ _ hk
   · -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
-    suffices
-      IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
-      obtain ⟨k, hk⟩ :=
-        exists_smul_eq (fixingSubgroup M s)
-          (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
-      use k
+    suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
+      obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
       rw [← Subtype.coe_inj, val_smul] at hk
-      exact hk
+      exact ⟨k, hk⟩
     -- Prove pretransitivity…
     rw [← is_one_pretransitive_iff]
     apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
