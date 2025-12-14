@@ -235,7 +235,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
           rw [if_neg, mul_zero]
           lia
-      split_ifs with h₁ h₂ h₃ h₄ h₅ <;> lia
+      lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1
   ext i j
@@ -288,7 +288,7 @@ lemma resultant_C_mul_right (r : R) :
         induction j₂ using Fin.addCases with
         | left j₂ => simp
         | right i => simp at hi; lia
-      split_ifs with h₁ h₂ h₃ h₄ h₅ <;> lia
+      lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1
   ext i j
@@ -328,7 +328,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.natAdd m).cast (by grind)) =
           j.natAdd _ := by ext; simp [Fin.succAbove, Fin.lt_def, add_right_comm]
         simp only [ite_and, this, Fin.addCases_right]
-        split_ifs with h₁ h₂ h₃ h₃ <;> try first | lia | rfl
+        split_ifs with h₁ h₂ h₃ h₃ <;> try lia
         exact coeff_eq_zero_of_natDegree_lt (by lia)
   · rintro (b : Fin ((m + 1) + (n + 1))) - hb
     suffices f.sylvester g (m + 1) (n + 1) (.last (m + 1 + n)) b = 0 by simp [this]
