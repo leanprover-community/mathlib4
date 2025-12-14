@@ -49,6 +49,8 @@ instance (priority := 100) sq_hasLift_of_hasLiftingProperty {f : A ⟶ X} {g : B
 
 namespace HasLiftingProperty
 
+scoped infix:25 " ⧄ " => HasLiftingProperty
+
 variable {i p}
 
 theorem op (h : HasLiftingProperty i p) : HasLiftingProperty p.op i.op :=
