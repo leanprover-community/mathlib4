@@ -585,25 +585,25 @@ instance (priority := low) (R) [NonAssocSemiring R] [IsStablyFiniteRing R] :
     IsDedekindFiniteMonoid R :=
   let f : R →* Matrix (Fin 1) (Fin 1) R :=
     ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
-  MonoidHom.isDedekindFiniteMonoid_of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
+  .of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
 
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
-theorem RingHom.isStablyFiniteRing_of_injective [FunLike F R S] [RingHomClass F R S] (f : F)
+theorem IsStablyFiniteRing.of_injective [FunLike F R S] [RingHomClass F R S] (f : F)
     (hf : Function.Injective f) [IsStablyFiniteRing S] : IsStablyFiniteRing R where
   isDedekindFiniteMonoid n :=
   let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) R ↦ M.map f,
     Matrix.map_one _ (map_zero f) (map_one f)⟩ fun _ _ ↦ Matrix.map_mul
-  MonoidHom.isDedekindFiniteMonoid_of_injective f <| Matrix.map_injective hf
+  .of_injective f <| Matrix.map_injective hf
 
 theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
-  mp _ := RingHom.isStablyFiniteRing_of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
-  mpr _ := RingHom.isStablyFiniteRing_of_injective f (EquivLike.injective f)
+  mp _ := .of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
+  mpr _ := .of_injective f (EquivLike.injective f)
 
-instance [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :
+instance (priority := low) [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :
     IsStablyFiniteRing S :=
-  RingHom.isStablyFiniteRing_of_injective _ (Subsemiring.subtype_injective <| .ofClass S)
+  .of_injective _ (Subsemiring.subtype_injective <| .ofClass S)
 
 end IsStablyFiniteRing
 
@@ -1226,7 +1226,7 @@ instance [IsStablyFiniteRing R] : IsDedekindFiniteMonoid (Matrix n n R) :=
   let e := Fintype.equivFin n
   let f := MonoidHom.mk ⟨reindex (α := R) e e, submatrix_one_equiv _⟩
     fun _ _ ↦ (submatrix_mul_equiv ..).symm
-  MonoidHom.isDedekindFiniteMonoid_of_injective f (reindex e e).injective
+  .of_injective f (reindex e e).injective
 
 variable {m n R} in
 /-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
@@ -1235,6 +1235,10 @@ theorem mul_eq_one_comm_of_equiv [IsStablyFiniteRing R] {A : Matrix m n R} {B : 
   (reindex e e).injective.eq_iff.symm.trans <| by
     rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
       mul_eq_one_comm, submatrix_mul_equiv, Equiv.coe_refl, submatrix_id_id]
+
+theorem mul_eq_one_comm_of_card_eq [IsStablyFiniteRing R] {A : Matrix m n R} {B : Matrix n m R}
+    (eq : Fintype.card m = Fintype.card n) : A * B = 1 ↔ B * A = 1 :=
+  mul_eq_one_comm_of_equiv (Fintype.card_eq.mp eq).some
 
 end Matrix
 

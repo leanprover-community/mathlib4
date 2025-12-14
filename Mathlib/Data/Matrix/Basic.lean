@@ -661,7 +661,7 @@ end RingEquiv
 
 instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
   isDedekindFiniteMonoid n := let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
-    MonoidHom.isDedekindFiniteMonoid_of_injective f RingEquiv.mopMatrix.injective
+    .of_injective f RingEquiv.mopMatrix.injective
 
 open MulOpposite in
 theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
@@ -669,7 +669,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
                fun _ _ ↦ by ext; simp [mul_apply]
-  MonoidHom.isDedekindFiniteMonoid_of_injective f (map_injective (op_injective.comp op_injective))⟩
+  .of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 
 namespace AlgHom

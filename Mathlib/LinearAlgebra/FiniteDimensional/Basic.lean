@@ -315,7 +315,7 @@ theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} 
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
 
 /-- Any division ring is stably finite. -/
-instance : IsStablyFiniteRing K := by
+instance (priority := low) : IsStablyFiniteRing K := by
   refine isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd.mpr fun n ↦ ⟨fun {f g} hfg ↦ ?_⟩
   have ginj : Injective g :=
     HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : End K (Fin n → K)) x by rw [hfg]⟩
