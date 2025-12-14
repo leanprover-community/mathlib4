@@ -338,7 +338,7 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
 /-- A choice of pre-image of `Q.relation r` under the canonical
-map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evalation of `P`. -/
+map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evaluation of `P`. -/
 noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
@@ -509,10 +509,17 @@ lemma naive_relation : (naive s hs).relation = v := rfl
 
 @[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 
+lemma mem_ker_naive (i : ι) : v i ∈ (naive s hs).ker := relation_mem_ker _ i
+
 end
 
 end Construction
 
 end Presentation
+
+lemma Generators.fg_ker_of_finitePresentation [Algebra.FinitePresentation R S] {α : Type*}
+    (P : Generators R S α) [Finite α] : P.ker.FG := by
+  rw [Generators.ker_eq_ker_aeval_val]
+  exact Algebra.FinitePresentation.ker_fG_of_surjective _ P.aeval_val_surjective
 
 end Algebra

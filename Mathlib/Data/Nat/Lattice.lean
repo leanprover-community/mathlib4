@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Order.Interval.Finset.Nat
 
@@ -239,8 +238,5 @@ theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = 
 
 theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
   Nat.iInf_le_succ' u n
-
-theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
-    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
 end Set

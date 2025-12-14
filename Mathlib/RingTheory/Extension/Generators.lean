@@ -110,6 +110,9 @@ lemma σ_injective : P.σ.Injective := by
   intro x y e
   rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
 
+lemma aeval_val_surjective : Function.Surjective (aeval (R := R) P.val) :=
+  fun x ↦ ⟨P.σ x, by simp⟩
+
 lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
   (⟨_, P.algebraMap_apply _ ▸ P.aeval_val_σ ·⟩)
 
@@ -247,6 +250,20 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+/-- Extend generators by more variables. -/
+noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
+  .ofSurjective (Sum.elim P.val b) fun s ↦ by
+    use rename Sum.inl (P.σ s)
+    simp [aeval_rename]
+
+@[simp]
+lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
+    (P.extend b).val (.inl i) = P.val i := rfl
+
+@[simp]
+lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
+    (P.extend b).val (.inr i) = b i := rfl
 
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/

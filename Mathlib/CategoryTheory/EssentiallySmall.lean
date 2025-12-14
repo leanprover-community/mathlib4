@@ -107,6 +107,10 @@ theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
 
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] [LocallySmall.{w'} C] :
+    LocallySmall.{w'} (SmallModel.{w} C) :=
+  (locallySmall_congr (equivSmallModel.{w} C)).1 inferInstance
+
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where
 
@@ -294,5 +298,10 @@ instance [Small.{w} C] [LocallySmall.{w} C]
   · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
     rw [Arrow.mk_eq_mk_iff] at this
     tauto
+
+instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
+    LocallySmall.{w} (C ⥤ A) where
+  hom_small P Q :=
+    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
 
 end CategoryTheory

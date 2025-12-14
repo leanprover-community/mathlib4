@@ -5,15 +5,17 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Facts about Gaussian characteristic function
 
 In this file we prove that Gaussian measures over a Banach space `E` are exactly those measures
 `μ` such that there exist `m : E` and `f : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ`
-satisfying `f.toBilinForm.IsPosSemidef` and `charFunDual μ L = exp (L m * I - f L L / 2)`.
+positive semidefinite (satisfying `f.toBilinForm.IsPosSemidef`) such that
+`charFunDual μ L = exp (L m * I - f L L / 2)`.
 We also prove that such `m` and `f` are unique and equal to `∫ x, x ∂μ` and `covarianceBilinDual μ`.
 
 We also specialize these statements in the case of Hilbert spaces, with

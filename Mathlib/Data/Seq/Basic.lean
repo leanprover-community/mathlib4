@@ -193,7 +193,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [take, head_eq_some hy]
     simp
     right
-    apply ih (by cutsat)
+    apply ih (by lia)
     rwa [get?_tail]
 
 theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
@@ -493,7 +493,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | succ k ih =>
     simp [Seq.get?_tail, drop]
     convert ih using 2
-    cutsat
+    lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
@@ -535,7 +535,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
       convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
-      omega
+      lia
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
@@ -729,7 +729,7 @@ theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get?
 
 theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp [get?_set_of_ne _ _ (show n + i ≠ m by cutsat)]
+  simp [get?_set_of_ne _ _ (show n + i ≠ m by lia)]
 
 end Update
 
@@ -829,16 +829,16 @@ theorem Pairwise.cons {R : α → α → Prop} {hd : α} {tl : Seq α}
     | zero =>
       simp only [get?_cons_zero, Option.mem_def, Option.some.injEq] at hx
       exact hx ▸ all_get h_hd hy
-    | succ n => exact h_tl n k (by omega) x hx y hy
+    | succ n => exact h_tl n k (by lia) x hx y hy
 
 theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
     (h : Pairwise R (.cons hd tl)) : (∀ x ∈ tl, R hd x) ∧ Pairwise R tl := by
   simp only [Pairwise] at *
-  refine ⟨?_, fun i j h_ij ↦ h (i + 1) (j + 1) (by omega)⟩
+  refine ⟨?_, fun i j h_ij ↦ h (i + 1) (j + 1) (by lia)⟩
   intro x hx
   rw [mem_iff_exists_get?] at hx
   obtain ⟨n, hx⟩ := hx
-  simpa [← hx] using h 0 (n + 1) (by omega)
+  simpa [← hx] using h 0 (n + 1) (by lia)
 
 @[simp]
 theorem Pairwise_cons_nil {R : α → α → Prop} {hd : α} : Pairwise R (cons hd nil) := by
@@ -893,7 +893,7 @@ theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans α R] {s : Seq α
   induction k generalizing y with
   | zero => exact h_succ hx hy
   | succ k ih =>
-    obtain ⟨z, hz⟩ := ge_stable (m := i + k + 1) _ (by omega) hy
+    obtain ⟨z, hz⟩ := ge_stable (m := i + k + 1) _ (by lia) hy
     exact _root_.trans (ih z hz) <| h_succ hz hy
 
 theorem Pairwise_tail {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) :
@@ -947,7 +947,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
     generalize a_tl.length' = u at ha'
     enat_to_nat
-    omega
+    lia
 
 instance : Functor Seq where map := @map
 
