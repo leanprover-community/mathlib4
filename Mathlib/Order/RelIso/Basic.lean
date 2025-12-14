@@ -190,6 +190,22 @@ structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β �
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
 
+section
+
+/-- `RelEmbeddingClass F r s` asserts that `F` is a type of embedding such that all `f : F`
+satisfy `r a b ↔ s (f a) (f b)`.
+
+The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
+matching problem that Lean usually can't do unaided.
+-/
+class RelEmbeddingClass (F : Type*) {α β : outParam Type*} (r : outParam <| α → α → Prop)
+  (s : outParam <| β → β → Prop) [FunLike F α β] [EmbeddingLike F α β] : Prop where
+  map_rel_iff : ∀ (f : F) {a b}, r a b ↔ s (f a) (f b)
+
+export RelEmbeddingClass (map_rel_iff)
+
+end
+
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
   ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
@@ -204,7 +220,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
   coe_injective' f g h := by
@@ -212,7 +227,6 @@ instance : FunLike (r ↪r s) α β where
     rcases g with ⟨⟨⟩⟩
     congr
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -220,6 +234,9 @@ initialize_simps_projections RelEmbedding (toFun → apply)
 
 instance : EmbeddingLike (r ↪r s) α β where
   injective' f := f.inj'
+
+instance : RelEmbeddingClass (r ↪r s) r s where
+  map_rel_iff f _ _ := map_rel_iff' f |>.symm
 
 @[simp]
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
@@ -530,6 +547,21 @@ structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Pro
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 infixl:25 " ≃r " => RelIso
 
+section
+
+/-- `RelIsoClass F r s` asserts that `F` is a type of relation isomorphism.
+
+The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
+matching problem that Lean usually can't do unaided.
+-/
+class RelIsoClass (F : Type*) {α β : outParam Type*} (r : outParam <| α → α → Prop)
+  (s : outParam <| β → β → Prop) [EquivLike F α β] : Prop where
+  map_rel_iff : ∀ (f : F) {a b}, r a b ↔ s (f a) (f b)
+
+export RelIsoClass (map_rel_iff)
+
+end
+
 namespace RelIso
 
 /-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
@@ -544,12 +576,10 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -559,6 +589,12 @@ instance : EquivLike (r ≃r s) α β where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
+
+instance : RelIsoClass (r ≃r s) r s where
+  map_rel_iff f _ _ := map_rel_iff' f |>.symm
+
+instance : RelEmbeddingClass (r ≃r s) r s where
+  map_rel_iff f _ _ := map_rel_iff' f |>.symm
 
 @[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=

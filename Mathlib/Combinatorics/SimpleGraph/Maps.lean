@@ -257,9 +257,23 @@ abbrev Iso :=
 @[inherit_doc] infixl:50 " ↪g " => Embedding
 @[inherit_doc] infixl:50 " ≃g " => Iso
 
+section
+
+variable (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W)
+
 /-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
-abbrev HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
+abbrev HomClass [FunLike F V W] :=
   RelHomClass F G.Adj H.Adj
+
+/-- `EmbeddingClass F G H` asserts that `F` is a type of adjacency-preserving embedding. -/
+abbrev EmbeddingClass [FunLike F V W] [EmbeddingLike F V W] :=
+  RelEmbeddingClass F G.Adj H.Adj
+
+/-- `IsoClass F G H` asserts that `F` is an adjacency-preserving isomorphism. -/
+abbrev IsoClass [EquivLike F V W] :=
+  RelIsoClass F G.Adj H.Adj
+
+end
 
 namespace Hom
 
