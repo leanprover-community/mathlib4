@@ -139,7 +139,7 @@ register_option linter.translateReorder : Bool := {
     equal to the automatically generated one" }
 
 @[inherit_doc translate_change_numeral]
-initialize changeNumeralAttr : NameMapExtension (List Nat) ←
+initialize changeNumeralAttr : NameMapExtension' (List Nat) ←
   registerNameMapAttribute {
     name := `translate_change_numeral
     descr :=
@@ -162,9 +162,9 @@ structure TranslateData : Type where
   involved when translating.
   This helps the translation heuristic by also transforming definitions if `ℕ` or another
   fixed type occurs as one of these arguments. -/
-  ignoreArgsAttr : NameMapExtension (List Nat)
+  ignoreArgsAttr : NameMapExtension' (List Nat)
   /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
-  argInfoAttr : NameMapExtension ArgInfo
+  argInfoAttr : NameMapExtension' ArgInfo
   /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
   a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
@@ -174,10 +174,10 @@ structure TranslateData : Type where
   Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
     translated thanks to this, you generally have to specify the translated name manually.
   -/
-  doTranslateAttr : NameMapExtension Bool
+  doTranslateAttr : NameMapExtension' Bool
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
-  translations : NameMapExtension Name
+  translations : NameMapExtension' Name
   /-- The name of the attribute, for example `to_additive` or `to_dual`. -/
   attrName : Name
   /-- If `changeNumeral := true`, then try to translate the number `1` to `0`. -/
