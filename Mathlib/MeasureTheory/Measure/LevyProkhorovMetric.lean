@@ -729,8 +729,7 @@ end Levy_Prokhorov_metrizes_convergence_in_distribution
 
 variable {X : Type*} [MetricSpace X] [MeasurableSpace X] [CompactSpace X] [BorelSpace X]
 
-open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedContinuousMap
-  Filter TopologicalSpace ProbabilityMeasure
+open WeakDual CompactlySupported CompactlySupportedContinuousMap ProbabilityMeasure
 
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let A := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1 }
