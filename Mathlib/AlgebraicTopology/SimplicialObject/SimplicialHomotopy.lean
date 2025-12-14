@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabian Odermatt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabian Odermatt
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
 /-!
 # Simplicial homotopies of simplicial objects
@@ -28,6 +30,8 @@ satisfying the simplicial identities involving the faces and degeneracies.
 
 * [nLab, *Simplicial Homotopy*](https://ncatlab.org/nlab/show/simplicial+homotopy)
 -/
+
+@[expose] public section
 
 universe v u
 
