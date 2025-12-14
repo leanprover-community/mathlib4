@@ -22,7 +22,7 @@ parallel morphisms out of `X` factor through the parallel pair `f`, `g`
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open WalkingParallelPair WalkingParallelPairHom CostructuredArrow
 

@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Linter.Header
 import Lean.Parser.Syntax
+import Init.Data.String.TakeDrop
 
 /-!
 # The `commandStart` linter
@@ -1087,10 +1088,10 @@ of a single character, then number of characters added to `rebuilt` is the same 
 characters removed from `L`.
 -/
 partial
-def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring.Raw)
+def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
     (addSpace removeSpace removeLine : String) :
     String × Array FormatError :=
-  if M.trim.isEmpty then (rebuilt ++ L.toString, as) else
+  if M.trimAscii.isEmpty then (rebuilt ++ L.toString, as) else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -1102,27 +1103,27 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
   --dbg_trace (L.take 3, M.take 3)
-  if (L.take 3).toString == "/--" && (M.take 3).toString == "/--" then
-    parallelScanAux as (rebuilt ++ "/--") (L.drop 3) (M.drop 3) addSpace removeSpace removeLine else
-  if (L.take 2).toString == "--" then
+  if (L.take 3) == "/--".toslice && (M.take 3) == "/--".toSlice then
+    parallelScanAux as (rebuilt ++ "/--") (L.drop 3).copy (M.drop 3).copy addSpace removeSpace removeLine else
+  if (L.take 2) == "--".toSlice then
     let newL := L.dropWhile (· != '\n')
-    let diff := L.toString.length - newL.toString.length
+    let diff := L.length - newL.copy.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
     parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimLeft newM.trimLeft addSpace removeSpace removeLine else
-  if (L.take 2).toString == "-/" then
-    let newL := L.drop 2 |>.trimLeft
-    let newM := M.drop 2 |>.trimLeft
-    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL newM addSpace removeSpace removeLine else
+  if (L.take 2) == "-/".toSlice then
+    let newL := L.drop 2 |>.trimAsciiStart
+    let newM := M.drop 2 |>.trimAsciiStart
+    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL.copy newM.copy addSpace removeSpace removeLine else
   let ls := L.drop 1
   let ms := M.drop 1
   match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
-      parallelScanAux as (rebuilt.push ' ') ls ms.trimLeft addSpace removeSpace removeLine
+      parallelScanAux as (rebuilt.push ' ') ls.trimAsciiStart.copy ms.trimAsciiStart.copy addSpace removeSpace removeLine
     else
       parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "extra space")) (rebuilt ++ removeSpace) ls M addSpace removeSpace removeLine
   | '\n', m =>
@@ -1135,11 +1136,11 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : Substring
       parallelScanAux as (rebuilt.push l) ls ms addSpace removeSpace removeLine
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimLeft addSpace removeSpace removeLine
+        parallelScanAux (pushFormatError as (mkFormatError L.copy M.copy "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimAsciiStart.copy addSpace removeSpace removeLine
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
-      (rebuilt, pushFormatError as (mkFormatError ls.toString ms.toString "Oh no! (Unreachable?)"))
+      (rebuilt, pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)"))
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
@@ -1390,9 +1391,9 @@ to avoid cutting into "words".
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
 public def mkWindow (orig : String) (start ctx : Nat) : String :=
-  let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
-  let middle := orig.takeRight (start + 1)
-  let headCtx := head.takeRightWhile (!·.isWhitespace)
+  let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
+  let middle := orig.takeEnd (start + 1)
+  let headCtx := head.takeEndWhile (!·.isWhitespace)
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 

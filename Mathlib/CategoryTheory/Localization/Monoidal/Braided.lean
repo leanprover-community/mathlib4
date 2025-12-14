@@ -28,7 +28,7 @@ open CategoryTheory Category MonoidalCategory BraidedCategory Functor
 
 namespace CategoryTheory.Localization.Monoidal
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C] [W.IsMonoidal] [L.IsLocalization W]
   {unit : D} (ε : L.obj (𝟙_ C) ≅ unit)
 

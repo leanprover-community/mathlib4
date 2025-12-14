@@ -257,7 +257,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
-instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
+instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
   ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
