@@ -1,15 +1,24 @@
 module
 
-import Aesop.Frontend.Attribute
+public import Aesop.Frontend.Attribute
 import all Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Lemma
+public import Lean.Elab.Command
+public meta import Lean.Meta.Tactic.TryThis
+public import Mathlib.Util.ParseCommand
+import Batteries.Util.LibraryNote
+public import Batteries.Linter.UnreachableTactic
+public import Qq
+
+meta section
 
 open Lean Elab Command Mathlib Linter Style.CommandStart in
 elab tk:"#reformat " cmd:command : command => do
   let tktxt := "#reformat"
   if let some cmdSubstring := cmd.raw.getSubstring? then
   if let .error .. :=
-    captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
+    GuardExceptions.captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
   then
     logWarningAt tk m!"{tktxt}: Parsing failed"
     return
@@ -28,6 +37,8 @@ elab tk:"#reformat " cmd:command : command => do
     let parts := mkStrings cmdSubstring (reported.map (·.rg.start))
     let reformatted := parts.foldl (· ++ ·.toString) ""
     liftTermElabM do Meta.liftMetaM do Lean.Meta.Tactic.TryThis.addSuggestion cmd reformatted
+
+end
 
 #reformat
 set_option linter.style.commandStart true
@@ -522,10 +533,6 @@ example := if bool then aux else aux
 where
   /-- A separate doc-string -/
   aux : Unit := ()
-<<<<<<< HEAD
-  /-- Another too -/
-  bool := true
-=======
 
 -- For structure fields, all field definitions are linted.
 -- TODO: currently, only the first field is linted
@@ -607,7 +614,6 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 instance   {R} : Sub R := sorry
->>>>>>> master
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
