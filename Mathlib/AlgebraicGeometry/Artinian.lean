@@ -83,9 +83,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : IsOpen ({⟨x, hW2⟩} : Set W) := discreteTopology_iff_forall_isOpen.mp
     (IsLocallyArtinian.discreteTopology_of_isAffine W) {⟨x, hW2⟩}
   have := this.trans W.2
-  have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
-  rw[← this]
-  assumption
+  rwa [← show Subtype.val '' {⟨x, hW2⟩} = {x} from Set.image_singleton]
 
 theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
 (R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
