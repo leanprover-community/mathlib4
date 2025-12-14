@@ -107,36 +107,23 @@ they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 
 section AddMonoidAlgebra
 
-private irreducible_def add : R[X] → R[X] → R[X]
-  | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
-
-private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
-  | ⟨a⟩ => ⟨-a⟩
-
-private irreducible_def mul : R[X] → R[X] → R[X]
-  | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
-
-instance zero : Zero R[X] :=
+instance : Zero R[X] :=
   ⟨⟨0⟩⟩
 
-instance one : One R[X] :=
+instance : One R[X] :=
   ⟨⟨1⟩⟩
 
-instance add' : Add R[X] :=
-  ⟨add⟩
+@[no_expose] instance : Add R[X] :=
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a + b⟩⟩
 
-instance neg' {R : Type u} [Ring R] : Neg R[X] :=
-  ⟨neg⟩
+@[no_expose] instance {R : Type u} [Ring R] : Neg R[X] :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
-instance sub {R : Type u} [Ring R] : Sub R[X] :=
+instance {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
 
-instance mul' : Mul R[X] :=
-  ⟨mul⟩
-
--- If the private definitions are accidentally exposed, simplify them away.
-@[simp] theorem add_eq_add : add p q = p + q := rfl
-@[simp] theorem mul_eq_mul : mul p q = p * q := rfl
+@[no_expose] instance : Mul R[X] :=
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a * b⟩⟩
 
 instance instNSMul : SMul ℕ R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
@@ -162,12 +149,12 @@ theorem ofFinsupp_one : (⟨1⟩ : R[X]) = 1 :=
   rfl
 
 @[simp]
-theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ :=
-  show _ = add _ _ by rw [add_def]
+theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ := by
+  rfl
 
 @[simp]
-theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ := by
+  rfl
 
 @[simp]
 theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a⟩ - ⟨b⟩ := by
@@ -175,8 +162,8 @@ theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a�
   rfl
 
 @[simp]
-theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
-  show _ = mul _ _ by rw [mul_def]
+theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ := by
+  rfl
 
 @[simp]
 theorem ofFinsupp_nsmul (a : ℕ) (b) :
@@ -876,9 +863,8 @@ theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 
 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
-    (p + q).sum f = p.sum f + q.sum f := by
-  rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from add_def p q]
-  exact Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
+    (p + q).sum f = p.sum f + q.sum f :=
+  Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
