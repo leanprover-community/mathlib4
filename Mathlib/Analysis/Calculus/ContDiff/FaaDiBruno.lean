@@ -621,7 +621,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         congr 1
         rw [← val_eq_val]
         simp only [val_cast, val_succ, val_pred]
-        lia
+        omega
     · have A : update c.partSize (c.index 0) (c.partSize (c.index 0) - 1) i = c.partSize i := by
         simp [hi]
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
