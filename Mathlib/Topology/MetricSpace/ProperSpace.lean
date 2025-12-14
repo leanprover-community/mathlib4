@@ -60,7 +60,7 @@ instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperS
 variable [PseudoMetricSpace α]
 
 -- see Note [lower instance priority]
-/-- A proper pseudo metric space is sigma compact, and therefore second countable. -/
+/-- A proper pseudometric space is sigma compact, and therefore second countable. -/
 instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
     SecondCountableTopology α := by
   -- We already have `sigmaCompactSpace_of_locallyCompact_secondCountable`, so we don't

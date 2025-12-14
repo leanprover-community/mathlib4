@@ -31,7 +31,7 @@ namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [MonoidalCategory C] [Category D]
+variable [Category* C] [MonoidalCategory C] [Category* D]
 
 attribute [local instance] endofunctorMonoidalCategory
 

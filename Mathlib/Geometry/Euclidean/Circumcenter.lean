@@ -84,7 +84,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       · rw [hp₁, hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-          ← dist_eq_norm_vsub V p, dist_comm _ cc]
+          Real.norm_eq_abs, abs_mul_abs_self, ← dist_eq_norm_vsub V p, dist_comm _ cc]
         simp only [ycc₂]
         field
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
@@ -122,7 +122,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [hpo, hcc₃'', hcr₃val, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
       dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc₃' _ _
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-      dist_comm, ← dist_eq_norm_vsub V p,
+      Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
     change x * x + _ * (y * y) = _ at hcr₃
     rw [show
@@ -493,7 +493,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
   | pointIndex j => if j = i then 1 else 0
   | circumcenterIndex => 0
 
-/-- `point_weights_with_circumcenter` sums to 1. -/
+/-- `pointWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
@@ -605,7 +605,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
     simp [W]
-  rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
+  rw [reflection_apply', h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
     circumcenter_eq_affineCombination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,

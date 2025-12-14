@@ -511,7 +511,7 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring.Raw := do
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option String.Slice := do
   let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.toList.head?.elim false Char.isDigit
@@ -543,7 +543,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
   let projInfo := projs.toList.map fun p ↦ do
     ((← dropPrefixIfNotNumber? proj (p.lastComponentAsString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
-    throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
+    throwError "Failed to find constructor {proj.dropEnd 1} in structure {structName}."
   let newE ← mkProjection e projName
   let newPos := pos ++ (← findProjectionIndices structName projName)
   -- we do this here instead of in a recursive call in order to not get an unnecessary eta-redex
