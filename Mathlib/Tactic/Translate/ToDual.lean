@@ -89,7 +89,7 @@ syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 macro "to_dual?" rest:attrArgs : attr => `(attr| to_dual ? $rest)
 
 @[inherit_doc to_dual_ignore_args]
-initialize ignoreArgsAttr : NameMapExtension' (List Nat) ←
+initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_dual_ignore_args
     descr :=
@@ -101,10 +101,10 @@ initialize ignoreArgsAttr : NameMapExtension' (List Nat) ←
         return ids.toList }
 
 @[inherit_doc TranslateData.argInfoAttr]
-initialize argInfoAttr : NameMapExtension' ArgInfo ← registerNameMapExtension' _
+initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
 @[inherit_doc TranslateData.doTranslateAttr]
-initialize doTranslateAttr : NameMapExtension' Bool ← registerNameMapExtension' _
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
 
 initialize
   registerBuiltinAttribute {
@@ -119,7 +119,7 @@ initialize
     add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps names to their dual counterparts. -/
-initialize translations : NameMapExtension' Name ← registerNameMapExtension' _
+initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
