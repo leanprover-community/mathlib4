@@ -7,9 +7,9 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.Groebner.Division
 public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.Tactic.DepRewrite
 
-/-!
-## Remainder
+/-! # Remainder
 
 The following definition is abstracted from the "remainder" as in `MonomialOrder.div_set`. And more
 properties of it is covered in this file.
@@ -35,6 +35,17 @@ And there're also some variant equivalent statements.
 
 * `MonomialOrder.isRemainder_range`: A variant of `MonomialOrder.IsRemainder` where divisors are
   given as a map from indexes to polynomials.
+
+## Naming convention
+
+Some theorems with an argument in type `Set (MvPolynomial σ R)` have 2 variants, named as following
+respectively:
+
+* without suffix `'` or `₀`: leading coefficients of all polynomials in the set are non-zero
+  divisors `· ∈ nonZeroDivisors (MvPolynomial σ R)` (or invertible `IsUnit ·`, depending on the
+  theorem);
+* with suffix `₀`: leading coefficients of echo polynomial in the set is non-zero divisors (or
+  invertible) or 0 `· = 0`.
 
 ## Reference : [Cox2015]
 
@@ -82,34 +93,32 @@ theorem isRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
   classical
   constructor
   · intro ⟨⟨g, h₁, h₂⟩, h₃⟩
+    refine ⟨?_, h₃⟩
+    use g.mapDomain Subtype.val
     split_ands
-    · use g.mapDomain Subtype.val
-      split_ands
-      · exact subset_trans (Finset.coe_subset.mpr Finsupp.mapDomain_support) (by simp)
-      · simp [h₁]
-      · intro b hb
-        rw [show b = ↑(Subtype.mk b hb) by rfl, Finsupp.mapDomain_apply (by simp)]
-        exact h₂ ⟨b, hb⟩
-    · exact h₃
+    · exact subset_trans (Finset.coe_subset.mpr Finsupp.mapDomain_support) (by simp)
+    · simp [h₁]
+    · intro b hb
+      rw [show b = ↑(Subtype.mk b hb) by rfl, Finsupp.mapDomain_apply (by simp)]
+      exact h₂ ⟨b, hb⟩
   · intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
-    split_ands
-    · use {
-        support := (g.support.subtype (· ∈ B)),
-        toFun := (g.toFun ·),
-        mem_support_toFun := by intro; simp; rfl
-      }
-      split_ands
-      · rw [h₁, eq_comm]
-        congr 1
-        simp [Finsupp.linearCombination_apply, Finsupp.sum]
-        apply Finset.sum_nbij (↑·)
-        · simp_intro ..
-        · simp_intro b _ b₁ _ h [Subtype.ext_iff]
-        · simp_intro b hb
-          exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hb
-        · simp [DFunLike.coe]
-      · simpa
-    · exact h₃
+    refine ⟨?_, h₃⟩
+    use {
+      support := (g.support.subtype (· ∈ B)),
+      toFun := (g.toFun ·),
+      mem_support_toFun := by intro; simp; rfl
+    }
+    refine ⟨?_, by simpa⟩
+    rw [h₁, eq_comm]
+    congr 1
+    simp? [Finsupp.linearCombination_apply, Finsupp.sum] says
+      simp only [Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.coe_mk, smul_eq_mul, id_eq]
+    apply Finset.sum_nbij (↑·)
+    · simp_intro ..
+    · simp_intro b _ b₁ _ h [Subtype.ext_iff]
+    · simp_intro b hb
+      exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hb
+    · simp [DFunLike.coe]
 
 /--
 A variant of `MonomialOrder.IsRemainder` where `g : MvPolynomial σ R →₀ MvPolynomial σ R` is
@@ -134,24 +143,25 @@ theorem isRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
     intro g' hg'
     exact h₃ g' (Set.mem_of_mem_of_subset hg' h₁)
   · intro ⟨⟨g, B', h₁, h₂, h₃⟩, h₄⟩
+    refine ⟨?_, h₄⟩
+    use Finsupp.onFinset B' (fun b' => if b' ∈ B' then g b' else 0) (by simp_intro ..)
     split_ands
-    · use Finsupp.onFinset B' (fun b' => if b' ∈ B' then g b' else 0) (by simp_intro ..)
-      split_ands
-      · simp_intro b' hb'
-        exact Set.mem_of_mem_of_subset hb'.1 h₁
-      · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
-        congr 1
-        simp [Finset.filter_and, Finset.filter_mem_eq_inter,
-          Finset.inter_self, Finset.inter_filter, Finset.filter_inter]
-        rw [Finset.sum_filter]
-        apply Finset.sum_congr rfl
-        intro b' _
-        by_cases hb' : g b' = 0 <;> simp [hb']
-      · intro b hb
-        by_cases hbB' : b ∈ B'
-        · simp [hbB', h₃]
-        · simp [hbB']
-    · exact h₄
+    · simp_intro b' hb'
+      exact Set.mem_of_mem_of_subset hb'.1 h₁
+    · rw [Finsupp.linearCombination_apply, Finsupp.sum, h₂, Finsupp.support_onFinset]
+      congr 1
+      simp? [Finset.filter_and, Finset.filter_mem_eq_inter, Finset.inter_self, Finset.inter_filter,
+          Finset.filter_inter] says
+        simp only [ne_eq, ite_eq_right_iff, Classical.not_imp, Finset.filter_and,
+          Finset.filter_mem_eq_inter, Finset.inter_self, Finset.inter_filter,
+          Finsupp.onFinset_apply, id_eq, smul_eq_mul, ite_mul, zero_mul, Finset.sum_ite_mem,
+          Finset.filter_inter]
+      rw [Finset.sum_filter]
+      apply Finset.sum_congr rfl
+      intro b' _
+      by_cases hb' : g b' = 0 <;> simp [hb']
+    · intro b hb
+      by_cases hbB' : b ∈ B' <;> simp [hbB', h₃]
 
 /--
 A variant of `MonomialOrder.IsRemainder_def'` where `B` is `Finset (MvPolynomial σ R)`.
@@ -166,16 +176,15 @@ theorem isRemainder_finset (p : MvPolynomial σ R) (B' : Finset (MvPolynomial σ
   constructor
   · rw [isRemainder_def']
     intro ⟨⟨g, hgsup, hsum, hg⟩, hr⟩
-    split_ands
-    · use g.toFun
-      split_ands
-      · simp [Finsupp.linearCombination_apply, Finsupp.sum] at hsum
-        rw [hsum]
-        congr 1
-        apply Finset.sum_subset hgsup
-        simp_intro ..
-      · exact hg
-    · exact hr
+    refine ⟨?_, hr⟩
+    use g.toFun
+    refine ⟨?_, hg⟩
+    simp? [Finsupp.linearCombination_apply, Finsupp.sum]  at hsum says
+      simp only [Finsupp.linearCombination_apply, Finsupp.sum, id_eq, smul_eq_mul] at hsum
+    rw [hsum]
+    congr 1
+    apply Finset.sum_subset hgsup
+    simp_intro ..
   · rw [isRemainder_def'']
     intro ⟨⟨g, hsum, hg⟩, hr⟩
     refine ⟨?_, hr⟩
@@ -201,116 +210,62 @@ theorem isRemainder_range {ι : Type*} (f : MvPolynomial σ R)
   classical
   constructor
   · rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    let idx : (↑(Set.range b)) ↪ ι := {
+    let idx : Set.range b ↪ ι := {
       toFun := Set.rangeSplitting b,
       inj' := Set.rangeSplitting_injective b
     }
     split_ands
     · use Finsupp.embDomain idx g
       split_ands
-      · ext
-        simp [h₁, Finsupp.linearCombination_apply, Finsupp.sum]
-        congr
-        simp [idx, Set.apply_rangeSplitting]
+      · simp [h₁, idx]
       · intro i
         specialize h₂ ⟨b i, Set.mem_range_self i⟩
-        simp at h₂
-        by_cases h' : (Finsupp.embDomain idx g) i = 0
+        wlog! h' : (Finsupp.embDomain idx g) i ≠ 0
         · simp [h']
-        simp at h'
         convert h₂
         generalize_proofs hbi
-        convert_to g.embDomain idx (hbi.choose) = _
-        · simp [Finsupp.embDomain_eq_mapDomain, Finsupp.mapDomain, Finsupp.single_apply] at ⊢ h'
-          congr
-          ext
-          congr
-          obtain ⟨a, ha, ha'⟩ := Finset.exists_ne_zero_of_sum_ne_zero h'
-          simp [idx] at ha'
-          convert_to i = Set.rangeSplitting b ⟨b i, hbi⟩
-          simp [← ha'.1, Set.apply_rangeSplitting]
-        · exact Finsupp.embDomain_apply_self idx g ⟨b i, hbi⟩
+        rw [Finsupp.embDomain_apply, Ne.dite_ne_right_iff fun h ↦ by simpa [h] using h'] at h'
+        rw [Finsupp.embDomain_apply, dite_cond_eq_true (by simp [h'])]
+        generalize_proofs h'
+        rw! (occs := [2, 3]) [← h'.choose_spec]
+        simp [idx, Set.apply_rangeSplitting]
     · intro i hi b hb
       aesop
   · rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    refine ⟨?_, ?_⟩
-    · let b_support : Finset (Set.range b) :=
-        (g.support.biUnion fun i ↦
-          {⟨b i, Set.mem_range_self i⟩})
-      let b' : ι → Set.range b := fun i ↦ ⟨b i, Set.mem_range_self i⟩
-      let g' : Set.range b → MvPolynomial σ R := fun x ↦
-         Finset.sum (g.support.filter fun i ↦ b' i = x) fun i ↦ g i
-      have mem_support : ∀ x, g' x ≠ 0 → x ∈ b_support := by
-        intro x hx
-        obtain ⟨i, hi, hb'x⟩ : ∃ i ∈ g.support, b' i = x := by
-          contrapose! hx
-          simp [g']
-          rw [Finset.sum_filter]
-          suffices (g.support.filter (fun i => b' i = x)) = ∅ by
-            rw [← Finset.sum_filter, this, Finset.sum_empty]
-          ext i
-          simp at hx
-          simp
-          exact hx i
-        simp [b_support, Finset.mem_biUnion]
-        use i
-        constructor
-        · exact Finsupp.mem_support_iff.mp hi
-        · exact hb'x.symm
-      use Finsupp.onFinset b_support g' mem_support
+    constructor
+    · letI b'_range : Finset (Set.range b) := g.support.image (Set.rangeFactorization b)
+      letI g' (x : Set.range b) : MvPolynomial σ R := (g.support.filter (b · = x)).sum g
+      have mem_support (x) (hx : g' x ≠ 0) : x ∈ b'_range := by
+        contrapose! hx
+        simp? [b'_range, Set.rangeFactorization_eq_iff]  at hx says
+          simp only [Finset.mem_image, Finsupp.mem_support_iff, ne_eq,
+            Set.rangeFactorization_eq_iff, not_exists, not_and, b'_range] at hx
+        apply Finset.sum_eq_zero
+        simp? says simp only [Finset.mem_filter, Finsupp.mem_support_iff, ne_eq, and_imp]
+        tauto
+      use Finsupp.onFinset b'_range g' mem_support
       split_ands
-      · simp [h₁, Finsupp.linearCombination_apply, Finsupp.sum]
+      · simp? [h₁, Finsupp.linearCombination_apply, Finsupp.sum] says
+          simp only [h₁, Finsupp.linearCombination_apply, Finsupp.sum, smul_eq_mul,
+            Finsupp.onFinset_apply]
         congr
-        calc
-          ∑ x ∈ g.support, g x * b x
-            = ∑ x ∈ g.support, g x * (b' x : MvPolynomial σ R) := by rfl
-          _ = ∑ y ∈ Finset.image b' g.support,
-              (∑ x ∈ g.support.filter (b' · = y), g x) * (y : MvPolynomial σ R) := by
-            rw [Finset.sum_image']
-            intro y hy
-            rw [Finset.sum_filter]
-            ext x
-            congr
-            calc
-              (∑ a ∈ g.support, if b' a = b' y then g a else 0) * ↑(b' y) =
-                  (∑ j ∈ g.support.filter (fun j ↦ b' j = b' y), g j) * ↑(b' y) := by
-                congr 1
-                simp [Finset.sum_filter]
-              _ = ∑ j ∈ g.support.filter (fun j ↦ b' j = b' y), g j * ↑(b' y) :=
-                Finset.sum_mul {j ∈ g.support | b' j = b' y} ⇑g ↑(b' y)
-              _ = ∑ j ∈ g.support.filter (fun j ↦ b' j = b' y), g j * ↑(b' j) := by
-                apply Finset.sum_congr rfl
-                intro j hj
-                congr 2
-                exact (Finset.mem_filter.mp hj).2.symm
-          _ = ∑ y ∈ Finset.image b' g.support, g' y * (y : MvPolynomial σ R) := by rfl
-          _ = ∑ y ∈ b_support, g' y * (y : MvPolynomial σ R) := by
-            congr
-            ext y
-            simp [b_support, Eq.comm (a:=y), b']
-          _ = ∑ x ∈ (Finsupp.onFinset b_support g' mem_support).support, g' x * ↑x := by
-            rw [Finsupp.support_onFinset, Finset.sum_filter]
-            congr
-            ext x
-            by_cases hx : g' x = 0 <;> simp [hx]
+        rw [eq_comm, Finset.sum_subset (s₂ := b'_range) (by simp) (by simp_intro ..)]
+        unfold b'_range g'
+        apply Finset.sum_image'
+        simp? [Finset.sum_mul] says
+          simp only [Finsupp.mem_support_iff, ne_eq, Set.rangeFactorization_coe, Finset.sum_mul,
+            Set.rangeFactorization_eq_rangeFactorization_iff]
+        intro _ _
+        apply Finset.sum_congr rfl
+        simp_intro ..
       · intro b1
-        simp [Finsupp.onFinset, g']
-        rw [Finset.mul_sum]
-        have sum_eq : (∑ i ∈ g.support.filter (fun i => b' i = b1), ↑b1 * g i) =
-            (∑ i ∈ g.support.filter (fun i => b' i = b1), b i * g i) := by
-          refine Finset.sum_congr rfl fun i hi ↦ ?_
-          rw [Finset.mem_filter] at hi
-          congr
-          exact Subtype.ext_iff.mp hi.2.symm
-        rw [sum_eq]
-        have degree_le : ∀ i ∈ g.support.filter (fun i => b' i = b1),
-            m.degree (b i * g i) ≼[m] m.degree f := by
-          intro i hi
-          rw [Finset.mem_filter] at hi
-          exact h₂ i
-        trans (g.support.filter fun i ↦ b' i = b1).sup fun i ↦ m.toSyn (m.degree (b i * g i))
-        · exact m.degree_sum_le
-        · exact Finset.sup_le (fun i hi ↦ degree_le i hi)
+        simp? [Finsupp.onFinset, g', Finset.mul_sum] says
+          simp only [Finsupp.onFinset, Finsupp.coe_mk, Finset.mul_sum, g']
+        apply le_trans m.degree_sum_le
+        simp? says
+          simp only [Finset.sup_le_iff, Finset.mem_filter, Finsupp.mem_support_iff, ne_eq, and_imp]
+        intro idx hidx hidx'
+        simp [h₂ idx, ← hidx']
     · aesop
 
 /--
@@ -370,38 +325,31 @@ variable {m B} in
 theorem isRemainder_zero {r : MvPolynomial σ R}
     (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _)
     (h : m.IsRemainder 0 B r) : r = 0 := by
+  classical
   unfold IsRemainder at h
   obtain ⟨⟨g, h0sumg, hg⟩, hr⟩ := h
-  conv at hg =>
-    intro b
-    simp
-    rw [← m.eq_zero_iff, AddEquiv.map_eq_zero_iff, mul_comm]
-  simp [Finsupp.linearCombination_apply, Finsupp.sum] at h0sumg
-  have rdeg0 : m.degree r = 0 := by
+  simp_rw [m.degree_zero, m.toSyn.map_zero, ← m.eq_zero_iff, AddEquiv.map_eq_zero_iff,
+    mul_comm _ (g _)] at hg
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, smul_eq_mul] at h0sumg
+  have h_deg_r_eq_0 : m.degree r = 0 := by
     apply congrArg m.degree at h0sumg
     contrapose! h0sumg
-    simp [-ne_eq]
-    rw [ne_comm, ← AddEquiv.map_ne_zero_iff m.toSyn, ← m.toSyn_lt_iff_ne_zero, add_comm]
+    rw [degree_zero, ne_comm, ← AddEquiv.map_ne_zero_iff m.toSyn, ← m.toSyn_lt_iff_ne_zero]
     rw [← AddEquiv.map_ne_zero_iff m.toSyn, ← m.toSyn_lt_iff_ne_zero] at h0sumg
-    rwa [degree_add_of_lt]
+    rwa [degree_add_eq_right_of_lt]
     apply lt_of_le_of_lt m.degree_sum_le
-    simp [hg]
-    exact lt_of_le_of_lt Finset.sup_const_le h0sumg
-  contrapose! hr
-  use 0
-  split_ands
-  · rw [m.degree_eq_zero_iff.mp rdeg0]; simp [hr]
-  contrapose! h0sumg
-  simp at h0sumg
-  suffices ∀ b : B, g b * ↑b = 0 by simp [this, hr.symm]
+    simpa [hg] using lt_of_le_of_lt Finset.sup_const_le h0sumg
+  by_contra! hr0
+  suffices ∀ b, g b * b = 0 by simp [this, hr0.symm] at h0sumg
   intro b
-  suffices ¬b.1 = 0 → g b = 0 by by_cases h : g b = 0 <;> aesop
-  intro hb
+  by_contra! hgb
+  obtain ⟨h_gb_ne_0, h_b_ne_0⟩ := ne_zero_and_ne_zero_of_mul hgb
+  rw [m.degree_eq_zero_iff.mp h_deg_r_eq_0, support_C, ite_cond_eq_false _ _ (by simp [hr0])] at hr
+  specialize hr 0 (by simp) b b.2 h_b_ne_0
   specialize hg b
-  specialize h0sumg b b.2 hb
-  contrapose! hg
-  rw [m.degree_mul_of_right_mem_nonZeroDivisors hg <| hB ↑b (by simp)]
-  simp [h0sumg]
+  rw [m.degree_mul_of_right_mem_nonZeroDivisors h_gb_ne_0 (hB b b.2)] at hg
+  rw [← hg] at hr
+  simp at hr
 
 variable {m B} in
 theorem isRemainder_zero₀ {r : MvPolynomial σ R}
@@ -444,7 +392,7 @@ theorem isRemainder_finset₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial
     exact ⟨⟨g, h₁, h₂⟩, h₃⟩
 
 variable {m} in
-theorem isRemainder_finset₀₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
+theorem isRemainder_finset₁₀ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
     (hB' : ∀ b' ∈ B', m.leadingCoeff b' ∈ nonZeroDivisors _ ∨ b' = 0)
     (r : MvPolynomial σ R) :
     m.IsRemainder p B' r ↔
@@ -468,7 +416,7 @@ theorem isRemainder_finset₀₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynom
     exact ⟨⟨g, h₁, h₂⟩, h₃⟩
 
 variable {m} in
-theorem isRemainder_finset'₁ [NoZeroDivisors R] (p : MvPolynomial σ R)
+theorem isRemainder_finset₁' [NoZeroDivisors R] (p : MvPolynomial σ R)
     (B' : Finset (MvPolynomial σ R)) (r : MvPolynomial σ R) :
     m.IsRemainder p B' r ↔
       (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
@@ -498,15 +446,12 @@ theorem isRemainder_def'₁ [NoZeroDivisors R] (p : MvPolynomial σ R) (B : Set 
         ∀ b ∈ B, m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p ∧
         (p = 0 → g = 0)) ∧
       ∀ c ∈ r.support, ∀ g' ∈ B, g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
-  by_cases h : p ≠ 0
+  by_cases! h : p ≠ 0
   · simp [isRemainder_def', h]
-  push_neg at h
   rw [h]
   constructor
   · intro h'
-    simp [isRemainder_zero' h']
-    use 0
-    simp
+    refine ⟨⟨0, ?_, ?_⟩, ?_⟩ <;> simp [isRemainder_zero' h']
   · intro h'
     rw [isRemainder_def']
     aesop
@@ -536,7 +481,10 @@ lemma term_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
     by_contra h1eq0
     rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff s, h1eq0, mul_zero] at hs
     exact hs rfl
-  simp [MvPolynomial.mem_support_iff.mp hs]
+  simp? [MvPolynomial.mem_support_iff.mp hs] says
+    simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff,
+      MvPolynomial.mem_support_iff.mp hs, imp_false, Decidable.not_not, Set.mem_image,
+      exists_exists_and_eq_and, forall_eq', not_exists, not_and]
   intro b hb
   unfold MonomialOrder.IsRemainder at h
   apply h.2 s hs b hb
@@ -566,7 +514,9 @@ lemma monomial_notMem_span_leadingTerm {r : MvPolynomial σ R}
   intro s hs
   rw [span_leadingTerm_eq_span_monomial hB,
       ← Set.image_image (monomial · 1) _ _, mem_ideal_span_monomial_image]
-  simp
+  simp? says
+    simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, Classical.not_imp,
+      Set.mem_image, exists_exists_and_eq_and, and_imp, forall_eq', not_exists, not_and]
   split_ands
   · by_contra h1eq0
     rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff s, h1eq0, mul_zero] at hs
@@ -582,13 +532,12 @@ lemma monomial_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
     ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
   apply monomial_notMem_span_leadingTerm hB
   intro c hc b hb
-  have : Nontrivial R := by
-    rw [nontrivial_iff_exists_ne 0]
-    use 1
-    by_contra h1eq0
-    rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff c, h1eq0, mul_zero] at hc
-    exact hc rfl
-  refine h.2 c hc b hb (m.leadingCoeff_ne_zero_iff.mp (hB _ hb).ne_zero)
+  suffices Nontrivial R from h.2 c hc b hb (m.leadingCoeff_ne_zero_iff.mp (hB _ hb).ne_zero)
+  rw [nontrivial_iff_exists_ne 0]
+  use 1
+  by_contra h1eq0
+  rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff c, h1eq0, mul_zero] at hc
+  exact hc rfl
 
 variable {m} in
 lemma monomial_notMem_span_leadingTerm_of_isRemainder₀ {p r : MvPolynomial σ R}
@@ -610,25 +559,22 @@ lemma exists_degree_le_degree_of_isRemainder_zero
   classical
   rw [isRemainder_def''] at h
   rcases h with ⟨⟨g, B', h₁, hsum, h₃⟩, h₄⟩
-  simp at hsum
+  simp? at hsum says simp only [add_zero] at hsum
   have : m.degree p ∈ p.support := m.degree_mem_support hp
   rw [hsum] at this
   obtain ⟨b, hb⟩ := Finset.mem_biUnion.mp <| hsum.symm ▸ Finset.mem_of_subset support_sum this
   use b
-  constructor
-  · exact h₁ hb.1
-  · rcases hb with ⟨hb₁, hb₂⟩
-    have := h₃ b hb₁
-    obtain hgbne0 : g b ≠ 0 := by
-      contrapose! hb₂
-      simp [hb₂]
-    apply le_degree (m:=m) at hb₂
-    rw [mul_comm b] at this
-    apply le_antisymm this at hb₂
-    simp at hb₂
-    rw [degree_mul_of_right_mem_nonZeroDivisors hgbne0] at hb₂
-    · exact le_of_add_le_right (le_of_eq hb₂)
-    exact hB b (Set.mem_of_mem_of_subset hb₁ h₁)
+  refine ⟨h₁ hb.1, ?_⟩
+  rcases hb with ⟨hb₁, hb₂⟩
+  obtain hgbne0 : g b ≠ 0 := by
+    contrapose! hb₂
+    simp [hb₂]
+  apply le_degree (m:=m) at hb₂
+  apply le_antisymm (mul_comm b _ ▸ h₃ b hb₁) at hb₂
+  simp? at hb₂ says simp only [EmbeddingLike.apply_eq_iff_eq] at hb₂
+  rw [degree_mul_of_right_mem_nonZeroDivisors hgbne0] at hb₂
+  · exact le_of_add_le_right (le_of_eq hb₂)
+  exact hB b (Set.mem_of_mem_of_subset hb₁ h₁)
 
 variable {m} in
 lemma exists_degree_le_degree_of_isRemainder_zero₀
@@ -638,8 +584,7 @@ lemma exists_degree_le_degree_of_isRemainder_zero₀
     ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p := by
   rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
   convert m.exists_degree_le_degree_of_isRemainder_zero p hp (B \ {0}) ?_ h using 2
-  · simp
-    rw [and_assoc]
+  · simp [and_assoc]
   · simp_intro a b [or_iff_not_imp_right.mp (hB _ _)]
 
 end CommSemiring
@@ -688,7 +633,7 @@ lemma sub_mem_ideal_of_isRemainder_of_subset_ideal
   obtain ⟨⟨f₁, h_eq₁, h_deg₁⟩, h_remain₁⟩ := hr₁
   obtain ⟨⟨f₂, h_eq₂, h_deg₂⟩, h_remain₂⟩ := hr₂
   rw [← sub_eq_of_eq_add' h_eq₁, ← sub_eq_of_eq_add' h_eq₂]
-  simp
+  simp? says simp only [sub_sub_sub_cancel_left]
   apply Ideal.sub_mem I
   all_goals
     apply Ideal.sum_mem
