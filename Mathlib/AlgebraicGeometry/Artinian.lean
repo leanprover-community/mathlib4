@@ -101,10 +101,10 @@ lemma IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero
   have _ : IsNoetherianRing Γ(X,U) := IsLocallyNoetherian.component_noetherian U
   apply isArtinianRing_iff_krullDimLE_zero.mpr
   rw [Ring.KrullDimLE, Order.krullDimLE_iff, ← ringKrullDim, Nat.cast_zero,
-  ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
+    ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
   have Ft := Scheme.Hom.homeomorph (AlgebraicGeometry.IsAffineOpen.isoSpec U.2).hom
   change topologicalKrullDim (Spec Γ(X, U)) ≤ 0
-  rw[← IsHomeomorph.topologicalKrullDim_eq Ft Ft.isHomeomorph]
+  rw [← IsHomeomorph.topologicalKrullDim_eq Ft Ft.isHomeomorph]
   exact (topologicalKrullDim_subspace_le X U).trans h
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
