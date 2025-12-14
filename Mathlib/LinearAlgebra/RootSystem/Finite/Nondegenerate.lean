@@ -260,6 +260,9 @@ lemma rootForm_nondegenerate [P.IsRootSystem] :
   LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
     simpa using P.disjoint_rootSpan_ker_rootForm
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
+
 end IsDomain
 
 section Field
@@ -380,6 +383,9 @@ lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
 lemma rootForm_anisotropic [P.IsRootSystem] :
     P.RootForm.toQuadraticMap.Anisotropic :=
   fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by simp
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.RootSystem.rootForm_anisotropic := rootForm_anisotropic
 
 end LinearOrderedCommRing
 

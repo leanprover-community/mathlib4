@@ -204,6 +204,8 @@ protected lemma IsRootSystem.ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
 
+@[deprecated (since := "2025-12-14")] alias _root_.RootSystem.ext := IsRootSystem.ext
+
 private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulDivisors R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
@@ -254,6 +256,8 @@ def mk'' :
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
+
+@[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
 
 variable {p root coroot hp hs hsp} in
 lemma isRootSystem_mk'' (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :
