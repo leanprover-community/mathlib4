@@ -385,14 +385,10 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
                iSup_eq_bot, not_forall]
     obtain ⟨α, hα_root, hα_q⟩ := LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot q h₀ h₁
     have hα : α.IsNonZero := by grind
-    refine ⟨⟨α, hα_q, hα⟩, ?_⟩
-    intro h_eq_bot
+    refine ⟨⟨α, hα_q, hα⟩, fun h_eq_bot => ?_⟩
     obtain ⟨e, he_mem, he_ne⟩ := α.exists_ne_zero
-    have he_in_sl2 : e ∈ sl2SubmoduleOfRoot hα := by
-      rw [sl2SubmoduleOfRoot_eq_sup]
-      exact Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)
-    rw [Submodule.eq_bot_iff] at h_eq_bot
-    exact he_ne (h_eq_bot e he_in_sl2)
+    simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
+    exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have : IsSimple K L := inferInstance
   have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
   have c₂ : J ≠ ⊥ := r_j2
