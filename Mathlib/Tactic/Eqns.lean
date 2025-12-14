@@ -37,8 +37,7 @@ open Lean Elab
 
 syntax (name := eqns) "eqns" (ppSpace ident)* : attr
 
--- #adaptation_note: this will be renamed back to `NameMapExtension'` on `nightly-2025-12-14`.
-initialize eqnsAttribute : NameMapExtension' (Array Name) ←
+initialize eqnsAttribute : NameMapExtension (Array Name) ←
   registerNameMapAttribute {
     name  := `eqns
     descr := "Overrides the equation lemmas for a declaration to the provided list"

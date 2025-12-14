@@ -225,14 +225,6 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  #adaptation_note
-  /--
-  It may be possible to change this back to
-  `all_goals grind [mem_antidiagonal, mul_zero]`
-  on nightly-2025-12-14 (or ideally without needing the `mul_zero`),
-  but if not just remove this note.
-  The proof by `grind` is a hack, doing arithmetic reasoning (i.e. `mul_zero`) by e-matching.
-  -/
   · rintro ⟨i, j⟩ h1 h2
     rw [coeff_X_pow, if_neg, mul_zero]
     grind [mem_antidiagonal]
