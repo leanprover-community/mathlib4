@@ -726,8 +726,10 @@ theorem top_toSubring {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Modu
   rfl
 
 @[simp]
-theorem toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toSubmodule'.injective.eq_iff' top_toSubmodule
+lemma toAddSubmonoid_eq_top {S : NonUnitalSubalgebra R A} : S.toAddSubmonoid = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+lemma toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ := by simp
 
 @[simp]
 theorem toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
