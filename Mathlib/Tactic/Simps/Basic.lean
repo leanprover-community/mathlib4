@@ -415,8 +415,8 @@ structure, used by the `@[simps]` attribute.
 - The first argument is the list of names of the universe variables used in the structure
 - The second argument is an array that consists of the projection data for each projection.
 -/
-initialize structureExt : NameMapExtension' (List Name × Array ProjectionData) ←
-  registerNameMapExtension' (List Name × Array ProjectionData)
+initialize structureExt : NameMapExtension (List Name × Array ProjectionData) ←
+  registerNameMapExtension (List Name × Array ProjectionData)
 
 /-- Projection data used internally in `getRawProjections`. -/
 structure ParsedProjectionData where

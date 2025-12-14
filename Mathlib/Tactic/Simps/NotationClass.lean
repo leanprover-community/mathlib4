@@ -104,8 +104,8 @@ deriving Inhabited
 
 /-- `@[notation_class]` attribute. Note: this is *not* a `NameMapAttribute` because we key on the
 argument of the attribute, not the declaration name. -/
-initialize notationClassAttr : NameMapExtension' AutomaticProjectionData ← do
-  let ext ← registerNameMapExtension' AutomaticProjectionData
+initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
+  let ext ← registerNameMapExtension AutomaticProjectionData
   registerBuiltinAttribute {
     name := `notation_class
     descr := "An attribute specifying that this is a notation class. Used by @[simps]."
