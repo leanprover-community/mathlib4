@@ -190,7 +190,7 @@ def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : Strin
       newTot := newTot.push s.length
     if !s.startsWith orig then newTot := newTot.push s.length
     let rest := s.drop orig.length
-    if t.trim.isEmpty then if t == " " || t == "\n" then return newTot
+    if t.trimAscii.isEmpty then if t == " " || t == "\n" then return newTot
     if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
     return newTot.push rest.length
 
@@ -256,7 +256,7 @@ def _root_.Lean.Syntax.regString : Syntax → String
 
 /-- Replaces the leading and trailing substrings in a `SourceInfo` with `"".toSubstring`. -/
 def _root_.Lean.SourceInfo.removeSpaces : SourceInfo → SourceInfo
-  | .original _ p _ q => .original "".toSubstring p "".toSubstring q
+  | .original _ p _ q => .original "".toRawSubstring p "".toRawSubstring q
   | s => s
   --| .synthetic p q c => .synthetic p q c
   --| .none => .none
@@ -316,10 +316,10 @@ def validateSpaceAfter (orig pp : Substring.Raw) : Bool :=
       or\n  \
       onlineComment orig: {onlineComment orig}\n  \
       or\n  \
-      orig1 == \" \" && !orig2.trim.isEmpty: {orig1 == " " && !orig2.trim.isEmpty}"
+      orig1 == \" \" && !orig2.trim.isEmpty: {orig1 == " " && !orig2.trimAscii.isEmpty}"
   (pp.isEmpty && ((orig.takeWhile (·.isWhitespace)).isEmpty || onlineComment orig)) ||
     (
-      (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trim.isEmpty))
+      (!pp.isEmpty) && ((orig1 == "\n") || onlineComment orig || (orig1 == " " && !orig2.trimAscii.isEmpty))
     )
 /-
 #eval show TermElabM _ from do
@@ -440,10 +440,10 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : 
   let (_l1, t1) := i1.getLeadTrail
   --let (l2, t2) := i2.getLeadTrail
   --dbg_trace "removing '{s2}'"
-  let stripString := consumeIgnoring s2.toSubstring str invisible|>.getD default --str.drop s2.length
+  let stripString := consumeIgnoring s2.toRawSubstring str invisible|>.getD default --str.drop s2.length
   let trail := stripString.takeWhile (·.isWhitespace)
   --withVerbose (trail.isEmpty != t1.isEmpty) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
-  let isValid := validateSpaceAfter' t1.toSubstring trail
+  let isValid := validateSpaceAfter' t1.toRawSubstring trail
   --dbg_trace "{isValid} -- {(s1, s2)}: '{t1}', '{trail}'\n"
   let tot1 := if isValid then
                 tot
@@ -452,12 +452,12 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : 
                 addException tot t1 trail.toString stripString.startPos kind "invalid"
 --consumeIgnoring s2.toSubstring str invisible
   --if ((!str.toString.startsWith s1) || (!str.toString.startsWith s2)) then
-  if (((consumeIgnoring s1.toSubstring str invisible).isNone) ||
-      ((consumeIgnoring s2.toSubstring str invisible).isNone)) then
+  if (((consumeIgnoring s1.toRawSubstring str invisible).isNone) ||
+      ((consumeIgnoring s2.toRawSubstring str invisible).isNone)) then
     dbg_trace s!"something went wrong\n\
       --- All pretty {kind} ---\n{str.toString}\ndoes not start with either of the following\n\
       --- Orig ---\n'{s1.norm}'\n--- Pretty---\n'{s2.norm}'\n---\n{tot1}"
-    match consumeIgnoring s2.toSubstring str invisible with
+    match consumeIgnoring s2.toRawSubstring str invisible with
     | some leftOver =>
       (leftOver, addException tot1 t1 trail.toString stripString.startPos kind
         s!"wrong:\n'{s1}' or\n'{s2}' is not the start of\n'{str.toString}'")
@@ -467,7 +467,7 @@ def validateAtomOrId (tot : Array Exceptions) (kind : SyntaxNodeKind) (i1 _i2 : 
     ( --withVerbose (!isValid) s!"Discrepancy at {s1}, orig: '{t1}' pped: '{trail}'"
       stripString |>.dropWhile (·.isWhitespace), tot1)
 
-#guard validateSpaceAfter' " ".toSubstring " ".toSubstring
+#guard validateSpaceAfter' " ".toRawSubstring " ".toRawSubstring
 
 def exclusions : NameSet := NameSet.empty
   |>.insert ``Parser.Command.docComment
@@ -545,19 +545,19 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
       t
 
 #eval show Lean.Elab.Term.TermElabM _ from do
-  let s := "/- alsdkj la l    asklj  ew ljr  wer-/".toSubstring
-  let t := "/- alsdkj la l asklj ew ljr    wer-/ theorem".toSubstring
+  let s := "/- alsdkj la l    asklj  ew ljr  wer-/".toRawSubstring
+  let t := "/- alsdkj la l asklj ew ljr    wer-/ theorem".toRawSubstring
   guard <| (readWhile s t).toString == " theorem"
-  let t := "/- alsdkj la l asklj ew ljr    wer-/theorem".toSubstring
+  let t := "/- alsdkj la l asklj ew ljr    wer-/theorem".toRawSubstring
   guard <| (readWhile s t).toString == "theorem"
 
 #eval show Lean.Elab.Term.TermElabM _ from do
-  let s := "example".toSubstring
-  let t := "example := 0".toSubstring
+  let s := "example".toRawSubstring
+  let t := "example := 0".toRawSubstring
   guard <| (readWhile s t).toString == " := 0"
-  let t := ":= 0".toSubstring
-  guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
-  guard <| (readWhile (" := ".toSubstring) t).toString == "0"
+  let t := ":= 0".toRawSubstring
+  guard <| (readWhile (" :=".toRawSubstring) t).toString == " 0"
+  guard <| (readWhile (" := ".toRawSubstring) t).toString == "0"
 
 def _root_.Substring.Raw.toRange (s : Substring.Raw) : Lean.Syntax.Range where
   start := s.startPos
@@ -864,8 +864,8 @@ elab "#show_corr " cmd:command : command => do
   let orig := cmd.raw.getSubstring?.getD default
   let stxNoSpaces := cmd.raw.eraseLeadTrailSpaces
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let pp := pretty.toSubstring
-    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] cmd pretty.toSubstring
+    let pp := pretty.toRawSubstring
+    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] cmd pretty.toRawSubstring
     for (origPos, ppR) in corr do
       let ppPos := ppR.pos
       let origAtPos := {orig with startPos := origPos}
@@ -884,9 +884,9 @@ elab "#show_corr " cmd:command : command => do
       msgs := msgs.push (
         {fm.toPosition a with column := (fm.toPosition a).column + 1},
           b.pos,
-          "'".push (pretty.toSubstring.get (pretty.toSubstring.prev b.pos))
-            |>.push (pretty.toSubstring.get b.pos)
-            |>.push (pretty.toSubstring.get (pretty.toSubstring.next b.pos))
+          "'".push (pretty.toRawSubstring.get (pretty.toRawSubstring.prev b.pos))
+            |>.push (pretty.toRawSubstring.get b.pos)
+            |>.push (pretty.toRawSubstring.get (pretty.toRawSubstring.next b.pos))
             |>.push '\'',
           b.ok,
           b.bracket,
@@ -917,17 +917,17 @@ def processAtomOrIdent {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOp
     then
       -- Case `read = " "` but we do not want a space after
       if forceNoSpaceAfter.contains k then
-        ("".toSubstring, read.drop 1, {pos := (read.drop 1).startPos, space := false})
+        ("".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos, space := false})
       else
-        (" ".toSubstring, read.drop 1, {pos := (read.drop 1).startPos})
+        (" ".toRawSubstring, read.drop 1, {pos := (read.drop 1).startPos})
     else
     -- Case `read = ""` but we want a space after anyway
     if forceSpaceAfter.contains k || forceSpaceAfter'.contains k then
       --dbg_trace "adding a space at '{read}'\n"
-      (" ".toSubstring, read, {pos := read.startPos})
+      (" ".toRawSubstring, read, {pos := read.startPos})
     -- Case `read = ""` and we follow the pretty-printer recommendation
     else
-      ("".toSubstring, read, {pos := read.startPos, space := false})
+      ("".toRawSubstring, read, {pos := read.startPos, space := false})
   pure (AfterAtom.mk next strNew, ppInstr)
 
 /--
@@ -951,7 +951,7 @@ def insertSpacesAux {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptio
         s!"* ident '{rawVal}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
     pure (.ident (modifyTail info next) rawVal val pre, strNew)
   | k, .atom info val, str => do
-    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toSubstring str
+    let (⟨next, strNew⟩, _) ← processAtomOrIdent verbose? (k.push (.str `atom val)) val.toRawSubstring str
     if false then
       dbg_trace
         s!"* atom '{val}'\nStr: '{str}'\nNxt: '{next}'\nNew: '{strNew}'\n"
@@ -981,7 +981,7 @@ In particular, it erases all comments embedded in `SourceInfo`s.
 def insertSpaces (verbose? : Bool) (stx : Syntax) : CommandElabM (Option Syntax) := do
   let stxNoSpaces := stx.eraseLeadTrailSpaces
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let withSpaces ← insertSpacesAux verbose? #[stx.getKind] stx pretty.toSubstring
+    let withSpaces ← insertSpacesAux verbose? #[stx.getKind] stx pretty.toRawSubstring
     return withSpaces.1
   else return none
 
