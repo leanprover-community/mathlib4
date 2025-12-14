@@ -178,7 +178,7 @@ theorem negOnePow_succAbove_add_predAbove {n : ℕ} (i : Fin (n + 2)) (j : Fin (
     Int.negOnePow ((i.succAbove j : ℤ) + (j.predAbove i : ℤ)) = Int.negOnePow (i + j + 1 : ℕ) := by
   rcases lt_or_ge j.castSucc i with hji | hij
   · have : 0 < (i : ℕ) := (Nat.zero_le j).trans_lt hji
-    rw [succAbove_of_castSucc_lt _ _ hji, coe_castSucc, predAbove_of_castSucc_lt _ _ hji, coe_pred,
+    rw [succAbove_of_castSucc_lt _ _ hji, val_castSucc, predAbove_of_castSucc_lt _ _ hji, val_pred,
       Int.ofNat_add_ofNat, ← Nat.add_sub_assoc this ↑j, Int.negOnePow_sub_eq_negOnePow_add,
       Nat.add_comm i, Int.ofNat_add_ofNat]
     omega
@@ -301,7 +301,7 @@ theorem negOnePow_smul_apply_cons {n : ℕ} (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
   | zero => simp
   | succ i ih =>
     rw [Fin.insertNth_succ, f.map_swap _ Fin.castSucc_lt_succ.ne, ← ih, Fin.val_succ,
-      Fin.coe_castSucc, Int.natCast_add, add_comm i.val.cast, Int.negOnePow_add, Int.natCast_one,
+      Fin.val_castSucc, Int.natCast_add, add_comm i.val.cast, Int.negOnePow_add, Int.natCast_one,
       Int.negOnePow_one, neg_one_mul, Units.neg_smul]
 
 lemma negOnePow_smul_apply_removeNth_add_eq_zero_of_eq {n : ℕ}
@@ -433,7 +433,7 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
       simp only [add_lie]
       rw [Fin.cons_eq_update_cons 0 (⁅x, g j⁆ + ⁅y, g j⁆), Fin.cons_eq_update_cons 0 ⁅x, g j⁆,
         Fin.cons_eq_update_cons 0 ⁅y, g j⁆, AlternatingMap.map_update_add]
-    · simp_all [Function.update]
+    · simp_all only [Function.update, ↓reduceDIte, eq_rec_constant, dite_eq_ite]
       by_cases hjk : j = k
       · have (z : L) : (k.removeNth (Function.update g k z)) = (k.removeNth g) := by
           convert Fin.removeNth_update k z g -- how to add DecidableEq instance?

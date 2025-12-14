@@ -14,6 +14,8 @@ We introduce a class for making an abstract exponential function.
 
 -/
 
+@[expose] public section
+
 open Finset Nat
 open CauSeq Finset IsAbsoluteValue
 

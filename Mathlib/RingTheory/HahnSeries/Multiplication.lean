@@ -603,8 +603,6 @@ theorem coeff_mul_order_add_order (x y : R⟦Γ⟧) :
 
 @[deprecated (since := "2025-01-31")] alias mul_coeff_order_add_order := coeff_mul_order_add_order
 
-  -- Finset.addAntidiagonal_min_add_min, Finset.sum_singleton]
-
 theorem orderTop_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).orderTop = x.orderTop + y.orderTop := by
   by_cases hx : x = 0; · simp [hx]
@@ -642,20 +640,6 @@ theorem order_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCo
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
-
-/-! delete!
-theorem order_mul_single_of_nonzero_divisor {g : Γ} {r : R} (hr : ∀ (s : R), r * s = 0 → s = 0)
-    {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
-  have hR : ∃ (y : R), y ≠ 0 := Exists.intro (x.leadingCoeff) (leadingCoeff_ne_iff.mpr hx)
-  have hrne : r ≠ 0 := by
-    by_contra hr'
-    let y := Exists.choose hR
-    exact (Exists.choose_spec hR) (hr y (mul_eq_zero_of_left hr' y))
-  have hrx : ((single g) r).leadingCoeff * x.leadingCoeff ≠ 0 := by
-    rw [leadingCoeff_of_single]
-    exact fun hrx' => (leadingCoeff_ne_iff.mpr hx) (hr x.leadingCoeff hrx')
-  rw [order_mul_of_nonzero hrx, order_single hrne]
--/
 theorem leadingCoeff_mul_of_nonzero {x y : R⟦Γ⟧} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
     (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
   simp only [leadingCoeff_eq, order_mul_of_nonzero h, coeff_mul_order_add_order]
@@ -1104,16 +1088,6 @@ def UnitSingle {g : Γ} (hg : IsAddUnit g) {r : R} (hr : IsUnit r) : (HahnSeries
   val_inv := by simp
   inv_val := by simp
 
-/-!
-theorem single_isUnit_iff (g : Γ) (r : R) : IsUnit (single g r) ↔ IsAddUnit g ∧ IsUnit r := by
-  constructor
-  intro ⟨⟨u, i, hui, hiu⟩, h⟩
-  rw [Units.val_mk] at h
-  rw [h] at hui
-  have hc : ((single g) r * i).coeff 0 = 1 := by
-    rw [hui, one_coeff, if_pos rfl]
--/
-
 end Semiring
 
 end HahnSeries
@@ -1401,14 +1375,6 @@ theorem equivDomainModuleHom_apply_coeff (x : HahnModule Γ₁ R V) (g : Γ₂) 
     ((of R).symm (equivDomainModuleHom f f₁ x)).coeff g =
       ((of R).symm x).coeff (EquivLike.inv f₁ g) := by
   rfl
-
-/-!
-@[simp]
-theorem equivDomainModuleHom_symm_apply' :
-    (equivDomainModuleHom (R := R) f f₁).symm =
-      equivDomainModuleHom (EquivLike.inv f) := by
-  rfl
--/
 
 @[simp]
 theorem equivDomainModuleHom_symm_apply_coeff (x : HahnModule Γ₂ R V) (g : Γ₁) :
