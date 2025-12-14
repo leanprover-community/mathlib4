@@ -40,9 +40,8 @@ def EdgeLabeling (G : SimpleGraph V) (K : Type*) :=
 instance [DecidableEq V] [Fintype G.edgeSet] [Fintype K] : Fintype (EdgeLabeling G K) :=
   Pi.instFintype
 
-instance [Fintype G.edgeSet] [Fintype K] : Finite (EdgeLabeling G K) := by
-  classical
-  exact Finite.of_fintype _
+instance [Finite G.edgeSet] [Finite K] : Finite (EdgeLabeling G K) :=
+  Pi.finite
 
 instance [Nonempty K] : Nonempty (EdgeLabeling G K) :=
   Pi.instNonempty
@@ -53,8 +52,8 @@ instance [Inhabited K] : Inhabited (EdgeLabeling G K) :=
 instance [Subsingleton K] : Subsingleton (EdgeLabeling G K) :=
   Pi.instSubsingleton
 
-instance [Inhabited G.edgeSet] [Nontrivial K] : Nontrivial (EdgeLabeling G K) :=
-  Pi.nontrivial
+instance [Nonempty G.edgeSet] [Nontrivial K] : Nontrivial (EdgeLabeling G K) :=
+  Function.nontrivial
 
 instance [Unique K] : Unique (EdgeLabeling G K) :=
   Pi.unique
