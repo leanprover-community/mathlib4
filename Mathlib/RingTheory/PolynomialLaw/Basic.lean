@@ -603,6 +603,7 @@ variable {R : Type u} [CommSemiring R]
   (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 
 /-- Extension of `MvPolynomial.comp_toFun'` -/
+@[simp]
 theorem toFun_comp (S : Type*) [CommSemiring S] [Algebra R S] :
     (g.comp f).toFun S = (g.toFun S).comp (f.toFun S) := by
   ext t
