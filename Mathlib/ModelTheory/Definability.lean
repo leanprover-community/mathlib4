@@ -303,9 +303,9 @@ theorem Definable.singleton_of_mem {a : M} {A : Set M} (h : a ∈ A) :
     A.Definable₁ L {a} :=
   (Definable.singleton L a).mono (Set.singleton_subset_iff.mpr h)
 
-/-- The 2-dimensional diagonal is ∅-definable. -/
-theorem Definable.diagonal :
-    (∅ : Set M).Definable₂ L {(x,y) : M × M | x = y} := by
+/-- The 2-dimensional diagonal is definable independent from parameters. -/
+theorem Definable.diagonal (A : Set M) :
+    A.Definable₂ L {(x,y) : M × M | x = y} := by
   exists (Term.var 0).equal (Term.var 1)
 
 end Set
@@ -506,9 +506,7 @@ lemma equalizer {f g : (α → M) → M}
     fin_cases i
     · exact hf
     · exact hg
-  have hDiag : A.Definable L { v : Fin 2 → M | v 0 = v 1 } :=
-    Set.Definable.mono (Set.Definable.diagonal L) (empty_subset A)
-  convert hDiag.preimage_map hF
+  convert (Definable.diagonal L A).preimage_map hF
 
 /-- The fiber of a definable function is definable. -/
 lemma fiber {f : (α → M) → M} (hf : DefinableFun L A f)
