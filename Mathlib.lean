@@ -12828,6 +12828,7 @@ public import Mathlib.Probability.Distributions.Exponential
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.CharFun
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
