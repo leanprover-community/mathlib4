@@ -589,7 +589,7 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
 lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
   refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
   · simp
-    cutsat
+    lia
   · simp [Fin.tail]
 
 @[simp]

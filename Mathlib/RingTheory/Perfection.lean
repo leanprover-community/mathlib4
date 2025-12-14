@@ -194,14 +194,14 @@ theorem coeff_surjective (h : Function.Surjective (frobenius R p)) (n : ℕ) :
       choose x hx using h xk
       use x
   · intro m
-    obtain (h1 | h1 | h1) : n ≤ m ∨ n = m + 1 ∨ ¬ n ≤ m + 1 := by cutsat
-    · have h1' : n ≤ m + 1 := by cutsat
+    obtain (h1 | h1 | h1) : n ≤ m ∨ n = m + 1 ∨ ¬ n ≤ m + 1 := by lia
+    · have h1' : n ≤ m + 1 := by lia
       simp only [h1', ↓reduceDIte, h1, Nat.leRec_succ, ← frobenius_def]
       exact Classical.choose_spec (h _)
     · subst h1
       simp [← frobenius_def]
-    · have h1' : ¬ n ≤ m := by cutsat
-      have : n - m = (n - (m + 1)) + 1 := by cutsat
+    · have h1' : ¬ n ≤ m := by lia
+      have : n - m = (n - (m + 1)) + 1 := by lia
       simp [h1, h1', this, pow_succ, pow_mul]
   · simp
 

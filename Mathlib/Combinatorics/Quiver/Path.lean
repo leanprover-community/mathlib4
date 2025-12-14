@@ -268,8 +268,9 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with
     | _, _, .nil, .nil => isTrue rfl
-    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
-    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .nil, .cons _ _
+    | _, _, .cons _ _, .nil =>
+      isFalse fun h => Quiver.Path.noConfusion rfl .rfl .rfl .rfl (heq_of_eq (Subtype.mk.inj h))
     | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>

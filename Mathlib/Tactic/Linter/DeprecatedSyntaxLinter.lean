@@ -185,7 +185,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
-        if trailing.toString.trimLeft.isEmpty then
+        if trailing.toString.trimAsciiStart.isEmpty then
           rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")

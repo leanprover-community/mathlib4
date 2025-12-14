@@ -82,3 +82,4 @@ end Mathlib.Tactic.FieldSimp
 
 /-! We register `field` with the `hint` tactic. -/
 register_hint 850 field
+register_try?_tactic (priority := 850) field

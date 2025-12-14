@@ -52,7 +52,7 @@ def mkMapping (s₁ s₂ : String) : Mapping := Id.run do
   let mut toNormal := {}
   let mut toSpecial := {}
   assert! s₁.length == s₂.length
-  for sp in s₁.toSubstring, nm in s₂ do
+  for sp in s₁.toRawSubstring, nm in s₂ do
     assert! !toNormal.contains sp
     assert! !toSpecial.contains nm
     toNormal := toNormal.insert sp nm

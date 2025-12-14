@@ -102,7 +102,7 @@ to catch any regressions.
 -/
 register_linter_set linter.nightlyRegressionSet :=
   linter.tacticAnalysis.regressions.linarithToGrind
-  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.omegaToLia
   linter.tacticAnalysis.regressions.ringToGrind
   linter.tacticAnalysis.regressions.tautoToGrind
 

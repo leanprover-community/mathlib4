@@ -247,10 +247,12 @@ compile_inductive% PEmpty
 compile_inductive% Sum
 compile_inductive% PSum
 compile_inductive% And
-compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma
 compile_inductive% Option
+-- False.rec and Empty.rec already have special compiler support
+compile_def% False.recOn
+compile_def% Empty.recOn
 
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.

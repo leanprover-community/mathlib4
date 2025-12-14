@@ -55,14 +55,14 @@ lemma Truncated.morphismProperty_eq_top
     · obtain _ | b := b
       · exact (h₁ (fun _ ↦ ⟨0, Subsingleton.elim (α := Fin 1) _ _⟩)).elim
       · obtain ⟨i, g', hf'⟩ := eq_comp_δ_of_not_surjective _ h₁
-        obtain rfl : f = (g' : _ ⟶ ⟨mk b, by dsimp; omega⟩) ≫ δ i := hf'
+        obtain rfl : f = (g' : _ ⟶ ⟨mk b, by dsimp; lia⟩) ≫ δ i := hf'
         exact W.comp_mem _ _ (hc _ _ _ _ _ (by lia))
           (δ_mem _ (by lia) _)
     by_cases h₂ : Function.Injective f'.toOrderHom; swap
     · obtain _ | a := a
       · exact (h₂ (Function.injective_of_subsingleton (α := Fin 1) _)).elim
       · obtain ⟨i, g', hf'⟩ := eq_σ_comp_of_not_injective _ h₂
-        obtain rfl : f = (by exact σ i) ≫ (g' : ⟨mk a, by dsimp; omega⟩ ⟶ _) := hf'
+        obtain rfl : f = (by exact σ i) ≫ (g' : ⟨mk a, by dsimp; lia⟩ ⟶ _) := hf'
         exact W.comp_mem _ _ (σ_mem _ (by lia) _) (hc _ _ _ _ _ (by lia))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂

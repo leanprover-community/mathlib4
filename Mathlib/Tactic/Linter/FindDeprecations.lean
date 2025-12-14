@@ -77,7 +77,7 @@ after the imports of `fname`.
 def addAfterImports (fname s : String) : CommandElabM String := do
   let pos ← getPosAfterImports fname
   let file ← IO.FS.readFile fname
-  let fileSubstring := file.toSubstring
+  let fileSubstring := file.toRawSubstring
   return {fileSubstring with stopPos := pos}.toString ++ s ++
     {fileSubstring with startPos := pos}.toString
 
@@ -136,6 +136,7 @@ def deprecatedHashMap (oldDate newDate : String) :
       -- However, while this works locally, CI throws the error ` unknown module prefix 'Mathlib'`
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
+          |>.copy
       --let lean ← findLean searchPath modName
       let file ← IO.FS.readFile lean
       let fm := FileMap.ofString file
@@ -155,7 +156,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 public -- for use in unit tests, but perhaps useful more broadly
 def removeRanges (file : String) (rgs : Array Lean.Syntax.Range) : String := Id.run do
   let mut curr : String.Pos.Raw := 0
-  let mut fileSubstring := file.toSubstring
+  let mut fileSubstring := file.toRawSubstring
   let mut tot := ""
   let last := fileSubstring.stopPos
   for next in rgs.push ⟨last, last⟩ do
@@ -188,7 +189,7 @@ that the script here is parsing.
 -/
 public -- for use in unit tests, but perhaps useful more broadly
 def parseLine (line : String) : Option (List String.Pos.Raw) :=
-  match (line.dropRight 1).splitOn ": [" with
+  match (line.dropEnd 1).copy.splitOn ": [" with
   | [_, rest] =>
     let nums := rest.splitOn ", "
     if nums == [""] then some [] else
@@ -221,9 +222,9 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
   -- corresponding position in the original file.
   -- Since we added the modification right after the imports, the command positions of the old file
   -- are always smaller than the command positions of the new file.
-  let offset := option.toSubstring.stopPos
+  let offset := option.toRawSubstring.stopPos
   let fileWithOptionAdded ← addAfterImports fname option
-  let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
+  let fname_with_option := (fname.dropEnd ".lean".length).copy ++ "_with_option.lean"
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>

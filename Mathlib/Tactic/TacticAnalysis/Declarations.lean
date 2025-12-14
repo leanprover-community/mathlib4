@@ -17,16 +17,6 @@ public meta import Lean.Elab.Command
 This file defines passes to run from the tactic analysis framework.
 -/
 
-
--- This is a temporary shim that can be replaced on `v4.27.0-rc1`.
-public meta section
-
-/-- `lia` is an alias for the `cutsat` tactic, which solves linear integer arithmetic goals. -/
-syntax (name := tacticLia) "lia" : tactic
-macro_rules | `(tactic| lia) => `(tactic| cutsat)
-
-end
-
 public meta section
 
 open Lean Meta
@@ -156,22 +146,22 @@ register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
 def ringToGrindRegressions := grindReplacementWith "ring" `Mathlib.Tactic.RingNF.ring
 
 /-- Debug `lia` by identifying places where it does not yet supersede `omega`. -/
-register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
+register_option linter.tacticAnalysis.regressions.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
-def omegaToCutsatRegressions :=
+@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToLia,
+  inherit_doc linter.tacticAnalysis.regressions.omegaToLia]
+def omegaToLiaRegressions :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := false) (reportFailure := true)
 
 /-- Report places where `omega` can be replaced by `lia`. -/
-register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
+register_option linter.tacticAnalysis.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.omegaToCutsat]
-def omegaToCutsat :=
+@[tacticAnalysis linter.tacticAnalysis.omegaToLia,
+  inherit_doc linter.tacticAnalysis.omegaToLia]
+def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
@@ -358,11 +348,11 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
             -- Extract just the tactic name, ignoring trailing comments/whitespace
             -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
             let oldTacticPP := (← try
-              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
+              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
             catch _ =>
               return i.tacI.stx.reprint.getD "???")
             let newTacticPP ← label.getDM (try
-              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim
+              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy
             catch _ =>
               return tac.raw.reprint.getD "???")
             -- Check if this is a self-replacement (tactic replacing itself)
