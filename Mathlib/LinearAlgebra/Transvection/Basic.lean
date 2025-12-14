@@ -496,10 +496,10 @@ variable {f : Module.Dual R V} {v : V} (hfv : f v = 0)
 def transvection : SpecialLinearGroup R V :=
   ⟨LinearEquiv.transvection hfv, LinearEquiv.transvection.det hfv⟩
 
+@[simp]
 theorem transvection.apply (x : V) :
     transvection hfv x = x + f x • v := rfl
 
-@[simp]
 theorem transvection.coe_toLinearEquiv :
     (transvection hfv : V ≃ₗ[R] V) = .transvection hfv :=
   rfl
@@ -509,6 +509,12 @@ theorem transvection.inv (hfv' : f (-v) = 0 := by simp [hfv]) :
   rw [← Subtype.coe_inj,
     show (transvection hfv)⁻¹ = (LinearEquiv.transvection hfv).symm from by rfl,
     coe_toLinearEquiv, LinearEquiv.transvection.symm_eq hfv _]
+
+@[simp]
+theorem transvection.inv_apply (x : V) :
+    (transvection hfv)⁻¹ x = x - f x • v := by
+  rw [transvection.inv]
+  simp [transvection.coe_toLinearEquiv, LinearMap.transvection.apply, ← sub_eq_add_neg]
 
 variable (R V) in
 /-- The set of transvections in the special linear group -/
