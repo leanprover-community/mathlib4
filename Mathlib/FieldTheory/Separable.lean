@@ -462,7 +462,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 

@@ -501,7 +501,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits ((cyclotomic n K).map (algebraMap K L)) := by
-  refine (splits_X_pow_sub_one K L hS).splits_of_dvd
+  refine (splits_X_pow_sub_one K L hS).of_dvd
     (map_ne_zero (X_pow_sub_C_ne_zero (NeZero.pos _) _)) ((map_dvd_map' _).mpr ?_)
   use ∏ i ∈ n.properDivisors, Polynomial.cyclotomic i K
   rw [(eq_cyclotomic_iff (NeZero.pos _) _).1 rfl]

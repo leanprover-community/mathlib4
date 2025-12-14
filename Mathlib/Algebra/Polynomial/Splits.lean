@@ -142,17 +142,17 @@ alias Splits.def := splits_iff_splits
 alias splits_of_splits_mul := splits_mul_iff
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_of_dvd := Splits.splits_of_dvd
+alias splits_of_splits_of_dvd := Splits.of_dvd
 
-@[deprecated "Use `Splits.splits_of_dvd` directly." (since := "2025-11-30")]
+@[deprecated "Use `Splits.of_dvd` directly." (since := "2025-11-30")]
 theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0)
     (hf : Splits f) : Splits (EuclideanDomain.gcd f g) :=
-  Splits.splits_of_dvd hf hf0 <| EuclideanDomain.gcd_dvd_left f g
+  Splits.of_dvd hf hf0 <| EuclideanDomain.gcd_dvd_left f g
 
-@[deprecated "Use `Splits.splits_of_dvd` directly." (since := "2025-11-30")]
+@[deprecated "Use `Splits.of_dvd` directly." (since := "2025-11-30")]
 theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
     (hg : Splits g) : Splits (EuclideanDomain.gcd f g) :=
-  Splits.splits_of_dvd hg hg0 <| EuclideanDomain.gcd_dvd_right f g
+  Splits.of_dvd hg hg0 <| EuclideanDomain.gcd_dvd_right f g
 
 @[deprecated (since := "2025-11-30")]
 alias degree_eq_one_of_irreducible_of_splits := Splits.degree_eq_one_of_irreducible
