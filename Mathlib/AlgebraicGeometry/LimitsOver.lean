@@ -30,7 +30,7 @@ variable (P : MorphismProperty Scheme.{u})
 
 section Over
 
-variable {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ Over S)
+variable {S : Scheme.{u}} {J : Type*} [Category* J] (F : J ⥤ Over S)
   [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
   [(F ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
   [Quiver.IsThin J] [Small.{u} J]
@@ -64,7 +64,7 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
   · simpa
   · simpa
 
-variable [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+variable [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category* J] (F : J ⥤ P.Over ⊤ S)
   [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
   [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
   [Quiver.IsThin J] [Small.{u} J]

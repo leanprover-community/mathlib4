@@ -85,7 +85,7 @@ noncomputable def colimit (F : J ⥤ C) [HasColimit F] :
 colimit presentations of `F(X)`. -/
 @[simps]
 noncomputable
-def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
+def map (P : ColimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : ColimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   ι := Functor.whiskerRight P.ι F ≫ (F.constComp _ _).hom
@@ -110,7 +110,7 @@ def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentat
 /-- Change the index category of a colimit presentation. -/
 @[simps]
 noncomputable
-def reindex (P : ColimitPresentation J X) {J' : Type*} [Category J'] (F : J' ⥤ J) [F.Final] :
+def reindex (P : ColimitPresentation J X) {J' : Type*} [Category* J'] (F : J' ⥤ J) [F.Final] :
     ColimitPresentation J' X where
   diag := F ⋙ P.diag
   ι := F.whiskerLeft P.ι
@@ -166,7 +166,7 @@ noncomputable def limit (F : J ⥤ C) [HasLimit F] :
 limit presentations of `F(X)`. -/
 @[simps]
 noncomputable
-def map (P : LimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
+def map (P : LimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : LimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   π := (F.constComp _ _).inv ≫ Functor.whiskerRight P.π F
@@ -191,7 +191,7 @@ def ofIso (P : LimitPresentation J X) {Y : C} (e : X ≅ Y) : LimitPresentation 
 /-- Change the index category of a limit presentation. -/
 @[simps]
 noncomputable
-def reindex (P : LimitPresentation J X) {J' : Type*} [Category J'] (F : J' ⥤ J) [F.Initial] :
+def reindex (P : LimitPresentation J X) {J' : Type*} [Category* J'] (F : J' ⥤ J) [F.Initial] :
     LimitPresentation J' X where
   diag := F ⋙ P.diag
   π := F.whiskerLeft P.π
