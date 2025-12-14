@@ -105,7 +105,7 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
     fundamentalDomain (b.reindex e) = fundamentalDomain b := by
   ext
   simp only [mem_fundamentalDomain, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, Set.mem_Ico]
-  exact Iff.symm (Equiv.forall_congr_left e)
+  exact Iff.symm e.forall_congr_left
 
 variable [IsStrictOrderedRing K]
 

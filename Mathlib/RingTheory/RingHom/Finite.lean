@@ -47,8 +47,7 @@ lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
   refine IsStableUnderBaseChange.mk finite_respectsIso ?_
   simp only [finite_algebraMap]
-  exact fun ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] a ↦
-    Module.Finite.base_change R S T
+  exact fun R S T _ _ _ _ _ _ ↦ Module.Finite.base_change R S T
 
 end RingHom
 
