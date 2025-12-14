@@ -26,7 +26,7 @@ local property of this form.
 
 * `Manifold.LocalSourceTargetPropertyAt` captures a local property of the above form:
   for each `f : M → N`, and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either
-  safisfied or not.
+  satisfied or not.
   We ask that the property be stable under congruence and under restriction of `φ`.
 * `Manifold.LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
   defines a local property of functions of the above shape:
@@ -57,7 +57,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
 
 namespace Manifold
 
-/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. to compatible
+/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. compatible
 choices of both a chart on `M` and `N`. Currently, we ask for the property being stable under
 restriction of the domain chart, and local in the target.
 

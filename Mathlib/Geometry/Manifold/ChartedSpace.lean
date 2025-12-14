@@ -532,8 +532,8 @@ end Groupoid
 /-! ### Charted spaces -/
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
-homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
-cover the whole space. We express the covering property by choosing for each `x` a member
+homeomorphisms taking values in a model space `H`, called charts, such that the domains of the
+charts cover the whole space. We express the covering property by choosing for each `x` a member
 `chartAt x` of the atlas containing `x` in its source: in the smooth case, this is convenient to
 construct the tangent bundle in an efficient way.
 The model space is written as an explicit parameter as there can be several model spaces for a
