@@ -335,7 +335,7 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
-  -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
+  -- Choose diffeomorphisms φ_x which coincide with `f` near `x`.
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.

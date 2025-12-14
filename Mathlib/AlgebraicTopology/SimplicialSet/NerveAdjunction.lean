@@ -160,14 +160,14 @@ lemma naturalityProperty_eq_top :
       · ext; apply hδ'₀ f₀ f₁ hδ₁ hδ₀ hY
       · ext; apply hδ'₁ f₀ f₁ hδ₁ hδ₀ H hY
       · ext; apply hδ'₂ f₀ f₁ hδ₁ hδ₀ hY
-    · cutsat
+    · lia
   · obtain _ | _ | n := n
     · fin_cases i
       ext; apply hσ
     · fin_cases i
       · ext; apply hσ'₀ f₀ f₁ hδ₁ hδ₀ hσ hY
       · ext; apply hσ'₁ f₀ f₁ hδ₁ hδ₀ hσ hY
-    · cutsat
+    · lia
 
 end liftOfStrictSegal
 

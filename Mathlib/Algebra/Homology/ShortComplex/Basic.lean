@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 variable (C) in
