@@ -20,7 +20,7 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 
 /-!
 
-# Star algebra equivalences on matrices are unitary inner
+# Star algebra equivalences on matrices are unitarily inner
 
 -/
 
