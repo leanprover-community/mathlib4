@@ -3,6 +3,8 @@ Copyright (c) 2025 0xTerencePrime. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: 0xTerencePrime
 -/
+module
+
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 import Mathlib.Data.Set.Card
