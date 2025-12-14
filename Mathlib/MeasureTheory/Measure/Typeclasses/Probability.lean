@@ -108,7 +108,11 @@ instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-@[simp] lemma probReal_univ : μ.real .univ = 1 := by simp [Measure.real]
+@[simp] lemma probReal_univ : μ.real univ = 1 := by simp [Measure.real]
+
+lemma isProbabilityMeasure_iff_real {μ : Measure α} :
+    IsProbabilityMeasure μ ↔ μ.real univ = 1 := by
+  refine ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
