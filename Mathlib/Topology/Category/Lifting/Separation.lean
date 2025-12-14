@@ -55,9 +55,7 @@ Foobars, barfoos
 -/
 
 universe w v u
-open CategoryTheory
-open TopCat
-open Limits Topology TopologicalSpace Set
+open CategoryTheory TopCat Limits Topology TopologicalSpace Set HasLiftingProperty
 
 @[simp]
 lemma Concrete.HasPushout.range_inl_union_range_inr
