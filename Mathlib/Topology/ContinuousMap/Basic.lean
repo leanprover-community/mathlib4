@@ -101,6 +101,8 @@ instance [Inhabited β] : Inhabited C(α, β) :=
 
 variable {α}
 
+theorem mk_apply (f : α → β) (hf : Continuous f) (a : α) : ContinuousMap.mk f hf a = f a := rfl
+
 @[simp]
 theorem id_apply (a : α) : ContinuousMap.id α a = a :=
   rfl
@@ -155,6 +157,10 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+
+@[simps]
+def subtypeVal {X : Type*} [TopologicalSpace X] {p : X → Prop} : C({ x : X // p x }, X) where
+  toFun := (↑)
 
 /-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
 `e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
@@ -304,6 +310,14 @@ def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
   ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ ↦
     (map_continuousAt f _).restrictPreimage⟩
 
+/-- Given a function `f : α → β` s.t. `MapsTo f s t`, if `f` is continuous on `s` then `f` can
+be lifted into a continuous map from `s` to `t`. -/
+@[simps -fullyApplied]
+def mapsTo (f : α → β) (s : Set α) (t : Set β) (h : Set.MapsTo f s t) (hf : ContinuousOn f s)
+    : C(s, t) where
+  toFun := Set.MapsTo.restrict f s t h
+  continuous_toFun := ContinuousOn.mapsToRestrict hf _
+
 end Restrict
 
 section mkD
@@ -379,6 +393,12 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [restrict_apply, liftCover_coe]
+
+lemma liftCover_apply
+    {i : ι} (x : α) (hxi : x ∈ S i) :
+    ContinuousMap.liftCover S φ hφ hS x = φ i ⟨x, hxi⟩ := by
+  change (ContinuousMap.liftCover S φ hφ hS) (Subtype.mk x hxi) = φ i ⟨x, hxi⟩
+  rw [ContinuousMap.liftCover_coe]
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
