@@ -108,9 +108,9 @@ lemma IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
-  fun ⟨_,_⟩ => by
+  fun ⟨_,_⟩ ↦
     have h : topologicalKrullDim X ≤ 0 := topologicalKrullDim_zero_of_discreteTopology X
-    exact IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero h⟩
+    IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero h⟩
 
 /-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
 @[mk_iff]
