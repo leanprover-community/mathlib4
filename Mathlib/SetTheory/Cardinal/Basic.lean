@@ -623,7 +623,7 @@ theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n ↦ #α ^ n :=
     #(List α) = #(Σ n, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n ↦ #α ^ n := by simp
 
-theorem sum_pow_zero : sum (fun n ↦ (0 : Cardinal) ^ n) = 1 := by
+theorem sum_zero_pow : sum (fun n ↦ (0 : Cardinal) ^ n) = 1 := by
   rw [← mk_eq_zero (α := PEmpty), ← mk_list_eq_sum_pow, mk_eq_one]
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
