@@ -298,21 +298,11 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
-  rw [card_eq_sum_ones, range_succ_eq_Icc_zero,
-    ← add_sum_erase (a := 2) _ _ (by simp [prime_two, le_floor hx])]
-  have : {x ∈ Icc 0 ⌊x⌋₊ | Nat.Prime x}.erase 2 = {x ∈ Ioc 2 ⌊x⌋₊ | Nat.Prime x} := by
-    ext
-    constructor <;> intro h
-    · simp_all only [mem_erase, mem_filter, mem_Icc, _root_.zero_le, true_and, mem_Ioc,
-      and_true]
-      exact lt_of_le_of_ne h.2.2.two_le h.1.symm
-    · grind
-  rw [this, sum_filter]
+  rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
   push_cast
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n => log n)
-  trans 1 + ∑ n ∈ Ioc 2 ⌊x⌋₊, (log n)⁻¹ * a n
-  · congr 1
-    apply sum_congr rfl fun n hn ↦ ?_
+  trans ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * a n
+  · apply sum_congr rfl fun n hn ↦ ?_
     unfold a
     split_ifs with h
     · simp only [Set.mem_setOf_eq, h, Set.indicator_of_mem]
@@ -321,8 +311,8 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
         exacts [h.pos, h.ne_one]
       field
     · simp [h]
-  rw [(by simp : 2 = ⌊(2 : ℝ)⌋₊), sum_mul_eq_sub_sub_integral_mul a (f := fun n ↦ (log n)⁻¹)
-    zero_le_two hx, ← intervalIntegral.integral_of_le hx]
+  rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
+    ← intervalIntegral.integral_of_le hx]
   · have int_deriv (f : ℝ → ℝ) :
       ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
@@ -332,10 +322,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       rw [deriv_log_inv]
       · ring
       all_goals linarith [hu.1]
-    rw [int_deriv]
-    have : log 2 ≠ 0 := by positivity
-    simp [a, Set.indicator_apply, sum_filter, show Icc 0 2 = {0, 1, 2} by grind,
-      prime_two, theta_eq_sum_Icc, this]
+    simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
   · intro z hz
     have : z ≠ 0 := by linarith [hz.1]
