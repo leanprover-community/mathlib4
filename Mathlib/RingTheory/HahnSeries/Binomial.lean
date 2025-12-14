@@ -62,8 +62,8 @@ theorem binomialFamily_orderTop_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop) 
   have : n ≠ 0 := by exact Nat.ne_zero_of_lt hn
   calc
     0 < n • (x - 1).orderTop := (nsmul_pos_iff (Nat.ne_zero_of_lt hn)).mpr hx
-    n • (x - 1).orderTop ≤ ((x - 1) ^ n).orderTop := orderTop_nsmul_le_orderTop_pow
-    ((x - 1) ^ n).orderTop ≤ ((Ring.choose r n) • ((x - 1) ^ n)).orderTop :=
+    _ ≤ ((x - 1) ^ n).orderTop := orderTop_nsmul_le_orderTop_pow
+    _ ≤ ((Ring.choose r n) • ((x - 1) ^ n)).orderTop :=
       orderTop_le_orderTop_smul (Ring.choose r n) ((x - 1) ^ n)
 
 theorem binomialFamily_mem_support {x : A⟦Γ⟧}

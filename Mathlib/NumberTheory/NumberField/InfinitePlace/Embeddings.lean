@@ -43,8 +43,8 @@ variable (A : Type*) [Field A] [CharZero A]
 
 instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
   obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
-      apply IntermediateField.nonempty_algHom_of_splits
-      exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
+    apply IntermediateField.nonempty_algHom_of_splits
+    exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
   exact ⟨f.toRingHom⟩
 
 variable [NumberField K]

@@ -72,14 +72,14 @@ instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d 
     simp [A.mem_degenerate_iff, X.degenerate_eq_top_of_hasDimensionLT d n hd]
 
 lemma le_iff_of_hasDimensionLT (A B : X.Subcomplex) (d : ℕ) [X.HasDimensionLT d] :
-    A ≤ B ↔ ∀ (i : ℕ) (_ : i < d), A.obj _ ∩ X.nonDegenerate i ⊆ B.obj (op ⦋i⦌) := by
+    A ≤ B ↔ ∀ i < d, A.obj _ ∩ X.nonDegenerate i ⊆ B.obj (op ⦋i⦌) := by
   refine ⟨fun h i hi a ⟨ha, _⟩ ↦ h _ ha, fun h ↦ ?_⟩
   rw [le_iff_contains_nonDegenerate]
   rintro n x hx
   exact h _ (X.dim_lt_of_nonDegenerate x d) ⟨hx, x.prop⟩
 
 lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionLT d] :
-    A = ⊤ ↔ ∀ (i : ℕ) (_ : i < d), X.nonDegenerate i ⊆ A.obj _ := by
+    A = ⊤ ↔ ∀ i < d, X.nonDegenerate i ⊆ A.obj _ := by
   simp [← top_le_iff, le_iff_of_hasDimensionLT ⊤ A d]
 
 end Subcomplex

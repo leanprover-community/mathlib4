@@ -390,8 +390,7 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
   trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
     simp only [mem_Ioc] at hn
-    have hn0 : n ≠ 0 := by exact ne_zero_of_lt hn.1
-    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn.1.ne' hn.2]
   · simp_rw [sum_filter]
     rw [sum_comm]
     exact sum_congr rfl fun _ _ ↦ (by simp_all)

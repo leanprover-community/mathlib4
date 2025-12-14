@@ -599,8 +599,7 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
 
 /-- Useful lemma for reordering sums. -/
 lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
-    n.divisorsAntidiagonal = ((Ioc 0 N) ×ˢ (Ioc 0 N)).filter
-    (fun x ↦ x.1 * x.2 = n) := by
+    n.divisorsAntidiagonal = (Ioc 0 N ×ˢ Ioc 0 N).filter (fun x ↦ x.1 * x.2 = n) := by
   ext ⟨n1, n2⟩
   rw [Nat.mem_divisorsAntidiagonal]
   simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]

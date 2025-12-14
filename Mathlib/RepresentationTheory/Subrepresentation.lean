@@ -42,7 +42,7 @@ namespace Subrepresentation
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
-  rintro ⟨_,_⟩
+  rintro ⟨_, _⟩
   congr!
 
 instance : SetLike (Subrepresentation ρ) W where

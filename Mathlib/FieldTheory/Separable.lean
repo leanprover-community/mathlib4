@@ -600,8 +600,7 @@ lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : F
 lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
     Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
   simp_rw [Algebra.isSeparable_def, Subtype.forall,
-    ← isSeparable_map_iff S.val Subtype.val_injective]
-  rfl
+    ← isSeparable_map_iff S.val Subtype.val_injective, coe_val]
 
 variable (L) {E : Type*}
 

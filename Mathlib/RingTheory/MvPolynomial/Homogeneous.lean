@@ -112,8 +112,8 @@ theorem homogeneousSubmodule_mul (m n : ℕ) :
 lemma homogeneousSubmodule_one_eq_span_X :
     MvPolynomial.homogeneousSubmodule σ R 1 = .span R (.range X) := by
   rw [MvPolynomial.homogeneousSubmodule_eq_finsupp_supported, Finsupp.supported_eq_span_single]
-  simp_rw [MvPolynomial.single_eq_monomial, ← Finsupp.range_single_one, ← Set.range_comp]
-  rfl
+  simp_rw [MvPolynomial.single_eq_monomial, ← Finsupp.range_single_one, ← Set.range_comp,
+    Function.comp_def, ← X_pow_eq_monomial, pow_one]
 
 section
 
