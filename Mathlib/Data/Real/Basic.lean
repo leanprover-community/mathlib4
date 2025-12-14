@@ -100,9 +100,9 @@ instance instNatCast : NatCast ℝ where natCast n := (n : ℚ)
 private lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
 private lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 
-private lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
+@[simp] private lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
+@[simp] private lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
 
-set_option backward.proofsInPublic false in
 instance commRing : CommRing ℝ where
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
   nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
@@ -120,7 +120,9 @@ instance commRing : CommRing ℝ where
   left_distrib a b c := by apply ext_cauchy; simp [mul_add]
   right_distrib a b c := by apply ext_cauchy; simp [add_mul]
   neg_add_cancel a := by apply ext_cauchy; simp
-  natCast_succ n := by apply ext_cauchy; simp [cauchy_natCast]
+  natCast_zero := by apply ext_cauchy; simp -- with `proofsInPublic false`, this is automatic
+  natCast_succ n := by apply ext_cauchy; simp
+  intCast_negSucc z := by apply ext_cauchy; simp -- with `proofsInPublic false`, this is automatic
 
 set_option backward.proofsInPublic false in
 /-- `Real.equivCauchy` as a ring equivalence. -/
@@ -137,39 +139,39 @@ version of them. -/
 
 instance : Sub ℝ := fast_instance% inferInstance
 
-instance instRing : Ring ℝ := fast_instance% inferInstance
+instance instRing : Ring ℝ := by infer_instance
 
-instance : CommSemiring ℝ := fast_instance% inferInstance
+instance : CommSemiring ℝ := by infer_instance
 
-instance semiring : Semiring ℝ := fast_instance% inferInstance
+instance semiring : Semiring ℝ := by infer_instance
 
-instance : CommMonoidWithZero ℝ := fast_instance% inferInstance
+instance : CommMonoidWithZero ℝ := by infer_instance
 
-instance : MonoidWithZero ℝ := fast_instance% inferInstance
+instance : MonoidWithZero ℝ := by infer_instance
 
-instance : AddCommGroup ℝ := fast_instance% inferInstance
+instance : AddCommGroup ℝ := by infer_instance
 
-instance : AddGroup ℝ := fast_instance% inferInstance
+instance : AddGroup ℝ := by infer_instance
 
-instance : AddCommMonoid ℝ := fast_instance% inferInstance
+instance : AddCommMonoid ℝ := by infer_instance
 
-instance : AddMonoid ℝ := fast_instance% inferInstance
+instance : AddMonoid ℝ := by infer_instance
 
-instance : AddLeftCancelSemigroup ℝ := fast_instance% inferInstance
+instance : AddLeftCancelSemigroup ℝ := by infer_instance
 
-instance : AddRightCancelSemigroup ℝ := fast_instance% inferInstance
+instance : AddRightCancelSemigroup ℝ := by infer_instance
 
-instance : AddCommSemigroup ℝ := fast_instance% inferInstance
+instance : AddCommSemigroup ℝ := by infer_instance
 
-instance : AddSemigroup ℝ := fast_instance% inferInstance
+instance : AddSemigroup ℝ := by infer_instance
 
-instance : CommMonoid ℝ := fast_instance% inferInstance
+instance : CommMonoid ℝ := by infer_instance
 
-instance : Monoid ℝ := fast_instance% inferInstance
+instance : Monoid ℝ := by infer_instance
 
-instance : CommSemigroup ℝ := fast_instance% inferInstance
+instance : CommSemigroup ℝ := by infer_instance
 
-instance : Semigroup ℝ := fast_instance% inferInstance
+instance : Semigroup ℝ := by infer_instance
 
 instance : Inhabited ℝ :=
   ⟨0⟩
