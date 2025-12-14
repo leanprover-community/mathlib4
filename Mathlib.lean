@@ -1401,7 +1401,6 @@ public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 public import Mathlib.AlgebraicTopology.SimplicialNerve
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
 public import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 public import Mathlib.AlgebraicTopology.SimplicialObject.II
 public import Mathlib.AlgebraicTopology.SimplicialObject.Op
