@@ -271,27 +271,19 @@ lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (h : q ≠ ⊥) :
     ∃ α ∈ H.root, ↑α ∈ q := by
-      -- Since $q \neq \bot$, there exists $\beta \in q$ with $\beta \neq 0$.
-      obtain ⟨β, hβ⟩ : ∃ β : Dual K H, β ∈ q ∧ β ≠ 0 := by
-        exact ( Submodule.ne_bot_iff _ ).mp h;
-      -- Since coroots span H (RootSystem.span_coroot_eq_top), a nonzero β must be nonzero on some coroot
-      obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
-        by_contra h_contra
-        push_neg at h_contra
-        exact hβ.2 (LinearMap.ext_on_range (rootSystem H).span_coroot_eq_top fun i ↦
-          h_contra i ▸ (LinearMap.zero_apply _).symm)
-      -- Since $q$ is invariant under the reflection corresponding to $\alpha_i$, we have $\alpha_i \in q$.
-      have h_alpha_i_in_q : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) • (rootSystem H).root i ∈ q := by
-        have h_alpha_i_in_q : (rootSystem H).reflection i β ∈ q := by
-          -- Since $q$ is invariant under the reflection corresponding to $i$, we have $s_i(\beta) \in q$ by definition of invariance.
-          apply hq i;
-          exact hβ.1;
-        -- Since $q$ is a submodule, subtracting $(β, α_i) * α_i$ from $β$ should keep it in $q$.
-        have h_sub : β - ((rootSystem H).toLinearMap β ((rootSystem H).coroot i)) • (rootSystem H).root i ∈ q := by
-          convert h_alpha_i_in_q using 1;
-        simpa using q.sub_mem hβ.1 h_sub;
-      use i.val; aesop;
-      simpa [ smul_smul, hi ] using q.smul_mem ( β ( coroot val ) ) ⁻¹ h_alpha_i_in_q
+  obtain ⟨β, hβ_mem, hβ_ne⟩ := q.exists_mem_ne_zero_of_ne_bot h
+  obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
+    by_contra h_contra; push_neg at h_contra
+    exact hβ_ne (LinearMap.ext_on_range (rootSystem H).span_coroot_eq_top fun i ↦
+      h_contra i ▸ (LinearMap.zero_apply _).symm)
+  have h_smul : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
+      (rootSystem H).root i ∈ q := by
+    have h_refl : (rootSystem H).reflection i β ∈ q := hq i hβ_mem
+    have h_sub : β - (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
+        (rootSystem H).root i ∈ q := by convert h_refl using 1
+    simpa using q.sub_mem hβ_mem h_sub
+  use i.val; aesop
+  simpa [smul_smul, hi] using q.smul_mem (β (coroot val))⁻¹ h_smul
 
 lemma LieAlgebra.IsKilling.exists_orthogonal_element_of_ne_top
     (q : Submodule K (Dual K H)) (hq : q ≠ ⊤) :
@@ -397,10 +389,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     obtain ⟨e, he_mem, he_ne⟩ := α.exists_ne_zero
     have he_in_sl2 : e ∈ sl2SubmoduleOfRoot hα := by
       rw [sl2SubmoduleOfRoot_eq_sup]
-      have h1 : genWeightSpace L α ≤ genWeightSpace L α ⊔ genWeightSpace L (-α) := le_sup_left
-      have h2 : genWeightSpace L α ⊔ genWeightSpace L (-α) ≤
-                genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := le_sup_left
-      exact h2 (h1 he_mem)
+      exact Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)
     rw [Submodule.eq_bot_iff] at h_eq_bot
     exact he_ne (h_eq_bot e he_in_sl2)
   have : IsSimple K L := inferInstance
