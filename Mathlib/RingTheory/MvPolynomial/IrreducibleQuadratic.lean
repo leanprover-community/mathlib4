@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, Johan Commelin
+Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
 -/
 module
 
@@ -13,6 +13,10 @@ import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Irreducibility of linear and quadratic polynomials
+
+* `MvPolynomial.irreducible_of_totalDegree_eq_one`:
+  a multivariate polynomial of `totalDegree` one is irreducible
+  if its coefficients are relatively prime.
 
 * For `c : n →₀ R`, `MvPolynomial.sum_smul_X c` is the linear polynomial
   $\sum_i c_i X_i$ of $R[X_1\dots,X_n]$.
@@ -63,45 +67,24 @@ section
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
-lemma irreducible_mul_X_add [IsDomain R]
+open scoped Polynomial in
+attribute [local simp] MvPolynomial.optionEquivLeft_X_none in -- tag simp globally?
+lemma irreducible_mul_X_add {n : Type*} {R : Type*} [CommRing R] [IsDomain R]
     (f g : MvPolynomial n R) (i : n) (hf0 : f ≠ 0) (hif : i ∉ f.vars) (hig : i ∉ g.vars)
     (h : IsRelPrime f g) :
     Irreducible (f * X i + g) := by
   classical
-  let e₁ := renameEquiv R (σ := n) (Equiv.optionSubtypeNe i).symm
-  let e₂ := optionEquivLeft R {j // j ≠ i}
-  let e := e₁.trans e₂
-  have heX : e (X i) = .X := by simp [e, e₁, e₂, optionEquivLeft_X_none]
-  suffices ∀ {p}, i ∉ p.vars → e p = .C ((e p).coeff 0) by
-    rw [← MulEquiv.irreducible_iff e, map_add, map_mul, heX, this hif, this hig,
-      ← Polynomial.smul_eq_C_mul]
-    apply Polynomial.irreducible_smul_X_add_C
-    · contrapose! hf0
-      apply e.injective
-      rw [this hif, hf0, map_zero, map_zero]
-    · intro p hpf hpg
-      refine isUnit_of_map_unit Polynomial.C _ (isUnit_of_map_unit e.symm _ ?_)
-      apply h
-      · replace hpf := map_dvd e.symm <| map_dvd Polynomial.C hpf
-        rwa [← this hif, e.symm_apply_apply] at hpf
-      · replace hpg := map_dvd e.symm <| map_dvd Polynomial.C hpg
-        rwa [← this hig, e.symm_apply_apply] at hpg
-  intro p hp
-  apply Polynomial.eq_C_of_degree_le_zero
-  rw [Polynomial.degree_le_iff_coeff_zero]
-  intro m hm
-  ext d
-  suffices ((rename (Equiv.optionSubtypeNe i).symm) p).coeff (d.optionElim m) = 0 by
-    simpa [e, e₁, e₂, optionEquivLeft_coeff_coeff']
-  rw [coeff_rename_eq_zero]
-  intro d' hd'
-  contrapose! hp
-  rw [mem_vars]
-  rw [← mem_support_iff] at hp
-  refine ⟨_, hp, ?_⟩
-  rw [Finsupp.mem_support_iff]
-  obtain rfl : d' i = m := by simpa [Finsupp.mapDomain_equiv_apply] using congr($hd' none)
-  simp_all [ne_of_gt]
+  let S := MvPolynomial { j // j ≠ i } R
+  let e : MvPolynomial n R ≃ₐ[R] S[X] :=
+    (renameEquiv R (Equiv.optionSubtypeNe i).symm).trans (optionEquivLeft R _)
+  have he : e.symm.toAlgHom.comp Polynomial.CAlgHom = rename (↑) := by ext; simp [e, S]
+  obtain ⟨f, rfl⟩ : f ∈ (e.symm.toAlgHom.comp Polynomial.CAlgHom).range :=
+    he ▸ exists_rename_eq_of_vars_subset_range _ _ Subtype.val_injective (by simpa [Set.subset_def])
+  obtain ⟨g, rfl⟩ : g ∈ (e.symm.toAlgHom.comp Polynomial.CAlgHom).range :=
+    he ▸ exists_rename_eq_of_vars_subset_range _ _ Subtype.val_injective (by simpa [Set.subset_def])
+  refine .of_map (f := e) ?_
+  simpa [e, S] using Polynomial.irreducible_C_mul_X_add_C (by aesop)
+    (IsRelPrime.of_map Polynomial.C (IsRelPrime.of_map e.symm h))
 
 /-- A multivariate polynomial `f` whose support is nontrivial,
 such that some variable `i` appears with exponent `1` in one nontrivial monomial,
@@ -110,52 +93,37 @@ lemma irreducible_of_disjoint_support [IsDomain R]
     {f : MvPolynomial n R}
     (nontrivial : f.support.Nontrivial)
     {d : n →₀ ℕ} (hd : d ∈ f.support) {i : n} (hdi : d i = 1)
-    -- Question — should one state this `disjoint` hypothesis as:
-    --  Set.Pairwise (f.support : Set (n →₀ ℕ)) (fun x y ↦ Disjoint x.support y.support))
-    (disjoint : ∀ d₁ ∈ f.support, ∀ d₂ ∈ f.support, ∀ i, i ∈ d₁.support → i ∈ d₂.support → d₁ = d₂)
+    (disjoint : (f.support : Set (n →₀ ℕ)).PairwiseDisjoint Finsupp.support)
     (isPrimitive : ∀ r, (∀ d, r ∣ f.coeff d) → IsUnit r) :
     Irreducible f := by
   classical
-  have hi : i ∈ d.support := by simp [Finsupp.mem_support_iff, hdi]
-  have hfd : f.coeff d ≠ 0 := by simpa [mem_support_iff] using hd
-  let d₀ := d - .single i 1
-  have hd₀ : d = d₀ + .single i 1 := by
-    rw [Finsupp.sub_add_single_one_cancel (by simp [hdi])]
+  have hfd : f.coeff d ≠ 0 := by simpa using hd
+  let d₀ := d.erase i
   let φ : MvPolynomial n R := monomial d₀ (f.coeff d)
   let ψ : MvPolynomial n R := f - φ * X i
   have hf : f = φ * X i + ψ := by grind only
-  have hdφX (k) : (φ * X i).coeff k = if k = d then f.coeff d else 0 := by
-    simp only [X, monomial_mul, ← hd₀, mul_one, coeff_monomial, eq_comm (a := k), φ]
-  have hdψ (k) : ψ.coeff k = if k = d then 0 else f.coeff k := by
-    simp +contextual [ψ, hdφX, sub_eq_iff_eq_add, ite_add_ite]
-  have hψsupp : ψ.support = f.support.erase d := by ext; simp [mem_support_iff, hdψ]
+  have hφ : φ * X i = monomial d (f.coeff d) := by
+    nth_rw 1 [← Finsupp.erase_add_single i d]; simp [φ, monomial_add_single, hdi, d₀]
+  have hdψ (k) : ψ.coeff k = if d = k then 0 else f.coeff k := by
+    simp +contextual [ψ, hφ, sub_eq_iff_eq_add, ite_add_ite]
   rw [hf]
   apply irreducible_mul_X_add
   · grind only [monomial_eq_zero]
   · simp [φ, hfd, d₀, hdi]
-  · grind only [mem_vars, Finset.mem_erase]
-  · intro p hpφ hpψ
-    simp_rw [φ, dvd_monomial_iff_exists hfd] at hpφ
-    obtain ⟨m, b, hm, hb, rfl⟩ := hpφ
-    obtain ⟨q, hq⟩ := hpψ
+  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by simpa [mem_vars, hdψ] using this
+    exact fun x hxd hx hix ↦
+      Finset.disjoint_iff_ne.mp (disjoint hd hx hxd) i (by simp [hdi]) _ hix rfl
+  · rintro p hpφ ⟨q, hq⟩
+    obtain ⟨m, b, hm, hb, rfl⟩ := (dvd_monomial_iff_exists hfd).mp hpφ
     obtain ⟨d₂, hd₂, H⟩ := nontrivial.exists_ne d
     obtain rfl : m = 0 := by
-      ext j
-      rw [Finsupp.zero_apply]
-      have aux : coeff d₂ ψ ≠ 0 := by simpa only [hdψ, H, ↓reduceIte,  mem_support_iff] using hd₂
+      have aux : coeff d₂ ψ ≠ 0 := by simpa [hdψ, H.symm] using hd₂
       simp only [hq, coeff_monomial_mul', ne_eq, ite_eq_right_iff, Classical.not_imp] at aux
-      replace aux := aux.1 j
-      specialize hm j
-      simp only [Finsupp.coe_tsub, Pi.sub_apply, d₀] at hm
-      contrapose! H
-      apply disjoint d₂ hd₂ d hd j <;> grind only [= Finsupp.mem_support_iff]
-    simp_rw [isUnit_iff_eq_C_of_isReduced, ← C_apply, C_inj]
-    refine ⟨b, ?_, rfl⟩
-    apply isPrimitive
-    intro k
-    obtain rfl | hk := eq_or_ne k d
-    · exact hb
-    simp [hf, hk, hq, hdφX]
+      simpa using disjoint hd₂ hd H (Finsupp.support_mono aux.1)
+        ((Finsupp.support_mono hm).trans (d.support.erase_subset i))
+    have hb' : IsUnit b := isPrimitive _ fun k ↦
+      if hk : k = d then hk ▸ hb else hf ▸ by simp [hq, hφ, Ne.symm hk]
+    simpa
 
 end
 
@@ -166,40 +134,61 @@ open Polynomial
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
+theorem irreducible_of_totalDegree_eq_one
+    [IsDomain R] {p : MvPolynomial n R} (hp : p.totalDegree = 1)
+    (hp' : ∀ x, (∀ i, x ∣ p.coeff i) → IsUnit x) :
+    Irreducible p where
+  not_isUnit H := by
+    simp [(MvPolynomial.isUnit_iff_totalDegree_of_isReduced.mp H).2] at hp
+  isUnit_or_isUnit a b hab := by
+    wlog hle : a.totalDegree ≤ b.totalDegree generalizing a b
+    · exact (this b a (by rw [hab, mul_comm]) (by cutsat)).symm
+    obtain rfl | ha₀ := eq_or_ne a 0; · simp_all
+    obtain rfl | hb₀ := eq_or_ne b 0; · simp_all
+    have : a.totalDegree + b.totalDegree = 1 := by
+      simpa [totalDegree_mul_of_isDomain, ha₀, hb₀, hp] using congr(($hab).totalDegree).symm
+    obtain ⟨r, rfl⟩ : ∃ r, a = C r := ⟨_, (totalDegree_eq_zero_iff_eq_C (p := a)).mp (by cutsat)⟩
+    simp [hp' r fun i ↦ by simp [hab]]
+variable (c : n →₀ R)
+
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
 noncomputable def sum_smul_X :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
 
-variable (c : n →₀ R)
+theorem coeff_sum_smul_X (i : n) :
+    (sum_smul_X c).coeff (Finsupp.single i 1) = c i := by
+  classical
+  rw [sum_smul_X, Finsupp.linearCombination_apply, Finsupp.sum, coeff_sum]
+  rw [Finset.sum_eq_single i _ (by simp)]
+  · simp
+  intro j hj hji
+  rw [coeff_smul, coeff_X', if_neg]
+  · aesop
+  · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
 theorem irreducible_sum_smul_X [IsDomain R]
-    (hc_nontrivial : c.support.Nontrivial)
+    (hc_nonempty : c.support.Nonempty)
     (hc_gcd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
     Irreducible (sum_smul_X c) := by
-  classical
-  let ι : n ↪ (n →₀ ℕ) :=
-    ⟨fun i ↦ .single i 1, fun i j ↦ by simp +contextual [Finsupp.single_eq_single_iff]⟩
-  -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sum_smul_X c = c.embDomain ι := by
-    rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
-    simp [Finsupp.sum_embDomain, sum_smul_X, X,
-      Finsupp.linearCombination_apply, smul_monomial, ι]
-    rfl
-  have hcoeff (i : n) : coeff (ι i) (sum_smul_X c) = c i := by
-    simp [aux, coeff, Finsupp.embDomain_apply]
-  have hsupp : (sum_smul_X c).support = c.support.map ι := by
-    rw [aux, support, Finsupp.support_embDomain]
-  obtain ⟨a, ha⟩ := hc_nontrivial.nonempty
-  apply irreducible_of_disjoint_support (d := ι a) (i := a)
-  · rwa [hsupp, Finset.map_nontrivial]
-  · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
-  · simp [ι]
-  · simp +contextual [hsupp, ι, Finsupp.single_apply]
+  apply irreducible_of_totalDegree_eq_one
+  · apply le_antisymm
+    · simp only [sum_smul_X, Finsupp.linearCombination_apply, Finsupp.sum]
+      apply totalDegree_finsetSum_le
+      intros
+      apply le_trans (totalDegree_smul_le ..)
+      simp
+    · rw [← not_lt, Nat.lt_one_iff, totalDegree_eq_zero_iff]
+      intro h
+      obtain ⟨i, hi⟩ := hc_nonempty
+      simp only [Finsupp.mem_support_iff] at hi
+      specialize h (Finsupp.single i 1) (by
+        rwa [mem_support_iff, coeff_sum_smul_X]) i
+      simp only [Finsupp.single_eq_same, one_ne_zero] at h
   · intro r hr
     apply hc_gcd
     intro i
-    simpa [hcoeff] using hr (ι i)
+    simpa [coeff_sum_smul_X] using hr (Finsupp.single i 1)
 
 /-- The quadratic polynomial $$\sum_i c_i X_i Y_i$$. -/
 noncomputable def sum_smul_X_mul_Y :
@@ -231,7 +220,10 @@ theorem irreducible_sum_smul_X_mul_Y [IsDomain R]
   · rwa [hsupp, Finset.map_nontrivial]
   · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
   · simp [ι]
-  · simp +contextual [hsupp, ι, Finsupp.single_apply]
+  · rw [hsupp, Finset.coe_map, ι.injective.injOn.pairwiseDisjoint_image]
+    suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inr x, Sum.inl x} by
+      simpa [ι, Function.comp_def,Finsupp.support_add_eq, Finsupp.support_single_ne_zero]
+    simp [Set.PairwiseDisjoint, Set.Pairwise, ne_comm]
   · intro r hr
     apply h_dvd
     intro i

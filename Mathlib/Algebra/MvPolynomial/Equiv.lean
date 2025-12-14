@@ -374,6 +374,11 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · simp
   · intros; rw [pow_add]
 
+@[simp]
+lemma optionEquivLeft_symm_C_X (x : S₁) :
+    (optionEquivLeft R S₁).symm (.C (X x)) = .X (.some x) := by
+  simp [optionEquivLeft]
+
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :

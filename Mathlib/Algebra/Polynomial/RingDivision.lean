@@ -222,13 +222,9 @@ theorem irreducible_X : Irreducible (X : R[X]) :=
 theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Irreducible p :=
   (hm.prime_of_degree_eq_one hp1).irreducible
 
-example {u a b : R} (h : IsRelPrime (u * a) (u * b)) :
-    IsUnit u :=
-  h (dvd_mul_right u a) (dvd_mul_right u b)
-
 /-- A degree 1 polynomial `C a * X + C b` is irreducible
 if `a, b` are relatively prime. -/
-theorem irreducible_of_degree_eq_one_of_coeff_isRelPrime
+theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
     {p : R[X]} (hp : p.degree = 1) (hc : IsRelPrime (p.coeff 0) (p.coeff 1)) :
     Irreducible p where
   not_isUnit h := by
@@ -249,6 +245,12 @@ theorem irreducible_of_degree_eq_one_of_coeff_isRelPrime
     apply IsUnit.map C
     rw [h, hf, coeff_C_mul, coeff_C_mul] at hc
     apply hc <;> simp
+
+theorem irreducible_C_mul_X_add_C {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b) :
+    Irreducible (C a * X + C b) := by
+  apply irreducible_of_degree_eq_one_of_isRelPrime_coeff
+  · compute_degree!
+  · symm; simpa using hab
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
