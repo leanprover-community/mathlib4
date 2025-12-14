@@ -141,7 +141,7 @@ section GammaCDF
 /-- CDF of the gamma distribution -/
 @[deprecated "Use `cdf (gammaMeasure a r)` instead." (since := "2025-08-28")]
 noncomputable
-def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
+def gammaCDFReal (a r : ℝ) : StieltjesFunction ℝ :=
   cdf (gammaMeasure a r)
 
 lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
