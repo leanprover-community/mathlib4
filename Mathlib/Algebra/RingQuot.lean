@@ -154,6 +154,7 @@ namespace RingQuot
 variable (r : R → R → Prop)
 
 -- Has to be exposed, otherwise we get diamonds in ℕ-algebras
+/-- The `natCast` function for `RingQuot`. -/
 def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
@@ -191,6 +192,7 @@ instance : NatCast (RingQuot r) :=
   ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨Quot.map₂ Sub.sub Rel.sub_right Rel.sub_left a b⟩⟩
 
 -- Has to be exposed, as otherwise diamonds don't commute.
+/-- The `•` function for `RingQuot`. -/
 def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
@@ -299,6 +301,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instMonoidWithZero r
 
 -- Has to be exposed, otherwise we get diamonds in ℤ-algebras.
+/-- The `intCast` function for `RingQuot`. -/
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
