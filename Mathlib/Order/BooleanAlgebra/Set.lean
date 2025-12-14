@@ -140,6 +140,9 @@ theorem union_compl_self (s : Set α) : s ∪ sᶜ = univ :=
 @[simp]
 theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ := by rw [union_comm, union_compl_self]
 
+lemma mem_or_mem_compl (s : Set α) (x : α) : x ∈ s ∨ x ∈ sᶜ := by
+  rw [mem_compl_iff]; exact em (x ∈ s)
+
 theorem compl_subset_comm : sᶜ ⊆ t ↔ tᶜ ⊆ s :=
   @compl_le_iff_compl_le _ s _ _
 
