@@ -272,7 +272,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
   measurable s hs := hgen ▸ measurableSet_generateFrom hs
   approx s ms hμs ε ε_pos := by
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
-    let T := Accumulate S.set
+    let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by

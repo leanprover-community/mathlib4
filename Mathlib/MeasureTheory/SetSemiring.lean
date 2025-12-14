@@ -523,7 +523,7 @@ theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
 theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
+    accumulate s n ∈ C := by
   induction n with
   | zero => simp [hs 0]
   | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
