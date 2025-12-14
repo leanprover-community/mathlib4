@@ -171,8 +171,7 @@ variable [OpensMeasurableSpace 𝓧] [SeparableSpace 𝓧]
 lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i))
     (hcomp : IsCompact (closure S)) (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1)
     (Cov : ⋃ i, U i = univ) : ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
-  have εfin : ε ≠ ⊤ := by
-    intro h; rw [h] at hεbound; exact not_top_le_coe hεbound
+  have εfin : ε ≠ ⊤ := by intro h; rw [h] at hεbound; exact not_top_le_coe hεbound
   lift ε to ℝ≥0 using εfin
   obtain ⟨ε,hε'⟩ := ε
   simp only [ENNReal.coe_pos, ← NNReal.coe_lt_coe, NNReal.coe_zero, coe_mk, coe_le_one_iff,
@@ -186,30 +185,25 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U 
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ n), U i) : ℝ)) atTop := by
       have hopen : IsOpen (⋃ i ≤ n, U i) := isOpen_biUnion fun i a ↦ O i
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
-      simp only [Function.comp_apply] at this
-      rw [toReal_liminf]
-      norm_cast
-      simp_rw [← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at this
+      simp_rw [Function.comp_apply, ← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at this
       rw [← ofNNReal_liminf] at this
       · exact mod_cast this
       use 1
-      simp only [ge_iff_le, eventually_map, eventually_atTop, forall_exists_index]
-      exact fun _ x h ↦ (h x (by simp)).trans <|
-        ProbabilityMeasure.apply_le_one (μ (sub x)) (⋃ i ≤ n, U i)
+      simpa [ge_iff_le, eventually_map, eventually_atTop, forall_exists_index] using fun _ x h ↦
+          (h x (by simp)).trans <| ProbabilityMeasure.apply_le_one (μ (sub x)) (⋃ i ≤ n, U i)
     _ ≤ liminf (fun k ↦ (μ (sub k) (⋃ (i ≤ sub k), U i) : ℝ)) atTop := by
       apply Filter.liminf_le_liminf
       · simp only [NNReal.coe_le_coe, eventually_atTop, ge_iff_le]
         use n + 1
         intro b hypo
         refine (μ (sub b)).apply_mono
-        <| Set.biUnion_mono (fun i (hi : i ≤ n) ↦ hi.trans ?_) fun _ _ ↦ le_rfl
+            <| Set.biUnion_mono (fun i (hi : i ≤ n) ↦ hi.trans ?_) fun _ _ ↦ le_rfl
         exact le_trans (Nat.le_add_right n 1) (le_trans hypo (StrictMono.le_apply hsubmono))
-      · simp only [autoParam, ge_iff_le, isBoundedUnder_ge_toReal]; use 0; simp
-      · simp only [autoParam, ge_iff_le, isCoboundedUnder_ge_toReal]
-        use 1
-        simp only [eventually_map, eventually_atTop, ge_iff_le, forall_exists_index]
-        exact fun _ d hyp ↦ (hyp d (by simp)).trans
-          <| ProbabilityMeasure.apply_le_one (μ (sub d)) (⋃ i ≤ sub d, U i)
+      · use 0; simp
+      · use 1
+        simpa [ge_iff_le, eventually_map, eventually_atTop, ge_iff_le, forall_exists_index] using
+            fun _ d hyp ↦ (hyp d (by simp)).trans
+            <| ProbabilityMeasure.apply_le_one (μ (sub d)) (⋃ i ≤ sub d, U i)
     _ ≤ 1 - ε := by
       apply Filter.liminf_le_of_le
       · use 0; simp
@@ -223,25 +217,24 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U 
   have accumulation : Tendsto (fun n ↦ μlim (⋃ i ≤ n, U i)) atTop (𝓝 (μlim (⋃ i, U i))) := by
     simp_rw [←Set.accumulate_def, ProbabilityMeasure.tendsto_measure_iUnion_accumulate]
   rw [Cov, coeFn_univ, ← NNReal.tendsto_coe] at accumulation
-  have exceeds_bound : ∀ᶠ n in atTop, (1 - ε / 2 : ℝ) ≤ μlim (⋃ i ≤ n, U i) := by
-    refine Tendsto.eventually_const_le (v := 1) (by simp; positivity) (accumulation)
+  have exceeds_bound : ∀ᶠ n in atTop, (1 - ε / 2 : ℝ) ≤ μlim (⋃ i ≤ n, U i) :=
+      Tendsto.eventually_const_le (v := 1) (by simp; positivity) (accumulation)
   suffices ∀ᶠ n : ℕ in atTop, False by exact this.exists.choose_spec
   filter_upwards [exceeds_bound] with n hn
-  have lim_measure_lb : (1 - ε / 2 : ℝ) ≤ 1 - ε := hn.trans <| Measurebound n
-  linarith [lim_measure_lb]
+  linarith [hn.trans <| Measurebound n]
 
 variable [CompleteSpace 𝓧]
 
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     IsTightMeasureSet {((μ : ProbabilityMeasure 𝓧) : Measure 𝓧) | μ ∈ S} := by
   rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
-  rcases isEmpty_or_nonempty 𝓧 with hempty | hempty
+  rcases isEmpty_or_nonempty 𝓧 with hempty | hnonempty
   · intro ε εpos
     use ∅
     constructor
     · exact isCompact_empty
     rw [← univ_eq_empty_iff] at hempty
-    simp only [mem_setOf_eq, compl_empty, hempty, measure_empty, zero_le, implies_true]
+    simp [mem_setOf_eq, compl_empty, hempty, measure_empty, zero_le, implies_true]
   obtain ⟨D, hD⟩ := exists_dense_seq 𝓧
   obtain ⟨u, hu_anti, hu_pos, hu⟩ : ∃ u, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
@@ -273,7 +266,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by
       simp only [bigK, compl_iInter, compl_iUnion]
     _ ≤ ∑' m, μ.toMeasure ((⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by
-      apply measure_iUnion_le
+      exact measure_iUnion_le _
     _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))) := by
       congr! with m; rw [measure_compl (by measurability) (by simp)]; simp
     _ ≤ (∑' (m : ℕ), (ε : ℝ≥0∞) * 2 ^ (-(m + 1) : ℤ)) := by
