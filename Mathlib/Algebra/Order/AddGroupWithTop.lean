@@ -64,6 +64,8 @@ variable [LinearOrderedAddCommGroupWithTop α] {a b : α}
 
 attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
 
+@[deprecated (since := "2025-12-14")] protected alias add_neg_cancel := add_neg_cancel_of_ne_top
+
 /-! Note: The following lemmas are special cases of the corresponding `IsAddUnit` lemmas. -/
 
 lemma neg_add_cancel_of_ne_top (ha : a ≠ ⊤) : -a + a = 0 := by
