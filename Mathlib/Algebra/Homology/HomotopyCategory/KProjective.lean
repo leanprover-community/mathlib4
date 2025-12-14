@@ -28,7 +28,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex Preadditive Opposite
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `L`

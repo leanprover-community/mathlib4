@@ -120,7 +120,7 @@ instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
 between `curry.obj ((F₁.prod F₂).comp G)` and
 `F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
 @[simps!]
-def curryObjProdComp {C' D' : Type*} [Category C'] [Category D']
+def curryObjProdComp {C' D' : Type*} [Category* C'] [Category* D']
     (F₁ : C ⥤ D) (F₂ : C' ⥤ D') (G : D × D' ⥤ E) :
     curry.obj ((F₁.prod F₂).comp G) ≅
       F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂ :=
