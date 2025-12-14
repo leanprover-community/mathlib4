@@ -73,24 +73,35 @@ def recOn {basis_hd} {basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort*
   | nil => exact nil
   | cons hd tl => exact cons hd.1 hd.2 tl
 
-def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS basis_tl × β)) (b : β) :
-    PreMS (basis_hd :: basis_tl) :=
-  Stream'.Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
-
-noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
-    (F : β → Option (ℝ × PreMS basis_tl × γ × β))
-    (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
-    [Stream'.Seq.FriendOperation op]
-    (b : β) :
-    PreMS (basis_hd :: basis_tl) :=
-  Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
-
 def destruct {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     Option (ℝ × PreMS basis_tl × PreMS (basis_hd :: basis_tl)) :=
   (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
 
 def head {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : Option (ℝ × PreMS basis_tl) :=
   Seq.head ms
+
+def tail {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
+  Seq.tail ms
+
+def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS basis_tl × β)) (b : β) :
+    PreMS (basis_hd :: basis_tl) :=
+  Stream'.Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
+
+def FriendOperation {basis_hd basis_tl}
+    (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
+  Stream'.Seq.FriendOperation op
+
+class FriendOperationClass {basis_hd basis_tl} {γ : Type*}
+    (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop
+    extends Stream'.Seq.FriendOperationClass op
+
+noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
+    (F : β → Option (ℝ × PreMS basis_tl × γ × β))
+    (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+    [FriendOperationClass op]
+    (b : β) :
+    PreMS (basis_hd :: basis_tl) :=
+  Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
 
 def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
     (g : PreMS basis_tl → PreMS basis_tl')
@@ -123,9 +134,81 @@ theorem eq_of_bisim_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
     x = y := Seq.eq_of_bisim_strong motive base (by grind [nil, cons])
 
+theorem FriendOperationClass.FriendOperation {basis_hd basis_tl} {γ : Type*}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    [h : FriendOperationClass op]
+    (c : γ) :
+    FriendOperation (op c) :=
+  h.friend c
+
+theorem FriendOperation.destruct {basis_hd basis_tl}
+    {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h : FriendOperation op) :
+    ∃ T : Option (ℝ × PreMS basis_tl) → Option (ℝ × PreMS basis_tl × Subtype FriendOperation),
+      ∀ ms, destruct (op ms) = (T ms.head).map
+        (fun (exp, coef, op') ↦ (exp, coef, op'.val ms.tail)) := by
+  have h' := Stream'.Seq.FriendOperation.destruct h
+  obtain ⟨T, hT⟩ := h'
+  use fun hd? ↦ (T hd?).map (fun ((exp, coef), op') ↦ (exp, coef, op'))
+  intro ms
+  specialize hT ms
+  unfold PreMS.destruct
+  simp [hT]
+  simp [head, tail]
+  cases T (Seq.head ms) <;> simp
+
+theorem FriendOperation.head_eq_head {basis_hd basis_tl}
+    {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h : FriendOperation op) {x y : PreMS (basis_hd :: basis_tl)}
+    (h_head : x.head = y.head) : (op x).head = (op y).head :=
+  Stream'.Seq.FriendOperation.head_eq_head h h_head
+
+-- theorem FriendOperation.head_eq_head_of_cons {basis_hd basis_tl}
+--     {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+--     (h : FriendOperation op) {exp : ℝ} {coef : PreMS basis_tl}
+--     {x y : PreMS (basis_hd :: basis_tl)} :
+--     (op (cons exp coef x)).head = (op (cons exp coef y)).head :=
+--   Stream'.Seq.FriendOperation.head_eq_head_of_cons h
+
+theorem FriendOperation.id {basis_hd basis_tl} :
+    FriendOperation (id : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) :=
+  Stream'.Seq.FriendOperation.id
+
+theorem FriendOperation.comp {basis_hd basis_tl}
+    {op₁ op₂ : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂) :
+    FriendOperation (op₁ ∘ op₂) :=
+  Stream'.Seq.FriendOperation.comp h₁ h₂
+
+theorem FriendOperation.const {basis_hd basis_tl} {s : PreMS (basis_hd :: basis_tl)} :
+    FriendOperation (fun _ ↦ s) :=
+  Stream'.Seq.FriendOperation.const
+
+theorem FriendOperation.ite {basis_hd basis_tl}
+    {op₁ op₂ : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂)
+    {P : Option (ℝ × PreMS basis_tl) → Prop} [DecidablePred P] :
+    FriendOperation (fun ms ↦ if P ms.head then op₁ ms else op₂ ms) :=
+  Stream'.Seq.FriendOperation.ite h₁ h₂
+
+theorem FriendOperation.cons_tail {basis_hd basis_tl}
+    {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl}
+    (h : FriendOperation op) :
+    FriendOperation (fun ms ↦ (op (cons exp coef ms)).tail) :=
+  Stream'.Seq.FriendOperation.cons_tail h
+
+theorem FriendOperationClass.comp {basis_hd basis_tl} {γ γ' : Type*}
+    {g : γ' → γ}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    [h : FriendOperationClass op] : FriendOperationClass (fun c ↦ op (g c)) := by
+  have : Stream'.Seq.FriendOperationClass (fun c ↦ op (g c)) := by
+    apply Stream'.Seq.FriendOperationClass.comp
+  constructor
+
 theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
-    [Stream'.Seq.FriendOperation op]
+    [FriendOperationClass op]
     {x y : PreMS (basis_hd :: basis_tl)}
     (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
     (base : motive x y)
@@ -133,7 +216,7 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
       ∃ (c : γ) (x' y' : PreMS (basis_hd :: basis_tl)),
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
-  apply Stream'.Seq.FriendOperation.eq_of_bisim (op := op) motive base
+  apply Stream'.Seq.FriendOperationClass.eq_of_bisim (op := op) motive base
   peel step with x y ih h
   obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
   · simp [h]
@@ -180,7 +263,7 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS 
 
 theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl} {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
     {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
-    [Stream'.Seq.FriendOperation op] {b : β}
+    [FriendOperationClass op] {b : β}
     (h : F b = none) :
     gcorec F op b = nil := by
   unfold gcorec
@@ -191,7 +274,7 @@ theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl} {F : β → Option (ℝ
 theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
     {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
-    [Stream'.Seq.FriendOperation op] {b : β}
+    [FriendOperationClass op] {b : β}
     {exp : ℝ} {coef : PreMS basis_tl} {c : γ} {next : β}
     (h : F b = some (exp, coef, c, next)) :
     gcorec F op b = cons exp coef (op c (gcorec F op next)) := by
@@ -212,6 +295,18 @@ theorem destruct_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {c
     destruct (cons exp coef tl) = some (exp, coef, tl) := by
   simp [destruct, cons]
 
+theorem destruct_eq_none {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : destruct ms = none) : ms = nil := by
+  apply Stream'.Seq.destruct_eq_none
+  simpa [destruct] using h
+
+theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : destruct ms = some (exp, coef, tl)) : ms = cons exp coef tl := by
+  apply Stream'.Seq.destruct_eq_cons
+  simp [destruct] at h
+  grind
+
 @[simp]
 theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     head (nil : PreMS (basis_hd :: basis_tl)) = none := by
@@ -222,6 +317,17 @@ theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef 
     {tl : PreMS (basis_hd :: basis_tl)} :
     head (cons exp coef tl) = some (exp, coef) := by
   simp [head, cons]
+
+@[simp]
+theorem tail_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    tail (nil : PreMS (basis_hd :: basis_tl)) = nil := by
+  simp [tail, nil]
+
+@[simp]
+theorem tail_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    tail (cons exp coef tl) = tl := by
+  simp [tail, cons]
 
 @[simp]
 theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
@@ -391,6 +497,12 @@ theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
     simp [hx]
   · assumption
 
+theorem WellOrdered.tail {ms : PreMS (basis_hd :: basis_tl)} (h : ms.WellOrdered) :
+    ms.tail.WellOrdered := by
+  cases ms with
+  | nil => simpa
+  | cons exp coef tl => simpa using (WellOrdered_cons h).right.right
+
 /-- Coinduction principle for proving `WellOrdered`. For some predicate `motive` on multiseries,
 if `motive ms` (base case) and the predicate "survives" destruction of its argument, then `ms` is
 `WellOrdered`. Here "survive" means that if `x = cons (exp, coef) tl` than `motive x` must imply
@@ -421,22 +533,132 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
       · specialize h_step exp coef tl h
         grind
 
+private abbrev PreservesWellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
+  ∀ x, PreMS.WellOrdered x → (op x).WellOrdered
+
+theorem PreservesWellOrdered.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {op op' : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h_preserves : PreservesWellOrdered op) (h_preserves' : PreservesWellOrdered op') :
+    PreservesWellOrdered (op ∘ op') := by
+  simp [PreservesWellOrdered] at *
+  grind
+
 theorem WellOrdered.coind_friend {ms : PreMS (basis_hd :: basis_tl)}
-    {γ : Type*} (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
-    [FriendOperation op]
     (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
-    (h_op : ∀ c x, PreMS.WellOrdered x → (op c x).WellOrdered)
     (h_base : motive ms)
     (h_step : ∀ exp coef tl, motive (PreMS.cons exp coef tl) →
         coef.WellOrdered ∧
         tl.leadingExp < exp ∧
-        ∃ c x, tl = op c x ∧ motive x) :
+        ∃ (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+        (x : PreMS (basis_hd :: basis_tl)), tl = op x ∧
+        FriendOperation op ∧ PreservesWellOrdered op ∧ motive x) :
     ms.WellOrdered := by
-  sorry
+  let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
+    ∃ (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+      (x : PreMS (basis_hd :: basis_tl)), ms = op x ∧ FriendOperation op ∧
+      PreservesWellOrdered op ∧ motive x
+  apply WellOrdered.coind motive'
+  · use id, ms
+    simp [h_base, FriendOperation.id, PreservesWellOrdered]
+  intro exp coef tl ⟨op, x, h_eq, h_friend, h_preserves, hx⟩
+  cases x with
+  | nil =>
+    have : WellOrdered (PreMS.cons exp coef tl) := by
+      rw [h_eq]
+      apply h_preserves
+      apply WellOrdered.nil
+    obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+    exact ⟨h_coef_wo, h_comp, fun _ ↦ tl, PreMS.nil, rfl, FriendOperation.const,
+      fun _ _ ↦ h_tl, hx⟩
+  | cons x_exp x_coef x_tl =>
+  obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
+    h_step x_exp x_coef x_tl hx
+  obtain ⟨x_tl', hx_tl_head, this⟩ : ∃ (x_tl' : PreMS (basis_hd :: basis_tl)),
+      x_tl.head = x_tl'.head ∧ WellOrdered (PreMS.cons x_exp x_coef x_tl') := by
+    cases x_tl with
+    | nil =>
+      use .nil
+      simp only [head_nil, true_and]
+      apply WellOrdered.cons_nil hx_coef
+    | cons x_tl_exp x_tl_coef x_tl_tl =>
+      use .cons x_tl_exp x_tl_coef .nil
+      simp only [head_cons, true_and]
+      apply WellOrdered.cons hx_coef
+      · simpa using hx_comp
+      apply WellOrdered.cons_nil
+      cases y with
+      | nil =>
+        have : WellOrdered (PreMS.cons x_tl_exp x_tl_coef x_tl_tl) := by
+          rw [hx_tl]
+          apply h_preserves'
+          apply WellOrdered.nil
+        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+        assumption
+      | cons y_exp y_coef y_tl =>
+        have : WellOrdered (basis := basis_hd :: basis_tl) (PreMS.cons y_exp y_coef .nil) := by
+          apply WellOrdered.cons_nil
+          grind
+        apply h_preserves' at this
+        obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend'
+        have h1 := hT (PreMS.cons y_exp y_coef .nil)
+        have h2 := hT (PreMS.cons y_exp y_coef y_tl)
+        simp only [tail_cons, head_cons] at h1 h2
+        cases hT_head : T (some (y_exp, y_coef)) with
+        | none =>
+          simp [hT_head, ← hx_tl] at h2
+        | some v =>
+        obtain ⟨z_exp, z_coef, op'', h_friend''⟩ := v
+        simp only [hT_head, Option.map_some, ← hx_tl, destruct_cons, Option.some.injEq,
+          Prod.mk.injEq] at h1 h2
+        obtain ⟨rfl, rfl, rfl⟩ := h2
+        apply destruct_eq_cons at h1
+        rw [h1] at this
+        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+        assumption
+  apply h_preserves at this
+  obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend
+  have h1 := hT (PreMS.cons x_exp x_coef x_tl')
+  have h2 := hT (PreMS.cons x_exp x_coef x_tl)
+  simp only [tail_cons, head_cons] at h1 h2
+  cases hT_head : T (some (x_exp, x_coef)) with
+  | none => simp [← h_eq, hT_head] at h2
+  | some v =>
+  obtain ⟨exp', coef', op'', h_friend''⟩ := v
+  simp only [hT_head, Option.map_some, ← h_eq, destruct_cons, Option.some.injEq,
+    Prod.mk.injEq] at h1 h2
+  obtain ⟨rfl, rfl, h_tl_eq⟩ := h2
+  apply destruct_eq_cons at h1
+  rw [h1] at this
+  obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+  refine ⟨h_coef_wo, ?_, ?_⟩
+  · simpa [h_tl_eq, leadingExp, FriendOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
+  simp only [motive']
+  use (fun z ↦ if (op' z).leadingExp < x_exp then
+    (op (PreMS.cons x_exp x_coef (op' z))).tail else .nil), y
+  constructorm* _ ∧ _
+  · simp [← hx_tl, ← h_eq, hx_comp]
+  · change FriendOperation ((fun z ↦ if z.leadingExp < (x_exp : WithBot ℝ) then
+      (op (PreMS.cons x_exp x_coef z)).tail else .nil) ∘ op')
+    apply FriendOperation.comp _ h_friend'
+    simp only [leadingExp]
+    let P (hd : Option (ℝ × PreMS basis_tl)) : Prop :=
+      (match hd with | none => ⊥ | some (exp, _) => exp) < (x_exp : WithBot ℝ)
+    apply FriendOperation.ite (P := P)
+    · apply FriendOperation.cons_tail h_friend
+    · apply FriendOperation.const
+  · intro z hz
+    dsimp
+    split_ifs with h_if
+    · apply WellOrdered.tail
+      apply h_preserves
+      apply WellOrdered.cons hx_coef h_if (h_preserves' z hz)
+    · apply WellOrdered.nil
+  · exact hy
 
 theorem WellOrdered.coind_friend' {ms : PreMS (basis_hd :: basis_tl)}
     {γ : Type*} (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
-    [FriendOperation op]
+    [FriendOperationClass op]
     (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
     (C : γ → Prop)
     (h_op : ∀ c x, C c → PreMS.WellOrdered x → (op c x).WellOrdered)
@@ -446,11 +668,11 @@ theorem WellOrdered.coind_friend' {ms : PreMS (basis_hd :: basis_tl)}
         tl.leadingExp < exp ∧
         ∃ c x, tl = op c x ∧ C c ∧ motive x) :
     ms.WellOrdered := by
-  let γ' := Subtype C
-  let op' (c : γ') := op c.val
-  have : FriendOperation op' := FriendOperation.comp _ _
-  apply WellOrdered.coind_friend op' motive _ h_base
-  all_goals (simp [γ']; grind)
+  apply WellOrdered.coind_friend motive h_base
+  intro exp coef tl ih
+  specialize h_step exp coef tl ih
+  obtain ⟨h_coef_wo, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
+  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendOperationClass.FriendOperation _, by grind, hx⟩
 
 end WellOrdered
 
@@ -645,17 +867,6 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
   have := OrderHom.le_gfp _ this
   unfold Approximates
   aesop
-
--- theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
---     (motive : (ms : PreMS (basis_hd :: basis_tl)) → (f : ℝ → ℝ) → Prop)
---     (h_base : motive ms f)
---     (h_step : ∀ ms f, motive ms f →
---       (ms = .nil ∧ f =ᶠ[atTop] 0) ∨
---       (∃ exp coef tl fC, ms = PreMS.cons exp coef tl ∧
---         (coef.Approximates fC) ∧
---         majorated f basis_hd exp ∧
---         ∃ c x , tl = op c x ∧ motive tl (fun t ↦ f t - (basis_hd t) ^ exp * (fC t))))) :
---     ms.Approximates f := by
 
 @[simp]
 theorem Approximates_const_iff {ms : PreMS []} {f : ℝ → ℝ} :

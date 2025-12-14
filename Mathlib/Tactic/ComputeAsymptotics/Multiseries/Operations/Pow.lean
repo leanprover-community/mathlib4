@@ -309,7 +309,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         apply div_pos hF_pos
         apply Real.rpow_pos_of_pos h_basis_hd_pos
       simp only [pow, destruct_cons]
-      apply Approximates_of_EventuallyEq (f := fun t ↦ (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t * (basis_hd t)^(exp * a) *
+      apply Approximates_of_EventuallyEq (f := fun t ↦
+        (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t * (basis_hd t)^(exp * a) *
         (fC t)^a)
       · apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
@@ -320,9 +321,8 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       swap
       · apply pow_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         rwa [leadingTerm_cons_coef] at h_pos
-      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦ (f t - basis_hd t ^ exp * fC t) *
-          (basis_hd t)^(-exp) * fC⁻¹ t)
-          (basis := basis_hd :: basis_tl) := by
+      have : (tl.mulMonomial coef.inv (-exp)).Approximates (fun t ↦
+          (f t - basis_hd t ^ exp * fC t) * (basis_hd t)^(-exp) * fC⁻¹ t) := by
         apply mulMonomial_Approximates h_basis
         · exact h_tl
         · exact inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed

@@ -91,46 +91,72 @@ theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2�
   · convert Nat.find_comp_succ _ _ _
     simp [Stream'.cons]
 
-theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :
-    dist (cons x s) (cons y t) = 1 := by
+theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
+    dist s t = 2⁻¹ * dist s.tail t.tail := by
+  cases s <;> cases t <;> simp at h <;> simp [h]
+
+theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
   · convert pow_zero _
-    simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
+    simp only [PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
       Nat.find_eq_zero]
     intro h'
     simpa [Stream'.cons]
-  · rw [Subtype.coe_ne_coe, ne_eq, cons_eq_cons]
+  · rw [Subtype.coe_ne_coe]
+    contrapose! h
     simp [h]
+
+theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :
+    dist (cons x s) (cons y t) = 1 := by
+  apply dist_eq_one_of_head
+  simpa
 
 @[simp]
 theorem dist_cons_nil (x : α) (s : Seq α) : dist (cons x s) nil = 1 := by
-  rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
-  · convert pow_zero _
-    simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
-      Nat.find_eq_zero]
-    intro h'
-    simp [Stream'.cons]
-  · rw [Subtype.coe_ne_coe, ne_eq]
-    exact cons_ne_nil
+  apply dist_eq_one_of_head
+  simp
 
 @[simp]
 theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
   rw [dist_comm]
   simp
 
-class FriendOperation (f : γ → Seq α → Seq α) : Prop where
-  lipschitz : ∀ c : γ, LipschitzWith 1 (f c)
+def FriendOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
 
-theorem FriendOperation.comp (f : γ → Seq α → Seq α) (g : γ' → γ)
-    [h : FriendOperation f] : FriendOperation (fun c ↦ f (g c)) := by
-  grind [FriendOperation]
+class FriendOperationClass (F : γ → Seq α → Seq α) : Prop where
+  friend : ∀ c : γ, FriendOperation (F c)
 
-theorem FriendOperation.dist_le {op : γ → Seq α → Seq α} [h : FriendOperation op]
-    {c : γ} {s t : Seq α} : dist (op c s) (op c t) ≤ dist s t := by
-  have := h.lipschitz c
-  rw [lipschitzWith_iff_dist_le_mul] at this
-  specialize this s t
-  simpa using this
+theorem FriendOperation.id : FriendOperation (id : Seq α → Seq α) :=
+  LipschitzWith.id
+
+theorem FriendOperation.comp {op op' : Seq α → Seq α}
+    (h : FriendOperation op) (h' : FriendOperation op') :
+    FriendOperation (op ∘ op') := by
+  rw [FriendOperation] at h h' ⊢
+  convert h.comp h'
+  simp
+
+theorem FriendOperation.const {s : Seq α} : FriendOperation (fun _ ↦ s) := by
+  simp [FriendOperation, lipschitzWith_iff_dist_le_mul]
+
+theorem FriendOperationClass.comp (F : γ → Seq α → Seq α) (g : γ' → γ)
+    [h : FriendOperationClass F] : FriendOperationClass (fun c ↦ F (g c)) := by
+  grind [FriendOperationClass]
+
+theorem FriendOperation.ite {op₁ op₂ : Seq α → Seq α}
+    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂)
+    {P : Option α → Prop} [DecidablePred P] :
+    FriendOperation (fun s ↦ if P s.head then op₁ s else op₂ s) := by
+  rw [FriendOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one] at h₁ h₂ ⊢
+  intro s t
+  by_cases! h_head : s.head ≠ t.head
+  · simp [dist_eq_one_of_head h_head]
+  grind
+
+theorem FriendOperation.dist_le {op : Seq α → Seq α} (h : FriendOperation op)
+    {s t : Seq α} : dist (op s) (op t) ≤ dist s t := by
+  rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at h
+  simpa using h s t
 
 theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →ᵤ Seq α))
     (h : LipschitzWith 2⁻¹ F) :
@@ -144,7 +170,7 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   exact hF.fixedPoint_isFixedPt
 
 theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
-    [h : FriendOperation op] :
+    [h : FriendOperationClass op] :
     ∃ f : β → Seq α, ∀ b : β,
     match F b with
     | none => f b = nil
@@ -167,8 +193,8 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
       simp
       calc
         _ ≤ dist (f b') (g b') := by
-          have := h.lipschitz c
-          rw [lipschitzWith_iff_dist_le_mul] at this
+          have := h.friend c
+          rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at this
           specialize this (f b') (g b')
           simpa using this
         _ ≤ _ := by
@@ -197,24 +223,23 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
     rw [hf]
 
 noncomputable def gcorec (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
-    [FriendOperation op] :
+    [FriendOperationClass op] :
   β → Seq α := (FriendOperation.exists_fixed_point F op).choose
 
 theorem gcorec_nil {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
-    [FriendOperation op] {b : β}
+    [FriendOperationClass op] {b : β}
     (h : F b = none) :
     gcorec F op b = nil := by
   have := (FriendOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
 
 theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
-    [FriendOperation op] {b : β}
+    [FriendOperationClass op] {b : β}
     {a : α} {c : γ} {b' : β}
     (h : F b = some (a, c, b')) :
     gcorec F op b = Seq.cons a (op c (gcorec F op b')) := by
   have := (FriendOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
-
 
 @[local simp]
 lemma inv_two_pow_succ_lt_one (n : ℕ) : ¬ 1 ≤ (2⁻¹ : ℝ) ^ (n + 1) := by
@@ -223,14 +248,116 @@ lemma inv_two_pow_succ_lt_one (n : ℕ) : ¬ 1 ≤ (2⁻¹ : ℝ) ^ (n + 1) := b
   refine mul_lt_one_of_nonneg_of_lt_one_right (pow_le_one₀ ?_ ?_) ?_ ?_
   all_goals norm_num
 
+theorem FriendOperation.head_eq {op : Seq α → Seq α} (h : FriendOperation op) {a : α}
+    {s t : Seq α} : head (op <| cons a s) = head (op <| cons a t) := by
+  rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at h
+  specialize h (cons a s) (cons a t)
+  simp only [NNReal.coe_one, dist_cons_cons, one_mul] at h
+  replace h : dist (op (cons a s)) (op (cons a t)) ≤ 2⁻¹ := by
+    apply h.trans
+    simp
+  cases hs : op (cons a s) with
+  | nil =>
+    cases ht : op (cons a t) with
+    | nil => simp
+    | cons t_hd t_tl => norm_num [hs, ht] at h
+  | cons s_hd s_tl =>
+    cases ht : op (cons a t) with
+    | nil => norm_num [hs, ht] at h
+    | cons t_hd t_tl =>
+      simp only [head_cons, Option.some.injEq]
+      by_contra! h_hd
+      rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
+      norm_num at h
+
+theorem FriendOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendOperation op) :
+    FriendOperation (fun s ↦ (op (cons hd s)).tail) := by
+  simp_rw [FriendOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one, one_mul] at h ⊢
+  intro x y
+  specialize h (cons hd x) (cons hd y)
+  simp only [dist_cons_cons] at h
+  cases hx : op (cons hd x) with
+  | nil =>
+    cases hy : op (cons hd y) with
+    | nil => simp
+    | cons y_hd y_tl =>
+      contrapose! h
+      grw [hx, hy, dist_le_one]
+      norm_num
+  | cons x_hd x_tl =>
+    cases hy : op (cons hd y) with
+    | nil =>
+      contrapose! h
+      grw [hx, hy, dist_le_one]
+      norm_num
+    | cons y_hd y_tl =>
+      by_cases! h_hd : x_hd ≠ y_hd
+      · contrapose! h
+        grw [hx, hy, dist_cons_cons_eq_one h_hd, dist_le_one]
+        norm_num
+      simpa [hx, hy, h_hd] using h
+
+theorem FriendOperation.destruct {op : Seq α → Seq α} (h : FriendOperation op) :
+    ∃ T : Option α → Option (α × Subtype FriendOperation),
+      ∀ s, destruct (op s) = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail)) := by
+  use fun hd? ↦
+    match hd? with
+    | none =>
+      let t := op nil
+      match t.destruct with
+      | none => none
+      | some (t_hd, t_tl) =>
+        some (t_hd, ⟨fun _ ↦ t_tl, FriendOperation.const⟩)
+    | some s_hd =>
+      let s := cons s_hd nil
+      let t := op s
+      match t.destruct with
+      | none => none
+      | some (t_hd, t_tl) =>
+        some (t_hd, ⟨fun s_tl ↦ (op (cons s_hd s_tl)).tail, FriendOperation.cons_tail h⟩)
+  intro s
+  cases s with
+  | nil =>
+    generalize op nil = t
+    cases t <;> simp
+  | cons s_hd s_tl =>
+    simp only [tail_cons, head_cons]
+    generalize ht0 : op (cons s_hd nil) = t0 at *
+    generalize ht : op (cons s_hd s_tl) = t at *
+    have : t0.head = t.head := by
+      rw [← ht0, ← ht, FriendOperation.head_eq h]
+    cases t0 with
+    | nil =>
+      cases t with
+      | nil => simp
+      | cons => simp at this
+    | cons =>
+      cases t with
+      | nil => simp at this
+      | cons => simp_all
+
+theorem FriendOperation.head_eq_head {op : Seq α → Seq α} (h : FriendOperation op) {s t : Seq α}
+    (h_head : s.head = t.head) : (op s).head = (op t).head := by
+  obtain ⟨T, hT⟩ := FriendOperation.destruct h
+  have hs := hT s
+  have ht := hT t
+  simp [Stream'.Seq.head_eq_destruct, hs, ht] at h_head ⊢
+  simp [h_head]
+  rfl
+
+theorem FriendOperation.head_eq_head_of_cons {op : Seq α → Seq α} (h : FriendOperation op) {a : α}
+    {s t : Seq α} : (op (cons a s)).head = (op (cons a t)).head := by
+  apply FriendOperation.head_eq_head h
+  simp
+
 attribute [-simp] inv_pow in
-theorem FriendOperation.coind_aux (motive : (Seq α → Seq α) → Prop)
-    (h_step : ∀ op, motive op → ∃ (H : Option α → Option α) (op' : Seq α → Seq α),
-      motive op' ∧ ∀ s, head (op s) = H (head s) ∧
-      tail (op s) = op' (tail s)) (op : Seq α → Seq α)
+theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
+    (h_step : ∀ op, motive op → ∃ T : Option α → Option (α × Subtype motive),
+      ∀ s, (op s).destruct = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail)))
+    (op : Seq α → Seq α)
     (h_base : motive op) :
-    LipschitzWith 1 op := by
-  rw [lipschitzWith_iff_dist_le_mul]
+    FriendOperation op := by
+  rw [FriendOperation, lipschitzWith_iff_dist_le_mul]
   intro s t
   simp only [NNReal.coe_one, one_mul]
   suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n by
@@ -244,46 +371,43 @@ theorem FriendOperation.coind_aux (motive : (Seq α → Seq α) → Prop)
   induction n generalizing op s t with
   | zero => simp
   | succ n ih =>
-  by_cases! h : op s = op t
-  · simp [h]
-  obtain ⟨H, op', h_tl, h_head⟩ := h_step _ h_base
-  obtain ⟨hs_head, hs_tail⟩ := h_head s
-  obtain ⟨ht_head, ht_tail⟩ := h_head t
-  cases s with
-  | nil =>
-    cases t
-    · simp at h
-    · simp at hn
-  | cons s_hd s_tl =>
-  cases t with
-  | nil => simp at hn
-  | cons t_hd t_tl =>
-  by_cases! h_head : s_hd ≠ t_hd
-  · simp [dist_cons_cons_eq_one h_head] at hn
-  subst h_head
-  have h_head : (op (cons s_hd s_tl)).head = (op (cons s_hd t_tl)).head := by
-    simp [hs_head, ht_head]
-  generalize op (cons s_hd s_tl) = x at *
-  generalize op (cons s_hd t_tl) = y at *
-  cases x <;> cases y <;> simp at h h_head
-  rename_i x_hd x_tl y_hd y_tl
-  simp only [h_head, forall_const, tail_cons, dist_cons_cons, pow_succ', inv_pos, Nat.ofNat_pos,
-    mul_le_mul_iff_right₀, ge_iff_le] at h hs_tail ht_tail ⊢
-  rw [hs_tail, ht_tail]
-  apply ih _ h_tl
-  simpa [pow_succ'] using hn
+  specialize h_step _ h_base
+  obtain ⟨T, hT⟩ := h_step
+  have hs := hT s
+  have ht := hT t
+  by_cases! h_head : s.head ≠ t.head
+  · contrapose! hn
+    norm_num [pow_succ, dist_eq_one_of_head h_head]
+    refine mul_lt_one_of_nonneg_of_lt_one_right (pow_le_one₀ ?_ ?_) ?_ ?_
+    all_goals norm_num
+  cases hT_head : T s.head with
+  | none =>
+    simp only [hT_head, Option.map_none, ← h_head] at hs ht
+    apply Stream'.Seq.destruct_eq_none at hs
+    apply Stream'.Seq.destruct_eq_none at ht
+    simp [hs, ht]
+  | some v =>
+    obtain ⟨hd, op', h_next⟩ := v
+    simp only [hT_head, Option.map_some, ← h_head] at hs ht
+    apply Stream'.Seq.destruct_eq_cons at hs
+    apply Stream'.Seq.destruct_eq_cons at ht
+    simp only [hs, ht, dist_cons_cons, pow_succ', inv_pos, Nat.ofNat_pos, mul_le_mul_iff_right₀,
+      ge_iff_le]
+    apply ih _ h_next
+    simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
-theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
-    (h_step : ∀ op, motive op → ∃ (H : Option α → Option α) (op' : Seq α → Seq α),
-      motive op' ∧ ∀ s, head (op s) = H (head s) ∧
-      tail (op s) = op' (tail s)) (op : γ → Seq α → Seq α)
-    (h_base : ∀ c, motive (op c)) :
-    FriendOperation op := by
+theorem FriendOperationClass.coind (motive : (Seq α → Seq α) → Prop)
+    (h_step : ∀ op, motive op → ∃ T : Option α → Option (α × Subtype motive),
+      ∀ s, (op s).destruct = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail)))
+    (op : γ → Seq α → Seq α) (h_base : ∀ c, motive (op c)) :
+    FriendOperationClass op := by
   constructor
   intro c
-  apply FriendOperation.coind_aux _ h_step _ (by grind)
+  apply FriendOperation.coind _ h_step _ (by grind)
 
-theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α} [FriendOperation op]
+-- TODO: prove using eq_of_bisim
+theorem FriendOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α}
+    [FriendOperationClass op]
     (motive : Seq α → Seq α → Prop)
     (base : motive s t)
     (step : ∀ s t, motive s t → (s = t) ∨
@@ -310,6 +434,7 @@ theorem FriendOperation.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq �
       _ ≤ 2⁻¹ * dist s' t' := by
         gcongr
         apply FriendOperation.dist_le
+        apply FriendOperationClass.friend
       _ ≤ _ := by
         grw [ih, pow_succ']
 

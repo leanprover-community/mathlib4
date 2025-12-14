@@ -580,9 +580,8 @@ theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
   apply neg_Approximates hY_approx
 
 instance {basis_hd basis_tl} :
-    Stream'.Seq.FriendOperation (add (basis := basis_hd :: basis_tl)) := by
+    FriendOperationClass (add (basis := basis_hd :: basis_tl)) := by
   sorry
-  -- apply Stream'.Seq.FriendOperation.coind
 
 theorem eq_of_bisim_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {x y : PreMS (basis_hd :: basis_tl)}

@@ -719,7 +719,7 @@ mutual
 end
 
 instance {basis_hd basis_tl} :
-    Stream'.Seq.FriendOperation (mul (basis := basis_hd :: basis_tl)) := by
+    FriendOperationClass (mul (basis := basis_hd :: basis_tl)) := by
   sorry
 
 theorem WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
