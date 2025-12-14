@@ -37,7 +37,7 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1)
   rcases hk with ⟨c, rfl⟩
   have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by lia
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
-  omega
+  lia
 
 end Imo1994Q1
 
@@ -88,4 +88,4 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
-  simpa [Fin.coe_sub, tedious, rev] using card_le_card hf
+  simpa [Fin.val_sub, tedious, rev] using card_le_card hf
