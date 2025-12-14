@@ -89,11 +89,11 @@ theorem mk_neg {A : ValuationSubring K} {x : K} (h : -x ∈ A) :
   (⟨-x, h⟩ : A) = -⟨x, neg_mem_iff.1 h⟩ := rfl
 
 @[simp]
-theorem mk_natCast (n : ℕ) {A : ValuationSubring K} (h : (n : K) ∈ A) :
+theorem mk_natCast {A : ValuationSubring K} {n : ℕ} (h : (n : K) ∈ A) :
   (⟨n, h⟩ : A) = n := rfl
 
 @[simp]
-theorem mk_intCast (n : ℤ) {A : ValuationSubring K} (h : (n : K) ∈ A) :
+theorem mk_intCast {A : ValuationSubring K} {n : ℤ} (h : (n : K) ∈ A) :
   (⟨n, h⟩ : A) = n := rfl
 
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
