@@ -686,6 +686,17 @@ theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
   rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.injective]
 
+@[continuity, fun_prop]
+lemma continuous_rangeSplitting {f : X → Y} (hf : IsOpenEmbedding f) :
+    Continuous (rangeSplitting f) where
+  isOpen_preimage s hs := by
+    rw [preimage_rangeSplitting hf.injective]
+    unfold instTopologicalSpaceSubtype
+    rw [isOpen_induced_iff]
+    simp_rw [← comp_rangeSplitting, preimage_comp, preimage_rangeSplitting hf.injective]
+    use f '' s, hf.isOpen_iff_image_isOpen.mp hs
+    simp [hf.injective]
+
 end IsOpenEmbedding
 
 end IsOpenEmbedding
@@ -734,6 +745,19 @@ lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
     IsClosedEmbedding f ↔ Continuous f ∧ Injective f ∧ IsClosedMap f where
   mp h := ⟨h.continuous, h.injective, h.isClosedMap⟩
   mpr h := .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2
+
+
+@[continuity, fun_prop]
+lemma continuous_rangeSplitting {f : X → Y} (hf : IsClosedEmbedding f) :
+    Continuous (rangeSplitting f) where
+  isOpen_preimage s hs := by
+    rw [← isClosed_compl_iff] at hs ⊢
+    rw [← preimage_compl, preimage_rangeSplitting hf.injective]
+    unfold instTopologicalSpaceSubtype
+    rw [isClosed_induced_iff]
+    simp_rw [← comp_rangeSplitting, preimage_comp, preimage_rangeSplitting hf.injective]
+    use f '' sᶜ, hf.isClosed_iff_image_isClosed.mp hs
+    simp [hf.injective]
 
 @[fun_prop]
 protected theorem id : IsClosedEmbedding (@id X) := ⟨.id, IsClosedMap.id.isClosed_range⟩

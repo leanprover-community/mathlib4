@@ -176,6 +176,11 @@ end Range
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
 noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
 
+@[simp]
+lemma _root_.Function.Injective.rangeSplitting_apply {f : α → β} (hf : f.Injective) (x : α) :
+    rangeSplitting f ⟨f x, mem_range_self x⟩ = x := by
+  apply hf; exact (mem_range_self x).choose_spec
+
 -- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
