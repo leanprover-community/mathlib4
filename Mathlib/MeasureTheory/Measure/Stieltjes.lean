@@ -89,6 +89,7 @@ def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
     have : h.choose ≤ a := h.choose_spec _
     grind
   · simp
+
 lemma notMem_botSet_of_lt {x y : R} (h : x < y) : y ∉ botSet := by
   simp only [botSet]
   split_ifs with h'
@@ -329,7 +330,7 @@ variable [OrderTopology R]
 statement for half-open intervals, the point of the current statement being that one can use
 compactness to reduce it to a finite sum, and argue by induction on the size of the covering set.
 
-To be able to handle also the top element if there is one, we `Iotop` instead of `Ioo` in the
+To be able to handle also the top element if there is one, we use `Iotop` instead of `Ioo` in the
 statement. As these intervals are all open, this does not change the proof. -/
 theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆ ⋃ i, Iotop (c i) (d i)) :
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
