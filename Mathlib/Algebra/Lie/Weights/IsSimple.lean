@@ -282,8 +282,10 @@ lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
     have h_sub : β - (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
         (rootSystem H).root i ∈ q := by convert h_refl using 1
     simpa using q.sub_mem hβ_mem h_sub
-  use i.val; aesop
-  simpa [smul_smul, hi] using q.smul_mem (β (coroot val))⁻¹ h_smul
+  refine ⟨i.val, i.prop, ?_⟩
+  have h_scaled := q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
+  simp only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi] at h_scaled
+  exact h_scaled
 
 lemma LieAlgebra.IsKilling.exists_orthogonal_element_of_ne_top
     (q : Submodule K (Dual K H)) (hq : q ≠ ⊤) :
