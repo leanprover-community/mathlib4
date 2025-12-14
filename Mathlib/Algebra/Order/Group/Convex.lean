@@ -12,6 +12,7 @@ public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Order.Birkhoff
+public import Mathlib.Order.Quotient
 
 /-! # Convex subgroups of a linearly ordered abelian group -/
 
@@ -173,39 +174,31 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
 
 @[to_additive] instance : CommGroup (α ⧸ G) := inferInstanceAs <| CommGroup (α ⧸ G.toSubgroup)
 
+@[to_additive] local instance (x : Quotient (QuotientGroup.leftRel G.toSubgroup)) :
+    (Quotient.mk _ ⁻¹' {x}).OrdConnected where
+  out' := by
+    rintro ax rfl ay eq a ha
+    exact QuotientGroup.eq.mpr (G.convex (a := ay⁻¹ * ax) (by have := ha.2; gcongr)
+      (inv_mul_le_one_iff.mpr ha.1) <| QuotientGroup.eq.mp eq)
+
 /-- The linear order on the quotient of a linearly ordered abelian group by a convex subgroup. -/
-@[to_additive] noncomputable instance : LinearOrder (α ⧸ G) where
-  le x y := ∀ a : α, ⟦a⟧ = x → ∃ b : α, ⟦b⟧ = y ∧ a ≤ b
-  le_refl x a ha := ⟨a, ha, le_rfl⟩
-  le_trans x y z h₁ h₂ a := by
-    rintro rfl
-    obtain ⟨b, rfl, hab⟩ := h₁ a rfl
-    obtain ⟨c, rfl, hbc⟩ := h₂ b rfl
-    exact ⟨c, rfl, hab.trans hbc⟩
-  le_antisymm x y h₁ h₂ := by
-    obtain ⟨b, rfl, hab⟩ := h₁ _ x.out_eq
-    obtain ⟨a, rfl, hba⟩ := h₂ _ rfl
-    exact QuotientGroup.eq.mpr <| G.convex (mul_le_mul_left' hab a⁻¹) (by simpa)
-      (QuotientGroup.eq.mp ⟦a⟧.out_eq.symm)
-  le_total a b := by
-    by_contra!
-    obtain ⟨⟨a, rfl, hba⟩, ⟨b, rfl, hab⟩⟩ := this
-    exact lt_irrefl _ <| (hab _ rfl).trans (hba _ rfl)
-  toDecidableLE := Classical.decRel _
+@[to_additive] noncomputable instance : LinearOrder (α ⧸ G) := by
+  classical exact inferInstanceAs (LinearOrder (Quotient _))
 
 @[to_additive] instance : IsOrderedMonoid (α ⧸ G) :=
-  have {x y z : α ⧸ G} (le : x ≤ y) : z * x ≤ z * y := fun ca hca ↦ by
+  have {x y z : α ⧸ G} (le : x ≤ y) : z * x ≤ z * y := by
+    rw [Quotient.le_iff_forall_left_exists] at le ⊢
     obtain ⟨b, rfl, hb⟩ := le _ x.out_eq
-    exact ⟨ca * x.out⁻¹ * b, by simp [hca], by simpa [mul_assoc]⟩
-  { mul_le_mul_left _ _ le _ := this le
-    mul_le_mul_right _ _ le z := by simpa only [← mul_comm z] using this le }
+    exact fun ca hca ↦ ⟨ca * x.out⁻¹ * b, by simp [hca], by simpa [mul_assoc]⟩
+  { mul_le_mul_left _ _ le z := by simpa only [← mul_comm z] using this le
+    mul_le_mul_right _ _ le _ := this le }
 
 /-- The quotient map by a convex subgroup as an ordered group homomorphism. -/
 @[to_additive
 /-- The quotient map by a convex subgroup as an ordered additive group homomorphism. -/]
 def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
   __ := QuotientGroup.mk' G.toSubgroup
-  monotone' a b le a' eq := ⟨a' * a⁻¹ * b, by simp [eq], by simp [mul_assoc, le]⟩
+  monotone' _ _ le := Quotient.mk_le_mk.mpr (.inl le)
 
 end ConvexSubgroup
 
