@@ -251,7 +251,7 @@ theorem sum_mul_eq_sub_integral_mul₁ (hc : c 0 = 0) (hc1 : c 1 = 0) (b : ℝ)
     · exact fun x hx ↦ this hx
     · intro x hx
       rw [this hx, mul_zero]
-  rw [← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ, Nat.succ_eq_add_one, 
+  rw [← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ, Nat.succ_eq_add_one,
     zero_add, ← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ,
     Nat.succ_eq_add_one, one_add_one_eq_two, ← add_sum_Ioc_eq_sum_Icc]
   · nth_rewrite 3 [show 2 = ⌊(2 : ℝ)⌋₊ by simp]
