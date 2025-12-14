@@ -133,6 +133,8 @@ end delaborators
 
 namespace Set
 
+attribute [to_dual_dont_translate] Set
+
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
