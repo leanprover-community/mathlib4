@@ -147,12 +147,12 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
 
 @[simp]
 theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
-  induction p using Quotient.inductionOn
-  rename_i a
-  have : Path.pi (fun b => a.map (continuous_apply b)) = a := by
-    ext
-    simp
-  simp [← Path.Homotopic.Quotient.mk_map, pi_lift, this]
+  induction p using Quotient.inductionOn with
+  | _ a =>
+    have : Path.pi (fun b => a.map (continuous_apply b)) = a := by
+      ext
+      simp
+    simp [← Path.Homotopic.Quotient.mk_map, pi_lift, this]
 
 end Pi
 
