@@ -623,7 +623,6 @@ theorem sumQuot_repr_inr (v : V) (j : n) :
     classical
     simp [LinearMap.comp_apply, sumQuot_inr, Finsupp.single_apply]
 
-@[simp]
 theorem sumQuot_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
     (sumQuot bW bQ).repr v (Sum.inr j) = 0 := by
   suffices W.mkQ v = 0 by simp [sumQuot_repr_inr, this]
