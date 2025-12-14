@@ -764,7 +764,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
   | corr, k, .atom info val, str => do
     --dbg_trace "kinds:\n{k}"
     --dbg_trace "val: '{val}'"
-    let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toSubstring str
+    let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toRawSubstring str
     let (_, tail) := info.getLeadTrail
     --dbg_trace "(tail: '{tail.norm}', (tail[0], str[{ppEndPos}]) ('{(tail.take 1).norm}' '{(str.get ppEndPos)}'))\n"
     let cond := tail.take 1 == "".push (str.get ppEndPos)
@@ -786,12 +786,13 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     pure (str, corr)
 
 partial
-def _root_.String.mkGroups (s : String) (n : Nat) : List String :=
+def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String.Slice :=
   if n == 0 || s.length ≤ n then [s] else
   s.take n :: (s.drop n).mkGroups n
 
-def byTens (s : String) (n : Nat := 9) : String :=
-  "\n".intercalate <| ("".intercalate <| (List.range n).map (fun n => s!"{(n + 1) % 10}")) :: s.mkGroups n
+-- TODO: fix this and re-enable it!
+-- def byTens (s : String) (n : Nat := 9) : String.Slice :=
+--   "\n".intercalate <| ("".intercalate <| (List.range n).map (fun n => s!"{(n + 1) % 10}")) :: (s.toSlice.mkGroups n)
 
 def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
     Option (Lean.Syntax.Range × MessageData × String) := Id.run do
@@ -890,7 +891,8 @@ elab "#show_corr " cmd:command : command => do
           b.ok,
           b.bracket,
         )
-    logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
+    -- TODO: fix `byTens` and re-enable this logging output
+    --logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
   else logWarning "Error"
 
 -- #show_corr
@@ -1091,7 +1093,7 @@ partial
 def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
     (addSpace removeSpace removeLine : String) :
     String × Array FormatError :=
-  if M.trimAscii.isEmpty then (rebuilt ++ L.toString, as) else
+  if M.trimAscii.isEmpty then (rebuilt ++ L.toSlice, as) else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
@@ -1103,7 +1105,7 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
   --dbg_trace (L.take 3, M.take 3)
-  if (L.take 3) == "/--".toslice && (M.take 3) == "/--".toSlice then
+  if (L.take 3) == "/--".toSlice && (M.take 3) == "/--".toSlice then
     parallelScanAux as (rebuilt ++ "/--") (L.drop 3).copy (M.drop 3).copy addSpace removeSpace removeLine else
   if (L.take 2) == "--".toSlice then
     let newL := L.dropWhile (· != '\n')
@@ -1113,7 +1115,7 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimLeft newM.trimLeft addSpace removeSpace removeLine else
+    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimAsciiStart.copy newM.trimAsciiStart.copy addSpace removeSpace removeLine else
   if (L.take 2) == "-/".toSlice then
     let newL := L.drop 2 |>.trimAsciiStart
     let newM := M.drop 2 |>.trimAsciiStart
@@ -1144,7 +1146,7 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
-  let (_expected, formatErrors) := parallelScanAux ∅ "" src.toSubstring fmt.toSubstring "🐩" "🦤" "😹"
+  let (_expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
   --dbg_trace "src:\n{src}\n---\nfmt:\n{fmt}\n---\nexpected:\n{expected}\n---"
   formatErrors
 
@@ -1154,12 +1156,12 @@ def _root_.Lean.Syntax.compareToString : Array FormatError → Syntax → String
     (getChoiceNode kind args).foldl (init := tot) (· ++ ·.compareToString tot s)
   | tot, .ident i raw _ _, s =>
     let (l, t) := i.getLeadTrail
-    let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
+    let (_r, f) := parallelScanAux tot "" (l ++ raw.toString ++ t) s "🐩" "🦤" "😹"
     --dbg_trace "'{r}'"
     f
   | tot, .atom i s', s => --compareLeaf tot i.getLeadTrail s' s
     let (l, t) := i.getLeadTrail
-    let (_r, f) := parallelScanAux tot "" (l ++ s' ++ t).toSubstring s.toSubstring "🐩" "🦤" "😹"
+    let (_r, f) := parallelScanAux tot "" (l ++ s' ++ t) s "🐩" "🦤" "😹"
     --dbg__trace "'{r}'"
     f
   | tot, .missing, _s => tot
@@ -1372,9 +1374,9 @@ def mkExpectedWindow (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
     {orig with startPos := extLeft.stopPos, stopPos := start}.toString ++ " " ++
       {afterWhitespace with startPos := start}.toString
 
-#guard mkExpectedWindow "0123 abcdef    \n ghi".toSubstring ⟨8⟩ == "abc def"
+#guard mkExpectedWindow "0123 abcdef    \n ghi".toRawSubstring ⟨8⟩ == "abc def"
 
-#guard mkExpectedWindow "0123 abc    \n def ghi".toSubstring ⟨9⟩ == "abc def"
+#guard mkExpectedWindow "0123 abc    \n def ghi".toRawSubstring ⟨9⟩ == "abc def"
 
 def _root_.Mathlib.Linter.mex.mkWindow (orig : Substring.Raw) (m : mex) (ctx : Nat := 4) : String :=
   let lth := ({orig with startPos := m.rg.start, stopPos := m.rg.stop}).toString.length
@@ -1401,7 +1403,7 @@ def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) :
   let origWindow := mkWindowSubstring' orig m.rg.start
   let expectedWindow := mkExpectedWindow orig m.rg.start
   m!"{m.error} in the source\n\n\
-  This part of the code\n  '{origWindow.trim}'\n\
+  This part of the code\n  '{origWindow.trimAscii}'\n\
   should be written as\n  '{expectedWindow}'\n"
 
 /-- If `s` is a `Substring` and `p` is a `String.Pos`, then `s.break p` is the pair consisting of
@@ -1435,32 +1437,32 @@ whitespace, is redundant and gets trimmed.
 def mkStrings (orig : Substring.Raw) (ms : Array String.Pos.Raw) : Array Substring.Raw :=
   let (tot, orig) := ms.foldl (init := (#[], orig)) fun (tot, orig) pos =>
     let (start, follow) := orig.break pos
-    let newTot := tot.push start ++ if (follow.take 1).trim.isEmpty then #[] else #[" ".toSubstring]
+    let newTot := tot.push start ++ if (follow.take 1).trim.isEmpty then #[] else #[" ".toRawSubstring]
     (newTot, follow.trimLeft)
   tot.push orig
 
 section Tests
-local instance : Coe String Substring.Raw := ⟨String.toSubstring⟩
+local instance : Coe String Substring.Raw := ⟨String.toRawSubstring⟩
 
 #guard -- empty positions, store `s` in a singleton array
   let s := "abcdef    ghi jkl"
   let ms : Array String.Pos.Raw := #[]
-  #[s.toSubstring] == mkStrings s.toSubstring ms
+  #[s.toRawSubstring] == mkStrings s.toRawSubstring ms
 
 #guard
   let s := "12345    ghi jkl"
   let ms : Array String.Pos.Raw := #[⟨5⟩]
-  #["12345".toSubstring, "ghi jkl".toSubstring] == mkStrings s.toSubstring ms
+  #["12345".toRawSubstring, "ghi jkl".toRawSubstring] == mkStrings s.toRawSubstring ms
 
 #guard
   let s := "12345    ghi    jkl"
   let ms : Array String.Pos.Raw := #[⟨2⟩, ⟨5⟩, ⟨10⟩, ⟨12⟩]
-  #["12".toSubstring, " ", "345", "g", " ", "hi", "jkl"] == mkStrings s.toSubstring ms
+  #["12".toRawSubstring, " ", "345", "g", " ", "hi", "jkl"] == mkStrings s.toRawSubstring ms
 
 #guard
   let s := "12345    ghi    jklmno pqr"
   let ms : Array String.Pos.Raw := #[⟨6⟩, ⟨13⟩, ⟨19⟩]
-  #["12345 ".toSubstring, "ghi ", "jkl", " ", "mno pqr"] == mkStrings s.toSubstring ms
+  #["12345 ".toRawSubstring, "ghi ", "jkl", " ", "mno pqr"] == mkStrings s.toRawSubstring ms
 
 end Tests
 
@@ -1487,8 +1489,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   let stxNoSpaces := stx.eraseLeadTrailSpaces
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
-    let pp := pretty.toSubstring
-    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] stx pretty.toSubstring
+    let pp := pretty.toRawSubstring
+    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] stx pretty.toRawSubstring
     let (reported, excluded) := corr.partition fun _ {kinds := ks,..} => !totalExclusions.contains ks
     let fm ← getFileMap
     --dbg_trace "reported: {reported.toArray.map (fm.toPosition ·.1)}"
