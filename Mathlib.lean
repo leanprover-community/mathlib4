@@ -6783,6 +6783,7 @@ public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Group.Compact
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Group.Extension
 public import Mathlib.Topology.Algebra.Group.GroupTopology
 public import Mathlib.Topology.Algebra.Group.OpenMapping
 public import Mathlib.Topology.Algebra.Group.Pointwise
