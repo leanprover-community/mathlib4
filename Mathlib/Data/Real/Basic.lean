@@ -230,7 +230,7 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f :=
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := (rfl)
 
-instance : LE ℝ :=
+@[no_expose] instance : LE ℝ :=
   ⟨fun x y ↦ x < y ∨ x = y⟩
 
 @[simp]
