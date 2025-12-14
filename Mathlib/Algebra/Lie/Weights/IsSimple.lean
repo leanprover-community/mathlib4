@@ -266,17 +266,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
-lemma LieAlgebra.IsKilling.exists_coroot_pairing_ne_zero
-    (β : Dual K H) (hβ : β ≠ 0) :
-    ∃ i, (rootSystem H).toRootPairing.toLinearMap β ((rootSystem H).coroot i) ≠ 0 := by
-      -- Assume for contradiction that for all roots i, β applied to the coroot of i is zero.
-      by_contra h_contra
-      have h_zero_on_span : ∀ x ∈ Submodule.span K (Set.range (rootSystem H).coroot), β x = 0 := by
-        intro x hx; induction hx using Submodule.span_induction <;> aesop;
-        rw [ ← right, h_contra _ left ];
-      exact hβ ( by ext x; aesop )
-
-
 lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
     (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
@@ -285,10 +274,12 @@ lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
       -- Since $q \neq \bot$, there exists $\beta \in q$ with $\beta \neq 0$.
       obtain ⟨β, hβ⟩ : ∃ β : Dual K H, β ∈ q ∧ β ≠ 0 := by
         exact ( Submodule.ne_bot_iff _ ).mp h;
-      -- Since $q$ is invariant under the reflection corresponding to a root $\alpha_i$, we have $\alpha_i \in q$.
-      obtain ⟨i, hi⟩ : ∃ i : H.root, (rootSystem H).toRootPairing.toLinearMap β ((rootSystem H).coroot i) ≠ 0 := by
-        have := LieAlgebra.IsKilling.exists_coroot_pairing_ne_zero β;
-        exact this hβ.2;
+      -- Since coroots span H (RootSystem.span_coroot_eq_top), a nonzero β must be nonzero on some coroot
+      obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
+        by_contra h_contra
+        push_neg at h_contra
+        exact hβ.2 (LinearMap.ext_on_range (rootSystem H).span_coroot_eq_top fun i ↦
+          h_contra i ▸ (LinearMap.zero_apply _).symm)
       -- Since $q$ is invariant under the reflection corresponding to $\alpha_i$, we have $\alpha_i \in q$.
       have h_alpha_i_in_q : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) • (rootSystem H).root i ∈ q := by
         have h_alpha_i_in_q : (rootSystem H).reflection i β ∈ q := by
