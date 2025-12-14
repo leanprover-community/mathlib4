@@ -195,11 +195,26 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
     simp only [nsmul_eq_mul, Nat.cast_id]
 
+@[simp]
+theorem descPochhammer_smeval_cast (R : Type*) [Ring R] {S : Type*} [NonAssocRing S]
+    [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
+    (x : S) (n : ℕ) : (descPochhammer R n).smeval x = (descPochhammer ℤ n).smeval x := by
+  induction n with
+  | zero => simp only [descPochhammer_zero, smeval_one, one_smul]
+  | succ n hn =>
+    simp only [descPochhammer_succ_right, mul_sub, smeval_sub, smeval_mul_X, ← Nat.cast_comm]
+    simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
+    simp only [natCast_zsmul, nsmul_eq_mul]
+
 variable {R : Type*}
 
 theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (n : ℕ) :
     (ascPochhammer ℕ n).smeval r = (ascPochhammer R n).eval r := by
   rw [eval_eq_smeval, ascPochhammer_smeval_cast R]
+
+theorem descPochhammer_smeval_eq_eval [Ring R] (r : R) (n : ℕ) :
+    (descPochhammer ℤ n).smeval r = (descPochhammer R n).eval r := by
+  rw [eval_eq_smeval, descPochhammer_smeval_cast R]
 
 variable [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
 
@@ -395,6 +410,17 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
   rw [← nsmul_right_inj (Nat.factorial_ne_zero k),
     ← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
     ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
+
+@[simp]
+theorem choose_eq_zero_iff {R : Type*} [Ring R] [IsDomain R] [BinomialRing R] [IsAddTorsionFree R]
+    (r : R) (n : ℕ) : choose r n = 0 ↔ ∃ k < n, k = r :=
+  calc
+    _ ↔ (descPochhammer ℤ n).smeval r = 0 := by
+      rw [Ring.descPochhammer_eq_factorial_smul_choose,
+        IsAddTorsionFree.nsmul_eq_zero_iff_right (Nat.factorial_ne_zero n)]
+    _ ↔ ∃ k < n, k = r := by
+      rw [descPochhammer_smeval_cast, descPochhammer_smeval_eq_eval,
+        descPochhammer_eval_eq_zero_iff]
 
 @[simp]
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by

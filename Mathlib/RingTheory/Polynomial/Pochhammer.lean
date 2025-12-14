@@ -456,6 +456,26 @@ theorem descPochhammer_eval_coe_nat_of_lt {k n : ℕ} (h : k < n) :
     ← Nat.cast_add_one, ← neg_sub, ← Nat.cast_sub h]
   exact ascPochhammer_eval_neg_coe_nat_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
 
+/-- Over an integral domain, the descending Pochhammer polynomial of degree `n` has roots *only* at
+`0`, `1`, ..., `(n - 1)`. -/
+@[simp]
+theorem descPochhammer_eval_eq_zero_iff [IsDomain R]
+    (n : ℕ) (r : R) : (descPochhammer R n).eval r = 0 ↔ ∃ k < n, k = r := by
+  refine ⟨fun zero' ↦ ?_, fun hrn ↦ ?_⟩
+  · induction n with
+    | zero => simp only [descPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero'
+    | succ n ih =>
+      rw [descPochhammer_succ_eval, mul_eq_zero] at zero'
+      cases zero' with
+      | inl h =>
+        obtain ⟨rn, hrn, rrn⟩ := ih h
+        exact ⟨rn, by lia, rrn⟩
+      | inr h =>
+        exact ⟨n, lt_add_one n, (eq_of_sub_eq_zero h).symm⟩
+  · obtain ⟨rn, hrn, rnn⟩ := hrn
+    convert descPochhammer_eval_coe_nat_of_lt hrn
+    simp [rnn]
+
 lemma descPochhammer_eval_eq_prod_range {R : Type*} [CommRing R] (n : ℕ) (r : R) :
     (descPochhammer R n).eval r = ∏ j ∈ Finset.range n, (r - j) := by
   induction n with
