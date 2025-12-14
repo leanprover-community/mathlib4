@@ -446,7 +446,7 @@ theorem integral_theta_div_log_sq_isBigO :
   · apply IntervalIntegrable.abs
     apply intervalIntegrable_iff.mpr
     rw [Set.uIoc_of_le (by linarith), ← integrableOn_Icc_iff_integrableOn_Ioc]
-    apply integrable_theta_div_id_mul_log_sq
+    apply integrableOn_theta_div_id_mul_log_sq
   · apply IntervalIntegrable.const_mul
     apply intervalIntegrable_one_div_log_sq <;> linarith
   · intro t ht
