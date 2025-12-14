@@ -281,10 +281,6 @@ section PrimeCounting
 
 We relate `θ` to the prime counting function `π`.-/
 
-lemma deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
-    deriv (fun x => (log x)⁻¹) x = -x⁻¹ / (log x ^ 2) := by
-  simp_all
-
 open Asymptotics Filter MeasureTheory
 
 /-- Integrability for the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/

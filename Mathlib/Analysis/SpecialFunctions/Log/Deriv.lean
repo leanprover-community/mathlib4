@@ -71,6 +71,10 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
+theorem deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
+    deriv (fun x => (log x)⁻¹) x = -x⁻¹ / (log x ^ 2) := by
+  simp_all
+
 theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
   refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
   have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
