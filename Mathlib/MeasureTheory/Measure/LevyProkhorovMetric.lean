@@ -6,9 +6,12 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Measure.Portmanteau
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+
+import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
+
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
@@ -722,4 +725,133 @@ instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution
 
+/-!
+S ⊆ P(X) is relatively compact iff tight.
+Let X be a compact metric space. P(X) is a compact metric space.
+-/
+variable {X : Type*} [MetricSpace X] [MeasurableSpace X] [CompactSpace X] [BorelSpace X]
+-- Need non EMetric for LevyProkhorov.continuous_equiv_symm_probabilityMeasure
+-- and T2 for RealRMK.rieszMeasure
+noncomputable section Arav
+
+open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedContinuousMap
+  Filter TopologicalSpace
+
+
+omit [BorelSpace X] in
+lemma fin_integral_prob_meas {μ : ProbabilityMeasure X} {f : C(X, ℝ)} :
+    HasFiniteIntegral ⇑f μ := by
+  let f' := BoundedContinuousFunction.mkOfCompact f
+  obtain ⟨c, hf'⟩ := BoundedContinuousFunction.bddAbove_range_norm_comp f'
+  change HasFiniteIntegral f' μ
+  simp_rw [mem_upperBounds,Set.mem_range, Function.comp_apply, forall_exists_index,
+      forall_apply_eq_imp_iff] at hf'
+  exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
+
+instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
+  let A := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1 }
+  have hAeq : A = toStrongDual ⁻¹' Metric.closedBall 0 1 := by ext x; simp [A]
+  have hA1 : IsCompact A := by
+    rw [hAeq]; exact isCompact_closedBall ℝ 0 1
+  let B := { φ : WeakDual ℝ C(X, ℝ) | φ ⟨(fun x => 1), continuous_const⟩ = 1 }
+  let C := { φ : WeakDual ℝ C(X, ℝ) | ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f}
+  let Φ := A ∩ B ∩ C -- Note this is compact,but we only need closedness
+  have hΦ1 : IsClosed Φ := by
+    · refine IsClosed.inter (IsClosed.inter (IsCompact.isClosed hA1) ?_) ?_
+      · let phi1 : WeakDual ℝ C(X, ℝ) → ℝ := fun f ↦ f ⟨(fun x => 1), continuous_const⟩
+        have : B = phi1 ⁻¹' {1} := by ext x; simp [B, phi1]
+        simpa [this] using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_singleton)
+      · have : C = ⋂ (f : { g : C_c(X, ℝ) | 0 ≤ g }), { φ : WeakDual ℝ C(X, ℝ) | 0 ≤ φ f } := by
+          ext x; simp [C]
+        simp only [this]
+        refine isClosed_iInter fun f ↦ ?_
+        let evaluatef := fun φ : WeakDual ℝ C(X, ℝ) ↦ φ f
+        have : {φ | 0 ≤ φ f} = evaluatef ⁻¹' Set.Ici 0 := by ext x; simp [evaluatef]
+        simpa [this] using (IsClosed.preimage (WeakDual.eval_continuous _) isClosed_Ici)
+  refine UniformSpace.compactSpace_iff_seqCompactSpace.mpr ⟨?_⟩
+  let Λ (φ : Φ) : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
+  { toFun f := φ.1 f.1
+    map_add' := by simp
+    map_smul' := by simp
+    monotone' := by
+      intro f g hfb
+      have hφ_nonneg : 0 ≤ φ.1 (g - f) := φ.2.2 (g - f) <| sub_nonneg.2 hfb
+      have cont_map_dist : φ.1 (g - f) = φ.1 (g.toContinuousMap - f.toContinuousMap) := rfl
+      have : 0 ≤ φ.1 g.toContinuousMap - φ.1 f.toContinuousMap := by
+        rw [← ContinuousLinearMap.map_sub, ← cont_map_dist]; exact hφ_nonneg
+      simpa using (le_of_sub_nonneg this) }
+  have IsPMeas (φ : Φ) : IsProbabilityMeasure <| RealRMK.rieszMeasure (Λ φ) := by
+    let c1 := CompactlySupportedContinuousMap.continuousMapEquiv
+        ⟨(fun (x : X) => (1 : ℝ)), continuous_const⟩
+    refine isProbabilityMeasure_iff.mpr ?_
+    rw [← ENNReal.toReal_eq_one_iff, ← MeasureTheory.Measure.real_def]
+    calc (RealRMK.rieszMeasure (Λ φ)).real Set.univ
+      _ = ∫ (x : X), 1 ∂(RealRMK.rieszMeasure (Λ φ)) := by rw [integral_const, smul_eq_mul, mul_one]
+      _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := (RealRMK.integral_rieszMeasure (Λ φ) c1)
+      _ = 1 := φ.2.1.2
+  let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
+    .ofMeasure ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
+  have : Set.univ = Set.range T := by
+    ext μ
+    let μprob : ProbabilityMeasure X := LevyProkhorov.toMeasureEquiv.toFun μ
+    let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
+    let liftL : C(X, ℝ) →ₚ[ℝ] ℝ :=
+      { toFun := L ∘ continuousMapEquiv
+        map_add' := by
+          intro f g
+          simp only [Function.comp_apply, liftCompactlySupported_add]
+          apply MeasureTheory.integral_add' _ _
+          all_goals simpa [Integrable] using ⟨by measurability,fin_integral_prob_meas⟩
+        map_smul' := by simp [L, integral_const_mul]
+        monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
+    let φ_weak : WeakDual ℝ (C(X,ℝ)) := ((liftL).toLinearMap.mkContinuous 1 ?_)
+    swap
+    · intro f
+      simpa [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk,
+      AddHom.coe_mk, one_mul, L, liftL] using BoundedContinuousFunction.norm_integral_le_norm _
+         (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
+    have as_ball : φ_weak ∈ Φ := by
+      simp only [Φ]
+      refine ⟨⟨?_,?_⟩,?_⟩
+      · refine ContinuousLinearMap.opNorm_le_bound φ_weak (by linarith) fun f ↦ ?_
+        simpa using BoundedContinuousFunction.norm_integral_le_norm μprob
+            (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
+      · simp only [LinearMap.mkContinuous, φ_weak, L, liftL]
+        change (fun f ↦ ∫ (x : X), f x ∂μprob) (fun x ↦ 1) = 1
+        simp
+      · intro g hgpos
+        simp only [φ_weak]
+        change (0 ≤ (fun f ↦ ∫ (x : X), f x ∂μprob) g.toContinuousMap)
+        simpa [coe_toContinuousMap] using integral_nonneg hgpos
+    let φ_fin : Φ := by use φ_weak
+    simpa only [Set.mem_univ, true_iff] using ⟨φ_fin, (Equiv.symm_apply_eq
+        (LevyProkhorov.toMeasureEquiv)).mpr <| Subtype.ext
+        RealRMK.rieszMeasure_integralPositiveLinearMap⟩
+  have hsubset : StrongDual.toWeakDual ⁻¹' (Φ : Set (WeakDual ℝ C(X, ℝ))) ⊆
+      Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1 := fun ψ hψ ↦ by simpa [hAeq] using hψ.1.1
+  have hbBall : Bornology.IsBounded (Metric.closedBall (0 : StrongDual ℝ C(X, ℝ)) 1) := by
+    simpa using (Metric.isBounded_closedBall (x := (0 : StrongDual ℝ C(X, ℝ))) (r := (1 : ℝ)))
+  have hΦseq : IsSeqCompact (Φ : Set (WeakDual ℝ C(X, ℝ))) :=
+    isSeqCompact_of_isBounded_of_isClosed (𝕜 := ℝ) (V := C(X, ℝ))
+      (hb := hbBall.subset hsubset) (hc := hΦ1)
+  have hΦ2 : SeqCompactSpace Φ := by -- There must be an easier way to get this from hΦseq
+    refine (seqCompactSpace_iff Φ).mpr fun x hx ↦ ?_
+    have hx' n : ((x n : Φ) : WeakDual ℝ C(X, ℝ)) ∈ (Φ : Set (WeakDual ℝ C(X, ℝ))) := (x n).property
+    rcases hΦseq hx' with ⟨a, haΦ, φ, hφmono, hφlim⟩
+    have hφlim' : Tendsto (fun n => (x (φ n) : WeakDual ℝ C(X, ℝ))) atTop (nhds a) := hφlim
+    exact ⟨⟨a, haΦ⟩, trivial, φ, hφmono,
+        (tendsto_subtype_rng (p := fun φ => φ ∈ (Φ : Set (WeakDual ℝ C(X, ℝ))))).2 hφlim'⟩
+  simp only [this]
+  refine IsSeqCompact.range <| Continuous.seqContinuous <| Continuous.comp
+      (LevyProkhorov.continuous_ofMeasure_probabilityMeasure) ?_ (Y := ProbabilityMeasure X)
+  · rw [ProbabilityMeasure.continuous_iff_forall_continuous_integral]
+    intro BCfun
+    let CCfun := CompactlySupportedContinuousMap.continuousMapEquiv BCfun.toContinuousMap
+    have IntToMeas x : ∫ (x : X), BCfun x ∂RealRMK.rieszMeasure (Λ x) =
+        Λ x (continuousMapEquiv BCfun.toContinuousMap) := RealRMK.integral_rieszMeasure (Λ x) CCfun
+    simpa [IntToMeas, Λ] using Continuous.comp (WeakDual.eval_continuous _) continuous_subtype_val
+        (g := (fun (x : WeakDual ℝ C(X,ℝ)) ↦ x CCfun.toContinuousMap))
+
+
+end Arav
 end MeasureTheory -- namespace
