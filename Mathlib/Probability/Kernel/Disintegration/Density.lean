@@ -160,7 +160,7 @@ lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ 
 
 lemma adapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (a : α)
     {s : Set β} (hs : MeasurableSet s) :
-    Adapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
+    StronglyAdapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
   fun n ↦ stronglyMeasurable_countableFiltration_densityProcess κ ν n a hs
 
 lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
