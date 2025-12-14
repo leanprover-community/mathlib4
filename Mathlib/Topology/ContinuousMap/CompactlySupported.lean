@@ -186,6 +186,10 @@ instance [Zero β] : Inhabited C_c(α, β) :=
   ⟨0⟩
 
 @[simp]
+lemma liftCompactlySupported_zero [CompactSpace α] [AddCommMonoid β] :
+  continuousMapEquiv (0 : C(α, β)) = 0 := rfl
+
+@[simp]
 theorem coe_zero [Zero β] : ⇑(0 : C_c(α, β)) = 0 :=
   rfl
 
@@ -241,6 +245,10 @@ lemma add_apply (f g : C_c(α, β)) : (f + g) x = f x + g x := rfl
 instance : AddZeroClass C_c(α, β) := DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 end AddZeroClass
+
+@[simp]
+lemma liftCompactlySupported_add [CompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
+  (f g : C(α, β)) : continuousMapEquiv (f + g) = continuousMapEquiv f + continuousMapEquiv g := rfl
 
 /-- Coercion to a function as a `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → β where

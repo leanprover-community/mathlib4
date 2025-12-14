@@ -854,4 +854,4 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
 
 
 end Arav
-end MeasureTheory -- namespace
+end MeasureTheory

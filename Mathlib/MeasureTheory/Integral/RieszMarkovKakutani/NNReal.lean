@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
-
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
@@ -29,26 +28,15 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 @[expose] public section
 
-namespace CompactlySupportedContinuousMap
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CompactSpace α] [AddCommMonoid β]
-
-@[simp] lemma liftCompactlySupported_zero : continuousMapEquiv (0 : C(α, β)) = 0 := rfl
-
-variable [ContinuousAdd β]
-
-@[simp] lemma liftCompactlySupported_add (f g : C(α, β)) :
-    continuousMapEquiv (f + g) = continuousMapEquiv f + continuousMapEquiv g := rfl
-
-end CompactlySupportedContinuousMap
-
 open scoped NNReal
 
 open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
 
-namespace NNRealRMK
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
+
+namespace NNRealRMK
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `rieszMeasure`
