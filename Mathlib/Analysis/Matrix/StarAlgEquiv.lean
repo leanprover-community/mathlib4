@@ -91,7 +91,7 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
   rw [← Unitary.coe_star, Unitary.star_eq_inv, ← Uinv]
   simp [αa, Algebra.smul_mul_assoc, U, smul_smul, ← RCLike.ofReal_mul, ← Real.rpow_add this2, hy]
 
-public theorem Matrix.AlgEquiv.eq_mulSemiringActionToAlgEquiv {n : Type*} [Fintype n]
+theorem Matrix.AlgEquiv.eq_mulSemiringActionToAlgEquiv {n : Type*} [Fintype n]
     [DecidableEq n] (f : Matrix n n 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜) :
     ∃ U : GL n 𝕜, f = MulSemiringAction.toAlgEquiv 𝕜 (G := ConjAct (GL n 𝕜)) _ U := by
   obtain ⟨U, hU⟩ := ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv').eq_linearEquivConjAlgEquiv
