@@ -287,28 +287,6 @@ instance forget_preservesColimitsOfSize :
 
 instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) where
 
-lemma pushout_isOpen_iff {A X Y : TopCat.{u}} {f : A ⟶ X} {g : A ⟶ Y} (s : Set ↑(pushout f g)) :
-    IsOpen s ↔ IsOpen (pushout.inl f g ⁻¹' s) ∧ IsOpen (pushout.inr f g ⁻¹' s) := by
-  have «forall» {p : WalkingSpan → Prop} : (∀ x, p x) ↔ p .left ∧ p .zero ∧  p .right :=
-    ⟨fun h ↦ ⟨h _, h _, h _⟩, by rintro ⟨_, _, _⟩ (_ | _ | _) <;> assumption⟩
-  have {h : IsOpen (pushout.inr f g ⁻¹' s)} : IsOpen (colimit.ι (span f g) .zero ⁻¹' s) := by
-    rw [← colimit.w (span f g) WalkingSpan.Hom.snd, ConcreteCategory.preimage_hom_comp]
-    exact h.preimage g.continuous
-  rw [TopCat.colimit_isOpen_iff, «forall»]
-  conv_lhs =>
-    enter [2]; rw [and_iff_right_of_imp]
-    · rfl
-    · exact @this
-  rfl
-
-lemma isOpen_iff_of_isPushout {A X Y Z : TopCat.{u}} {f : A ⟶ X} {g : A ⟶ Y} {inl : X ⟶ Z}
-    {inr : Y ⟶ Z} (h : IsPushout f g inl inr) (s : Set Z) :
-    IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) := by
-  simp_rw [← (homeoOfIso <| h.isoPushout).symm.isOpen_preimage, pushout_isOpen_iff,
-  preimage_preimage]
-  simp [← ConcreteCategory.comp_apply]
-    -- rw [← h.isOpen_iff]; exact ⟨h.1, h.2⟩
-
 end Colimits
 
 /-- The terminal object of `Top` is `PUnit`. -/
