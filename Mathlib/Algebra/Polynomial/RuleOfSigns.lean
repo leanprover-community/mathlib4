@@ -313,7 +313,15 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   · --P is zero degree, therefore a constant.
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by
-      grind [coeff_X_sub_C_mul, mul_zero, coeff_eq_zero_of_natDegree_lt]
+      #adaptation_note
+      /--
+      It may be possible to change this back to
+      `grind [coeff_X_sub_C_mul, mul_zero, coeff_eq_zero_of_natDegree_lt]`
+      on nightly-2025-12-14 (or ideally without needing the `mul_zero`),
+      but if not just remove this note.
+      The proof by `grind` is a hack, doing arithmetic reasoning (i.e. `mul_zero`) by e-matching.
+      -/
+      simp_all [coeff_X_sub_C_mul, coeff_eq_zero_of_natDegree_lt]
     dsimp [signVariations, coeffList]
     rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
