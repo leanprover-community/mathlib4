@@ -167,6 +167,16 @@ theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
+theorem t2Space_iff_of_continuous_of_surjective_of_isOpenMap [TopologicalSpace Y] {π : X → Y}
+    (hcont : Continuous π) (hsurj : Surjective π) (hop : IsOpenMap π) :
+    T2Space Y ↔ IsClosed {q : X × X | π q.1 = π q.2} := by
+  rw [t2_iff_isClosed_diagonal]
+  constructor <;> intro H
+  · exact H.preimage (hcont.prodMap hcont)
+  · simp_rw [← isOpen_compl_iff] at H ⊢
+    convert hop.prodMap hop _ H
+    exact ((hsurj.prodMap hsurj).image_preimage _).symm
+
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
   (tendsto_nhds_unique_inseparable ha hb).eq
