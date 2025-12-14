@@ -9,13 +9,14 @@ public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.MeasureTheory.Integral.Regular
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Prokhorov theorem
 
 We prove statements about the compactness of sets of finite measures or probability measures,
-notably a version of Prokhorov theorem on tight sets of probability measures.
+notably several versions of Prokhorov theorem on tight sets of probability measures.
 
 ## Main statements
 
@@ -24,6 +25,8 @@ space is itself compact
 * `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
   sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
   to the complement of `Kₙ` form a compact set.
+* `isCompact_closure_of_isTightMeasureSet`: Given a tight set of probability measures, its closure
+  is compact.
 
 Versions are also given for finite measures.
 
@@ -35,13 +38,18 @@ For the compactness of the space of probability measures in a compact space, we 
 ultrafilter converges, using the Riesz-Markov-Kakutani theorem to construct the limiting measure
 in terms of its integrals against continuous functions.
 
-For Prokhorov theorem, we rely on the compactness of the space of measures
-inside each compact set to get convergence of the restriction there, and argue that the full
-measure converges to the sum of the individual limits of the disjointed components. There is a
-subtlety that the space of finite measures giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed
-in our general setting, but we only need to find *a* limit satisfying this condition. To ensure
-this, we modify the individual limits (again using Riesz-Markov-Kakutani) to make sure that
-they are inner-regular.
+For Prokhorov theorem `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`,
+we rely on the compactness of the space of measures inside each compact set to get convergence
+of the restriction there, and argue that the full measure converges to the sum of the individual
+limits of the disjointed components. There is a subtlety that the space of finite measures
+giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed in our general setting, but we only need to
+find *a* limit satisfying this condition. To ensure this, we modify the individual limits
+(again using Riesz-Markov-Kakutani) to make sure that they are inner-regular.
+
+For the version `isCompact_closure_of_isTightMeasureSet` in terms of the closure of a set of tight
+probability measures, we assume additionally that the set of probability measures is separated
+to guarantee that the closure is well behaved. This is satisfied for instance in metrizable spaces,
+or more generally for spaces with the `HasOuterApproxClosed` property.
 -/
 
 @[expose] public section
@@ -444,3 +452,31 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le [NormalSpace
       exact ⟨ν, by simpa [← this] using h'μ , this⟩
   rw [this]
   exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK
+
+
+-- check that the assumptions of next theorem are satisfied by metrizable spaces
+example {E : Type*} [TopologicalSpace E] [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] :
+    T2Space E ∧ NormalSpace E ∧ R1Space (ProbabilityMeasure E) :=
+  ⟨inferInstance, inferInstance, inferInstance⟩
+
+/-- **Prokhorov theorem**: the closure of a tight set of probability measures is compact.
+
+We require the space to be normal and T2, and the space of probability measures to be R1. All these
+properties are satisfied in metrizable spaces for instance. -/
+lemma isCompact_closure_of_isTightMeasureSet [NormalSpace E]
+    [R1Space (ProbabilityMeasure E)] {S : Set (ProbabilityMeasure E)}
+    (hS : IsTightMeasureSet {((μ : ProbabilityMeasure E) : Measure E) | μ ∈ S}) :
+    IsCompact (closure S) := by
+  obtain ⟨u, -, u_pos, u_lim⟩ :
+      ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
+    exists_seq_strictAnti_tendsto 0
+  have A n : ∃ (K : Set E), IsCompact K ∧ ∀ μ ∈ S, μ Kᶜ ≤ u n := by
+    rcases IsTightMeasureSet_iff_exists_isCompact_measure_compl_le.1 hS (u n)
+      (by norm_cast; exact u_pos n) with ⟨K, K_comp, hK⟩
+    refine ⟨K, K_comp, fun μ hμ ↦ ?_⟩
+    have : (μ : Measure E) Kᶜ ≤ u n := hK _ ⟨μ, hμ, rfl⟩
+    exact ENNReal.coe_le_coe.1 (by simpa using this)
+  choose K K_comp hK using A
+  have h'K : IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} :=
+    isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim K_comp
+  exact IsCompact.closure_of_subset h'K (by grind)
