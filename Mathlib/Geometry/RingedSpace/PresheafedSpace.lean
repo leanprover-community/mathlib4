@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 # Presheafed spaces
 
 Introduces the category of topological spaces equipped with a presheaf (taking values in an
-arbitrary target category `C`.)
+arbitrary target category `C`).
 
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
