@@ -97,6 +97,8 @@ instance instNNRatCast : NNRatCast ℝ where nnratCast q := (q : ℚ)
 instance instIntCast : IntCast ℝ where intCast z := (z : ℚ)
 instance instNatCast : NatCast ℝ where natCast n := (n : ℚ)
 
+@[simp] private lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
+@[simp] private lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
 private lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
 private lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 
@@ -375,23 +377,24 @@ instance : IsDomain ℝ := IsStrictOrderedRing.isDomain
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
-set_option backward.proofsInPublic false in
+@[simp] private lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
+  simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
+
 noncomputable instance instField : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
-    simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
-      Ne, ofCauchy.injEq] at *
+    rw [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero, Ne, ofCauchy.injEq] at *
     exact CauSeq.Completion.inv_mul_cancel h
-  inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
+  inv_zero := by rw [← ofCauchy_zero, ← ofCauchy_inv]; simp
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
-    rw [← ofCauchy_nnratCast, NNRat.cast_def]; rfl
+    rw [← ofCauchy_nnratCast, NNRat.cast_def]; simp
   ratCast_def q := by
-    rw [← ofCauchy_ratCast, Rat.cast_def]; rfl
+    rw [← ofCauchy_ratCast, Rat.cast_def]; simp
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : DivisionRing ℝ := by infer_instance

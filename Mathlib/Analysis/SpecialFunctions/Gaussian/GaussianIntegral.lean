@@ -247,7 +247,6 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     intro c hc; filter_upwards with x
     rw [norm_cexp_neg_mul_sq]
     gcongr
-    exact le_of_lt hc
   exact
     continuousAt_of_dominated (Eventually.of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
       (ae_of_all _ f_cts)
