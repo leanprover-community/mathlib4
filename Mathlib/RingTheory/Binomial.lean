@@ -453,6 +453,13 @@ theorem choose_one_right' (r : R) : choose r 1 = r ^ 1 := by
 theorem choose_one_right [NatPowAssoc R] (r : R) : choose r 1 = r := by
   rw [choose_one_right', npow_one]
 
+@[simp]
+theorem choose_two_right {R : Type*} [Ring R] [BinomialRing R] (r : R) :
+    2 • choose r 2 = r * (r - 1) := by
+  nth_rw 1 [← Nat.factorial_two, ← descPochhammer_eq_factorial_smul_choose,
+    descPochhammer_smeval_eq_eval, descPochhammer_succ_eval, descPochhammer_one, eval_X,
+    Nat.cast_one]
+
 theorem choose_neg [NatPowAssoc R] (r : R) (n : ℕ) :
     choose (-r) n = Int.negOnePow n • choose (r + n - 1) n := by
   apply (nsmul_right_inj (Nat.factorial_ne_zero n)).mp
@@ -553,6 +560,123 @@ lemma map_choose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRin
     [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
     f (Ring.choose a n) = Ring.choose (f a) n := by
   simpa using Ring.map_multichoose f (a - n + 1) n
+
+section
+
+variable {R : Type*} [Semiring R]
+
+theorem ascPochhammer_comm {k : ℕ} {r r' : R} (h : Commute r r') :
+    Commute ((ascPochhammer ℕ k).smeval r) r' := by
+  induction k with
+  | zero => simp
+  | _ _ h' =>
+    unfold Commute SemiconjBy at h' ⊢
+    rw [Polynomial.ascPochhammer_smeval_eq_eval] at h' ⊢
+    rw [ascPochhammer_succ_eval, ← mul_assoc, ← h', mul_assoc, mul_add, mul_assoc, ← h,
+      mul_assoc, ← mul_add, add_mul, Nat.cast_comm]
+
+theorem ascPochhammer_comm' {k k' : ℕ} {r r' : R} (h : Commute r r') :
+    Commute ((ascPochhammer ℕ k).smeval r) ((ascPochhammer ℕ k').smeval r'):=
+  (ascPochhammer_comm (ascPochhammer_comm h).symm).symm
+
+theorem descPochhammer_comm {R : Type*} [Ring R] {k : ℕ} {r r' : R} (h : Commute r r') :
+    Commute ((descPochhammer ℤ k).smeval r) r' := by
+  induction k with
+  | zero => simp
+  | _ _ h' =>
+    unfold Commute SemiconjBy at h' ⊢
+    rw [descPochhammer_smeval_eq_eval] at h' ⊢
+    rw [descPochhammer_succ_eval, ← mul_assoc, ← h', mul_assoc, mul_sub, mul_assoc, ← h,
+      mul_assoc, ← mul_sub, sub_mul, Nat.cast_comm]
+
+theorem descPochhammer_comm' {R : Type*} [Ring R] {k k' : ℕ} {r r' : R} (h : Commute r r') :
+    Commute ((descPochhammer ℤ k).smeval r) ((descPochhammer ℤ k').smeval r'):=
+  (descPochhammer_comm (descPochhammer_comm h).symm).symm
+
+end
+
+section
+
+variable {R : Type*} [Ring R] [BinomialRing R]
+
+theorem multichoose_comm {R : Type*} [Semiring R] [BinomialRing R]
+    {k : ℕ} {r r' : R} (h : Commute r r') : Commute (Ring.multichoose r k) r' := by
+  apply @IsAddTorsionFree.nsmul_right_injective R
+    (by infer_instance) BinomialRing.toIsAddTorsionFree k.factorial (Nat.factorial_ne_zero k)
+  simp only [nsmul_eq_mul]
+  rw [← mul_assoc, ← mul_assoc, Nat.cast_comm _ r', mul_assoc r', ← nsmul_eq_mul,
+    factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_comm h]
+
+theorem multichoose_comm' {k k' : ℕ} {r r' : R} (h : Commute r r') :
+    Commute (multichoose r k) (multichoose r' k') := multichoose_comm (multichoose_comm h.symm).symm
+
+theorem choose_comm {k : ℕ} {r r' : R} (h : Commute r r') : Commute (Ring.choose r k) r' := by
+  apply multichoose_comm
+  exact Commute.add_left (Commute.sub_left h (Nat.cast_commute k r')) (Commute.one_left r')
+
+theorem choose_comm' {k k' : ℕ} {r r' : R} (h : Commute r r') :
+    Commute (choose r k) (choose r' k') := choose_comm (choose_comm h.symm).symm
+
+theorem succ_mul_choose_eq (x : R) (k : ℕ) :
+  (x + 1) * choose x k = choose (x + 1) (k + 1) * (k + 1) := by
+  apply @IsAddTorsionFree.nsmul_right_injective R
+      (by infer_instance) (BinomialRing.toIsAddTorsionFree) k.factorial (Nat.factorial_ne_zero k)
+  simp only [nsmul_eq_mul]
+  calc
+    _ = (descPochhammer ℤ k).smeval x * (x + 1) := by
+      rw[← mul_assoc, Nat.cast_comm,
+        mul_assoc, ← nsmul_eq_mul, ← descPochhammer_eq_factorial_smul_choose,
+        ← descPochhammer_comm (by simp)]
+    _ = (descPochhammer ℤ (k + 1)).smeval (x + 1) := by
+      rw [descPochhammer_succ_succ_smeval, descPochhammer_smeval_eq_eval (n := k + 1),
+        descPochhammer_succ_eval, ← descPochhammer_smeval_eq_eval, nsmul_eq_mul',
+        ← mul_add, Nat.cast_add, Nat.cast_one, add_right_comm, add_sub_cancel]
+    _ = ↑k.factorial * (choose (x + 1) (k + 1) * (↑k + 1)) := by
+      rw [← mul_assoc, Nat.cast_comm _ (choose (x + 1) (k + 1)), mul_assoc,
+        ← Nat.cast_succ, ← Nat.cast_mul, ← Nat.cast_comm, mul_comm, ← Nat.factorial_succ,
+        ← nsmul_eq_mul, ← descPochhammer_eq_factorial_smul_choose]
+
+theorem choose_succ_right_eq (x : R) (k : ℕ) :
+    choose x (k + 1) * (k + 1) = choose x k * (x - k) := by
+  have e : (x + 1) * choose x k = choose x (k + 1) * (k + 1) + choose x k * (k + 1) := by
+    rw [← add_mul, add_comm (choose _ _), ← choose_succ_succ, succ_mul_choose_eq]
+  rw [← sub_eq_of_eq_add e, ← choose_comm (by simp), ← mul_sub, add_sub_add_right_eq_sub]
+
+theorem choose_succ_right (x : R) (k : ℕ) :
+    Ring.choose x (k + 1) = Ring.choose (x - 1) k + Ring.choose (x - 1) (k + 1) := by
+  rw [← sub_add_cancel x 1, Ring.choose_succ_succ, sub_add_cancel x 1]
+
+theorem choose_succ_left {x : R} {k : ℕ} (hk : 0 < k) :
+    Ring.choose (x + 1) k  = Ring.choose x (k - 1) + Ring.choose x k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rw [Ring.choose_succ_succ, Nat.add_sub_cancel]
+
+theorem choose_eq_choose_pred_add {x : R} {k : ℕ} (hk : 0 < k) :
+    choose x k = choose (x - 1) (k - 1) + choose (x - 1) k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rw [Ring.choose_succ_right, Nat.add_one_sub_one]
+
+theorem choose_mul {x : R} {k s : ℕ} (hsk : s ≤ k) :
+    choose x k * choose (↑k : R) s = choose x s * choose (x - s) (k - s) := by
+  have h : s.factorial * (k - s).factorial ≠ 0 := by simp [Ne.symm, Nat.factorial_pos, ne_of_lt]
+  apply @IsAddTorsionFree.nsmul_right_injective R
+      (by infer_instance) (BinomialRing.toIsAddTorsionFree) (s.factorial * (k - s).factorial) h
+  simp only [nsmul_eq_mul]
+  calc
+    _ = (descPochhammer ℤ k).smeval x := by
+      rw [← mul_assoc, Nat.cast_comm, mul_assoc, choose_natCast, Nat.cast_comm,
+        ← Nat.cast_mul, ← mul_assoc, Nat.choose_mul_factorial_mul_factorial hsk,
+        ← Nat.cast_comm, ← nsmul_eq_mul, ← descPochhammer_eq_factorial_smul_choose]
+    _ = (descPochhammer ℤ s).smeval x * (descPochhammer ℤ (k - s)).smeval (x - ↑s) := by
+      nth_rw 1 [← Nat.add_sub_cancel' hsk, ← descPochhammer_mul,
+        smeval_mul, smeval_comp, smeval_sub, smeval_X, pow_one, ← C_eq_natCast, smeval_C,
+        pow_zero, zsmul_one, Int.cast_natCast]
+    _ = ↑(s.factorial * (k - s).factorial) * (choose x s * choose (x - ↑s) (k - s)) := by
+      rw [Nat.mul_comm, ← mul_assoc, Nat.cast_mul, mul_assoc _ (↑s.factorial : R),
+      ← nsmul_eq_mul (s.factorial), ← descPochhammer_eq_factorial_smul_choose, Nat.cast_comm,
+      mul_assoc, ← nsmul_eq_mul, ← descPochhammer_eq_factorial_smul_choose]
+
+end
 
 end Ring
 
