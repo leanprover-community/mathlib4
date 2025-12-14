@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.Topology.Algebra.Group.Extension
 
 /-!
 # Haar measures on group extensions
@@ -17,16 +18,14 @@ we construct a Haar measure on `B` from Haar measures on `A` and `B`.
 
 ## Main definitions
 
-* `TopologicalGroup.IsSES φ ψ`: A predicate stating that `φ` is a closed embedding, `ψ` is an open
-  quotient map, and `φ.range = ψ.ker`.
 * `TopologicalGroup.IsSES.inducedMeasure`: The Haar measure on `B` induced by Haar measures
   on `A` and `C`.
 
 ## Main results
 
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
-* `TopologicalGroup.IsSES.not_injOn_of_inducedMeasure_gt`: A sufficiently large open subset of
-  `B` cannot be a fundamental domain.
+* `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
+then `U` has bounded measure.
 
 -/
 
@@ -36,44 +35,12 @@ open MeasureTheory MeasureTheory.Measure
 
 open scoped Pointwise
 
-/-- A predicate stating that `φ` and `ψ` define a short exact sequence of topological groups. -/
-structure TopologicalGroup.IsSES {A B C : Type*} [Group A] [Group B] [Group C]
-    [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →* B) (ψ : B →* C) where
-  isClosedEmbedding : Topology.IsClosedEmbedding φ
-  isOpenQuotientMap : IsOpenQuotientMap ψ
-  exact : φ.range = ψ.ker
-
-/-- A predicate stating that `φ` and `ψ` define a short exact sequence of topological groups. -/
-structure TopologicalAddGroup.IsSES {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
-    [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] (φ : A →+ B) (ψ : B →+ C) where
-  isClosedEmbedding : Topology.IsClosedEmbedding φ
-  isOpenQuotientMap : IsOpenQuotientMap ψ
-  exact : φ.range = ψ.ker
-
-attribute [to_additive TopologicalAddGroup.IsSES] TopologicalGroup.IsSES
-
 namespace TopologicalGroup.IsSES
-
-/-- Construct a short exact sequence of topological groups from a closed normal subgroup. -/
-@[to_additive /-- Construct a short exact sequence of topological groups from a
-closed normal subgroup. -/]
-theorem ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-    (H : Subgroup G) [H.Normal] (hH : IsClosed (H : Set G)) :
-    TopologicalGroup.IsSES H.subtype (QuotientGroup.mk' H) where
-  isClosedEmbedding := ⟨⟨Topology.IsInducing.subtypeVal, H.subtype_injective⟩, by simpa⟩
-  isOpenQuotientMap := MulAction.isOpenQuotientMap_quotientMk
-  exact := by simp
 
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-
-include H in
-@[to_additive]
-theorem apply_apply (a : A) : ψ (φ a) = 1 :=
-   H.exact.le ⟨a, rfl⟩
-
-variable [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
+  [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
 
 /-- Pullback a continuous compactly supported function `f` on `B` to the
 continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
@@ -306,11 +273,12 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
-/-- A sufficiently large open subset of `B` cannot be a fundamental domain. -/
-@[to_additive /-- A sufficiently large open subset of `B` cannot be a fundamental domain. -/]
-theorem not_injOn_of_inducedMeasure_gt (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
-    (h : μC Set.univ * μA {1} < inducedMeasure H μA μC U) :
-    ¬ U.InjOn ψ := by
+/-- If `ψ` is injective on an open set `U`, then `U` has bounded measure. -/
+@[to_additive /-- If `ψ` is injective on an open set `U`, then `U` has bounded measure. -/]
+theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology A]
+    (h : U.InjOn ψ) :
+    inducedMeasure H μA μC U ≤ μC Set.univ * μA {1} := by
+  contrapose! h
   have ho : 0 < μA {1} := (isOpen_discrete {1}).measure_pos _ (Set.singleton_nonempty 1)
   have ht : μA {1} < ⊤ := isCompact_singleton.measure_lt_top
   obtain ⟨K, hKU, hK, h⟩ := Regular.innerRegular hU _ h
