@@ -32,6 +32,8 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 * `LevyProkhorov.eq_convergenceInDistribution`: The topology of the Lévy-Prokhorov metric on
   probability measures on a separable space coincides with the topology of convergence in
   distribution, and in particular convergence in distribution is then pseudometrizable.
+* `MeasureTheory.instCompactSpaceLevyProkhorovProbabilityMeasure`: The space of probability measures
+  on a compact Borel metric space is compact
 
 ## Tags
 
@@ -725,28 +727,10 @@ instance instMetrizableSpaceProbabilityMeasure (X : Type*) [TopologicalSpace X]
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution
 
-/-!
-S ⊆ P(X) is relatively compact iff tight.
-Let X be a compact metric space. P(X) is a compact metric space.
--/
 variable {X : Type*} [MetricSpace X] [MeasurableSpace X] [CompactSpace X] [BorelSpace X]
--- Need non EMetric for LevyProkhorov.continuous_equiv_symm_probabilityMeasure
--- and T2 for RealRMK.rieszMeasure
-noncomputable section Arav
 
 open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedContinuousMap
-  Filter TopologicalSpace
-
-
-omit [BorelSpace X] in
-lemma fin_integral_prob_meas {μ : ProbabilityMeasure X} {f : C(X, ℝ)} :
-    HasFiniteIntegral ⇑f μ := by
-  let f' := BoundedContinuousFunction.mkOfCompact f
-  obtain ⟨c, hf'⟩ := BoundedContinuousFunction.bddAbove_range_norm_comp f'
-  change HasFiniteIntegral f' μ
-  simp_rw [mem_upperBounds,Set.mem_range, Function.comp_apply, forall_exists_index,
-      forall_apply_eq_imp_iff] at hf'
-  exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
+  Filter TopologicalSpace ProbabilityMeasure
 
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let A := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1 }
@@ -801,7 +785,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
           intro f g
           simp only [Function.comp_apply, liftCompactlySupported_add]
           apply MeasureTheory.integral_add' _ _
-          all_goals simpa [Integrable] using ⟨by measurability,fin_integral_prob_meas⟩
+          all_goals simpa [Integrable] using ⟨by measurability,
+              HasFiniteIntegral_continuous_ProbabilityMeasure⟩
         map_smul' := by simp [L, integral_const_mul]
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
     let φ_weak : WeakDual ℝ (C(X,ℝ)) := ((liftL).toLinearMap.mkContinuous 1 ?_)
@@ -852,6 +837,4 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     simpa [IntToMeas, Λ] using Continuous.comp (WeakDual.eval_continuous _) continuous_subtype_val
         (g := (fun (x : WeakDual ℝ C(X,ℝ)) ↦ x CCfun.toContinuousMap))
 
-
-end Arav
 end MeasureTheory

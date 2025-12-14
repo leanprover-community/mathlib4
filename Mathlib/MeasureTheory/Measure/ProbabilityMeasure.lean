@@ -409,7 +409,16 @@ lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F 
     Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
-end convergence_in_distribution -- section
+omit [OpensMeasurableSpace Ω] in lemma HasFiniteIntegral_continuous_ProbabilityMeasure
+ {μ : ProbabilityMeasure Ω} {f : C(Ω, ℝ)} : HasFiniteIntegral ⇑f μ := by
+  let f' := BoundedContinuousFunction.mkOfCompact f
+  obtain ⟨c, hf'⟩ := BoundedContinuousFunction.bddAbove_range_norm_comp f'
+  change HasFiniteIntegral f' μ
+  simp_rw [mem_upperBounds, Set.mem_range, Function.comp_apply, forall_exists_index,
+    forall_apply_eq_imp_iff] at hf'
+  exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
+
+end convergence_in_distribution
 
 section Hausdorff
 
