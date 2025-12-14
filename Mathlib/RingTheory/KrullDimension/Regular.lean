@@ -142,12 +142,13 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
     (hS : (S : Set R) ⊆ maximalIdeal R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (SetLike.coe S)) + S.card := by
   classical
-  induction S using Finset.induction_on
-  · simp only [Finset.card_empty, CharP.cast_eq_zero, add_zero]
+  induction S using Finset.induction_on with
+  | empty =>
+    simp only [Finset.card_empty, CharP.cast_eq_zero, add_zero]
     apply le_of_eq
     rw [Finset.coe_empty, Ideal.span_empty]
     exact RingEquiv.ringKrullDim (RingEquiv.quotientBot R).symm
-  · rename_i a S nmem ih
+  | insert a S nmem ih =>
     have sub : (S : Set R) ⊆ maximalIdeal R := fun x hx ↦ hS (Finset.mem_insert_of_mem hx)
     have : Nontrivial (R ⧸ Ideal.span (SetLike.coe S)) :=
       Ideal.Quotient.nontrivial_iff.mpr

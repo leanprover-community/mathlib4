@@ -366,7 +366,7 @@ namespace ZFSet
 open Ordinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
-  refine ⟨fun x hx y hy ↦ ?_, @fun z y x hz hy hx ↦ ?_⟩
+  refine ⟨fun x hx y hy ↦ ?_, fun {z y x} hz hy hx ↦ ?_⟩
   all_goals
     obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy

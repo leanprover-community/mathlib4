@@ -434,7 +434,7 @@ attribute [local instance] FractionRing.liftAlgebra
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Algebra.IsIntegral A B₂]
     [NoZeroSMulDivisors A B₂] [Algebra.IsAlgebraic (FractionRing A) (FractionRing B)]
     [Algebra.IsAlgebraic (FractionRing A) (FractionRing B₂)]
-     (x : B) (σ : B ≃ₐ[A] B₂) :
+    (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,

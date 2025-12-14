@@ -80,7 +80,7 @@ lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.Finite
   rw [Ideal.height_eq_primeHeight, Ideal.primeHeight] at hn ⊢
   obtain ⟨l, last, len⟩ := Order.exists_series_of_height_eq_coe (⟨p, ‹_›⟩ : PrimeSpectrum R) hn
   rw [hn]
-  exact ⟨l, last, by rw [len]; rfl⟩
+  exact ⟨l, last, by rw [len, WithTop.some_eq_coe, ENat.some_eq_coe]⟩
 
 @[gcongr]
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
