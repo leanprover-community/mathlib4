@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 
 /-!
 # Limits in concrete categories
@@ -325,6 +326,76 @@ theorem multiequalizerEquiv_apply {J : MulticospanShape.{w, w'}}
   rfl
 
 end Multiequalizer
+
+section Pushout
+
+variable {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [ConcreteCategory.{w} C FC] {A X Y Z : C} (f : A ⟶ X) (g : A ⟶ Y) [HasPushout f g]
+variable [PreservesColimit (span f g) (forget C)]
+
+lemma pushout_exists_rep (w : ToType (pushout f g)) :
+    (∃ y, pushout.inl f g y = w) ∨ ∃ z, pushout.inr f g z = w := by
+  obtain ⟨_ | _ | _, x, rfl⟩ := Concrete.colimit_exists_rep _ w
+  focus rw [← colimit.cocone_ι, PushoutCocone.condition_zero]
+  all_goals simp
+
+variable {inl : X ⟶ Z} {inr : Y ⟶ Z} (h : IsPushout f g inl inr)
+variable [(forget C).PreservesMonomorphisms]
+
+instance {D} [Category D] [HasPushout f g] (F : C ⥤ D)
+    [hF : PreservesColimit (span f g) F] : PreservesColimit (span g f) F := by
+  have := hasPushout_symmetry f g
+  have := (IsPushout.of_hasPushout f g).map F |>.hasPushout
+  have := hasPushout_symmetry (F.map f) (F.map g)
+  let η := PreservesPushout.iso F f g
+  apply PreservesPushout.of_iso_comparison (i := ?_)
+  convert inferInstanceAs <|
+    IsIso ((pushoutSymmetry _ _ ).hom ≫ η.hom ≫ (F.mapIso (pushoutSymmetry f g)).hom)
+  ext <;> simp [η, ← F.map_comp]
+
+/-- In any concrete category where the forgetful functor preserves pushouts and monos, the pushout
+of a mono is itself a mono. -/
+instance pushout_inl_of_mono [Mono f] : Mono (pushout.inr f g) := by
+  have := IsPushout.map (forget C) (IsPushout.of_hasPushout f g)
+  replace this := Types.isPullback_of_isPushout this <| mono_iff_injective _ |>.mp inferInstance
+  fapply (inferInstanceAs (forget C).ReflectsMonomorphisms).reflects
+  rw [← PreservesPushout.inr_iso_hom]
+  fapply mono_comp' _ inferInstance
+  infer_instance
+
+/-- In any concrete category where the forgetful functor preserves pushouts and monos, the pushout
+of a mono is itself a mono. -/
+instance pushout_inr_of_mono [Mono g] : Mono (pushout.inl f g) := by
+  have := hasPushout_symmetry f g
+  rw [← inr_comp_pushoutSymmetry_hom]
+  fapply mono_comp' _ inferInstance
+  fapply pushout_inl_of_mono
+
+/-- In any concrete category where the forgetful functor preserves pushouts and monos, given a
+pushout along some mono `f`, if the image of some point under `inl` coincides with the image of
+some point under `inr`, then these points must be the images under `f, g` of some common point
+in the base of the pushout. -/
+lemma pushout_inl_eq_inr_iff [hf : Mono f] {x : ToType X} {y : ToType Y} :
+    pushout.inl f g x = pushout.inr f g y ↔ ∃ a, f a = x ∧ g a = y := by
+  have h := (inferInstanceAs <| PreservesColimit (span f g) (forget C)).preserves
+    (IsPushout.of_hasPushout f g).isColimit |>.some
+  apply (inferInstanceAs <| (forget C).PreservesMonomorphisms).preserves at hf
+  rw [mono_iff_injective] at hf
+  simp_rw [← ConcreteCategory.forget_map_eq_coe]
+  constructor
+  · intro h
+    replace h := congrArg (PreservesPushout.iso (forget C) f g).inv h
+    simp_rw [← types_comp_apply _ (Iso.inv _), PreservesPushout.inl_iso_inv,
+    PreservesPushout.inr_iso_inv] at h
+    erw [Types.pushoutCocone_inl_eq_inr_iff_of_isColimit (pushout.isColimit _ _) hf] at h
+    exact h
+  · intro h
+    erw [← Types.pushoutCocone_inl_eq_inr_iff_of_isColimit (pushout.isColimit _ _) hf] at h
+    replace h := congrArg (PreservesPushout.iso (forget C) f g).hom h
+    simpa [elementwise_of% PreservesPushout.inl_iso_hom (forget C) f g,
+    elementwise_of% PreservesPushout.inr_iso_hom (forget C) f g] using h
+
+end Pushout
 
 section WidePushout
 
