@@ -91,8 +91,8 @@ lemma isDenseSubsite_functor_of_isCocontinuous
       exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
 
 lemma isDenseSubsite_inverse_of_isCocontinuous
-    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J]
-    : e.inverse.IsDenseSubsite K J :=
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
   have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
   have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
   isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
