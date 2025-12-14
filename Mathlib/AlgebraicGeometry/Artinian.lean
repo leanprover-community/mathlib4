@@ -118,7 +118,7 @@ class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
 /-- Artinian Schemes are finite -/
 instance IsArtinianScheme.finite [IsArtinianScheme X] :
-    Finite X := @finite_of_compact_of_discrete X _ _ _
+    Finite X := finite_of_compact_of_discrete
 
 instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
     IsNoetherian X :=
