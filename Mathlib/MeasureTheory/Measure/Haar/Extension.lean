@@ -296,9 +296,10 @@ theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology
       exact integral_mono (H.pushforward μA ⟨f, hf2⟩).integrable (integrable_const _) h
   obtain ⟨c, hc⟩ := h
   contrapose! hc
-  simp only [pushforward_def, pullback_def, CompactlySupportedContinuousMap.coe_mk]
+  obtain ⟨b, rfl⟩ := H.isOpenQuotientMap.surjective c
+  simp only [pushforward_apply, pullback_def, CompactlySupportedContinuousMap.coe_mk]
   rw [← MeasureTheory.setIntegral_support]
-  have key : (Function.support (fun a ↦ f (Function.invFun ψ c * φ a))).Subsingleton := by
+  have key : (Function.support fun a ↦ f (b * φ a)).Subsingleton := by
     intro a ha b hb
     simpa [H.isClosedEmbedding.injective.eq_iff] using
       hc (hf3 (subset_tsupport _ ha)) (hf3 (subset_tsupport _ hb)) (by simp [H.apply_apply])
