@@ -79,23 +79,6 @@ instance : SubringClass (ValuationSubring K) K where
   mul_mem {_} a b := mul_mem _ a b
   neg_mem {_} x := neg_mem _ x
 
--- TODO: add the following for other substructures.
-
-@[simp] theorem mk_zero {A : ValuationSubring K} (h : 0 ∈ A) : (⟨0, h⟩ : A) = 0 := rfl
-@[simp] theorem mk_one {A : ValuationSubring K} (h : 1 ∈ A) : (⟨1, h⟩ : A) = 1 := rfl
-
-@[simp]
-theorem mk_neg {A : ValuationSubring K} {x : K} (h : -x ∈ A) :
-  (⟨-x, h⟩ : A) = -⟨x, neg_mem_iff.1 h⟩ := rfl
-
-@[simp]
-theorem mk_natCast {A : ValuationSubring K} {n : ℕ} (h : (n : K) ∈ A) :
-  (⟨n, h⟩ : A) = n := rfl
-
-@[simp]
-theorem mk_intCast {A : ValuationSubring K} {n : ℤ} (h : (n : K) ∈ A) :
-  (⟨n, h⟩ : A) = n := rfl
-
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 

@@ -60,6 +60,26 @@ theorem map_mem_finite_of_archimedean (f : R →+*o K) (r : R) : f r ∈ Archime
   · simp
   · rw [mem_finite_iff, mk_map_of_archimedean' f hr]
 
+@[simp]
+theorem mk_finite_zero (h : 0 ∈ ArchimedeanClass.finite K) :
+    (⟨0, h⟩ : ArchimedeanClass.finite K) = 0 := rfl
+
+@[simp]
+theorem mk_finite_one (h : 1 ∈ ArchimedeanClass.finite K) :
+    (⟨1, h⟩ : ArchimedeanClass.finite K) = 1 := rfl
+
+@[simp]
+theorem mk_finite_neg (x : K) (h : -x ∈ ArchimedeanClass.finite K) :
+    (⟨-x, h⟩ : ArchimedeanClass.finite K) = -⟨x, neg_mem_iff.1 h⟩ := rfl
+
+@[simp]
+theorem mk_finite_natCast (n : ℕ) (h : (n : K) ∈ ArchimedeanClass.finite K) :
+    (⟨n, h⟩ : ArchimedeanClass.finite K) = n := rfl
+
+@[simp]
+theorem mk_finite_intCast (n : ℤ) (h : (n : K) ∈ ArchimedeanClass.finite K) :
+    (⟨n, h⟩ : ArchimedeanClass.finite K) = n := rfl
+
 theorem not_isUnit_finite_iff_mk_pos {x : ArchimedeanClass.finite K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
