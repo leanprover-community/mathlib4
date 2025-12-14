@@ -171,7 +171,8 @@ def trivial : Type u ⥤ TopCat.{u} where
 
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
-def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
+def isoOfHomeo {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X ≃ₜ Y) :
+    of X ≅ of Y where
   hom := ofHom f
   inv := ofHom f.symm
 
