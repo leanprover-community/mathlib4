@@ -56,7 +56,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
   [Abelian C] [HasProjectiveResolutions C] [Abelian D]
 
 /-- When `F : C ⥤ D` is an additive functor, this is
@@ -253,13 +253,13 @@ noncomputable def fromLeftDerivedZero' {X : C}
     rw [← F.map_comp, complex_d_comp_π_f_zero, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category C] [Abelian C] {X : C}
+lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category* C] [Abelian C] {X : C}
     (P : ProjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     HomologicalComplex.pOpcycles _ _ ≫ P.fromLeftDerivedZero' F = F.map (P.π.f 0) := by
   simp [fromLeftDerivedZero']
 
 @[reassoc]
-lemma fromLeftDerivedZero'_naturality {C} [Category C] [Abelian C] {X Y : C} (f : X ⟶ Y)
+lemma fromLeftDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
     (φ : P.complex ⟶ Q.complex) (comm : φ.f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f)
     (F : C ⥤ D) [F.Additive] :

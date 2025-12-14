@@ -146,7 +146,6 @@ def mathlibLabels : Array Label := #[
   { label := "CI",
     dirs := #[
       ".github",
-      "scripts" /"bench",
       "scripts",
     ],
     exclusions := #[
