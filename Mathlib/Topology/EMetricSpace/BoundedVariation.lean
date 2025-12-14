@@ -447,10 +447,10 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     by_cases hn₀ : n = 0
     · simp [hn₀]
     rw [← Icc_add_Icc (b := E n)]
-    · rw [← ih (by intros; apply hn <;> lia), Finset.sum_range_succ]
+    · rw [← ih (by intros; apply hn <;> omega), Finset.sum_range_succ]
     · apply hE; lia
     · apply hE; lia
-    · apply hn <;> lia
+    · apply hn <;> omega
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))

@@ -1449,10 +1449,10 @@ theorem AddSubmonoid.isLocalizationMap_nat_int (S : AddSubmonoid ℕ) (hS : S �
     S.IsLocalizationMap ((↑) : ℕ → ℤ) :=
   S.isLocalizationMap_of_addGroup (fun _ _ ↦ Int.natCast_inj.mp) fun z ↦ by
     obtain ⟨z, rfl | rfl⟩ := z.eq_nat_or_neg
-    · exact ⟨z, 0, zero_mem _, by cutsat⟩
+    · exact ⟨z, 0, zero_mem _, by lia⟩
     have ⟨n, hnS, hn0⟩ := S.bot_or_exists_ne_zero.resolve_left hS
     have key : z < n * (z / n + 1) := Nat.lt_mul_div_succ _ <| Nat.pos_of_ne_zero hn0
-    exact ⟨(z / n + 1) * n - z, (z / n + 1) * n, nsmul_mem hnS _, by cutsat⟩
+    exact ⟨(z / n + 1) * n - z, (z / n + 1) * n, nsmul_mem hnS _, by lia⟩
 
 theorem AddSubmonoid.isLocalizationMap_top_nat_int :
     (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
