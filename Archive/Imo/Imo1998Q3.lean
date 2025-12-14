@@ -122,7 +122,7 @@ lemma d_multiplicative (m n : ℕ) (h : Nat.Coprime m n) : d (m * n) = d m * d n
 
 /-- Proof that `d(pᵏ) = k + 1` for `p` prime. -/
 lemma prime_power_divisors {p k : ℕ} (hp : p.Prime) : d (p ^ k) = k + 1 := by
-  simp [d]
+  simp only [d]
   rw [Nat.divisors_prime_pow hp]
   rw [Finset.card_map]
   simp
@@ -180,11 +180,11 @@ theorem k_is_odd (k : ℕ)
       _ = (nfac.prod fun p k ↦ (p ^ k) ^ 2) := by
           apply Finset.prod_congr rfl
           intro p _
-          simp
+          simp only
           rw [pow_mul']
       _ = (nfac.prod fun p k ↦ p ^ k) ^ 2 := by
           unfold Finsupp.prod
-          simp
+          simp only
           rw [Finset.prod_pow]
       _ = n ^ 2 := by rw [hneqnfac]
     have hd : d (n ^ 2) = (nfac.prod fun _ x2 ↦ ((2 * x2) + 1)) := d_n2 n hn.left
@@ -228,7 +228,7 @@ lemma exists_distinct_primes (t n : ℕ) (hnneq0 : n ≠ 0) (primes : List ℕ) 
       use l ++ [new]
       apply And.intro
       · intro i hiinlist
-        simp at hiinlist
+        simp only [List.mem_append, List.mem_cons, List.not_mem_nil, or_false] at hiinlist
         cases hiinlist with
         | inl h => exact props.left i h
         | inr h =>
@@ -241,13 +241,13 @@ lemma exists_distinct_primes (t n : ℕ) (hnneq0 : n ≠ 0) (primes : List ℕ) 
                   apply List.mem_append_left
                   exact hin
                 have hnewlemax := List.le_max_of_mem (l := existing_numbers) hnewinexisting
-                simp [bound]
+                simp only [bound]
                 exact hnewlemax
               linarith [hnewlebound, hnewgtbound]
             have hnewcoprimen : new.Coprime n := by
               refine Nat.coprime_of_lt_prime hnneq0 ?_ hnewprime
               have hnleqbound : n ≤ bound := by
-                simp [bound]
+                simp only [bound]
                 have hninexisting : n ∈ existing_numbers :=
                   List.mem_append_right _ (List.mem_singleton_self n)
                 exact List.le_max_of_mem hninexisting
@@ -259,12 +259,13 @@ lemma exists_distinct_primes (t n : ℕ) (hnneq0 : n ≠ 0) (primes : List ℕ) 
             refine List.nodup_cons.mpr (And.intro ?_ props.right.right)
             intro hnewinl
             have hnewinexisting : new ∈ existing_numbers := by
-              simp [existing_numbers]
+              simp only [List.append_assoc, List.mem_append, List.mem_cons,
+                List.not_mem_nil, or_false, existing_numbers]
               right
               left
               exact hnewinl
             have hle : new ≤ bound := by
-              simp [bound]
+              simp only [bound]
               exact List.le_max_of_mem hnewinexisting
             linarith
           rw [List.singleton_append.symm] at hconsnodup
@@ -306,7 +307,8 @@ lemma d_of_factorization (t : ℕ) (ps exps : List ℕ)
         · simp [hlen]
       · intro n hind1 hind2
         have hnltexpslen : n < exps.length := by rw [List.length_map] at hind2; exact hind2
-        simp
+        simp only [List.get_eq_getElem, List.map_map, List.getElem_map,
+          List.getElem_zip, Function.comp_apply]
         have hnltpslen : n < ps.length := by
           rw [List.length_map, List.length_map] at hind1; exact List.lt_length_left_of_zip hind1
         have hpsnprime : Nat.Prime (ps[n]'hnltpslen) :=
@@ -317,7 +319,7 @@ lemma d_of_factorization (t : ℕ) (ps exps : List ℕ)
         refine List.Pairwise.imp_of_mem (R := Ne) (fun {a b} ha hb hneq => ?_) ?_
         · obtain ⟨p₁, k₁⟩ := a
           obtain ⟨p₂, k₂⟩ := b
-          simp
+          simp only [ne_eq]
           have hp₁prime : Nat.Prime p₁ := hallprime p₁ (List.of_mem_zip ha).left
           have hp₂prime : Nat.Prime p₂ := hallprime p₂ (List.of_mem_zip hb).left
           have hk₁gt0 : k₁ > 0 := hexpsgt0 k₁ (List.of_mem_zip ha).right
@@ -412,7 +414,7 @@ theorem odd_k_satisfies (k : ℕ)
       rcases k with (_ | k_minus_1)
       · contradiction
       · by_cases hk1 : k_minus_1 = 0
-        · simp
+        · simp only [ne_eq, Nat.exists_ne_zero]
           use 0
           rw [hk1]
           simp
@@ -463,7 +465,7 @@ theorem odd_k_satisfies (k : ℕ)
             dsimp only [x]
             apply Nat.coprime_list_prod_left_iff.mpr
             intro n hnin
-            simp at hnin
+            simp only [List.mem_map, Prod.exists] at hnin
             obtain ⟨p, k, hpk⟩ := hnin
             have hpinps : p ∈ ps := (List.of_mem_zip hpk.left).left
             have hpcoprime : Nat.Coprime p nⱼ := (hps.left p hpinps).right.right
@@ -486,7 +488,7 @@ theorem odd_k_satisfies (k : ℕ)
             have hexpsgt0 : (∀ i ∈ exps, i > 0) := by
               dsimp [exps]
               intro i hi
-              simp at hi
+              simp only [List.mem_map, List.mem_range] at hi
               obtain ⟨a, ha⟩ := hi
               rw [ha.right.symm]
               exact Nat.mul_pos hCpos (Nat.two_pow_pos a)
@@ -500,7 +502,7 @@ theorem odd_k_satisfies (k : ℕ)
             apply congrArg List.prod
             apply List.map_congr_left
             intro i hi
-            simp
+            simp only [Function.comp_apply, Nat.add_right_cancel_iff]
             dsimp [C]
             rw [Nat.mul_sub_right_distrib, Nat.mul_sub_left_distrib, Nat.mul_one]
             rw [Nat.mul_sub_right_distrib, mul_assoc j, ←pow_add]
@@ -514,7 +516,9 @@ theorem odd_k_satisfies (k : ℕ)
                         = (List.map (fun x ↦ x.1 ^ (2 * x.2)) (ps.zip exps)).prod := by
               induction (ps.zip exps) with
               | nil => simp
-              | cons head tail ih => simp; rw [Nat.mul_pow, ih, mul_comm 2 head.2, pow_mul]
+              | cons head tail ih =>
+                simp only [List.map_cons, List.prod_cons]
+                rw [Nat.mul_pow, ih, mul_comm 2 head.2, pow_mul]
             rw [hsqdistr]
             have hexp2 : (List.map (fun x ↦ x.1 ^ (2 * x.2)) (ps.zip exps)) =
                     (List.map (fun x ↦ x.1 ^ x.2)
@@ -526,7 +530,7 @@ theorem odd_k_satisfies (k : ℕ)
             have hexpsgt0 : (∀ i ∈ (List.map (fun y ↦ 2 * y) exps), i > 0) := by
               dsimp [exps]
               intro i hi
-              simp at hi
+              simp only [List.map_map, List.mem_map, List.mem_range, Function.comp_apply] at hi
               obtain ⟨a, ha⟩ := hi
               rw [ha.right.symm]
               exact Nat.mul_pos (by decide) (Nat.mul_pos hCpos (Nat.two_pow_pos a))
@@ -541,7 +545,7 @@ theorem odd_k_satisfies (k : ℕ)
             apply congrArg List.prod
             apply List.map_congr_left
             intro i hi
-            simp
+            simp only [Function.comp_apply, Nat.add_right_cancel_iff]
             dsimp [C]
             rw [mul_comm 2, mul_assoc, mul_comm (2 ^ i) 2, (pow_succ' 2 i).symm]
             rw [Nat.mul_sub_right_distrib, Nat.mul_sub_left_distrib, Nat.mul_one]
@@ -553,7 +557,8 @@ theorem odd_k_satisfies (k : ℕ)
               let f := fun i ↦ 2 ^ (t + i) * j - 2 ^ i * (j + 1) + 1
               have h1 : (List.map (f ∘ Nat.succ) (List.range t)).prod * f 0 =
                     d (x ^ 2) * (2 ^ t * j - (j + 1) + 1) := by
-                    simp [f, hneqdx2]
+                    simp only [add_zero, pow_zero, one_mul, hneqdx2, mul_eq_mul_right_iff,
+                      Nat.add_eq_zero_iff, one_ne_zero, and_false, or_false, f]
                     apply congrArg List.prod
                     apply List.map_congr_left
                     intro i hi
@@ -561,7 +566,10 @@ theorem odd_k_satisfies (k : ℕ)
                     rfl
               have h2 : (List.map f (List.range t)).prod * f t =
                   d x * (2 ^ (2 * t) * j - 2 ^ t * (j + 1) + 1) := by
-                simp [f, hneqdx]; rw [two_mul]
+                simp only [hneqdx, mul_eq_mul_left_iff, Nat.add_right_cancel_iff,
+                  List.prod_eq_zero_iff, List.mem_map, List.mem_range, Nat.add_eq_zero_iff,
+                  one_ne_zero, and_false, exists_const, or_false, f]
+                rw [two_mul]
               rw [h1.symm, h2.symm]
               rw [mul_comm _ (f 0)]
               rw [←List.prod_cons]
@@ -615,7 +623,7 @@ theorem odd_k_satisfies (k : ℕ)
             apply d_multiplicative nⱼ x; exact hxnⱼcoprime.symm
           rw [hdx2, hdx]
           have hkj : k_minus_1 + 1 = (2 ^ t) * j - 1 := by
-            simp [j, kk]
+            simp only [j, kk]
             have hkj2 : 2 ^ t * ((k_minus_1 + 2) / 2 ^ t) = (k_minus_1 + 1 + 1) :=
               Nat.mul_div_cancel' h_div
             rw [hkj2]
