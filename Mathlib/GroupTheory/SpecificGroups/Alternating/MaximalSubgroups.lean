@@ -142,36 +142,13 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
   simp_rw [mem_stabilizer_set, Subgroup.mk_smul, mul_smul, Perm.smul_def]
   grind
 
-end AlternatingGroup
-
-namespace MulAction.IsBlock
-
-open AlternatingGroup
-
-theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
-    {s B : Set α} {G : Subgroup (alternatingGroup α)}
-    (hs : s.Nontrivial) (hB_ss_sc : B ⊂ sᶜ) (hG : stabilizer (alternatingGroup α) s ≤ G)
-    (hB : IsBlock G B) :
-    B.Subsingleton := by
-  apply hB.subsingleton_of_ssubset_compl_of_stabilizer_le hB_ss_sc
-  intro g
-  obtain ⟨⟨k, hk⟩, rfl⟩ := AlternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
-  simp only [stabilizer_compl] at hk
-  let h : G := ⟨k, hG hk⟩
-  have : h ∈ stabilizer G sᶜ := by aesop
-  exact ⟨⟨h, this⟩, rfl⟩
-
-end MulAction.IsBlock
-
-namespace AlternatingGroup
-
 /- Here, we need that `Nat.card α` has at least `4` elements,
 so that  either `t` has at least 3 elements, or `tᶜ` has at least 2.
 The condition is necessary, because the result is wrong when
 `α = {1, 2, 3}` and either `t = {1, 2}` or `t = {1}`. -/
-theorem moves_in (hα : 4 ≤ Nat.card α) {t : Set α} {a b : α}
-    (ha : a ∈ t) (hb : b ∈ t) :
-    ∃ g ∈ stabilizer (alternatingGroup α) t, g • a = b := by
+theorem exists_mem_stabilizer_smul_eq (hα : 4 ≤ Nat.card α) {t : Set α} :
+    ∀ a ∈ t, ∀ b ∈ t, ∃ g ∈ stabilizer (alternatingGroup α) t, g • a = b := by
+  intro a ha b hb
   by_cases hab : a = b
   · use 1
     simpa
@@ -211,6 +188,34 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
       Function.bijective_id]
 
+end AlternatingGroup
+
+namespace MulAction.IsBlock
+
+open AlternatingGroup
+
+theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
+    {s B : Set α} {G : Subgroup (alternatingGroup α)}
+    (hs : s.Nontrivial) (hB_ss_sc : B ⊂ sᶜ) (hG : stabilizer (alternatingGroup α) s ≤ G)
+    (hB : IsBlock G B) :
+    B.Subsingleton := by
+  apply hB.subsingleton_of_ssubset_compl_of_stabilizer_le hB_ss_sc
+  intro g
+  obtain ⟨⟨k, hk⟩, rfl⟩ := AlternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
+  simp only [stabilizer_compl] at hk
+  let h : G := ⟨k, hG hk⟩
+  have : h ∈ stabilizer G sᶜ := by aesop
+  exact ⟨⟨h, this⟩, rfl⟩
+
+end MulAction.IsBlock
+
+namespace AlternatingGroup
+
+/- Note : The proof of this statement is close to that
+of `Equiv.Perm.isCoato_stabilizer_of_ncard_lt_ncard_compl`,
+and while it would be absolutely impossible the proofs,
+the result would be slightly awkward because the
+details of the results involved in the proof differ slightly. -/
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     (h0 : s.Nontrivial) (hs : s.ncard < (sᶜ : Set α).ncard) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
@@ -231,17 +236,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   intro G hG
   suffices IsPreprimitive G α from subgroup_eq_top_of_isPreprimitive hα G hG.le
   -- G acts transitively
-  have : IsPretransitive G α := by
-    apply IsPretransitive.of_partition (s := s)
-    · intro a ha b hb
-      obtain ⟨g, hg, H⟩ := moves_in hα.le ha hb
-      use! ⟨g, hG.le hg⟩, H
-    · intro a ha b hb
-      obtain ⟨g, hg, H⟩ := moves_in hα.le ha hb
-      use! g, hG.le (by rwa [stabilizer_compl] at hg), H
-    · intro h
-      apply (lt_iff_le_not_ge.mp hG).right
-      rwa [← Subgroup.subgroupOf_eq_top]
+  have := G.isPretransitive_of_stabilizer_lt hG
+    (exists_mem_stabilizer_smul_eq (Nat.le_of_succ_le hα))
   apply IsPreprimitive.mk
   -- We reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
@@ -300,7 +296,7 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     AlternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
-/-- `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
+/-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
 provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
 
 This is the intransitive case of the O'Nan–Scott classification. -/
