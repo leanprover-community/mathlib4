@@ -67,6 +67,16 @@ lemma HasLaw.hasGaussianLaw {μ : Measure E} (hX : HasLaw X μ P) [IsGaussian μ
     HasGaussianLaw X P where
   isGaussian_map := by rwa [hX.map_eq]
 
+lemma HasGaussianLaw.map_of_measurable {F : Type*} [TopologicalSpace F] [AddCommMonoid F]
+    [Module ℝ F] [MeasurableSpace F] [OpensMeasurableSpace F]
+    (L : E →L[ℝ] F) (hX : HasGaussianLaw X P) (hL : Measurable L) :
+    HasGaussianLaw (L ∘ X) P where
+  isGaussian_map := by
+    have := hX.isGaussian_map
+    rw [← AEMeasurable.map_map_of_aemeasurable]
+    · exact isGaussian_map_of_measurable hL
+    all_goals fun_prop
+
 end Basic
 
 namespace HasGaussianLaw
@@ -131,12 +141,8 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
 
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
-lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P where
-  isGaussian_map := by
-    have := hX.isGaussian_map
-    rw [← AEMeasurable.map_map_of_aemeasurable]
-    · infer_instance
-    all_goals fun_prop
+lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
+    hX.map_of_measurable L (by fun_prop)
 
 lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
   hX.map L
@@ -162,17 +168,20 @@ lemma fun_neg (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ -(X ω)) P 
 
 section Prod
 
-variable [SecondCountableTopologyEither E F] {Y : Ω → F}
+variable {Y : Ω → F}
 
-lemma toLp_prodMk (p : ℝ≥0∞) [Fact (1 ≤ p)] (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+lemma toLp_prodMk [SecondCountableTopologyEither E F] (p : ℝ≥0∞) [Fact (1 ≤ p)]
+    (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X ω, Y ω)) P :=
   hXY.map_equiv (WithLp.prodContinuousLinearEquiv p ℝ E F).symm
 
+omit [BorelSpace F] in
 lemma fst (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw X P :=
-  hXY.map (.fst ℝ E F)
+  hXY.map_of_measurable (.fst ℝ E F) measurable_fst
 
+omit [BorelSpace E] in
 lemma snd (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw Y P :=
-  hXY.map (.snd ℝ E F)
+  hXY.map_of_measurable (.snd ℝ E F) measurable_snd
 
 variable [SecondCountableTopology E] {Y : Ω → E}
 
@@ -196,10 +205,13 @@ section Pi
 
 variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
-  [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
+  {X : (i : ι) → Ω → E i}
 
+omit [Fintype ι] in
 lemma eval (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i : ι) :
-    HasGaussianLaw (X i) P := hX.map (.proj i)
+    HasGaussianLaw (X i) P := hX.map_of_measurable (.proj i) (measurable_pi_apply i)
+
+variable [∀ i, SecondCountableTopology (E i)]
 
 lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
     HasGaussianLaw (fun ω ↦ (X i ω, X j ω)) P :=
