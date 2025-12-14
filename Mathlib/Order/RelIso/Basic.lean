@@ -227,16 +227,16 @@ instance : FunLike (r ↪r s) α β where
     rcases g with ⟨⟨⟩⟩
     congr
 
-instance : RelHomClass (r ↪r s) r s where
-  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
-
-initialize_simps_projections RelEmbedding (toFun → apply)
-
 instance : EmbeddingLike (r ↪r s) α β where
   injective' f := f.inj'
 
+instance (priority := 100) : RelHomClass (r ↪r s) r s where
+  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
 instance : RelEmbeddingClass (r ↪r s) r s where
   map_rel_iff f _ _ := map_rel_iff' f |>.symm
+
+initialize_simps_projections RelEmbedding (toFun → apply)
 
 @[simp]
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
@@ -580,9 +580,6 @@ instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
-instance : RelHomClass (r ≃r s) r s where
-  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
-
 instance : EquivLike (r ≃r s) α β where
   coe f := f
   inv f := f.toEquiv.symm
@@ -590,10 +587,10 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
-instance : RelIsoClass (r ≃r s) r s where
+instance (priority := 100) : RelEmbeddingClass (r ≃r s) r s where
   map_rel_iff f _ _ := map_rel_iff' f |>.symm
 
-instance : RelEmbeddingClass (r ≃r s) r s where
+instance : RelIsoClass (r ≃r s) r s where
   map_rel_iff f _ _ := map_rel_iff' f |>.symm
 
 @[simp]
