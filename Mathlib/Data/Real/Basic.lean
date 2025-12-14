@@ -65,70 +65,90 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
 
-@[no_expose] instance : Zero ℝ :=
-  ⟨⟨0⟩⟩
+-- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
+private irreducible_def zero : ℝ :=
+  ⟨0⟩
 
-@[no_expose] instance : One ℝ :=
-  ⟨⟨1⟩⟩
+private irreducible_def one : ℝ :=
+  ⟨1⟩
 
-@[no_expose] instance : Add ℝ :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a + b⟩⟩
+private irreducible_def add : ℝ → ℝ → ℝ
+  | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-@[no_expose] instance : Neg ℝ :=
-  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
+private irreducible_def neg : ℝ → ℝ
+  | ⟨a⟩ => ⟨-a⟩
 
-@[no_expose] instance : Mul ℝ :=
-  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a * b⟩⟩
+private irreducible_def mul : ℝ → ℝ → ℝ
+  | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
+
+private noncomputable irreducible_def inv' : ℝ → ℝ
+  | ⟨a⟩ => ⟨a⁻¹⟩
+
+instance : Zero ℝ :=
+  ⟨zero⟩
+
+instance : One ℝ :=
+  ⟨one⟩
+
+instance : Add ℝ :=
+  ⟨add⟩
+
+instance : Neg ℝ :=
+  ⟨neg⟩
+
+instance : Mul ℝ :=
+  ⟨mul⟩
 
 instance : Sub ℝ :=
-  ⟨fun a b ↦ a + -b⟩
+  ⟨fun a b => a + -b⟩
 
-@[no_expose] noncomputable instance : Inv ℝ :=
-  ⟨fun ⟨a⟩ ↦ ⟨a⁻¹⟩⟩
+noncomputable instance : Inv ℝ :=
+  ⟨inv'⟩
 
-theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 := by
-  rfl
+theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
+  zero_def.symm
 
-theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 := by
-  rfl
+theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
+  one_def.symm
 
-theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ := by
-  rfl
+theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
+  (add_def _ _).symm
 
-theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ := by
-  rfl
+theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
+  (neg_def _).symm
 
 theorem ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ := by
   rw [sub_eq_add_neg, ofCauchy_add, ofCauchy_neg]
   rfl
 
-theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ := by
- rfl
+theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
+  (mul_def _ _).symm
 
-theorem ofCauchy_inv (a) : (⟨a⁻¹⟩ : ℝ) = ⟨a⟩⁻¹ := by
-  rfl
+theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
+  show _ = inv' _ by rw [inv']
 
-theorem cauchy_zero : (0 : ℝ).cauchy = 0 := by
-  rfl
+theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
+  show zero.cauchy = 0 by rw [zero_def]
 
-theorem cauchy_one : (1 : ℝ).cauchy = 1 := by
-  rfl
+theorem cauchy_one : (1 : ℝ).cauchy = 1 :=
+  show one.cauchy = 1 by rw [one_def]
 
-theorem cauchy_add (a b) : (a + b : ℝ).cauchy = a.cauchy + b.cauchy := by
-  rfl
+theorem cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
+  | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add_def]
 
-theorem cauchy_neg (a) : (-a : ℝ).cauchy = -a.cauchy := by
-  rfl
+theorem cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
+  | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg_def]
 
-theorem cauchy_mul (a b) : (a * b : ℝ).cauchy = a.cauchy * b.cauchy := by
-  rfl
+theorem cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
+  | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul_def]
 
-theorem cauchy_sub (a b) : (a - b : ℝ).cauchy = a.cauchy - b.cauchy := by
+theorem cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
+  | ⟨a⟩, ⟨b⟩ => by
     rw [sub_eq_add_neg, ← cauchy_neg, ← cauchy_add]
     rfl
 
-theorem cauchy_inv (a : ℝ) : (a⁻¹).cauchy = a.cauchy⁻¹ := by
-  rfl
+theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
+  | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 
 instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
 instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
@@ -146,6 +166,8 @@ lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
 lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 
 instance commRing : CommRing ℝ where
+  natCast n := ⟨n⟩
+  intCast z := ⟨z⟩
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
   nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
@@ -162,9 +184,9 @@ instance commRing : CommRing ℝ where
   left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
   right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
   neg_add_cancel a := by apply ext_cauchy; simp [cauchy_add, cauchy_neg, cauchy_zero]
-  natCast_zero := by apply ext_cauchy; simp [instNatCast, cauchy_zero]
-  natCast_succ n := by apply ext_cauchy; simp [instNatCast, cauchy_one, cauchy_add]
-  intCast_negSucc z := by apply ext_cauchy; simp [instIntCast, cauchy_neg, cauchy_natCast]
+  natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
+  natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
+  intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]
 
 /-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
@@ -225,16 +247,18 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
 theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
-@[no_expose] instance : LT ℝ where
-  lt
-    | ⟨x⟩, ⟨y⟩ =>
-      (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
-        propext <|
-          ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
-            lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
+private irreducible_def lt : ℝ → ℝ → Prop
+  | ⟨x⟩, ⟨y⟩ =>
+    (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
+      propext <|
+        ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
+          lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
-theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g := by
-  rfl
+instance : LT ℝ :=
+  ⟨lt⟩
+
+theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
+  show lt _ _ ↔ _ by rw [lt_def]; rfl
 
 @[simp]
 theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
@@ -257,12 +281,18 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
-@[no_expose] instance : LE ℝ :=
-  ⟨fun x y ↦ x < y ∨ x = y⟩
+private irreducible_def le (x y : ℝ) : Prop :=
+  x < y ∨ x = y
+
+instance : LE ℝ :=
+  ⟨le⟩
+
+private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
+  iff_of_eq <| le_def _ _
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
-  simp only [instLE, mk_lt, mk_eq]; rfl
+  simp only [le_def', mk_lt, mk_eq]; rfl
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
@@ -294,7 +324,8 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   rw [← mk_const, ← mk_const, mk_lt]
   exact const_lt
 
-protected theorem zero_lt_one : (0 : ℝ) < 1 := ratCast_lt.2 zero_lt_one
+protected theorem zero_lt_one : (0 : ℝ) < 1 := by
+  convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
 @[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
@@ -334,21 +365,31 @@ instance instIsOrderedRing : IsOrderedRing ℝ :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
-@[no_expose] instance : Max ℝ :=
-  ⟨fun ⟨x⟩ ⟨y⟩ ↦ ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩⟩
+private irreducible_def sup : ℝ → ℝ → ℝ
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ := by
-  rfl
+instance : Max ℝ :=
+  ⟨sup⟩
+
+theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
+  show _ = sup _ _ by
+    rw [sup_def]
+    rfl
 
 @[simp]
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
-@[no_expose] instance : Min ℝ :=
-  ⟨fun ⟨x⟩ ⟨y⟩ ↦ ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩⟩
+private irreducible_def inf : ℝ → ℝ → ℝ
+  | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ := by
-  rfl
+instance : Min ℝ :=
+  ⟨inf⟩
+
+theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
+  show _ = inf _ _ by
+    rw [inf_def]
+    rfl
 
 @[simp]
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
