@@ -45,7 +45,7 @@ variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
 
 section Basic
 
-variable [ts𝓧 : TopologicalSpace 𝓧]
+variable [TopologicalSpace 𝓧]
 
 /-- A set of measures `S` is tight if for all `0 < ε`, there exists a compact set `K` such that
 for all `μ ∈ S`, `μ Kᶜ ≤ ε`.
@@ -149,20 +149,20 @@ variable [PseudoMetricSpace 𝓧] (S : Set (ProbabilityMeasure 𝓧))
 /-- This lemma is required for the proof of isTightMeasureSet_of_isCompact_closure. It is kept here
 instead of a more general file as it is unlikely to be helpful in other settings. -/
 private lemma lt_geom_series {D : ℕ → 𝓧} {ε : ℝ≥0∞} {μ : ProbabilityMeasure 𝓧} {km : ℕ → ℕ}
-    {hbound : ∀ k : ℕ, 1 - ε * 2 ^ (-k : ℤ) < μ (⋃ i ≤ km k, ball (D i) (1 / (↑k + 1)))} :
-  ∑' (m : ℕ), (1 - μ.toMeasure (⋃ i ≤ km (m + 1), closure (ball (D i) (1 / (↑m + 1))))) ≤
-  ∑' (m : ℕ), (ε : ENNReal) * 2 ^ (-((m : ℤ) + 1)) := by
+    {u : ℕ → ℝ} (hu_anti : Antitone u)
+    (hbound : ∀ k : ℕ, 1 - ε * 2 ^ (-k : ℤ) < μ (⋃ i ≤ km k, ball (D i) (u k))) :
+    ∑' (m : ℕ), (1 - μ.toMeasure (⋃ i ≤ km (m + 1), closure (ball (D i) (u m)))) ≤
+    ∑' (m : ℕ), (ε : ℝ≥0∞) * 2 ^ (-((m : ℤ) + 1)) := by
   refine ENNReal.tsum_le_tsum fun m ↦ tsub_le_iff_tsub_le.mp ?_
   specialize hbound (m+1)
   apply le_of_lt at hbound
-  simp_all only [neg_add_rev, Int.reduceNeg, one_div, tsub_le_iff_right, Nat.cast_add, Nat.cast_one,
+  simp_all only [neg_add_rev, Int.reduceNeg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one,
       ← coe_ofNat, ← ennreal_coeFn_eq_coeFn_toMeasure]
   grw [hbound]
   gcongr
   · refine apply_mono μ <| iUnion₂_mono <| fun i hi ↦ ?_
-    grw [←subset_closure (s:= ball (D i) (↑m + 1)⁻¹), ball_subset_ball]
-    field_simp
-    simp
+    grw [← subset_closure (s := ball (D i) (u m)), ball_subset_ball]
+    exact hu_anti (by grind)
 
 noncomputable section
 
@@ -235,19 +235,20 @@ variable [CompleteSpace 𝓧]
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     IsTightMeasureSet {((μ : ProbabilityMeasure 𝓧) : Measure 𝓧) | μ ∈ S} := by
   rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
-  by_cases hempty : IsEmpty 𝓧
+  rcases isEmpty_or_nonempty 𝓧 with hempty | hempty
   · intro ε εpos
     use ∅
     constructor
     · exact isCompact_empty
     rw [← univ_eq_empty_iff] at hempty
     simp only [mem_setOf_eq, compl_empty, hempty, measure_empty, zero_le, implies_true]
-  rw [not_isEmpty_iff] at hempty
   obtain ⟨D, hD⟩ := exists_dense_seq 𝓧
-  have hcov (m : ℕ): ⋃ i, ball (D i) (1 / (m + 1)) = univ := by
+  obtain ⟨u, hu_anti, hu_pos, hu⟩ : ∃ u, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  have hcov (m : ℕ) : ⋃ i, ball (D i) (u m) = univ := by
     rw [denseRange_iff] at hD
     ext p
-    exact ⟨fun a ↦ trivial, fun _ ↦ mem_iUnion.mpr <| hD p (1 / (m + 1)) Nat.one_div_pos_of_nat⟩
+    exact ⟨fun a ↦ trivial, fun _ ↦ mem_iUnion.mpr <| hD p (u m) (hu_pos m)⟩
   intro ε εpos
   by_cases hεbound : 1 < ε
   · use ∅
@@ -258,25 +259,25 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     obtain ⟨μ', hμ', rfl⟩ := hμ
     rw [compl_empty,measure_univ]
     exact le_of_lt hεbound
-  have byclaim (m : ℕ) : ∃ (k : ℕ), ∀ μ ∈ S,1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) <
-      μ (⋃ i ≤ k, ball (D i) (1 / (m + 1))) := by
-    refine (MeasOpenCoverTendstoMeasUniv (S := S) (U := fun i ↦ ball (D i) (1 / (m + 1)))
-    (ε := (ε * 2 ^ (-m : ℤ))) (hε := ?_) (fun i ↦ isOpen_ball) hcomp) ?_ (hcov m)
-    · simp; exact ⟨εpos,(ENNReal.zpow_pos (Ne.symm (NeZero.ne' 2)) (ofNat_ne_top) (-↑m))⟩
+  have byclaim (m : ℕ) : ∃ k, ∀ μ ∈ S, 1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) <
+      μ (⋃ i ≤ k, ball (D i) (u m)) := by
+    refine (MeasOpenCoverTendstoMeasUniv (S := S) (U := fun i ↦ ball (D i) (u m))
+      (ε := (ε * 2 ^ (-m : ℤ))) (hε := ?_) (fun i ↦ isOpen_ball) hcomp) ?_ (hcov m)
+    · simpa using ⟨εpos, (ENNReal.zpow_pos (by simp) (by simp) (-↑m))⟩
     · exact Left.mul_le_one (le_of_not_gt hεbound) <| zpow_le_one_of_nonpos (by linarith) (by simp)
   choose! km hbound using byclaim
   -- This is a set we can construct to show tightness
-  let bigK := ⋂ m, ⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1)))
-  have bigcalc (μ : ProbabilityMeasure 𝓧) (hs : μ ∈ S) := calc
+  let bigK := ⋂ m, ⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m))
+  have bigcalc (μ : ProbabilityMeasure 𝓧) (hs : μ ∈ S) : μ.toMeasure (bigK)ᶜ ≤ ε := calc
     μ.toMeasure (bigK)ᶜ
-    _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))ᶜ) := by
+    _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by
       simp only [bigK, compl_iInter, compl_iUnion]
-    _ ≤ ∑' m, μ.toMeasure ((⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))ᶜ) := by
+    _ ≤ ∑' m, μ.toMeasure ((⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by
       apply measure_iUnion_le
-    _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (1 / (m + 1))))) := by
+    _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))) := by
       congr! with m; rw [measure_compl (by measurability) (by simp)]; simp
-    _ ≤ (∑' (m : ℕ), (ε : ENNReal) * 2 ^ (-(m + 1) : ℤ)) := by
-      exact lt_geom_series (hbound := fun k ↦ hbound k μ hs)
+    _ ≤ (∑' (m : ℕ), (ε : ℝ≥0∞) * 2 ^ (-(m + 1) : ℤ)) := by
+      exact lt_geom_series hu_anti.antitone (fun k ↦ hbound k μ hs)
     _ = ε := by
       rw [ENNReal.tsum_mul_left]
       nth_rw 2 [←mul_one (a :=ε)]
@@ -284,30 +285,27 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
       ring_nf
       exact tsum_two_zpow_neg_add_one
   -- Final proof
-  use bigK
-  constructor
+  refine ⟨bigK, ?_, by simpa⟩
   -- Compactness first
-  · refine TotallyBounded.isCompact_of_isClosed ?_ ?_
-    --Totally bounded
-    · refine Metric.totallyBounded_iff.mpr fun δ δpos ↦
-          ⟨D '' .Iic (km (⌊δ⁻¹⌋₊ + 1)), (Set.finite_Iic _).image _, ?_⟩
-      -- t should be image under D of the set of numbers less than km of 1/δ.ceil
-      simp only [one_div, mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
-      calc
-            ⋂ m, ⋃ i ≤ km (m + 1), closure (ball (D i) (m + 1)⁻¹)
-        _ ⊆ ⋃ i ≤ km (⌊δ⁻¹⌋₊ + 1), closure (ball (D i) (⌊δ⁻¹⌋₊ + 1)⁻¹) := iInter_subset ..
-        _ ⊆ ⋃ i ≤ km (⌊δ⁻¹⌋₊ + 1), ball (D i) δ := by
-            gcongr
-            exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <|
-              inv_lt_of_inv_lt₀ δpos <| Nat.lt_floor_add_one _
-    -- Closedness
-    · simp only [one_div, bigK]
-      refine isClosed_iInter fun n ↦ Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
-      · refine Finite.ofFinset (Finset.Iic (km (n + 1))) fun x ↦ ?_
-        simp only [Finset.mem_Iic, Nat.le_eq]
-        exact Eq.to_iff rfl
-  simp only [mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  exact bigcalc
+  refine TotallyBounded.isCompact_of_isClosed ?_ ?_
+  --Totally bounded
+  · refine Metric.totallyBounded_iff.mpr fun δ δpos ↦ ?_
+    have ⟨δ_inv, hδ_inv⟩ : ∃ x, u x < δ := (Tendsto.eventually_lt_const δpos hu).exists
+    refine ⟨D '' .Iic (km (δ_inv + 1)), (Set.finite_Iic _).image _, ?_⟩
+    -- t should be image under D of the set of numbers less than km of δ_inv
+    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
+    calc
+        ⋂ m, ⋃ i ≤ km (m + 1), closure (ball (D i) (u m))
+    _ ⊆ ⋃ i ≤ km (δ_inv + 1), closure (ball (D i) (u δ_inv)) := iInter_subset ..
+    _ ⊆ ⋃ i ≤ km (δ_inv + 1), ball (D i) δ := by
+        gcongr
+        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <| hδ_inv
+  -- Closedness
+  · simp only [bigK]
+    refine isClosed_iInter fun n ↦ Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
+    refine Finite.ofFinset (Finset.Iic (km (n + 1))) fun x ↦ ?_
+    simp only [Finset.mem_Iic, Nat.le_eq]
+    exact Eq.to_iff rfl
 
 end
 
