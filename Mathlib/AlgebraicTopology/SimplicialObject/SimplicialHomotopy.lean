@@ -43,6 +43,9 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
+/-- A simplicial homotopy between morphisms `f g : X ⟶ Y` of simplicial objects
+consists of a family of morphisms `h n i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` for `i : Fin (n + 1)`,
+satisfying compatibility conditions with respect to face and degeneracy maps -/
 structure SimplicialHomotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
 
