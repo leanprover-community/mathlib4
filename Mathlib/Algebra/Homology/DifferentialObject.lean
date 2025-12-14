@@ -32,7 +32,7 @@ TODO: We should move these to their own file.
 namespace CategoryTheory.DifferentialObject
 
 variable {β : Type*} [AddCommGroup β] {b : β}
-variable {V : Type*} [Category V] [HasZeroMorphisms V]
+variable {V : Type*} [Category* V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
@@ -67,7 +67,7 @@ open CategoryTheory.DifferentialObject
 namespace HomologicalComplex
 
 variable {β : Type*} [AddCommGroup β] (b : β)
-variable (V : Type*) [Category V] [HasZeroMorphisms V]
+variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 
 @[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :

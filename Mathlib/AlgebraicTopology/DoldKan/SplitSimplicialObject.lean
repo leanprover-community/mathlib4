@@ -32,7 +32,7 @@ namespace SimplicialObject
 
 namespace Splitting
 
-variable {C : Type*} [Category C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] {X : SimplicialObject C}
   (s : Splitting X)
 
 /-- The projection on a summand of the coproduct decomposition given
@@ -217,7 +217,7 @@ end Splitting
 
 namespace Split
 
-variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
 /-- The functor which sends a split simplicial object in a preadditive category to
 the chain complex which consists of nondegenerate simplices. -/

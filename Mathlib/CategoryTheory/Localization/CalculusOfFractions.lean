@@ -32,7 +32,7 @@ Similar results are obtained when `W` has a right calculus of fractions.
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 open Category
 
@@ -549,7 +549,7 @@ instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 /-- The image by a functor which inverts `W` of an equivalence class of left fractions. -/
 noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
@@ -633,7 +633,7 @@ variable (W)
 open StrictUniversalPropertyFixedTarget in
 /-- The universal property of the localization for the constructed localized category
 when there is a left calculus of fractions. -/
-noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
+noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (Q W) W E where
   inverts := inverts W
   lift := lift
@@ -675,7 +675,7 @@ lemma map_eq {W} {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocaliza
       L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
 
 lemma map_compatibility {W} {X Y : C}
-    (φ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (φ : W.LeftFraction X Y) {E : Type*} [Category* E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
     (Localization.uniq L₁ L₂ W).functor.map (φ.map L₁ (Localization.inverts L₁ W)) =
       (Localization.compUniqFunctor L₁ L₂ W).hom.app X ≫
@@ -688,7 +688,7 @@ lemma map_compatibility {W} {X Y : C}
   simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
 
 lemma map_eq_of_map_eq {W} {X Y : C}
-    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category* E]
     (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W]
     (h : φ₁.map L₁ (Localization.inverts L₁ W) = φ₂.map L₁ (Localization.inverts L₁ W)) :
     φ₁.map L₂ (Localization.inverts L₂ W) = φ₂.map L₂ (Localization.inverts L₂ W) := by
