@@ -374,9 +374,8 @@ theorem ball_zero : ball x 0 = ∅ := by rw [ball_eq_empty]
 contains it.
 
 See also `exists_lt_subset_ball`. -/
-theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
-  simp only [mem_ball] at h ⊢
-  exact ⟨(dist x y + ε) / 2, by linarith, by linarith⟩
+theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' :=
+  exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
     UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=

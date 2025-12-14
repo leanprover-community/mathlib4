@@ -646,16 +646,8 @@ lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyG
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
     Tendsto μs L (𝓝 μ) := by
-  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
-  rcases L.eq_or_neBot with rfl | hne
-  · simp
-  specialize h F hF
-  simp only [Measure.real_def] at h
-  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
-    ENNReal.toReal_le_toReal _ (by finiteness)] at h
-  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
-  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
-  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+  simp only [ProbabilityMeasure.measureReal_eq_coe_coeFn, NNReal.toReal_limsup] at h
+  exact tendsto_of_forall_isClosed_limsup_le h
 
 end Closed
 
