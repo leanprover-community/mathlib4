@@ -132,35 +132,19 @@ Proof that `dComputed n = d n`, using the fact that `d` is multiplicative
 and `d(pᵏ) = k + 1` for `p` prime.
 -/
 lemma d_eq_dComputed (n : ℕ) : d n = dComputed n := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp [d, dComputed]
-  · rw [dComputed, if_neg hn]
-    rw [Nat.multiplicative_factorization d d_multiplicative (by simp [d]) hn]
-    refine Finset.prod_congr ?_ ?_
-    · rfl
-    · intro p hp; exact prime_power_divisors (Nat.prime_of_mem_primeFactors hp)
+  cases n
+  · rfl
+  exact Nat.card_divisors <| by lia
 
 /-- Proof that `d(n²) = ∏ᵢ(2kᵢ + 1)` for `n = ∏ᵢpᵢᵏᵢ` (prime factorization). -/
 lemma d_n2 (n : ℕ) (hn : n ≠ 0) : d (n ^ 2) = n.factorization.prod (fun _ k ↦ 2 * k + 1) := by
-  rw [d_eq_dComputed, dComputed]
-  rw [if_neg (pow_ne_zero 2 hn)]
-  rw [Nat.factorization_pow]
-  apply Finset.prod_congr (Finsupp.support_smul_eq two_ne_zero)
-  simp
+  rw [d, Nat.card_divisors <| pow_ne_zero 2 hn, Nat.factorization_pow,
+    Nat.primeFactors_pow _ two_ne_zero]
+  rfl
 
 /-- Proof that if every number in a list is odd, the product of the list is odd. -/
 lemma list_prod_odd (l : List ℕ) : (∀ x ∈ l, Odd x) → Odd l.prod := by
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-      intro hallodd2
-      rw [List.prod_cons]
-      apply Odd.mul
-      · apply hallodd2; exact @List.mem_cons_self _ head tail
-      · apply ih
-        intro x hx
-        apply hallodd2
-        exact List.mem_cons_of_mem head hx
+  induction l <;> grind [Odd.mul]
 
 /-- We begin by first proving that every value of `k` must be an odd number. -/
 theorem k_is_odd (k : ℕ)
