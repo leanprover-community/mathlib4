@@ -289,7 +289,7 @@ open Asymptotics Filter MeasureTheory
 
 /-- Integrability for the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
 theorem integrable_theta_div_id_mul_log_sq (x : ℝ) :
-    IntegrableOn (fun t ↦ (θ t) / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
+    IntegrableOn (fun t ↦ θ t / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
   refine integrableOn_mul_sum_Icc _ (by norm_num) <| ContinuousOn.integrableOn_Icc fun x hx ↦
     ContinuousAt.continuousWithinAt ?_
@@ -346,7 +346,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have : log z ≠ 0 := by
       apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
     fun_prop (disch := assumption)
-  · have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹:= by
+  · have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹ := by
       intro y hy
       rw [deriv_log_inv, mul_inv, ← div_eq_mul_inv, neg_div]
       all_goals linarith [hy.1]
@@ -371,7 +371,7 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
 /- Simple bound on the integral from monotonicity.
 We will bound the integral on 2..x by splitting into two intervals and using this result on both.-/
 private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
-    ∫ x in a..b, 1 / log x  ^ 2 ≤ (b - a) / log a ^2 := by
+    ∫ x in a..b, 1 / log x  ^ 2 ≤ (b - a) / log a ^ 2 := by
   trans ∫ x in a..b, 1 / log a ^ 2
   · apply intervalIntegral.integral_mono_on hab
     · apply intervalIntegrable_one_div_log_sq <;> linarith
@@ -403,7 +403,7 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
 
 -- Somewhat arbitrary bound which we use to estimate the second term.
 private theorem sqrt_isLittleO :
-    Real.sqrt =o[atTop] (fun x ↦ x / log x ^2) := by
+    Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
   apply isLittleO_mul_iff_isLittleO_div _|>.mp
   · conv => arg 2; ext; rw [mul_comm]
     apply isLittleO_mul_iff_isLittleO_div _|>.mpr
