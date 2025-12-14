@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 public import Mathlib.Probability.HasLaw
-
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
