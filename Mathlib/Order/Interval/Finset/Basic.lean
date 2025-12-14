@@ -568,6 +568,10 @@ theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2
 @[simp]
 theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
 
+instance [OrderBot α] : Unique (Iic (⊥ : α)) := by
+  rw [Iic_bot]
+  infer_instance
+
 section DecidableEq
 
 variable [DecidableEq α]
