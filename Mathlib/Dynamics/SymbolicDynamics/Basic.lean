@@ -52,7 +52,7 @@ so that the theory works not only for groups but also for cancellative monoids.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbidden F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
-* `subshift_from_forbidden F` — the subshift defined by forbidding a family of patterns.
+* `MulSubshift.ofForbidde F` — the subshift defined by forbidding a family of patterns.
 * `subshift_of_finite_type F` — a subshift of finite type defined by a finite set of
 forbidden patterns.
 * `languageOn X U` — the set of patterns of shape `U` obtained by restricting some `x ∈ X`.
@@ -135,7 +135,7 @@ at position `h` in the shifted configuration is the value that was at position
 `h * g` in the original one.
 
 For example, if `G = ℤ` (with addition) and `A = {0, 1}`, then
-`shift 1 x` is the sequence obtained from `x` by shifting every symbol one
+`mulShift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
 @[to_additive /-- The **right-translation shift** on configurations, in additive notation.
 
@@ -327,7 +327,8 @@ section Forbidden
 
 variable {A G : Type*} [Monoid G]
 
-/-- `p.mulOccursInAt x g` means that the finite pattern `p` appears in the configuration `x`
+/-- `p.mulOccursInAt x g` means that the finite pattern
+`p` appears in the configuration `x`
 at position `g`.
 
 Formally: for every position `h` in the support of `p`, the value of the configuration
@@ -528,7 +529,7 @@ lemma mulOccursInAt_mulShift {A G : Type*} [Monoid G] (p : Pattern A G) (x : G �
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every position. -/
-@[to_additive forbidden_shift_invariant
+@[to_additive mapsTo_shift_forbidden
   /-- Configurations that avoid a family `F` of patterns are stable under the shift.
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
@@ -554,7 +555,8 @@ in which a pattern `p` occurs at position `g`.
 This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
-Equivalently, `p.mulOccursInAt x g` iff on every translated site `w * g` (with `w ∈ p.support`)
+Equivalently, `p.mulOccursInAt x g` iff on every translated site
+`w * g` (with `w ∈ p.support`)
 the configuration `x` agrees with the translated pattern `Pattern.mulExtend p g`.
 
 (This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/
@@ -607,7 +609,7 @@ lemma isOpen_mulOccursInAt [DiscreteTopology A] (p : Pattern A G) (g : G) :
 Since each occurrence set `{ x | p.mulOccursInAt x v }` is open (when `A` is discrete),
 its complement `{ x | ¬ p.mulOccursInAt x v }` is closed; `forbidden F` is the intersection
 of these closed sets over `p ∈ F` and `v ∈ G`. -/
-@[to_additive /-- Avoiding a fixed family of patterns is a closed
+@[to_additive isClosed_forbidden /-- Avoiding a fixed family of patterns is a closed
 condition (in the product topology on `G → A`).
 
 Since each occurrence set `{ x | p.occursInAt x v }` is open (when `A` is discrete),
@@ -644,33 +646,40 @@ lemma isClosed_mulOccursInAt [T1Space A] (p : Pattern A G) (g : G) :
 /-- The subshift defined by a family of forbidden patterns `F`.
 
 This is a standard way to construct subshifts:
-`subshift_from_forbidden F` consists of all configurations `x : G → A` in which no pattern
+`MulSubshift.ofForbidden F` consists of all configurations `x : G → A` in which no pattern
 `p ∈ F` occurs at any position.
 
 Formally:
 * the carrier is `forbidden F` (configurations avoiding `F`),
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
-@[to_additive]
+@[to_additive /-- The subshift defined by a family of forbidden patterns `F`.
+
+This is a standard way to construct subshifts:
+`Subshift.ofForbidden F` consists of all configurations `x : G → A` in which no pattern
+`p ∈ F` occurs at any position.
+
+Formally:
+* the carrier is `forbidden F` (configurations avoiding `F`),
+* it is closed because each occurrence set is open, and
+* it is shift-invariant since avoidance is preserved by shifts. -/]
 def MulSubshift.ofForbidden [DiscreteTopology A] (F : Set (Pattern A G)) : MulSubshift A G where
   carrier := mulForbidden F
   isClosed := isClosed_mulForbidden F
   mapsTo := Pattern.mapsTo_mulShift_mulForbidden F
 
-attribute [inherit_doc SymbolicDynamics.FullShift.MulSubshift.ofForbidden]
-  SymbolicDynamics.FullShift.Subshift.ofForbidden
-
 /-- A subshift of finite type (SFT) is a subshift defined by forbidding
 a *finite* family of patterns.
 
-Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` is a
+Formally, `mulSubshift_of_finite_type F` is `MulSubshift.ofForbidden F` where `F` is a
 `Finset (Pattern A G)`. -/
-@[to_additive]
+@[to_additive /-- A subshift of finite type (SFT) is a subshift defined by forbidding
+a *finite* family of patterns.
+
+Formally, `subshift_of_finite_type F` is `Subshift.ofForbidden F` where `F` is a
+`Finset (Pattern A G)`. -/]
 def mulSubshift_of_finite_type [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
   MulSubshift.ofForbidden (F : Set (Pattern A G))
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_of_finite_type]
-  SymbolicDynamics.FullShift.subshift_of_finite_type
 
 end DefSubshiftByForbidden
 
