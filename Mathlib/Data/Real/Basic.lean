@@ -118,15 +118,10 @@ instance instNNRatCast : NNRatCast ℝ where nnratCast q := (q : ℚ)
 instance instIntCast : IntCast ℝ where intCast z := (z : ℚ)
 instance instNatCast : NatCast ℝ where natCast n := (n : ℚ)
 
-@[simp] private lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
-@[simp] private lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
-@[simp] private lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
-@[simp] private lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
+private lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
+private lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 
-@[simp] private lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
-@[simp] private lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
-@[simp] private lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
-@[simp] private lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
+private lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
 
 set_option backward.proofsInPublic false in
 instance commRing : CommRing ℝ where
@@ -146,7 +141,7 @@ instance commRing : CommRing ℝ where
   left_distrib a b c := by apply ext_cauchy; simp [mul_add]
   right_distrib a b c := by apply ext_cauchy; simp [add_mul]
   neg_add_cancel a := by apply ext_cauchy; simp
-  natCast_succ n := by apply ext_cauchy; simp
+  natCast_succ n := by apply ext_cauchy; simp [cauchy_natCast]
 
 set_option backward.proofsInPublic false in
 /-- `Real.equivCauchy` as a ring equivalence. -/
@@ -194,6 +189,8 @@ instance : Monoid ℝ := by infer_instance
 instance : CommSemigroup ℝ := by infer_instance
 
 instance : Semigroup ℝ := by infer_instance
+
+instance : Sub ℝ := by infer_instance
 
 instance : Inhabited ℝ :=
   ⟨0⟩
