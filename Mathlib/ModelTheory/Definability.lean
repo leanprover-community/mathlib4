@@ -442,6 +442,7 @@ variable {L A}
 
 namespace DefinableFun
 
+/-- The sum type style of `Function.graph`. -/
 @[simp]
 def graph (f : (α → M) → M) : Set ((α ⊕ Unit) → M) :=
   { v : (α ⊕ Unit) → M | f (v ∘ Sum.inl) = v (Sum.inr ()) }
