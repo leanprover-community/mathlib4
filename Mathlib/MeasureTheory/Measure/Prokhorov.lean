@@ -471,7 +471,7 @@ lemma isCompact_closure_of_isTightMeasureSet [NormalSpace E]
       ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto 0
   have A n : ∃ (K : Set E), IsCompact K ∧ ∀ μ ∈ S, μ Kᶜ ≤ u n := by
-    rcases IsTightMeasureSet_iff_exists_isCompact_measure_compl_le.1 hS (u n)
+    rcases isTightMeasureSet_iff_exists_isCompact_measure_compl_le.1 hS (u n)
       (by norm_cast; exact u_pos n) with ⟨K, K_comp, hK⟩
     refine ⟨K, K_comp, fun μ hμ ↦ ?_⟩
     have : (μ : Measure E) Kᶜ ≤ u n := hK _ ⟨μ, hμ, rfl⟩
