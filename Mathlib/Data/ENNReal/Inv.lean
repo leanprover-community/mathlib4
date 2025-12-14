@@ -232,26 +232,10 @@ protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : 
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   cases b
   case top =>
-    #adaptation_note
-    /--
-    It may be possible to change this back to
-    `grind [mul_top, mul_zero, inv_top, ENNReal.inv_eq_zero]`
-    on nightly-2025-12-14 (or ideally without needing the `mul_zero`),
-    but if not just remove this note.
-    The proof by `grind` is a hack, doing arithmetic reasoning (i.e. `mul_zero`) by e-matching.
-    -/
     simp_all only [Ne, not_true_eq_false, or_false, top_ne_zero, not_false_eq_true, or_true,
       mul_top, inv_top, mul_zero]
   cases a
   case top =>
-    #adaptation_note
-    /--
-    It may be possible to change this back to
-    `grind [top_mul, zero_mul, inv_top, ENNReal.inv_eq_zero]`
-    on nightly-2025-12-14 (or ideally without needing the `zero_mul`),
-    but if not just remove this note.
-    The proof by `grind` is a hack, doing arithmetic reasoning (i.e. `zero_mul`) by e-matching.
-    -/
     simp_all only [Ne, top_ne_zero, not_false_eq_true, coe_ne_top, or_self, not_true_eq_false,
       coe_eq_zero, false_or, top_mul, inv_top, zero_mul]
   grind [_=_ coe_mul, coe_zero, inv_zero, = mul_inv, coe_ne_top, ENNReal.inv_eq_zero,
