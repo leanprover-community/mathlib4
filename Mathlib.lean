@@ -652,7 +652,6 @@ public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.CartanExists
-public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Character
 public import Mathlib.Algebra.Lie.ChevalleyEilenberg
@@ -684,6 +683,7 @@ public import Mathlib.Algebra.Lie.Rank
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.SerreConstruction
 public import Mathlib.Algebra.Lie.SkewAdjoint
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Solvable
@@ -3678,6 +3678,7 @@ public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Bilinear
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.Cartan
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
@@ -5629,6 +5630,7 @@ public import Mathlib.Probability.Distributions.Exponential
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.CharFun
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
@@ -6260,6 +6262,7 @@ public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization

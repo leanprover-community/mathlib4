@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category Pretriangulated.Opposite Pretriangulated
 
-variable {C : Type*} [Category C] [HasShift C ℤ] {X Y Z : C}
+variable {C : Type*} [Category* C] [HasShift C ℤ] {X Y Z : C}
 
 namespace ShiftedHom
 
