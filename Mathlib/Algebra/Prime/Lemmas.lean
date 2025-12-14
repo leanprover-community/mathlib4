@@ -178,4 +178,3 @@ lemma IsRelPrime.of_map
     (f : F) [IsLocalHom f] {a b : M}
     (hab : IsRelPrime (f a) (f b)) : IsRelPrime a b :=
   fun _ h₁ h₂ ↦ .of_map _ _ (hab (map_dvd f h₁) (map_dvd f h₂))
-
