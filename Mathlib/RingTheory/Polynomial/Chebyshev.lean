@@ -375,7 +375,7 @@ theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
-  case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_ne_neg_one R n hn)
+  case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_of_ne_neg_one R n hn)
 
 @[simp]
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
