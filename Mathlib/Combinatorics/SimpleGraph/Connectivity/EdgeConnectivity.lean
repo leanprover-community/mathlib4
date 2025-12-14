@@ -5,9 +5,9 @@ Authors: 0xTerencePrime
 -/
 module
 
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Data.Set.Card
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Data.Set.Card
 
 /-!
 # Edge Connectivity
@@ -27,42 +27,43 @@ variable {V : Type*} (G : SimpleGraph V) (k : ℕ)
 
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing fewer than
 `k` edges. -/
-def IsEdgeReachable (u v : V) : Prop :=
+public def IsEdgeReachable (u v : V) : Prop :=
   ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
 
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
-def IsEdgeConnected : Prop :=
+public def IsEdgeConnected : Prop :=
   ∀ u v : V, G.IsEdgeReachable k u v
 
 variable {G} {k}
 
 @[simp]
-lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u :=
+public lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u :=
   fun _ _ ↦ Reachable.refl _
 
 @[symm]
-lemma IsEdgeReachable.symm {u v : V} (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
+public lemma IsEdgeReachable.symm {u v : V} (h : G.IsEdgeReachable k u v) :
+    G.IsEdgeReachable k v u :=
   fun _ hk ↦ (h hk).symm
 
 @[trans]
-lemma IsEdgeReachable.trans {u v w : V} (h1 : G.IsEdgeReachable k u v)
+public lemma IsEdgeReachable.trans {u v w : V} (h1 : G.IsEdgeReachable k u v)
     (h2 : G.IsEdgeReachable k v w) : G.IsEdgeReachable k u w :=
   fun _ hk ↦ (h1 hk).trans (h2 hk)
 
-lemma IsEdgeReachable.mono {k l : ℕ} (hkl : k ≤ l) {u v : V} (h : G.IsEdgeReachable l u v) :
-    G.IsEdgeReachable k u v :=
+public lemma IsEdgeReachable.mono {k l : ℕ} (hkl : k ≤ l) {u v : V}
+    (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
   fun _ hk ↦ h (lt_of_lt_of_le hk (Nat.cast_le.mpr hkl))
 
 @[simp]
-lemma IsEdgeReachable.zero {u v : V} : G.IsEdgeReachable 0 u v :=
+public lemma IsEdgeReachable.zero {u v : V} : G.IsEdgeReachable 0 u v :=
   fun _ hk ↦ absurd (zero_le _) (not_le_of_gt hk)
 
 @[simp]
-lemma isEdgeConnected_zero : G.IsEdgeConnected 0 :=
+public lemma isEdgeConnected_zero : G.IsEdgeConnected 0 :=
   fun _ _ ↦ IsEdgeReachable.zero
 
 @[simp]
-lemma isEdgeReachable_one {u v : V} : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
+public lemma isEdgeReachable_one {u v : V} : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
   constructor
   · intro h
     specialize (@h ∅) (by simp)
@@ -74,10 +75,10 @@ lemma isEdgeReachable_one {u v : V} : G.IsEdgeReachable 1 u v ↔ G.Reachable u 
     subst this
     rwa [deleteEdges_empty]
 
-lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected :=
+public lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected :=
   forall_congr' fun _ ↦ forall_congr' fun _ ↦ isEdgeReachable_one
 
-lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
+public lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
     G.IsEdgeReachable (k + 1) u v ↔
       G.Reachable u v ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeReachable k u v := by
   constructor
@@ -116,14 +117,14 @@ lemma isEdgeReachable_succ {k : ℕ} {u v : V} :
       rw [hsub] at hk'
       exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mp hk'
 
-lemma isEdgeConnected_succ {k : ℕ} :
+public lemma isEdgeConnected_succ {k : ℕ} :
     G.IsEdgeConnected (k + 1) ↔
       G.IsEdgeConnected 1 ∧ ∀ e ∈ G.edgeSet, (G.deleteEdges {e}).IsEdgeConnected k := by
   simp only [IsEdgeConnected, isEdgeReachable_succ, IsEdgeReachable.zero]
   exact ⟨fun h ↦ ⟨fun u v ↦ ⟨(h u v).1, fun _ _ ↦ trivial⟩, fun e he u v ↦ (h u v).2 e he⟩,
          fun ⟨h1, h_succ⟩ u v ↦ ⟨(h1 u v).1, fun e he ↦ h_succ e he u v⟩⟩
 
-lemma isEdgeConnected_two :
+public lemma isEdgeConnected_two :
     G.IsEdgeConnected 2 ↔ G.Preconnected ∧ ¬∃ e, G.IsBridge e := by
   constructor
   · intro h
