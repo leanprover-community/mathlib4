@@ -590,6 +590,9 @@ theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃
 
 @[deprecated (since := "2025-05-23")] alias ne_univ_iff_exists_not_mem := ne_univ_iff_exists_notMem
 
+theorem ne_univ_of_notMem {α : Type*} {s : Set α} {a : α} (hx : a ∉ s) : s ≠ univ := by
+  intro h; simp [h] at hx
+
 theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
 
