@@ -558,7 +558,7 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
   guard <| (readWhile (" :=".toSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toSubstring) t).toString == "0"
 
-def _root_.Substring.toRange (s : Substring.Raw) : Lean.Syntax.Range where
+def _root_.Substring.Raw.toRange (s : Substring.Raw) : Lean.Syntax.Range where
   start := s.startPos
   stop := s.stopPos
 
@@ -994,7 +994,7 @@ def allowedTrail (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) : Option 
   -- Case `pp = " "`
   else
     if orig.isEmpty then
-      let misformat : Substring.Raw := {orig with stopPos := orig.stopPos + ⟨1⟩}
+      let misformat : Substring.Raw := {orig with stopPos := orig.stopPos.increaseBy 1}
       some ⟨misformat.toRange, "add space", ks⟩
     else
     -- Allow line breaks
@@ -1049,7 +1049,7 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then
     .error (s.toErrorMsg ictx)
-  else if ictx.input.atEnd s.pos then
+  else if String.Pos.Raw.atEnd ictx.input s.pos then
     .ok s.stxStack.back
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
@@ -1405,7 +1405,7 @@ def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) :
 
 /-- If `s` is a `Substring` and `p` is a `String.Pos`, then `s.break p` is the pair consisting of
 the `Substring` `s` ending at `p` and of the `Substring` `s` starting from `p`. -/
-def _root_.Substring.break (s : Substring.Raw) (p : String.Pos.Raw) : Substring.Raw × Substring.Raw :=
+def _root_.Substring.Raw.break (s : Substring.Raw) (p : String.Pos.Raw) : Substring.Raw × Substring.Raw :=
   ({s with stopPos := p}, {s with startPos := p})
 
 /--
