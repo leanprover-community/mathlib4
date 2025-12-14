@@ -307,22 +307,18 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.setCongr Finset.coe_image.symm))⟩⟩
 
-variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W] in
-@[simp] theorem trace_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
-    (f x).trace K W = x.trace K V :=
-  have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ trace_conj' _ _
+@[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
+    [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
+    (f : F) (x : End K V) : (f x).trace K W = x.trace K V :=
+  have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
+  (by simpa using congr($h x)) ▸ trace_conj' _ _
 
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
-    [DecidableEq m] [DecidableEq n] (f : Matrix m m K ≃ₐ[K] Matrix n n K) (x : Matrix m m K) :
-    (f x).trace = x.trace := by
+    [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
+    [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
-    LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans f).trans Matrix.toLinAlgEquiv') x.toLin'
-
-@[simp] theorem _root_.Matrix.trace_starAlgEquiv_map {K m n : Type*} [Field K] [Star K]
-    [Fintype m] [Fintype n] (f : Matrix m m K ≃⋆ₐ[K] Matrix n n K) (x : Matrix m m K) :
-    (f x).trace = x.trace := by
-  classical exact Matrix.trace_map f.toAlgEquiv x
+    LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
+      (f : Matrix m m K ≃ₐ[K] Matrix n n K)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :

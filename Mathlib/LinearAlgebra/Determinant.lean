@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
@@ -439,22 +438,18 @@ attribute [irreducible] LinearEquiv.det
 
 end LinearEquiv
 
-variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W] in
-@[simp] theorem LinearMap.det_map (f : End K V ≃ₐ[K] End K W) (x : End K V) :
-    (f x).det = x.det :=
-  have ⟨_, h⟩ := f.eq_linearEquivConjAlgEquiv
-  h ▸ det_conj _ _
+@[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
+    [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
+    [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
+  have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
+  (by simpa using congr($h x)) ▸ det_conj _ _
 
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
-    [DecidableEq m] [DecidableEq n] (f : Matrix m m K ≃ₐ[K] Matrix n n K) (x : Matrix m m K) :
-    (f x).det = x.det := by
-  simpa [toMatrixAlgEquiv', toLinAlgEquiv'] using
-    LinearMap.det_map ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv') x.toLin'
-
-@[simp] theorem Matrix.det_starAlgEquiv_map {K m n : Type*} [Field K] [Star K]
-    [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
-    (f : Matrix m m K ≃⋆ₐ[K] Matrix n n K) (x : Matrix m m K) : (f x).det = x.det :=
-  det_map f.toAlgEquiv x
+    [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
+    [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
+  simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
+    LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
+      (f : Matrix m m K ≃ₐ[K] Matrix n n K)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
