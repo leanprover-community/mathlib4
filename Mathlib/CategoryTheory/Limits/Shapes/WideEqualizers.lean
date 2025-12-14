@@ -60,9 +60,17 @@ variable {J : Type w}
 inductive WalkingParallelFamily (J : Type w) : Type w
   | zero : WalkingParallelFamily J
   | one : WalkingParallelFamily J
-deriving DecidableEq, Inhabited
+deriving Inhabited
 
 open WalkingParallelFamily
+
+-- We do not use `deriving DecidableEq` here
+-- because it generates an instance with unnecessary hypotheses.
+instance : DecidableEq (WalkingParallelFamily J)
+  | zero, zero => isTrue rfl
+  | zero, one => isFalse fun t => by grind
+  | one, zero => isFalse fun t => by grind
+  | one, one => isTrue rfl
 
 -- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
