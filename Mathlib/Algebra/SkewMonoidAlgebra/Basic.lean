@@ -550,8 +550,8 @@ variable [AddGroup k]
   ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
-theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ := by
-  rfl
+theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
+  (rfl)
 
 instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec

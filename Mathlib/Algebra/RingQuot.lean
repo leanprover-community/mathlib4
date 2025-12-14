@@ -199,32 +199,32 @@ def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
 instance [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
-theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 := by
-  rfl
+theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
+  (rfl)
 
-theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 := by
-  rfl
+theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 :=
+  (rfl)
 
-theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
-  rfl
+theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ :=
+  (rfl)
 
-theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
-  rfl
+theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ :=
+  (rfl)
 
-theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
-  rfl
+theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ :=
+  (rfl)
 
 theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
-    (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
-  rfl
+    (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ :=
+  (rfl)
 
 theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
-    (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
-  rfl
+    (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ :=
+  (rfl)
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
-    (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  rfl
+    (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ :=
+  (rfl)
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=

@@ -149,25 +149,24 @@ theorem ofFinsupp_one : (⟨1⟩ : R[X]) = 1 :=
   rfl
 
 @[simp]
-theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ := by
-  rfl
+theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ :=
+  (rfl)
 
 @[simp]
-theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ := by
-  rfl
+theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ :=
+  (rfl)
 
 @[simp]
 theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a⟩ - ⟨b⟩ := by
-  rw [sub_eq_add_neg, ofFinsupp_add, ofFinsupp_neg]
+  rw [sub_eq_add_neg]
   rfl
 
 @[simp]
-theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ := by
-  rfl
+theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
+  (rfl)
 
 @[simp]
-theorem ofFinsupp_nsmul (a : ℕ) (b) :
-    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+theorem ofFinsupp_nsmul (a : ℕ) (b) : (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 
 @[simp]
@@ -191,26 +190,25 @@ theorem toFinsupp_one : (1 : R[X]).toFinsupp = 1 :=
   rfl
 
 @[simp]
-theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp := by
-  rw [← ofFinsupp_add]
+theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp :=
+  (rfl)
 
 @[simp]
-theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
-  rw [← ofFinsupp_neg]
+theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp :=
+  (rfl)
 
 @[simp]
 theorem toFinsupp_sub {R : Type u} [Ring R] (a b : R[X]) :
     (a - b).toFinsupp = a.toFinsupp - b.toFinsupp := by
-  rw [sub_eq_add_neg, ← toFinsupp_neg, ← toFinsupp_add]
+  rw [sub_eq_add_neg]
   rfl
 
 @[simp]
-theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp := by
-  rw [← ofFinsupp_mul]
+theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp :=
+  (rfl)
 
 @[simp]
-theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) :
-    (a • b).toFinsupp = a • b.toFinsupp :=
+theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) : (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
 
 @[simp]
@@ -863,8 +861,9 @@ theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 
 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
-    (p + q).sum f = p.sum f + q.sum f :=
-  Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
+    (p + q).sum f = p.sum f + q.sum f := by
+  rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from rfl]
+  exact Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
