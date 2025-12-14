@@ -361,8 +361,8 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
 
 end
 
-instance {X : C} (f : Over X) : f.iteratedSliceEquiv.inverse.IsDenseSubsite
-    (J.over _) ((J.over _).over _) where
+instance {X : C} (f : Over X) :
+    f.iteratedSliceEquiv.inverse.IsDenseSubsite (J.over _) ((J.over _).over _) where
   functorPushforward_mem_iff := by
     simp [GrothendieckTopology.mem_over_iff, Sieve.overEquiv,
       ← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
