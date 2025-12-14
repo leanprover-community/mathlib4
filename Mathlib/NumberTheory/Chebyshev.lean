@@ -288,7 +288,7 @@ lemma deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
 open Asymptotics Filter MeasureTheory
 
 /-- Integrability for the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
-theorem integrable_theta_div_id_mul_log_sq (x : ℝ) :
+theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
     IntegrableOn (fun t ↦ θ t / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
   refine integrableOn_mul_sum_Icc _ (by norm_num) <| ContinuousOn.integrableOn_Icc fun x hx ↦
