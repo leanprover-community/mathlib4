@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.83" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.84" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -177,17 +177,17 @@ update its toolchain to match Mathlib's and fetch the new cache.
 -/
 post_update pkg do
   let rootPkg ← getRootPackage
-  if rootPkg.name = pkg.name then
+  if rootPkg.baseName = pkg.baseName then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
     -- Check if Lake version matches toolchain version
     let toolchainFile := rootPkg.dir / "lean-toolchain"
     let toolchainContent ← IO.FS.readFile toolchainFile
-    let toolchainVersion := match toolchainContent.trim.splitOn ":" with
+    let toolchainVersion := match toolchainContent.trimAscii.copy.splitOn ":" with
       | [_, version] => version
-      | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+      | _ => toolchainContent.trimAscii.copy  -- fallback to full content if format is unexpected
     -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
-    let toolchainVersion := toolchainVersion.stripPrefix "v"
+    let toolchainVersion := (toolchainVersion.dropPrefix "v").copy
     if Lean.versionString ≠ toolchainVersion then
       IO.println s!"Not running `lake exe cache get` yet, as \
         the `lake` version ({Lean.versionString}) does not match \
@@ -204,4 +204,4 @@ post_update pkg do
     finally
       IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
-      error s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.baseName}: failed to fetch cache"

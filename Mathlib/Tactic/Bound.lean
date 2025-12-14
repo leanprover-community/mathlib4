@@ -258,3 +258,4 @@ We register `bound` with the `hint` tactic.
 -/
 
 register_hint 70 bound
+register_try?_tactic (priority := 70) bound

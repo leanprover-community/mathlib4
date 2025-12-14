@@ -747,7 +747,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
   IsCompl.of_le
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
-      exact Sum.noConfusion h)
+      exact Sum.noConfusion rfl rfl (heq_of_eq h))
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]

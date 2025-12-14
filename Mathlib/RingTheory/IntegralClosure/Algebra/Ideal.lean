@@ -96,7 +96,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_of_mem_map [Algebra.IsIntegral R S]
   obtain ⟨p, hp, e, h⟩ := exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map hx
   refine ⟨p, hp, e, fun i hi ↦ ?_⟩
   obtain hi | hi := hi.lt_or_gt
-  · exact Ideal.pow_le_self (by cutsat) (h _)
+  · exact Ideal.pow_le_self (by lia) (h _)
   · simp [coeff_eq_zero_of_natDegree_lt hi]
 
 end Polynomial

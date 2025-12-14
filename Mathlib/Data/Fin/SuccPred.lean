@@ -911,7 +911,7 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   by saying that both functions are strictly monotone and have the same range `{i, i.succAbove j}ᶜ`,
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
-  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, coe_pred, coe_castPred,
+  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, val_pred, coe_castPred,
     dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> lia
 

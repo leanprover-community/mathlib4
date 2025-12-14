@@ -76,7 +76,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
-    if docString.trim.isEmpty then
+    if docString.trimAscii.isEmpty then
       Linter.logLintIf linter.style.docString.empty docStx m!"warning: this doc-string is empty"
       continue
     -- `startSubstring` is the whitespace between `/--` and the actual doc-string text.
@@ -92,12 +92,12 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
     let deIndentedDocString := deindentString currIndent docString
 
-    let docTrim := deIndentedDocString.trimRight
+    let docTrim := deIndentedDocString.trimAsciiEnd.copy
     let tail := docTrim.length
     -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
     let endRange (n : Nat) : Syntax := .ofRange
       {start := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩, stop := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩}
-    if docTrim.takeRight 1 == "," then
+    if docTrim.takeEnd 1 == ",".toSlice then
       Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"
     if tail + 1 != deIndentedDocString.length then
