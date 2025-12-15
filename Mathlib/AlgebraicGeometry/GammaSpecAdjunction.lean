@@ -172,7 +172,7 @@ def toΓSpecCBasicOpens :
     apply X.presheaf.map_comp
 
 /-- The canonical morphism of sheafed spaces from `X` to the spectrum of its global sections. -/
-@[simps!]
+@[simps! -isSimp]
 def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.obj (op X))) :=
   InducedCategory.homMk
     { base := X.toΓSpecBase

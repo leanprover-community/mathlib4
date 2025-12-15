@@ -64,6 +64,7 @@ variable {F}
 is a 1-field structure which identifies to `F X ⟶ F Y`. -/
 @[ext]
 structure Hom (X Y : InducedCategory D F) where
+  /-- The underlying morphism. -/
   hom : F X ⟶ F Y
 
 @[simps id_hom comp_hom]

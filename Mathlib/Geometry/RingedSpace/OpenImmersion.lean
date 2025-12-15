@@ -766,8 +766,6 @@ theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f 
   InducedCategory.hom_ext
     (PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f.hom)
 
-  --PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f
-
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ :=
   InducedCategory.hom_ext
