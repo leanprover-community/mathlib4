@@ -208,9 +208,9 @@ theorem continuous_right_self_arcLength
     have hae : a < e := lt_min hal hd.1
     have hec : e < c := (min_le_right _ d).trans_lt hd.2
     refine ⟨e, ⟨hae, hec.le.trans hc.2⟩, fun x hx ↦ (arcLength_mono f a hx.2.le).trans ?_⟩
-    obtain rfl | hε := eq_or_ne ε ⊤
+    obtain rfl | hε := eq_or_ne ε ∞
     · exact le_top
-    have : ε / 2 ≠ ⊤ := fun h ↦ (ENNReal.div_eq_top.1 h).elim (two_ne_zero ·.2) (hε ·.1)
+    have : ε / 2 ≠ ∞ := fun h ↦ (ENNReal.div_eq_top.1 h).elim (two_ne_zero ·.2) (hε ·.1)
     by_contra hac
     apply (Eq.refl <| arcLength f a b).not_lt
     calc arcLength f a b
