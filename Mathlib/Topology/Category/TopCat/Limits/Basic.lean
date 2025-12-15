@@ -309,4 +309,66 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
 def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 
+-- Generalize this for concrete categories
+/-- The unique continuous map from the terminal topology that picks out a single point `x`. -/
+def terminal.homOfElement {X : TopCat.{u}} (x : X) : ⊤_ TopCat.{u} ⟶ X :=
+  ofHom (.const _ x)
+
+@[inherit_doc TopCat.terminal.homOfElement]
+abbrev terminal.homOfElement' {X} [TopologicalSpace X] (x : X) : ⊤_ TopCat.{u} ⟶ of X :=
+  TopCat.terminal.homOfElement x
+
+noncomputable instance : Unique (⊤_ TopCat.{u}) :=
+  Equiv.unique (homeoOfIso (TopCat.terminalIsoPUnit)).toEquiv
+
+lemma terminal.homOfElement_eq {X : TopCat} (x : X) :
+    homOfElement x = ofHom (.const (⊤_ TopCat) x) := rfl
+
+@[simp]
+lemma terminal.homOfElement_apply {X : TopCat.{u}} (x : X) (y : ⊤_ TopCat.{u} := default) :
+  TopCat.terminal.homOfElement x y = x := rfl
+
+@[simp↓]
+lemma terminal.homOfElement'_apply {X} [TopologicalSpace X] (x : X)
+    (y : ⊤_ TopCat.{u} := default) : TopCat.terminal.homOfElement' x y = x := rfl
+
+@[simp↓]
+lemma terminal.range_homOfElement {X : TopCat.{u}} (x : X) :
+    Set.range (TopCat.terminal.homOfElement x) = {x} := by
+  ext y; simp [Unique.exists_iff, eq_comm]
+
+lemma terminal.range_homOfElement' {X} [TopologicalSpace X] (x : X) :
+    Set.range (TopCat.terminal.homOfElement' x) = {x} := by simp
+
+@[simp]
+lemma terminal.homOfElement_inj_iff {X : TopCat.{u}} {x y : X} :
+    (TopCat.terminal.homOfElement x = TopCat.terminal.homOfElement y) ↔ x = y := by
+  constructor
+  · intro h
+    rw [← TopCat.terminal.homOfElement_apply x, ← TopCat.terminal.homOfElement_apply y, h]
+  · rintro rfl; rfl
+
+alias ⟨terminal.homOfElement_inj, _⟩ := TopCat.terminal.homOfElement_inj_iff
+
+@[simp]
+lemma terminal.homOfElement'_inj_iff {X} [TopologicalSpace X] {x y : X} :
+    (TopCat.terminal.homOfElement' x = TopCat.terminal.homOfElement' y) ↔ x = y := by
+  constructor
+  · intro h
+    rw [← TopCat.terminal.homOfElement'_apply x, ← TopCat.terminal.homOfElement'_apply y, h]
+  · rintro rfl; rfl
+
+alias ⟨terminal.homOfElement'_inj, _⟩ := TopCat.terminal.homOfElement'_inj_iff
+
+@[simp↓]
+lemma terminal.homOfElement_comp {X Y : TopCat.{u}} (x : X) (f : X ⟶ Y) :
+    TopCat.terminal.homOfElement x ≫ f = TopCat.terminal.homOfElement (f x) := by
+ext; simp
+
+@[simp↓]
+lemma terminal.homOfElement'_comp {X Y} [TopologicalSpace X]
+    (x : X) (f : of X ⟶ Y) :
+    TopCat.terminal.homOfElement' x ≫ f = TopCat.terminal.homOfElement' (f x) := by
+  ext; simp
+
 end TopCat
