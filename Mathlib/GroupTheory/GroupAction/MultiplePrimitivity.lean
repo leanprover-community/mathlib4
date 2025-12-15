@@ -122,7 +122,7 @@ theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
 
 /-- An action is preprimitive iff it is `1`-preprimitive -/
 @[to_additive
-/-- An action is preprimitive iff it is `1`-preprimitive -/]
+/-- An action is preprimitive iff it is `1`-preprimitive. -/]
 theorem is_one_preprimitive_iff :
     IsMultiplyPreprimitive M α 1 ↔ IsPreprimitive M α := by
   constructor
