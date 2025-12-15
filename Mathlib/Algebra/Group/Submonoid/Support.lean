@@ -65,8 +65,8 @@ namespace AddSubmonoid
 variable (M : AddSubmonoid R)
 
 /-- Typeclass to track when the support of a submonoid forms an ideal. -/
-class HasIdealSupport (M : AddSubmonoid R) : Prop where
-  smul_mem_support (M) (x : R) {a : R} (ha : a ∈ M.supportAddSubgroup) :
+class HasIdealSupport : Prop where
+  smul_mem_support (x : R) {a : R} (ha : a ∈ M.supportAddSubgroup) :
     x * a ∈ M.supportAddSubgroup := by aesop
 
 export HasIdealSupport (smul_mem_support)
@@ -97,7 +97,7 @@ the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 -/
 def support : Ideal R where
   __ := supportAddSubgroup M
-  smul_mem' := by simpa [mem_supportAddSubgroup] using smul_mem_support M
+  smul_mem' := have := M.smul_mem_support; by aesop
 
 variable {M} in
 @[aesop simp]

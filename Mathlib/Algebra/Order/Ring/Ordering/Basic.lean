@@ -115,23 +115,13 @@ theorem IsOrdering.mk' [HasMemOrNegMem P]
 
 end ne_top
 
-namespace HasIdealSupport
+@[deprecated (since := "2025-12-15")] alias HasIdealSupport.smul_mem := AddSubmonoid.smul_mem
 
-theorem smul_mem [P.HasIdealSupport]
-    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
-  rw [AddSubmonoid.hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp_all
+@[deprecated (since := "2025-12-15")] alias HasIdealSupport.neg_smul_mem := AddSubmonoid.neg_smul_mem
 
-theorem neg_smul_mem [P.HasIdealSupport]
-    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
-  rw [AddSubmonoid.hasIdealSupport_iff] at ‹P.HasIdealSupport›
-  simp_all
 
-end HasIdealSupport
-
-theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := by
-  rw [AddSubmonoid.hasIdealSupport_iff]
-  intro x a _ _
+theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := where
+  smul_mem_support x a _ _ := by
   rcases h.exists_right_inv with ⟨half, h2⟩
   set y := (1 + x) * half
   set z := (1 - x) * half
@@ -155,7 +145,7 @@ protected theorem eq_zero_of_mem_of_neg_mem {x} (h : x ∈ P) (h2 : -x ∈ P) : 
   exact RingPreordering.neg_one_notMem P mem
 
 theorem supportAddSubgroup_eq_bot : P.supportAddSubgroup = ⊥ := by
-  ext; aesop (add simp AddSubmonoid.mem_supportAddSubgroup)
+  ext; aesop
 
 instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
@@ -173,8 +163,8 @@ theorem isOrdering_iff :
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
     have : a ∈ P.support ∨ b ∈ P.support :=
-      Ideal.IsPrime.mem_or_mem inferInstance (by simp_all [AddSubmonoid.mem_support])
-    simp_all [AddSubmonoid.mem_support]
+      Ideal.IsPrime.mem_or_mem inferInstance (by aesop)
+    aesop
   · have : HasMemOrNegMem P := ⟨by simp [h]⟩
     refine IsOrdering.mk' P (fun {x y} _ => ?_)
     by_contra
@@ -182,5 +172,5 @@ theorem isOrdering_iff :
     have := h (-x) (-y)
     have := h x y
     have := h x (-y)
-    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [AddSubmonoid.mem_support]
+    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> aesop
 end RingPreordering
