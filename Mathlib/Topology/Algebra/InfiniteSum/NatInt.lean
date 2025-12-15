@@ -557,20 +557,20 @@ lemma tprod_zero_pnat_eq_tprod_nat [TopologicalSpace G] [IsTopologicalGroup G] [
 theorem tprod_int_eq_zero_mul_tprod_pnat [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
     [T2Space G] {f : ℤ → G} (hf2 : Multipliable f) :
     ∏' n, f n = f 0 * (∏' n : ℕ+, f n) * (∏' n : ℕ+, f (-n)) := by
-  have hf3 : Multipliable fun n : ℕ ↦ f n :=
+  have h1 : Multipliable fun n : ℕ ↦ f n :=
     (multipliable_int_iff_multipliable_nat_and_neg.mp hf2).1
-  have hf33 : Multipliable fun n : ℕ ↦ f (-n) :=
+  have h2 : Multipliable fun n : ℕ ↦ f (-n) :=
     (multipliable_int_iff_multipliable_nat_and_neg.mp hf2).2
-  have hf4 : Multipliable fun n : ℕ+ ↦ f n := by
+  have h3 : Multipliable fun n : ℕ+ ↦ f n := by
     rwa [multipliable_pnat_iff_multipliable_succ (f := (f ·)),
       multipliable_nat_add_iff 1 (f := (f ·))]
-  have hf44 : Multipliable fun n : ℕ+ ↦ f (-n) := by
+  have h4 : Multipliable fun n : ℕ+ ↦ f (-n) := by
     rwa [multipliable_pnat_iff_multipliable_succ (f := (fun x ↦ f (-x))),
       multipliable_nat_add_iff 1 (f := (fun x ↦ f (-x)))]
   have := tprod_nat_mul_neg hf2
-  simp only [← tprod_zero_pnat_eq_tprod_nat (by simpa using hf3.mul hf33), Nat.cast_zero, neg_zero,
+  simp only [← tprod_zero_pnat_eq_tprod_nat (by simpa using h1.mul h2), Nat.cast_zero, neg_zero,
     mul_comm _ (f 0), mul_assoc, mul_right_inj] at this
-  simp [← this, hf4.tprod_mul hf44, ← mul_assoc]
+  simp [← this, h3.tprod_mul h4, ← mul_assoc]
 
 @[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
 theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
@@ -580,6 +580,6 @@ theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] 
     conv =>
       enter [2,2,1, n]
       rw [← hf]
-    apply tprod_int_eq_zero_mul_tprod_pnat hf2
+    exact tprod_int_eq_zero_mul_tprod_pnat hf2
 
 end PNat

@@ -14,26 +14,22 @@ public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 
 We show how the Eisenstein series `E2` transforms under the slash action of `SL(2, ℤ)`.
 In particular, we show that it is invariant under the action of `T = [[1, 1], [0, 1]] ` and we
-compute how it  transforms under the action of `S = [[0, -1], [1, 0]]` in term of a correction term
+compute how it transforms under the action of `S = [[0, -1], [1, 0]]` in term of a correction term
 `D2`.
 
-The key identities used to prove these transformation formulae are `tsumFilter_tsum_eq` which says
-that  `∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))` equals
-`-2 * π * I / z` while if we take the sum the other way,  `tsum_tsumFilter_eq` tells us that
-`∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0`.
-
 The idea is then to rewrite the Eisenstein series `G2` as an absolutely convergent infinite sum of
-terms of the form `(((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ(m) ` for
-`m : Fin 2 → ℤ` where `δ(m)` is a small correction term.
-
+terms of the form `(((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ(m)` for
+`m : Fin 2 → ℤ` where `δ(m)` is a small correction term. This allows us to link the sum when acted
+on by `S` (which swaps the co-ordinates of `m`) to the original sum plus some extra terms which
+give rise to the correction term `D2`.
 -/
 
 @[expose] public section
 
 open UpperHalfPlane hiding I
 
-open ModularForm EisensteinSeries  TopologicalSpace ModularGroup Filter Complex MatrixGroups Finset
-  Set SummationFilter
+open ModularForm TopologicalSpace ModularGroup Filter Complex MatrixGroups
+ Set SummationFilter
 
 open scoped Real Topology
 
@@ -86,6 +82,9 @@ lemma G2Term_summable (z : ℍ) : Summable fun m ↦ G2Term z m := by
   have hb2 : b.1 ≠ ![0, -1] := by aesop
   simp [δ, hb1, hb2]
 
+lemma G2Term_prod_summable (z : ℍ) : Summable (fun p : ℤ × ℤ ↦ G2Term z ![p.1, p.2]) := by
+  apply (finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)
+
 private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ) * z + n) ^ 2)⁻¹ +
     (δ ![b, n]) + (((b : ℂ) * z + n)⁻¹ - ((b : ℂ) * z + n + 1)⁻¹) = (((b : ℂ) * z + n) ^ 2)⁻¹ := by
   by_cases h : b = 0 ∧ n = 0
@@ -123,18 +122,18 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
           Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, G2Term, mul_inv_rev, one_div,
           aux_identity z a b, inv_inj]
         rfl
-      · have := G2Term_summable z
-        simp only [G2Term, Fin.isValue, mul_inv_rev, ← (finTwoArrowEquiv _).symm.summable_iff,
-          finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
+      · have := G2Term_prod_summable z
+        simp only [G2Term, Fin.isValue, mul_inv_rev, Matrix.cons_val_zero, Matrix.cons_val_one,
           Matrix.cons_val_fin_one] at *
         exact this.prod_factor _
     · conv =>
         enter [1, N]
-        rw [tsum_symmetricIco_eq_zero z N, add_zero]
-      exact ((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)).prod
-  · apply (((finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)).prod).congr
+        rw [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z N, add_zero]
+      exact (G2Term_prod_summable z).prod
+  · apply ((G2Term_prod_summable z).prod).congr
     simp
-  · exact summable_zero.congr (fun b ↦ (by simp [← tsum_symmetricIco_eq_zero z b]))
+  · exact summable_zero.congr
+      (fun b ↦ (by simp [← tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z b]))
 
 private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
     ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
@@ -164,21 +163,16 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
 private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     ∑' m : ℤ, ∑' n : ℤ, G2Term z ![m, n] := by
   rw [ ← (finTwoArrowEquiv _).symm.tsum_eq]
-  have := G2Term_summable z
-  simp only [finTwoArrowEquiv_symm_apply] at *
-  rw [← (finTwoArrowEquiv _).symm.summable_iff] at this
-  exact Summable.tsum_prod' this (this.prod_factor)
+  exact Summable.tsum_prod' (G2Term_prod_summable z) ((G2Term_prod_summable z).prod_factor)
 
 private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
-  have := G2Term_summable z
-  simp only [← (finTwoArrowEquiv _).symm.summable_iff, finTwoArrowEquiv_symm_apply] at this
   rw [Summable.tsum_comm', tsum_G2Term_eq_tsum]
-  · apply this.congr
+  · apply (G2Term_prod_summable z).congr
     grind [finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_inv_rev]
-  · simpa [mul_inv_rev] using this.prod_factor
-  · have H := (G2Term_summable z)
+  · simpa [mul_inv_rev] using (G2Term_prod_summable z).prod_factor
+  · have H := G2Term_summable z
     rw [← swap_equiv.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at H
     simpa using H.prod_factor
 
