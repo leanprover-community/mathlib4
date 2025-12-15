@@ -25,13 +25,13 @@ number) is a `ValuationSubring`, which means we can construct its residue field
 This field inherits a `LinearOrder` instance, which makes it into an Archimedean linearly ordered
 field, meaning we can uniquely embed it in the reals.
 
-Given a finite element of the field, the `ArchimedeanClass.standardPart` function returns the real
-number corresponding to this unique embedding. This function generalizes, among other things, the
-standard part function on `Hyperreal`.
+Given a finite element of the field, the `ArchimedeanClass.stdPart` function returns the real number
+corresponding to this unique embedding. This function generalizes, among other things, the standard
+part function on `Hyperreal`.
 
 ## TODO
 
-Redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`.
+Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 
 ## References
 
@@ -224,41 +224,41 @@ infinitesimal difference.
 
 For any infinite inputs, this function outputs a junk value of 0. -/
 @[no_expose]
-noncomputable def standardPart (x : K) : ℝ :=
+noncomputable def stdPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
     OrderRingHom.comp default FiniteResidueField.mk (.mk x h) else 0
 
-theorem standardPart_of_mk_ne_zero (h : mk x ≠ 0) : standardPart x = 0 := by
+theorem stdPart_of_mk_ne_zero (h : mk x ≠ 0) : stdPart x = 0 := by
   obtain h | h := h.lt_or_gt
   · exact dif_neg h.not_ge
-  · rw [standardPart, dif_pos h.le, OrderRingHom.comp_apply, FiniteResidueField.mk_eq_zero.2 h,
+  · rw [stdPart, dif_pos h.le, OrderRingHom.comp_apply, FiniteResidueField.mk_eq_zero.2 h,
       map_zero]
 
-theorem standardPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk x) :
-    standardPart x = f (.mk <| .mk x h) := by
-  rw [standardPart, dif_pos h, OrderRingHom.comp_apply]
+theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk x) :
+    stdPart x = f (.mk <| .mk x h) := by
+  rw [stdPart, dif_pos h, OrderRingHom.comp_apply]
   congr
   exact Subsingleton.allEq _ _
 
 @[simp]
-theorem standardPart_zero : standardPart (0 : K) = 0 := by
-  rw [standardPart, dif_pos] <;> simp
+theorem stdPart_zero : stdPart (0 : K) = 0 := by
+  rw [stdPart, dif_pos] <;> simp
 
 @[simp]
-theorem standardPart_one : standardPart (1 : K) = 1 := by
-  rw [standardPart, dif_pos] <;> simp
+theorem stdPart_one : stdPart (1 : K) = 1 := by
+  rw [stdPart, dif_pos] <;> simp
 
 @[simp]
-theorem standardPart_neg (x : K) : standardPart (-x) = -standardPart x := by
-  simp_rw [standardPart, ArchimedeanClass.mk_neg,]
+theorem stdPart_neg (x : K) : stdPart (-x) = -stdPart x := by
+  simp_rw [stdPart, ArchimedeanClass.mk_neg,]
   split_ifs
   · rw [← FiniteElement.mk_neg, map_neg]
   · simp
 
 @[simp]
-theorem standardPart_inv (x : K) : standardPart x⁻¹ = (standardPart x)⁻¹ := by
+theorem stdPart_inv (x : K) : stdPart x⁻¹ = (stdPart x)⁻¹ := by
   obtain hx | hx := eq_or_ne (mk x) 0
-  · unfold standardPart
+  · unfold stdPart
     have hx' : 0 ≤ mk x⁻¹ := by simp_all
     rw [dif_pos hx.ge, dif_pos hx']
     · apply eq_inv_of_mul_eq_one_left
@@ -267,58 +267,62 @@ theorem standardPart_inv (x : K) : standardPart x⁻¹ = (standardPart x)⁻¹ :
       ext
       apply inv_mul_cancel₀
       aesop
-  · rw [standardPart_of_mk_ne_zero hx, standardPart_of_mk_ne_zero, inv_zero]
+  · rw [stdPart_of_mk_ne_zero hx, stdPart_of_mk_ne_zero, inv_zero]
     rwa [mk_inv, neg_ne_zero]
 
-theorem standardPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    standardPart (x + y) = standardPart x + standardPart y := by
-  unfold standardPart
+theorem stdPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+    stdPart (x + y) = stdPart x + stdPart y := by
+  unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_add _ (FiniteElement.mk x hx) (.mk y hy)
 
-theorem standardPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    standardPart (x - y) = standardPart x - standardPart y := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, standardPart_add hx, standardPart_neg]
+theorem stdPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+    stdPart (x - y) = stdPart x - stdPart y := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, stdPart_add hx, stdPart_neg]
   rwa [mk_neg]
 
-theorem standardPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    standardPart (x * y) = standardPart x * standardPart y := by
-  unfold standardPart
+theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+    stdPart (x * y) = stdPart x * stdPart y := by
+  unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_mul _ (FiniteElement.mk x hx) (.mk y hy)
 
-theorem standardPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
-    standardPart (x / y) = standardPart x / standardPart y := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, standardPart_mul hx, standardPart_inv]
+theorem stdPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
+    stdPart (x / y) = stdPart x / stdPart y := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, stdPart_mul hx, stdPart_inv]
   rwa [mk_inv]
 
 @[simp]
-theorem standardPart_intCast (n : ℤ) : standardPart (n : K) = n := by
+theorem stdPart_intCast (n : ℤ) : stdPart (n : K) = n := by
   obtain rfl | hn := eq_or_ne n 0
   · simp
-  · rw [standardPart, dif_pos]
+  · rw [stdPart, dif_pos]
     · rw [FiniteElement.mk_intCast]
       simp
     · rw [mk_intCast hn]
 
 @[simp]
-theorem standardPart_natCast (n : ℕ) : standardPart (n : K) = n := by
-  exact_mod_cast standardPart_intCast n
+theorem stdPart_natCast (n : ℕ) : stdPart (n : K) = n :=
+  mod_cast stdPart_intCast n
 
 @[simp]
-theorem standardPart_ratCast (q : ℚ) : standardPart (q : K) = q := by
+theorem stdPart_ofNat (n : ℕ) : stdPart ofNat(n) = n :=
+  stdPart_natCast n
+
+@[simp]
+theorem stdPart_ratCast (q : ℚ) : stdPart (q : K) = q := by
   cases q with | div n d hd
   simp_rw [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast]
   obtain rfl | hn := eq_or_ne n 0
   · simp
-  · rw [standardPart_div]
+  · rw [stdPart_div]
     · simp
     · rw [mk_intCast hn]
     · rw [mk_natCast hd, neg_zero]
 
 @[simp]
-theorem standardPart_real (f : ℝ →+*o K) (r : ℝ) : standardPart (f r) = r := by
-  rw [standardPart, dif_pos]
+theorem stdPart_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
+  rw [stdPart, dif_pos]
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
 
 end ArchimedeanClass
