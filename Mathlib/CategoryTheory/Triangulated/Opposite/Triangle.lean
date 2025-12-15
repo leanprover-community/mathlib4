@@ -31,7 +31,7 @@ namespace CategoryTheory.Pretriangulated
 
 open Category Limits Preadditive ZeroObject Opposite
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace TriangleOpEquivalence
 

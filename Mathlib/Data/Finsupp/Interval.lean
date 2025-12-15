@@ -59,7 +59,7 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq ι]
 variable {f g : ι →₀ α} {i : ι} {a : α}
 
 /-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
-@[simps toFun]
+@[simps apply]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support := f.support ∪ g.support

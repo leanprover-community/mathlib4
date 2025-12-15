@@ -23,8 +23,8 @@ namespace CategoryTheory.Abelian
 
 open Category
 
-variable {A C : Type*} [Category C] [Category A]
-  {A' C' : Type*} [Category C'] [Category A']
+variable {A C : Type*} [Category* C] [Category* A]
+  {A' C' : Type*} [Category* C'] [Category* A']
 
 namespace LeftResolution
 

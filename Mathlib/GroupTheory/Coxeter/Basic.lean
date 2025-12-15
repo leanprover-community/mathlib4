@@ -452,7 +452,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
         rw [getElem_alternatingWord i j (2*p) k (by lia)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
-        simp only [(by rwa [Nat.even_add_one] : Even (k + 1)), ↓reduceIte]
+        simp only [Odd.add_one (by simpa using h_even), ↓reduceIte]
         rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by lia)]

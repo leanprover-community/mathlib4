@@ -146,7 +146,7 @@ end Functor
 
 section
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
