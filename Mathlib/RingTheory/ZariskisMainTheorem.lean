@@ -32,6 +32,8 @@ open scoped TensorProduct nonZeroDivisors
 
 open Polynomial
 
+namespace Algebra
+
 variable (R) in
 /-- We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
 if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`. -/
@@ -95,3 +97,5 @@ lemma ZariskisMainProperty.of_isIntegral (p : Ideal S) [p.IsPrime] [Algebra.IsIn
     ZariskisMainProperty R p :=
   zariskisMainProperty_iff'.mpr ⟨1, p.primeCompl.one_mem,
     fun _ ↦ ⟨0, Algebra.IsIntegral.isIntegral _⟩⟩
+
+end Algebra
