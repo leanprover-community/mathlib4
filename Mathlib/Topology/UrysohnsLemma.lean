@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Separation.GDelta --.Basic
 
 /-!
 # Urysohn's lemma
@@ -315,24 +315,6 @@ end CU
 
 end Urysohns
 
-/-- Urysohn's lemma: a topological space `X` is normal if for any two disjoint closed sets `s` and
-`t` there exists a continuous function `f : X → ℝ` such that
-
-* `f` equals zero on `s`;
-* `f` equals one on `t`.
--/
-lemma NormalSpace.of_separating {X} [TopologicalSpace X]
-    (sep : {U V : Set X} → IsClosed U → IsClosed V → Disjoint U V →
-      { f : C(X, ℝ) // EqOn f 0 U ∧ EqOn f 1 V }) : NormalSpace X where
-  normal {s t} sC tC disj := by
-    obtain ⟨f, hf₀, hf₁⟩ := sep sC tC disj
-    use f ⁻¹' (Iio 0.5), f ⁻¹' (Ioi 0.5), isOpen_Iio.preimage f.continuous,
-      isOpen_Ioi.preimage f.continuous
-    split_ands
-    · intro x hxs; simp [hf₀ hxs]; linarith
-    · intro x hxt; simp [hf₁ hxt]; linarith
-    · apply Disjoint.preimage; simp
-
 /-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 then there exists a continuous function `f : X → ℝ` such that
 
@@ -495,6 +477,127 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
   · apply le_trans _ hu.le
     exact (S x).tsum_le_tsum (fun n ↦ I n x) u_sum
+
+/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
+then there exists a continuous function `f : X → ℝ` such that
+
+* `f` equals zero on `s`;
+* `f` equals one on `t`;
+* `0 ≤ f x ≤ 1` for all `x`.
+
+Moreover, if `s` and `t` are both `Gδ` sets, then `f` can be chosen so that `f ⁻¹ {0}` is exactly
+`s` and `f ⁻¹ {1}` is exactly `t`. -/
+lemma exists_continuous_zero_one_of_isClosed_of_isGδ {X} [TopologicalSpace X] [NormalSpace X]
+    {s t : Set X} (sC : IsClosed s) (sGδ : IsGδ s) (tC : IsClosed t) (tGδ : IsGδ t)
+    (disj : Disjoint s t) :
+    ∃ (f : C(X, ℝ)), f ⁻¹' {0} = s ∧ f ⁻¹' {1} = t ∧ ∀ x, f x ∈ Icc 0 1 := by
+  obtain ⟨u, anti_u, inter_u, uOΔ⟩ := anti sGδ tC disj
+  obtain ⟨v, anti_v, inter_v, vOΔ⟩ := anti tGδ sC disj.symm
+  have hδs n := exists_continuous_zero_one_of_isClosed (uOΔ n).1.isClosed_compl sC
+    (by simpa [← subset_compl_iff_disjoint_right, ← inter_u] using subset_iUnion (compl ∘ u) n)
+  have hδt n := exists_continuous_zero_one_of_isClosed (vOΔ n).1.isClosed_compl tC
+    (by simpa [← subset_compl_iff_disjoint_right, ← inter_v] using subset_iUnion (compl ∘ v) n)
+  choose δs hδs₀ hδs₁ hδsI using hδs; choose δt hδt₀ hδt₁ hδtI using hδt
+  let δ x := (1 + ∑' n, (δt - δs) n x / 2 / 2 ^ n) / 2
+  have bounded (i : ℕ) (x : X) : ‖((δt i - δs i) x) / 2 / 2 ^ i‖ ≤ 1 / 2 / 2 ^ i := by
+    simp_rw [norm_div, norm_pow, Real.norm_ofNat]
+    grw [div_le_div_iff_of_pos_right (by positivity), div_le_div_iff_of_pos_right Nat.ofNat_pos,
+    ContinuousMap.sub_apply, Real.norm_eq_abs, abs_le]
+    grind
+  have summable (x : X) : Summable fun b ↦ ((δt - δs) b x) / 2 / 2 ^ b := by
+    apply Summable.of_norm_bounded (summable_geometric_two' 1)
+    simpa using (bounded · x)
+  obtain ⟨hxs, hxt⟩ : (∀ x ∉ s, ∃ n, δs n x = 0) ∧ (∀ x ∉ t, ∃ n, δt n x = 0) := by
+    split_ands
+    all_goals
+      intro x; contrapose!; intro hx
+      simp_rw [EqOn, mem_compl_iff, @not_imp_comm (_ ∈ _), Pi.zero_apply] at hδs₀ hδt₀
+      simp [← inter_u, ← inter_v]; grind
+  use ⟨δ, ?cont⟩, ?δ₀, ?δ₁, ?δI
+  case cont =>
+    fapply Continuous.div₀ (.add continuous_const ?_) continuous_const (by simp)
+    exact continuous_tsum (hu := summable_geometric_two' 1) (fun n ↦ by fun_prop) bounded
+  case δI =>
+    intro x
+    simp only [ContinuousMap.mk_apply, δ]
+    split_ands
+    · conv in 1 + _ =>
+      rw [← tsum_geometric_two' 1, ← Summable.tsum_add (summable_geometric_two' 1) (summable x)]
+      simp_rw [← add_div, Pi.sub_apply, ContinuousMap.sub_apply]
+      apply div_nonneg _ <| Nat.ofNat_nonneg 2
+      fapply tsum_nonneg; intro n
+      apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
+      grind
+    · have {x : ℝ} : 1 + x ≤ 2 ↔ 0 ≤ 1 - x := by grind
+      simp only [Nat.ofNat_pos, div_le_one, this, ge_iff_le]
+      rw [← tsum_geometric_two' 1, ← Summable.tsum_sub (summable_geometric_two' 1) (summable x)]
+      simp_rw [← sub_div, Pi.sub_apply, ContinuousMap.sub_apply]
+      apply tsum_nonneg; intro n
+      apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
+      grind
+  all_goals
+    have {x : ℝ} : 1 + x = 2 ↔ 1 + -x = 0 := by grind
+    ext x; constructor
+    · specialize summable x; have summable' := summable.neg
+      simp only [ContinuousMap.coe_mk, mem_preimage, mem_singleton_iff, div_eq_zero_iff, ne_eq,
+      OfNat.ofNat_ne_zero, or_false, δ, not_false_eq_true, div_eq_one_iff_eq, this]
+      contrapose!; intro hx
+      obtain ⟨n, hn⟩ := by first | exact hxs x hx | exact hxt x hx
+      -- ‹∀ x ∉ _, _› x hx
+      simp +singlePass only [← tsum_geometric_two' 1, ← tsum_neg, summable, summable',
+      ← Summable.tsum_add (summable_geometric_two' 1)]
+      · apply ne_of_gt
+        fapply Summable.add (summable_geometric_two' 1) ‹_› |>.tsum_pos _ n <;>
+          simp only [← add_div, Pi.sub_apply, ContinuousMap.sub_apply, ← neg_div]
+        · apply div_pos _ (by positivity); apply div_pos _ Nat.ofNat_pos
+          grind
+        · intro n
+          apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
+          grind
+    · intro hx
+      have hx' {n : ℕ} : x ∉ _ := ‹∀ n, IsOpen _ ∧ Disjoint _ _› n |>.2.notMem_of_mem_right hx
+      unfold EqOn at hδs₀ hδs₁ hδt₀ hδt₁
+      simp [δ, *, tsum_geometric_two', -one_div]
+where
+  anti {U V : Set X} (h : IsGδ U) (Vc : IsClosed V) (disj : Disjoint U V) :
+      ∃ (s : ℕ → Set X), Antitone s ∧ ⋂ n, s n = U ∧ ∀ n, IsOpen (s n) ∧ Disjoint (s n) V := by
+    rcases em (U = univ) with rfl | hntop
+    · use fun n ↦ univ; simp at disj; simp [antitone_const, disj]
+    · obtain ⟨T, To, cardT, hUT⟩ := h
+      have T₀ : T.Nonempty := by by_contra! hT₀; simp [hT₀] at hUT; simp [hUT] at hntop
+      obtain ⟨t, ht⟩ := cardT.exists_surjective T₀
+      use fun i ↦ (t i ∩ ⋂ j < i, t j) \ V; split_ands
+      · rintro i j hij x ⟨⟨hxj, hx⟩, hxV⟩
+        rcases em (i = j) with rfl | hne
+        · simp at hx; simpa using ⟨⟨hxj, hx⟩, hxV⟩
+        · replace hij := lt_of_le_of_ne hij hne
+          simp at hx; simpa using ⟨⟨hx _ hij, (hx · <| ·.trans hij)⟩, hxV⟩
+      · simp only
+        conv =>
+          enter [1, 1, i]; rw [inter_comm, ← biInter_lt_succ] --; simp only [Nat.lt_add_one_iff]
+        simp_rw [Nat.lt_add_one_iff, ← iInter_diff, biInter_le_eq_iInter,
+        iInter_congr_of_surjective t ht (fun _ ↦ rfl), ← sInter_eq_iInter, ← hUT]
+        tauto_set
+      · intro i; split_ands
+        · apply To _ (t i).prop |>.inter ?_ |>.sdiff Vc
+          rw [iInter_subtype']
+          apply isOpen_iInter_of_finite
+          simp [To]
+        · exact disjoint_sdiff_left
+
+/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
+then there exists a continuous function `f : X → ℝ` such that
+
+* `f` equals zero on `s`;
+* `f` equals one on `t`;
+* `0 ≤ f x ≤ 1` for all `x`.
+
+Moreover, if `X` is *perfectly* normal, then `s` and `t` are both `Gδ` sets and `f` can be chosen
+so that `f ⁻¹ {0}` is exactly `s` and `f ⁻¹ {1}` is exactly `t`. -/
+lemma exists_precise_continuous_zero_one_of_isClosed [PerfectlyNormalSpace X]
+    {s t : Set X} (sC : IsClosed s) (tC : IsClosed t) (disj : Disjoint s t) :
+    ∃ (f : C(X, ℝ)), f ⁻¹' {0} = s ∧ f ⁻¹' {1} = t ∧ ∀ x, f x ∈ Icc 0 1 :=
+  exists_continuous_zero_one_of_isClosed_of_isGδ sC sC.isGδ tC tC.isGδ disj
 
 /-- A variation of Urysohn's lemma. In a `R1Space X`, for a closed set `t` and a relatively
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
