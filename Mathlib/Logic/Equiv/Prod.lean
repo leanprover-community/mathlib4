@@ -233,6 +233,7 @@ variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `β₁ × α₁` and `β₂ × α₁`. -/
+@[simps apply_fst apply_snd]
 def prodCongrLeft : β₁ × α₁ ≃ β₂ × α₁ where
   toFun ab := ⟨e ab.2 ab.1, ab.2⟩
   invFun ab := ⟨(e ab.2).symm ab.1, ab.2⟩
@@ -246,14 +247,11 @@ theorem prodCongrLeft_apply (b : β₁) (a : α₁) : prodCongrLeft e (b, a) = (
 theorem prodCongr_refl_right (e : β₁ ≃ β₂) :
     prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ ↦ e := rfl
 
-@[simp] lemma fst_prodCongrLeft (p) : (prodCongrLeft e p).1 = e p.2 p.1 := rfl
-
-@[simp] lemma snd_prodCongrLeft (p) : (prodCongrLeft e p).2 = p.2 := rfl
-
 @[simp] lemma prodCongrLeft_symm : (prodCongrLeft e).symm = prodCongrLeft (.symm ∘ e) := rfl
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `α₁ × β₁` and `α₁ × β₂`. -/
+@[simps apply_fst apply_snd]
 def prodCongrRight : α₁ × β₁ ≃ α₁ × β₂ where
   toFun ab := ⟨ab.1, e ab.1 ab.2⟩
   invFun ab := ⟨ab.1, (e ab.1).symm ab.2⟩
@@ -266,10 +264,6 @@ theorem prodCongrRight_apply (a : α₁) (b : β₁) : prodCongrRight e (a, b) =
 
 theorem prodCongr_refl_left (e : β₁ ≃ β₂) :
     prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ ↦ e := rfl
-
-@[simp] lemma fst_prodCongrRight (p) : (prodCongrRight e p).1 = p.1 := rfl
-
-@[simp] lemma snd_prodCongrRight (p) : (prodCongrRight e p).2 = e p.1 p.2 := rfl
 
 @[simp] lemma prodCongrRight_symm : (prodCongrRight e).symm = prodCongrRight (.symm ∘ e) := rfl
 
