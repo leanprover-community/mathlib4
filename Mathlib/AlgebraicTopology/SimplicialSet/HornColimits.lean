@@ -86,7 +86,7 @@ abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 0 (by simp)
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (1 : Fin 2)) ι₀₁ ι₁₂ := by
-  apply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+  apply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _)
     (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
@@ -119,7 +119,7 @@ abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 0 (by simp)
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (0 : Fin 2)) ι₀₂ ι₁₂ := by
-  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _)
     (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
@@ -135,7 +135,7 @@ of all `1`-codimensional faces of the standard simplex but one
 along suitable `2`-codimensional faces. -/
 lemma multicoequalizerDiagram :
     Subcomplex.MulticoequalizerDiagram Λ[n, i]
-      (ι := ({i}ᶜ : Set (Fin (n +1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
+      (ι := ({i}ᶜ : Set (Fin (n + 1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
       (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
   iSup_eq := by rw [horn_eq_iSup]
   eq_inf j k := by
