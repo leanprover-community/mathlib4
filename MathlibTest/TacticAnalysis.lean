@@ -6,9 +6,9 @@ section terminalReplacement
 
 section omega
 
-set_option linter.tacticAnalysis.omegaToCutsat true
+set_option linter.tacticAnalysis.omegaToLia true
 
-/-- warning: `cutsat` can replace `omega` -/
+/-- warning: `lia` can replace `omega` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   omega
@@ -213,6 +213,9 @@ end introMerge
 
 section tryAtEachStep
 
+-- Disable timing in tests to avoid non-deterministic output
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+
 section
 set_option linter.tacticAnalysis.tryAtEachStepGrind true
 
@@ -222,7 +225,7 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
-info: `skip` can be replaced with `grind`
+info: `skip` (+1 later steps) can be replaced with `grind`
 ---
 info: `rfl` can be replaced with `grind`
 ---
@@ -278,9 +281,63 @@ end
 
 end tryAtEachStep
 
+section selfReplacements
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+-- With selfReplacements true (default), grind replacing grind is reported
+/-- info: `grind` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+section
+set_option linter.tacticAnalysis.tryAtEachStep.selfReplacements false
+
+-- With selfReplacements false, grind replacing grind is NOT reported
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+-- Non-self replacements are still reported when selfReplacements is false
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+end
+
+end selfReplacements
+
+section laterSteps
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+set_option linter.unusedTactic false
+
+-- Test that later steps are counted correctly
+/--
+info: `skip` (+3 later steps) can be replaced with `grind`
+---
+info: `skip` (+2 later steps) can be replaced with `grind`
+---
+info: `skip` (+1 later steps) can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  skip
+  skip
+  rfl
+
+end laterSteps
+
 section grindReplacement
 
-set_option linter.tacticAnalysis.regressions.omegaToCutsat true
+set_option linter.tacticAnalysis.regressions.omegaToLia true
 
 -- We should not complain about `omega` (and others) failing in a `try` context.
 example : x = y := by
@@ -292,7 +349,7 @@ example : x = y := by
   try
     symm
     symm
-    omega
+    lia
   rfl
 
 set_option linter.unusedVariables false in
@@ -310,7 +367,27 @@ example : x = y := by
   any_goals
     symm
     symm
-    omega
+    lia
   rfl
 
 end grindReplacement
+
+section unknownTactic
+
+-- Test that tryAtEachStepFromStrings gracefully handles unknown tactics
+-- (e.g., trying to run `aesop` before Aesop is imported)
+
+register_option linter.tacticAnalysis.unknownTacticTest : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.unknownTacticTest]
+def unknownTacticTest :=
+  Mathlib.TacticAnalysis.tryAtEachStepFromStrings "nonexistent" "nonexistent_tactic_xyz"
+
+-- This should not crash - the unknown tactic should be silently skipped
+set_option linter.tacticAnalysis.unknownTacticTest true in
+#guard_msgs in
+example : 1 + 1 = 2 := by rfl
+
+end unknownTactic

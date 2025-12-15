@@ -38,7 +38,7 @@ open Mathlib.Tactic
 namespace CategoryTheory
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
-theorem eq_whisker' {C : Type*} [Category C]
+theorem eq_whisker' {C : Type*} [Category* C]
     {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 
@@ -139,7 +139,7 @@ initialize registerBuiltinAttribute {
   | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun value levels => do
+    addRelatedDecl src "" "_assoc" ref stx? fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
         let pf ← reassocExpr' value
         pure (pf, levels)

@@ -40,6 +40,11 @@ def orderEmbeddingToFun : (ι →₀ M) ↪o (ι → M) where
   inj' := DFunLike.coe_injective
   map_rel_iff' := coe_le_coe
 
+/-- `equivFunOnFinite` as an order isomorphism. -/
+def orderIsoFunOnFinite [Finite ι] : (ι →₀ M) ≃o (ι → M) where
+  toEquiv := equivFunOnFinite
+  map_rel_iff' := Iff.rfl
+
 end LE
 
 section Preorder

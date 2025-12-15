@@ -100,7 +100,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
     exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
-  cutsat
+  lia
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
@@ -140,7 +140,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
     map_one' := rfl
-    map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
+    map_mul' := map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by

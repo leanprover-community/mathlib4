@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
@@ -31,7 +32,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 assert_not_exists CompleteLattice
 
-open Set
+open Set Set.Notation
 
 variable {α β : Type*}
 
@@ -119,6 +120,16 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+
+@[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
+  h.mono Set.diff_subset
+
+theorem isChain_preimage_subtypeVal (s t : Set α) :
+    @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) := by
+  simp [IsChain, Set.Pairwise]
+
+theorem isChain_coe_univ_iff {s : Set α} : @IsChain ↑s (r · ·) univ ↔ IsChain r s := by
+  simpa using isChain_preimage_subtypeVal s univ
 
 section Rel
 
@@ -256,8 +267,8 @@ protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s
   simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsChain.singleton).symm
 
-protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s ≠ ∅ := by
-  grind [not_nonempty_iff, IsMaxChain.isEmpty_iff]
+protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
 
 theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
