@@ -195,7 +195,7 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
 
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
-    (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
+    (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
   ext y; simp [append_mem_acceptsFrom M]
 
 variable (M) in
@@ -349,7 +349,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
   | nil => tauto
   | cons a s ih =>
     rw [List.foldl, List.foldl,
-      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet] ]
+      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
     tauto
 
 @[simp]
