@@ -1034,6 +1034,10 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
   rw [← ncard_univ, ← ncard_union_eq (@disjoint_compl_right _ _ s) hs hsc, union_compl_self]
 
+theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
+    (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard = Nat.card α - s.ncard := by
+  rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
+
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
   rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
