@@ -643,6 +643,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Mathlib.Notation3.notation3, -- of `notation3`.
     ``Parser.Term.structInstField, -- of the `where` fields: the LHS pps with virtually no spaces.
     ``Parser.Term.structInst, -- of the `where` fields: the LHS pps with virtually no spaces.
+    `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`
   ]
   depth := none
 

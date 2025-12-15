@@ -52,6 +52,18 @@ example : True ∧ True := by
     first | assumption | done | assumption | trivial
 set_option linter.style.commandStart false in
 
+/--
+info: Try this:
+  [apply] example : True ∧
+     True := by
+    refine ?_
+    constructor
+    · {exact  trivial}
+    · apply ?_;
+      first | assumption |
+       done | assumption | trivial
+-/
+#guard_msgs in
 #reformat
 example    :   True∧
    True    :=by
@@ -62,14 +74,108 @@ example    :   True∧
     first|assumption|
      done|assumption   |     trivial
 
+/--
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'first |'
 
 
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  '| assumption'
 
 
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'assumption |'
 
 
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  '·{exact'
+should be written as
+  '· {'
 
 
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  'done |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'done|assumption   |'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  '|     trivial'
+should be written as
+  '| trivial'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove space in the source
+
+This part of the code
+  'apply  ?_'
+should be written as
+  'apply ?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: remove spaces in the source
+
+This part of the code
+  '?_    ;'
+should be written as
+  '?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
 example : True ∧ True := by
   refine ?_
   constructor
@@ -394,9 +500,21 @@ example {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
 -- Ideally, this would complain, but we silenced the linter for `declare_aesop_rule_sets`.
 declare_aesop_rule_sets [$id](default := true)
 
--- `library_note` may have or not have a space between `""` and `/-- -/`
-library_note ""/-- -/
-library_note "" /-- -/
+-- `library_note` may not have a space between `""` and `/-- -/`
+/--
+warning: add space in the source
+
+This part of the code
+  '"a"/--'
+should be written as
+  '"a" /--'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+library_note "a"/-- Avoid empty doc-string -/
+library_note "b" /-- Avoid empty doc-string -/
 
 -- The pretty-printer does not place a space after `safe`.
 --`attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim`
