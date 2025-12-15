@@ -67,15 +67,16 @@ variable [AddCommMonoid N] [Module R N]
   linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  TensorProduct.finsuppLeft _ _ _ _ _
+  (TensorProduct.AlgebraTensorModule.congr (AddMonoidAlgebra.coeffLinearEquiv S) <| .refl ..).trans
+    <| TensorProduct.finsuppLeft _ _ _ _ _
 
 lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
-    rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
-  TensorProduct.finsuppLeft_apply_tmul p n
+    rTensor (p ⊗ₜ[R] n) = (AddMonoidAlgebra.coeff p).sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
+  TensorProduct.finsuppLeft_apply_tmul (AddMonoidAlgebra.coeff p) n
 
 lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
     rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
-  TensorProduct.finsuppLeft_apply_tmul_apply p n d
+  TensorProduct.finsuppLeft_apply_tmul_apply (AddMonoidAlgebra.coeff p) n d
 
 lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
     rTensor (monomial e s ⊗ₜ[R] n) d = if e = d then s ⊗ₜ[R] n else 0 := by

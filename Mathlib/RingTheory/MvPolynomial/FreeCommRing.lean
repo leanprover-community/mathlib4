@@ -55,7 +55,7 @@ noncomputable def mvPolynomialSupportLEEquiv
     { p : ι → MvPolynomial κ R // ∀ i, (p i).support ⊆ monoms i } ≃
       ((Σ i, monoms i) → R) :=
   { toFun := fun p i => (p.1 i.1).coeff i.2,
-    invFun := fun p => ⟨fun i =>
+    invFun p := ⟨fun i => .ofCoeff
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
         support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
         mem_support_toFun := by simp },

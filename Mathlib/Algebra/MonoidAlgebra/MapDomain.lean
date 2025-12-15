@@ -22,7 +22,7 @@ open Finsupp hiding single mapDomain
 
 noncomputable section
 
-variable {F R S T M N O : Type*}
+variable {ι F R S T M N O : Type*}
 
 /-! ### Multiplicative monoids -/
 
@@ -31,33 +31,73 @@ variable [Semiring R] [Semiring S] [Semiring T] {f : M → N} {a : M} {r : R}
 
 /-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/
-@[to_additive /--
+@[to_additive (attr := simps) /--
 Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/]
-abbrev mapDomain (f : M → N) (x : R[M]) : R[N] := Finsupp.mapDomain f x
+def mapDomain (f : M → N) (x : R[M]) : R[N] := .ofCoeff <| Finsupp.mapDomain f x.coeff
 
-@[to_additive]
-lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := Finsupp.mapDomain_zero ..
+@[to_additive (attr := simp)]
+lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := by ext; simp
 
 @[to_additive]
 lemma mapDomain_add (f : M → N) (x y : R[M]) :
-    mapDomain f (x + y) = mapDomain f x + mapDomain f y := Finsupp.mapDomain_add ..
+    mapDomain f (x + y) = mapDomain f x + mapDomain f y := by
+  ext; simp [Finsupp.mapDomain_add]
 
 @[to_additive]
 lemma mapDomain_sum (f : M → N) (x : S[M]) (v : M → S → R[M]) :
-    mapDomain f (x.sum v) = x.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
+    mapDomain f (x.coeff.sum v) = x.coeff.sum fun a b ↦ mapDomain f (v a b) := by
+  ext; simp [Finsupp.mapDomain_sum]
 
-@[to_additive (relevant_arg := M)]
+@[to_additive (relevant_arg := M) (attr := simp)]
 lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; simp
 
 @[to_additive]
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
-  Finsupp.mapDomain_injective hf
+  ofCoeff_injective.comp <| (Finsupp.mapDomain_injective hf).comp coeff_injective
 
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
 theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
     mapDomain f (1 : R[M]) = (1 : R[N]) := by
   simp [one_def]
+
+/-- Given a map `f : R → S`, return the corresponding map `R[M] → S[M]` obtained by mapping
+each coefficient along `f`. -/
+@[to_additive (attr := simps) /--
+Given a map `f : R → S`, return the corresponding map `R[M] → S[M]` obtained by mapping
+each coefficient along `f`. -/]
+def mapRange (f : R →+ S) (x : R[M]) : S[M] := .ofCoeff <| .mapRange f f.map_zero x.coeff
+
+@[to_additive (relevant_arg := M) (attr := simp)]
+lemma mapRange_zero (f : R →+ S) : mapRange f (0 : R[M]) = 0 := by ext; simp
+
+@[to_additive]
+lemma mapRange_add (f : R →+ S) (x y : R[M]) :
+    mapRange f (x + y) = mapRange f x + mapRange f y := by ext; simp [Finsupp.mapRange_add]
+
+@[to_additive]
+lemma mapRange_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
+    mapRange f (∑ i ∈ s, x i) = ∑ i ∈ s, mapRange f (x i) := by ext; simp
+
+@[to_additive (relevant_arg := M) (attr := simp)]
+lemma mapRange_single (f : R →+ S) (r : R) (m : M) : mapRange f (single m r) = single m (f r) := by
+  simp [mapRange]
+
+@[to_additive]
+lemma coeff_mapRange (f : R →+ S) (x : R[M]) :
+    (mapRange f x).coeff = .mapRange f f.map_zero x.coeff := rfl
+
+/-- Given an injective `f : M → N`, `comapDomain f : R[N] → R[N]` is the map obtained by
+precomposing with `f`. -/
+@[to_additive (attr := simps)]
+def comapDomain (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
+  toFun x := .ofCoeff <| .comapDomain f x.coeff hf.injOn
+  map_zero' := by simp
+  map_add' := by simp [Finsupp.comapDomain_add, hf.injOn]
+
+@[to_additive (attr := simp)]
+lemma comapDomain_single (f : M → N) (hf : Injective f) (m : M) (r : R) :
+    comapDomain f hf (single (f m) r) = single m r := by ext; simp
 
 section Mul
 variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
@@ -68,9 +108,7 @@ lemma mapDomain_mul (f : F) (x y : R[M]) : mapDomain f (x * y) = mapDomain f x *
 
 variable (R) in
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
-`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras.
-
-See also `MulEquiv.monoidAlgebraCongrRight`. -/
+`MonoidAlgebra.mapDomain f` is a ring homomorphism between their monoid algebras. -/
 @[to_additive (attr := simps) /--
 If `f : G → H` is a multiplicative homomorphism between two additive monoids, then
 `AddMonoidAlgebra.mapDomain f` is a ring homomorphism between their additive monoid algebras. -/]
@@ -105,8 +143,8 @@ def mapDomainAddEquiv (e : M ≃ N) : R[M] ≃+ R[N] where
   map_add' x y := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma mapDomainAddEquiv_apply (e : M ≃ N) (x : R[M]) (n : N) :
-    mapDomainAddEquiv R e x n = x (e.symm n) := by simp [mapDomainAddEquiv]
+lemma coeff_mapDomainAddEquiv (e : M ≃ N) (x : R[M]) :
+    (mapDomainAddEquiv R e x).coeff = equivMapDomain e x.coeff := by ext; simp [mapDomainAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma mapDomainAddEquiv_single (e : M ≃ N) (r : R) (m : M) :
@@ -130,19 +168,19 @@ variable (M) in
 
 `Finsupp.mapRange` as an `AddEquiv`. -/]
 def mapRangeAddEquiv (e : R ≃+ S) : R[M] ≃+ S[M] where
-  toFun x := .mapRange e e.map_zero x
-  invFun x := .mapRange e.symm e.symm.map_zero x
+  toFun x := .mapRange e x
+  invFun x := .mapRange e.symm x
   left_inv x := by ext; simp
   right_inv x := by ext; simp
   map_add' x y := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma mapRangeAddEquiv_apply (e : R ≃+ S) (x : R[M]) (m : M) :
-    mapRangeAddEquiv M e x m = e (x m) := by simp [mapRangeAddEquiv]
+lemma coeff_mapRangeAddEquiv (e : R ≃+ S) (x : R[M]) (m : M) :
+    (mapRangeAddEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRangeAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma mapRangeAddEquiv_single (e : R ≃+ S) (r : R) (m : M) :
-    mapRangeAddEquiv M e (single m r) = single m (e r) := by simp [mapRangeAddEquiv]
+    mapRangeAddEquiv M e (single m r) = single m (e r) := by simp [mapRangeAddEquiv, mapRange]
 
 @[to_additive (attr := simp)]
 lemma symm_mapRangeAddEquiv (e : R ≃+ S) :
@@ -186,15 +224,12 @@ variable (M) in
 /-- The ring homomorphism of additive monoid algebras induced by a homomorphism of the base rings.
 -/]
 noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] where
-  toFun := mapRange f f.map_zero
-  map_zero' := mapRange_zero
-  map_add' := mapRange_add f.map_add
+  toFun := mapRange f
+  map_zero' := mapRange_zero _
+  map_add' := mapRange_add _
   map_one' := by ext; simp [one_def]
   map_mul' _ _ := by
-    classical
-    ext
-    simp [mul_def]
-    simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite]
+    classical ext; simp [mul_def, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite]
 
 @[to_additive]
 lemma coe_mapRangeRingHom (f : R →+* S) :
@@ -202,13 +237,13 @@ lemma coe_mapRangeRingHom (f : R →+* S) :
   simp [mapRangeRingHom]
 
 @[to_additive (attr := simp)]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
-    mapRangeRingHom M f x m = f (x m) := by simp [mapRangeRingHom]
+lemma coeff_mapRangeRingHom (f : R →+* S) (x : R[M]) :
+    (mapRangeRingHom M f x).coeff = .mapRange f f.map_zero x.coeff := by simp [mapRangeRingHom]
 
 @[to_additive (attr := simp)]
 lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
     mapRangeRingHom M f (single a b) = single a (f b) := by
-  classical ext; simp [single_apply, apply_ite f]
+  classical ext; simp [single_apply]
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id R[M] := by ext <;> simp
@@ -232,8 +267,8 @@ def mapDomainRingEquiv (e : M ≃* N) : R[M] ≃+* R[N] :=
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
 @[to_additive (attr := simp)]
-lemma mapDomainRingEquiv_apply (e : M ≃* N) (x : R[M]) (n : N) :
-    mapDomainRingEquiv R e x n = x (e.symm n) := mapDomainAddEquiv_apply ..
+lemma coeff_mapDomainRingEquiv (e : M ≃* N) (x : R[M]) :
+    (mapDomainRingEquiv R e x).coeff = equivMapDomain e x.coeff := coeff_mapDomainAddEquiv ..
 
 @[to_additive (attr := simp)]
 lemma mapDomainRingEquiv_single (e : M ≃* N) (r : R) (m : M) :
@@ -261,8 +296,8 @@ def mapRangeRingEquiv (e : R ≃+* S) : R[M] ≃+* S[M] :=
     (by apply MonoidAlgebra.ringHom_ext <;> simp) (by apply MonoidAlgebra.ringHom_ext <;> simp)
 
 @[to_additive (attr := simp)]
-lemma mapRangeRingEquiv_apply (e : R ≃+* S) (x : R[M]) (m : M) :
-    mapRangeRingEquiv M e x m = e (x m) := by simp [mapRangeRingEquiv]
+lemma coeff_mapRangeRingEquiv (e : R ≃+* S) (x : R[M]) (m : M) :
+    (mapRangeRingEquiv M e x).coeff m = e (x.coeff m) := by simp [mapRangeRingEquiv]
 
 @[to_additive (attr := simp)]
 lemma mapRangeRingEquiv_single (e : R ≃+* S) (r : R) (m : M) :
@@ -292,9 +327,7 @@ lemma symm_commRingEquiv : (commRingEquiv : R[M][N] ≃+* R[N][M]).symm = commRi
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
-    commRingEquiv (single m <| single n r) = single n (single m r) := by
-  simp [commRingEquiv, MonoidAlgebra, curryRingEquiv, curryAddEquiv, mapDomainRingEquiv,
-    mapDomainRingHom, EquivLike.toEquiv]
+    commRingEquiv (single m <| single n r) = single n (single m r) := by simp [commRingEquiv]
 
 end MonoidAlgebra
 
@@ -312,22 +345,28 @@ variable (k G) in
 `Multiplicative` -/
 protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
     AddMonoidAlgebra k G ≃+* MonoidAlgebra k (Multiplicative G) where
-  toFun x := x.mapDomain .ofAdd
-  invFun x := x.mapDomain Multiplicative.toAdd
+  toFun x := .ofCoeff <| x.coeff.mapDomain .ofAdd
+  invFun x := .ofCoeff <| x.coeff.mapDomain Multiplicative.toAdd
   left_inv x := by ext; simp
   right_inv x := by ext; simp
-  map_add' := mapDomain_add _
+  map_add' x y := by simp [Finsupp.mapDomain_add]
   map_mul' x y := by
-    dsimp [Multiplicative.ofAdd]
-    exact MonoidAlgebra.mapDomain_mul (M := Multiplicative G) (MulHom.id (Multiplicative G)) x y
+    classical
+    ext
+    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
+      mul_add, ite_add_zero, Multiplicative.ext_iff]
 
 variable (k G) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
 protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
     MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) where
-  toFun x := x.mapDomain .ofMul
-  invFun x := x.mapDomain Additive.toMul
+  toFun x := .ofCoeff <| x.coeff.mapDomain .ofMul
+  invFun x := .ofCoeff <| x.coeff.mapDomain Additive.toMul
   left_inv x := by ext; simp
   right_inv x := by ext; simp
-  map_add' := mapDomain_add _
-  map_mul' := MonoidAlgebra.mapDomain_mul (MulHom.id G)
+  map_add' x y := by simp [Finsupp.mapDomain_add]
+  map_mul' x y := by
+    classical
+    ext
+    simp [MonoidAlgebra.coeff_mul, AddMonoidAlgebra.coeff_mul, Finsupp.sum_mapDomain_index, add_mul,
+      mul_add, ite_add_zero, Additive.ext_iff]

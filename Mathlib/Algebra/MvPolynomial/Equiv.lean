@@ -443,15 +443,13 @@ theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : 
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
+  simp only [Polynomial.mem_support_iff, ne_eq, MvPolynomial.ext_iff, coeff_zero, not_forall,
+    Finset.mem_image, mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none]
   constructor
   · rintro ⟨m, hm⟩
-    refine ⟨optionElim i m, ?_, optionElim_apply_none _ _⟩
-    rw [← mem_support_coeff_optionEquivLeft]
-    simpa using hm
+    exact ⟨optionElim i m, by simpa using hm, optionElim_apply_none _ _⟩
   · rintro ⟨m, h, rfl⟩
-    refine ⟨some m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_optionEquivLeft, optionElim_some]
+    exact ⟨some m, h⟩
 
 theorem nonempty_support_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).support.Nonempty := by
@@ -656,15 +654,13 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
+  simp only [Polynomial.mem_support_iff, ne_eq, MvPolynomial.ext_iff, coeff_zero, not_forall,
+    Finset.mem_image, mem_support_iff, finSuccEquiv_coeff_coeff]
   constructor
   · rintro ⟨m, hm⟩
-    refine ⟨cons i m, ?_, cons_zero _ _⟩
-    rw [← mem_support_coeff_finSuccEquiv]
-    simpa using hm
+    exact ⟨cons i m, hm, cons_zero _ _⟩
   · rintro ⟨m, h, rfl⟩
-    refine ⟨tail m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
+    exact ⟨tail m, by simpa using h⟩
 
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by

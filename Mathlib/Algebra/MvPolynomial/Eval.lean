@@ -67,7 +67,7 @@ variable (f : R →+* S₁) (g : σ → S₁)
 /-- Evaluate a polynomial `p` given a valuation `g` of all the variables
   and a ring hom `f` from the scalar ring to the target -/
 def eval₂ (p : MvPolynomial σ R) : S₁ :=
-  p.sum fun s a => f a * s.prod fun n e => g n ^ e
+  (AddMonoidAlgebra.coeff p).sum fun s a => f a * s.prod fun n e => g n ^ e
 
 theorem eval₂_eq (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) :
     f.eval₂ g X = ∑ d ∈ f.support, g (f.coeff d) * ∏ i ∈ d.support, X i ^ d i :=
@@ -473,8 +473,8 @@ theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
   simp only [coeff_map, coeff_zero, hr]
 
-theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
-    map f (Finsupp.mapRange g hg φ) = φ ↔ ∀ d, f (g (coeff d φ)) = coeff d φ := by
+theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ →+ R) (φ : MvPolynomial σ S₁) :
+    map f (φ.mapRange g) = φ ↔ ∀ d, f (g (coeff d φ)) = coeff d φ := by
   simp_rw [MvPolynomial.ext_iff, coeff_map, coeff_mapRange]
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :

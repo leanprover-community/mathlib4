@@ -50,10 +50,8 @@ variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
-instance {σ : Type*} {R : Type*} [CommSemiring R]
-    [Small.{u} R] [Small.{u} σ] :
-    Small.{u} (MvPolynomial σ R) :=
-  inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))
+instance {σ R : Type*} [CommSemiring R] [Small.{u} R] [Small.{u} σ] :
+    Small.{u} (MvPolynomial σ R) := small_map AddMonoidAlgebra.coeffEquiv
 
 section CharP
 
@@ -81,10 +79,11 @@ end ExpChar
 section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
-    (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
-  refine Finset.sum_congr rfl fun n _ => ?_
-  rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
+    (f : R →+* S) : p.mapRange f = map f p := by
+  rw [p.as_sum, AddMonoidAlgebra.mapRange_sum, map_sum]
+  congr! 1
+  rw [map_monomial]
+  simp [← single_eq_monomial]
 
 end Homomorphism
 
@@ -94,14 +93,14 @@ variable {σ}
 
 /-- The submodule of polynomials that are sum of monomials in the set `s`. -/
 def restrictSupport (s : Set (σ →₀ ℕ)) : Submodule R (MvPolynomial σ R) :=
-  Finsupp.supported _ _ s
+  AddMonoidAlgebra.supported R R s
 
 /-- `restrictSupport R s` has a canonical `R`-basis indexed by `s`. -/
 def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport R s) where
-  repr := Finsupp.supportedEquivFinsupp s
+  repr := AddMonoidAlgebra.supportedEquivFinsupp s
 
 theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
-    restrictSupport R s ≤ restrictSupport R t := Finsupp.supported_mono h
+    restrictSupport R s ≤ restrictSupport R t := AddMonoidAlgebra.supported_mono h
 
 variable (σ)
 
@@ -123,7 +122,7 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
 
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
-  rw [restrictDegree, restrictSupport, Finsupp.mem_supported]
+  rw [restrictDegree, restrictSupport, AddMonoidAlgebra.mem_supported]
   rfl
 
 theorem mem_restrictDegree_iff_sup [DecidableEq σ] (p : MvPolynomial σ R) (n : ℕ) :
@@ -140,8 +139,8 @@ theorem restrictTotalDegree_le_restrictDegree (m : ℕ) :
     (degreeOf_le_totalDegree p i) s hs).trans ((mem_restrictTotalDegree _ _ _).mp hp)
 
 /-- The monomials form a basis on `MvPolynomial σ R`. -/
-def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
-  Finsupp.basisSingleOne
+def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) where
+  repr := AddMonoidAlgebra.coeffLinearEquiv _
 
 @[simp]
 theorem coe_basisMonomials :

@@ -49,8 +49,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
-noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) :
+noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) (w : W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v w)
   continuous_toFun :=
@@ -112,9 +111,9 @@ def charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2
 
 @[simp]
 lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
-    charAlgHom he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
+    charAlgHom he hL w v = ∑ a ∈ w.coeff.support, w.coeff a * (e (L v a) : ℂ) := by
   simp only [charAlgHom, AddMonoidAlgebra.lift_apply]
-  rw [Finsupp.sum_of_support_subset w subset_rfl]
+  rw [Finsupp.sum_of_support_subset _ subset_rfl]
   · simp only [coe_sum, coe_smul, charMonoidHom_apply, smul_eq_mul, Finset.sum_apply]
     rfl
   · simp
@@ -125,13 +124,13 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
     star x ∈ (charAlgHom he hL).range := by
   simp only [AlgHom.mem_range] at hx ⊢
   obtain ⟨y, rfl⟩ := hx
-  let z := Finsupp.mapRange star (star_zero _) y
+  let z := Finsupp.mapRange star (star_zero _) y.coeff
   let f : W ↪ W := ⟨fun x ↦ -x, (fun _ _ ↦ neg_inj.mp)⟩
-  refine ⟨z.embDomain f, ?_⟩
+  refine ⟨.ofCoeff <| z.embDomain f, ?_⟩
   ext1 u
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
     Finsupp.embDomain_apply_self, star_apply, star_sum, star_mul', Circle.star_addChar]
-  rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
+  rw [Finsupp.support_mapRange_of_injective (star_zero _) _ star_injective]
   simp [z, f]
 
 /-- The star-subalgebra of polynomials. -/
@@ -142,8 +141,8 @@ def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) 
   star_mem' hx := star_mem_range_charAlgHom he hL hx
 
 lemma mem_charPoly (f : V →ᵇ ℂ) :
-    f ∈ charPoly he hL
-      ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
+    f ∈ charPoly he hL ↔
+      ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.coeff.support, w.coeff a * e (L x a) := by
   change f ∈ (charAlgHom he hL).range ↔ _
   simp [BoundedContinuousFunction.ext_iff, funext_iff, eq_comm]
 
