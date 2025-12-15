@@ -37,17 +37,19 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
       ← Ring.krullDimLE_iff]
     infer_instance
 
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 open Ideal IsLocalization
 
 /--
 Let `p` be a maximal ideal of `A`. If `P` is a maximal ideal of `A[X]` lying above `p`,
 then `ht(P) = ht(p) + 1`.
-See `Ideal.height_polynomial` for the more general version that does not assume `p` is maximal.
+See `Ideal.height_eq_height_add_one` for the more general version that does not assume `p` is
+maximal.
 -/
-lemma height_eq_height_succ_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
+lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] (P : Ideal R[X])
     [P.IsMaximal] [P.LiesOver p] : P.height = p.height + 1 := by
   let _ : Field (R ⧸ p) := Quotient.field p
   suffices h : (P.map (Ideal.Quotient.mk (Ideal.map (algebraMap R R[X]) p))).height = 1 by
@@ -71,9 +73,10 @@ attribute [local instance] Polynomial.algebra Polynomial.isLocalization
 
 /-- Let `p` be a prime ideal of `A`. If `P` is a maximal ideal of `A[X]` lying over `p`,
 `ht(P) = ht(p) + 1`. -/
-lemma height_eq_height_succ (p : Ideal R)
-    [p.IsPrime] (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
+lemma height_eq_height_add_one (p : Ideal R)
+    (P : Ideal R[X]) [P.IsMaximal] [P.LiesOver p] :
     P.height = p.height + 1 := by
+  have : p.IsPrime := by rw [Ideal.LiesOver.over (p := p) (P := P)]; infer_instance
   let Rₚ := Localization.AtPrime p
   set p' : Ideal Rₚ := p.map (algebraMap R Rₚ) with p'_def
   have : p'.IsMaximal := by
@@ -93,16 +96,31 @@ lemma height_eq_height_succ (p : Ideal R)
   have eq2 : P.height = P'.height := by
     rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
   rw [eq1, eq2]
-  apply height_eq_height_succ_of_isMaximal p' P'
+  apply height_eq_height_add_one_of_isMaximal p' P'
 
 /-- If `R` is Noetherian, `dim R[X] = dim R + 1`. -/
 lemma ringKrullDim_of_isNoetherianRing : ringKrullDim R[X] = ringKrullDim R + 1 := by
   refine le_antisymm ?_ ?_
   · nontriviality R[X]
     refine (ringKrullDim_le_iff_isMaximal_height_le (ringKrullDim R + 1)).mpr fun M hM ↦ ?_
-    rw [height_eq_height_succ (M.under R) M, WithBot.coe_add, WithBot.coe_one]
+    rw [height_eq_height_add_one (M.under R) M, WithBot.coe_add, WithBot.coe_one]
     gcongr
     exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
   · exact ringKrullDim_succ_le_ringKrullDim_polynomial
 
 end Polynomial
+
+/-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
+    ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e H =>
+    convert ← H using 1
+    · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
+    · rw [Nat.card_congr e]
+  | h_empty => simp
+  | h_option IH =>
+    simp only [Nat.card_eq_fintype_card, Fintype.card_option, Nat.cast_add, Nat.cast_one,
+      ← add_assoc] at IH ⊢
+    rw [ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv,
+      Polynomial.ringKrullDim_of_isNoetherianRing, IH]
