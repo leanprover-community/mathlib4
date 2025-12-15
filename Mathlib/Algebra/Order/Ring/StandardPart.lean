@@ -53,6 +53,8 @@ some natural number. -/
 noncomputable def FiniteElement : Type _ :=
   (addValuation K).toValuation.valuationSubring
 
+namespace FiniteElement
+
 instance : CommRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
@@ -67,8 +69,6 @@ instance : LinearOrder (FiniteElement K) := by
 
 instance : IsStrictOrderedRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
-
-namespace FiniteElement
 
 @[simp] theorem val_zero : (0 : FiniteElement K).1 = 0 := rfl
 @[simp] theorem val_one : (1 : FiniteElement K).1 = 1 := rfl
@@ -306,7 +306,7 @@ theorem stdPart_natCast (n : ℕ) : stdPart (n : K) = n :=
   mod_cast stdPart_intCast n
 
 @[simp]
-theorem stdPart_ofNat (n : ℕ) : stdPart ofNat(n) = n :=
+theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (K := K) ofNat(n) = n :=
   stdPart_natCast n
 
 @[simp]
