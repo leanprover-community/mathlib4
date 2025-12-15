@@ -21,7 +21,7 @@ and define some algebraic structures on it.
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
 
 ## Warning
-If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristc zero
+If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic zero
 then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where `R` is
 `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then `QuadraticAlgebra a b` is
 a `ℚ`-algebra in two ways, that are not definitionally equal. This is a known diamond for
