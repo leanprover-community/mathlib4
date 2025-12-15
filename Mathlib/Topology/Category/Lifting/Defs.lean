@@ -35,16 +35,22 @@ In this file, we provide the basic definitions of the topological spaces used in
 
 ## Main definitions
 
-We give names and a minimal API to a number of topological spaces (bundled as objects of `TopCat`)
-used to define separation axioms:
+We give names and a minimal API to a number of topological spaces used to define separation axioms:
 
 * `Discrete2` is the discrete space on two points.
 * `Codiscrete2` is the codiscrete space on two points.
-* `UProp` is `of (ULift Prop)`, with the Sierpinski topology.
-  * For `X : TopCat`, `Opens X ≃ (X ⟶ of UProp) ≃ Closeds X`. We provide a convenient API for
-    working with open and closed sets in terms of maps to `UProp`.
-* `O2C1` is the space with two open points and one closed point.
-* `O1C2` is the space with one open point and two closed points.
+* `Z3` is the preorder with three points `L, R ≤ 0`.
+  * `O2C1` is the lower-set topology on `Z3`, the space with two open points and one closed point.
+  * `O1C2` is the upper-set topology on `Z3`, space with one open point and two closed points.
+* `O1N2` is the topology on three points with one open point and two inseparable points.
+* `N2C1` is the topology on three points with two inseparable points and one closed point.
+* `Z5` is the preorder with five points `L, M ≤ 0` and `M, R` ≤ 1.
+  * `O3C2` is the lower-set topology on `Z5`, the space with three open points and two closed
+    points.
+  * `O2C3` is the upper-set topology on `Z5`, the space with two open points and three closed
+    points.
+* `OIC2` is the space formed by replacing the single open point in `O1C2` with a copy of the unit
+  interval, so that `0 ⤳ L` and `1 ⤳ R`.
 
 ## Notation
 
@@ -80,127 +86,10 @@ def decidable_of_bool' {a : Prop} : ∀ (b : Bool), (b ↔ a) → Decidable a
   | true, h => isTrue (h.1 rfl)
   | false, h => isFalse (mt h.2 Bool.noConfusion)
 
---TODO goes into `Mathlib.Topology.Order`
-/- A topological space is discrete if only the empty set and `univ` are open, that is, its topology
-equals the codiscrete topology `⊤`. -/
-class CodiscreteTopology α [t : TopologicalSpace α] : Prop where
-  eq_top : t = ⊤
-
-lemma codiscreteTopology_top (α) : @CodiscreteTopology α ⊤ := @CodiscreteTopology.mk α ⊤ rfl
-
-section CodiscreteTopology
-variable {α} [TopologicalSpace α] [CodiscreteTopology α] (s : Set α)
-
-@[simp]
-lemma isOpen_codiscrete : IsOpen s ↔ s = ∅ ∨ s = Set.univ :=
-  ‹CodiscreteTopology α›.eq_top ▸ TopologicalSpace.isOpen_top_iff s
-
-@[simp]
-lemma isClosed_codiscrete : IsClosed s ↔ s = ∅ ∨ s = Set.univ := by
-  rw [← isOpen_compl_iff, isOpen_codiscrete, Or.comm]; simp
-
-variable {s}
-
-lemma closure_codiscrete (hs₀ : s.Nonempty) : closure s = Set.univ := by
-  rcases isClosed_codiscrete (closure s) |>.mp isClosed_closure with hs | hs
-  · exfalso; exact hs₀.mono subset_closure |>.ne_empty hs
-  · assumption
-
-lemma dense_codiscrete (hs₀ : s.Nonempty) : Dense s := by
-  rw [dense_iff_closure_eq]; exact closure_codiscrete hs₀
-
-@[simp]
-lemma CodiscreteTopology.specializes (x y : α) : x ⤳ y := by
-  simp [specializes_iff_mem_closure, closure_codiscrete]
-
-@[continuity, fun_prop]
-lemma continuous_of_codiscreteTopology {β} [TopologicalSpace β] (f : β → α) : Continuous f := by
-  simp [continuous_iff_coinduced_le, CodiscreteTopology.eq_top (α := α)]
-
-
-open Set in
-/-- A function out of a codiscrete topology is continuous iff all points in its range are
-inseparable. -/
-lemma continuous_codiscrete_dom {β} [TopologicalSpace β] (f : α → β) :
-    Continuous f ↔ ∀ x y, Inseparable (f x) (f y) where
-  mp h x y := by
-    rw [inseparable_iff_forall_isOpen]
-    intro s hs
-    have := hs.preimage h
-    simp only [isOpen_codiscrete, preimage_eq_empty_iff, preimage_eq_univ_iff] at this
-    constructor
-    all_goals
-      intro hxy
-      replace this := this.resolve_left (not_disjoint_iff.mpr ⟨f _, hxy, mem_range_self _⟩)
-      exact this <| mem_range_self _
-  mpr h := by
-    simp_rw [inseparable_iff_forall_isOpen] at h
-    fconstructor
-    intro s hs
-    replace h x y := h x y s hs
-    simp_rw [← mem_preimage] at h
-    by_cases h₀ : ∃ x, x ∈ f ⁻¹' s
-    · obtain ⟨x, hx⟩ := h₀
-      simp [eq_univ_of_forall <| (h x · |>.mp hx)]
-    · push_neg at h₀
-      simp [eq_empty_of_forall_notMem h₀]
-
-alias ⟨_, continuous_codiscrete_of_inseparable⟩ := continuous_codiscrete_dom
-
-attribute [continuity] continuous_codiscrete_of_inseparable
-
-instance {α} [TopologicalSpace α] [CodiscreteTopology α] : CodiscreteTopology (ULift α) where
-  eq_top := by
-    ext
-    simp [ULift.isOpen_iff, TopologicalSpace.isOpen_top_iff, Set.preimage_eq_empty_iff,
-    Set.range_eq_univ.mpr ULift.up_surjective]
-
-instance {α} : CodiscreteTopology (TopCat.trivial.obj α) := codiscreteTopology_top _
-
-end CodiscreteTopology
-
 
 universe u v
 open CategoryTheory Topology TopologicalSpace ContinuousMap Set
 open scoped Filter
-
-namespace Topology
-open TopCat
-
--- TODO move to `Mathlib.Topology.Order.UpperLowerSetTopology`?
-
-lemma IsLowerSet.antitone_iff_continuous {α β} [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β]
-    [hα : Topology.IsLowerSet α] [hβ : Topology.IsUpperSet β] (f : α → β) :
-    Antitone f ↔ Continuous f where
-  mp hf := by
-    have : OrderDual.ofDual ∘ OrderDual.toDual ∘ f = f := by ext; rfl
-    rw [← isLowerSet_orderDual] at hβ
-    rw [← monotone_toDual_comp_iff, IsLowerSet.monotone_iff_continuous] at hf
-    rw [← this]; exact continuous_ofDual.comp hf
-  mpr hf := by
-    rw [← isLowerSet_orderDual] at hβ
-    rw [← monotone_toDual_comp_iff, IsLowerSet.monotone_iff_continuous]
-    exact hf.comp continuous_ofDual
-
-lemma IsUpperSet.antitone_iff_continuous {α β} [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β]
-    [hα : Topology.IsUpperSet α] [hβ : Topology.IsLowerSet β] (f : α → β) :
-    Antitone f ↔ Continuous f where
-  mp hf := by
-    have : OrderDual.ofDual ∘ OrderDual.toDual ∘ f = f := by ext; rfl
-    rw [← isUpperSet_orderDual] at hβ
-    rw [← monotone_toDual_comp_iff, IsUpperSet.monotone_iff_continuous] at hf
-    rw [← this]; exact continuous_ofDual.comp hf
-  mpr hf := by
-    rw [← isUpperSet_orderDual] at hβ
-    rw [← monotone_toDual_comp_iff, IsUpperSet.monotone_iff_continuous]
-    exact hf.comp continuous_ofDual
-
-
-end Topology
-
-
 
 namespace TopCat
 open CategoryTheory Limits
@@ -1629,7 +1518,7 @@ def toI : C(OIC2, I) :=
     rw [continuous_dom_iff]
     split_ands <;> first
       | simpa [toFun, Function.comp_def] using continuous_id
-      | rw [AlexandrovDiscrete.continuous_iff_spec_monotone]; simp [toFun] }
+      | rw [continuous_iff_spec_monotone]; simp [toFun] }
 
 @[simp] lemma toI_left : toI .left = 0 := rfl
 @[simp] lemma toI_right : toI .right = 1 := rfl
@@ -1653,7 +1542,7 @@ def flip : OIC2 ≃ₜ OIC2 :=
     rw [continuous_dom_iff]
     split_ands <;> first
       | simpa [toFun, Function.comp_def] using continuous_ofI.comp' unitInterval.continuous_symm
-      | rw [AlexandrovDiscrete.continuous_iff_spec_monotone]
+      | rw [continuous_iff_spec_monotone]
         simp [toFun, specializes_refl, specializes_one_right, specializes_zero_left]
 { toFun
   invFun := toFun
@@ -1676,8 +1565,6 @@ attribute [simp] toI_flip
 
 lemma flip_preimage (s : Set OIC2) : flip ⁻¹' s = flip '' s := by
   rw [flip.image_eq_preimage_symm]; rfl
-
-
 
 lemma nhds_left : 𝓝 left.{u} = (𝓝 (0 : I)).comap toI.{u} := by --⊔ pure left.{u} := by
   have hbot : (0 : I) = ⊥ := by rw [← isMin_iff_eq_bot]; rintro ⟨r, hr₁, hr₂⟩; simp
@@ -1805,117 +1692,5 @@ lemma lift_comp_toI {X : TopCat.{u}} {f : X ⟶ of O1C2} {g : X ⟶ of (ULift I)
   ext x; cases hf : f x using O1C2.casesOn' <;> simp [lift, lift.map, toI, hf, h₀, h₁]
 
 end OIC2
-
-end
-
-def O3C4' : Type u := O3C2.{u} ⊕ O2C1.{u} deriving Inhabited, DecidableEq
-
-namespace O3C4'
-
-@[mk_iff]
-inductive spec : O3C4' → O3C4' → Prop
-  | inl_spec {x y : O3C2} : x ≤ y → spec (.inl x) (.inl y)
-  | inr_spec {x y : O2C1} : x ≤ y → spec (.inr x) (.inr y)
-  | leftL_leftR : spec (.inl O3C2.left) (.inr O2C1.left)
-  | leftR_leftL : spec (.inr O2C1.left) (.inl O3C2.left)
-  | rightL_rightR : spec (.inl O3C2.right) (.inr O2C1.right)
-  | rightR_rightL : spec (.inr O2C1.right) (.inl O3C2.right)
-  | leftL_right0 : spec (.inl O3C2.left) (.inr O2C1.zero)
-  | leftR_right0 : spec (.inl O3C2.right) (.inr O2C1.zero)
-  | rightL_left0 : spec (.inr O2C1.left) (.inl O3C2.zero)
-  | rightR_left1 : spec (.inr O2C1.right) (.inl O3C2.one)
-
-instance : Preorder O3C4'.{u} where
-  le := spec
-  le_refl := by rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> constructor <;> rfl
-  le_trans := by
-    rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _)
-    <;> constructor <;> simp +decide [O3C2.le_def]
-
-
-instance : TopologicalSpace O3C4'.{u} := Topology.lowerSet _
-
-end O3C4'
-
-def O1C1' : Type u := O1C2.{u} ⊕ O2C1.{u} deriving Inhabited, DecidableEq
-
-namespace O1C1'
-
-@[mk_iff]
-inductive spec : O1C1' → O1C1' → Prop
-  | inl_spec {x y : O1C2} : x ≥ y → spec (.inl x) (.inl y)
-  | inr_spec {x y : O2C1} : x ≤ y → spec (.inr x) (.inr y)
-  | leftL_leftR : spec (.inl O1C2.left) (.inr O2C1.left)
-  | leftR_leftL : spec (.inr O2C1.left) (.inl O1C2.left)
-  | rightL_rightR : spec (.inl O1C2.right) (.inr O2C1.right)
-  | rightR_rightL : spec (.inr O2C1.right) (.inl O1C2.right)
-  | left1_inr (x : O2C1) : spec (.inl O1C2.one) (.inr x)
-  | inl_right0 (x : Z3) : spec (.inl <| .as x) (.inr O2C1.zero)
-
-instance : Preorder O1C1'.{u} where
-  le := spec
-  le_refl := by rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> constructor <;> rfl
-  le_trans := by
-    rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _)
-      <;> constructor <;> simp +decide
-
-instance : TopologicalSpace O1C1'.{u} := Topology.lowerSet _
-
-end O1C1'
-
-section
-open scoped unitInterval
-
--- `unitInterval'`, or `I₀¹`, is the unit interval with an extra `0'`, `1'` glued onto the ends.
-inductive unitInterval' : Type u where | zero' | one' | ofI (x : I)
-  deriving Inhabited
-
-scoped[unitInterval] notation "I₀¹" => TopCat.unitInterval'
-
-namespace unitInterval'
-
-def toI : I₀¹ → I | .zero' => 0 | .one' => 1 | .ofI x => x
-@[simp] lemma ofI_toI (x : I) : toI (.ofI x) = x := rfl
-@[simp] lemma toI_zero' : toI (.zero') = 0 := rfl
-@[simp] lemma toI_one' : toI (.one') = 1 := rfl
-
-instance : TopologicalSpace unitInterval' := induced toI inferInstance
-
-lemma continuous_toI : Continuous toI := continuous_induced_dom
-lemma continuous_ofI : Continuous ofI := by
-  constructor
-  rintro _ ⟨s, sO, rfl⟩
-  simp [preimage_preimage, sO]
-
-/-- The embedding `I → I₀¹ := ofI`. -/
-@[simps] def emb : C(I, I₀¹) := ⟨ofI, continuous_ofI⟩
-
-lemma isEmbedding_emb : IsEmbedding emb :=
-  .of_leftInverse (fun x ↦ by simp) continuous_toI emb.continuous
-
-lemma isClosed_zeros : IsClosed {zero', ofI 0} := by
-  rw [isClosed_induced_iff]
-  use {0}, isClosed_singleton
-  ext ⟨⟩ <;> simp [toI]
-
-lemma isClosed_ones : IsClosed {one', ofI 1} := by
-  rw [isClosed_induced_iff]
-  use {1}, isClosed_singleton
-  ext ⟨⟩ <;> simp [toI]
-
-lemma continuous_iff {α} [TopologicalSpace α] {f : α → I₀¹} :
-    Continuous f ↔ Continuous (toI ∘ f) where
-  mp h := by
-    constructor
-    rintro _ ⟨s, sO, rfl⟩
-    exact sO.preimage_val.preimage continuous_toI |>.preimage h
-  mpr h := by
-    constructor
-    rintro _ ⟨s, sO, rfl⟩
-    exact sO.preimage h
-    -- simp_rw [← preimage_comp, Function.comp_def, toI]
-    -- exact h.preimage sO
-
-end unitInterval'
 end
 end TopCat

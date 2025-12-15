@@ -22,14 +22,6 @@ axiom, stating that a space satisfies the axiom iff it has the corresponding lif
 together with both its directions. If necessary, we then provide simplified versions of one or both
 directions, abandoning the explicit lifting property in order to remove redundant hypotheses.
 
-## Main definitions
-
-* `FooBar`
-
-## Main statements
-
-* `fooBar_unique`
-
 ## Notation
 
 While we do not (yet) provide a Lean implementation, in the doc-comments we borrow the notation
@@ -40,15 +32,30 @@ long as the maps are monotone w.r.t. specialization. For example, the diagram
 L ⟶ 0 ⟵ R   |--------->   L ⟶ 0
 ```
 is one way of representing `U2C1ToUPropL`, the continuous map taking the left copy of `UProp` in
-`U2C1` to their matching points in `UProp`.
+`O2C1` to their matching points in `UProp`.
 
-## Implementation details
+## Main statements
 
+* A space is `T0` iff `Codiscrete2 ⟶ ⊤_ TopCat ⧄ X ⟶ ⊤_ TopCat`.
+* A space is `R0` iff `「⊤ ⟶ ⊥」 ⟶ 「⊤ ⟷ ⊥」 ⧄ X ⟶ ⊤_ TopCat`.
+* A space is `T1` iff `UProp ⟶ ⊤_ TopCat ⧄ X ⟶ ⊤_ TopCat`.
+* A space is `T2` iff every mono `χ : Discrete2 ⟶ X` satisfies `χ ⧄ O2C1 ⟶ ⊤_ TopCat`.
+* A space is `T2.5` iff every mono `χ : Discrete2 ⟶ X` satisfies `χ ⧄ O3C2 ⟶ ⊤_ TopCat`.
+* A space is regular iff every `χ : ⊤_ TopCat ⟶ X` satisfies
+  `χ ⧄「L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥」 ↦ 「L = 0 = R = ⊤ ⟶ ⊥」`.
+* A space is normal iff `⊥_ TopCat ⟶ X ⧄ 「L ⟵ 0 ⟶ M ⟵ 1 ⟶ R」 ↦「L ⟵ 0 = M = 1 ⟶  R」.`
+  * Alternatively, let us slightly abuse notation and represent the non-specialization-topology
+    `OIC2` as `「L ⟵ [0, 1] ⟶ R」`; then a space is normal iff
+    `⊥_ TopCat ⟶ X ⧄ 「L ⟵ [0, 1] ⟶ R」 ↦「L ⟵ 0 = 1 ⟶ R」.`
+* A space is completely, or hereditarily, normal iff every open subspace is normal,
+  that is, `⊥_ TopCat ⟶ X ⧄  WithBot.map「L ⟵ 0 ⟶ M ⟵ 1 ⟶ R」 ↦「L ⟵ 0 = M = 1 ⟶  R」.`
+* A space is perfectly normal iff `⊥_ TopCat ⟶ X ⧄ [0, 1] ↦「0 ⟵ (0, 1) ⟶ 1」.`
 
 
 ## References
 
 * https://ncatlab.org/nlab/show/separation+axioms+in+terms+of+lifting+properties
+* [Misha Gavrilovich, *The unreasonable power of the lifting property in elementary mathematics*][gavrilovich2017lifting]
 
 ## Tags
 
@@ -351,7 +358,7 @@ noncomputable def disjointClosedNhdsIndicator :
 
 /--
 Let `O3C2` be the topology constructed by gluing together two copies of `O2C1` at end points,
-and let `ofHom disjointClosedNhdsIndicator : Discrete2 ⟶ O3C2` be the map sending
+and let `ofHom disjointClosedNhdsIndicator : of Discrete2 ⟶ of O3C2` be the map sending
 `0` to the left `O2C1`'s left point and `1` to the right `O2C1`'s right point:
 ```
 「L  R」         「L     M      R
@@ -576,7 +583,7 @@ open scoped Classical in
 /-- Let `O2C2T` denote the topology `L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥` made by gluing together `O2C1` and
 `UProp` at `O2C1.right` and `⊤`. Then a space `X` is regular iff every morphism `⊤_ TopCat ⟶ X`
 picking out some point of `X` has the left lifting property against
-`「L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥」 ↦ 「⊤ ⟶ ⊥」`.
+`「L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥」 ↦ 「L = 0 = R = ⊤ ⟶ ⊥」`.
 
 (In fact, it is sufficient to consider only a specific top morphism in the lifting square;
 see `RegularSpace.of_lift`.) -/
@@ -767,7 +774,7 @@ open scoped unitInterval
 open OIC2
 
 /-- Alternative characterization by Urysohn's lemma: if every morphism from a space `X` to `O1C2`
-lifts through `I₀¹` -- specifically, through the morphism `endpointsIndicatorI'` that sends
+lifts through `OIC2` -- specifically, through the morphism `OIC2.toO1C2` that sends
 `0, 0'` to `.left`, `1, 1'` to `.right`, and everything else to `.one` -- then `X` is a normal
 space. -/
 lemma of_lift_separating
@@ -820,16 +827,7 @@ lemma rlp_separating : NormalSpace X ↔ initial.to X ⧄ ofHom OIC2.toO1C2 wher
 
 end NormalSpace
 
--- -- TODO goes in ???
--- lemma _root_.WithBot.range_coe' {α} : range (WithBot.some : α → WithBot α) = {⊥}ᶜ := by
---   ext x; cases x using WithBot.recBotCoe <;> simp
-
--- lemma _root_.WithTop.range_coe' {α} : range (WithTop.some : α → WithTop α) = {⊤}ᶜ := by
---   ext x; cases x using WithTop.recTopCoe <;> simp
-
 namespace CompletelyNormalSpace
-
-#check CompletelyNormalSpace
 
 def O1C2.quotO2C3 : O2C3 →o O1C2 where
   toFun | .left => .left | .zero | .mid | .one => .one | .right => .right
@@ -898,9 +896,6 @@ lemma O1C2B.isClosed_right_bot : @IsClosed O1C2B _ {↑O1C2.right, ⊥} := by
     | coe b => cases b <;> simp_all +decide [O1C2B.some, WithUpperSet.toUpperSet_le_iff]
   · simp at h; simp [h]
 
--- lemma O1C2B.specializes_bot {a : O1C2B} : a ⤳ ⊥ := IsUpperSet.specializes_bot _
--- lemma O2C3B.specializes_bot {a : O2C3B} : a ⤳ ⊥ := IsUpperSet.specializes_bot _
-
 lemma O1C2B.continuous_coe : Continuous O1C2B.some :=
   IsUpperSet.WithBot.continuous_coe
 -- by
@@ -922,58 +917,6 @@ lemma indicator_restrict : indicator.comp ⟨O2C3B.some, O2C3B.continuous_coe⟩
     .comp ⟨O1C2B.some, O1C2B.continuous_coe⟩ NormalSpace.indicator := by
   ext (x : O2C3); cases x <;>
     simp [O2C3B.some, O1C2B.some, O2C3.casesOn', NormalSpace.indicator]
-
---TODO goes in `Mathlib.Topology.Separation.Regular`
-open Set.Notation in
-/-- Alternative characterization of completely normal spaces: a space `X` is completely normal
-iff every open subset, considered as a space under the subspace topology, is normal. -/
-lemma iff_subspaces_normal {X} [TopologicalSpace X] :
-    CompletelyNormalSpace X ↔ ∀ U : Set X, IsOpen U → NormalSpace U where
-  mp hX U Uo :=
-  { normal s t sC tC Δst := by
-      have {s t : Set U} (sC : IsClosed s) (Δst : Disjoint s t) :
-          Disjoint (α := Set X) (closure ↑s) ↑t := by
-        apply Disjoint.mono_right <| image_mono Δst.symm.subset_compl_right
-        apply Disjoint.closure_left _ (Uo.isOpenMap_subtype_val _ sC.isOpen_compl)
-        exact disjoint_image_of_injective Subtype.val_injective disjoint_compl_right
-      have := hX.completely_normal (s := s) (t :=  t) (this sC Δst) (this tC Δst.symm).symm
-      simp_rw [← Uo.isOpenMap_subtype_val.map_nhdsSet_eq continuous_subtype_val,
-      Filter.disjoint_map Subtype.val_injective] at this
-      rwa [separatedNhds_iff_disjoint] }
-  mpr hU :=
-  { completely_normal {s t} Δs Δt := by
-      let U := (closure s ∩ closure t)ᶜ
-      have Uo : IsOpen U := isClosed_closure.inter isClosed_closure |>.isOpen_compl
-      obtain ⟨s', t', s'O, t'O, hs', ht', Δst'⟩ :=
-        hU U Uo |>.normal (U ↓∩ closure s) (U ↓∩ closure t) isClosed_closure.preimage_val
-          isClosed_closure.preimage_val <| by
-            rw [disjoint_iff_inter_eq_empty, ← preimage_inter, ← preimage_inter_range,
-            Subtype.range_coe]
-            simp [U]
-      rw [Filter.disjoint_iff]
-      use ↑s', (Uo.isOpenMap_subtype_val _ s'O).mem_nhdsSet.mpr ?hs',
-        ↑t', (Uo.isOpenMap_subtype_val _ t'O).mem_nhdsSet.mpr ?ht',
-        disjoint_image_of_injective Subtype.val_injective Δst'
-      · intro x hxs
-        have hxU : x ∈ U := by simp [U, Δt.notMem_of_mem_left hxs]
-        have : (⟨x, hxU⟩ : U) ∈ s' := by apply hs'; simp [subset_closure hxs]
-        use ⟨x, hxU⟩, this
-      · intro x hxt
-        have hxU : x ∈ U := by simp [U, Δs.notMem_of_mem_right hxt]
-        have : (⟨x, hxU⟩ : U) ∈ t' := by apply ht'; simp [subset_closure hxt]
-        use ⟨x, hxU⟩, this }
-
-alias ⟨_, of_subspaces_normal⟩ := iff_subspaces_normal
-
--- --TODO goes in `Mathlib.Topology.ContinuousMap.Basic`?
-lemma _root_.ContinuousMap.restrict_eq {α β} [TopologicalSpace α] [TopologicalSpace β]
-    {s : Set α} {f : C(α, β)} : f.restrict s = f.comp .subtypeVal := by
-  ext x; simp
-
-lemma _root_.ContinuousMap.val_comp_restrictPreimage {α β} [TopologicalSpace α] [TopologicalSpace β]
-    {s : Set β} {f : C(α, β)} :
-    ContinuousMap.subtypeVal.comp (f.restrictPreimage s) = f.comp .subtypeVal := by
-  ext x; simp [ContinuousMap.restrictPreimage]
 
 lemma of_lift (lift : (X ⟶ of O1C2B) → (X ⟶ of O2C3B))
     (fac : ∀ (χ : X ⟶ of O1C2B), lift χ ≫ ofHom indicator = χ) :
@@ -1061,14 +1004,6 @@ open scoped unitInterval
 /-- The hom `I ⟶ O1C2` taking `0 → L`, `1 → R` and everything else to `1`. -/
 noncomputable def intervalToO1C2 : of (ULift I) ⟶ of O1C2 :=
   O1C2.lift (U := {0}) (V := {1}) isClosed_singleton isClosed_singleton (by simp)
-
-noncomputable def OIC2.liftI : of (ULift I) ⟶ of OIC2.{u} :=
-  OIC2.lift intervalToO1C2 (𝟙 _)
-    (by simp [intervalToO1C2, ite_eq_iff, ULift.ext_iff])
-    (by simp [intervalToO1C2, ite_eq_iff, ULift.ext_iff])
-
-lemma OIC2.liftI_toO1C2 : OIC2.liftI ≫ ofHom OIC2.toO1C2 = intervalToO1C2 := by
-  unfold liftI; exact OIC2.lift_comp_toO1C2
 
 open ContinuousMap Set.Notation in
 /-- A space `X` is perfectly normal if any morphism to `O1C2` (encoding two disjoint closed sets)
