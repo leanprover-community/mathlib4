@@ -97,12 +97,12 @@ namespace MultiInd
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
 def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
-  | 0     => 𝟭 _
+  | 0 => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
 /-- The differential map in `MultiInd.complex`. -/
 def d : ∀ n : ℕ, functor R G n ⟶ functor R G (n + 1)
-  | 0     => const R G
+  | 0 => const R G
   | n + 1 => whiskerLeft (functor R G (n + 1)) (const R G) - (by exact whiskerRight (d n) (I R G))
 
 lemma d_zero : d R G 0 = const R G := rfl

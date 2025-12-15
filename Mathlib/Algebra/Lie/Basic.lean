@@ -699,7 +699,7 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M N where
 initialize_simps_projections LieModuleHom (toFun → apply)
 
 @[simp, norm_cast]
-theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
+theorem coe_toLinearMap (f : M →ₗ⁅R, L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
   rfl
 
 instance : LinearMapClass (M →ₗ⁅R, L⁆ N) R M N where

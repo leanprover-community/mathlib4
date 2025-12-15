@@ -72,11 +72,11 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
   apply lt_irrefl (f y)
   calc
     f y = f (-x + (x + y)) := by simp
-    _   ≤ max (f (-x)) (f (x + y)) := hna (-x) (x + y)
-    _   < max (f y) (f y) := by
+    _ ≤ max (f (-x)) (f (x + y)) := hna (-x) (x + y)
+    _ < max (f y) (f y) := by
       rw [max_self, map_neg_eq_map]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
-    _   = f y := max_self (f y)
+    _ = f y := max_self (f y)
 
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
@@ -86,11 +86,11 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
   apply lt_irrefl (f x)
   calc
     f x = f (x + y + -y) := by simp
-    _   ≤ max (f (x + y)) (f (-y)) := hna (x + y) (-y)
-    _   < max (f x) (f x) := by
+    _ ≤ max (f (x + y)) (f (-y)) := hna (x + y) (-y)
+    _ < max (f x) (f x) := by
       rw [max_self, map_neg_eq_map]
       apply max_lt (lt_of_le_of_ne h1 h) h_lt
-    _   = f x := max_self (f x)
+    _ = f x := max_self (f x)
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
   `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
@@ -175,7 +175,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
     (b : β → α) (m : ℕ) :
     ∃ u : powersetCard (s.card - m) s,
       f ((powersetCard (s.card - m) s).sum fun t : Finset β ↦
-        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β  ↦ -b i)  := by
+        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β ↦ -b i) := by
   set g := fun t : Finset β ↦ t.prod fun i : β ↦ - b i
   obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩

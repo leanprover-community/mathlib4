@@ -178,7 +178,7 @@ theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
 theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   change _ = npowRec n _
   induction n with
-  | zero        => simp [npowRec]
+  | zero => simp [npowRec]
   | succ n n_ih => simp [npowRec, n_ih, pow_succ]
 
 @[simp]

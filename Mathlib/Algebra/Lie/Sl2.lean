@@ -41,7 +41,7 @@ structure IsSl2Triple (h e f : L) : Prop where
   h_ne_zero : h ≠ 0
   lie_e_f : ⁅e, f⁆ = h
   lie_h_e_nsmul : ⁅h, e⁆ = 2 • e
-  lie_h_f_nsmul : ⁅h, f⁆ = - (2 • f)
+  lie_h_f_nsmul : ⁅h, f⁆ = -(2 • f)
 
 namespace IsSl2Triple
 
@@ -87,7 +87,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
 lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith t m μ  where
+    HasPrimitiveVectorWith t m μ where
   ne_zero := hm
   lie_h := hm'
   lie_e := by
@@ -150,7 +150,7 @@ local notation "ψ" n => ((toEnd R L M f) ^ n) m
 set_option linter.unusedVariables false in
 @[nolint unusedArguments]
 lemma lie_f_pow_toEnd_f (P : HasPrimitiveVectorWith t m μ) (n : ℕ) :
-    ⁅f, ψ n⁆ = ψ (n + 1) := by
+    ⁅f, ψ n⁆ = ψ(n + 1) := by
   simp [pow_succ']
 
 variable (P : HasPrimitiveVectorWith t m μ)
@@ -167,7 +167,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
     ring
 
 lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
-    ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
+    ⁅e, ψ(n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
@@ -216,9 +216,9 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
-    {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
+    {n : ℕ} (hn : μ = n) : (ψ(n + 1)) = 0 := by
   by_contra h
-  have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=
+  have : t.HasPrimitiveVectorWith (ψ(n + 1)) (n - 2 * (n + 1) : R) :=
     { ne_zero := h
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }

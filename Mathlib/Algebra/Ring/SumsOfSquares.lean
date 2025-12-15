@@ -38,7 +38,7 @@ then for all `a : R`, `a * a + s` is a sum of squares in `R`.
 -/
 @[mk_iff]
 inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
-  | zero                                    : IsSumSq 0
+  | zero : IsSumSq 0
   | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
 /-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
@@ -49,7 +49,7 @@ theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
       motive (x + s) (by rcases hx with ⟨_, rfl⟩; exact sq_add _ hs))
     {s : R} (h : IsSumSq s) : motive s h :=
   match h with
-  | .zero        => zero
+  | .zero => zero
   | .sq_add _ hs => sq_add (.mul_self _) hs (rec' zero sq_add _)
 
 /--
@@ -212,5 +212,5 @@ sums of squares are non-negative.
 theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R] {s : R} (hs : IsSumSq s) : 0 ≤ s := by
   induction hs using IsSumSq.rec' with
-  | zero          => simp
+  | zero => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h

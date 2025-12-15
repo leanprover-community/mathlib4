@@ -74,8 +74,7 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
     ((smul_eq_zero.mp
           (calc
             (c - d) • x = c • x - d • x := sub_smul c d x
-            _ = 0 := sub_eq_zero.mpr h
-            )).resolve_right
+            _ = 0 := sub_eq_zero.mpr h)).resolve_right
       hx)
 
 end SMulInjective
