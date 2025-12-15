@@ -9,10 +9,10 @@ public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
-# Weak (extended) metric spaces
+# One point compactifications of Weak (pseudo) extended metric spaces
 
-In this file we prove products and One-point compactifications
-of weak (pseudo) extended metric spaces are weak (pseudo) extended metric spaces.
+In this file we prove that one-point compactifications
+of weak (pseudo) extended metric spaces are again weak (pseudo) extended metric spaces.
 -/
 
 @[expose] public section
@@ -92,6 +92,11 @@ theorem im_ball (a : α) (r : ENNReal) :
     · rfl
   }
 
+theorem im_ball' (a : α) (r : ENNReal) :
+    OnePoint.some '' ball a r = ball (↑a : (OnePoint α)) r := by
+  rw [im_ball]
+  rfl
+
 end
 
 section
@@ -115,19 +120,19 @@ theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ ball x r := 
 theorem infty_not_mem_ball' {x : α} (r : ENNReal) : ∞ ∉ ball (↑x : OnePoint α) r :=
   infty_not_mem_ball r (OnePoint.coe_ne_infty x)
 
-private theorem edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+private lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : OnePoint α, edist x x = 0
   | some a => by simp [m.edist_self]
   | ∞ => rfl
 
-private theorem edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+private lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y : OnePoint α, edist x y = edist y x
   | some _, some _ => by simp [m.edist_comm]
   | some _, ∞ => by simp
   | ∞, some _ => by simp
   | ∞, ∞ => by simp
 
-private theorem edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
+private lemma edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x y z : OnePoint α, edist x z ≤ edist x y + edist y z
   | some a, some b, some c => by simp [m.edist_triangle]
   | ∞, some _, some _ => by simp
@@ -138,8 +143,48 @@ private theorem edist_triangle' {α : Type u} [TopologicalSpace α] (m : WeakPse
   | some _, ∞, ∞ => by simp
   | ∞, ∞, ∞ => by simp
 
+private lemma eq_of_edist_eq_zero' {α : Type u} [TopologicalSpace α] (m : WeakEMetricSpace α) :
+    ∀ {x y : OnePoint α}, edist x y = 0 → x = y
+  | some a, some b => by {
+    intro eq
+    rw [edist_some_some] at eq
+    congr
+    exact m.eq_of_edist_eq_zero eq
+  }
+  | some _, ∞ => by simp
+  | ∞, some _ => by simp
+  | ∞, ∞ => by simp
+
+lemma prod_open_iff {α : Type u} {m : PseudoEMetricSpace α} (s : Set (OnePoint α)) :
+    IsOpen[(PseudoEMetricSpace_def (edist_self' m.toWeakPseudoEMetricSpace)
+    (edist_comm' m.toWeakPseudoEMetricSpace)
+    (edist_triangle' m.toWeakPseudoEMetricSpace)).toUniformSpace.toTopologicalSpace] s
+    ↔ IsOpen (OnePoint.some ⁻¹' s) := by
+  rw [@EMetric.isOpen_iff _ m, @EMetric.isOpen_iff _ (PseudoEMetricSpace_def
+    (edist_self' m.toWeakPseudoEMetricSpace) (edist_comm' m.toWeakPseudoEMetricSpace)
+    (edist_triangle' m.toWeakPseudoEMetricSpace))]
+  constructor <;> intro h x xh
+  · obtain ⟨ε, εp, εh⟩ := h x xh
+    use ε
+    refine ⟨εp, ?_⟩
+    rw [← im_ball'] at εh
+    exact image_subset_iff.mp εh
+  · match x with
+    | ∞ => {
+      simp only [mem_preimage, gt_iff_lt] at h
+      use 1
+      simpa [ball_infty_of_pos]
+    }
+    | some x => {
+      obtain ⟨ε, εp, εh⟩ := h x (mem_preimage.mpr xh)
+      use ε
+      refine ⟨εp, ?_⟩
+      rw [← im_ball]
+      exact image_subset_iff.mpr εh
+    }
+
 instance toWeakPseudoEMetricSpace
-    {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    {α : Type u} [TopologicalSpace α] [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (OnePoint α) where
   edist := edist
   edist_self := edist_self' m
@@ -176,27 +221,45 @@ instance toWeakPseudoEMetricSpace
     intro x s sO
     match x with
     | some x => {
-
       have po : IsOpen[(PseudoEMetricSpace_def
           m.edist_self m.edist_comm m.edist_triangle).toUniformSpace.toTopologicalSpace]
-          (OnePoint.some ⁻¹' s) := by
-        sorry
-      obtain ⟨t, th⟩ := m.topology_eq_on_restrict (x := x) po
-      sorry
+          (OnePoint.some ⁻¹' s) := (prod_open_iff s).1 sO
+      obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict (x := x) po
+      use OnePoint.some '' s'
+      constructor
+      · exact OnePoint.isOpen_image_coe.mpr s'o
+      ext ⟨y, yh⟩
+      match y with
+      | ∞ => {contradiction}
+      | some z => {
+        apply Set.ext_iff.1 at s's
+        simp only [mem_preimage, Subtype.forall, mem_ball, edist_some_some, mem_image] at s's ⊢ yh
+        specialize s's z yh
+        constructor <;> intro h
+        · obtain ⟨r, rh, rh'⟩ := h
+          rw [(OnePoint.isOpenEmbedding_coe).injective rh'] at rh
+          exact s's.1 rh
+        · use z
+          exact ⟨s's.2 h, rfl⟩
+      }
+
       }
     | ∞ =>
       apply discreteTopology_iff_forall_isOpen.1
       rw [ball_infty_of_pos ENNReal.zero_lt_top]
       exact Subsingleton.discreteTopology
 
+instance toWeakEMetricSpace {α : Type u} [TopologicalSpace α] [m : WeakEMetricSpace α] :
+    WeakEMetricSpace (OnePoint α) where
+  edist := edist
+  edist_self := edist_self' _
+  edist_comm := edist_comm' _
+  edist_triangle := edist_triangle' _
+  topology_le := (@toWeakPseudoEMetricSpace α _ _).topology_le
+  topology_eq_on_restrict := (@toWeakPseudoEMetricSpace α _ _).topology_eq_on_restrict
+  eq_of_edist_eq_zero := eq_of_edist_eq_zero' m
+
 end
-
-#check OnePoint
-example : 0 = 0 := by sorry
-
-#check WeakPseudoEMetricSpace
-
-#check WithTop
 
 end OnePoint
 

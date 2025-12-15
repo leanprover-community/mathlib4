@@ -376,32 +376,6 @@ abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpac
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_edist := (uniformity_basis_edist.comap (Prod.map f f)).eq_biInf
 
-/-
-
-section
-
-#check TopologicalSpace.induced
-
-variable (n : TopologicalSpace β) (f : α → β)
-
-#check @WeakPseudoEMetricSpace α (n.induced f)
-
-end
-
-/-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
-See note [reducible non-instances]. -/
-abbrev WeakPseudoEMetricSpace.induced {α β}
-    (f : α → β) (n : TopologicalSpace β) (m : WeakPseudoEMetricSpace β) :
-    @WeakPseudoEMetricSpace α (n.induced f) where
-  edist x y := edist (f x) (f y)
-  edist_self _ := edist_self _
-  edist_comm _ _ := edist_comm _ _
-  edist_triangle _ _ _ := edist_triangle _ _ _
-  toUniformSpace := UniformSpace.comap f m.toUniformSpace
-  uniformity_edist := (uniformity_basis_edist.comap (Prod.map f f)).eq_biInf
-
--/
-
 /-- Pseudoemetric space instance on subsets of pseudoemetric spaces -/
 instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
   PseudoEMetricSpace.induced Subtype.val ‹_›
