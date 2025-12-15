@@ -149,6 +149,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("upper", ["Lower"]),
   ("succ", ["Pred"]),
   ("pred", ["Succ"]),
+  ("ico", ["Ioc"]),
+  ("ioc", ["Ico"]),
+  ("iio", ["Ioi"]),
+  ("ioi", ["Iio"]),
+  ("ici", ["Iic"]),
+  ("iic", ["Ici"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -227,7 +233,7 @@ private def mkSimpleEqThm (declName : Name) (name : Name) (isThm : Bool)
         .defnDecl <$> mkDefinitionValInferringUnsafe name info.levelParams type value (.regular 0)
 
 elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
-  let declName := declName.getId
+  let declName ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo declName
   withDeclNameForAuxNaming declName do
   let name ← mkAuxDeclName `_to_dual_insert_cast
   Command.liftTermElabM do
@@ -254,7 +260,7 @@ elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
     attribute [to_dual existing $(mkIdent name):ident] $(mkIdent dualName))
 
 elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command => do
-  let declName := declName.getId
+  let declName ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo declName
   withDeclNameForAuxNaming declName do
   let name₁ ← mkAuxDeclName `_to_dual_insert_cast_fun
   Command.liftTermElabM do mkSimpleEqThm declName name₁ false fun lhs body =>

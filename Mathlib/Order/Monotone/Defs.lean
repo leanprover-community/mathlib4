@@ -63,48 +63,51 @@ variable [Preorder α] [Preorder β]
 def Monotone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
 
+to_dual_insert_cast Monotone := by grind
+
 /-- A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. -/
 def Antitone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f b ≤ f a
+
+to_dual_insert_cast Antitone := by grind
 
 /-- A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. -/
 def MonotoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f a ≤ f b
 
+to_dual_insert_cast MonotoneOn := by grind
+
 /-- A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. -/
 def AntitoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f b ≤ f a
+
+to_dual_insert_cast AntitoneOn := by grind
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
 def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 
+to_dual_insert_cast StrictMono := by grind
+
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
 def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
+
+to_dual_insert_cast StrictAnti := by grind
 
 /-- A function `f` is strictly monotone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f a < f b`. -/
 def StrictMonoOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a < f b
 
+to_dual_insert_cast StrictMonoOn := by grind
+
 /-- A function `f` is strictly antitone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f b < f a`. -/
 def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b < f a
 
-attribute [to_dual_dont_unfold]
-  Monotone Antitone MonotoneOn AntitoneOn StrictMono StrictAnti StrictMonoOn StrictAntiOn
-
-set_option linter.style.longLine false
-@[to_dual existing eq_def] theorem Monotone.eq_def_dual (f : α → β) : Monotone f = ∀ ⦃a b⦄, b ≤ a → f b ≤ f a := by grind [Monotone.eq_def]
-@[to_dual existing eq_def] theorem Antitone.eq_def_dual (f : α → β) : Antitone f = ∀ ⦃a b⦄, b ≤ a → f a ≤ f b := by grind [Antitone.eq_def]
-@[to_dual existing eq_def] theorem MonotoneOn.eq_def_dual (f : α → β) (s : Set α) : MonotoneOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b ≤ a → f b ≤ f a := by grind [MonotoneOn.eq_def]
-@[to_dual existing eq_def] theorem AntitoneOn.eq_def_dual (f : α → β) (s : Set α) : AntitoneOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b ≤ a → f a ≤ f b := by grind [AntitoneOn.eq_def]
-@[to_dual existing eq_def] theorem StrictMono.eq_def_dual (f : α → β) : StrictMono f = ∀ ⦃a b⦄, b < a → f b < f a := by grind [StrictMono.eq_def]
-@[to_dual existing eq_def] theorem StrictAnti.eq_def_dual (f : α → β) : StrictAnti f = ∀ ⦃a b⦄, b < a → f a < f b := by grind [StrictAnti.eq_def]
-@[to_dual existing eq_def] theorem StrictMonoOn.eq_def_dual (f : α → β) (s : Set α) : StrictMonoOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b < a → f b < f a := by grind [StrictMonoOn.eq_def]
-@[to_dual existing eq_def] theorem StrictAntiOn.eq_def_dual (f : α → β) (s : Set α) : StrictAntiOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b < a → f a < f b := by grind [StrictAntiOn.eq_def]
+to_dual_insert_cast StrictAntiOn := by grind
 
 end MonotoneDef
 

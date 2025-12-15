@@ -92,6 +92,10 @@ This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
+to_dual_insert_cast_fun OrderEmbedding :=
+  { this with map_rel_iff' := by grind [this.map_rel_iff']},
+  { this with map_rel_iff' := by grind [this.map_rel_iff']}
+
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
@@ -99,6 +103,10 @@ infixl:25 " ↪o " => OrderEmbedding
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
+
+to_dual_insert_cast_fun OrderIso :=
+  { this with map_rel_iff' := by grind [this.map_rel_iff']},
+  { this with map_rel_iff' := by grind [this.map_rel_iff']}
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -109,6 +117,8 @@ section
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
+to_dual_insert_cast OrderHomClass := by grind [RelHomClass]
+
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
@@ -116,6 +126,8 @@ class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivL
     Prop where
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
+
+attribute [to_dual self] OrderIsoClass.map_le_map_iff
 
 end
 
@@ -170,28 +182,25 @@ section LE
 
 variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
-@[simp]
+@[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
   convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
+@[to_dual self]
 theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
     EquivLike.inv f b ≤ EquivLike.inv f a ↔ b ≤ a := by
   simp
-
-@[simp]
-theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
-  convert (map_le_map_iff f).symm
-  exact (EquivLike.right_inv _ _).symm
 
 end LE
 
 variable [Preorder α] [Preorder β] [EquivLike F α β] [OrderIsoClass F α β]
 
+@[to_dual self]
 theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (map_le_map_iff f) (map_le_map_iff f)
 
-@[simp]
+@[to_dual (attr := simp) lt_map_inv_iff]
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply]
@@ -199,11 +208,6 @@ theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b <
 theorem map_inv_lt_map_inv_iff (f : F) {a b : β} :
     EquivLike.inv f b < EquivLike.inv f a ↔ b < a := by
   simp
-
-@[simp]
-theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
-  rw [← map_lt_map_iff f]
-  simp only [EquivLike.apply_inv_apply]
 
 end OrderIsoClass
 
@@ -282,18 +286,19 @@ instance : Preorder (α →o β) :=
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
+@[to_dual self]
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
   Iff.rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, to_dual self]
 theorem coe_le_coe {f g : α →o β} : (f : α → β) ≤ g ↔ f ≤ g :=
   Iff.rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem mk_le_mk {f g : α → β} {hf hg} : mk f hf ≤ mk g hg ↔ f ≤ g :=
   Iff.rfl
 
-@[mono]
+@[mono, to_dual self]
 theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   (h₁ x).trans <| g.mono h₂
 
@@ -317,7 +322,7 @@ theorem curry_symm_apply (f : α →o β →o γ) (x : α × β) : curry.symm f 
 def comp (g : β →o γ) (f : α →o β) : α →o γ :=
   ⟨g ∘ f, g.mono.comp f.mono⟩
 
-@[mono]
+@[mono, to_dual self]
 theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂ : α →o β⦄ (hf : f₁ ≤ f₂) :
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 

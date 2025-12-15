@@ -32,27 +32,23 @@ namespace Set
 variable {α : Type*} [Preorder α] {a b x : α}
 
 /-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
-@[to_dual self (reorder := a b), to_dual_dont_unfold]
+@[to_dual self (reorder := a b)]
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
-@[to_dual existing eq_def]
-theorem Ioo.eq_def_dual (a b : α) : Ioo b a = { x | x < a ∧ b < x } := Set.ext fun _ ↦ And.comm
+to_dual_insert_cast Ioo := by grind
 
 @[to_dual mem_Ioo', simp, grind =] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := Iff.rfl
 @[to_dual Ioo_def'] theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b := rfl
 
 /-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
-@[to_dual_dont_unfold]
 def Ico (a b : α) := { x | a ≤ x ∧ x < b }
 
 /-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
-@[to_dual existing (reorder := a b) Ico, to_dual_dont_unfold]
+@[to_dual existing (reorder := a b)]
 def Ioc (a b : α) := { x | a < x ∧ x ≤ b }
 
-@[to_dual existing eq_def]
-theorem Ico.eq_def_dual (a b : α) : Ico b a = { x | x < a ∧ b ≤ x } := Set.ext fun _ ↦ And.comm
-@[to_dual existing eq_def]
-theorem Ioc.eq_def_dual (a b : α) : Ioc b a = { x | x ≤ a ∧ b < x } := Set.ext fun _ ↦ And.comm
+to_dual_insert_cast Ico := by grind
+to_dual_insert_cast Ioc := by grind
 
 @[to_dual mem_Ioc', simp, grind =] theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := Iff.rfl
 @[to_dual Ioc_def'] theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b := rfl
@@ -60,29 +56,28 @@ theorem Ioc.eq_def_dual (a b : α) : Ioc b a = { x | x ≤ a ∧ b < x } := Set.
 @[to_dual mem_Ico', simp, grind =] theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := Iff.rfl
 @[to_dual Ico_def'] theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b := rfl
 
-/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-@[to_dual Ioi /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
-def Iio (b : α) := { x | x < b }
-
-@[to_dual (attr := simp, grind =) mem_Ioi] theorem mem_Iio : x ∈ Iio b ↔ x < b := Iff.rfl
-@[to_dual Ioi_def] theorem Iio_def (a : α) : { x | x < a } = Iio a := rfl
-
 /-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
-@[to_dual self (reorder := a b), to_dual_dont_unfold]
+@[to_dual self (reorder := a b)]
 def Icc (a b : α) := { x | a ≤ x ∧ x ≤ b }
 
-@[to_dual existing eq_def]
-theorem Icc.eq_def_dual (a b : α) : Icc b a = { x | x ≤ a ∧ b ≤ x } := Set.ext fun _ ↦ And.comm
+to_dual_insert_cast Icc := by grind
 
 @[to_dual mem_Icc', simp, grind =] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := Iff.rfl
 @[to_dual Icc_def'] theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b := rfl
 
+/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
+@[to_dual /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
+def Iio (b : α) := { x | x < b }
+
+@[to_dual (attr := simp, grind =)] theorem mem_Iio : x ∈ Iio b ↔ x < b := Iff.rfl
+@[to_dual] theorem Iio_def (a : α) : { x | x < a } = Iio a := rfl
+
 /-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-@[to_dual Ici /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
+@[to_dual /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
 def Iic (b : α) := { x | x ≤ b }
 
-@[to_dual (attr := simp, grind =) mem_Ici] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := Iff.rfl
-@[to_dual Ici_def] theorem Iic_def (b : α) : { x | x ≤ b } = Iic b := rfl
+@[to_dual (attr := simp, grind =)] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := Iff.rfl
+@[to_dual] theorem Iic_def (b : α) : { x | x ≤ b } = Iic b := rfl
 
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
