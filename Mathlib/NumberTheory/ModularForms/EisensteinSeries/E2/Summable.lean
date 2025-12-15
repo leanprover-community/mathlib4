@@ -69,7 +69,7 @@ lemma hasSum_e2Summand_symmetricIcc : HasSum (e2Summand · z)
   simpa [HasSum, -symmetricIcc_filter, symmetricIcc_eq_map_Icc_nat, Function.comp_def,
     G2_partial_sum_eq] using (aux_G2_tendsto z).const_add _
 
-lemma summable_e2Summand_symmetricIcc : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ) :=
+lemma summable_e2Summand_symmetricIcc : Summable (e2Summand · z) (symmetricIcc ℤ) :=
   (hasSum_e2Summand_symmetricIcc z).summable
 
 lemma G2_eq_tsum_cexp : G2 z = 2 * riemannZeta 2 - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ) :=

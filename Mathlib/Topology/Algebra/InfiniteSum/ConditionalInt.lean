@@ -6,15 +6,11 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Order.Filter.AtTopBot.Interval
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
-public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Analysis.Normed.MulAction
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Int.Star
 
 
 /-!
@@ -136,7 +132,7 @@ lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
     using hf2
 
 @[to_additive]
-lemma multipliable_symmetricIco_of_multiplible_symmetricIcc
+lemma multipliable_symmetricIco_of_multipliable_symmetricIcc
     (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (symmetricIco ℤ) :=
   (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).multipliable
