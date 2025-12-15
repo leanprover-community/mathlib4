@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Colimit
-import Mathlib.Condensed.Discrete.Module
+module
+
+public import Mathlib.Condensed.Discrete.Colimit
+public import Mathlib.Condensed.Discrete.Module
 /-!
 
 # Characterizing discrete condensed sets and `R`-modules.
@@ -29,13 +31,15 @@ condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits Functor FintypeCat
 
 namespace Condensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
 A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
@@ -161,7 +165,7 @@ end CondensedMod
 
 namespace LightCondensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
 
 /--
 A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant

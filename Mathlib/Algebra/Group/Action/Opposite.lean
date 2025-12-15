@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -24,6 +26,8 @@ With `open scoped RightActions`, this provides:
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Units FaithfulSMul MonoidHom
 
@@ -155,7 +159,6 @@ instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α �
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
 instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
-  smul := (· • ·)
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 

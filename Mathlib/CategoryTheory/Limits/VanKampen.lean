@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
 
@@ -27,6 +29,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory.Limits CategoryTheory.Functor
 
@@ -35,7 +39,7 @@ namespace CategoryTheory
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-variable {K : Type*} [Category K] {D : Type*} [Category D]
+variable {K : Type*} [Category* K] {D : Type*} [Category* D]
 
 section NatTrans
 
@@ -62,7 +66,7 @@ theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : 
     Equifibered (whiskerRight α H) :=
   fun _ _ f => (hα f).map H
 
-theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C} {α : F ⟶ G}
+theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category* K] {F G : J ⥤ C} {α : F ⟶ G}
     (hα : Equifibered α) (H : K ⥤ J) : Equifibered (whiskerLeft H α) :=
   fun _ _ f => hα (H.map f)
 
@@ -212,7 +216,7 @@ theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
     exact hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
-theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
+theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
@@ -227,13 +231,13 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
     refine (H (e.inverse.obj k)).paste_vert ?_
     exact IsPullback.of_vert_isIso ⟨by simp⟩
 
-theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
+theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsUniversalColimit (c.whisker e.functor) ↔ IsUniversalColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
       (Cocones.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
 
-theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
+theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
@@ -258,7 +262,7 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category K] (e : J �
   · ext k
     simpa using congr_app e' (e.inverse.obj k)
 
-theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
+theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsVanKampenColimit (c.whisker e.functor) ↔ IsVanKampenColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
@@ -323,10 +327,7 @@ theorem IsUniversalColimit.map_reflective
       ι := { app := fun j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
              naturality := ?_ } }
     · rw [← Gr.map_comp, ← hc'']
-      erw [← adj.unit_naturality]
-      rw [Gl.map_comp, hα'']
-      dsimp
-      simp only [Category.assoc, Functor.map_comp, adj.right_triangle_components_assoc]
+      simp_all [← adj.unit_naturality]
     · intro i j g
       dsimp [α']
       ext
@@ -677,7 +678,8 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt,
         Cofan.mk_ι_app, IsColimit.fac, Fin.cases_succ]
     · intro T f₁ f₂ f₃ m₁ m₂
-      simp at m₁ m₂ ⊢
+      simp only [Discrete.functor_obj_eq_as, pair_obj_left, BinaryCofan.mk_pt, const_obj_obj,
+        BinaryCofan.mk_inl, pair_obj_right, BinaryCofan.mk_inr] at m₁ m₂ ⊢
       refine Hc.uniq (Cofan.mk T (Fin.cases f₁
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩

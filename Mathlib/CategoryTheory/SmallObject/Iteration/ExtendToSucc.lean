@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`
@@ -16,6 +17,8 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
@@ -24,7 +27,7 @@ open Category
 
 namespace SmallObject
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J] [SuccOrder J] {j : J} (hj : ¬IsMax j)
   (F : Set.Iic j ⥤ C) {X : C} (τ : F.obj ⟨j, by simp⟩ ⟶ X)
 

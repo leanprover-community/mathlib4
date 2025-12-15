@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Topology.MetricSpace.PartitionOfUnity
-import Mathlib.Topology.ShrinkingLemma
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Topology.MetricSpace.PartitionOfUnity
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -48,7 +50,7 @@ function from local functions.
 
 ## TODO
 
-* Build a framework for to transfer local definitions to global using partition of unity and use it
+* Build a framework to transfer local definitions to global using partition of unity and use it
   to define, e.g., the integral of a differential form over a manifold. Lemma
   `exists_smooth_forall_mem_convex_of_local` is a first step in this direction.
 
@@ -56,6 +58,8 @@ function from local functions.
 
 smooth bump function, partition of unity
 -/
+
+@[expose] public section
 
 universe uι uE uH uM uF
 
@@ -73,7 +77,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 ### Covering by supports of smooth bump functions
 
 In this section we define `SmoothBumpCovering ι I M s` to be a collection of
-`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each
+`SmoothBumpFunction`s such that their supports are a locally finite family of sets and for each
 `x ∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering
 of this type is useful to construct a smooth partition of unity and can be used instead of a
 partition of unity in some proofs.

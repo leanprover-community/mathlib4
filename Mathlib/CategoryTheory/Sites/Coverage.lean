@@ -3,8 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -39,18 +41,20 @@ All definitions are in the `CategoryTheory` namespace.
   Grothendieck topology `J`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if
   it is a sheaf for `J`.
 
-# References
+## References
 We don't follow any particular reference, but the arguments can probably be distilled from
 the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
 - [nLab, *Coverage*](https://ncatlab.org/nlab/show/coverage)
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe w w'
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type _} [Category* C] [Category* D]
 
 open Limits
 

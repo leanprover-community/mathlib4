@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 /-!
 # Regulator of a number field
@@ -30,6 +32,8 @@ We define and prove basic results about the regulator of a number field `K`.
 ## Tags
 number field, units, regulator
 -/
+
+@[expose] public section
 
 open scoped NumberField
 
@@ -113,11 +117,12 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
       _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← map_span (logEmbeddingEquiv K),
       ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
-      QuotientGroup.coe_mk', Set.preimage_equiv_eq_image_symm]
-    exact Iff.rfl
+      QuotientGroup.coe_mk', ← Equiv.image_symm_eq_preimage]
+    rfl
   have h₂ : DiscreteTopology
       (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
-    refine DiscreteTopology.of_subset (inferInstance : DiscreteTopology (unitLattice K)) ?_
+    rw [← SetLike.isDiscrete_iff_discreteTopology]
+    refine (inferInstance : DiscreteTopology (unitLattice K)).isDiscrete.mono ?_
     rw [SetLike.coe_subset_coe, Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩

@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.Topology.Separation.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.Topology.MetricSpace.Perfect
+public import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -58,6 +60,8 @@ We use this to prove several versions of the Borel isomorphism theorem.
 * `PolishSpace.Equiv.measurableEquiv` : Any two standard Borel spaces of the same cardinality
   are Borel isomorphic.
 -/
+
+@[expose] public section
 
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
@@ -778,8 +782,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       intro a ha
       calc
         dist a z ≤ dist a (y n) + dist (y n) z := dist_triangle _ _ _
-        _ ≤ u n + dist (y n) z :=
-          (add_le_add_right ((dist_le_diam_of_mem (hs n).1 ha (hy n)).trans (hs n).2) _)
+        _ ≤ u n + dist (y n) z := by grw [dist_le_diam_of_mem (hs n).1 ha (hy n), (hs n).2]
         _ < δ := hn
     -- as `x` belongs to the closure of `f '' (s n)`, it belongs to the closure of `v`.
     have : x ∈ closure v := closure_mono fsnv (hxs n).1
@@ -933,8 +936,8 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
     intro x hx y hy hxy
     contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+    wlog! H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne H hxy.symm
       exact (h hy hx hxy.symm this).symm
     intro h
     exact hx.2 ⟨hx.1, x, y, hx.1, hy.1, H, rfl, h.symm⟩

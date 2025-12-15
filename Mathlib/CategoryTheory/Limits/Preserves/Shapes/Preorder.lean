@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of well order continuous functors
@@ -17,6 +19,8 @@ for any limit element `j : J`. It follows that if
 `F : J ⥤ C` is well order continuous, then so is `F ⋙ G`.
 
 -/
+
+@[expose] public section
 
 universe w w' v v' v'' u' u u''
 
@@ -58,7 +62,7 @@ instance (G₁ : C ⥤ D) (G₂ : D ⥤ E)
     have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₂ j hj
     infer_instance
 
-instance [HasIterationOfShape J C] (K : Type*) [Category K] (X : K) :
+instance [HasIterationOfShape J C] (K : Type*) [Category* K] (X : K) :
     PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
   preservesColimitsOfShape j hj := by
     have := hasColimitsOfShape_of_isSuccLimit C j hj

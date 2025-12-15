@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.IndicatorFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # Indicator of a set as an element of `Lp`
@@ -19,6 +21,8 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 * `MeasureTheory.indicatorConstLp`: Indicator of a set as an element of `Lp`.
 * `MeasureTheory.Lp.const`: Constant function as an element of `Lp` for a finite measure.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -52,8 +56,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     refine ⟨η, hη, ?_⟩
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
   refine ⟨η, hη_pos, fun s hs => ?_⟩
-  refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
-  exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
+  grw [eLpNorm_indicator_const_le, ← hη_le, hs]
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -150,13 +153,13 @@ theorem enorm_indicatorConstLp_le :
 
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ₑ := by
+      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
+      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
   simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
     Lp.coe_nnnorm]
@@ -204,7 +207,7 @@ theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (suppor
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (c : E) :
-    indicatorConstLp p (hs.union ht) (measure_union_ne_top hμs hμt) c =
+    indicatorConstLp p (hs.union ht) (by finiteness) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
   grw [Lp.coeFn_add, indicatorConstLp_coeFn]

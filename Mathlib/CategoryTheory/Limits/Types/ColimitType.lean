@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The colimit type of a functor to types
@@ -31,6 +33,8 @@ in a categorical sense is a colimit.
 * add a similar API for limits in `Type`?
 
 -/
+
+@[expose] public section
 
 universe w₃ w₂ w₁ w₀ w₀' v u
 
@@ -84,6 +88,14 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+/-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
+the induced cocone in `(G ⋙ F).CoconeTypes`. -/
+@[simps]
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category* J'] (G : J' ⥤ J) :
+    CoconeTypes.{w₁} (G ⋙ F) where
+  pt := c.pt
+  ι _ := c.ι _
+
 end CoconeTypes
 
 /-- Given `F : J ⥤ Type w₀`, this is the relation `Σ j, F.obj j` which
@@ -121,7 +133,7 @@ def coconeTypes : F.CoconeTypes where
   pt := F.ColimitType
   ι j := F.ιColimitType j
 
-/-- An heterogeneous universe version of the universal property of the colimit is
+/-- A heterogeneous universe version of the universal property of the colimit is
 satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
 def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
@@ -211,6 +223,17 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
+
+lemma iff_bijective {c' : CoconeTypes.{w₂} F}
+    (f : c.pt → c'.pt) (hf : ∀ j x, c'.ι j x = f (c.ι j x)) :
+    c'.IsColimit ↔ Function.Bijective f := by
+  refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
+  have h₁ := hc.bijective
+  rw [← Function.Bijective.of_comp_iff _ hc.bijective]
+  convert hc'.bijective
+  ext x
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+  simp [hf]
 
 end IsColimit
 

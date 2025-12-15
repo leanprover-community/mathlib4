@@ -3,9 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Localization of adjunctions
@@ -20,13 +23,15 @@ induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Localization Category Functor
 
 namespace Adjunction
 
-variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} (adj : G ⊣ F)
 
 section
@@ -144,6 +149,14 @@ lemma isLocalization [F.Full] [F.Faithful] :
       asIso adj.counit)
   apply Functor.IsLocalization.of_equivalence_target W.Q W G e
     (Localization.fac G hG W.Q)
+
+include adj in
+/-- This is the dual statement to `Adjunction.isLocalization`. -/
+lemma isLocalization' [G.Full] [G.Faithful] :
+    F.IsLocalization ((MorphismProperty.isomorphisms C₁).inverseImage F) := by
+  rw [← Functor.IsLocalization.op_iff, MorphismProperty.op_inverseImage,
+    MorphismProperty.op_isomorphisms]
+  exact adj.op.isLocalization
 
 end Adjunction
 

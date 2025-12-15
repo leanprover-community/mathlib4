@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
 ## Locally directed gluing
@@ -16,11 +18,13 @@ This is the condition needed to show that a colimit (in `TopCat`) of open embedd
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {J : Type*} [Category J]
+variable {J : Type*} [Category* J]
 
 /--
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the

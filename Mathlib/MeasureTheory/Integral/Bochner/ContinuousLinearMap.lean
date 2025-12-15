@@ -3,9 +3,11 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+module
+
+public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Continuous linear maps composed with integration
@@ -16,6 +18,8 @@ operations on the space `L¹`. Note that composition by a continuous linear map 
 the composition, as we are dealing with classes of functions, but it has already been defined
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
+
+@[expose] public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
@@ -49,7 +53,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
+      map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
       ← integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
@@ -81,12 +85,11 @@ theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι]
     (∫ x, φ x ∂μ) m = ∫ x, φ x m ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousMultilinearMap.apply 𝕜 M E m).integral_comp_comm φ_int).symm
-  · by_cases hm : ∀ i, m i ≠ 0
+  · by_cases! hm : ∀ i, m i ≠ 0
     · have : ¬ CompleteSpace (ContinuousMultilinearMap 𝕜 M E) := by
         rwa [SeparatingDual.completeSpace_continuousMultilinearMap_iff _ _ hm]
       simp [integral, hE, this]
-    · push_neg at hm
-      rcases hm with ⟨i, hi⟩
+    · rcases hm with ⟨i, hi⟩
       simp [ContinuousMultilinearMap.map_coord_zero _ i hi]
 
 variable [CompleteSpace E]

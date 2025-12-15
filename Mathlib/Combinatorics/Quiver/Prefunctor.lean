@@ -3,11 +3,15 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 # Morphisms of quivers
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u u₁ u₂
 

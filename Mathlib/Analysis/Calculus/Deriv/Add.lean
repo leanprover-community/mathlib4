@@ -3,8 +3,10 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Add
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Add
 
 /-!
 # One-dimensional derivatives of sums etc
@@ -19,6 +21,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -171,21 +175,16 @@ theorem deriv_const_add (c : F) : deriv (c + f ·) x = deriv f x := by
 theorem deriv_const_add' (c : F) : (deriv (c + f ·)) = deriv f :=
   funext fun _ ↦ deriv_const_add c
 
-lemma differentiableAt_comp_const_add {a b : 𝕜} :
-    DifferentiableAt 𝕜 (fun x ↦ f (b + x)) a ↔ DifferentiableAt 𝕜 f (b + a) := by
-  refine ⟨fun H ↦ ?_, fun H ↦ H.comp _ (differentiable_id.const_add _).differentiableAt⟩
-  convert DifferentiableAt.comp (b + a) (by simpa)
-    (differentiable_id.const_add (-b)).differentiableAt
-  ext
-  simp
+@[deprecated (since := "2025-10-06")]
+alias differentiableAt_comp_const_add := differentiableAt_comp_add_left
 
 lemma differentiableAt_comp_add_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x + b)) a ↔ DifferentiableAt 𝕜 f (a + b) := by
-  simpa [add_comm b] using differentiableAt_comp_const_add (f := f) (b := b)
+  grind [add_comm, differentiableAt_comp_add_left]
 
 lemma differentiableAt_iff_comp_const_add {a b : 𝕜} :
     DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (b + x)) (-b + a) := by
-  simp [differentiableAt_comp_const_add]
+  simp [differentiableAt_comp_add_left]
 
 lemma differentiableAt_iff_comp_add_const {a b : 𝕜} :
     DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (x + b)) (a - b) := by

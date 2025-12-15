@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.Data.Fintype.Sigma
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 
@@ -32,6 +34,8 @@ Simplicial objects equipped with a splitting form a category
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -41,7 +45,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace SimplicialObject
 

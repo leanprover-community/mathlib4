@@ -3,10 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Linarith.Frontend
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -31,6 +33,8 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 
 polynomial, quadratic, discriminant, root
 -/
+
+@[expose] public section
 
 assert_not_exists Finite Finset
 
@@ -136,8 +140,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
     convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
-    field_simp
-    ring
+    field
 
 lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * (x * x) + b * x + c ≤ 0) : discrim a b c ≤ 0 :=
   discrim_neg a b c ▸ discrim_le_zero <| by simpa only [neg_mul, ← neg_add, neg_nonneg]

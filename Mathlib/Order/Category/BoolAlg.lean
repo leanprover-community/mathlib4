@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.HeytAlg
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Category.HeytAlg
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # The category of Boolean algebras
 
 This defines `BoolAlg`, the category of Boolean algebras.
 -/
+
+@[expose] public section
 
 
 open OrderDual Opposite Set
@@ -21,6 +25,8 @@ open CategoryTheory
 
 /-- The category of Boolean algebras. -/
 structure BoolAlg where
+  /-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
@@ -35,9 +41,6 @@ instance : CoeSort BoolAlg (Type _) :=
   ⟨BoolAlg.carrier⟩
 
 attribute [coe] BoolAlg.carrier
-
-/-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [BooleanAlgebra X] : BoolAlg := ⟨X⟩
 
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]

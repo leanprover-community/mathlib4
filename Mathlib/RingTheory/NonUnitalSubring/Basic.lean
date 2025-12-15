@@ -3,11 +3,13 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.Subsemigroup.Center
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # `NonUnitalSubring`s
@@ -62,6 +64,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 non-unital subring
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -221,7 +225,7 @@ theorem mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
 theorem map_range : f.range.map g = (g.comp f).range := by
   simpa only [range_eq_map] using (⊤ : NonUnitalSubring R).map_map g f
 
-/-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
+/-- The range of a ring homomorphism is a fintype if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
 instance fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=
@@ -641,7 +645,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubring S) :
     K.comap (f : R →ₙ+* S) = K.map f.symm :=

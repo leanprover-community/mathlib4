@@ -3,10 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
@@ -21,6 +23,8 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 matrix, trace, diagonal
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -167,8 +171,6 @@ theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalN
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
-
-@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
 
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :

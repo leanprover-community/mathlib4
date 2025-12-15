@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Limits.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Limits of monoid objects.
@@ -17,6 +19,8 @@ and the forgetful functor preserves these limits.
 in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits Monoidal MonoidalCategory
 
@@ -24,6 +28,7 @@ universe v u w
 
 noncomputable section
 
+namespace CategoryTheory
 namespace Mon
 
 variable {J : Type w} [SmallCategory J]
@@ -85,3 +90,4 @@ instance forget_preservesLimitsOfShape : PreservesLimitsOfShape J (Mon.forget C)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon
+end CategoryTheory

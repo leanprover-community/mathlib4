@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Functor categories have chosen finite products
@@ -14,12 +16,14 @@ If `C` is a category with chosen finite products, then so is `J ⥤ C`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits MonoidalCategory Category CartesianMonoidalCategory
 
 universe v
-variable {J C D E : Type*} [Category J] [Category C] [Category D] [Category E]
+variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* E]
   [CartesianMonoidalCategory C] [CartesianMonoidalCategory E]
 
 namespace Functor
@@ -160,7 +164,7 @@ lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
-instance {K : Type*} [Category K] [HasColimitsOfShape K C]
+instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation

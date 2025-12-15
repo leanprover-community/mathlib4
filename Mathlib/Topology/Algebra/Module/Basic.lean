@@ -4,19 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
+module
+
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
 # Theory of topological modules
 
 We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal TrivialStar
 
@@ -95,13 +99,19 @@ end
 
 section LatticeOps
 
-variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
-  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+variable {R S M₁ M₂ M₂' : Type*} {φ : R → S} [SMul R M₁] [SMul R M₂] [SMul S M₂']
+  [u : TopologicalSpace R] [u' : TopologicalSpace S]
+  {t : TopologicalSpace M₂} {t' : TopologicalSpace M₂'}
+  [ContinuousSMul R M₂] [ContinuousSMul S M₂']
   {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
+  {F' : Type*} [FunLike F' M₁ M₂'] [MulActionSemiHomClass F' φ M₁ M₂'] (f' : F')
+
+theorem continuousSMul_inducedₛₗ (hφ : Continuous φ) : @ContinuousSMul R M₁ _ u (t'.induced f') :=
+  let _ : TopologicalSpace M₁ := t'.induced f'
+  IsInducing.continuousSMul ⟨rfl⟩ hφ (map_smulₛₗ f' _ _)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
-  let _ : TopologicalSpace M₁ := t.induced f
-  IsInducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
+  continuousSMul_inducedₛₗ f continuous_id
 
 end LatticeOps
 
@@ -272,7 +282,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { addMonoidHomOfMemClosureRangeCoe f hf with
     map_smul' := (isClosed_setOf_map_smul M₁ M₂ σ).closure_subset_iff.2
-      (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
+      (Set.range_subset_iff.2 map_smulₛₗ) hf }
 
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
 @[simps! -fullyApplied]

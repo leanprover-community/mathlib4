@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -30,6 +32,8 @@ This topology is defined as a scoped instance since it may not be the desired to
 a linearly ordered commutative group with zero. You can locally activate this topology using
 `open WithZeroTopology`.
 -/
+
+@[expose] public section
 
 open Topology Filter TopologicalSpace Filter Set Function
 

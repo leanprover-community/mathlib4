@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Compactness.LocallyFinite
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Compactness.LocallyFinite
 
 /-!
 # Sigma-compactness in topological spaces
@@ -16,6 +18,8 @@ import Mathlib.Topology.Compactness.LocallyFinite
   of a countable collection of compact subspaces.
 
 -/
+
+@[expose] public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -196,7 +200,7 @@ open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
 def compactCovering : ℕ → Set X :=
-  Accumulate exists_compact_covering.choose
+  accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n

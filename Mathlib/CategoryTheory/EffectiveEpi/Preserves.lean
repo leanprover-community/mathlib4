@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Comp
+public import Mathlib.Data.Fintype.EquivFin
 /-!
 
 # Functors preserving effective epimorphisms
@@ -17,17 +19,19 @@ epimorphic families.
   effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 noncomputable section Equivalence
 
-variable {D : Type*} [Category D] (e : C ≌ D) {B : C}
+variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
@@ -79,7 +83,7 @@ end Equivalence
 
 namespace Functor
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 section Preserves
 

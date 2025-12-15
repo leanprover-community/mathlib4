@@ -3,10 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Chebyshev polynomials
@@ -56,6 +59,8 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 * Prove minimax properties of Chebyshev polynomials.
 -/
 
+@[expose] public section
+
 namespace Polynomial.Chebyshev
 
 open Polynomial
@@ -63,10 +68,7 @@ open Polynomial
 variable (R R' : Type*) [CommRing R] [CommRing R']
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def T : ℤ → R[X]
+noncomputable def T : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => 2 * X * T (n + 1) - T n
@@ -83,6 +85,25 @@ protected theorem induct (motive : ℤ → Prop)
     ∀ (a : ℤ), motive a :=
   T.induct motive zero one add_two fun n hn hnm => by
     simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
+
+/-- Another induction principle used for proving facts about Chebyshev polynomials,
+    which is sometimes easier to use -/
+@[elab_as_elim]
+protected theorem induct' (motive : ℤ → Prop)
+    (zero : motive 0)
+    (one : motive 1)
+    (add_two : ∀ (n : ℕ), motive (↑n + 1) → motive ↑n → motive (↑n + 2))
+    (neg : ∀ (n : ℤ), motive n → motive (-n)) :
+    ∀ (a : ℤ), motive a := by
+  refine Chebyshev.induct motive zero one add_two ?_
+  have neg' (n : ℤ) (h : motive (-n)) : motive n := by
+    convert neg (-n) h; rw [neg_neg]
+  intro n h₀ h₁
+  cases n with
+  | zero => exact neg 1 h₁
+  | succ n =>
+    apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
+    convert h₁ using 1; omega
 
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
@@ -102,21 +123,26 @@ theorem T_eq (n : ℤ) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
 @[simp]
-theorem T_zero : T R 0 = 1 := rfl
+theorem T_zero : T R 0 = 1 := by simp [T]
 
 @[simp]
-theorem T_one : T R 1 = X := rfl
+theorem T_one : T R 1 = X := by simp [T]
 
-theorem T_neg_one : T R (-1) = X := show 2 * X * 1 - X = X by ring
+theorem T_neg_one : T R (-1) = X := by
+  change T R (Int.negSucc 0) = X
+  rw [T]
+  suffices 2 * X - X = X by simpa
+  ring
+
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
-  simpa [pow_two, mul_assoc] using T_add_two R 0
+  unfold T; simp [pow_two, mul_assoc]
 
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => change 2 * X * 1 - X = X; ring
+  | one => simp only [T_neg_one, T_one]
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -139,7 +165,6 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
-@[simp]
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -157,11 +182,58 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+@[simp]
+theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
+  induction n using Chebyshev.induct' with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
+      change (C 2 * X * T R (n + 1)).degree = ↑(n + 2)
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih1]
+      rfl
+    rw [T_add_two, degree_sub_eq_left_of_degree_lt]
+    · rw [this]; rfl
+    · rw [ih2, this]; tauto
+  | neg n ih => simp [ih]
+
+@[simp]
+theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
+  natDegree_eq_of_degree_eq_some (degree_T R n)
+
+@[simp]
+theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
+    (T R n).leadingCoeff = 2 ^ (n.natAbs - 1) := by
+  induction n using Chebyshev.induct' with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : leadingCoeff (2 : R[X]) = 2 := by
+      change leadingCoeff (C 2) = 2
+      rw [leadingCoeff_C]
+    rw [T_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih1,
+      leadingCoeff_mul, leadingCoeff_X, this]
+    · norm_cast; simp [pow_add, mul_comm]
+    · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, degree_T, degree_T]
+      tauto
+  | neg n ih => simp [ih]
+
+@[simp]
+theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
+  induction n using Chebyshev.induct' with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    trans (n + 2 : ℤ).negOnePow * (2 * x * (T R (n + 1)).eval x - (T R n).eval x)
+    · simp only [T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, ih1, Int.negOnePow_add,
+        Int.negOnePow_one, Units.val_neg, Int.cast_neg, ih2, Int.negOnePow_even 2 even_two]
+      ring_nf
+    · simp
+  | neg n ih => simp [ih]
+
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def U : ℤ → R[X]
+noncomputable def U : ℤ → R[X]
   | 0 => 1
   | 1 => 2 * X
   | (n : ℕ) + 2 => 2 * X * U (n + 1) - U n
@@ -186,10 +258,10 @@ theorem U_eq (n : ℤ) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
 @[simp]
-theorem U_zero : U R 0 = 1 := rfl
+theorem U_zero : U R 0 = 1 := by simp [U]
 
 @[simp]
-theorem U_one : U R 1 = 2 * X := rfl
+theorem U_one : U R 1 = 2 * X := by simp [U]
 
 @[simp]
 theorem U_neg_one : U R (-1) = 0 := by simpa using U_sub_one R 0
@@ -237,7 +309,6 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
-@[simp]
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -256,6 +327,88 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_cast
     norm_num
     ring
+
+@[simp]
+theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one =>
+    norm_cast
+    rw [U_one]
+    change (C (2:R) * X).degree = 1
+    exact degree_C_mul_X (NeZero.ne 2)
+  | more n ih1 ih2 =>
+    push_cast; push_cast at ih2
+    have : (2 * X * U R (n+1)).degree = ↑(n + 2) := by
+      change (C 2 * X * U R (n+1)).degree = ↑(n + 2)
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih2]
+      norm_cast
+    rw [U_add_two, degree_sub_eq_left_of_degree_lt]
+    · rw [this]; norm_cast
+    · rw [ih1, this]; norm_cast; omega
+
+@[simp]
+theorem natDegree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).natDegree = n :=
+  natDegree_eq_of_degree_eq_some (degree_U_natCast R n)
+
+theorem degree_U_neg_one : (U R (-1)).degree = ⊥ := by simp
+
+theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
+
+theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
+    (U R n).degree = ↑((n + 1).natAbs - 1) := by
+  obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
+  case inl => rw [degree_U_natCast R m]; norm_cast
+  case inr =>
+    rw [U_neg, degree_neg]
+    cases m with
+    | zero => simp
+    | succ m =>
+      cases m with
+      | zero => contradiction
+      | succ m =>
+        trans (U R m).degree
+        · congr; omega
+        · rw [degree_U_natCast R m]; norm_cast
+
+theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
+    (U R n).natDegree = (n + 1).natAbs - 1 := by
+  by_cases n = -1
+  case pos hn => subst hn; simp
+  case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_of_ne_neg_one R n hn)
+
+@[simp]
+theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
+    (U R n).leadingCoeff = 2 ^ n := by
+  have : leadingCoeff (2 : R[X]) = 2 := by
+    change leadingCoeff (C 2) = 2
+    rw [leadingCoeff_C]
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one => simp [this]
+  | more n ih1 ih2 =>
+    push_cast; push_cast at ih2
+    rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
+      leadingCoeff_mul, leadingCoeff_X, this]
+    · norm_cast; rw [pow_add, pow_add]; ring_nf
+    · change (U R n).degree < (C 2 * X * U R (n + 1)).degree
+      norm_cast
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
+        degree_U_natCast R n, degree_U_natCast R (n + 1)]
+      norm_cast; omega
+
+@[simp]
+theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow * (U R n).eval x := by
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one => simp
+  | more n ih1 ih2 =>
+    trans (n + 2 : ℤ).negOnePow * (2 * x * (U R (n + 1)).eval x - (U R n).eval x)
+    · push_cast; push_cast at ih2
+      rw [U_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2,
+        Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
+      simp; ring
+    · simp
 
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -287,7 +440,7 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
-@[semireducible] noncomputable def C : ℤ → R[X]
+noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
   | (n : ℕ) + 2 => X * C (n + 1) - C n
@@ -312,12 +465,16 @@ theorem C_eq (n : ℤ) : C R n = X * C R (n - 1) - C R (n - 2) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
 @[simp]
-theorem C_zero : C R 0 = 2 := rfl
+theorem C_zero : C R 0 = 2 := by simp [C]
 
 @[simp]
-theorem C_one : C R 1 = X := rfl
+theorem C_one : C R 1 = X := by simp [C]
 
-theorem C_neg_one : C R (-1) = X := show X * 2 - X = X by ring
+theorem C_neg_one : C R (-1) = X := by
+  change C R (Int.negSucc 0) = X
+  rw [C]
+  suffices X * 2 - X = X by simpa
+  ring
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
@@ -326,7 +483,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => change X * 2 - X = X; ring
+  | one => simp only [C_neg_one, C_one]
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
@@ -393,7 +550,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
 Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
-@[semireducible] noncomputable def S : ℤ → R[X]
+noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => X * S (n + 1) - S n
@@ -418,10 +575,10 @@ theorem S_eq (n : ℤ) : S R n = X * S R (n - 1) - S R (n - 2) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
 @[simp]
-theorem S_zero : S R 0 = 1 := rfl
+theorem S_zero : S R 0 = 1 := by simp [S]
 
 @[simp]
-theorem S_one : S R 1 = X := rfl
+theorem S_one : S R 1 = X := by simp [S]
 
 @[simp]
 theorem S_neg_one : S R (-1) = 0 := by simpa using S_sub_one R 0

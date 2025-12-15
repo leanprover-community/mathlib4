@@ -3,8 +3,10 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # The structure of `Fintype (Fin n)`
@@ -12,6 +14,8 @@ import Mathlib.Data.Vector.Basic
 This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -44,7 +48,7 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
   rw [Fin.univ_succ, filter_cons, apply_ite Finset.card, card_cons, filter_map, card_map]; rfl
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
-    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)}:= by
+    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
