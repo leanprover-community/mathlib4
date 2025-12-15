@@ -103,12 +103,11 @@ lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
 
 /-- A nonempty irreducible root pairing is a root system. -/
-def toRootSystem [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : RootSystem ι R M N :=
-  { toRootPairing := P
-    span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
-      (P.rootSpan R) P.rootSpan_mem_invtSubmodule_reflection (P.rootSpan_ne_bot R)
-    span_coroot_eq_top := IsIrreducible.eq_top_of_invtSubmodule_coreflection
-      (P.corootSpan R) P.corootSpan_mem_invtSubmodule_coreflection (P.corootSpan_ne_bot R) }
+instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
+  span_root_eq_top := IsIrreducible.eq_top_of_invtSubmodule_reflection
+    (P.rootSpan R) P.rootSpan_mem_invtSubmodule_reflection (P.rootSpan_ne_bot R)
+  span_coroot_eq_top := IsIrreducible.eq_top_of_invtSubmodule_coreflection
+    (P.corootSpan R) P.corootSpan_mem_invtSubmodule_coreflection (P.corootSpan_ne_bot R)
 
 lemma invtSubmodule_reflection_of_invtSubmodule_coreflection (i : ι) (q : Submodule R N)
     (hq : q ∈ invtSubmodule (P.coreflection i)) :
@@ -189,10 +188,6 @@ lemma span_root_image_eq_top_of_forall_orthogonal (s : Set ι)
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
-end RootPairing
-
-namespace RootSystem
-
 /-
 Note that this actually holds for `RootPairing` provided we:
 * assume `RootPairing.IsBalanced`,
@@ -201,7 +196,7 @@ Note that this actually holds for `RootPairing` provided we:
 -/
 lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
     {K : Type*} [Field K] [NeZero (2 : K)] [Module K M] [Module K N]
-    (P : RootSystem ι K M N)
+    (P : RootPairing ι K M N) [P.IsRootSystem]
     (q : Submodule K M)
     (h₀ : q ≠ ⊥)
     (h₁ : ∀ i, q ∈ invtSubmodule (P.reflection i))
@@ -215,4 +210,4 @@ lemma eq_top_of_mem_invtSubmodule_of_forall_eq_univ
       simpa [Submodule.disjoint_span_singleton' (P.ne_zero _)] using b
     simpa [h₂ Φ hΦ b c, ← span_le] using b
 
-end RootSystem
+end RootPairing
