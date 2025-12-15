@@ -70,6 +70,14 @@ def allAncestors : HashMap α (HashSet α) := Id.run do
 
   return ancestorMap
 
+def descendants (b : α) : HashSet α := Id.run do
+  let ancs := G.allAncestors
+  let mut descs : HashSet α := {}
+  for (a, s) in ancs do
+    if s.contains b then do
+      descs := descs.insert a
+  return descs
+
 def removeEdge (a b : α) : DAG α where
   parent := match G.parent[b]? with
     | none => G.parent

@@ -1,6 +1,8 @@
+import ImportGraph.RequiredModules
+import Lean.CoreM
 import RefactorGraph.DAG
 
-open Lean Std
+open Lean Core Std
 
 def importGraph (env : Environment) : IO (DAG Name) := do
   let stderr ← IO.getStderr
@@ -12,52 +14,31 @@ def importGraph (env : Environment) : IO (DAG Name) := do
     out := out.insert module (HashSet.ofArray <| env.importsOf module)
   return out
 
-def importsUsing (env : Environment) (nm : Name) : IO (HashSet Name) := do
-  let stderr ← IO.getStderr
-  stderr.putStrLn "Computing required imports..."
-  stderr.flush
-  let mut out := {}
-  let mut counter := 0
-  let stderr ← IO.getStderr
-  for (n,c) in env.constants do
-    counter := counter + 1
-    if counter % 1000 == 0 then
-      stderr.putStr s!"\rProgress: {counter}"
-      stderr.flush
-    if c.getUsedConstantsAsSet.contains nm then
-      let some mod := env.getModuleFor? n | continue
-      out := out.insert mod
-  stderr.putStrLn ""
-  stderr.flush
-  return out
+partial def Name.transitivelyUsedConstants (n : Name) : MonadCacheT Name NameSet CoreM NameSet :=
+  checkCache n fun _ ↦ do
+    let s ← getConstInfo n
+    let mut out := {}
+    for t in s.getUsedConstantsAsSet do
+      if t == n then continue
+      out := out.union <| (← transitivelyUsedConstants t).filter (· != n)
+    return out
 
-def computeSubgraph
-    (importGraph : HashMap Name (HashSet Name)) (importsUsing : HashSet Name) :
-    IO (DAG Name) := do
-  let mut G := .empty
-  for mod in importsUsing do
-    G := G.insert mod <| (importGraph.getD mod {}).filter importsUsing.contains
-  return G
+--#eval (Name.transitivelyUsedConstants `Nat).run
+
+def aux (nm : Name) : CoreM Unit := do
+  let env ← getEnv
+  let mut csts : NameSet := {}
+  for (c, i) in env.constants do
+    if i.getUsedConstantsAsSet.contains nm then csts := csts.insert c
+  println! csts.size
+
 
 def main (args : List String) : IO Unit := do
   match args with
   | [name] =>
     initSearchPath (← findSysroot)
     let env ← Lean.importModules #[{ module := `Mathlib }] {}
-    let importGraph ← importGraph env
-    let stderr ← IO.getStderr
-    stderr.putStrLn "Computing ancestors..."
-    stderr.flush
-    let importGraph := importGraph.allAncestors
-    let importsUsing ← importsUsing env (String.toName name)
-    stderr.putStrLn "Computing subgraph... this may take a while..."
-    stderr.flush
-    let mut G ← computeSubgraph importGraph importsUsing
-    stderr.putStrLn "Computing transitive reduction..."
-    stderr.flush
-    G := G.transitiveReduction
-    stderr.putStrLn "Done!"
-    stderr.flush
-    println! G.dot
+    Prod.fst <$> CoreM.toIO (aux name.toName) { fileName := "input", fileMap := default }
+      { env := env }
   | _ =>
     throw <| .userError "Usage: RefactorGraph <name>"
