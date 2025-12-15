@@ -247,7 +247,7 @@ theorem continuous_right_arcLength_right
   by_cases hca : c ≤ a
   · refine ((continuous_add_left _).continuousAt.comp_continuousWithinAt <|
       continuous_right_self_arcLength f hab hrect cont).congr
-        (fun x hx ↦ ((arcLength_add f hca hx).symm)) (arcLength_add f hca le_rfl).symm
+        (fun x hx ↦ (arcLength_add f hca hx).symm) (arcLength_add f hca le_rfl).symm
   apply ContinuousAt.continuousWithinAt
   exact ContinuousAt.congr_of_eventuallyEq (continuous_const.continuousAt) <|
     Filter.eventuallyEq_of_mem (isOpen_Iio.mem_nhds (lt_of_not_ge hca))
