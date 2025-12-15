@@ -122,7 +122,7 @@ section Semiring
 
 variable [Semiring R]
 
-theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) :=
+theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) :=
   rfl
 
 /-!  ### The functions `C` and `T`. -/
@@ -143,7 +143,7 @@ theorem algebraMap_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R 
 theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
   rfl
 
-theorem single_eq_C (r : R) : Finsupp.single 0 r = C r := rfl
+theorem single_eq_C (r : R) : .single 0 r = C r := rfl
 
 @[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
   rw [← single_eq_C, Finsupp.single_apply]; aesop
@@ -154,7 +154,7 @@ Using directly `T ^ n` does not work, since we want the exponents to be of Type 
 is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
 For these reasons, the definition of `T` is as a sequence. -/
 def T (n : ℤ) : R[T;T⁻¹] :=
-  Finsupp.single n 1
+  .single n 1
 
 @[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
   Finsupp.single_apply
@@ -178,17 +178,14 @@ theorem mul_T_assoc (f : R[T;T⁻¹]) (m n : ℤ) : f * T m * T n = f * T (m + n
   simp [← T_add, mul_assoc]
 
 @[simp]
-theorem single_eq_C_mul_T (r : R) (n : ℤ) :
-    (Finsupp.single n r : R[T;T⁻¹]) = (C r * T n : R[T;T⁻¹]) := by
+theorem single_eq_C_mul_T (r : R) (n : ℤ) : .single n r = C r * T n := by
   simp [C, T, single_mul_single]
 
 -- This lemma locks in the right changes and is what Lean proved directly.
 -- The actual `simp`-normal form of a Laurent monomial is `C a * T n`, whenever it can be reached.
 @[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
-    (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n :=
-  show Finsupp.mapDomain (↑) (monomial n r).toFinsupp = (C r * T n : R[T;T⁻¹]) by
-    rw [toFinsupp_monomial, Finsupp.mapDomain_single, single_eq_C_mul_T]
+    (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n := by simp [toLaurent]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
@@ -289,7 +286,8 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
     rw [smul_add, mul_add, hp, hq]
   | C_mul_T n s =>
     rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
-      Finsupp.smul_single', single_eq_C]
+      Finsupp.smul_single']
+    rfl
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
@@ -631,7 +629,7 @@ theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro 
 theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
   simp only [smeval_eq_sum, Finsupp.sum_zero_index]
 
-theorem smeval_single (n : ℤ) (r : R) : smeval (Finsupp.single n r) x = r • (x ^ n).val := by
+theorem smeval_single (n : ℤ) (r : R) : smeval (.single n r) x = r • (x ^ n).val := by
   simp only [smeval_eq_sum]
   rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
 

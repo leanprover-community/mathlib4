@@ -67,7 +67,7 @@ macro_rules | `($R⟦$M⟧) => `(HahnSeries $M $R)
 /-- Unexpander for `HahnSeries`. -/
 @[scoped app_unexpander HahnSeries]
 meta def unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $M $R) => `($R[$M])
+  | `($_ $M $R) => `($R⟦$M⟧)
   | _ => throw ()
 
 section Zero

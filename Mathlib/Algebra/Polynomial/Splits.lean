@@ -142,17 +142,17 @@ alias Splits.def := splits_iff_splits
 alias splits_of_splits_mul := splits_mul_iff
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_of_dvd := Splits.splits_of_dvd
+alias splits_of_splits_of_dvd := Splits.of_dvd
 
-@[deprecated "Use `Splits.splits_of_dvd` directly." (since := "2025-11-30")]
+@[deprecated "Use `Splits.of_dvd` directly." (since := "2025-11-30")]
 theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0)
     (hf : Splits f) : Splits (EuclideanDomain.gcd f g) :=
-  Splits.splits_of_dvd hf hf0 <| EuclideanDomain.gcd_dvd_left f g
+  Splits.of_dvd hf hf0 <| EuclideanDomain.gcd_dvd_left f g
 
-@[deprecated "Use `Splits.splits_of_dvd` directly." (since := "2025-11-30")]
+@[deprecated "Use `Splits.of_dvd` directly." (since := "2025-11-30")]
 theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
     (hg : Splits g) : Splits (EuclideanDomain.gcd f g) :=
-  Splits.splits_of_dvd hg hg0 <| EuclideanDomain.gcd_dvd_right f g
+  Splits.of_dvd hg hg0 <| EuclideanDomain.gcd_dvd_right f g
 
 @[deprecated (since := "2025-11-30")]
 alias degree_eq_one_of_irreducible_of_splits := Splits.degree_eq_one_of_irreducible
@@ -211,31 +211,14 @@ alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_
 @[deprecated (since := "2025-12-06")]
 alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
-variable (R) in
-theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
-    (hs : f.Splits) (hm : f.Monic)
-    (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) : f ∈ Polynomial.lifts (algebraMap R K) := by
-  rw [hs.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
-  refine Subring.multiset_prod_mem _ _ fun P hP => ?_
-  obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
-  exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
+@[deprecated (since := "2025-12-13")]
+alias mem_lift_of_splits_of_roots_mem_range := Splits.mem_lift_of_roots_mem_range
 
-/--
-A polynomial of degree `2` with a root splits.
--/
-theorem splits_of_natDegree_eq_two {f : Polynomial K} {x : L} (h₁ : f.natDegree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) := by
-  have hf₀ : f ≠ 0 := ne_zero_of_natDegree_gt (h₁ ▸ zero_lt_two)
-  have h : (map i f /ₘ (X - C x)).natDegree = 1 := by
-    rw [natDegree_divByMonic _ (monic_X_sub_C x), natDegree_map, h₁, natDegree_X_sub_C]
-  replace h₂ := (mem_roots'.mp <| (mem_roots_map_of_injective i.injective hf₀).mpr h₂).2
-  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂]
-  exact (splits_mul_iff (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
-    ⟨Splits.X_sub_C  _, Splits.of_natDegree_le_one (by rw [h])⟩
+@[deprecated (since := "2025-12-13")]
+alias splits_of_natDegree_eq_two := Splits.of_natDegree_eq_two
 
-theorem splits_of_degree_eq_two {f : Polynomial K} {x : L} (h₁ : f.degree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) :=
-  splits_of_natDegree_eq_two i (natDegree_eq_of_degree_eq_some h₁) h₂
+@[deprecated (since := "2025-12-13")]
+alias splits_of_degree_eq_two := Splits.of_degree_eq_two
 
 section UFD
 
@@ -264,14 +247,11 @@ alias splits_comp_of_splits := Splits.map
 
 variable [Algebra R K] [Algebra R L]
 
-theorem splits_of_algHom {f : R[X]} (h : Splits (f.map (algebraMap R K))) (e : K →ₐ[R] L) :
-    Splits (f.map (algebraMap R L)) := by
-  rw [← e.comp_algebraMap_of_tower R, ← map_map]; exact h.map _
+@[deprecated (since := "2025-12-13")]
+alias splits_of_algHom := Splits.of_algHom
 
-variable (L) in
-theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
-    (h : Splits (f.map (algebraMap R K))) : Splits (f.map (algebraMap R L)) :=
-  splits_of_algHom h (IsScalarTower.toAlgHom R K L)
+@[deprecated (since := "2025-12-13")]
+alias splits_of_isScalarTower := Splits.of_isScalarTower
 
 @[deprecated (since := "2025-12-08")]
 alias eval₂_derivative_of_splits := Splits.eval_derivative
@@ -285,48 +265,25 @@ alias eval_derivative_of_splits := Splits.eval_derivative
 @[deprecated (since := "2025-12-08")]
 alias aeval_root_derivative_of_splits := Splits.eval_root_derivative
 
-theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
-    (h : p.Splits) (hx : p.eval x ≠ 0) :
-    p.derivative.eval x = p.eval x * (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  classical
-  suffices p.roots.map (fun z ↦ p.leadingCoeff * ((p.roots.erase z).map (fun w ↦ x - w) ).prod) =
-      p.roots.map fun i ↦ p.leadingCoeff * ((x - i)⁻¹ * (p.roots.map (fun z ↦ x - z)).prod) by
-    nth_rw 2 [Splits.eq_prod_roots h]
-    simp [h.eval_derivative, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
-      mul_comm, mul_left_comm]
-  refine Multiset.map_congr rfl fun z hz ↦ ?_
-  rw [← Multiset.prod_map_erase hz, inv_mul_cancel_left₀]
-  aesop (add simp sub_eq_zero)
+@[deprecated (since := "2025-12-12")]
+alias eval_derivative_eq_eval_mul_sum_of_splits := Splits.eval_derivative_eq_eval_mul_sum
 
-theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
-    (h : p.Splits) (hx : p.eval x ≠ 0) :
-    p.derivative.eval x / p.eval x = (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  rw [eval_derivative_eq_eval_mul_sum_of_splits h hx]
-  exact mul_div_cancel_left₀ _ hx
+@[deprecated (since := "2025-12-12")]
+alias eval_derivative_div_eval_of_ne_zero_of_splits := Splits.eval_derivative_div_eval_of_ne_zero
 
-theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]}
-    (hP : P.Splits) :
-    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
-  nth_rw 1 [hP.eq_prod_roots]
-  simp only [coeff_zero_eq_eval_zero, eval_mul, eval_C, eval_multiset_prod, Function.comp_apply,
-    Multiset.map_map, eval_sub, eval_X, zero_sub, Multiset.prod_map_neg]
-  grind [splits_iff_card_roots]
+@[deprecated (since := "2025-12-12")]
+alias coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits :=
+  Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots
 
-/-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem coeff_zero_eq_prod_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
-  simp [hmo, coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP]
+@[deprecated (since := "2025-12-12")]
+alias coeff_zero_eq_prod_roots_of_monic_of_splits := Splits.coeff_zero_eq_prod_roots_of_monic
 
-theorem nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits {P : K[X]}
-    (hP : P.Splits) : P.nextCoeff = -P.leadingCoeff * P.roots.sum := by
-  nth_rw 1 [Splits.eq_prod_roots hP]
-  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
+@[deprecated (since := "2025-12-12")]
+alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
+  Splits.nextCoeff_eq_neg_sum_roots_mul_leadingCoeff
 
-/-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the negative of the sum
-of the roots. -/
-theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits) : P.nextCoeff = -P.roots.sum := by
-  simp [hmo, nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP]
+@[deprecated (since := "2025-12-12")]
+alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
 
 @[deprecated (since := "2025-10-08")]
 alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
