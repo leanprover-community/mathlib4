@@ -100,6 +100,7 @@ instance toWeakPseudoEMetricSpace
   | some _, ∞, ∞ => by simp
   | ∞, ∞, ∞ => by simp
   topology_le := by
+    rw [← toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist]
     intro s sh
     let τ := (uniformSpaceOfEDist
           m.edist m.edist_self m.edist_comm m.edist_triangle).toTopologicalSpace

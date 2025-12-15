@@ -228,8 +228,9 @@ def WeakPseudoEMetricSpace.toPseudoEMetricSpace
 
 theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
     (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
-    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
-    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
+    ((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace =
+    ((uniformSpaceOfEDist
+    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace := by rfl
 
 theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
     {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} (s : Set α) :
