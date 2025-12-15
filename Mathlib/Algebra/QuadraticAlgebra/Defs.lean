@@ -29,7 +29,7 @@ characteristic zero fields. If you are working in this setting you should start 
 ```
 attribute [-instance] DivisionRing.toRatAlgebra
 ```
-to keep the `CharZero` instance but to avoid having to `Algebra` instances. (Note that all the basic
+to keep the `CharZero` instance but to avoid having two `Algebra` instances. (Note that all the basic
 theorems about `QuadraticAlgebra` are stated using the general instance
 `Algebra R (QuadraticAlgebra a b)`, so you don't want to deactivate that one.)
 
