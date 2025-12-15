@@ -203,6 +203,18 @@ lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s 
   simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
 
+omit [AlexandrovDiscrete β] in
+/-- A function out of an `AlexandrovDiscrete` space is continuous iff it is monotone with respect
+to the specialization preorder. -/
+lemma continuous_iff_spec_monotone {f : α → β} :
+    Continuous f ↔ ∀ x y, x ⤳ y → (f x) ⤳ (f y) where
+  mp hf x y hxy := hxy.map hf
+  mpr hf := by
+    constructor; intro s hs
+    rw [isOpen_iff_forall_specializes]
+    intro x y hxy hy
+    exact hf x y hxy |>.mem_open hs hy
+
 omit [AlexandrovDiscrete α] in
 lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where
   mp _ a := principal_nhdsKer_singleton a |>.symm
