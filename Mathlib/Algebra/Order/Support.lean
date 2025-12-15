@@ -36,11 +36,12 @@ namespace Submonoid
 variable {G : Type*} [Group G] (M : Submonoid G)
 
 /--
-The support of a submonoid `M` of a group `G` is `M ∩ M⁻¹`, the largest subgroup contained in `M`.
+The support of a submonoid `M` of a group `G` is `M ∩ M⁻¹`,
+the largest subgroup contained in `M`.
 -/
 @[to_additive
-  /-- The support of a submonoid `M` of a group `G` is `M ∩ -M`,
-  the largest subgroup contained in `M`. -/]
+/-- The support of a submonoid `M` of a group `G` is `M ∩ -M`,
+the largest subgroup contained in `M`. -/]
 def supportSubgroup : Subgroup G where
   carrier := M ∩ M⁻¹
   one_mem' := by aesop
