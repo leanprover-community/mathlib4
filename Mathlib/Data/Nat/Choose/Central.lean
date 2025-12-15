@@ -5,7 +5,7 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Choose.Vandermonde
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
@@ -24,6 +24,7 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
   coefficient.
 * `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
+* `sum_range_choose_sq`: ∑ k ∈ Finset.range (n + 1), n.choose k ^ 2 = centralBinom n
 -/
 
 @[expose] public section
@@ -127,5 +128,12 @@ theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom := by
   apply Nat.dvd_of_mul_dvd_mul_left zero_lt_two
   rw [← mul_assoc, ← succ_mul_centralBinom_succ, mul_comm]
   exact mul_dvd_mul_left _ (two_dvd_centralBinom_succ n)
+
+/-- The sum of entries squared in a row of Pascal's triangle -/
+theorem sum_range_choose_sq (n : ℕ) :
+    ∑ i ∈ Finset.range (n + 1), (n.choose i) ^ 2 = n.centralBinom := by
+  rw [centralBinom, two_mul, add_choose_eq, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  congr! 1 with _ h
+  rw [choose_symm (Finset.mem_range_succ_iff.mp h), sq]
 
 end Nat
