@@ -117,7 +117,7 @@ def app (f : Expr) (arg : Arg) : Expr :=
 
 /-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
 
-`e = ∀ (x : α), p x` is represented as `Pi α fun x => p x` internally. -/
+`e = ∀ x, p x` is represented as `Pi fun x => p x` internally. -/
 partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
   go e #[]
 where
@@ -139,9 +139,7 @@ where
       go (.app (.app c f) x) as
     | .app f a, as => go f (as.push { expr := a })
     | .forallE x a b bi, _ => do
-      let ta ← inferType a
-      let tb ← inferType b
-      k (.const ``Pi [ta.sortLevel!, tb.sortLevel!]) #[{ expr := a }, { expr := .lam x a b bi }]
+      go (← mkAppM ``Pi #[.lam x a b bi]) #[]
     | f, as => k f as.reverse
 
 
