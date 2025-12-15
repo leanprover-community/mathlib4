@@ -305,7 +305,7 @@ instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
 /-- forgetful functor to `TopCat` is the same as coercion -/
-unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢forgetToTop.obj X ≟ (X : TopCat)
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
