@@ -112,6 +112,12 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
       ⟨y, -, hy⟩
     exact ⟨y, hy⟩⟩
 
+instance : ProperSpace ℝ where isCompact_closedBall _ _ :=
+  Real.closedBall_eq_Icc ▸ ConditionallyCompleteLinearOrder.isCompact_Icc _ _
+
+-- shortcut instance for performance reasons
+instance : SecondCountableTopology ℝ := inferInstance
+
 /-- A binary product of proper spaces is proper. -/
 instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [ProperSpace α] [ProperSpace β] : ProperSpace (α × β) where
