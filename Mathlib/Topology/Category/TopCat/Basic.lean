@@ -169,7 +169,7 @@ def trivial : Type u ⥤ TopCat.{u} where
   obj X := @of X ⊤
   map f := @ofHom _ _ ⊤ ⊤ <| @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
 
-instance : CodiscreteTopology (TopCat.trivial.obj α) :=
+instance {X : Type u} : CodiscreteTopology (trivial.obj X) :=
   codiscreteTopology_top _
 
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
