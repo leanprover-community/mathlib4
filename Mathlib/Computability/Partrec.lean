@@ -29,9 +29,6 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
--- TODO: revisit this after #13791 is merged
-set_option linter.flexible false
-
 @[expose] public section
 
 open List (Vector)
@@ -208,6 +205,7 @@ theorem prec' {f g h} (hf : Partrec f) (hg : Partrec g) (hh : Partrec h) :
   ((prec hg hh).comp (pair Partrec.some hf)).of_eq fun a =>
     ext fun s => by simp [Seq.seq]
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem ppred : Partrec fun n => ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
@@ -274,6 +272,7 @@ theorem of_eq {f g : α → σ} (hf : Computable f) (H : ∀ n, f n = g n) : Com
 theorem const (s : σ) : Computable fun _ : α => s :=
   (Primrec.const _).to_comp
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem ofOption {f : α → Option β} (hf : Computable f) : Partrec fun a => (f a : Part β) :=
   (Nat.Partrec.ppred.comp hf).of_eq fun n => by
     rcases decode (α := α) n with - | a <;> simp
@@ -400,6 +399,7 @@ theorem const' (s : Part σ) : Partrec fun _ : α => s :=
   haveI := Classical.dec s.Dom
   Decidable.Partrec.const' s
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f) (hg : Partrec₂ g) :
     Partrec fun a => (f a).bind (g a) :=
   (hg.comp (Nat.Partrec.some.pair hf)).of_eq fun n => by
@@ -412,6 +412,7 @@ theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Compu
 theorem to₂ {f : α × β →. σ} (hf : Partrec f) : Partrec₂ fun a b => f (a, b) :=
   hf.of_eq fun ⟨_, _⟩ => rfl
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ} (hf : Computable f) (hg : Partrec g)
     (hh : Partrec₂ h) : Partrec fun a => (f a).rec (g a) fun y IH => IH.bind fun i => h a (y, i) :=
   (Nat.Partrec.prec' hf hg hh).of_eq fun n => by
@@ -423,7 +424,9 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
 
 nonrec theorem comp {f : β →. σ} {g : α → β} (hf : Partrec f) (hg : Computable g) :
     Partrec fun a => f (g a) :=
-  (hf.comp hg).of_eq fun n => by simp; rcases e : decode (α := α) n with - | a <;> simp [encodek]
+  (hf.comp hg).of_eq fun n => by
+    simp only [PFun.coe_val, map_some, bind_eq_bind]
+    rcases e : decode (α := α) n with - | a <;> simp [encodek]
 
 theorem nat_iff {f : ℕ →. ℕ} : Partrec f ↔ Nat.Partrec f := by simp [Partrec, map_id']
 
@@ -492,6 +495,7 @@ variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Computable
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => Nat.rfind (p a) :=
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
@@ -506,6 +510,7 @@ theorem rfindOpt {f : α → ℕ → Option σ} (hf : Computable₂ f) :
     Partrec fun a => Nat.rfindOpt (f a) :=
   (rfind (Primrec.option_isSome.to_comp.comp hf).partrec.to₂).bind (ofOption hf)
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. σ} (hf : Computable f)
     (hg : Computable g) (hh : Partrec₂ h) : Partrec fun a => (f a).casesOn (some (g a)) (h a) :=
   (nat_rec hf hg (hh.comp fst (pred.comp <| hf.comp fst)).to₂).of_eq fun a => by
@@ -713,6 +718,7 @@ theorem sumCasesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α �
   (sumCasesOn_right (sumCasesOn hf (sumInr.comp snd).to₂ (sumInl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     let F : α → ℕ →. σ ⊕ α := fun a n =>
       n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f
