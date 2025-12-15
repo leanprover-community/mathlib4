@@ -719,6 +719,11 @@ def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : 
   uniformity_edist := rfl
   eq_of_edist_eq_zero := inst.eq_of_edist_eq_zero
 
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
+    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
+
 @[ext]
 protected theorem EMetricSpace.ext
     {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by
