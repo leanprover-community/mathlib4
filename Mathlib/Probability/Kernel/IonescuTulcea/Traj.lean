@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Function.FactorsThrough
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
@@ -256,6 +256,13 @@ lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)}
     trajContent κ x s ≠ ∞ :=
   projectiveFamilyContent_ne_top (isProjectiveMeasureFamily_partialTraj κ x)
 
+theorem nonempty_of_isProbabilityMeasure {α : Type*} {m : MeasurableSpace α} (μ : Measure α)
+    [IsProbabilityMeasure μ] : Nonempty α := by
+  by_contra! maybe_empty
+  have : μ Set.univ = 0 := by
+    rw [Set.univ_eq_empty_iff.mpr maybe_empty, measure_empty]
+  simp at this
+
 /-- This is an auxiliary result for `trajContent_tendsto_zero`. Consider `f` a sequence of bounded
 measurable functions such that `f n` depends only on the first coordinates up to `a n`.
 Assume that when integrating `f n` against `partialTraj (k + 1) (a n)`, one gets a non-increasing
@@ -281,7 +288,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Fₙ` is the integral of `fₙ` from time `k + 1` to `aₙ`.
   let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPartialTraj κ (k + 1) (a n) (f n)
   -- `Fₙ` converges to `l` by hypothesis.
@@ -353,7 +360,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
     simpa [measurableCylinders_nat] using A_mem n
