@@ -29,7 +29,7 @@ namespace CategoryTheory.Abelian
 
 open Category Limits Preadditive ZeroObject
 
-variable {A C : Type*} [Category C] [Category A] (ι : C ⥤ A)
+variable {A C : Type*} [Category* C] [Category* A] (ι : C ⥤ A)
 
 /-- Given a fully faithful functor `ι : C ⥤ A`, this structure contains the data
 of a functor `F : A ⥤ C` and a functorial epimorphism
@@ -99,7 +99,7 @@ attribute [irreducible] chainComplex
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
-    (ComplexShape.prev_eq' _ (by dsimp; omega)) (by simp),
+    (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
   convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]

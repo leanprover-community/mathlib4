@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.Algebra.ProperAction.Basic
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
@@ -61,9 +62,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     have hK' : IsCompact K' := (hK.image continuous_fst).union (hK.image continuous_snd)
     let E := {g : G | Set.Nonempty ((g • ·) '' K' ∩ K')}
     -- The set `E` is finite because the action is properly discontinuous.
-    have fin : Set.Finite E := by
-      simp_rw [E, nonempty_iff_ne_empty]
-      exact h.finite_disjoint_inter_image hK' hK'
+    have fin : Set.Finite E := h.finite_disjoint_inter_image hK' hK'
     -- Therefore we can rewrite `f ⁻¹ (K' × K')` as a finite union of compact sets.
     have : (fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ⁻¹' (K' ×ˢ K') =
         ⋃ g ∈ E, {g} ×ˢ ((g⁻¹ • ·) '' K' ∩ K') := by
@@ -88,7 +87,6 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
       preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
   · intro h; constructor
     intro K L hK hL
-    simp_rw [← nonempty_iff_ne_empty]
     -- We want to show that a subset of `G` is finite, but as `G` has the discrete topology it
     -- is enough to show that this subset is compact.
     apply IsCompact.finite_of_discrete

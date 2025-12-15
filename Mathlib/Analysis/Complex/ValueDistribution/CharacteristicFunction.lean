@@ -47,8 +47,8 @@ The Characteristic Function of Value Distribution Theory
 
 If `f : ℂ → E` is meromorphic and `a : WithTop E` is any value, the characteristic function of `f`
 is defined as the sum of two terms: the proximity function, which quantifies how close `f` gets to
-`a` on the circle `∣z∣ = r`, and the counting function, which counts the number times that `f`
-attains the value `a` inside the disk `∣z∣ ≤ r`, weighted by multiplicity.
+`a` on the circle `∣z∣ = r`, and the logarithmic counting function, which counts the number times
+that `f` attains the value `a` inside the disk `∣z∣ ≤ r`, weighted by multiplicity.
 -/
 noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f a
 
@@ -57,8 +57,8 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 -/
 
 /--
-The difference between the characteristic functions of `f` and `f - const` simplifies to the
-difference between the proximity functions.
+The difference between the characteristic functions for the poles of `f` and `f - const` simplifies
+to the difference between the proximity functions.
 -/
 @[simp]
 lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f Set.univ)
@@ -71,56 +71,66 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
 -/
 
 /--
-For `1 ≤ r`, the characteristic function of `f * g` at zero is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+For `1 ≤ r`, the characteristic function for the zeros of `f * g` is less than or equal to the sum
+of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
-theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
+theorem characteristic_mul_zero_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 r ≤ (characteristic f₁ 0 + characteristic f₂ 0) r := by
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
-  apply add_le_add (proximity_zero_mul_le h₁f₁ h₁f₂ r)
-    (logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
+  apply add_le_add (proximity_mul_zero_le h₁f₁ h₁f₂ r)
+    (logCounting_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
+
+@[deprecated (since := "2025-12-11")] alias characteristic_zero_mul_le := characteristic_mul_zero_le
 
 /--
-Asymptotically, the characteristic function of `f * g` at zero is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+Asymptotically, the characteristic function for the zeros of `f * g` is less than or equal to the
+sum of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
-theorem characteristic_zero_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
+theorem characteristic_mul_zero_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] characteristic f₁ 0 + characteristic f₂ 0 := by
   filter_upwards [Filter.eventually_ge_atTop 1]
-  exact fun _ hr ↦ characteristic_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+  exact fun _ hr ↦ characteristic_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+@[deprecated (since := "2025-12-11")]
+alias characteristic_zero_mul_eventually_le := characteristic_mul_zero_eventuallyLE
 
 /--
-For `1 ≤ r`, the characteristic function of `f * g` at `⊤` is less than or equal
-to the sum of the characteristic functions of `f` and `g`, respectively.
+For `1 ≤ r`, the characteristic function for the poles of `f * g` is less than or equal to the sum
+of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
-theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
+theorem characteristic_mul_top_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ r ≤ (characteristic f₁ ⊤ + characteristic f₂ ⊤) r := by
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
-  apply add_le_add (proximity_top_mul_le h₁f₁ h₁f₂ r)
-    (logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
+  apply add_le_add (proximity_mul_top_le h₁f₁ h₁f₂ r)
+    (logCounting_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
+
+@[deprecated (since := "2025-12-11")] alias characteristic_top_mul_le := characteristic_mul_top_le
 
 /--
-Asymptotically, the characteristic function of `f * g` at `⊤` is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+Asymptotically, the characteristic function for the poles of `f * g` is less than or equal to the
+sum of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
-theorem characteristic_top_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
+theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ := by
   filter_upwards [Filter.eventually_ge_atTop 1]
-  exact fun _ hr ↦ characteristic_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+  exact fun _ hr ↦ characteristic_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+@[deprecated (since := "2025-12-11")]
+alias characteristic_top_mul_eventually_le := characteristic_mul_top_eventuallyLE
 
 /--
-For natural numbers `n`, the characteristic function counting zeros of `f ^ n` equals `n` times the
-counting function counting zeros of `f`.
+For natural numbers `n`, the characteristic function for the zeros of `f ^ n` equals `n` times the
+characteristic counting function for the zeros of `f`.
 -/
 @[simp]
 theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
@@ -128,8 +138,8 @@ theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn 
   simp_all [characteristic]
 
 /--
-For natural numbers `n`, the characteristic function counting poles of `f ^ n` equals `n` times the
-counting function counting poles of `f`.
+For natural numbers `n`, the characteristic function for the poles of `f ^ n` equals `n` times the
+characteristic function for the poles of `f`.
 -/
 @[simp]
 theorem characteristic_pow_top {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
