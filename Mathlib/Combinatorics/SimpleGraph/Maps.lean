@@ -258,7 +258,7 @@ abbrev Iso :=
 @[inherit_doc] infixl:50 " ≃g " => Iso
 
 /-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
-abbrev HomClass  (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
+abbrev HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
   RelHomClass F G.Adj H.Adj
 
 namespace Hom
