@@ -294,11 +294,10 @@ lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
   obtain ⟨z_α, hz_α, z_negα, hz_negα, rfl⟩ := Submodule.mem_sup.mp hz_αneg
   simp only [lie_add, ← LieSubalgebra.coe_bracket_of_module]
   rw [lie_eq_smul_of_mem_rootSpace hz_α, hy, zero_smul, zero_add,
-      lie_eq_smul_of_mem_rootSpace hz_negα]
-  simp only [Pi.neg_apply, hy, neg_zero, zero_smul, zero_add]
+      lie_eq_smul_of_mem_rootSpace hz_negα, Pi.neg_apply, hy, neg_zero, zero_smul, zero_add]
   have h_cor_in_zero : (h_cor : L) ∈ rootSpace H (0 : H → K) := by
     rw [rootSpace_zero_eq]; exact h_cor.property
-  convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1 <;> (simp)
+  convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
 
 open Weight in
 lemma LieAlgebra.IsKilling.l2 (q : Submodule K (Dual K H))
