@@ -716,7 +716,7 @@ def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : 
   edist_self := inst.edist_self
   edist_comm := inst.edist_comm
   edist_triangle := inst.edist_triangle
-  uniformity_edist := uniformSpaceOfEDist inst.edist edist_self edist_comm edist_triangle
+  uniformity_edist := rfl
   eq_of_edist_eq_zero := inst.eq_of_edist_eq_zero
 
 @[ext]

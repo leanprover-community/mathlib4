@@ -103,3 +103,9 @@ example : 0 = 0 := by sorry
 #check WithTop
 
 end WeakEMetric
+
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
+    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
