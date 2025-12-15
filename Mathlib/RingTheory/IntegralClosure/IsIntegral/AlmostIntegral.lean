@@ -66,7 +66,7 @@ lemma IsIntegral.isAlmostIntegral_of_exists_smul_mem_range
   simp_rw [mul_smul_comm, ← pow_add, smul_comm b]
   refine neg_mem (sum_mem fun i hi ↦ (AlgHom.range (Algebra.ofId _ _)).smul_mem (IH _ ?_) _)
   simp only [Finset.mem_range] at hi
-  cutsat
+  lia
 
 lemma IsIntegral.isAlmostIntegral_of_isLocalization
     {s : S} (H : IsIntegral R s) (M : Submonoid R) (hM : M ≤ R⁰) [IsLocalization M S] :

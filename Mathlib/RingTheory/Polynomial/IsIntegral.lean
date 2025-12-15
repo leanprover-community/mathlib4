@@ -119,7 +119,7 @@ lemma IsAlmostIntegral.coeff [IsDomain R] [FaithfulSMul R S]
     obtain ⟨s, hs⟩ := hr' n
     exact ⟨C s, by simp [Algebra.smul_def, hs]⟩
   simpa [hi, eraseLead_coeff_of_ne] using
-    IH (p := p.eraseLead) _ (p.eraseLead_natDegree_le.trans_lt (by cutsat)) this rfl
+    IH (p := p.eraseLead) _ (p.eraseLead_natDegree_le.trans_lt (by lia)) this rfl
 
 lemma IsIntegral.coeff_of_exists_smul_mem_lifts
     [FaithfulSMul R S] [IsDomain S]
