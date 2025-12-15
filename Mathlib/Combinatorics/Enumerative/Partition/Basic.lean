@@ -224,31 +224,87 @@ def distincts (n : ℕ) : Finset n.Partition :=
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
+/-- If `s ≠ 0`, then `s.sup ∈ s`. -/
+private lemma sup_mem_of_ne_zero (s : Multiset ℕ) (hs : s ≠ 0) : s.sup ∈ s := by
+  classical
+  induction s using Multiset.induction_on with
+  | empty =>
+      cases hs rfl
+  | @cons a s ih =>
+      by_cases h0 : s = 0
+      · subst h0
+        simp
+      · have hmem : s.sup ∈ s := ih h0
+        cases le_total a s.sup with
+        | inl hle =>
+            have hsup : a ⊔ s.sup = s.sup := sup_eq_right.2 hle
+            have : s.sup ∈ a ::ₘ s := (Multiset.mem_cons).2 (Or.inr hmem)
+            simpa [Multiset.sup_cons, hsup] using this
+        | inr hge =>
+            have hsup : a ⊔ s.sup = a := sup_eq_left.2 hge
+            have : a ∈ a ::ₘ s := Multiset.mem_cons_self a s
+            simp [Multiset.sup_cons, hsup]
+
 /-- If `r` is a positive integer, then we have a correspondence between:
-1. Partitions of `n + r` that contain `r` as a part and have all parts ≤ `r`
+1. Partitions of `n + r` whose largest part is `r`;
 2. Partitions of `n` whose largest part is ≤ `r`.
 The correspondence is to erase `r` to go from 1 to 2, and to add `r` to go from 2 to 1.
 -/
 def eraseEquiv (n r : ℕ) (hr : 0 < r) :
-    {π : Partition (n + r) // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} ≃
-    {π : Partition n // π.parts.sup ≤ r} where
-  toFun s := ⟨⟨s.1.1.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
-    (add_right_inj r).1 <| by rw [Multiset.sum_erase s.2.1,  s.1.3, add_comm]⟩,
-    Multiset.sup_le.mpr (s.2.2 · <| Multiset.mem_of_mem_erase ·)⟩
-  invFun s := ⟨⟨r ::ₘ s.1.1, by cases s.1; aesop, by cases s.1; aesop (add unsafe add_comm)⟩,
-    by aesop, by aesop⟩
-  left_inv s := by aesop
-  right_inv s := by aesop
+    {π : Partition (n + r) // π.parts.sup = r} ≃
+    {π : Partition n // π.parts.sup ≤ r} := by
+  classical
+  refine
+    { toFun := ?_
+      invFun := ?_
+      left_inv := ?_
+      right_inv := ?_ }
+  · intro s
+    have hpos : 0 < n + r := Nat.add_pos_right n hr
+    have hne : s.1.parts ≠ 0 := by
+      intro h0
+      have : (0 : ℕ) = n + r := by simpa [h0] using s.1.3
+      exact (Nat.ne_of_gt hpos) this.symm
+    have hrmem : r ∈ s.1.parts := by
+      have : s.1.parts.sup ∈ s.1.parts := sup_mem_of_ne_zero s.1.parts hne
+      simpa [s.2] using this
+    have hall : ∀ x ∈ s.1.parts, x ≤ r :=
+      (Multiset.sup_le.1 (le_of_eq s.2))
+    refine
+      ⟨⟨s.1.parts.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
+        (add_right_inj r).1 <| by
+          rw [Multiset.sum_erase hrmem, s.1.3, add_comm]⟩,
+        ?_⟩
+    exact
+      Multiset.sup_le.mpr (fun x hx =>
+        hall x (Multiset.mem_of_mem_erase hx))
+  · intro s
+    refine
+      ⟨⟨r ::ₘ s.1.parts, by cases s.1; aesop,
+        by cases s.1; aesop (add unsafe add_comm)⟩, ?_⟩
+    simp [Multiset.sup_cons, sup_eq_left.2 s.2]
+  · rintro ⟨π, hsup⟩
+    have hpos : 0 < n + r := Nat.add_pos_right n hr
+    have hne : π.parts ≠ 0 := by
+      intro h0
+      have : (0 : ℕ) = n + r := by simpa [h0] using π.3
+      exact (Nat.ne_of_gt hpos) this.symm
+    have hrmem : r ∈ π.parts := by
+      have : π.parts.sup ∈ π.parts := sup_mem_of_ne_zero π.parts hne
+      simpa [hsup] using this
+    ext a
+    simpa using
+      congrArg (fun t => Multiset.count a t) (Multiset.cons_erase hrmem)
+  · intro s
+    aesop
 
-/--
-The number of partitions of `n` that contain `r` as a part and have all parts ≤ `r`
-equals the number of partitions of `n - r` whose largest part is ≤ `r`. This is a result of
-`eraseEquiv`.
--/
+/-- The number of partitions of `n` whose largest part is `r` equals the number of partitions
+of `n - r` whose largest part is ≤ `r`. This is a result of `eraseEquiv`. -/
 theorem partition_max_equals_bound (n r : ℕ) (h₁ : r ≤ n) (h₂ : r ≠ 0) :
-    Fintype.card {π : Partition n // r ∈ π.parts ∧ ∀ x ∈ π.parts, x ≤ r} =
+    Fintype.card {π : Partition n // π.parts.sup = r} =
     Fintype.card {π : Partition (n - r) // π.parts.sup ≤ r} := by
-  convert Fintype.card_congr (eraseEquiv (n - r) r (by omega)) <;> omega
+  have hr : 0 < r := Nat.pos_of_ne_zero h₂
+  convert Fintype.card_congr (eraseEquiv (n - r) r hr) <;> omega
 
 end Partition
 
