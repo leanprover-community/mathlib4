@@ -10,27 +10,27 @@ public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
+@[expose] public section
+
 open CategoryTheory Functor Limits GrothendieckTopology
 
 universe v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} [Subcanonical J]
-  [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.val]
+  {K : Type*} [Category K]
+  [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val]
 
-instance {n : ℕ} (S : Fin n → C) :
-    PreservesColimit (Discrete.functor S) J.yoneda where
-  preserves {c} hc := ⟨by
+instance : PreservesColimitsOfShape K J.yoneda where
+  preservesColimit {F} := { preserves {c} hc := ⟨by
     suffices IsLimit (coyoneda.mapCone (J.yoneda.mapCocone c).op) from
       isColimitOfOp (isLimitOfReflects _ this)
     apply evaluationJointlyReflectsLimits
     intro X
     suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
       (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
-    have := preservesLimitsOfShape_of_equiv (Discrete.opposite (Fin n)).symm X.val
-    exact isLimitOfPreserves _ hc.op⟩
+    exact isLimitOfPreserves _ hc.op⟩ }
 
-public instance Subcanonical.preservesFiniteCoproductsYoneda :
+instance Subcanonical.preservesFiniteCoproductsYoneda
+    [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.val] :
     PreservesFiniteCoproducts J.yoneda where
-  preserves _ := { preservesColimit {S} :=
-    let i : S ≅ Discrete.functor (fun i ↦ S.obj ⟨i⟩) := Discrete.natIso (fun _ ↦ Iso.refl _)
-    preservesColimit_of_iso_diagram J.yoneda i.symm }
+  preserves _ := inferInstance
