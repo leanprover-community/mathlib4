@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.Tactic.Group
+
 /-!
 # SubMulActions on complements of invariant subsets
 

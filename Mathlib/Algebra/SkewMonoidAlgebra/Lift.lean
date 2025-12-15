@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
+
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
@@ -204,6 +205,7 @@ theorem domCongr_refl :
   apply AlgEquiv.ext
   aesop
 
+set_option backward.proofsInPublic true in
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl

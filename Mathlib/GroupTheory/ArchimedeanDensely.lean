@@ -100,6 +100,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
+set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/

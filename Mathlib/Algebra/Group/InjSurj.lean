@@ -30,6 +30,8 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 `to_additive`ized from the versions for `^`.
 -/
 
+set_option backward.proofsInPublic true
+
 @[expose] public section
 
 
@@ -45,6 +47,7 @@ namespace Injective
 
 variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `*` is a semigroup, if it admits an injective map that preserves `*` to
 a semigroup. See note [reducible non-instances]. -/
 @[to_additive /-- A type endowed with `+` is an additive semigroup, if it admits an
@@ -116,6 +119,7 @@ protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → 
 
 variable [One M₁]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
 preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -/
 @[to_additive
@@ -129,6 +133,7 @@ protected abbrev mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Inject
 
 variable [Pow M₁ ℕ]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1` and `*` is a monoid, if it admits an injective map that preserves `1`
 and `*` to a monoid.  See note [reducible non-instances]. -/
 @[to_additive
@@ -214,6 +219,7 @@ protected abbrev invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Inject
 
 variable [Div M₁] [Pow M₁ ℤ]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducible non-instances]. -/
 @[to_additive subNegMonoid
@@ -276,6 +282,7 @@ protected abbrev divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionCommMonoid M₁ :=
   { hf.divisionMonoid f one mul inv div npow zpow, hf.commSemigroup f mul with }
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits an injective map that preserves
 `1`, `*` and `⁻¹` to a group. See note [reducible non-instances]. -/
 @[to_additive
@@ -311,6 +318,7 @@ namespace Surjective
 
 variable {M₁ : Type*} {M₂ : Type*} [Mul M₂]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `*` is a semigroup, if it admits a surjective map that preserves `*` from a
 semigroup. See note [reducible non-instances]. -/
 @[to_additive
@@ -320,6 +328,7 @@ protected abbrev semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ :=
   { ‹Mul M₂› with mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc] }
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
 `*` from a commutative semigroup. See note [reducible non-instances]. -/
 @[to_additive
@@ -354,6 +363,7 @@ protected abbrev mulOneClass [MulOneClass M₁] (f : M₁ → M₂) (hf : Surjec
 
 variable [Pow M₂ ℕ]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1` and `*` is a monoid, if it admits a surjective map that preserves `1`
 and `*` to a monoid. See note [reducible non-instances]. -/
 @[to_additive
@@ -390,6 +400,7 @@ protected abbrev involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f
 
 variable [Inv M₂] [Div M₂] [Pow M₂ ℤ]
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits a surjective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducible non-instances]. -/
 @[to_additive subNegMonoid
@@ -409,6 +420,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
       rw [← zpow, ← zpow, zpow_negSucc, zpow_natCast, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by rw [← inv, ← mul, ← div, div_eq_mul_inv] }
 
+set_option backward.proofsInPublic true in
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits a surjective map that preserves
 `1`, `*` and `⁻¹` to a group. See note [reducible non-instances]. -/
 @[to_additive

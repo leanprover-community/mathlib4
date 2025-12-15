@@ -95,6 +95,7 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+set_option backward.proofsInPublic true in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
 @[simps!]

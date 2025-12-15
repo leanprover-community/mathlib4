@@ -204,6 +204,7 @@ lemma condDistrib_comp_self (X : α → β) {f : β → Ω} (hf : Measurable f) 
 lemma condDistrib_self (Y : α → Ω) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
   simpa using condDistrib_comp_self Y measurable_id
 
+set_option backward.proofsInPublic true in
 lemma condDistrib_const (X : α → β) (c : Ω) :
     condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X] Kernel.deterministic (fun _ ↦ c) (by fun_prop) := by
   have : (fun _ : α ↦ c) = (fun _ : β ↦ c) ∘ X := rfl
