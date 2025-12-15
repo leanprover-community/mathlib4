@@ -220,7 +220,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Se
   simp only [iInf, coe_sInf, Set.biInter_range]
 
 @[simp]
-theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : x ∈ ⨅ i, . i ↔ ∀ i, x ∈ . i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
