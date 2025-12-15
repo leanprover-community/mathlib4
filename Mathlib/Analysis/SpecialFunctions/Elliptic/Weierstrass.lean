@@ -35,6 +35,9 @@ public import Mathlib.Analysis.Meromorphic.Order
 - `PeriodPair.derivWeierstrassP_add_coe`: `℘'` is periodic.
 - `PeriodPair.weierstrassP_neg`: `℘'` is odd.
 - `PeriodPair.deriv_weierstrassP`: `deriv ℘ = ℘'`. This is true globally because of junk values.
+- `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
+- `PeriodPair.meromorphicAt_weierstrassP`: `℘` is meromorphic on the whole plane.
+- `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
 
 ## tags
 
