@@ -58,7 +58,7 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
 
 /-- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$ -/
 theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
-    (∃ N, ∀ p > N, p.Prime → f p = 1) := by
+    ∃ N, ∀ p > N, p.Prime → f p = 1 := by
   obtain ⟨b, hb, neq⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
