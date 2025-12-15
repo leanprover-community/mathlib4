@@ -22,7 +22,7 @@ This will be useful to define embedded submanifolds.
 ## Implementation notes
 
 * Unlike immersions, being an embedding is a global notion: this is why we have no definition
-`IsSmoothEmbeddingAt`. (Besides, it would be equivalent to being an immersion at `x`.)
+  `IsSmoothEmbeddingAt`. (Besides, it would be equivalent to being an immersion at `x`.)
 * Note that being a smooth embedding is a stronger condition than being a smooth map
   which is a topological embedding.
 
