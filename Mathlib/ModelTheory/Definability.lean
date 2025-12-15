@@ -299,9 +299,9 @@ theorem Definable.singleton (a : M) :
   exists (Term.var 0).equal (L.con (⟨a, rfl⟩ : ↑({a} : Set M))).term
 
 /-- A singleton `{a}` is definable over any set `A` that contains `a`. -/
-theorem Definable.singleton_of_mem {a : M} {A : Set M} (h : a ∈ A) :
+theorem Definable.singleton_of_mem {a : M} {A : Set M} (ha : a ∈ A) :
     A.Definable₁ L {a} :=
-  (Definable.singleton L a).mono (Set.singleton_subset_iff.mpr h)
+  (Definable.singleton L a).mono (Set.singleton_subset_iff.mpr ha)
 
 /-- The 2-dimensional diagonal is definable independent from parameters. -/
 theorem Definable.diagonal (A : Set M) :
@@ -463,13 +463,13 @@ theorem empty_definableFun_iff {f : (α → M) → M} :
 /-- A function symbol is a definable function. -/
 theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
     DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) := by
-  refine empty_definableFun_iff.mpr ?_
+  rw [empty_definableFun_iff]
   exists (Term.func f (Term.var ∘ Sum.inl)).equal (Term.var (Sum.inr ()))
 
 /-- A term is a definable function. -/
-theorem DefinableFun.term (t : L.Term α) :
+theorem _root_.Language.Term.realize_definableFun (t : L.Term α) :
     DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
-  refine empty_definableFun_iff.mpr ?_
+  rw [empty_definableFun_iff]
   exists (t.relabel Sum.inl).equal (Term.var (Sum.inr ()))
   ext v
   simp
@@ -477,11 +477,12 @@ theorem DefinableFun.term (t : L.Term α) :
 variable (L A)
 
 /-- A constant function is a definable function. -/
-theorem _root_.FirstOrder.Language.definableFun_of_const (γ : Type*) (a : M) :
-    DefinableFun L ({a} : Set M) (fun _ : γ → M => a) := by
+theorem _root_.FirstOrder.Language.definableFun_of_const {A : Set M} {a : M}
+    (γ : Type*) (ha : a ∈ A) :
+    DefinableFun L A (fun _ : γ → M => a) := by
   simp only [DefinableFun]
-  convert Definable.preimage_comp (fun _ : Fin 1 => Sum.inr ()) (Definable.singleton L a) using 1
-  simp only [Fin.isValue, mem_singleton_iff, preimage_setOf_eq, Function.comp_apply]
+  convert (Definable.singleton_of_mem L ha).preimage_comp (fun _ : Fin 1 => Sum.inr ())  using 1
+  simp only [tupleGraph, Fin.isValue, mem_singleton_iff, preimage_setOf_eq, comp_apply]
   ext v
   exact comm
 
@@ -511,21 +512,18 @@ lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     fin_cases i
     · exact hf
     · exact hg
-  convert (Definable.diagonal L A).preimage_map hF
+  exact (Definable.diagonal L A).preimage_map hF
 
 /-- The fiber of a definable function is definable. -/
 lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : DefinableFun L A f)
     {a : M} (ha : a ∈ A) :
-    A.Definable L {v : α → M | f v = a} := by
-  refine hf.setOf_eq ?_
-  exact Definable.mono (L.definableFun_of_const α (a : M)) (singleton_subset_iff.mpr ha)
+    A.Definable L {v : α → M | f v = a} :=
+  hf.setOf_eq (L.definableFun_of_const α ha)
 
 lemma DefinableFun.setOf_const_eq {f : (α → M) → M} (hf : DefinableFun L A f)
     {a : M} (ha : a ∈ A) :
-    A.Definable L {v : α → M | a = f v} := by
-  have : DefinableFun L A fun v ↦ a :=
-    (L.definableFun_of_const α (a : M)).mono (singleton_subset_iff.mpr ha)
-  exact this.setOf_eq hf
+    A.Definable L {v : α → M | a = f v} :=
+  (L.definableFun_of_const α ha).setOf_eq hf
 
 end Function
 
