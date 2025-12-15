@@ -75,9 +75,7 @@ theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 
-@[simp]
-theorem support_neg : (-p).support = p.support :=
-  Finsupp.support_neg p
+@[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
 theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).support ⊆ p.support ∪ q.support :=

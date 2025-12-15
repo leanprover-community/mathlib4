@@ -10,6 +10,8 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
+import Mathlib.LinearAlgebra.Span.Basic
+
 /-!
 # Lemmas about the support of a finitely supported function
 -/
@@ -29,78 +31,74 @@ variable {k : Type u₁} {G : Type u₂} [Semiring k]
 section Mul
 variable [Mul G]
 
-@[to_additive (dont_translate := k) support_mul]
-theorem support_mul [DecidableEq G] (a b : k[G]) : (a * b).support ⊆ a.support * b.support := by
-  rw [MonoidAlgebra.mul_def]
-  exact support_sum.trans <| biUnion_subset.2 fun _x hx ↦
-    support_sum.trans <| biUnion_subset.2 fun _y hy ↦
-      support_single_subset.trans <| singleton_subset_iff.2 <| mem_image₂_of_mem hx hy
+@[to_additive (dont_translate := k) support_coeff_mul_subset]
+theorem support_coeff_mul_subset [DecidableEq G] (a b : k[G]) :
+    (a * b).coeff.support ⊆ a.coeff.support * b.coeff.support := by
+  simp only [MonoidAlgebra.mul_def, coeff_finsuppSum]
+  grw [Finsupp.support_sum, biUnion_subset]
+  rintro x hx
+  grw [Finsupp.support_sum, biUnion_subset]
+  exact fun y hy ↦ support_single_subset.trans <| singleton_subset_iff.2 <| mem_image₂_of_mem hx hy
 
-@[to_additive (dont_translate := k) support_single_mul_subset]
-lemma support_single_mul_subset [DecidableEq G] (f : k[G]) (r : k) (a : G) :
-    (single a r * f : k[G]).support ⊆ Finset.image (a * ·) f.support :=
-  (support_mul _ _).trans <| (Finset.image₂_subset_right support_single_subset).trans <| by
-    rw [Finset.image₂_singleton_left]
+@[to_additive (dont_translate := k) support_coeff_single_mul_subset]
+lemma support_coeff_single_mul_subset [DecidableEq G] (f : k[G]) (r : k) (a : G) :
+    (single a r * f : k[G]).coeff.support ⊆ Finset.image (a * ·) f.coeff.support := by
+  grw [support_coeff_mul_subset, coeff_single, support_single_subset]
+  change image₂ _ _ _ ⊆ _
+  rw [image₂_singleton_left]
 
-@[to_additive (dont_translate := k) support_mul_single_subset]
-theorem support_mul_single_subset [DecidableEq G] (f : k[G]) (r : k) (a : G) :
-    (f * single a r).support ⊆ Finset.image (· * a) f.support :=
-  (support_mul _ _).trans <| (Finset.image₂_subset_left support_single_subset).trans <| by
-    rw [Finset.image₂_singleton_right]
+@[to_additive (dont_translate := k) support_coeff_mul_single_subset]
+theorem support_coeff_mul_single_subset [DecidableEq G] (f : k[G]) (r : k) (a : G) :
+    (f * single a r).coeff.support ⊆ Finset.image (· * a) f.coeff.support := by
+  grw [support_coeff_mul_subset, coeff_single, support_single_subset]
+  change image₂ _ _ _ ⊆ _
+  rw [image₂_singleton_right]
 
-@[to_additive (dont_translate := k) support_single_mul_eq_image]
-theorem support_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
+@[to_additive (dont_translate := k) support_coeff_single_mul_eq_image]
+theorem support_coeff_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
-    (single x r * f : k[G]).support = Finset.image (x * ·) f.support := by
-  refine subset_antisymm (support_single_mul_subset f _ _) fun y hy => ?_
-  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by grind
-  simp [mul_apply, mem_support_iff.mp yf, hr, lx.eq_iff]
+    (single x r * f : k[G]).coeff.support = Finset.image (x * ·) f.coeff.support := by
+  refine subset_antisymm (support_coeff_single_mul_subset f _ _) fun y hy => ?_
+  obtain ⟨y, yf, rfl⟩ : ∃ a ∈ f.coeff.support, x * a = y := by grind
+  simp [coeff_mul, mem_support_iff.mp yf, hr, lx.eq_iff]
 
-@[to_additive (dont_translate := k) support_mul_single_eq_image]
-theorem support_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}
+@[to_additive (dont_translate := k) support_coeff_mul_single_eq_image]
+theorem support_coeff_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :
-    (f * single x r).support = Finset.image (· * x) f.support := by
-  refine subset_antisymm (support_mul_single_subset f _ _) fun y hy => ?_
-  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by grind
-  simp only [mul_apply, mem_support_iff.mp yf, hr, mem_support_iff, sum_single_index,
-    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, mul_zero, ite_self, rx.eq_iff]
+    (f * single x r).coeff.support = Finset.image (· * x) f.coeff.support := by
+  refine subset_antisymm (support_coeff_mul_single_subset f _ _) fun y hy => ?_
+  obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.coeff.support ∧ a * x = y := by grind
+  simp [coeff_mul, mem_support_iff.mp yf, hr, rx.eq_iff]
 
-@[to_additive (dont_translate := k) support_mul_single]
-theorem support_mul_single [IsRightCancelMul G] (f : k[G]) (r : k)
+@[to_additive (dont_translate := k) support_coeff_mul_single]
+theorem support_coeff_mul_single [IsRightCancelMul G] (f : k[G]) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
-    (f * single x r).support = f.support.map (mulRightEmbedding x) := by
-  classical
-    ext
-    simp only [support_mul_single_eq_image f hr (IsRightRegular.all x),
-      mem_image, mem_map, mulRightEmbedding_apply]
+    (f * single x r).coeff.support = f.coeff.support.map (mulRightEmbedding x) := by
+  classical ext; simp [support_coeff_mul_single_eq_image f hr (.all x)]
 
-@[to_additive (dont_translate := k) support_single_mul]
-theorem support_single_mul [IsLeftCancelMul G] (f : k[G]) (r : k)
+@[to_additive (dont_translate := k) support_coeff_single_mul]
+theorem support_coeff_single_mul [IsLeftCancelMul G] (f : k[G]) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
-    (single x r * f : k[G]).support = f.support.map (mulLeftEmbedding x) := by
-  classical
-    ext
-    simp only [support_single_mul_eq_image f hr (IsLeftRegular.all x), mem_image,
-      mem_map, mulLeftEmbedding_apply]
+    (single x r * f : k[G]).coeff.support =
+      f.coeff.support.map (mulLeftEmbedding x) := by
+  classical ext; simp [support_coeff_single_mul_eq_image f hr (.all x)]
 
 end Mul
 
-@[to_additive (dont_translate := k) support_one_subset]
-lemma support_one_subset [One G] : (1 : k[G]).support ⊆ 1 :=
+@[to_additive (dont_translate := k) support_coeff_one_subset]
+lemma support_coeff_one_subset [One G] : (1 : k[G]).coeff.support ⊆ 1 :=
   Finsupp.support_single_subset
 
-@[to_additive (dont_translate := k) (attr := simp) support_one]
-lemma support_one [One G] [NeZero (1 : k)] : (1 : k[G]).support = 1 :=
+@[to_additive (dont_translate := k) (attr := simp) support_coeff_one]
+lemma support_coeff_one [One G] [NeZero (1 : k)] : (1 : k[G]).coeff.support = 1 :=
   Finsupp.support_single_ne_zero _ one_ne_zero
 
 section Span
 
-variable [MulOneClass G]
-
 /-- An element of `k[G]` is in the subalgebra generated by its support. -/
-theorem mem_span_support (f : k[G]) : f ∈ Submodule.span k (of k G '' (f.support : Set G)) := by
-  simp only [of, MonoidHom.coe_mk, OneHom.coe_mk]
-  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported]
+theorem mem_span_support_coeff [MulOneClass G] (f : k[G]) :
+    f ∈ Submodule.span k (of k G '' f.coeff.support) := by
+  simp [of, ← supported_eq_span_single, mem_supported]
 
 end Span
 
@@ -115,8 +113,8 @@ variable {k : Type u₁} {G : Type u₂} [Semiring k]
 section Span
 
 /-- An element of `k[G]` is in the submodule generated by its support. -/
-theorem mem_span_support (f : k[G]) : f ∈ Submodule.span k (of' k G '' f.support) := by
-  simp only [of']; rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported]
+theorem mem_span_support (f : k[G]) : f ∈ Submodule.span k (of' k G '' f.coeff.support) := by
+  simp [of', ← supported_eq_span_single, mem_supported]
 
 @[deprecated (since := "2025-12-08")] alias mem_span_support' := mem_span_support
 

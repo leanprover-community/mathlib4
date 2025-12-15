@@ -165,42 +165,36 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     simp
 
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
-noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
-  { (Polynomial.toFinsuppIso R).symm with
-    map_smul' := fun r x => by
-      dsimp
-      rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
-      induction x using induction_linear with
-      | zero => rw [smul_zero, map_zero, mul_zero]
-      | add _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
-      | single n a =>
-        ext i
-        simp only [coeff_ofFinsupp, smul_single_apply, toFinsuppIso_symm_apply, coeff_ofFinsupp,
-        single_apply, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
-        split_ifs with hn
-        · rw [Finset.sum_eq_single (i - n, n)]
-          · simp only [ite_true]
-          · rintro ⟨p, q⟩ hpq1 hpq2
-            rw [Finset.mem_antidiagonal] at hpq1
-            split_ifs with H
-            · dsimp at H
-              exfalso
-              apply hpq2
-              rw [← hpq1, H]
-              simp only [add_tsub_cancel_right]
-            · rfl
-          · intro H
-            exfalso
-            apply H
-            rw [Finset.mem_antidiagonal, tsub_add_cancel_of_le hn]
-        · symm
-          rw [Finset.sum_ite_of_false, Finset.sum_const_zero]
-          grind [Finset.mem_antidiagonal] }
+noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
+  toAddEquiv := AddMonoidAlgebra.coeffAddEquiv.symm.trans (toFinsuppIso R).symm.toAddEquiv
+  map_smul' r x := by
+    dsimp
+    induction x using induction_linear with
+    | zero => simp
+    | add _ _ hp hq => simp [smul_add, mul_add, hp, hq]
+    | single n a =>
+    ext i
+    -- FIXME: Including `coeff` in the simp call below makes it unfold the `*` notation.
+    rw [coeff, coeff]
+    -- FIXME: Get rid of `AddEquivClass.toAddEquiv` and `EquivLike.toEquiv`,
+    -- which cause simp troubles here.
+    simp only [AddEquivClass.toAddEquiv, EquivLike.toEquiv, RingEquiv.invFun_eq_symm,
+      AddEquiv.symm_mk, PolynomialModule, single, Finsupp.singleAddHom_apply,
+      AddMonoidAlgebra.coeffAddEquiv_symm_apply, AddEquiv.coe_mk, Equiv.coe_fn_symm_mk,
+      toFinsuppIso_symm_apply, AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, toFinsupp_mul,
+      toFinsupp_monomial]
+    erw [smul_single_apply]
+    split_ifs with hn
+    · rw [show i = (i - n) + n by lia, AddMonoidAlgebra.coeff_mul_single_add]
+      simp [coeff]
+    · rw [AddMonoidAlgebra.coeff_mul_single_of_forall_add_ne]
+      lia
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
-    PolynomialModule R S ≃ₗ[R] S[X] :=
-  { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
+    PolynomialModule R S ≃ₗ[R] S[X] where
+  toAddEquiv := AddMonoidAlgebra.coeffAddEquiv.symm.trans (toFinsuppIso _).symm.toAddEquiv
+  map_smul' _ _ := rfl
 
 @[simp]
 lemma equivPolynomialSelf_apply_eq (p : PolynomialModule R R) :

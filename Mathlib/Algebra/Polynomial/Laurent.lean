@@ -90,8 +90,8 @@ scoped[LaurentPolynomial] notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 open LaurentPolynomial
 
 @[ext]
-theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
-  Finsupp.ext h
+theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p.coeff a = q.coeff a) :
+    p = q := by ext; exact h _
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
@@ -122,8 +122,7 @@ section Semiring
 
 variable [Semiring R]
 
-theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T⁻¹]) :=
-  rfl
+theorem single_zero_one_eq_one : (.single 0 1 : R[T;T⁻¹]) = 1 := rfl
 
 /-!  ### The functions `C` and `T`. -/
 
@@ -145,18 +144,17 @@ theorem C_eq_algebraMap {R : Type*} [CommSemiring R] (r : R) : C r = algebraMap 
 
 theorem single_eq_C (r : R) : .single 0 r = C r := rfl
 
-@[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
-  rw [← single_eq_C, Finsupp.single_apply]; aesop
+@[simp] lemma C_apply (t : R) (n : ℤ) : (C t).coeff n = if n = 0 then t else 0 := by
+  simp [← single_eq_C]; aesop
 
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
 is no `ℤ`-power defined on `R[T;T⁻¹]`.  Using that `T` is a unit introduces extra coercions.
 For these reasons, the definition of `T` is as a sequence. -/
-def T (n : ℤ) : R[T;T⁻¹] :=
-  .single n 1
+def T (n : ℤ) : R[T;T⁻¹] := .single n 1
 
-@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]) m = if n = m then 1 else 0 :=
+@[simp] lemma T_apply (m n : ℤ) : (T n : R[T;T⁻¹]).coeff m = if n = m then 1 else 0 :=
   Finsupp.single_apply
 
 @[simp]
@@ -241,16 +239,17 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
-  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
+  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.coeff n) * T n) := by
     apply Finset.induction
     · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
-  convert B p.support
+  convert B p.coeff.support
   ext a
   simp_rw [← single_eq_C_mul_T]
+  simp only [AddMonoidAlgebra.coeff_sum, coeff_single]
   rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
   · intro b _ hb
     rw [single_eq_of_ne' hb]
@@ -286,32 +285,27 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
     rw [smul_add, mul_add, hp, hq]
   | C_mul_T n s =>
     rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
-      Finsupp.smul_single']
+      AddMonoidAlgebra.smul_single']
     rfl
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
-  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
+  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain (↑) Nat.cast_injective
 
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_natCast,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
-  -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
-  erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
-  split_ifs with n0
-  · rw [toFinsupp_monomial]
-    lift n to ℕ using n0
-    apply comapDomain_single
-  · rw [toFinsupp_inj]
-    ext a
+  split_ifs with hn
+  · lift n to ℕ using hn
+    simp [toFinsupp_monomial, AddMonoidAlgebra.comapDomain_single, -single_eq_C_mul_T]
+  · ext a
     have : a ≠ n := by lia
-    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_natCast, coeff_zero,
-      single_eq_of_ne this]
+    simp [-single_eq_C_mul_T, single_eq_of_ne this]
 
 @[simp]
 theorem leftInverse_trunc_toLaurent :
@@ -376,36 +370,33 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
 
 section Support
 
-theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp.support (C a * T n) ⊆ {n} := by
+theorem support_C_mul_T (a : R) (n : ℤ) : (C a * T n).coeff.support ⊆ {n} := by
   rw [← single_eq_C_mul_T]
   exact support_single_subset
 
 theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
-    Finsupp.support (C a * T n) = {n} := by
+    (C a * T n).coeff.support = {n} := by
   rw [← single_eq_C_mul_T]
   exact support_single_ne_zero _ a0
 
 /-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
 shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural
 inclusion `ℕ ↪ ℤ`. -/
-theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.castEmbedding := by
-  generalize hd : f.support = s
-  revert f
-  refine Finset.induction_on s ?_ ?_ <;> clear s
-  · intro f hf
-    rw [Finset.map_empty, Finsupp.support_eq_empty, toLaurent_eq_zero]
-    exact Polynomial.support_eq_empty.mp hf
-  · intro a s as hf f fs
-    have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
-      refine hf (f.erase a) ?_
-      simp only [fs, Finset.erase_eq_of_notMem as, Polynomial.support_erase,
-        Finset.erase_insert_eq_erase]
-    rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
-      support_add_eq, Finset.insert_eq]
-    · congr
-      exact support_C_mul_T_of_ne_zero (Polynomial.mem_support_iff.mp (by simp [fs])) _
-    · rw [this]
-      exact Disjoint.mono_left (support_C_mul_T _ _) (by simpa)
+theorem toLaurent_support (f : R[X]) :
+    f.toLaurent.coeff.support = f.support.map Nat.castEmbedding := by
+  induction hs : f.support using Finset.induction_on generalizing f with
+  | empty => simpa using hs
+  | insert a s as hf =>
+  have : (erase a f).toLaurent.coeff.support = s.map Nat.castEmbedding := by
+    refine hf (f.erase a) ?_
+    simp only [hs, Finset.erase_eq_of_notMem as, Polynomial.support_erase,
+      Finset.erase_insert_eq_erase]
+  rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
+    AddMonoidAlgebra.coeff_add, support_add_eq, Finset.insert_eq]
+  · congr
+    exact support_C_mul_T_of_ne_zero (Polynomial.mem_support_iff.mp (by simp [hs])) _
+  · rw [this]
+    exact .mono_left (support_C_mul_T _ _) (by simpa)
 
 end Support
 
@@ -415,7 +406,7 @@ section Degrees
 If `f : R[T;T⁻¹]` is a Laurent polynomial, then `f.degree` is the maximum of its support of `f`,
 or `⊥`, if `f = 0`. -/
 def degree (f : R[T;T⁻¹]) : WithBot ℤ :=
-  f.support.max
+  f.coeff.support.max
 
 @[simp]
 theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
@@ -425,7 +416,7 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   ext n
-  simp only [coe_zero, Pi.zero_apply]
+  simp only [AddMonoidAlgebra.coeff_zero, coe_zero, Pi.ofNat_apply]
   simp_rw [degree, Finset.max_eq_sup_withBot, Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne,
     WithBot.coe_ne_bot, imp_false, not_not] at h
   exact h n
@@ -592,7 +583,8 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R 
 @[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
   AddMonoidAlgebra.domCongr_single ..
 
-@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := by simp [invert]
+@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : (invert f).coeff n = f.coeff (-n) := by
+  simp [invert]
 
 @[simp] lemma invert_comp_C : invert ∘ (@C R _) = C := by ext; simp
 
@@ -619,19 +611,16 @@ section SMulWithZero
 variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
 
 /-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
-def smeval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+def smeval : S := f.coeff.sum fun n r => r • (x ^ n).val
 
-theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+theorem smeval_eq_sum : f.smeval x = f.coeff.sum fun n r => r • (x ^ n).val := rfl
 
 theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
 
-@[simp]
-theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
-  simp only [smeval_eq_sum, Finsupp.sum_zero_index]
+@[simp] lemma smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by simp [smeval]
 
 theorem smeval_single (n : ℤ) (r : R) : smeval (.single n r) x = r • (x ^ n).val := by
-  simp only [smeval_eq_sum]
-  rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
+  simp [smeval, -single_eq_C_mul_T]
 
 @[simp]
 theorem smeval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).smeval x = r • (x ^ n).val := by
@@ -664,8 +653,7 @@ variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻�
 
 @[simp]
 theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
-  simp only [smeval_eq_sum]
-  rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
+  simp [smeval, Finsupp.sum_add_index, add_smul]
 
 @[simp]
 theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by

@@ -67,14 +67,14 @@ namespace MonoidAlgebra
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-@[to_additive (dont_translate := R) (relevant_arg := A) mul_apply_add_eq_mul_of_uniqueAdd
+@[to_additive (dont_translate := R) coeff_mul_add_of_uniqueAdd
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/]
-theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
-    (h : UniqueMul f.support g.support a0 b0) :
-    (f * g) (a0 * b0) = f a0 * g b0 := by
+theorem coeff_mul_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
+    (h : UniqueMul f.coeff.support g.coeff.support a0 b0) :
+    (f * g).coeff (a0 * b0) = f.coeff a0 * g.coeff b0 := by
   classical
-  simp_rw [mul_apply, sum, ← Finset.sum_product']
+  simp_rw [coeff_mul, sum, ← Finset.sum_product']
   refine (Finset.sum_eq_single (a0, b0) ?_ ?_).trans (if_pos rfl) <;> simp_rw [Finset.mem_product]
   · refine fun ab hab hne ↦ if_neg (fun he ↦ hne <| Prod.ext ?_ ?_)
     exacts [(h hab.1 hab.2 he).1, (h hab.1 hab.2 he).2]
@@ -83,35 +83,36 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
-  eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
-    contrapose! ab
-    obtain ⟨da, a0, db, b0, h⟩ := UniqueProds.uniqueMul_of_nonempty
-      (support_nonempty_iff.mpr ab.1) (support_nonempty_iff.mpr ab.2)
-    refine support_nonempty_iff.mp ⟨da * db, ?_⟩
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
+    contrapose! hab
+    simp only [ne_eq, ← coeff_eq_zero, ← support_nonempty_iff] at hab ⊢
+    obtain ⟨da, a0, db, b0, h⟩ := UniqueProds.uniqueMul_of_nonempty hab.1 hab.2
+    refine ⟨da * db, ?_⟩
     rw [mem_support_iff] at a0 b0 ⊢
-    exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
+    exact coeff_mul_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
 
 @[to_additive (dont_translate := R) (relevant_arg := A)]
 instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     IsLeftCancelMulZero R[A] where
   mul_left_cancel_of_ne_zero {f} hf {g₁ g₂} eq := by
     classical
-    induction hg : g₁.support ∪ g₂.support using Finset.eraseInduction generalizing g₁ g₂ with
+    induction hg : g₁.coeff.support ∪ g₂.coeff.support
+      using Finset.eraseInduction generalizing g₁ g₂ with
     | _ s ih =>
     obtain h | h := s.eq_empty_or_nonempty <;> subst s
-    · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; exact h.1.trans h.2.symm
-    obtain ⟨af, haf, ag, hag, uniq⟩ :=
-      UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
-    have h := mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
+    · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; simpa using h.1.trans h.2.symm
+    simp only [ne_eq, ← coeff_eq_zero, ← support_nonempty_iff] at hf
+    obtain ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty hf h
+    have h := coeff_mul_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
     dsimp only at eq
-    rw [eq, mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
+    rw [eq, coeff_mul_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
     have := mul_left_cancel₀ (mem_support_iff.mp haf) h
     rw [← g₁.erase_add_single ag, ← g₂.erase_add_single ag, this] at eq ⊢
     simp_rw [mul_add, add_right_cancel_iff] at eq
     rw [ih ag hag eq]
-    simp_rw [support_erase, Finset.erase_union_distrib]
+    simp [Finset.erase_union_distrib]
 
 @[to_additive (dont_translate := R) (relevant_arg := A)]
 instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
@@ -119,10 +120,10 @@ instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
   MulOpposite.isLeftCancelMulZero_iff.mp <|
     MonoidAlgebra.opRingEquiv.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] : IsCancelMulZero R[A] where
 
-@[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] : IsDomain R[A] where
 
 end MonoidAlgebra

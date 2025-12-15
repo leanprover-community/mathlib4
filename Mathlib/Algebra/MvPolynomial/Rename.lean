@@ -101,18 +101,14 @@ theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
   · exact fun n => pow_zero _
   · exact fun n i₁ i₂ => pow_add _ _ _
 
-theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) :
-    rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
-  simp_rw [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
-    X_pow_eq_monomial, ← monomial_finsupp_sum_index, ← single_eq_monomial]
+theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) : rename f p = mapDomain (.mapDomain f) p := by
+  simp [rename, aeval_def, eval₂, X_pow_eq_monomial, AddMonoidAlgebra.mapDomain, Finsupp.mapDomain]
+  simp [MvPolynomial, AddMonoidAlgebra.finsuppProd_single, -monomial_zero', monomial, C]
 
 theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
     Function.Injective (rename f : MvPolynomial σ R → MvPolynomial τ R) := by
-  have :
-    (rename f : MvPolynomial σ R → MvPolynomial τ R) = Finsupp.mapDomain (Finsupp.mapDomain f) :=
-    funext (rename_eq f)
-  rw [this]
-  exact Finsupp.mapDomain_injective (Finsupp.mapDomain_injective hf)
+  rw [funext (rename_eq f)]
+  exact mapDomain_injective (Finsupp.mapDomain_injective hf)
 
 theorem rename_leftInverse {f : σ → τ} {g : τ → σ} (hf : Function.LeftInverse f g) :
     Function.LeftInverse (rename f : MvPolynomial σ R → MvPolynomial τ R) (rename g) := by
