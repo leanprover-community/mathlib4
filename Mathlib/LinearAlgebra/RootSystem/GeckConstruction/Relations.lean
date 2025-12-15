@@ -36,7 +36,7 @@ open Set hiding diagonal
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootSystem ι R M N} [P.IsCrystallographic] {b : P.Base} [Fintype ι]
+  {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base} [Fintype ι]
   (i j : b.support)
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply

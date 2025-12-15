@@ -114,7 +114,7 @@ lemma functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functo
 
 section Limit
 
-variable {C : Type*} [Category C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
@@ -145,7 +145,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : Profiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on

@@ -19,7 +19,7 @@ Known limitations:
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
-  are dual to eachother. Currently, this requires writing
+  are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
 
@@ -30,9 +30,6 @@ open Lean Meta Elab Term Command Std Translate UnfoldBoundary
 
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
-
-@[inherit_doc relevantArgOption]
-syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
@@ -150,6 +147,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
   ("upper", ["Lower"]),
+  ("succ", ["Pred"]),
+  ("pred", ["Succ"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
