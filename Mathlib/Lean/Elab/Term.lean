@@ -6,6 +6,7 @@ Authors: Kyle Miller, Thomas R. Murrills
 module
 
 public import Lean.Elab.Term
+public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # Additions to `Lean.Elab.Term`

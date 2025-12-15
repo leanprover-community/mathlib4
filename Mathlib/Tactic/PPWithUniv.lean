@@ -6,6 +6,7 @@ Authors: Gabriel Ebner
 module
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.Elab.Command
 
 /-!
 # Attribute to pretty-print universe level parameters by default
