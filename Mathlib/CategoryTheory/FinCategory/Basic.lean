@@ -34,6 +34,9 @@ namespace CategoryTheory
 instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 
+instance {α : Type*} [Finite α] : Finite (Discrete α) :=
+  Finite.of_equiv α discreteEquiv.symm
+
 instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   classical
   apply ULift.fintype
