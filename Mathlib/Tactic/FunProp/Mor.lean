@@ -8,6 +8,8 @@ module
 public import Mathlib.Init
 public meta import Lean.Meta.CoeAttr
 
+import Mathlib.Tactic.TypeStar
+
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
 
@@ -29,6 +31,9 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
+
+/-- Internal definition to represent pi types as function application. -/
+private abbrev Pi {α : Sort*} (p : α → Sort*) := ∀ x, p x
 
 namespace Mor
 
@@ -110,7 +115,9 @@ def app (f : Expr) (arg : Arg) : Expr :=
   | some coe => (coe.app f).app arg.expr
 
 
-/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
+/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
+
+`e = ∀ (x : α), p x` is represented as `Pi α [fun x => p x]` internally. -/
 partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
   go e #[]
 where
@@ -131,6 +138,10 @@ where
 
       go (.app (.app c f) x) as
     | .app f a, as => go f (as.push { expr := a })
+    | .forallE x a b bi, _ => do
+      let ta ← inferType a
+      let tb ← inferType b
+      k (.const ``Pi [ta.sortLevel!, tb.sortLevel!]) #[{ expr := a }, { expr := .lam x a b bi }]
     | f, as => k f as.reverse
 
 
