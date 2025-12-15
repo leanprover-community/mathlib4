@@ -547,7 +547,7 @@ lemma liftCochain_descCochain :
 lemma liftCochain_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + n' = p₃)
     (q : ℤ) (hq : p₁ + m = q) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (descCochain φ α' β' h').v p₂ p₃ h₂₃ =
-      α.v p₁ q hq ≫ α'.v q p₃ (by lia) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
+      α.v p₁ q hq ≫ α'.v q p₃ (by omega) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
   have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by lia)
   simpa only [Cochain.comp_v _ _ hp p₁ p₂ p₃ h₁₂ h₂₃, Cochain.add_v,
     Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by lia)] using eq
@@ -583,12 +583,12 @@ definitional properties. See also the equational lemma `mapHomologicalComplexXIs
 noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     ((H.mapHomologicalComplex (ComplexShape.up ℤ)).obj (mappingCone φ)).X n ≅
       (mappingCone ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).X n where
-  hom := H.map ((fst φ).1.v n m (by omega)) ≫
-      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by omega) +
+  hom := H.map ((fst φ).1.v n m (by lia)) ≫
+      (inl ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v m n (by lia) +
       H.map ((snd φ).v n n (add_zero n)) ≫
         (inr ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).f n
-  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by omega) ≫
-      H.map ((inl φ).v m n (by omega)) +
+  inv := (fst ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).1.v n m (by lia) ≫
+      H.map ((inl φ).v m n (by lia)) +
       (snd ((H.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).v n n (add_zero n) ≫
         H.map ((inr φ).f n)
   hom_inv_id := by

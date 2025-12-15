@@ -43,8 +43,8 @@ open CategoryTheory Functor
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type*} [Category J] [Category K]
-variable {C : Type*} [Category C]
+variable {J K : Type*} [Category* J] [Category* K]
+variable {C : Type*} [Category* C]
 variable (F : J ⥤ K ⥤ C) (G : J × K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?

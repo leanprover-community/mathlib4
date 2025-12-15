@@ -89,7 +89,7 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
       ne_top_of_le_ne_top (by simp) (min_le_left _ _)
     lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
     simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
-    omega
+    lia
 
 @[deprecated (since := "2025-10-25")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
 
