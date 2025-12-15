@@ -60,7 +60,7 @@ instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperS
 variable [PseudoMetricSpace α]
 
 -- see Note [lower instance priority]
-/-- A proper pseudo metric space is sigma compact, and therefore second countable. -/
+/-- A proper pseudometric space is sigma compact, and therefore second countable. -/
 instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
     SecondCountableTopology α := by
   -- We already have `sigmaCompactSpace_of_locallyCompact_secondCountable`, so we don't
@@ -111,6 +111,12 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
         (le_principal_iff.2 this) with
       ⟨y, -, hy⟩
     exact ⟨y, hy⟩⟩
+
+instance : ProperSpace ℝ where isCompact_closedBall _ _ :=
+  Real.closedBall_eq_Icc ▸ ConditionallyCompleteLinearOrder.isCompact_Icc _ _
+
+-- shortcut instance for performance reasons
+instance : SecondCountableTopology ℝ := inferInstance
 
 /-- A binary product of proper spaces is proper. -/
 instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
