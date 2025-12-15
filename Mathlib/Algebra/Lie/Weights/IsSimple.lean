@@ -260,10 +260,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
-lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
-    (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    (h : q ≠ ⊥) :
+lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) (h : q ≠ ⊥) :
     ∃ α ∈ H.root, ↑α ∈ q := by
   obtain ⟨β, hβ_mem, hβ_ne⟩ := q.exists_mem_ne_zero_of_ne_bot h
   obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
@@ -293,7 +291,6 @@ lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
     rw [rootSpace_zero_eq]; exact h_cor.property
   convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
 
-open Weight in
 lemma LieAlgebra.IsKilling.l2 (q : Submodule K (Dual K H))
     (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
     q = ⊤ := by
