@@ -209,7 +209,7 @@ instance : IsRefl (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| IsRefl (Finset α) (· ≤ ·)
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <|  IsTrans (Finset α) (· ≤ ·)
+  inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
 
 instance : IsAntisymm (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)

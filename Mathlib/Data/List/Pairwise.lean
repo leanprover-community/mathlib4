@@ -113,7 +113,7 @@ alias Sorted.head!_le := Pairwise.head!_le
 alias Sorted.le_head! := Pairwise.head!_le
 
 theorem pairwise_replicate_of_refl {n} [IsRefl α R] : (replicate n a).Pairwise R :=
-  pairwise_replicate.mpr  (Or.inr <| refl_of ..)
+  pairwise_replicate.mpr (Or.inr <| refl_of ..)
 
 @[deprecated (since := "2025-10-11")]
 alias sorted_replicate := pairwise_replicate_of_refl

@@ -41,7 +41,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α
 variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
 @[simp]
-theorem sort_val : Multiset.sort s.val r  = sort s r :=
+theorem sort_val : Multiset.sort s.val r = sort s r :=
   rfl
 
 @[simp]

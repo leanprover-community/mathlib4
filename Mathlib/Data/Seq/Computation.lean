@@ -220,8 +220,7 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
-    | Sum.inr x => rfl
-    ]
+    | Sum.inr x => rfl]
   rcases h : f b with a | b'; · rfl
   dsimp [Corec.f, destruct]
   apply congr_arg; apply Subtype.ext
