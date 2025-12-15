@@ -13,6 +13,12 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 In this file we will prove (TODO @erdOne) the algebraic version of Zariski's main theorem
 
+The final statement would be
+```
+example {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskiMainProperty R p
+```
+
 ## References
 - https://stacks.math.columbia.edu/tag/00PI
 
@@ -28,12 +34,12 @@ open Polynomial
 
 variable (R) in
 /-- We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
-if there exists `r` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`. -/
+if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`. -/
 def ZariskisMainProperty (p : Ideal S) : Prop :=
   ∃ r : integralClosure R S, r.1 ∉ p ∧ Function.Bijective
     (Localization.awayMap (integralClosure R S).val.toRingHom r)
 
-lemma ZariskisMainProperty_iff {p : Ideal S} :
+lemma zariskisMainProperty_iff {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, IsIntegral R r ∧ ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
   simp only [ZariskisMainProperty, Subtype.exists, ← exists_prop, @exists_comm (_ ∉ p)]
   refine exists₃_congr fun r hr hrp ↦ ?_
@@ -42,24 +48,24 @@ lemma ZariskisMainProperty_iff {p : Ideal S} :
     Localization.awayMap_surjective_iff]
   simp [mem_integralClosure_iff]
 
-lemma ZariskisMainProperty_iff' {p : Ideal S} :
+lemma zariskisMainProperty_iff' {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
-  refine ZariskisMainProperty_iff.trans (exists_congr fun r ↦ and_congr_right fun hrp ↦
+  refine zariskisMainProperty_iff.trans (exists_congr fun r ↦ and_congr_right fun hrp ↦
     and_iff_right_of_imp fun H ↦ ?_)
   obtain ⟨n, hn⟩ := H r
   rw [← pow_succ] at hn
   exact (IsIntegral.pow_iff (by simp)).mp hn
 
-lemma ZariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
+lemma zariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
       (integralClosure R S).saturation (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
-  simp [ZariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
+  simp [zariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
     Submonoid.mem_powers_iff, mem_integralClosure_iff]
 
 lemma ZariskisMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
     [Algebra.IsIntegral R S] {p : Ideal T} (H : ZariskisMainProperty S p) :
     ZariskisMainProperty R p := by
-  rw [ZariskisMainProperty_iff'] at H ⊢
+  rw [zariskisMainProperty_iff'] at H ⊢
   obtain ⟨r, hrp, H⟩ := H
   exact ⟨r, hrp, fun x ↦ ⟨_, isIntegral_trans _ (H x).choose_spec⟩⟩
 
@@ -68,8 +74,8 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
     (h₂ : ∃ r ∉ p.under S, (⊥ : Subalgebra S T).saturation (.powers (algebraMap _ _ r))
       (by simp [Submonoid.powers_le]) = ⊤) :
     ZariskisMainProperty R p := by
-  rw [ZariskisMainProperty_iff] at h₁
-  rw [ZariskisMainProperty_iff']
+  rw [zariskisMainProperty_iff] at h₁
+  rw [zariskisMainProperty_iff']
   obtain ⟨s, hsp, hs, Hs⟩ := h₁
   obtain ⟨t, htp, Ht⟩ := h₂
   obtain ⟨m, hm⟩ := Hs t
@@ -87,5 +93,5 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
 
 lemma ZariskisMainProperty.of_isIntegral (p : Ideal S) [p.IsPrime] [Algebra.IsIntegral R S] :
     ZariskisMainProperty R p :=
-  ZariskisMainProperty_iff'.mpr ⟨1, p.primeCompl.one_mem,
+  zariskisMainProperty_iff'.mpr ⟨1, p.primeCompl.one_mem,
     fun _ ↦ ⟨0, Algebra.IsIntegral.isIntegral _⟩⟩
