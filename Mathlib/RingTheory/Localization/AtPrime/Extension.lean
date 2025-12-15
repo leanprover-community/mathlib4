@@ -48,11 +48,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.
 
 namespace IsLocalization.AtPrime
 
-lemma map_isMaximal :
-    (p.map (algebraMap R Rₚ)).IsMaximal := by
-  rw [map_eq_maximalIdeal]
-  exact maximalIdeal.isMaximal Rₚ
-
 /--
 The nonzero prime ideals of `Sₚ` are prime ideals over the maximal ideal of `Rₚ`.
 See `Localization.AtPrime.primesOverEquivPrimesOver` for the bijection between the prime ideals
@@ -164,6 +159,8 @@ theorem algebraMap_equivQuotMaximalIdeal_symm_apply [p.IsMaximal] [P.IsMaximal]
   simp [equivQuotMaximalIdeal_symm_apply_mk, map_mul, Quotient.algebraMap_mk_of_liesOver,
     IsLocalization.algebraMap_mk' S Rₚ Sₚ]
 
+-- Lean thinks that the instance [p.IsPrime] is not necessary here, but it is needed
+-- for the definition of `Rₚ`.
 set_option linter.unusedSectionVars false in
 @[simp]
 theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
@@ -204,18 +201,6 @@ theorem ramificationIdx_map_eq_ramificationIdx [NoZeroSMulDivisors R S] [NoZeroS
     map_eq_maximalIdeal p] at h_main
   rw [map_eq_maximalIdeal]
   exact IsPrime.ne_top'
-
-theorem exists_primesOver_map_eq_of_primesOver (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
-    ∃ q : p.primesOver S, q.val.map (algebraMap S Sₚ) = Q := by
-  refine ⟨⟨comap (algebraMap S Sₚ) Q, ⟨IsPrime.under _ _, ?_⟩⟩, ?_⟩
-  · have : Q.1.LiesOver p := by
-      have := liesOver_maximalIdeal Rₚ p inferInstance
-      exact LiesOver.trans Q.1 (IsLocalRing.maximalIdeal Rₚ) p
-    exact comap_liesOver Q.1 p <| IsScalarTower.toAlgHom R S Sₚ
-  · refine le_antisymm  map_comap_le fun x hx ↦ ?_
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := exists_mk'_eq (algebraMapSubmonoid S p.primeCompl) x
-    refine (mk'_mem_map_algebraMap_iff _ _ _ _ _).mpr ⟨s, hs, ?_⟩
-    exact Ideal.mul_mem_left _ _ <| mk'_mem_iff.mp hx
 
 end IsLocalization.AtPrime
 
