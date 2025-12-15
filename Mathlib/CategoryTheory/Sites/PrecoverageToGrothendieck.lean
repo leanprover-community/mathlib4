@@ -135,7 +135,8 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
         fun Z g ZZ gg hgg => x (gg ≫ g) (by simpa using hgg)
       have hy : ∀ ⦃Z : C⦄ (g : Z ⟶ Y), (y g).Compatible := by
         intro Z g Y₁ Y₂ ZZ g₁ g₂ f₁ f₂ h₁ h₂ h
-        rw [hx, reassoc_of% h]
+        rw [hx]
+        rw [reassoc_of% h]
       choose z hz using fun ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄ (hg : R.pullback f g) =>
         H2' hg (𝟙 _) (y g) (hy g)
       let q : (R.pullback f).arrows.FamilyOfElements P := fun Z g hg => z hg
