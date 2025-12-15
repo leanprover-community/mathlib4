@@ -517,7 +517,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h

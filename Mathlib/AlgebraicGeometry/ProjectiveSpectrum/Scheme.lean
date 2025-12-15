@@ -573,7 +573,7 @@ The homeomorphism `Proj|D(f) ≅ Spec A⁰_f` defined by
 - `ψ : Spec A⁰_f ⟶ Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
 def projIsoSpecTopComponent {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f))  where
+    (Proj.T| (pbo f)) ≅ (Spec.T (A⁰_ f)) where
   hom := ProjIsoSpecTopComponent.toSpec 𝒜 f
   inv := ProjIsoSpecTopComponent.fromSpec f_deg hm
   hom_inv_id := ConcreteCategory.hom_ext _ _

@@ -196,7 +196,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
 
 instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseChange := by
   constructor
-  intro Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
+  intro Y' X X' Y Y'_to_Y f X'_to_X f' hP hf commSq
   let commSq' : ValuativeCommSq f :=
   { R := commSq.R
     K := commSq.K

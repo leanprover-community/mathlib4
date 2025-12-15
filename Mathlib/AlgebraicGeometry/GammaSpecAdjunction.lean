@@ -130,7 +130,7 @@ def toΓSpecCApp :
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   -- note: the explicit type annotations were not needed before
   -- https://github.com/leanprover-community/mathlib4/pull/19757
-  CommRingCat.ofHom  <|
+  CommRingCat.ofHom <|
     IsLocalization.Away.lift
       (R := Γ.obj (op X))
       (S := (structureSheaf ↑(Γ.obj (op X))).val.obj (op (basicOpen r)))
