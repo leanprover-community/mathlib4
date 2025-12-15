@@ -25,17 +25,15 @@ open AddSubgroup
 variable {𝕜 : Type*} [AddCommGroup 𝕜] (p : 𝕜) [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜]
   [DiscreteTopology (zmultiples p)]
 
-theorem isQuotientCoveringMap_coe :
+theorem isAddQuotientCoveringMap_coe :
     IsAddQuotientCoveringMap ((↑) : 𝕜 → AddCircle p) (zmultiples p) :=
   isAddQuotientCoveringMap_of_comm _ DiscreteTopology.isDiscrete
 
 theorem isCoveringMap_coe : IsCoveringMap ((↑) : 𝕜 → AddCircle p) :=
-  (isQuotientCoveringMap_coe p).isCoveringMap
+  (isAddQuotientCoveringMap_coe p).isCoveringMap
 
 theorem isLocalHomeomorph_coe : IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) :=
   (isCoveringMap_coe p).isLocalHomeomorph
-
-example (p : ℝ) : IsCoveringMap ((↑) : ℝ → AddCircle p) := isCoveringMap_coe p
 
 end AddCommGroup
 

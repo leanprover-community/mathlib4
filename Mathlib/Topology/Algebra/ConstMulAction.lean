@@ -494,7 +494,7 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
-  convert ProperlyDiscontinuousSMul.exists_nhds_image_smul_eq_self Γ x using 4
+  convert exists_nhds_image_smul_eq_self Γ x using 4
   rw [← not_imp_not]
   simp [Set.not_disjoint_iff_nonempty_inter]
 

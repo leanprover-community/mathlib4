@@ -25,7 +25,7 @@ open Topology
 topological space `X` is a quotient covering map if it is a quotient map, the action is
 continuous and transitive on fibers, and every point of `E` has a neighborhood whose translates
 by the group elements are pairwise disjoint. -/
-structure IsAddQuotientCoveringMap (G) [AddGroup G] [AddAction G E]
+structure IsAddQuotientCoveringMap (G) [AddGroup G] [AddAction G E] : Prop
     extends IsQuotientMap f, ContinuousConstVAdd G E where
   apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ AddAction.orbit G e₂
   disjoint (e : E) : ∃ U ∈ 𝓝 e, ∀ g : G, ((g +ᵥ ·) '' U ∩ U).Nonempty → g = 0
@@ -35,7 +35,7 @@ topological space `X` is a quotient covering map if it is a quotient map, the ac
 continuous and transitive on fibers, and every point of `E` has a neighborhood whose translates
 by the group elements are pairwise disjoint. -/
 @[mk_iff, to_additive]
-structure IsQuotientCoveringMap extends IsQuotientMap f, ContinuousConstSMul G E where
+structure IsQuotientCoveringMap : Prop extends IsQuotientMap f, ContinuousConstSMul G E where
   apply_eq_iff_mem_orbit {e₁ e₂} : f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂
   disjoint (e : E) : ∃ U ∈ 𝓝 e, ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1
 
@@ -43,6 +43,7 @@ attribute [to_additive] isQuotientCoveringMap_iff
 
 namespace IsQuotientCoveringMap
 
+/-- The group action on the domain of a quotient covering map is free. -/
 @[to_additive] theorem isCancelSMul (h : IsQuotientCoveringMap f G) : IsCancelSMul G E where
   right_cancel' g g' e eq := by
     have ⟨U, heU, hU⟩ := h.disjoint e
@@ -183,8 +184,8 @@ end MulAction
     IsQuotientCoveringMap f G where
   __ := hf
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.rightRel_apply.symm
-  disjoint e := have ⟨U, hU, disj⟩ := hG.exists_nhds_eq_one_of_image_inter_nonempty
-    ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.2 <| .inl <| by
+  disjoint e := have ⟨U, hU, _, disj⟩ := hG.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
+    ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.2 <| by
       obtain ⟨_, ⟨_, ⟨x, hx, _, rfl, rfl⟩, rfl⟩, y, hy, g, rfl, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_right_cancel ((mul_assoc ..).trans he.symm)⟩, hy⟩⟩
 
@@ -193,9 +194,9 @@ end MulAction
     IsQuotientCoveringMap f G.op where
   __ := hf
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.leftRel_apply.symm
-  disjoint e := have ⟨U, hU, disj⟩ := hG.exists_nhds_eq_one_of_image_inter_nonempty
+  disjoint e := have ⟨U, hU, _, disj⟩ := hG.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
     ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
-        MulOpposite.unop_injective <| disj _ hS <| .inr <| by
+        MulOpposite.unop_injective <| disj _ hS <| by
       obtain ⟨_, ⟨_, ⟨_, rfl, x, hx, rfl⟩, rfl⟩, g, rfl, y, hy, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_left_cancel (he.trans <| mul_assoc ..).symm⟩, hy⟩⟩
 
