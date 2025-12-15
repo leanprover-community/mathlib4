@@ -147,7 +147,7 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
     -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
     match_expr tgt with
     | Bundle.Trivial E E' _ =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E } {E'}`"
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
       -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
@@ -159,7 +159,7 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
       mkLambdaFVars #[x] body
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
-        trace[Elab.DiffGeo.TotalSpaceMk]"Section of a bundle as a dependent function"
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
         let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
           /- Note: we do not use `match_expr` here since that would require importing
           `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
@@ -172,13 +172,13 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
           | _ => return none
         return f?.getD e.headBeta
       | tgt =>
-        trace[Elab.DiffGeo.TotalSpaceMk]"Section of a trivial bundle as a non-dependent function"
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
         -- Check that `x` is not a bound variable in `tgt`!
         if tgtHasLooseBVars then
           throwError "Attempted to fall back to creating a section of the trivial bundle out of \
-            (`{e }` : `{etype }`) as a non-dependent function, but return type `{tgt }` depends on the
-            bound variable (`{x }` : `{base}`).\n\
+            (`{e}` : `{etype}`) as a non-dependent function, but return type `{tgt}` depends on the
+            bound variable (`{x}` : `{base}`).\n\
             Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, (e.app x).headBeta]
@@ -226,9 +226,9 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
         /- Catch the exception so that we can trace it, then throw it again to inform
         `withTraceNode` of the result. -/
         catch ex =>
-          trace[Elab.DiffGeo.MDiff]"Failed with error:\n{ex.toMessageData}"
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[Elab.DiffGeo.MDiff]"Found model: `{e}`"
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
@@ -266,15 +266,15 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  trace[Elab.DiffGeo.MDiff]"Finding a model for: {e}"
-  if let some m← tryStrategy m!"TotalSpace" fromTotalSpace then return m
-  if let some m← tryStrategy m!"TangentBundle" fromTangentBundle then return m
-  if let some m← tryStrategy m!"NormedSpace" fromNormedSpace then return m
-  if let some m← tryStrategy m!"Manifold" fromManifold then return m
-  if let some m← tryStrategy m!"ContinuousLinearMap" fromCLM then return m
-  if let some m← tryStrategy m!"RealInterval" fromRealInterval then return m
-  if let some m← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
-  if let some m← tryStrategy m!"NormedField" fromNormedField then return m
+  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
+  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
+  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -284,14 +284,14 @@ where
   fromTotalSpace : TermElabM Expr := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
-      if let some m← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
-      if let some m← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
+      if let some m ← tryStrategy m!"From base info" (fromTotalSpace.fromBaseInfo F) then return m
+      if let some m ← tryStrategy m!"TangentSpace" (fromTotalSpace.tangentSpace V) then return m
       throwError "Having a TotalSpace as source is not yet supported"
     | _ => throwError "`{e}` is not a `Bundle.TotalSpace`."
   /-- Attempt to use the provided `baseInfo` to find a model. -/
   fromTotalSpace.fromBaseInfo (F : Expr) : TermElabM Expr := do
     if let some (src, srcI) := baseInfo then
-      trace[Elab.DiffGeo.MDiff]"Using base info `{src }`, `{srcI}`"
+      trace[Elab.DiffGeo.MDiff] "Using base info `{src}`, `{srcI}`"
       let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
           | NormedSpace K E _ _ =>
@@ -320,7 +320,7 @@ where
   fromTangentBundle : TermElabM Expr := do
     match_expr e with
     | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a `TangentBundle` over model `{I }` on `{M}`"
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a `TangentBundle` over model `{I}` on `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
@@ -341,17 +341,17 @@ where
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
     -- or `e` is `H` itself.
     let some H ← findSomeLocalInstanceOf? ``ChartedSpace fun inst type ↦ do
-        trace[Elab.DiffGeo.MDiff]"considering instance of type `{type}`"
+        trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
         match_expr type with
         | ChartedSpace H _ M _ =>
           if ← withReducible (pureIsDefEq M e) then
-            trace[Elab.DiffGeo.MDiff] "`{e}` is a charted space over `{H }` via `{inst}`"
+            trace[Elab.DiffGeo.MDiff] "`{e}` is a charted space over `{H}` via `{inst}`"
             return some H else
           if ← withReducible (pureIsDefEq H e) then
-            trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M }` via `{inst}`"
+            trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M}` via `{inst}`"
             return some H else return none
         | _ => return none
-      | throwError "Couldn't find a `ChartedSpace` structure on `{e }` among local instances, \
+      | throwError "Couldn't find a `ChartedSpace` structure on `{e}` among local instances, \
           and `{e}` is not the charted space of some type in the local context either."
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
@@ -366,7 +366,7 @@ where
   fromCLM : TermElabM Expr := do
     match_expr e with
     | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff]"`{e}` is a space of continuous linear maps"
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
       -- If `S` were a copy of `k` with a non-standard topology or smooth structure
       -- (such as, imposed deliberately through a type synonym), we do not want to infer
       -- the standard model with corners.
@@ -378,7 +378,7 @@ where
         let iTerm : Term ← ``(𝓘($eK, $eT))
         Term.elabTerm iTerm none
       else
-        throwError "Coefficients `{k }` and `{S }` of `{e}` are not reducibly definitionally equal"
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => throwError "`{e}` is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
@@ -396,7 +396,7 @@ where
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
-      else throwError "`{e }` is a closed interval of type `{α}`, \
+      else throwError "`{e}` is a closed interval of type `{α}`, \
         which is not reducibly definitionally equal to ℝ"
     | _ => throwError "`{e}` is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
@@ -425,7 +425,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
   | .forallE _ src tgt _ =>
     if tgt.hasLooseBVars then
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
-      throwError "Term `{e }` is a dependent function, of type `{etype}`\nHint: you can use \
+      throwError "Term `{e}` is a dependent function, of type `{etype}`\nHint: you can use \
         the `T%` elaborator to convert a dependent function to a non-dependent one"
     let srcI ← findModel src
     if let some es := es then
@@ -434,11 +434,11 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       `estype` are acceptable.
       TODO: consider attempting to coerce `es` to a `Set`. -/
       if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
-        throwError "The domain `{src }` of `{e }` is not definitionally equal to the carrier type of \
-          the set `{es }` : `{estype}`"
+        throwError "The domain `{src}` of `{e}` is not definitionally equal to the carrier type of \
+          the set `{es}` : `{estype}`"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
-  | _ => throwError "Expected{indentD e }\nof type{indentD etype}\nto be a function"
+  | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 end Elab
 
