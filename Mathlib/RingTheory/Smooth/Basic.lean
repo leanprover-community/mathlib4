@@ -484,6 +484,9 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   ext
   simp
 
+instance : FormallySmooth R (Localization M) :=
+  .of_isLocalization M
+
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra

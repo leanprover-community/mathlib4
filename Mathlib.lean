@@ -6220,6 +6220,7 @@ public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.RingHom.Integral
 public import Mathlib.RingTheory.RingHom.Locally
+public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.StandardSmooth
