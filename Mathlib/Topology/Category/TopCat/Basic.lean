@@ -169,6 +169,9 @@ def trivial : Type u ⥤ TopCat.{u} where
   obj X := @of X ⊤
   map f := @ofHom _ _ ⊤ ⊤ <| @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
 
+instance : CodiscreteTopology (TopCat.trivial.obj α) :=
+  codiscreteTopology_top _
+
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
 def isoOfHomeo {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : X ≃ₜ Y) :

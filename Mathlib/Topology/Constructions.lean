@@ -1301,6 +1301,13 @@ lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology
 
+instance [TopologicalSpace X] [CodiscreteTopology X] : CodiscreteTopology (ULift X) where
+  eq_top := by
+    ext
+    simp [ULift.isOpen_iff, TopologicalSpace.isOpen_top_iff, Set.preimage_eq_empty_iff,
+    Set.range_eq_univ.mpr ULift.up_surjective]
+
+
 end ULift
 
 section Monad

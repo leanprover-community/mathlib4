@@ -286,6 +286,57 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 
 end DiscreteTopology
 
+/- A topological space is codiscrete, or indiscrete, if only the empty set and `univ` are open,
+that is, its topology equals the codiscrete topology `⊤`. -/
+class CodiscreteTopology α [t : TopologicalSpace α] : Prop where
+  eq_top : t = ⊤
+
+theorem codiscreteTopology_top (α) : @CodiscreteTopology α ⊤ := @CodiscreteTopology.mk α ⊤ rfl
+
+section CodiscreteTopology
+variable [TopologicalSpace α] [CodiscreteTopology α] (s : Set α)
+
+@[simp]
+theorem isOpen_codiscrete : IsOpen s ↔ s = ∅ ∨ s = Set.univ :=
+  ‹CodiscreteTopology α›.eq_top ▸ TopologicalSpace.isOpen_top_iff s
+
+@[simp]
+theorem isClosed_codiscrete : IsClosed s ↔ s = ∅ ∨ s = Set.univ := by
+  rw [← isOpen_compl_iff, isOpen_codiscrete, Or.comm]; simp
+
+variable {s}
+
+theorem closure_codiscrete (hs₀ : s.Nonempty) : closure s = Set.univ := by
+  rcases isClosed_codiscrete (closure s) |>.mp isClosed_closure with hs | hs
+  · exfalso; exact hs₀.mono subset_closure |>.ne_empty hs
+  · assumption
+
+theorem dense_codiscrete (hs₀ : s.Nonempty) : Dense s := by
+  rw [dense_iff_closure_eq]; exact closure_codiscrete hs₀
+
+@[simp]
+theorem CodiscreteTopology.specializes (x y : α) : x ⤳ y := by
+  simp only [HasBasis.le_basis_iff (nhds_basis_opens' x) (nhds_basis_opens' y), mem_nhds_iff,
+  isOpen_codiscrete, and_imp, forall_exists_index, Specializes]
+  rintro s t hts (rfl | rfl) ⟨⟩ (rfl | rfl) <;> grind
+
+@[continuity, fun_prop]
+theorem continuous_of_codiscreteTopology {β} [TopologicalSpace β] (f : β → α) : Continuous f :=
+  continuous_def.2 fun _ h ↦ by
+    rw [isOpen_codiscrete] at h
+    rcases h with (rfl | rfl) <;> simp
+
+@[simp]
+theorem nhds_codiscrete (x : α) : 𝓝 x = ⊤ := by
+  have {s : Set α} : x ∈ s → s ≠ ∅ := by grind
+  rw [← top_le_iff, nhds_def]
+  simp +contextual [this]
+
+@[simp] theorem mem_nhds_codiscrete {x : α} {s : Set α} : s ∈ 𝓝 x ↔ s = Set.univ := by
+  rw [nhds_codiscrete, mem_top]
+
+end CodiscreteTopology
+
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
   rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
