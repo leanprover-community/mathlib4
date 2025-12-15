@@ -132,6 +132,26 @@ theorem S_two_mul_complex_cosh (n : ℤ) : (S ℂ n).eval (2 * cosh θ) * sinh �
     sinh ((n + 1) * θ) := by
   simp [S_eq_U_comp_half_mul_X]
 
+theorem degree_T_complex (n : ℤ) : (T ℂ n).degree = n.natAbs := degree_T ℂ n
+
+theorem natDegree_T_complex (n : ℤ) : (T ℂ n).natDegree = n.natAbs := natDegree_T ℂ n
+
+theorem leadingCoeff_T_complex (n : ℤ) : (T ℂ n).leadingCoeff = 2 ^ (n.natAbs - 1) :=
+    leadingCoeff_T ℂ n
+
+theorem degree_U_complex_natCast (n : ℕ) : (U ℂ n).degree = n := degree_U_natCast ℂ n
+
+theorem natDegree_U_complex_natCast (n : ℕ) : (U ℂ n).natDegree = n := natDegree_U_natCast ℂ n
+
+theorem degree_U_complex_of_ne_neg_one (n : ℤ) (hn : n ≠ -1) :
+    (U ℂ n).degree = ↑((n + 1).natAbs - 1) := degree_U_of_ne_neg_one ℂ n hn
+
+theorem natDegree_U_complex (n : ℤ) : (U ℂ n).natDegree = ((n + 1).natAbs - 1) :=
+  natDegree_U ℂ n
+
+theorem leadingCoeff_U_complex_natCast (n : ℕ) : (U ℂ n).leadingCoeff = 2 ^ n :=
+  leadingCoeff_U_natCast ℂ n
+
 end Complex
 
 /-! ### Real versions -/
@@ -187,6 +207,26 @@ evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
 @[simp]
 theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
   mod_cast S_two_mul_complex_cosh θ n
+
+theorem degree_T_real (n : ℤ) : (T ℝ n).degree = n.natAbs := degree_T ℝ n
+
+theorem natDegree_T_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := natDegree_T ℝ n
+
+theorem leadingCoeff_T_real (n : ℤ) : (T ℝ n).leadingCoeff = 2 ^ (n.natAbs - 1) :=
+    leadingCoeff_T ℝ n
+
+theorem degree_U_real_natCast (n : ℕ) : (U ℝ n).degree = n := degree_U_natCast ℝ n
+
+theorem natDegree_U_real_natCast (n : ℕ) : (U ℝ n).natDegree = n := natDegree_U_natCast ℝ n
+
+theorem degree_U_real_of_ne_neg_one (n : ℤ) (hn : n ≠ -1) :
+    (U ℝ n).degree = ↑((n + 1).natAbs - 1) := degree_U_of_ne_neg_one ℝ n hn
+
+theorem natDegree_U_real (n : ℤ) : (U ℝ n).natDegree = ((n + 1).natAbs - 1) :=
+  natDegree_U ℝ n
+
+theorem leadingCoeff_U_real_natCast (n : ℕ) : (U ℝ n).leadingCoeff = 2 ^ n :=
+  leadingCoeff_U_natCast ℝ n
 
 end Real
 
