@@ -315,6 +315,25 @@ end CU
 
 end Urysohns
 
+
+/-- Urysohn's lemma: a topological space `X` is normal if for any two disjoint closed sets `s` and
+`t` there exists a continuous function `f : X → ℝ` such that
+
+* `f` equals zero on `s`;
+* `f` equals one on `t`.
+-/
+lemma NormalSpace.of_separating {X} [TopologicalSpace X]
+    (sep : {U V : Set X} → IsClosed U → IsClosed V → Disjoint U V →
+      { f : C(X, ℝ) // EqOn f 0 U ∧ EqOn f 1 V }) : NormalSpace X where
+  normal {s t} sC tC disj := by
+    obtain ⟨f, hf₀, hf₁⟩ := sep sC tC disj
+    use f ⁻¹' (Iio 0.5), f ⁻¹' (Ioi 0.5), isOpen_Iio.preimage f.continuous,
+      isOpen_Ioi.preimage f.continuous
+    split_ands
+    · intro x hxs; simp [hf₀ hxs]; linarith
+    · intro x hxt; simp [hf₁ hxt]; linarith
+    · apply Disjoint.preimage; simp
+
 /-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 then there exists a continuous function `f : X → ℝ` such that
 
