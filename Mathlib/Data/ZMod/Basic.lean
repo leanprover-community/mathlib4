@@ -58,7 +58,6 @@ def val : ∀ {n : ℕ}, ZMod n → ℕ
   | 0 => Int.natAbs
   | n + 1 => ((↑) : Fin (n + 1) → ℕ)
 
-@[aesop safe]
 theorem val_lt {n : ℕ} [NeZero n] (a : ZMod n) : a.val < n := by
   cases n
   · cases NeZero.ne 0 rfl
