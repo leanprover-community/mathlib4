@@ -10,7 +10,7 @@ public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -36,6 +36,24 @@ universe u
 variable {X : Type*} [TopologicalSpace X]
 
 section Separation
+
+/-- Urysohn's lemma: a topological space `X` is normal if for any two disjoint closed sets `s` and
+`t` there exists a continuous function `f : X → ℝ` such that
+
+* `f` equals zero on `s`;
+* `f` equals one on `t`.
+-/
+lemma NormalSpace.of_separating {X} [TopologicalSpace X]
+    (sep : {U V : Set X} → IsClosed U → IsClosed V → Disjoint U V →
+      { f : C(X, ℝ) // EqOn f 0 U ∧ EqOn f 1 V }) : NormalSpace X where
+  normal {s t} sC tC disj := by
+    obtain ⟨f, hf₀, hf₁⟩ := sep sC tC disj
+    use f ⁻¹' (Iio 0.5), f ⁻¹' (Ioi 0.5), isOpen_Iio.preimage f.continuous,
+      isOpen_Ioi.preimage f.continuous
+    split_ands
+    · intro x hxs; simp [hf₀ hxs]; linarith
+    · intro x hxt; simp [hf₁ hxt]; linarith
+    · apply Disjoint.preimage; simp
 
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
@@ -110,6 +128,9 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
 
+/-- Alternative definition of perfectly normal spaces: for any two disjoint closed sets `s` and `t`,
+if there exists a continuous function `δ : X → ℝ` such that `δ ⁻¹' {0} = s` and `δ ⁻¹' {1} = t`,
+then `X` is perfectly normal. -/
 lemma of_precise_separating
     (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
       {δ : C(X, ℝ) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
