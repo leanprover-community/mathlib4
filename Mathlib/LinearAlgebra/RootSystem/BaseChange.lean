@@ -46,7 +46,7 @@ class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
   isPerfectCompl : P.toLinearMap.IsPerfectCompl (P.rootSpan R) (P.corootSpan R)
 
 instance {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
-    [CommRing R] [Module R M] [Module R N] (P : RootSystem ι R M N) :
+    [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) [P.IsRootSystem] :
     P.IsBalanced where
   isPerfectCompl := by simp
 
@@ -66,10 +66,9 @@ variable (hP : ∀ i j, P.pairing i j ∈ (algebraMap K L).range)
 
 /-- Restriction of scalars for a root pairing taking values in a subfield.
 
-Note that we obtain a root system (not just a root pairing). See also
-`RootPairing.restrictScalars`. -/
+See also `RootPairing.restrictScalars`. -/
 def restrictScalars' :
-    RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) where
+    RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) where
   toLinearMap := .restrictScalarsRange₂ (R := L)
     (span K (range P.root)).subtype (span K (range P.coroot)).subtype (Algebra.linearMap K L)
     (FaithfulSMul.algebraMap_injective K L) P.toLinearMap fun x y ↦
@@ -90,16 +89,18 @@ def restrictScalars' :
     ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_root i j
   reflectionPerm_coroot i j := by
     ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_coroot i j
+
+instance : (P.restrictScalars' K hP).IsRootSystem where
   span_root_eq_top := by
     rw [← span_setOf_mem_eq_top]
     congr
     ext ⟨x, hx⟩
-    simp
+    simp [restrictScalars']
   span_coroot_eq_top := by
     rw [← span_setOf_mem_eq_top]
     congr
     ext ⟨x, hx⟩
-    simp
+    simp [restrictScalars']
 
 @[simp] lemma restrictScalars_toLinearMap_apply_apply
     (x : span K (range P.root)) (y : span K (range P.coroot)) :
@@ -123,7 +124,7 @@ end SubfieldValued
 
 /-- Restriction of scalars for a crystallographic root pairing. -/
 abbrev restrictScalars [P.IsCrystallographic] :
-    RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
+    RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) :=
   P.restrictScalars' K (IsValuedIn.trans P K ℤ).exists_value
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
