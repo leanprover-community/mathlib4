@@ -10,13 +10,12 @@ public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
-open CategoryTheory Functor Opposite Limits Function GrothendieckTopology
+open CategoryTheory Functor Limits GrothendieckTopology
 
 universe v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} [Subcanonical J]
   [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.val]
-  [HasWeakSheafify J (Type v)]
 
 instance {n : ℕ} (S : Fin n → C) :
     PreservesColimit (Discrete.functor S) J.yoneda where
@@ -25,14 +24,8 @@ instance {n : ℕ} (S : Fin n → C) :
       isColimitOfOp (isLimitOfReflects _ this)
     apply evaluationJointlyReflectsLimits
     intro X
-    let i : (J.yoneda.op ⋙ coyoneda ⋙
-        ((evaluation (Sheaf J (Type v)) (Type (max u v))).obj X)) ≅ X.val ⋙ uliftFunctor :=
-      Iso.trans
-        (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X))
-        (NatIso.ofComponents
-          (fun X ↦ Equiv.toIso (Equiv.trans Equiv.ulift Equiv.ulift.symm))
-          (fun _ ↦  rfl))
-    suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv i.symm this
+    suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
+      (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     have := preservesLimitsOfShape_of_equiv (Discrete.opposite (Fin n)).symm X.val
     exact isLimitOfPreserves _ hc.op⟩
 

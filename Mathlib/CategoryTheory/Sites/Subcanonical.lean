@@ -98,21 +98,14 @@ lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Sheaf J (Type v)} 
 
 /-- The curried functorial Yoneda lemma for sheaves. See also
   `CategoryTheory.largeCurriedYonedaLemma`. -/
-def largeCurriedYonedaLemma : J.yoneda.op ⋙ coyoneda
-    ≅ sheafSections J (Type v) ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{max u v} :=
-  NatIso.ofComponents
-    (fun Y ↦ (
-      NatIso.ofComponents (fun X ↦ Equiv.toIso <| J.yonedaEquiv.trans Equiv.ulift.symm)
-        (by
-          intro Y Z f
-          ext g
-          rw [ULift.down_inj]
-          rfl)))
-    (by
+def largeCurriedYonedaLemma : J.yoneda.op ⋙ coyoneda ≅
+    sheafSections J (Type v) ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{max u v} := by
+  refine NatIso.ofComponents (fun Y ↦ NatIso.ofComponents (fun X ↦
+    (J.yonedaEquiv.trans (Equiv.ulift (α := X.val.obj Y)).symm).toIso) (by cat_disch)) <| by
       intro X Y f
       ext F g
       rw [← ULift.down_inj]
-      exact (J.yonedaEquiv_naturality _ _).symm)
+      exact (J.yonedaEquiv_naturality _ _).symm
 
 /--
 Two morphisms of sheaves of types `P ⟶ Q` coincide if the precompositions with morphisms
