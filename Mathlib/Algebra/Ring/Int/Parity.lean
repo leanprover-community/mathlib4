@@ -106,7 +106,7 @@ lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by grind
 
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 := by grind
 
-@[simp, grind =]
+@[simp]
 theorem even_sign_iff {z : ℤ} : Even z.sign ↔ z = 0 := by
   induction z using wlog_sign with
   | inv => simp

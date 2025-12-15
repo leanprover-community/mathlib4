@@ -49,7 +49,7 @@ Results for completed L-functions:
   `LFunction_eq_completed_div_gammaFactor_odd`: we have
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ s` for `Φ` even, and
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ (s + 1)` for `Φ` odd. (We formulate it this way
-  around so it is still valid at the poles of the Gamma factor.)
+  so that it is still valid at the poles of the Gamma factor.)
 * `ZMod.differentiableAt_completedLFunction`: `ZMod.completedLFunction Φ` is differentiable at
   `s ∈ ℂ`, unless `s = 1` and `∑ j, Φ j ≠ 0`, or `s = 0` and `Φ 0 ≠ 0`.
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
