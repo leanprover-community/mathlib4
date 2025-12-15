@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang
+Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
@@ -14,12 +14,15 @@ public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 /-!
 # Krull dimension of polynomial ring
 
-This file proves properties of the krull dimension of the polynomial ring over a commutative ring
+This file proves properties of the Krull dimension of the polynomial ring over a commutative ring
 
 ## Main results
 
-* `Polynomial.ringKrullDim_le`: the krull dimension of the polynomial ring over a commutative ring
+* `Polynomial.ringKrullDim_le`: the Krull dimension of the polynomial ring over a commutative ring
   `R` is less than `2 * (ringKrullDim R) + 1`.
+* `Polynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X]` is `dim R + 1`.
+* `MvPolynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X₁, ..., Xₙ]` is
+  `dim R + n`.
 -/
 
 @[expose] public section
@@ -88,7 +91,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
   have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] P ‹P.IsMaximal›.isPrime disj
   have : (comap (algebraMap R[X] Rₚ[X]) P').IsMaximal := eq.symm ▸ ‹P.IsMaximal›
-  have : P'.IsMaximal := .of_isLocalization_of_disjoint _ (eq.symm ▸ disj)
+  have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
     rw [height_map_of_disjoint p.primeCompl]

@@ -364,11 +364,10 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
     LiesOver.over (P := P) (p := p)]
 
 lemma Ideal.IsMaximal.of_isLocalization_of_disjoint [IsLocalization M S] {J : Ideal S}
-    [(Ideal.comap (algebraMap R S) J).IsMaximal]
-    (disj : Disjoint (M : Set R) (Ideal.comap (algebraMap R S) J)) :
-    J.IsMaximal := by
-  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <|
-    (IsLocalization.isPrime_iff_isPrime_disjoint M S J).mpr ⟨‹IsMaximal _›.isPrime, disj⟩ |>.ne_top
+    [(Ideal.comap (algebraMap R S) J).IsMaximal] : J.IsMaximal := by
+  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <| by
+    rintro rfl
+    exact Ideal.IsMaximal.ne_top ‹_› (by simp)
   apply comap_mono (f := algebraMap R S) at hm
   rwa [← IsLocalization.map_comap M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
     Ideal.under_def, IsLocalization.map_comap M S m]
