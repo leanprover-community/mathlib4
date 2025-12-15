@@ -69,7 +69,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
@@ -159,7 +159,7 @@ def natTransHσ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapCo
     simp only [alternatingFaceMapComplex_map_f, hσ'_naturality]
 
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
-theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_hσ' {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
     (hσ' q n m hnm : K[((whiskering _ _).obj G).obj X].X n ⟶ _) =
       G.map (hσ' q n m hnm : K[X].X n ⟶ _) := by
@@ -170,7 +170,7 @@ theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addit
     rfl
 
 /-- The null homotopic maps `Hσ` are compatible with the application of additive functors. -/
-theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Hσ {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     (Hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((Hσ q : K[X] ⟶ _).f n) := by
   unfold Hσ
