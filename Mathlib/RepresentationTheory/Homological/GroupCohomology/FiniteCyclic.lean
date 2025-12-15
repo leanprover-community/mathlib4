@@ -118,7 +118,7 @@ noncomputable def groupCohomologyIsoOdd (hg : ∀ x, x ∈ Subgroup.zpowers g) (
 `Ker(N) ⟶ Ker(N)/Im(ρ(g) - Id(A)) ≅ Hⁱ(G, A)` for any odd `i`. -/
 noncomputable abbrev groupCohomologyπOdd (hg : ∀ x, x ∈ Subgroup.zpowers g) (i : ℕ) (hi : Odd i) :
     ModuleCat.of k (LinearMap.ker A.norm.hom.hom) ⟶ groupCohomology A i :=
-    (moduleCatCyclesIso <| subCompNormHom A g).inv ≫
+  (moduleCatCyclesIso <| subCompNormHom A g).inv ≫
       ShortComplex.homologyπ _ ≫ (groupCohomologyIsoOdd A g hg i hi).inv
 
 lemma groupCohomologyπOdd_eq_zero_iff (hg : ∀ x, x ∈ Subgroup.zpowers g) (i : ℕ) (hi : Odd i)
