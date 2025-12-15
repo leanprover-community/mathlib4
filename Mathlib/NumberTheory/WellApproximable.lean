@@ -17,7 +17,7 @@ respect to the Lebesgue measure.
 
 Gallagher's theorem concerns the approximation of real numbers by rational numbers. The input is a
 sequence of distances `δ₁, δ₂, ...`, and the theorem concerns the set of real numbers `x` for which
-there is an infinity of solutions to:
+there are infinitely many solutions to:
 $$
   |x - m/n| < δₙ,
 $$
@@ -197,7 +197,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       `A p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∤ n))`
       `B p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∣∣ n))`
       `C p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p*p ∣ n))`.
-    In other words, `A p` is the set of points `x` for which there exist infinitely-many `n` such
+    In other words, `A p` is the set of points `x` for which there exist infinitely many `n` such
     that `x` is within a distance `δ n` of a point of order `n` and `p ∤ n`. Similarly for `B`, `C`.
 
     These sets have the following key properties:
