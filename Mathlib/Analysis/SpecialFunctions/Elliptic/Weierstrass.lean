@@ -638,8 +638,8 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     Summable (Function.uncurry fun b c ↦ L.weierstrassPExceptSummand l₀ x b c * (z - x) ^ b) := by
   obtain ⟨ε, hε, hε'⟩ : ∃ ε : ℝ, 1 < ε ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * ε < ‖l - x‖ := by
     obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp ((continuous_mul_right ‖z - x‖).isOpen_preimage _
-      (isClosed_upperClosure _ (isClosedMap_dist x _
-      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀}))))).isOpen_compl) 1
+      (isClosedMap_dist x _
+      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))).upperClosure.isOpen_compl) 1
       (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
     refine ⟨ε / 2 + 1, by simpa, fun l hl ↦ ?_⟩
     have : ∀ l ∈ L.lattice, l ≠ l₀ → (ε / 2 + 1) * ‖z - x‖ < dist x l := by
@@ -772,6 +772,11 @@ lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
   exact ⟨L.derivWeierstrassPExceptSeries l₀ x, _,
     L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l₀ x (ε / 2)
     (div_pos hε (by simp)) ((Metric.closedBall_subset_ball (by norm_num; exact hε)).trans h)⟩
+
+lemma PeriodPairs.analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ := by
+  rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
+  exact (L.analyticOnNhd_derivWeierstrassPExcept _).mono
+    (Set.compl_subset_compl.mpr Set.diff_subset)
 
 end AnalyticderivWeierstrassPExcept
 
