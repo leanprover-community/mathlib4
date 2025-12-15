@@ -49,7 +49,7 @@ lemma tendsto_measure_compl_closedBall_of_isTightMeasureSet (hS : IsTightMeasure
 lemma isTightMeasureSet_of_tendsto_measure_compl_closedBall [ProperSpace E] {x : E}
     (h : Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ (Metric.closedBall x r)ᶜ) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
-  refine IsTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
+  refine isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
   rw [ENNReal.tendsto_atTop_zero] at h
   obtain ⟨r, h⟩ := h ε hε
   exact ⟨Metric.closedBall x r, isCompact_closedBall x r, by simpa using h r le_rfl⟩
