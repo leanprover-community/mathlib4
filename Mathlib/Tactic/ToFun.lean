@@ -40,7 +40,8 @@ initialize registerBuiltinAttribute {
   | `(attr| to_fun $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_fun` can only be used as a global attribute"
-    addRelatedDecl src "fun_" "" ref stx? fun value levels => do
+    addRelatedDecl src "fun_" "" ref stx? (docstringPrefix? := s!"Eta-expanded form of `{src}`")
+      fun value levels => do
       let r ← Push.pullCore .lambda (← inferType value) none
       return (← r.mkCast value, levels)
   | _ => throwUnsupportedSyntax }
