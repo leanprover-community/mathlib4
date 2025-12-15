@@ -31,7 +31,7 @@ behaves like
 alias Foo.Bar.d := A.B.C.d
 ```
 -/
-syntax (name := aliasIn) "alias_in" ppSpace ident (ppSpace num)? : attr
+syntax (name := aliasIn) "alias_in " ident (ppSpace num)? : attr
 
 open Lean Meta Elab Command
 @[inherit_doc aliasIn]
@@ -40,20 +40,16 @@ initialize registerBuiltinAttribute {
     descr := "create alias in another namespace"
     applicationTime := .afterCompilation
     add := fun
-    | src, stx@`(attr| alias_in%$tk $nm $[$num]?), _ => do
+    | src, `(attr| alias_in%$tk $nm $[$num]?), _ => do
       let newNamespace := nm.getId.components
-      let num := num.map (·.1.isNatLit?.get!) |>.getD newNamespace.length
-      let srcId := mkIdent src
+      let num := num.map (·.1.toNat) |>.getD newNamespace.length
       let components := src.components
       if components.length ≤ num then
         throwError m!"{src} has only {components.length - 1} namespaces, cannot remove {num}. \n\
         Use `@[alias_in {nm} {components.length - 1}]` instead."
       let tgtName := .fromComponents <|
         components.take (components.length - 1 - num) ++ newNamespace ++ [components.getLast!]
-      let tgtId := mkIdent tgtName
-      liftCommandElabM <| elabCommand <| ← `(command| alias $tgtId := $srcId)
+      liftCommandElabM <| elabCommand <| ← `(command| alias $(mkIdent tgtName) := $(mkIdent src))
       -- add mouse-over text
-      pushInfoLeaf <| .ofTermInfo {
-        elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := true,
-        stx := nm, expr := ← mkConstWithLevelParams tgtName }
+      addConstInfo nm tgtName
     | _, _, _ => throwUnsupportedSyntax }
