@@ -190,6 +190,26 @@ protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
   have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
   exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
 
+lemma IsClosed.upperClosure {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {s : Set α} (hs : IsClosed s) :
+    IsClosed (upperClosure s).1 := by
+  obtain rfl | h₁ := s.eq_empty_or_nonempty
+  · simp
+  by_cases h₂ : BddBelow s
+  · convert isClosed_Ici (a := sInf s)
+    exact Set.ext fun a ↦ ⟨fun ⟨x, h, h'⟩ ↦ csInf_le_of_le h₂ h h',
+      (⟨_, (isGLB_csInf h₁ h₂).mem_of_isClosed h₁ hs, ·⟩)⟩
+  · convert isClosed_univ
+    exact Set.ext fun x ↦ ⟨fun _ ↦ trivial,
+      fun _ ↦ ⟨_, (not_bddBelow_iff.mp h₂ x).choose_spec.imp id le_of_lt⟩⟩
+
+lemma IsClosed.lowerClosure {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {s : Set α} (hs : IsClosed s) :
+    IsClosed (lowerClosure s).1 :=
+  IsClosed.upperClosure (α := αᵒᵈ) hs
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/

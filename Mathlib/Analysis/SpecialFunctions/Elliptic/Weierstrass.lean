@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.Analytic.Binomial
 public import Mathlib.Analysis.Meromorphic.Order
@@ -48,98 +49,6 @@ open Module
 section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
-lemma Metric.cthickening_sphere [Nontrivial E] {x : E} (r s : ℝ) (hr : 0 ≤ r) (hs : 0 ≤ s) :
-    Metric.cthickening s (Metric.sphere x r) = dist x ⁻¹' Metric.closedBall r s := by
-  ext a
-  constructor
-  · intro hb
-    simp only [Set.mem_preimage, mem_closedBall]
-    refine le_of_forall_gt fun c hc ↦ ?_
-    have := lt_of_le_of_lt (mem_cthickening_iff.mp hb)
-      ((ENNReal.ofReal_lt_ofReal_iff (hs.trans_lt hc)).mpr hc)
-    obtain ⟨y, hy, hyc⟩ := EMetric.infEdist_lt_iff.mp this
-    replace hyc : dist a y < c := by
-      simpa [edist_dist, ENNReal.ofReal_lt_iff_lt_toReal, hs.trans hc.le] using hyc
-    refine lt_of_le_of_lt ?_ hyc
-    simpa [← show dist y x = r by simpa [SeminormedAddCommGroup.dist_eq] using hy, dist_comm x]
-      using dist_dist_dist_le_left a y x
-  · intro H
-    obtain rfl | hax := eq_or_ne a x
-    · replace H : |r| ≤ s := by simpa [SeminormedAddCommGroup.dist_eq] using H
-      obtain ⟨b, hb⟩ := (NormedSpace.sphere_nonempty (x := a) (r := r)).mpr hr
-      exact Metric.mem_cthickening_of_dist_le _ b _ _ hb (.trans
-        (by simp_all [SeminormedAddCommGroup.dist_eq, norm_sub_rev, le_abs_self]) H)
-    refine Metric.mem_cthickening_of_dist_le _ (x + (r / ‖a - x‖) • (a - x)) _ _ ?_ ?_
-    · simpa [norm_smul, hax, sub_eq_zero]
-    · trans ‖1 - r / ‖a - x‖‖ * ‖a - x‖
-      · rw [← norm_smul, sub_smul, one_smul, sub_sub, SeminormedAddCommGroup.dist_eq]
-      · rw [Real.norm_eq_abs, ← abs_norm, ← abs_mul, sub_mul]
-        simpa [hax, SeminormedAddCommGroup.dist_eq, norm_sub_rev x, sub_eq_zero] using H
-
-lemma isClosedMap_nndist [ProperSpace E] (x : E) : IsClosedMap (nndist x) := by
-  cases subsingleton_or_nontrivial E
-  · exact fun _ _ ↦ (Set.subsingleton_of_subsingleton.image _).isClosed
-  intro s hs
-  rw [← isOpen_compl_iff, Metric.isOpen_iff]
-  simp only [Set.mem_compl_iff, Set.mem_image, not_exists, not_and]
-  intro r hr
-  simp only [gt_iff_lt, Set.subset_def, Metric.mem_ball, Set.mem_compl_iff, Set.mem_image,
-    not_exists, not_and]
-  obtain ⟨δ, hδ, h⟩ := Disjoint.exists_cthickenings (by
-    simpa [Set.disjoint_iff_inter_eq_empty, Set.ext_iff, norm_sub_rev, ← NNReal.coe_inj,
-      SeminormedAddCommGroup.dist_eq, imp_not_comm (a := _ = _)] using hr) (isCompact_sphere x r) hs
-  refine ⟨δ, hδ, fun y hy l hls hd ↦ ?_⟩
-  refine Set.subset_compl_iff_disjoint_left.mpr h (Metric.self_subset_cthickening _ hls) ?_
-  rw [← NNReal.coe_inj, coe_nndist] at hd
-  simpa [-Metric.mem_cthickening_iff, Metric.cthickening_sphere, hδ.le, hd] using hy.le
-
-lemma isClosedMap_dist [ProperSpace E] (x : E) :
-    IsClosedMap (dist x) :=
-  (PseudoEMetricSpace.isometry_induced NNReal.toReal).isClosedEmbedding.isClosedMap.comp
-    (isClosedMap_nndist x)
-
--- move me
-def _root_.optionProdEquiv {α β : Type*} : Option α × β ≃ β ⊕ α × β where
-  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
-  invFun x := x.casesOn (Prod.mk none) (Prod.map some id)
-  left_inv
-  | (none, _) => rfl
-  | (some _, _) => rfl
-  right_inv
-  | .inl _ => rfl
-  | .inr (_, _) => rfl
-
-@[simp] lemma _root_.optionProdEquiv_mk_none {α β : Type*} (b : β) :
-    optionProdEquiv (α := α) (.none, b) = .inl b := rfl
-
-@[simp] lemma _root_.optionProdEquiv_mk_some {α β : Type*} (a : α) (b : β) :
-    optionProdEquiv (.some a, b) = .inr (a, b) := rfl
-
-@[simp] lemma _root_.optionProdEquiv_symm_inl {α β : Type*} (b : β) :
-    optionProdEquiv (α := α).symm (.inl b) = (.none, b) := rfl
-
-@[simp] lemma _root_.optionProdEquiv_symm_inr {α β : Type*} (p : α × β) :
-    optionProdEquiv.symm (.inr p) = p.map .some id := rfl
-
-@[simp] lemma Equiv.fst_prodCongrLeft {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) (p) :
-    (Equiv.prodCongrLeft e p).1 = e p.2 p.1 := rfl
-
-@[simp] lemma Equiv.snd_prodCongrLeft {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) (p) :
-    (Equiv.prodCongrLeft e p).2 = p.2 := rfl
-
-@[simp] lemma Equiv.prodCongrLeft_symm {α₁ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂) :
-    (Equiv.prodCongrLeft e).symm = Equiv.prodCongrLeft (Equiv.symm ∘ e) := rfl
-
-lemma isOpen_setOf_forall_mem_lt (s : Set ℝ) (hs : IsClosed s) :
-    IsOpen { a | ∀ l ∈ s, a < l } := by
-  obtain rfl | h₁ := s.eq_empty_or_nonempty
-  · simp
-  by_cases h₂ : BddBelow s
-  · convert isOpen_Iio (a := sInf s)
-    exact Set.ext fun x ↦ ⟨(· _ (hs.csInf_mem h₁ h₂)), fun h _ ↦ (h.trans_le <| csInf_le h₂ ·)⟩
-  · convert isOpen_empty
-    exact Set.ext fun x ↦ ⟨fun h ↦ h₂ ⟨x, fun a ha ↦ (h a ha).le⟩, fun h ↦ h.elim⟩
 
 end
 
@@ -732,12 +641,13 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     Summable (Function.uncurry fun b c ↦ L.weierstrassPExceptSummand l₀ x b c * (z - x) ^ b) := by
   obtain ⟨ε, hε, hε'⟩ : ∃ ε : ℝ, 1 < ε ∧ ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * ε < ‖l - x‖ := by
     obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp ((continuous_mul_right ‖z - x‖).isOpen_preimage _
-      (isOpen_setOf_forall_mem_lt _ (isClosedMap_dist x _
-      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀})))))) 1
+      (isClosed_upperClosure _ (isClosedMap_dist x _
+      (L.isClosed_of_subset_lattice (Set.diff_subset (t := {l₀}))))).isOpen_compl) 1
       (by simpa [Complex.dist_eq, @forall_comm ℝ, norm_sub_rev x] using hx)
     refine ⟨ε / 2 + 1, by simpa, fun l hl ↦ ?_⟩
-    simpa only [Complex.dist_eq, norm_sub_rev x, mul_comm] using @hε' (ε / 2 + 1)
-      (by simp [div_lt_iff₀, abs_eq_self.mpr hε.le, hε]) _ ⟨_, ⟨l.2, hl⟩, rfl⟩
+    have : ∀ l ∈ L.lattice, l ≠ l₀ → (ε / 2 + 1) * ‖z - x‖ < dist x l := by
+      simpa using @hε' (ε / 2 + 1) (by simp [div_lt_iff₀, abs_eq_self.mpr hε.le, hε])
+    simpa only [Complex.dist_eq, norm_sub_rev x, mul_comm] using this _ l.2 hl
   let e : ℕ × L.lattice ≃ L.lattice ⊕ (ℕ × L.lattice) :=
     (Equiv.prodCongrLeft fun _ ↦ (Denumerable.eqv (Option ℕ)).symm).trans optionProdEquiv
   rw [← e.symm.summable_iff]
@@ -833,6 +743,8 @@ end AnalyticweierstrassPExcept
 
 section AnalyticderivWeierstrassPExcept
 
+/-- The power series exansion of `℘'[L - l₀]` at `x`.
+See `PeriodPair.hasFPowerSeriesOnBall_derivWeierstrassPExcept`. -/
 def derivWeierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
   .ofScalars _ fun i ↦ (i + 1) * (i + 2) *
@@ -868,9 +780,13 @@ end AnalyticderivWeierstrassPExcept
 
 section Analytic
 
+/-- In the power series expansion of `℘(z) = ∑ aᵢzⁱ` at some `x ∉ L`,
+each `aᵢ` can be written as an infinite sum over `l ∈ L`.
+This is the summand of this infinite sum. See `PeriodPair.coeff_weierstrassPSeries`. -/
 def weierstrassPSummand (x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
+/-- The power series exansion of `℘` at `x`. See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
 def weierstrassPSeries (x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   .ofScalars _ fun i ↦ i.casesOn (℘[L] x) fun i ↦ (i + 2) * L.sumInvPow x (i + 3)
 
