@@ -28,9 +28,6 @@ are defined on `ONote` and `NONote`.
 
 @[expose] public section
 
--- TODO: fix all the violations in this file
-set_option linter.flexible false
-
 open Ordinal Order
 
 -- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,
@@ -790,6 +787,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
+set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
@@ -872,6 +870,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
+set_option linter.flexible false in -- simp used on two different goals
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁

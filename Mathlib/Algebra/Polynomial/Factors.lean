@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
 
 /-!
@@ -207,6 +208,17 @@ theorem Splits.comp_of_degree_le_one_of_monic {f g : R[X]} (hf : f.Splits)
 theorem Splits.comp_X_add_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X + C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_add_C.trans_le natDegree_X_le) (monic_X_add_C a)
 
+theorem Splits.of_algHom {f : R[X]} {A B : Type*} [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (hf : Splits (f.map (algebraMap R A))) (e : A →ₐ[R] B) :
+    Splits (f.map (algebraMap R B)) := by
+  rw [← e.comp_algebraMap, ← map_map]
+  apply hf.map
+
+theorem Splits.of_isScalarTower {f : R[X]} {A : Type*} (B : Type*) [CommSemiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (hf : Splits (f.map (algebraMap R A))) : Splits (f.map (algebraMap R B)) :=
+  hf.of_algHom (IsScalarTower.toAlgHom R A B)
+
 end CommSemiring
 
 section Ring
@@ -324,6 +336,14 @@ theorem Splits.of_splits_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing
   refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i i.injective ?_⟩
   conv_lhs => rw [hf.eq_prod_roots]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
+
+theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
+    {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
+    f ∈ Polynomial.lifts i := by
+  rw [hf.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
+  refine Subring.multiset_prod_mem _ _ fun g hg => ?_
+  obtain ⟨x, hx, rfl⟩ := Multiset.mem_map.mp hg
+  exact Subring.sub_mem _ (X_mem_lifts i) (C'_mem_lifts (hr x hx))
 
 theorem Splits.eq_X_sub_C_of_single_root (hf : Splits f) {x : R} (hr : f.roots = {x}) :
     f = C f.leadingCoeff * (X - C x) := by
@@ -555,6 +575,17 @@ theorem Splits.eval_derivative_div_eval_of_ne_zero (hf : Splits f) {x : R} (hx :
 theorem Splits.mem_subfield_of_isRoot (F : Subfield R) {f : F[X]} (hf : Splits f) (hf0 : f ≠ 0)
     {x : R} (hx : (f.map F.subtype).IsRoot x) : x ∈ F := by
   simpa using hf.mem_range_of_isRoot hf0 hx
+
+/-- A polynomial of degree `2` with a root splits. -/
+theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.eval x = 0) :
+    Splits f := by
+  have h : (f /ₘ (X - C x)).natDegree = 1 := by
+    rw [natDegree_divByMonic f (monic_X_sub_C x), h₁, natDegree_X_sub_C]
+  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂, splits_mul_iff (X_sub_C_ne_zero x) (by aesop)]
+  exact ⟨Splits.X_sub_C x, Splits.of_natDegree_eq_one h⟩
+
+theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
+  Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name.
