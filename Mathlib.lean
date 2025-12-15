@@ -8211,6 +8211,7 @@ public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Algebra.Order.Ring.Idempotent
 public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Order.Ring.Interval
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.Opposite
