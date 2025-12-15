@@ -78,4 +78,23 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
   aesop
 
 end OrthonormalBasis
+
+/-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then `E` is
+isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
+@[simps! apply symm_apply]
+def Submodule.orthogonalDecomposition (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] :
+    E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
+  __ := LinearEquiv.ofLinear
+    (K.orthogonalProjection.toLinearMap.prod Kᗮ.orthogonalProjection.toLinearMap)
+    (K.subtype.coprod Kᗮ.subtype)
+    (by
+      ext ⟨x, hx⟩ <;> simp only [LinearMap.comp_assoc, LinearMap.coprod_inl, LinearMap.coprod_inr]
+      exacts [K.starProjection_eq_self_iff.mpr hx, K.starProjection_orthogonal_apply_eq_zero hx,
+        K.starProjection_apply_eq_zero_iff.mpr hx, Kᗮ.starProjection_eq_self_iff.mpr hx])
+    (LinearMap.ext K.starProjection_add_starProjection_orthogonal)
+    ≪≫ₗ (WithLp.linearEquiv 2 _ _).symm
+  norm_map' _ := by
+    rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2]
+    exact (K.norm_sq_eq_add_norm_sq_starProjection _).symm
+
 end
