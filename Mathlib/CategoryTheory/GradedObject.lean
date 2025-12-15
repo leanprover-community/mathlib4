@@ -104,7 +104,7 @@ end GradedObject
 
 namespace Iso
 
-variable {C D E J : Type*} [Category C] [Category D] [Category E]
+variable {C D E J : Type*} [Category* C] [Category* D] [Category* E]
   {X Y : GradedObject J C}
 
 @[reassoc (attr := simp)]
@@ -293,7 +293,7 @@ end GradedObject
 
 namespace GradedObject
 
-variable {I J K : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`

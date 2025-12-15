@@ -52,7 +52,7 @@ attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise {C : Type*} [Category C] [HasForget C]
+theorem hom_elementwise {C : Type*} [Category* C] [HasForget C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems
@@ -182,14 +182,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type*} [Category C]
+lemma some_lemma {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type*} [Category C]
+lemma some_lemma_apply {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [HasForget C] (x : X) : g (f x) = h x := ...
 ```

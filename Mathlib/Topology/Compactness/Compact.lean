@@ -458,7 +458,7 @@ theorem Finset.isCompact_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i 
   s.finite_toSet.isCompact_biUnion hf
 
 theorem isCompact_accumulate {K : ℕ → Set X} (hK : ∀ n, IsCompact (K n)) (n : ℕ) :
-    IsCompact (Accumulate K n) :=
+    IsCompact (accumulate K n) :=
   (finite_le_nat n).isCompact_biUnion fun k _ => hK k
 
 theorem Set.Finite.isCompact_sUnion {S : Set (Set X)} (hf : S.Finite) (hc : ∀ s ∈ S, IsCompact s) :
