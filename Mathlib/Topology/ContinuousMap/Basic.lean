@@ -286,6 +286,9 @@ variable (s : Set α)
 def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 
+lemma restrict_eq {f : C(α, β)} : f.restrict s = f.comp .subtypeVal := by
+  ext x; simp [restrict]
+
 @[simp]
 theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.restrict f :=
   rfl
@@ -309,6 +312,11 @@ theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
   ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ ↦
     (map_continuousAt f _).restrictPreimage⟩
+
+lemma val_comp_restrictPreimage {α β} [TopologicalSpace α] [TopologicalSpace β]
+    {s : Set β} {f : C(α, β)} :
+    ContinuousMap.subtypeVal.comp (f.restrictPreimage s) = f.comp .subtypeVal := by
+  ext x; simp [ContinuousMap.restrictPreimage]
 
 /-- Given a function `f : α → β` s.t. `MapsTo f s t`, if `f` is continuous on `s` then `f` can
 be lifted into a continuous map from `s` to `t`. -/
