@@ -21,8 +21,8 @@ public import Mathlib.MeasureTheory.Function.L2Space
 # Schwartz space
 
 This file defines the Schwartz space. Usually, the Schwartz space is defined as the set of smooth
-functions `f : ℝ^n → ℂ` such that there exists `C_{αβ} > 0` with `|x^α ∂^β f(x)| < C_{αβ}` for
-all `x ∈ ℝ^n` and for all multiindices `α`, `β`.
+functions $f : ℝ^n → ℂ$ such that there exists $C_{αβ} > 0$ with $$|x^α ∂^β f(x)| < C_{αβ}$$ for
+all $x ∈ ℝ^n$ and for all multiindices $α, β$.
 In mathlib, we use a slightly different approach and define the Schwartz space as all
 smooth functions `f : E → F`, where `E` and `F` are real normed vector spaces such that for all
 natural numbers `k` and `n` we have uniform bounds `‖x‖^k * ‖iteratedFDeriv ℝ n f x‖ < C`.
