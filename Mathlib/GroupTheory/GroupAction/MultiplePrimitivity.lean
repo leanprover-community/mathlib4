@@ -115,7 +115,7 @@ instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
   IsMultiplyPreprimitive.isMultiplyPretransitive M α n
 
 /-- Any action is `0`-preprimitive -/
-@[to_additive /-- Any action is `0`-preprimitive -/]
+@[to_additive /-- Any action is `0`-preprimitive. -/]
 theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
