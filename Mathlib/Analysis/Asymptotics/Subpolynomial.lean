@@ -285,5 +285,4 @@ theorem IsSubpolynomial.uniform {ι : Type*} {s : Finset ι} {l : Filter α}
     _ ≤ 2 * s.sup' hs (fun j => |C_fun j|) * ‖1 + ‖g x‖ ^ k‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         linarith
-
 end Asymptotics
