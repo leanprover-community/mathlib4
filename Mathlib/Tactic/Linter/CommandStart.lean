@@ -760,7 +760,8 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     let cond := tail.take 1 == (str.take 1).toString
     pure (
       {str with startPos := ppEndPos},
-      corr.alter (info.getTrailing?.get!.startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `ident rawVal.toString)))
+      -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
+      corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `ident rawVal.toString)))
   | corr, k, .atom info val, str => do
     --dbg_trace "kinds:\n{k}"
     --dbg_trace "val: '{val}'"
@@ -770,7 +771,8 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     let cond := tail.take 1 == "".push (str.get ppEndPos)
     pure (
       {str with startPos := ppEndPos},
-      corr.alter (info.getTrailing?.get!.startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `atom val)))
+      -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
+      corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `atom val)))
   | corr, k, _stx@(.node _info kind args), str => do
     --let corr :=
     --  if (k.back?.getD .anonymous) == ``Parser.Term.structInst then
@@ -1090,8 +1092,7 @@ of a single character, then number of characters added to `rebuilt` is the same 
 characters removed from `L`.
 -/
 partial
-def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
-    (addSpace removeSpace removeLine : String) :
+def parallelScanAux (as : Array FormatError) (rebuilt L M addSpace removeSpace removeLine : String) :
     String × Array FormatError :=
   if M.trimAscii.isEmpty then (rebuilt ++ L.toSlice, as) else
   -- We try as hard as possible to scan the strings one character at a time.
@@ -1127,28 +1128,34 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
   let ls := L.drop 1
   let ms := M.drop 1
   let lf := L.front
-  match L.front, M.front with
-  | ' ', m =>
+  let m := M.front
+  --match L.front with
+  --| ' ' =>
+  if lf == ' ' then
+    let newAs := if m.isWhitespace then as else pushFormatError as (mkFormatError L M "extra space")
+    let rebs := if m.isWhitespace then rebuilt.push ' ' else rebuilt ++ removeSpace
+    let newLs := if m.isWhitespace then ls.trimAsciiStart.toString else ls.toString
+    let newMs := if m.isWhitespace then ms.trimAsciiStart.toString else M
+    parallelScanAux newAs rebs newLs newMs addSpace removeSpace removeLine
+  else if lf == '\n' then
+  --| '\n' =>
     if m.isWhitespace then
-      parallelScanAux as (rebuilt.push ' ') ls.trimAsciiStart.copy ms.trimAsciiStart.copy addSpace removeSpace removeLine
+      parallelScanAux as (rebuilt ++ (L.takeWhile (·.isWhitespace)).toString) ls.toString.trimAsciiStart.toString ms.toString.trimAsciiStart.toString addSpace removeSpace removeLine
     else
-      parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "extra space")) (rebuilt ++ removeSpace) ls M addSpace removeSpace removeLine
-  | '\n', m =>
-    if m.isWhitespace then
-      parallelScanAux as (rebuilt ++ (L.takeWhile (·.isWhitespace)).toString) ls.trimLeft ms.trimLeft addSpace removeSpace removeLine
-    else
-      parallelScanAux (pushFormatError as (mkFormatError L.toString M.toString "remove line break")) (rebuilt ++ removeLine ++ (ls.takeWhile (·.isWhitespace)).toString) ls.trimLeft M addSpace removeSpace removeLine
-  | l, m => -- `l` is not whitespace
+      parallelScanAux (pushFormatError as (mkFormatError L M "remove line break")) (rebuilt ++ removeLine ++ (ls.takeWhile (·.isWhitespace)).toString) ls.toString.trimAsciiStart.toString M addSpace removeSpace removeLine
+  else
+    let l := lf
+  --| l => -- `l` is not whitespace
     if l == m then
-      parallelScanAux as (rebuilt.push l) ls ms addSpace removeSpace removeLine
+      parallelScanAux as (rebuilt.push l) ls.toString ms.toString addSpace removeSpace removeLine
     else
       if m.isWhitespace then
-        parallelScanAux (pushFormatError as (mkFormatError L.copy M.copy "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimAsciiStart.copy addSpace removeSpace removeLine
+        parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) ((rebuilt ++ addSpace).push ' ') L ms.trimAsciiStart.copy addSpace removeSpace removeLine
     else
       -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
       (rebuilt, pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)"))
-
+--#exit
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
   let (_expected, formatErrors) := parallelScanAux ∅ "" src fmt "🐩" "🦤" "😹"
