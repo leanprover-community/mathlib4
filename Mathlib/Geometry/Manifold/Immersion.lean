@@ -392,6 +392,7 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 open IsManifold in
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
   apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
@@ -569,6 +570,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
     |>.isImmersionAt
 
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   rw [IsImmersionAt_def]
@@ -651,6 +653,7 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
@@ -702,6 +705,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
 
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩

@@ -18,6 +18,8 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding I J n f` means `f : M → N` is a `C^n` embedding:
   it is both a `C^n` immersion and a topological embedding
 * `IsSmoothEmbedding.prodMap`: the product of two smooth embeddings is a smooth embedding
+* `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
+  is a smooth embedding
 
 ## Implementation notes
 
@@ -78,6 +80,12 @@ theorem prodMap {f : M → N} {g : M' → N'}
     (hf : IsSmoothEmbedding I J n f) (hg : IsSmoothEmbedding I' J' n g) :
     IsSmoothEmbedding (I.prod I') (J.prod J') n (Prod.map f g) :=
   ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
+
+/- The inclusion of an open subset `s` of a smooth manifold `M` is a smooth embedding. -/
+lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
+    IsSmoothEmbedding I I n (Subtype.val : s → M) := by
+  rw [isSmoothEmbedding_iff]
+  exact ⟨IsImmersion.of_opens s, IsEmbedding.subtypeVal⟩
 
 -- use IsImmersion.comp and IsEmbedding.comp
 /-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
