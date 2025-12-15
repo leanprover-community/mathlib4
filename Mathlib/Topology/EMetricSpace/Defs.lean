@@ -223,8 +223,35 @@ def WeakPseudoEMetricSpace.toPseudoEMetricSpace
   edist_self := edist_self
   edist_comm := edist_comm
   edist_triangle := edist_triangle
-  toUniformSpace : UniformSpace α := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
   uniformity_edist := rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
+    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
+    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
+
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
+    {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} (s : Set α) :
+    IsOpen[((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace] s
+    ↔ IsOpen[((uniformSpaceOfEDist
+    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
+
+abbrev PseudoEMetricSpace_def {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : PseudoEMetricSpace α where
+  edist := edist
+  edist_self := edist_self
+  edist_comm := edist_comm
+  edist_triangle := edist_triangle
+  toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
+  uniformity_edist := by rfl
+
+theorem EMetric.Uniformity_eq {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+    (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
+    (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) =
+    (PseudoEMetricSpace_def edist_self edist_comm edist_triangle).toUniformSpace := by rfl
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
@@ -718,17 +745,6 @@ def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : 
   edist_triangle := inst.edist_triangle
   uniformity_edist := rfl
   eq_of_edist_eq_zero := inst.eq_of_edist_eq_zero
-
-theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
-    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
-    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
-    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
-
-theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
-    {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} (s : Set α) :
-    IsOpen[((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace] s ↔
-    IsOpen[((uniformSpaceOfEDist
-    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
 
 @[ext]
 protected theorem EMetricSpace.ext

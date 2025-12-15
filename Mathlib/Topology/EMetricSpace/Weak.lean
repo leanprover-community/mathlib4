@@ -120,7 +120,6 @@ instance toWeakPseudoEMetricSpace
         rw [e]
         let τ := (uniformSpaceOfEDist
           m.edist m.edist_self m.edist_comm m.edist_triangle).toTopologicalSpace
-        rw [toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr]
         have : IsOpen[τ] (ball x ⊤) := by
           -- toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
           sorry
