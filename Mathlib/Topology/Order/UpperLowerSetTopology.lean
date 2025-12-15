@@ -700,7 +700,7 @@ lemma WithTop.lift_of_mem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (�
 
 @[simp]
 lemma WithTop.lift_of_notMem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
-    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∉ U) : WithTop.lift Uo f x = ⊥ := by
+    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∉ U) : WithTop.lift Uo f x = ⊤ := by
   simp [WithTop.lift, hx]
 
 @[simp]
@@ -713,7 +713,7 @@ lemma WithTop.lift_restrict {X} [TopologicalSpace X] {U : Set X} [DecidablePred 
 @[simp]
 lemma WithTop.lift_restrict_compl {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
     (Uo : IsOpen U) (f : C(U, α)) :
-    (WithTop.lift Uo f).restrict Uᶜ = .const _ ⊥ := by
+    (WithTop.lift Uo f).restrict Uᶜ = .const _ ⊤ := by
   ext x; simpa [WithTop.lift, -Subtype.coe_prop] using x.2
 
 end IsLowerSet
