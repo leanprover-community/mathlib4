@@ -188,7 +188,7 @@ lemma mem_grothendieckTopology_iff_sectionsOfPresieve
   rw [← generate_presieveOfSections_mem_grothendieckTopology, presieveOfSections_sectionsOfPresieve,
     Sieve.generate_sieve]
 
-variable {A} [Category A]
+variable {A} [Category* A]
 variable [∀ (U : X.Opensᵒᵖ), Limits.HasLimitsOfShape (StructuredArrow U (toOpensFunctor X).op) A]
 
 /-- The category of sheaves on `X.AffineZariskiSite` is equivalent to the categories of sheaves

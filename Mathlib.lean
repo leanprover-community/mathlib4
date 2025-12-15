@@ -551,9 +551,11 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
+public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.DifferentialObject
 public import Mathlib.Algebra.Homology.Double
@@ -598,6 +600,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
@@ -649,7 +652,6 @@ public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.CartanExists
-public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Character
 public import Mathlib.Algebra.Lie.Classical
@@ -677,6 +679,7 @@ public import Mathlib.Algebra.Lie.Rank
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.SerreConstruction
 public import Mathlib.Algebra.Lie.SkewAdjoint
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Solvable
@@ -3088,6 +3091,7 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+public import Mathlib.CategoryTheory.Triangulated.Opposite.OpOp
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
@@ -3226,6 +3230,7 @@ public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Combinatorics.SimpleGraph.Diam
+public import Mathlib.Combinatorics.SimpleGraph.EdgeLabeling
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
@@ -3666,6 +3671,7 @@ public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Bilinear
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Data.Matrix.Cartan
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.Data.Matrix.DMatrix
@@ -3911,6 +3917,7 @@ public import Mathlib.Data.Set.Finite.List
 public import Mathlib.Data.Set.Finite.Monad
 public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.FiniteExhaustion
 public import Mathlib.Data.Set.Function
 public import Mathlib.Data.Set.Functor
 public import Mathlib.Data.Set.Image
@@ -4954,6 +4961,7 @@ public import Mathlib.MeasureTheory.Integral.MeanInequalities
 public import Mathlib.MeasureTheory.Integral.PeakFunction
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Regular
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
@@ -5613,6 +5621,7 @@ public import Mathlib.Probability.Distributions.Exponential
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.CharFun
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
@@ -5768,6 +5777,7 @@ public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Algebraic.LinearIndependent
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.Algebraic.Pi
+public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
 public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
@@ -5839,6 +5849,7 @@ public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.Pi
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
@@ -5965,6 +5976,8 @@ public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
+public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
@@ -6237,6 +6250,7 @@ public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Smooth.StandardSmooth
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
