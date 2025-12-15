@@ -249,7 +249,7 @@ theorem Trivialization.mdifferentiableAt_snd_comp_iff₂
     e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
-of any trivialization. Version at a point within at set. -/
+of any trivialization. Version at a point within a set. -/
 theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {s : Set M} {x₀ : M}
@@ -281,7 +281,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
-of any trivialization. Version at a point within at set. -/
+of any trivialization. Version at a point within a set. -/
 theorem Trivialization.mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (s : Π b : B, E b) {u : Set B} {b₀ : B}

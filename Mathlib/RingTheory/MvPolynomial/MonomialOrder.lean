@@ -120,7 +120,7 @@ def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
 variable (m) in
-/-- The leading term of of a multivariate polynomial with respect to a monomial ordering. -/
+/-- The leading term of a multivariate polynomial with respect to a monomial ordering. -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -693,6 +693,40 @@ lemma leadingTerm_leadingTerm (f : MvPolynomial σ R) :
 @[simp]
 lemma leadingTerm_C (c : R) : m.leadingTerm (C c) = C c := by
   simp [leadingTerm, leadingCoeff_C]
+
+@[simp]
+lemma leadingTerm_monomial (s : σ →₀ ℕ) (c : R) :
+    m.leadingTerm (monomial s c) = monomial s c := by
+  classical
+  by_cases h : c = 0 <;> simp [leadingTerm, degree_monomial, h]
+
+@[simp]
+lemma degree_leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.degree (m.leadingTerm p * q) = m.degree (p * q) := by
+  wlog! +distrib h : p ≠ 0 ∧ q ≠ 0
+  · obtain rfl | rfl := h <;> simp
+  classical
+  simp [leadingTerm, degree_mul, h, degree_monomial]
+
+@[simp]
+lemma degree_mul_leadingTerm [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.degree (p * m.leadingTerm q) = m.degree (p * q) :=
+  mul_comm _ p ▸ mul_comm _ p ▸ m.degree_leadingTerm_mul q p
+
+lemma degree_lt_of_left_ne_zero_of_degree_mul_lt [NoZeroDivisors R] {p p' q : MvPolynomial σ R}
+    (hp : p ≠ 0) (h : m.degree (p * q) ≺[m] m.degree (p' * q)) :
+    m.degree p ≺[m] m.degree p' := by
+  wlog! hq : q ≠ 0
+  · simp [hq] at h
+  apply lt_of_le_of_lt' m.degree_mul_le at h
+  simpa [m.degree_mul hp hq] using h
+
+lemma degree_mul_lt_iff_left_lt_of_ne_zero [NoZeroDivisors R] {p p' q : MvPolynomial σ R}
+    (hp : p ≠ 0) (hq : q ≠ 0) :
+    m.degree (p * q) ≺[m] m.degree (p' * q) ↔ m.degree p ≺[m] m.degree p' := by
+  refine ⟨m.degree_lt_of_left_ne_zero_of_degree_mul_lt hp, ?_⟩
+  intro h
+  simpa [m.degree_mul hp hq, m.degree_mul (show p' ≠ 0 by contrapose! h; simp [h]) hq] using h
 
 end Semiring
 

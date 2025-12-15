@@ -332,7 +332,7 @@ end Adjunction
 
 namespace Functor
 
-variable {J C D : Type*} [Category J] [Category C] [Category D]
+variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (F : C ⥤ D)
 
 noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
