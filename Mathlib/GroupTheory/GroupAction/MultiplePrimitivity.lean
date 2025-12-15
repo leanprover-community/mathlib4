@@ -96,7 +96,7 @@ transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 is preprimitive. -/
 @[mk_iff, to_additive existing
 /-- A group action is `n`-multiply preprimitive  if it is `n`-multiply
-transitive and if, when `n ≥ 1`, for every set `s` of cardinality
+pretransitive and if, when `n ≥ 1`, for every set `s` of cardinality
 `n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/]
 class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ) where
