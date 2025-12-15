@@ -219,8 +219,8 @@ end FiniteResidueField
 
 /-! ### Standard part -/
 
-/-- The standard part of an `FiniteElement` element is the unique real number with an
-infinitesimal difference.
+/-- The standard part of a `FiniteElement` is the unique real number with an infinitesimal
+difference.
 
 For any infinite inputs, this function outputs a junk value of 0. -/
 @[no_expose]
