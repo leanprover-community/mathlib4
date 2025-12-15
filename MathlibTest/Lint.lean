@@ -1,5 +1,5 @@
 import Batteries.Tactic.Alias
-import Mathlib.Tactic.Linter.Lint
+import MathlibInit.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 /--
 warning: The namespace 'add' is duplicated in the declaration 'add.add'

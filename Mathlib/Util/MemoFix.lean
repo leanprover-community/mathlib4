@@ -6,6 +6,7 @@ Authors: Gabriel Ebner, Edward Ayers
 module
 
 public import Std.Data.HashMap.Basic
+public import Lean.Util.PtrSet
 
 /-!
 # Fixpoint function with memoisation

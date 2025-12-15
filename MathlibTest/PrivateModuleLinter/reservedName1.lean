@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import Mathlib.Tactic.Linter.PrivateModule
 public import Lean.Elab.Command
 

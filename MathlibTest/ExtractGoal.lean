@@ -1,4 +1,4 @@
-import Mathlib.Tactic.ExtractGoal
+import MathlibInit.Tactic.ExtractGoal
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 

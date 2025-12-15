@@ -25,7 +25,7 @@ public meta import Batteries.Tactic.GeneralizeProofs
 public meta import LeanSearchClient
 
 -- Import Mathlib-specific linters.
-public meta import Mathlib.Tactic.Linter.Lint
+public meta import MathlibInit.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 public meta import Mathlib.Tactic.ApplyCongr
@@ -54,7 +54,7 @@ public meta import Mathlib.Tactic.DeprecateTo
 public meta import Mathlib.Tactic.ErwQuestion
 public meta import Mathlib.Tactic.Eqns
 public meta import Mathlib.Tactic.ExistsI
-public meta import Mathlib.Tactic.ExtractGoal
+public meta import MathlibInit.Tactic.ExtractGoal
 public meta import Mathlib.Tactic.FailIfNoProgress
 public meta import Mathlib.Tactic.Find
 public meta import Mathlib.Tactic.FunProp

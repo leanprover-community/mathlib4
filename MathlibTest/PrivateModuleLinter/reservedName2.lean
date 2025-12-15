@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import all Mathlib.Tactic.Linter.PrivateModule
 public import MathlibTest.PrivateModuleLinter.reservedName1
 
