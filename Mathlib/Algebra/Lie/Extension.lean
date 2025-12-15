@@ -127,6 +127,11 @@ lemma proj_surjective (E : Extension R M L) :
     Function.Surjective E.proj :=
   (LieHom.range_eq_top E.proj).mp E.IsExtension.range_eq_top
 
+lemma proj_choose_sub_mem (E : Extension R M L) {s : L →ₗ[R] E.L}
+    (hs : Function.LeftInverse E.proj s) (x : L) :
+    E.proj_surjective.hasRightInverse.choose x - s x ∈ E.proj.ker := by
+  rw [LieHom.mem_ker, map_sub, hs, E.proj_surjective.hasRightInverse.choose_spec, sub_eq_zero]
+
 end Extension
 
 section Algebra
@@ -300,7 +305,6 @@ noncomputable def toKer (E : Extension R M L) :
     simp [IsExtension.kerEquivRange, Equiv.symm_apply_eq]
     rfl
   right_inv x := by simpa [Subtype.ext_iff] using Equiv.apply_ofInjective_symm E.incl_injective _
-
 
 @[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
     ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by
@@ -555,7 +559,7 @@ lemma apply_sub_apply_mem_ker (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L
 
 /-- The 1-cochain attached to a pair of splittings of an extension. -/
 @[simps]
-def oneCochain_of_two_splitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
+def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂) :
     oneCochain R L M where
   toFun x := E.toKer.symm ⟨(s₁ x) - (s₂ x), E.apply_sub_apply_mem_ker hs₁ hs₂ x⟩
@@ -567,5 +571,37 @@ def oneCochain_of_two_splitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E
     rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk]
     refine Subtype.mk_eq_mk.mpr ?_
     rw [LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
+
+lemma d₁₂_oneCochain_of_two_splitting [IsLieAbelian M]
+    (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
+    (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂) :
+    letI _ := E.ringModuleOf
+    letI _ := E.lieModuleOf
+    d₁₂ R L M (E.oneCochainOfTwoSplitting hs₁ hs₂) =
+      E.twoCocycleOf hs₁ - E.twoCocycleOf hs₂ := by
+  ext x y
+  simp only [d₁₂_apply_coe_apply_apply, oneCochainOfTwoSplitting_apply, AddSubgroupClass.coe_sub,
+    twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply, LinearMap.coe_mk,
+    AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+  refine (EmbeddingLike.apply_eq_iff_eq E.toKer).mp ?_
+  letI _ := E.ringModuleOf
+  set Ex := E.proj_surjective.hasRightInverse.choose x with hx
+  set Ey := E.proj_surjective.hasRightInverse.choose y with hy
+  simp only [ringModuleOf_bracket, LieEquiv.apply_symm_apply, map_sub, ← hx, ← hy]
+  refine Subtype.ext ?_
+  simp only [AddSubgroupClass.coe_sub, LieSubmodule.coe_bracket, lie_sub]
+  have h₁ : ⁅Ex - s₁ x, s₁ y - Ey⁆ = (0 : E.L) := by
+    simpa only [Subtype.ext_iff, LieSubmodule.coe_zero, LieIdeal.coe_bracket_of_module,
+      LieSubmodule.coe_bracket] using
+        trivial_lie_zero E.proj.ker E.proj.ker ⟨Ex - s₁ x, proj_choose_sub_mem E hs₁ x⟩
+        ⟨s₁ y - Ey, sub_mem_comm_iff.mp (proj_choose_sub_mem E hs₁ y)⟩
+  have h₂ : ⁅Ex - s₂ x, s₂ y - Ey⁆ = (0 : E.L) := by
+    simpa only [Subtype.ext_iff, LieSubmodule.coe_zero, LieIdeal.coe_bracket_of_module,
+      LieSubmodule.coe_bracket] using
+        trivial_lie_zero E.proj.ker E.proj.ker ⟨Ex - s₂ x, proj_choose_sub_mem E hs₂ x⟩
+        ⟨s₂ y - Ey, sub_mem_comm_iff.mp (proj_choose_sub_mem E hs₂ y)⟩
+  simp only [lie_sub, sub_lie, sub_sub, sub_eq_zero] at h₁ h₂
+  rw [h₁, h₂, ← lie_skew (s₁ x) Ey, ← lie_skew (s₂ x) Ey]
+  abel
 
 end LieAlgebra.Extension
