@@ -10,6 +10,7 @@ public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -39,6 +40,14 @@ section Separation
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
 
+lemma IsGδ.preimage {X Y} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : ContinuousMap X Y) {s : Set Y} (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
+  rcases hs with ⟨T, To, cardT, hsT⟩
+  use Set.preimage f '' T
+  split_ands
+  · rintro _ ⟨t, ht, rfl⟩; exact (To t ht).preimage f.continuous
+  · exact Countable.image cardT (Set.preimage ⇑f)
+  · simp [hsT]
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -100,6 +109,17 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
     exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
+
+lemma of_precise_separating
+    (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
+      {δ : C(X, ℝ) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
+  __ := NormalSpace.of_separating fun {s t} sC tC disj ↦ (sep sC tC disj).map id
+      (fun _ ↦ And.imp (fun h₀ x hx ↦ h₀.symm.subset hx) fun h₁ x hx ↦ h₁.symm.subset hx)
+  closed_gdelta ⦃s⦄ sC := by
+    have Gδ₀ : IsGδ ({0} : Set ℝ) := IsGδ.singleton 0
+    let ⟨δ, hδ₀, hδ₁⟩ := sep sC isClosed_empty (disjoint_empty s)
+    rw [← hδ₀]
+    apply Gδ₀.preimage
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
