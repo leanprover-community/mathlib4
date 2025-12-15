@@ -177,6 +177,18 @@ def WithUpperSet.toDualHomeomorph [Preorder α] : WithUpperSet α ≃ₜ WithLow
   continuous_toFun := continuous_coinduced_rng
   continuous_invFun := continuous_coinduced_rng
 
+
+/--
+The Lower Set topology is homeomorphic to the Upper Set topology on the dual order
+-/
+def WithLowerSet.toDualHomeomorph [Preorder α] : WithLowerSet α ≃ₜ WithUpperSet αᵒᵈ where
+  toFun := OrderDual.toDual
+  invFun := OrderDual.ofDual
+  left_inv := OrderDual.toDual_ofDual
+  right_inv := OrderDual.ofDual_toDual
+  continuous_toFun := continuous_coinduced_rng
+  continuous_invFun := continuous_coinduced_rng
+
 /-- Prop-valued mixin for an ordered topological space to be
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
 set topology does not coincide with the upper topology.
@@ -462,4 +474,247 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
     IsOpen (ofLowerSet ⁻¹' s) ↔ IsLowerSet s := isLowerSet_toLowerSet_preimage.symm
 
 end WithLowerSet
+
+namespace IsUpperSet
+variable [Preorder α] [TopologicalSpace α] [Topology.IsUpperSet α]
+    [Preorder β] [TopologicalSpace β] [Topology.IsUpperSet β]
+
+open scoped Filter
+
+lemma specializes_bot [OrderBot α] {a : α} : a ⤳ ⊥ := by
+  simp [IsUpperSet.specializes_iff_le]
+
+lemma specializes_top [OrderTop α] {a : α} : ⊤ ⤳ a := by
+  simp [IsUpperSet.specializes_iff_le]
+
+@[simps]
+instance [OrderBot α] : OrderBot (WithUpperSet α) where
+  bot := WithUpperSet.toUpperSet ⊥
+  bot_le a := by cases a; simp [WithUpperSet.toUpperSet_le_iff]
+
+@[simps]
+instance [OrderTop α] : OrderTop (WithUpperSet α) where
+  top := WithUpperSet.toUpperSet ⊤
+  le_top a := by cases a; simp [WithUpperSet.toUpperSet_le_iff]
+
+lemma WithBot.continuous_coe :
+    Continuous (Y := WithUpperSet <| WithBot α) (WithUpperSet.toUpperSet ∘ WithBot.some) := by
+  rw [← IsUpperSet.monotone_iff_continuous]
+  exact WithBot.coe_mono
+
+lemma WithTop.continuous_coe :
+    Continuous (Y := WithUpperSet <| WithTop α) (WithUpperSet.toUpperSet ∘ WithTop.some) := by
+  rw [← IsUpperSet.monotone_iff_continuous]
+  exact WithTop.coe_mono
+
+lemma WithBot.isOpenEmbedding_coe :
+    IsOpenEmbedding (Y := WithUpperSet <| WithBot α) (WithUpperSet.toUpperSet ∘ WithBot.some) :=
+  have inj : (WithUpperSet.toUpperSet ∘ WithBot.some).Injective := Option.some_injective _
+{ eq_induced := by
+    ext s
+    simp_rw [isOpen_induced_iff]
+    constructor
+    · intro hs; use WithUpperSet.toUpperSet ∘ WithBot.some '' s; split_ands
+      · rw [IsUpperSet.isOpen_iff_isUpperSet, IsUpperSet]
+        intro a b; cases a with | _ a => cases b with | _ b =>
+        cases a using WithBot.recBotCoe <;> cases b using WithBot.recBotCoe
+        rotate_right
+        · simp_rw [WithUpperSet.toUpperSet_le_iff, WithBot.coe_le_coe,
+           ← IsUpperSet.specializes_iff_le]; intro h
+          simp_rw [← Function.comp_apply (f := WithUpperSet.toUpperSet), inj.mem_set_image]
+          exact h.mem_open hs
+        all_goals simp [WithBot.some, WithUpperSet, WithUpperSet.toUpperSet, WithBot.le_bot_iff]
+      · rw [inj.preimage_image]
+    · rintro ⟨t, tO, rfl⟩
+      exact tO.preimage WithBot.continuous_coe
+  injective := inj
+  isOpen_range := by
+    rw [← isClosed_compl_iff]
+    convert_to IsClosed {(⊥ : WithUpperSet (WithBot α))}
+    · ext x
+      cases x using WithBot.recBotCoe <;> simp [WithUpperSet, WithUpperSet.toUpperSet]
+    · rw [IsUpperSet.isClosed_iff_isLower, IsLowerSet]
+      rintro a b h ⟨⟩; simpa [WithUpperSet, WithBot.le_bot_iff] using h }
+
+lemma nhds_bot [OrderBot α] : 𝓝 (⊥ : α) = ⊤ := by
+  rw [eq_top_iff, le_nhds_iff]
+  intro s hs sO
+  rw [Filter.mem_top, eq_univ_iff_forall]
+  intro x; exact specializes_bot.mem_open sO hs
+
+omit [TopologicalSpace α] in
+lemma WithBot.isClosed_singleton_bot : IsClosed {(⊥ : WithUpperSet <| WithBot α)} := by
+  rw [IsUpperSet.isClosed_iff_isLower, IsLowerSet]
+  rintro x y h ⟨⟩; cases y
+  simp [WithUpperSet.toUpperSet_le_iff, WithBot.le_bot_iff] at h; simp [h]
+
+omit [TopologicalSpace α] in
+@[simp]
+lemma WithBot.le_bot_iff {a : WithUpperSet (WithBot α)} :
+    a ≤ WithUpperSet.toUpperSet (⊥ : WithBot α) ↔ a = WithUpperSet.toUpperSet (⊥ : WithBot α) :=
+  _root_.WithBot.le_bot_iff
+
+def WithBot.lift {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
+    (f : C(U, α)) : C(X, WithUpperSet (WithBot α)) where
+  toFun x := if h : x ∈ U then (WithUpperSet.toUpperSet ∘ WithBot.some) (f ⟨x, h⟩) else ⊥
+  continuous_toFun := by
+    constructor; intro s hs
+    by_cases hb : ⊥ ∈ s
+    · have : s = univ := by
+        rw [eq_univ_iff_forall]; intro x; exact IsUpperSet.specializes_bot.mem_open hs hb
+      simp [this]
+    · simp only [preimage_dif, hb, exists_false, setOf_false, union_empty]
+      rw [Uo.isOpenEmbedding_subtypeVal.isOpen_iff_preimage_isOpen, preimage_setOf_eq]
+      · simpa [← mem_preimage, setOf_mem_eq] using
+          hs.preimage WithBot.continuous_coe |>.preimage <| map_continuous f
+      · intro x; simp +contextual
+
+@[simp]
+lemma WithBot.lift_coe {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
+    (f : C(U, α)) (x : U) :
+    WithBot.lift Uo f (x : X) = (WithUpperSet.toUpperSet ∘ WithBot.some) (f x) := by
+  simp [WithBot.lift]
+
+@[simp]
+lemma WithBot.lift_of_mem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∈ U) :
+    WithBot.lift Uo f x = (WithUpperSet.toUpperSet ∘ WithBot.some) (f ⟨x, hx⟩) := by
+  simp [WithBot.lift, hx]
+
+@[simp]
+lemma WithBot.lift_of_notMem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∉ U) : WithBot.lift Uo f x = ⊥ := by
+  simp [WithBot.lift, hx]
+
+@[simp]
+lemma WithBot.lift_restrict {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) :
+    (WithBot.lift Uo f).restrict U =
+      .comp ⟨WithUpperSet.toUpperSet ∘ WithBot.some, continuous_coe⟩ f := by
+  ext x; simp [WithBot.lift]
+
+@[simp]
+lemma WithBot.lift_restrict_compl {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) :
+    (WithBot.lift Uo f).restrict Uᶜ = .const _ ⊥ := by
+  ext x; simpa [WithBot.lift, -Subtype.coe_prop] using x.2
+
+end IsUpperSet
+
+namespace IsLowerSet
+
+variable [Preorder α] [TopologicalSpace α] [Topology.IsLowerSet α]
+    [Preorder β] [TopologicalSpace β] [Topology.IsLowerSet β]
+
+lemma specializes_bot [OrderBot α] {a : α} : ⊥ ⤳ a := by
+  simp [IsLowerSet.specializes_iff_le]
+
+lemma specializes_top [OrderTop α] {a : α} : a ⤳ ⊤ := by
+  simp [IsLowerSet.specializes_iff_le]
+
+@[simps]
+instance [OrderBot α] : OrderBot (WithLowerSet α) where
+  bot := WithLowerSet.toLowerSet ⊥
+  bot_le a := by cases a; simp [WithLowerSet.toLowerSet_le_iff]
+
+@[simps]
+instance [OrderTop α] : OrderTop (WithLowerSet α) where
+  top := WithLowerSet.toLowerSet ⊤
+  le_top a := by cases a; simp [WithLowerSet.toLowerSet_le_iff]
+
+lemma WithTop.continuous_coe :
+    Continuous (Y := WithLowerSet <| WithTop α) (WithLowerSet.toLowerSet ∘ WithTop.some) := by
+  rw [← IsLowerSet.monotone_iff_continuous]
+  exact WithTop.coe_mono
+
+lemma WithBot.continuous_coe :
+    Continuous (Y := WithLowerSet <| WithBot α) (WithLowerSet.toLowerSet ∘ WithBot.some) := by
+  rw [← IsLowerSet.monotone_iff_continuous]
+  exact WithBot.coe_mono
+
+open OrderDual in
+lemma isOpenEmbedding_iff_orderDual {f : α → β} :
+    IsOpenEmbedding f ↔ IsOpenEmbedding (toDual ∘ f ∘ ofDual) := by
+  let η₁ : α ≃ₜ αᵒᵈ :=
+    IsLowerSet.WithLowerSetHomeomorph.symm.trans <|
+      WithLowerSet.toDualHomeomorph.trans IsUpperSet.WithUpperSetHomeomorph
+  let η₂ : β ≃ₜ βᵒᵈ :=
+    IsLowerSet.WithLowerSetHomeomorph.symm.trans <|
+      WithLowerSet.toDualHomeomorph.trans IsUpperSet.WithUpperSetHomeomorph
+  have h_of : IsOpenEmbedding (@ofDual α) := η₁.symm.isOpenEmbedding
+  have h_to : IsOpenEmbedding (@toDual β) := η₂.isOpenEmbedding
+  refine (fun (mp : {f : _} → IsOpenEmbedding f →  IsOpenEmbedding (⇑toDual ∘ f ∘ ⇑ofDual)) ↦
+    ⟨mp, ?mpr⟩) ?mp
+  case mp => intro f h; exact h_to.comp (h.comp h_of)
+  case mpr => intro h; simpa using mp h
+
+lemma WithTop.isOpenEmbedding_coe :
+    IsOpenEmbedding (Y := WithLowerSet <| WithTop α) (WithLowerSet.toLowerSet ∘ WithTop.some) := by
+  rw [isOpenEmbedding_iff_orderDual]
+  exact IsUpperSet.WithBot.isOpenEmbedding_coe
+
+lemma nhds_top [OrderTop α] : 𝓝 (⊤ : α) = ⊤ := by
+  rw [eq_top_iff, le_nhds_iff]
+  intro s hs sO
+  rw [Filter.mem_top, eq_univ_iff_forall]
+  intro x; exact specializes_top.mem_open sO hs
+
+omit [TopologicalSpace α] in
+lemma WithTop.isClosed_singleton_top : IsClosed {(⊤ : WithLowerSet <| WithTop α)} := by
+  rw [IsLowerSet.isClosed_iff_isUpper, IsUpperSet]
+  rintro x y h ⟨⟩; cases y
+  simp [WithLowerSet.toLowerSet_le_iff] at h; simp [h]
+
+omit [TopologicalSpace α] in
+@[simp]
+lemma WithTop.top_le_iff {a : WithLowerSet (WithTop α)} :
+    WithLowerSet.toLowerSet (⊤ : WithTop α) ≤ a ↔ a = WithLowerSet.toLowerSet (⊤ : WithTop α) :=
+  _root_.WithTop.top_le_iff
+
+def WithTop.lift {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
+    (f : C(U, α)) : C(X, WithLowerSet (WithTop α)) where
+  toFun x := if h : x ∈ U then (WithLowerSet.toLowerSet ∘ WithTop.some) (f ⟨x, h⟩) else ⊤
+  continuous_toFun := by
+    constructor; intro s hs
+    by_cases hb : ⊤ ∈ s
+    · have : s = univ := by
+        rw [eq_univ_iff_forall]; intro x; exact IsLowerSet.specializes_top.mem_open hs hb
+      simp [this]
+    · simp only [preimage_dif, hb, exists_false, setOf_false, union_empty]
+      rw [Uo.isOpenEmbedding_subtypeVal.isOpen_iff_preimage_isOpen, preimage_setOf_eq]
+      · simpa [← mem_preimage, setOf_mem_eq] using
+          hs.preimage WithTop.continuous_coe |>.preimage <| map_continuous f
+      · intro x; simp +contextual
+
+@[simp]
+lemma WithTop.lift_coe {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
+    (f : C(U, α)) (x : U) :
+    WithTop.lift Uo f (x : X) = (WithLowerSet.toLowerSet ∘ WithTop.some) (f x) := by
+  simp [WithTop.lift]
+
+@[simp]
+lemma WithTop.lift_of_mem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∈ U) :
+    WithTop.lift Uo f x = (WithLowerSet.toLowerSet ∘ WithTop.some) (f ⟨x, hx⟩) := by
+  simp [WithTop.lift, hx]
+
+@[simp]
+lemma WithTop.lift_of_notMem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∉ U) : WithTop.lift Uo f x = ⊥ := by
+  simp [WithTop.lift, hx]
+
+@[simp]
+lemma WithTop.lift_restrict {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) :
+    (WithTop.lift Uo f).restrict U =
+      .comp ⟨WithLowerSet.toLowerSet ∘ WithTop.some, continuous_coe⟩ f := by
+  ext x; simp [WithTop.lift]
+
+@[simp]
+lemma WithTop.lift_restrict_compl {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
+    (Uo : IsOpen U) (f : C(U, α)) :
+    (WithTop.lift Uo f).restrict Uᶜ = .const _ ⊥ := by
+  ext x; simpa [WithTop.lift, -Subtype.coe_prop] using x.2
+
+end IsLowerSet
 end Topology
