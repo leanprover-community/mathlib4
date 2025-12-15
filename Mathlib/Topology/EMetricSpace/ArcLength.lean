@@ -33,7 +33,7 @@ noncomputable def arcLength (a b : α) : ℝ≥0∞ :=
 
 theorem arcLength_eq : arcLength f a b = eVariationOn f (Set.Icc a b) := rfl
 
-theorem arcLength_ne_iff : (arcLength f a b ≠ ∞) ↔ BoundedVariationOn f (Set.Icc a b) := by rfl
+theorem arcLength_ne_iff : (arcLength f a b ≠ ∞) ↔ BoundedVariationOn f (Set.Icc a b) := .rfl
 
 /-- `arcLength f a b` is the supremum of finite sums of `edist (f <| u i) (f <| u <| i+1)` for `u`
 satisfying the same conditions as for `eVariationOn` with the addition of:
