@@ -47,7 +47,7 @@ category-theoretic product in `CompHausLike P`.
 -/
 def productIsLimit : IsLimit (productCone X Y) := by
   refine BinaryFan.isLimitMk (fun s ↦ ofHom _ { toFun x := (s.fst x, s.snd x) })
-    (by cat_disch) (by cat_disch) fun _ _ h₁ h₂ ↦ ?_
+    (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
   ext x
   exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
 
@@ -84,7 +84,7 @@ category-theoretic coproduct in `CompHausLike P`.
 -/
 def coproductIsColimit : IsColimit (coproductCocone X Y) := by
   refine BinaryCofan.isColimitMk (fun s ↦ ofHom _ { toFun := Sum.elim s.inl s.inr })
-    (by cat_disch) (by cat_disch) fun _ _ h₁ h₂ ↦ ?_
+    (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
   ext ⟨⟩
   exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
 
