@@ -385,13 +385,13 @@ theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
 @[deprecated (since := "2025-08-19")] alias order_eq_orderTop_of_ne := order_eq_orderTop_of_ne_zero
 
 @[simp]
-theorem coeff_order_eq_zero {x : HahnSeries Γ R} : x.coeff x.order = 0 ↔ x = 0 := by
+theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := by
   refine ⟨not_imp_not.1 fun hx ↦ ?_, by simp +contextual⟩
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
 @[deprecated coeff_order_eq_zero (since := "2025-12-09")]
-theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
+theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
   coeff_order_eq_zero.not.2 hx
 
 theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : R⟦Γ⟧}
