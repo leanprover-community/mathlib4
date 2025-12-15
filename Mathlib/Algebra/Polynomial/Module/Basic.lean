@@ -190,9 +190,9 @@ def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] where
       lia
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
-def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
-    PolynomialModule R S ≃ₗ[R] S[X] :=
-  { (Polynomial.toFinsuppIso S).symm with map_smul' := fun _ _ => rfl }
+def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] : PolynomialModule R S ≃ₗ[R] S[X] where
+  toAddEquiv := AddMonoidAlgebra.coeffAddEquiv.symm.trans (toFinsuppIso _).symm.toAddEquiv
+  map_smul' _ _ := rfl
 
 @[simp]
 lemma equivPolynomialSelf_apply_eq (p : PolynomialModule R R) :

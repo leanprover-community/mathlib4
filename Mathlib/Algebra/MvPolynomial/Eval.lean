@@ -867,7 +867,7 @@ lemma algebraMap_def :
   rfl
 
 instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+  IsScalarTower.of_algebraMap_eq' (by ext; simp [C, monomial])
 
 instance [FaithfulSMul R S] : FaithfulSMul (MvPolynomial σ R) (MvPolynomial σ S) :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr

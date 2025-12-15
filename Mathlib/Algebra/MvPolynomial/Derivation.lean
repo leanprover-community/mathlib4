@@ -34,9 +34,10 @@ variable (R)
 /-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`, as a linear map.
 Use `MvPolynomial.mkDerivation` instead. -/
 def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
-  Finsupp.lsum R fun xs : σ →₀ ℕ =>
+  Finsupp.lsum R (fun xs : σ →₀ ℕ =>
     (LinearMap.ringLmapEquivSelf R R A).symm <|
-      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i
+      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv R).toLinearMap
 
 end
 

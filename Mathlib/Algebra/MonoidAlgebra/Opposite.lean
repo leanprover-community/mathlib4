@@ -39,10 +39,11 @@ protected noncomputable def opRingEquiv : R[M]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[Mᵐᵒ
 
 @[to_additive (dont_translate := R)]
 lemma opRingEquiv_single (r : R) (x : M) :
-    MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
+    MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by ext; simp
 
 @[to_additive (dont_translate := R)]
 lemma opRingEquiv_symm_single (r : Rᵐᵒᵖ) (x : Mᵐᵒᵖ) :
-    MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
+    MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by
+  apply MulOpposite.unop_injective; ext; simp
 
 end MonoidAlgebra

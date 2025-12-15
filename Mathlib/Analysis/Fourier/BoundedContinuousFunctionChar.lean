@@ -49,8 +49,7 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
-noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : W) :
+noncomputable def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) (w : W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v w)
   continuous_toFun :=

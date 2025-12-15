@@ -60,8 +60,8 @@ open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
     _ = #(p.toFinsupp * q.toFinsupp).coeff.support := by rw [← support_toFinsupp, toFinsupp_mul]
-    _ ≤ #(p.toFinsupp.coeff.support + q.toFinsupp.coeff.support) :=
-      Finset.card_le_card (AddMonoidAlgebra.support_coeff_mul_subset p.toFinsupp q.toFinsupp)
+    _ ≤ #(p.toFinsupp.coeff.support + q.toFinsupp.coeff.support) := by
+      grw [AddMonoidAlgebra.support_coeff_mul_subset]
     _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
