@@ -445,8 +445,8 @@ of their cone points. -/
 def ext {ι : Type*}
     {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {s t : WidePullbackCone f}
     (e : s.pt ≅ t.pt)
-    (base : e.hom ≫ t.base = s.base)
-    (π : ∀ i, e.hom ≫ t.π i = s.π i) :
+    (base : e.hom ≫ t.base = s.base := by cat_disch)
+    (π : ∀ i, e.hom ≫ t.π i = s.π i := by cat_disch) :
     s ≅ t :=
   Cones.ext e <| by
     rintro (_ | _)
