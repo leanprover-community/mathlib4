@@ -192,7 +192,7 @@ def compareLeaf (tot : Array Nat) (leadTrail : String × String) (orig s : Strin
     let rest := s.drop orig.length
     if t.trimAscii.isEmpty then if t == " " || t == "\n" then return newTot
     if (t.dropWhile (· == ' ')).take 2 == "--" || (t.dropWhile (· == ' ')).take 1 == "\n" then return newTot
-    return newTot.push rest.length
+    return newTot.push rest.positions.count
 
 /--
 Analogous to `Lean.PrettyPrinter.ppCategory`, but does not run the parenthesizer,
@@ -787,7 +787,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
 
 partial
 def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String.Slice :=
-  if n == 0 || s.length ≤ n then [s] else
+  if n == 0 || s.positions.count ≤ n then [s] else
   s.take n :: (s.drop n).mkGroups n
 
 -- TODO: fix this and re-enable it!
@@ -851,7 +851,7 @@ def mkWdw (s : Substring.Raw) (mid : String := "") : String :=
   s!"\
     {{s with startPos := leftWhitespaceAndWord.stopPos, stopPos := p}}\
     {mid}\
-    {{s with startPos := p, stopPos := rightWhitespaceAndWord.startPos}}".trim.norm
+    {{s with startPos := p, stopPos := rightWhitespaceAndWord.startPos}}".trimAscii.toString.norm
 
 /-
 This part of the code\n  '{origWindow.trim}'\n\
@@ -1098,7 +1098,7 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
   -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
   -- matter too much what we do here and we simply drop `/--` from the original string and the
-  -- pretty-printed one, before continuing.
+  -- pretty-printed one, before continuing. -- -/
   -- Next, if we already dealt with `/--`, finding a `--` means that this is a single line comment
   -- (or possibly a comment embedded in a doc-string, which is ok, since we eventually discard
   -- doc-strings).  In this case, we drop everything until the following line break in the
@@ -1107,7 +1107,8 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
   --dbg_trace (L.take 3, M.take 3)
   if (L.take 3) == "/--".toSlice && (M.take 3) == "/--".toSlice then
     parallelScanAux as (rebuilt ++ "/--") (L.drop 3).copy (M.drop 3).copy addSpace removeSpace removeLine else
-  if (L.take 2) == "--".toSlice then
+  if (L.take 2) == "--".toSlice
+  then
     let newL := L.dropWhile (· != '\n')
     let diff := L.length - newL.copy.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
@@ -1115,13 +1116,17 @@ def parallelScanAux (as : Array FormatError) (rebuilt : String) (L M : String)
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimAsciiStart.copy newM.trimAsciiStart.copy addSpace removeSpace removeLine else
-  if (L.take 2) == "-/".toSlice then
+    parallelScanAux as (rebuilt ++ (L.takeWhile (· != '\n')).toString ++ (newL.takeWhile (·.isWhitespace)).toString) newL.trimAsciiStart.copy newM.trimAsciiStart.copy addSpace removeSpace removeLine
+  else
+  if (L.take 2) == "-/".toSlice
+  then
     let newL := L.drop 2 |>.trimAsciiStart
     let newM := M.drop 2 |>.trimAsciiStart
-    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL.copy newM.copy addSpace removeSpace removeLine else
+    parallelScanAux as (rebuilt ++ "-/" ++ ((L.drop 2).takeWhile (·.isWhitespace)).toString) newL.copy newM.copy addSpace removeSpace removeLine
+  else
   let ls := L.drop 1
   let ms := M.drop 1
+  let lf := L.front
   match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
