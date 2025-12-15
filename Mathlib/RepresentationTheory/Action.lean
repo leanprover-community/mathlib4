@@ -259,7 +259,7 @@ variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
 def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
     (linearize k G (Action.ofMulAction G H)).Equiv (ofMulAction k G H) :=
-    .mk (LinearEquiv.refl _ _) fun g ↦ by rfl
+  .mk (MonoidAlgebra.coeffLinearEquiv _).symm fun _ ↦ rfl
 
 -- the following two lemmas are bad but necessary to fix the broken proofs, but once
 -- we refactor `Action` away these should be removed

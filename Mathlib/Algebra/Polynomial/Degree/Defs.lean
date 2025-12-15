@@ -366,8 +366,6 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
-  simp only [erase_def, AddMonoidAlgebra.erase, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff,
-    degree, support]
   apply sup_mono
   simpa using Finset.erase_subset ..
 

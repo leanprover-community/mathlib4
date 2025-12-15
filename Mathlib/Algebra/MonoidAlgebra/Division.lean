@@ -49,12 +49,12 @@ section
 variable [AddCommMonoid G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
-noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] :=
+noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] where
   -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
   -- the support, and discarding the elements of the support from which `g` can't be subtracted.
   -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
   -- then no discarding occurs.
-  x.coeff.comapDomain (g + ·) (add_right_injective g).injOn
+  coeff := x.coeff.comapDomain (g + ·) (add_right_injective g).injOn
 
 local infixl:70 " /ᵒᶠ " => divOf
 

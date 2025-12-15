@@ -712,8 +712,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem addSubmonoid_closure_setOf_eq_monomial :
     AddSubmonoid.closure { p : R[X] | ∃ n a, p = monomial n a } = ⊤ := by
   apply top_unique
-  rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ←
-    Finsupp.add_closure_setOf_eq_single, AddMonoidHom.map_mclosure]
+  rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ← addSubmonoidClosure_single,
+    AddMonoidHom.map_mclosure]
   refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 ?_)
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
@@ -817,8 +817,7 @@ theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
 theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v ≠ 0) :
     C u * X ^ k + C v * X ^ l = C u * X ^ m + C v * X ^ n ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u + v = 0 ∧ k = l ∧ m = n := by
-  simp_rw [C_mul_X_pow_eq_monomial, ← toFinsupp_inj, toFinsupp_add, toFinsupp_monomial]
-  exact Finsupp.single_add_single_eq_single_add_single hu hv
+  simp [C_mul_X_pow_eq_monomial, ← toFinsupp_inj, single_add_single_inj, *]
 
 theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm

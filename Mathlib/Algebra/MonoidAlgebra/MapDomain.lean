@@ -28,13 +28,10 @@ variable [Semiring R] [Semiring S] [Semiring T] {f : M → N} {a : M} {r : R}
 
 /-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/
-@[to_additive
+@[to_additive (attr := simps)
 /-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/]
 def mapDomain (f : M → N) (x : R[M]) : R[N] := .ofCoeff <| Finsupp.mapDomain f x.coeff
-
-@[to_additive (attr := simp)]
-lemma coeff_mapDomain (f : M → N) (x : R[M]) : (mapDomain f x).coeff = x.coeff.mapDomain f := rfl
 
 @[to_additive (attr := simp)]
 lemma mapDomain_zero (f : M → N) : mapDomain f (0 : R[M]) = 0 := by ext; simp
@@ -78,7 +75,7 @@ lemma ofCoeff_mapRange (f : R →+ S) (x : M →₀ R) :
     ofCoeff (.mapRange f f.map_zero x) = map f (ofCoeff x) := rfl
 
 @[to_additive (attr := simp)]
-protected lemma map_zero (f : R →+ S) : map f (0 : R[M]) = 0 := mapRange_zero (hf := f.map_zero)
+protected lemma map_zero (f : R →+ S) : map f (0 : R[M]) = 0 := by ext; simp
 
 @[to_additive]
 protected lemma map_add (f : R →+ S) (x y : R[M]) : map f (x + y) = map f x + map f y := by
@@ -89,15 +86,14 @@ protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
     map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) :=
-  mapRange_single (hf := f.map_zero)
+lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma map_id (x : R[M]) : map (.id R) x = x := by simp [map, coeff, ofCoeff]
+lemma map_id (x : R[M]) : map (.id R) x = x := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) :
-    map f (map g x) = map (f.comp g) x := by simp [map, coeff, ofCoeff]
+lemma map_map (f : S →+ T) (g : R →+ S) (x : R[M]) : map f (map g x) = map (f.comp g) x := by
+  ext; simp
 
 /-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
@@ -138,7 +134,8 @@ lemma comapDomain_single_map (f : M → N) (hf) (m : M) (r : R) :
 
 @[to_additive]
 lemma mapDomain_comapDomain {f : M → N} {x : R[N]} (hx : ↑x.coeff.support ⊆ Set.range f) (hf) :
-    mapDomain f (comapDomain f hf x) = x := Finsupp.mapDomain_comapDomain _ hf _ hx
+    mapDomain f (comapDomain f hf x) = x := by
+  ext : 1; exact Finsupp.mapDomain_comapDomain _ hf _ hx
 
 section Mul
 variable [Mul M] [Mul N] [Mul O] [FunLike F M N] [MulHomClass F M N]
@@ -436,12 +433,11 @@ section Ring
 variable [Ring R] [Ring S]
 
 @[to_additive]
-protected lemma map_neg (f : R →+ S) (x : R[M]) : map f (-x) = -map f x :=
-  Finsupp.mapRange_neg (hf := f.map_zero) f.map_neg ..
+protected lemma map_neg (f : R →+ S) (x : R[M]) : map f (-x) = -map f x := by ext; simp
 
 @[to_additive]
-protected lemma map_sub (f : R →+ S) (x y : R[M]) : map f (x - y) = map f x - map f y :=
-  Finsupp.mapRange_sub (hf := f.map_zero) f.map_sub ..
+protected lemma map_sub (f : R →+ S) (x y : R[M]) : map f (x - y) = map f x - map f y := by
+  ext; simp
 
 end Ring
 end MonoidAlgebra
