@@ -71,7 +71,7 @@ Additional useful definitions:
   maximal atlas associated to the groupoid `G`, the composition of `e.symm` and `e'` belongs to the
   `G` if `M` admits `G` as a structure groupoid.
 * `ChartedSpaceCore.toChartedSpace`: consider a space without a topology, but endowed with a set
-  of charts (which are partial equivs) for which the change of coordinates are partial homeos.
+  of charts (which are partial equivs) for which the changes of coordinates are partial homeos.
   Then one can construct a topology on the space for which the charts become partial homeos,
   defining a genuine charted space structure.
 
@@ -90,7 +90,7 @@ that these properties only depend on the maximal atlas, for instance). In practi
 create any real difficulty.
 
 We use the letter `H` for the model space thinking of the case of manifolds with boundary, where the
-model space is a half space.
+model space is a half-space.
 
 Manifolds are sometimes defined as topological spaces with an atlas of local diffeomorphisms, and
 sometimes as spaces with an atlas from which a topology is deduced. We use the former approach:

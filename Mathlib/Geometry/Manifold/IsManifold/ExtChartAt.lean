@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.Basic
 In a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in the
 model space `H`. However, we also need to use extended charts taking values in the model vector
 space `E`. These extended charts are not `OpenPartialHomeomorph` as the target is not open in `E`
-in general, but we can still register them as `PartialEquiv`.
+in general, but we can still register them as `PartialEquiv`s.
 
 ## Main definitions
 

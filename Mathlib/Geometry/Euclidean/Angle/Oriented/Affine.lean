@@ -46,7 +46,7 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 
 @[inherit_doc] scoped notation "∡" => EuclideanGeometry.oangle
 
-/-- Oriented angles are continuous when neither end point equals the middle point. -/
+/-- Oriented angles are continuous when neither endpoint equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
   unfold oangle
