@@ -414,9 +414,8 @@ theorem isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] [Epi f.base] 
 
 theorem of_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding f)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  sorry
-  --haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
-  --SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
+  have (x : X) : IsIso (f.toShHom.hom.stalkMap x) := inferInstanceAs (IsIso (f.stalkMap x))
+  SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
 
 @[deprecated (since := "2025-10-07")] alias of_stalk_iso := of_isIso_stalkMap
 
@@ -507,10 +506,9 @@ instance hasLimit_cospan_forget_of_right' :
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
 instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
-  sorry
-  --createsLimitOfFullyFaithfulOfIso
-  --  (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom)
-  --  (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
+  createsLimitOfFullyFaithfulOfIso
+    (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom.hom)
+    (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
 instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
