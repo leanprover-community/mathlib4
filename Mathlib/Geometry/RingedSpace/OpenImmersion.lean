@@ -886,14 +886,17 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where
   base_open := sigma_ι_isOpenEmbedding F i
   c_iso U := by
-    sorry
-    /-have e : colimit.ι F i = _ :=
-      (ι_preservesColimitIso_inv SheafedSpace.forgetToPresheafedSpace F i).symm
+    have h₁ := ι_preservesColimitIso_inv SheafedSpace.forgetToPresheafedSpace F i
+    have h₂ : colimit.ι F i =
+      { hom := (colimit.ι (F ⋙ forgetToPresheafedSpace) i ≫
+        (preservesColimitIso _ F).inv) } :=
+      InducedCategory.hom_ext h₁.symm
     have H :
       IsOpenEmbedding
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
-            (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base :=
-      e ▸ sigma_ι_isOpenEmbedding F i
+            (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base := by
+      have := h₁.symm
+      convert sigma_ι_isOpenEmbedding F i
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
@@ -901,23 +904,17 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note: this instance created manually to make the `inferInstance` below work
-    have inst1 : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c :=
-      inferInstance
-    rsuffices : IsIso
-        (limit.π
-          (PresheafedSpace.componentwiseDiagram (F ⋙ SheafedSpace.forgetToPresheafedSpace)
-            ((Opens.map
-                  (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
-              (unop <| op <| H.isOpenMap.functor.obj U)))
-          (op i))
-    · infer_instance
+    have : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c := inferInstance
+    suffices IsIso (limit.π (PresheafedSpace.componentwiseDiagram
+      (F ⋙ SheafedSpace.forgetToPresheafedSpace) ((Opens.map
+        (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
+          (H.isOpenMap.functor.obj U))) (op i)) from inferInstance
     apply limit_π_isIso_of_is_strict_terminal
-    intro j hj
-    induction j with | op j => ?_
+    rintro ⟨j⟩ hj
     dsimp
     convert (F.obj j).sheaf.isTerminalOfEmpty using 3
     convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
-    exact (congr_arg PresheafedSpace.Hom.base e).symm-/
+    exact congr_arg PresheafedSpace.Hom.base h₁
 
 instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
     (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F] (i : Discrete ι)
