@@ -26,7 +26,7 @@ Known limitations:
 public meta section
 
 namespace Mathlib.Tactic.ToDual
-open Lean Meta Elab Command Std Translate UnfoldBoundary
+open Lean Meta Elab Term Command Std Translate UnfoldBoundary
 
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
@@ -39,12 +39,6 @@ syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
-
-@[inherit_doc UnfoldBoundaryExt.unfolds]
-syntax (name := to_dual_dont_unfold) "to_dual_dont_unfold" : attr
-
-@[inherit_doc UnfoldBoundaryExt.casts]
-syntax (name := to_dual_cast) "to_dual_cast" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) to their dual version.
@@ -111,32 +105,15 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 
 @[inherit_doc UnfoldBoundaryExt.unfolds]
 initialize unfolds : NameMapExtension SimpTheorem ← registerNameMapExtension _
-initialize
-  registerBuiltinAttribute {
-    name := `to_dual_dont_unfold
-    descr := "The `to_dual_dont_unfold` attribute"
-    applicationTime := .afterCompilation
-    add := fun declName _ _ ↦ MetaM.run' do
-      let name := mkEqLikeNameFor (← getEnv) declName unfoldThmSuffix
-      let some name ← mkSimpleEqThm declName name |
-        throwError "No unfold theorem could be generated for `{declName}`"
-      executeReservedNameAction name
-      unfolds.add declName { origin := .decl name, proof := mkConst name, rfl := true } }
 
 @[inherit_doc UnfoldBoundaryExt.casts]
-initialize casts : NameMapExtension Name ← registerNameMapExtension _
-initialize
-  registerBuiltinAttribute {
-    name := `to_dual_cast
-    descr := "The `to_dual_cast` attribute"
-    add := fun cast _ _ ↦ MetaM.run' do
-      let_expr Identification α _ := (← getConstInfo cast).type.getForallBody |
-        throwError "expected an `Identification`, not {cast}"
-      let .const declName _ := α.getAppFn | throwError "expected {α} to be a constant application"
-      casts.add declName cast }
+initialize casts : NameMapExtension (Name × Name) ← registerNameMapExtension _
+
+@[inherit_doc UnfoldBoundaryExt.insertionFuns]
+initialize insertionFuns : NameMapExtension Unit ← registerNameMapExtension _
 
 @[inherit_doc TranslateData.unfoldBoundaries]
-def unfoldBoundaries : UnfoldBoundaryExt := { unfolds, casts }
+def unfoldBoundaries : UnfoldBoundaryExt := { unfolds, casts, insertionFuns }
 
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
@@ -233,5 +210,89 @@ initialize registerBuiltinAttribute {
       addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
+
+/-- This function is based on `Lean.Meta.mkSimpleEqThm`. -/
+private def mkSimpleEqThm (declName : Name) (name : Name) (isThm : Bool)
+    (mkTypeVal : Expr → Expr → MetaM (Expr × Expr)) : MetaM Unit := do
+  let .defnInfo info ← getConstInfo declName | throwError "`{declName}` is not a definition"
+  lambdaTelescope (cleanupAnnotations := true) info.value fun xs body => do
+    let lhs := mkAppN (mkConst info.name <| info.levelParams.map mkLevelParam) xs
+    let (type, val) ← mkTypeVal lhs body
+    let type ← mkForallFVars xs type
+    let value ← mkLambdaFVars xs val
+    addDecl <| ←
+      if isThm then mkThmOrUnsafeDef {
+        name, type, value
+        levelParams := info.levelParams }
+      else
+        .defnDecl <$> mkDefinitionValInferringUnsafe name info.levelParams type value (.regular 0)
+
+elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
+  let declName := declName.getId
+  withDeclNameForAuxNaming declName do
+  let name ← mkAuxDeclName `_to_dual_insert_cast
+  Command.liftTermElabM do
+    mkSimpleEqThm declName name true fun lhs body => return (← mkEq lhs body, ← mkEqRefl lhs)
+  let dualName ← mkAuxDeclName `_to_dual_insert_cast
+  Command.liftTermElabM do
+    unfolds.add declName { origin := .decl name, proof := mkConst name, rfl := true }
+    let cinfo ← getConstInfo name
+    let dualType ← applyReplacementFun data cinfo.type
+    let value ← forallTelescope dualType fun xs dualTypeBody => do
+      -- Make the goal easier to prove by unfolding the lhs of the equality, if possible
+      let dualTypeBody' ← (do
+        if let mkApp2 eq lhs body := dualTypeBody then
+          if let some lhs ← unfoldDefinition? lhs then
+            return mkApp2 eq lhs body
+        return dualTypeBody)
+      let value ← elabTermEnsuringType valStx dualTypeBody'
+      synthesizeSyntheticMVarsNoPostponing
+      mkLambdaFVars xs (← instantiateMVars value)
+    addDecl <| ← mkThmOrUnsafeDef {
+      name := dualName, type := dualType, value
+      levelParams := cinfo.levelParams }
+  elabCommand <| ← `(command|
+    attribute [to_dual existing $(mkIdent name):ident] $(mkIdent dualName))
+
+elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command => do
+  let declName := declName.getId
+  withDeclNameForAuxNaming declName do
+  let name₁ ← mkAuxDeclName `_to_dual_insert_cast_fun
+  Command.liftTermElabM do mkSimpleEqThm declName name₁ false fun lhs body =>
+      return (.forallE `this lhs body .default, .lam `this lhs (.bvar 0) .default)
+  let dualName₁ ← mkAuxDeclName `_to_dual_insert_cast_fun
+  Command.liftTermElabM do
+    let cinfo₁ ← getConstInfo name₁
+    let dualType₁ ← applyReplacementFun data cinfo₁.type
+    let value ← forallTelescope dualType₁ fun xs dualTypeBody => do
+      let value ← elabTermEnsuringType valStx₁ dualTypeBody
+      synthesizeSyntheticMVarsNoPostponing
+      mkLambdaFVars xs (← instantiateMVars value)
+    addDecl <| .defnDecl <|
+      ← mkDefinitionValInferringUnsafe dualName₁ cinfo₁.levelParams dualType₁ value (.regular 0)
+  elabCommand <| ← `(command|
+    attribute [to_dual existing $(mkIdent name₁):ident] $(mkIdent dualName₁))
+  insertionFuns.add name₁ ()
+  insertionFuns.add dualName₁ ()
+
+  let name₂ ← mkAuxDeclName `_to_dual_insert_cast_invFun
+  casts.add declName (name₁, name₂)
+  Command.liftTermElabM do
+    mkSimpleEqThm declName name₂ false fun lhs body =>
+      return (.forallE `this body lhs .default, .lam `this lhs (.bvar 0) .default)
+  let dualName₂ ← mkAuxDeclName `_to_dual_insert_cast_invFun
+  Command.liftTermElabM do
+    let cinfo₂ ← getConstInfo name₂
+    let dualType₂ ← applyReplacementFun data cinfo₂.type
+    let value ← forallTelescope dualType₂ fun xs dualTypeBody => do
+      let value ← elabTermEnsuringType valStx₂ dualTypeBody
+      synthesizeSyntheticMVarsNoPostponing
+      mkLambdaFVars xs (← instantiateMVars value)
+    addDecl <| .defnDecl <|
+      ← mkDefinitionValInferringUnsafe dualName₂ cinfo₂.levelParams dualType₂ value (.regular 0)
+  elabCommand <| ← `(command|
+    attribute [to_dual existing $(mkIdent name₂):ident] $(mkIdent dualName₂))
+  insertionFuns.add name₂ ()
+  insertionFuns.add dualName₂ ()
 
 end Mathlib.Tactic.ToDual

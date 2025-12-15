@@ -560,16 +560,24 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
+
   let translateValue (v : Expr) : MetaM Expr := do
-    let v ← match t.unfoldBoundaries with
-      | some b => b.cast (← b.insertBoundaries v) decl.type
-      | none => pure v
-    reorderLambda reorder <| ← applyReplacementLambda t dont v
-  let type ← match t.unfoldBoundaries with
-    | some b => b.insertBoundaries decl.type
-    | none => pure decl.type
-  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
-    renameBinderNames t type
+    let mut v := v
+    if let some b := t.unfoldBoundaries then
+      v ← b.cast (← b.insertBoundaries v) decl.type
+    v ← reorderLambda reorder <| ← applyReplacementLambda t dont v
+    if let some b := t.unfoldBoundaries then
+      v ← b.unfoldInsertions v
+    return v
+
+  let mut type := decl.type
+  if let some b := t.unfoldBoundaries then
+    type ← b.insertBoundaries decl.type
+  type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
+  if let some b := t.unfoldBoundaries then
+    type ← b.unfoldInsertions type
+  decl := decl.updateType type
+
   if let some v := decl.value? then
     decl := decl.updateValue <| ← translateValue v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
@@ -903,10 +911,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  let srcType ← match t.unfoldBoundaries with
-    | some b => b.insertBoundaries srcDecl.type
-    | none => pure srcDecl.type
-  let srcType ← applyReplacementForall t cfg.dontTranslate srcType
+  let mut srcType := srcDecl.type
+  if let some b := t.unfoldBoundaries then
+    srcType ← b.insertBoundaries srcType
+  srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
@@ -922,12 +930,15 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
-  let srcType ← reorderForall reorder srcType
+  srcType ← reorderForall reorder srcType
+  if let some b := t.unfoldBoundaries then
+    srcType ← b.unfoldInsertions srcType
+
   if 0 ∈ reorder.flatten then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
   -- normalization, so we apply it to both types.
-  let srcType := srcType.instantiateLevelParams
+  srcType := srcType.instantiateLevelParams
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)

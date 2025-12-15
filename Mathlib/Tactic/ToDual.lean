@@ -17,16 +17,8 @@ public meta section
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
 
-/-
-`DecidableLT` is defined as `∀ a b : α, Decidable (a < b)`, which is dual to
-`∀ a b : α, Decidable (b < a)`. Translations given by `to_dual` need to satisfy the
-property that if `e₁` is defEq to `e₂`, then the dual of `e₁` needs to be defEq to
-the dual of `e₂`. Hence, the translation of `DecidableLT` needs to be defEq to
-`∀ a b : α, Decidable (b < a)`. So, we define `DecidableLT'` to be this.
-
-`DecidableLT'` is not definitionally the same as `DecidableLT`, but for type class search
-the two are identical. So although this is a bit annoying, it is not a big problem.
--/
+to_dual_insert_cast_fun DecidableLE := fun a b ↦ this b a, fun a b ↦ this b a
+to_dual_insert_cast_fun DecidableLT := fun a b ↦ this b a, fun a b ↦ this b a
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
 
