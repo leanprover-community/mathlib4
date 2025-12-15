@@ -87,6 +87,10 @@ theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
   induction p using Polynomial.induction_on' <;> simp_all
 
+@[simp]
+theorem coe_polynomial_eq_algebraMap (p : K[X]) :
+    (p : RatFunc K) = algebraMap (Polynomial K) (RatFunc K) p := rfl
+
 end Domain
 
 section Field
@@ -305,14 +309,14 @@ theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[
   by_cases h0 : p.coeff i = 0
   · simp_all
   · rw [← RatFunc.coePolynomial]
-    simp_all [valuation_monomial_eq_valuation_X_pow, pow_le_one']
+    simp_all [pow_le_one']
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `1 / (monomial n a)` (as an element of the field of rational functions) is equal
 to `(v RatFunc.X) ^ (- n)`. -/
 lemma valuation_inv_monomial_eq_valuation_X_zpow (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
-  simpa using valuation_monomial_eq_valuation_X_pow _ hv n ha
+  simp_all
 
 end TrivialOnConstants
 
