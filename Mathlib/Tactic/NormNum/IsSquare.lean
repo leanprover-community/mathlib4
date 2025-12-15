@@ -87,7 +87,7 @@ theorem not_isSquare_of_isNNRat_rat_of_den (a : ℚ) (n d : ℕ) (hd : ¬IsSquar
     simp_all
   · simpa
 
-theorem not_isSquare_of_isNegNNRat_rat (a : ℚ) (n d : ℕ) (hn : n ≠ 0) (hd : d ≠ 0)
+theorem not_isSquare_of_isRat_neg (a : ℚ) (n d : ℕ) (hn : n ≠ 0) (hd : d ≠ 0)
     (ha : IsRat a (Int.negOfNat n) d) : ¬IsSquare a := by
   rw [ha.neg_to_eq rfl rfl]
   rintro ⟨q, hq⟩
