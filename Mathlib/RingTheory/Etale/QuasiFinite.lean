@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
@@ -7,7 +12,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 /-!
 # Etale local structure of finite maps
 
-We show that we can construct etale neighborhoods that splits fibers of finite algebras.
+We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
