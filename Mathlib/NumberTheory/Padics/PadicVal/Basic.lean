@@ -20,7 +20,8 @@ The `p`-adic valuation on `ℚ` is the difference of the multiplicities of `p` i
 denominator of `q`. This function obeys the standard properties of a valuation, with the appropriate
 assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that on `ℚ`.
 
-The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
+The valuation induces a norm on `ℚ`. This norm is defined in
+`Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 
 ## Notation
 
