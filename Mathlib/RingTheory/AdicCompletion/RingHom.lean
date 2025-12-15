@@ -78,7 +78,7 @@ theorem mk_comp_liftRingHom (n : ℕ) :
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : R →ₗ[R] S ⧸ (I ^ n)`.
-If `F : R →+* S` makes the following diagram commutes
+If `F : R →+* S` makes the following diagram commute
 ```
   R
   | \
@@ -96,6 +96,43 @@ theorem eq_liftRingHom (F : R →+* S)
   apply IsHausdorff.funext' I
   intro n m
   simp [← hF n]
+
+section
+
+variable {R S A : Type*} [CommRing R] [CommRing S] [Algebra R S] (I : Ideal S)
+  [IsAdicComplete I S] [CommRing A] [Algebra R A]
+
+/-- `AlgHom` version of `IsAdicCompletion.liftRingHom`. -/
+noncomputable
+def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n),
+      (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
+    A →ₐ[R] S :=
+  ((ofAlgEquiv I).symm.toAlgHom.restrictScalars R).comp (AdicCompletion.liftAlgHom I f hf)
+
+variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n),
+      (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m)
+
+@[simp]
+lemma mk_liftAlgHom (n : ℕ) (x : A) : liftAlgHom I f hf x = f n x := by
+  simp [liftAlgHom]
+
+@[simp]
+lemma mkₐ_comp_liftAlgHom (n : ℕ) :
+    (Ideal.Quotient.mkₐ R (I ^ n)).comp (liftAlgHom I f hf) = f n :=
+  AlgHom.ext fun _ ↦ mk_liftAlgHom _ _ hf _ _
+
+lemma algHom_ext {f g : A →ₐ[R] S}
+    (H : ∀ n, (Ideal.Quotient.mkₐ R (I ^ n)).comp f = (Ideal.Quotient.mkₐ R (I ^ n)).comp g) :
+    f = g := by
+  rw [← AlgHom.cancel_left (f := ((ofAlgEquiv I).restrictScalars R).toAlgHom)
+    (ofAlgEquiv I).injective]
+  ext1 x
+  refine AdicCompletion.ext_evalₐ fun n ↦ ?_
+  simpa using congr($(H n) x)
+
+end
 
 end
 

@@ -436,7 +436,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
         Nat.reduceAdd] at htwo ⊢
       exact htwo.symm.lt_of_le hp.1.two_le
     · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.1.one_lt hk)
-        (have := Nat.Prime.two_le hp.out; by cutsat)
+        (have := Nat.Prime.two_le hp.out; by lia)
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
@@ -449,7 +449,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     map_smul, ← zsmul_one, ← pB.basis.coord_apply, map_smul,
-    show 1 = pB.gen ^ (⟨0, by cutsat⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
@@ -806,7 +806,7 @@ variable (n)
 theorem cyclotomicRing_isIntegralClosure :
     IsIntegralClosure (CyclotomicRing n ℤ ℚ) ℤ (CyclotomicField n ℚ) := by
   have hζ := zeta_spec n ℚ (CyclotomicField n ℚ)
-  refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
+  refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
     simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
@@ -832,7 +832,7 @@ noncomputable def adjoinEquivRingOfIntegers [IsCyclotomicExtension {n} ℚ K]
 /-- The ring of integers of a `n`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} ℚ K] :
     IsCyclotomicExtension {n} ℤ (𝓞 K) :=
-  let _ := (zeta_spec (n) ℚ K).adjoin_isCyclotomicExtension ℤ
+  let _ := (zeta_spec n ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec n ℚ K).adjoinEquivRingOfIntegers
 
 @[deprecated (since := "2025-11-26")] alias _root_.IsCyclotomicExtension.ring_of_integers' :=
@@ -849,8 +849,7 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {n} ℚ K] (hζ : 
     hζ.integralPowerBasis.gen = hζ.toInteger :=
   Subtype.ext <| show algebraMap _ K hζ.integralPowerBasis.gen = _ by
     rw [integralPowerBasis, PowerBasis.map_gen, adjoin.powerBasis'_gen]
-    simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
-    rfl
+    simp
 
 @[simp]
 theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimitiveRoot ζ n) :

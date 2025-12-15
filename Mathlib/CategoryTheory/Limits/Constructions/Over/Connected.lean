@@ -30,7 +30,7 @@ noncomputable section
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type u'} [Category.{v'} J]
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D] {K : C ⥤ D}
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {K : C ⥤ D}
 variable {X : C}
 
 namespace CategoryTheory.CostructuredArrow

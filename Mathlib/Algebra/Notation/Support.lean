@@ -232,6 +232,12 @@ lemma mulSupport_mulSingle [DecidableEq M] :
     mulSupport (mulSingle i a) = if a = 1 then ∅ else {i} := by split_ifs with h <;> simp [h]
 
 @[to_additive]
+lemma subsingleton_mulSupport_mulSingle : (mulSupport (mulSingle i a)).Subsingleton := by
+  classical
+  rw [mulSupport_mulSingle]
+  split_ifs with h <;> simp
+
+@[to_additive]
 lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :
     Disjoint (mulSupport (mulSingle i a)) (mulSupport (mulSingle j b)) ↔ i ≠ j := by
   rw [mulSupport_mulSingle_of_ne ha, mulSupport_mulSingle_of_ne hb, disjoint_singleton]

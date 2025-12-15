@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 module
 
-public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
@@ -20,7 +20,7 @@ This file proves that if `Y` is a Hausdorff and compactly generated space, a con
 open Set Filter
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-variable [T2Space Y] [CompactlyGeneratedSpace Y]
+variable [T2Space Y] [CompactlyCoherentSpace Y]
 variable {f : X → Y}
 
 /-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
@@ -33,9 +33,9 @@ theorem isProperMap_iff_isCompact_preimage :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) where
   mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
   mpr := fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
-    ⟨hf, fun _ hs ↦ CompactlyGeneratedSpace.isClosed
-      fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
-      fun _ ↦ h isCompact_singleton⟩
+    ⟨hf, fun s hs ↦ (CompactlyCoherentSpace.isClosed_iff _).mpr fun K hK ↦ by
+        convert (((h hK).inter_left hs).image hf).isClosed.preimage continuous_subtype_val using 1
+        aesop, fun _ ↦ h isCompact_singleton⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`.
 

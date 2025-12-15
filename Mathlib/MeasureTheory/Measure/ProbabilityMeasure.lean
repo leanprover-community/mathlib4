@@ -204,7 +204,7 @@ theorem apply_union_le (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} : μ (s
 sets is the limit of the measures of the partial unions. -/
 protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
     [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
-    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
     using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
 
@@ -233,6 +233,15 @@ theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
 @[simp]
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
   μ.coeFn_univ
+
+@[simp] lemma range_toFiniteMeasure :
+    range toFiniteMeasure = {μ : FiniteMeasure Ω | μ.mass = 1} := by
+  ext μ
+  simp only [mem_range, mem_setOf_eq]
+  refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
+  refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
+  ext s hs
+  rfl
 
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
@@ -470,7 +479,7 @@ theorem normalize_eq_inv_mass_smul_of_nonzero (nonzero : μ ≠ 0) :
     μ.normalize.toFiniteMeasure = μ.mass⁻¹ • μ := by
   nth_rw 3 [μ.self_eq_mass_smul_normalize]
   rw [← smul_assoc]
-  simp only [μ.mass_nonzero_iff.mpr nonzero, Algebra.id.smul_eq_mul, inv_mul_cancel₀, Ne,
+  simp only [μ.mass_nonzero_iff.mpr nonzero, smul_eq_mul, inv_mul_cancel₀, Ne,
     not_false_iff, one_smul]
 
 theorem toMeasure_normalize_eq_of_nonzero (nonzero : μ ≠ 0) :

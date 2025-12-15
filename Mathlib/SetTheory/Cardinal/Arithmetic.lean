@@ -575,7 +575,7 @@ theorem mk_arrow_eq_zero_iff : #(α → β') = 0 ↔ #α ≠ 0 ∧ #β' = 0 := b
 
 theorem mk_surjective_eq_zero_iff_lift :
     #{f : α → β' | Surjective f} = 0 ↔ lift.{v} #α < lift.{u} #β' ∨ (#α ≠ 0 ∧ #β' = 0) := by
-  set_option push_neg.use_distrib true in contrapose!
+  contrapose! +distrib
   rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
     Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
@@ -611,15 +611,15 @@ theorem mk_equiv_eq_arrow_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') :
   obtain ⟨e⟩ := lift_mk_eq'.mp leq
   have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
   have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
-  rw [lift_id'.{u,v}] at e₁ e₂
+  rw [lift_id'.{u, v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
 theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :=
   mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
 
 theorem mk_equiv_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = 2 ^ lift.{v} #α := by
-  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u,v} _),
-    lift_umax.{u,v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
+  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u, v} _),
+    lift_umax.{u, v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
 
 theorem mk_equiv_of_eq (eq : #α = #β) : #(α ≃ β) = 2 ^ #α := by
   rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
@@ -640,7 +640,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
     #{f : α → β' | Surjective f} = #(α → β') :=
   (mk_set_le _).antisymm <|
     have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
-      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u,v}, eq_comm]
+      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
