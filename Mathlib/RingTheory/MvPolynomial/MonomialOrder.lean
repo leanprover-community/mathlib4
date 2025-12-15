@@ -891,7 +891,7 @@ lemma sPolynomial_lt_of_degree_ne_zero_of_degree_eq {f g : MvPolynomial σ R}
     m.degree (m.sPolynomial f g) ≺[m] m.degree f := by
   simpa [h] using m.degree_sPolynomial_lt_sup_degree hs
 
-lemma sPolynomial_mul_monomial [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
+lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :
     m.sPolynomial ((monomial d₁ c₁) * p₁) ((monomial d₂ c₂) * p₂) =
       monomial ((d₁ + m.degree p₁) ⊔ (d₂ + m.degree p₂) - m.degree p₁ ⊔ m.degree p₂) (c₁ * c₂) *
@@ -911,6 +911,36 @@ lemma sPolynomial_mul_monomial [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
     add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
+
+lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
+    (c₁ c₂ : R) :
+    m.sPolynomial (monomial d₁ c₁ * p₁) (monomial d₂ c₂ * p₂) =
+      monomial (m.degree (monomial d₁ c₁ * p₁) ⊔ m.degree (monomial d₂ c₂ * p₂) -
+          m.degree p₁ ⊔ m.degree p₂) (c₁ * c₂) *
+      m.sPolynomial p₁ p₂ := by
+  classical
+  wlog! +distrib H : c₁ ≠ 0 ∧ c₂ ≠ 0 ∧ p₁ ≠ 0 ∧ p₂ ≠ 0
+  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  simp [H, degree_mul, sPolynomial_monomial_mul, degree_monomial]
+
+lemma sPolynomial_leadingTerm_mul [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvPolynomial σ R) :
+    m.sPolynomial (m.leadingTerm p₁ * q₁) (m.leadingTerm p₂ * q₂) =
+    monomial
+        ((m.degree p₁ + m.degree q₁) ⊔ (m.degree p₂ + m.degree q₂) - m.degree q₁ ⊔ m.degree q₂)
+        (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
+      m.sPolynomial q₁ q₂ := by
+  simp [sPolynomial_monomial_mul, leadingTerm]
+
+lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvPolynomial σ R) :
+    m.sPolynomial (m.leadingTerm p₁ * q₁) (m.leadingTerm p₂ * q₂) =
+    monomial
+        ((m.degree (p₁ * q₁)) ⊔ (m.degree (p₂ * q₂)) - m.degree q₁ ⊔ m.degree q₂)
+        (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
+      m.sPolynomial q₁ q₂ := by
+  classical
+  wlog! +distrib H : p₁ ≠ 0 ∧ p₂ ≠ 0 ∧ q₁ ≠ 0 ∧ q₂ ≠ 0
+  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}
