@@ -233,6 +233,7 @@ variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `β₁ × α₁` and `β₂ × α₁`. -/
+@[simps apply_fst apply_snd]
 def prodCongrLeft : β₁ × α₁ ≃ β₂ × α₁ where
   toFun ab := ⟨e ab.2 ab.1, ab.2⟩
   invFun ab := ⟨(e ab.2).symm ab.1, ab.2⟩
@@ -244,12 +245,13 @@ theorem prodCongrLeft_apply (b : β₁) (a : α₁) : prodCongrLeft e (b, a) = (
   rfl
 
 theorem prodCongr_refl_right (e : β₁ ≃ β₂) :
-    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrLeft_symm : (prodCongrLeft e).symm = prodCongrLeft (.symm ∘ e) := rfl
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `α₁ × β₁` and `α₁ × β₂`. -/
+@[simps apply_fst apply_snd]
 def prodCongrRight : α₁ × β₁ ≃ α₁ × β₂ where
   toFun ab := ⟨ab.1, e ab.1 ab.2⟩
   invFun ab := ⟨ab.1, (e ab.1).symm ab.2⟩
@@ -261,9 +263,9 @@ theorem prodCongrRight_apply (a : α₁) (b : β₁) : prodCongrRight e (a, b) =
   rfl
 
 theorem prodCongr_refl_left (e : β₁ ≃ β₂) :
-    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrRight_symm : (prodCongrRight e).symm = prodCongrRight (.symm ∘ e) := rfl
 
 @[simp]
 theorem prodCongrLeft_trans_prodComm :
@@ -500,3 +502,29 @@ def subsingletonProdSelfEquiv {α} [Subsingleton α] : α × α ≃ α where
   invFun a := (a, a)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
+
+section
+
+variable {α β : Type*} (a : α) (b : β)
+
+/-- `(1 + α) × β = β + α × β` -/
+def optionProdEquiv : Option α × β ≃ β ⊕ α × β where
+  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
+  invFun x := x.casesOn (.mk none) (.map some id)
+  left_inv
+  | (none, _) => rfl
+  | (some _, _) => rfl
+  right_inv
+  | .inl _ => rfl
+  | .inr (_, _) => rfl
+
+@[simp] lemma optionProdEquiv_mk_none : optionProdEquiv (α := α) (.none, b) = .inl b := rfl
+
+@[simp] lemma optionProdEquiv_mk_some : optionProdEquiv (.some a, b) = .inr (a, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inl : optionProdEquiv (α := α).symm (.inl b) = (.none, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inr (p : α × β) :
+  optionProdEquiv.symm (.inr p) = p.map some id := rfl
+
+end

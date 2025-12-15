@@ -286,11 +286,11 @@ lemma iInf_ker_coroot'_eq :
     (P.corootSpan R).map P.toLinearMap.flip.toPerfPair = span R (range P.coroot') :=
   P.flip.rootSpan_map_toPerfPair
 
-@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+@[simp] lemma span_root'_eq_top [P.IsRootSystem] :
     span R (range P.root') = ⊤ := by
   simp [← rootSpan_map_toPerfPair]
 
-@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+@[simp] lemma span_coroot'_eq_top [P.IsRootSystem] :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 

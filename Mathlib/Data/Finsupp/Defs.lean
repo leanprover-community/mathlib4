@@ -113,6 +113,8 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
+initialize_simps_projections Finsupp (toFun → apply)
+
 @[ext, grind ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
