@@ -156,7 +156,7 @@ theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y 
   rw [add_comm]
   exact mk_le_mk_add_of_archimedean f x y
 
-theorem mk_map_of_archimedean_nonneg [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
+theorem mk_map_nonneg_of_archimedean [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
   simpa using mk_le_mk_add_of_archimedean f 1 y
 
 @[simp]
