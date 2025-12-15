@@ -48,39 +48,40 @@ theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n)
     (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
 
-/-- An open subset of a Baire space is Baire. -/
-theorem IsOpen.baireSpace {s : Set X} (hO : IsOpen s) : BaireSpace s := by
+/-- If `p : Y → X` is an open embedding and `X` is a Baire space, then `Y` is a Baire space. -/
+theorem Topology.IsOpenEmbedding.baireSpace {Y : Type*} [TopologicalSpace Y] {p : Y → X}
+    (hp : Topology.IsOpenEmbedding p) : BaireSpace Y := by
   constructor
   intro f hof hdf
-  obtain ⟨g, hg1, hg2, hg3⟩ : ∃ g : ℕ → Set X,
-    (∀ n, IsOpen (g n)) ∧ (∀ n, Subtype.val ⁻¹' g n = f n) ∧
-    ∀ n, Subtype.val '' f n = s ∩ g n := by
-    choose g hg using hof
-    exact ⟨g, fun n => (hg n).1, fun n => (hg n).2,
-      fun n => (hg n).2 ▸ Subtype.image_preimage_val s (g n)⟩
-  let c := fun n : ℕ => g n ∪ (closure s)ᶜ
-  have c_open (n : ℕ) : IsOpen (c n) := IsOpen.union (hg1 n) isClosed_closure.isOpen_compl
+  let s := range p
+  let c := fun n : ℕ => p '' f n ∪ (closure s)ᶜ
+  have c_open (n : ℕ) : IsOpen (c n) := IsOpen.union (hp.isOpenMap (f n) (hof n))
+    isClosed_closure.isOpen_compl
   have c_dense (n : ℕ) : Dense (c n) := by
     rw [dense_iff_closure_eq, subset_antisymm_iff]
-    have : (univ : Set X) ⊆ closure (c n) := calc
+    have : univ ⊆ closure (c n) := calc
       _ ⊆ (interior (closure s)) ∪ (interior (closure s))ᶜ := by grind
       _ ⊆ closure s ∪ (interior (closure s))ᶜ := by gcongr; exact interior_subset
-      _ ⊆ closure (Subtype.val '' f n) ∪ (interior (closure s))ᶜ := union_subset_union
-          (closure_minimal (Subtype.dense_iff.mp (hdf n)) isClosed_closure)
-          (subset_refl (interior (closure s))ᶜ)
-      _ ⊆ closure (g n ∩ s) ∪ (interior (closure s))ᶜ := by gcongr; simpa using (hg3 n).subset
-      _ ⊆ closure (g n) ∪ closure ((closure s)ᶜ) := union_subset_union
+      _ ⊆ closure (p '' f n) ∪ (interior (closure s))ᶜ := union_subset_union
+          (closure_minimal (hp.continuous.range_subset_closure_image_dense (hdf n))
+          isClosed_closure) (subset_refl (interior (closure s))ᶜ)
+      _ ⊆ closure (p '' f n ∩ s) ∪ (interior (closure s))ᶜ := by gcongr; simp [s]
+      _ ⊆ closure (p '' f n) ∪ closure ((closure s)ᶜ) := union_subset_union
         (closure_mono inter_subset_left) (by simp)
       _ = closure (c n) := closure_union.symm
     grind
   have c_inter_dense : Dense (⋂ n, c n) := dense_iInter_of_isOpen_nat c_open c_dense
-  have c_inter_eq : ⋂ n, f n = Subtype.val ⁻¹' (⋂ n, c n) := by
+  have c_inter_eq : ⋂ n, f n = p ⁻¹' (⋂ n, c n) := by
     ext x
     simp only [mem_iInter, mem_preimage, mem_union, mem_compl_iff, c]
-    refine ⟨fun h i => ?_, fun h i => ?_⟩
-    · exact Or.inl (mem_preimage.mp ((hg2 i).symm ▸ h i))
-    · exact (hg2 i).subset (imp_iff_or_not.mpr (h i) (subset_closure x.2))
-  exact c_inter_eq ▸ Dense.preimage c_inter_dense (hO.isOpenMap_subtype_val)
+    refine ⟨fun h i => by grind, fun h i => ?_⟩
+    exact hp.injective.mem_set_image.mp (imp_iff_or_not.mpr (h i)
+      (subset_closure (mem_range_self x)))
+  exact c_inter_eq ▸ Dense.preimage c_inter_dense hp.isOpenMap
+
+/-- An open subset of a Baire space is Baire. -/
+theorem IsOpen.baireSpace {s : Set X} (hO : IsOpen s) : BaireSpace s :=
+  hO.isOpenEmbedding_subtypeVal.baireSpace
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with ⋂₀. -/
 theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (hS : S.Countable)
