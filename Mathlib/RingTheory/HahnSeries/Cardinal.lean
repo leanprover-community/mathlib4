@@ -59,7 +59,8 @@ theorem cardSupp_single_le (a : Γ) (r : R) : cardSupp (single a r) ≤ 1 :=
 theorem cardSupp_map_le [Zero S] (x : R⟦Γ⟧) (f : ZeroHom R S) : (x.map f).cardSupp ≤ x.cardSupp :=
   cardSupp_mono <| support_map_subset ..
 
-theorem cardSupp_truncLT_le [DecidableLT Γ] (x : R⟦Γ⟧) (c : Γ) : (truncLT c x).cardSupp ≤ x.cardSupp :=
+theorem cardSupp_truncLT_le [DecidableLT Γ] (x : R⟦Γ⟧) (c : Γ) :
+    (truncLT c x).cardSupp ≤ x.cardSupp :=
   cardSupp_mono <| support_truncLT_subset ..
 
 theorem cardSupp_smul_le (s : S) (x : R⟦Γ⟧) [SMulZeroClass S R] : (s • x).cardSupp ≤ x.cardSupp :=
