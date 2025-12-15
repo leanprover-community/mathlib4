@@ -24,7 +24,7 @@ open CategoryTheory CategoryTheory.MonoidalCategory CategoryTheory.MonoidalClose
 
 namespace CategoryTheory.Functor
 
-variable {D C : Type*} [Groupoid D] [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {D C : Type*} [Groupoid D] [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The internal hom functor `F ⟶[C] -` -/

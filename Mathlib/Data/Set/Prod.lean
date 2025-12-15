@@ -376,6 +376,33 @@ theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
 
 end Mono
 
+lemma eqOn_prod_iff {a b : α → γ × δ} :
+    EqOn a b s ↔ EqOn (Prod.fst ∘ a) (Prod.fst ∘ b) s ∧ EqOn (Prod.snd ∘ a) (Prod.snd ∘ b) s := by
+  grind [EqOn]
+
+lemma EqOn.left_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : t.Nonempty) : EqOn f f' s := by
+  obtain ⟨x, hxt⟩ := ht
+  intro x hxs
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.right_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) : EqOn g g' t := by
+  obtain ⟨x, hxs⟩ := hs
+  intro x hxt
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.prodMap {f f' : α → γ} {g g' : β → δ}
+    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
+  grind [EqOn]
+
+lemma eqOn_prodMap_iff {f f' : α → γ} {g g' : β → δ}
+    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
+  ⟨fun h ↦ ⟨h.left_of_eqOn_prodMap ht, h.right_of_eqOn_prodMap hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+
 end Prod
 
 /-! ### Diagonal

@@ -21,7 +21,7 @@ Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
 
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The category of `Join.inclLeft C D`-costructured arrows with target `right d` is equivalent to
 `C`. -/

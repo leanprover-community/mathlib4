@@ -324,10 +324,12 @@ theorem disjoint_filter_filter' (s t : Finset α)
   rw [Pi.disjoint_iff] at h
   simpa [hp, hq] using h a
 
-theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
+theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   s.disjoint_filter_filter' t disjoint_compl_right
+
+@[deprecated (since := "2025-12-12")] alias disjoint_filter_filter_neg := disjoint_filter_filter_not
 
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
@@ -419,9 +421,11 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
   (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
 
-theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
+theorem filter_union_filter_not_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
+
+@[deprecated (since := "2025-12-12")] alias filter_union_filter_neg_eq := filter_union_filter_not_eq
 
 end
 

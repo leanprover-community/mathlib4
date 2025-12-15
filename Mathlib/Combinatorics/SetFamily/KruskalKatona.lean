@@ -207,14 +207,14 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
   rw [compression] at a ⊢
   have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by grind
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
-    filter_union_filter_neg_eq _ _
+    filter_union_filter_not_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
     contrapose! a
     rw [filter_image, a, image_empty, union_empty]
     rwa [a, union_empty] at uA
   rw [familyMeasure, familyMeasure, sum_union compress_disjoint]
   conv_rhs => rw [← uA]
-  rw [sum_union (disjoint_filter_filter_neg _ _ _), add_lt_add_iff_left, filter_image,
+  rw [sum_union (disjoint_filter_filter_not _ _ _), add_lt_add_iff_left, filter_image,
     sum_image compress_injOn]
   refine sum_lt_sum_of_nonempty ne₂ fun A hA ↦ ?_
   simp_rw [← sum_image Fin.val_injective.injOn]
@@ -369,7 +369,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
   have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by lia)
     ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
-  have : n - r - (n - 2 * r) = r := by omega
+  have : n - r - (n - 2 * r) = r := by lia
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
   have := calc

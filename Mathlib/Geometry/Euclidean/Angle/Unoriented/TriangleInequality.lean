@@ -131,7 +131,8 @@ lemma angle_le_angle_add_angle_of_norm_eq_one {x y z : V}
       (norm_normalize_eq_one_iff.mpr H3) (norm_normalize_eq_one_iff.mpr H4)
   have := sin_angle_nonneg x y; have := sin_angle_nonneg y z
   grw [← H2]
-  ring_nf; rfl
+  apply le_of_eq
+  ring
 
 end UnitVectorAngles
 

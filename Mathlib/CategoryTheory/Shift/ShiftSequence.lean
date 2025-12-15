@@ -31,7 +31,7 @@ in degree `n`.
 
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type*} [Category C] [Category A] (F : C ⥤ A)
+variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
   (M : Type*) [AddMonoid M] [HasShift C M]
   {G : Type*} [AddGroup G] [HasShift C G]
 

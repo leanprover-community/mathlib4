@@ -399,7 +399,7 @@ theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
     (vecMulVec a (star a)).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
 
-/-- The matrix `vecMulVec (star a) a` is always postive semi-definite. -/
+/-- The matrix `vecMulVec (star a) a` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
     (vecMulVec (star a) a).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]

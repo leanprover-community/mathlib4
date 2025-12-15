@@ -214,7 +214,7 @@ def toCoinduced (i) : X i ⟶ coinduced f :=
 
 /-- The cocone of topological modules associated to a cocone over the underlying modules, where
 the cocone point is given the coinduced topology. This is colimiting when the given cocone is. -/
-def ofCocone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     (c : Cocone (F ⋙ forget₂ _ (ModuleCat R))) : Cocone F where
   pt := coinduced c.ι.app
   ι :=
@@ -223,7 +223,7 @@ def ofCocone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
 
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
 the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
-def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     {c : Cocone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsColimit c) :
     IsColimit (ofCocone c) where
   desc s := ofHom (X := (ofCocone c).pt) ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
@@ -242,11 +242,11 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     ext y
     exact congr($(H j).hom y)
 
-instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     [HasColimit (F ⋙ forget₂ _ (ModuleCat R))] : HasColimit F :=
   ⟨_, isColimit (colimit.isColimit _)⟩
 
-instance {J : Type*} [Category J] [HasColimitsOfShape J (ModuleCat.{v} R)] :
+instance {J : Type*} [Category* J] [HasColimitsOfShape J (ModuleCat.{v} R)] :
     HasColimitsOfShape J (TopModuleCat.{v} R) where
 
 instance : HasColimits (TopModuleCat.{v} R) where
@@ -275,7 +275,7 @@ open Limits
 
 /-- The cone of topological modules associated to a cone over the underlying modules, where
 the cone point is given the induced topology. This is limiting when the given cone is. -/
-def ofCone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     (c : Cone (F ⋙ forget₂ _ (ModuleCat R))) : Cone F where
   pt := induced c.π.app
   π :=
@@ -284,7 +284,7 @@ def ofCone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
 
 /-- Given a limit cone over the underlying modules, equipping the cone point with
 the induced topology gives a limit cone in `TopModuleCat R`. -/
-def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     {c : Cone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsLimit c) :
     IsLimit (ofCone c) where
   lift s := ofHom (Y := (ofCone c).pt) ⟨(hc.lift ((forget₂ _ _).mapCone s)).hom, by
@@ -302,18 +302,18 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     ext y
     exact congr($(H j).hom y)
 
-instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
+instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))] : HasLimit F :=
   ⟨_, isLimit (limit.isLimit _)⟩
 
-instance {J : Type*} [Category J] [HasLimitsOfShape J (ModuleCat.{v} R)] :
+instance {J : Type*} [Category* J] [HasLimitsOfShape J (ModuleCat.{v} R)] :
     HasLimitsOfShape J (TopModuleCat.{v} R) where
   has_limit _ := hasLimit_of_hasLimit_forget₂
 
 instance : HasLimits (TopModuleCat.{v} R) where
   has_limits_of_shape _ _ := ⟨fun _ ↦ hasLimit_of_hasLimit_forget₂⟩
 
-instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
+instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))]
     [PreservesLimit (F ⋙ forget₂ _ (ModuleCat.{v} R)) (forget _)] :
     PreservesLimit F (forget₂ _ TopCat) :=
@@ -322,7 +322,7 @@ instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
       ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1:)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
-instance {J : Type*} [Category J]
+instance {J : Type*} [Category* J]
     [HasLimitsOfShape J (ModuleCat.{v} R)]
     [PreservesLimitsOfShape J (forget (ModuleCat.{v} R))] :
     PreservesLimitsOfShape J (forget₂ (TopModuleCat.{v} R) TopCat) where

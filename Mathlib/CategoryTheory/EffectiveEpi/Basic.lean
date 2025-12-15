@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 open Limits Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 This structure encodes the data required for a morphism to be an effective epimorphism.

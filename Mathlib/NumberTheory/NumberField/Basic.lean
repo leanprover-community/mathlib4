@@ -288,8 +288,7 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
 
 variable (K)
 
-instance [CharZero K] : CharZero (𝓞 K) :=
-  CharZero.of_module _ K
+instance [CharZero K] : CharZero (𝓞 K) := .of_module K
 
 variable [NumberField K]
 

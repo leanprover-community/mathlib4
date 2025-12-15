@@ -185,7 +185,7 @@ private theorem Polynomial.flt_catalan_aux
       · apply (isCoprime_expand chn0).mp
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
-        have hch2 : 2 ≤ ch := by omega
+        have hch2 : 2 ≤ ch := by lia
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         grw [← hch2]
         lia
@@ -247,7 +247,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
   have hdc : d ∣ c := by
     -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
-    have hn : 0 < n := by omega
+    have hn : 0 < n := by lia
     have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
     simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
   obtain ⟨c', eq_c⟩ := hdc

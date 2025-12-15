@@ -25,7 +25,7 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory Limits
+open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits
 
 namespace SSet
 
@@ -103,5 +103,44 @@ def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
 @[ext]
 lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
   isTerminalObj₀.hom_ext _ _
+
+instance (X Y : SSet.{u}) (n : SimplexCategoryᵒᵖ)
+    [Finite (X.obj n)] [Finite (Y.obj n)] :
+    Finite ((X ⊗ Y).obj n) :=
+  inferInstanceAs (Finite (X.obj n × Y.obj n))
+
+/-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `0` on the second factor. -/
+noncomputable def ι₀ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
+  lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 0))
+
+@[reassoc (attr := simp)]
+lemma ι₀_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
+    ι₀ ≫ f ▷ _ = f ≫ ι₀ := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₀_fst (X : SSet.{u}) : ι₀ ≫ fst X _ = 𝟙 X := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₀_snd (X : SSet.{u}) : ι₀ ≫ snd X _ = const (stdSimplex.obj₀Equiv.{u}.symm 0) := rfl
+
+@[simp]
+lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₀.app _ x).1 = x := rfl
+
+/-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
+noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
+  lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 1))
+
+@[reassoc (attr := simp)]
+lemma ι₁_fst (X : SSet.{u}) : ι₁ ≫ fst X _ = 𝟙 X := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₁_snd (X : SSet.{u}) : ι₁ ≫ snd X _ = (const (stdSimplex.obj₀Equiv.{u}.symm 1)) := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
+    ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
+
+@[simp]
+lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
 
 end SSet

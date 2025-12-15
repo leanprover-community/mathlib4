@@ -28,7 +28,7 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by

@@ -370,6 +370,9 @@ instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} 
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
+instance (S : A) [IsDedekindFiniteMonoid M] : IsDedekindFiniteMonoid S where
+  mul_eq_one_symm eq := Subtype.ext (mul_eq_one_symm <| congr_arg (·.1) eq)
+
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]

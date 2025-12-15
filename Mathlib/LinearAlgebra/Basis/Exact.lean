@@ -99,6 +99,14 @@ noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Ba
   .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
 
+@[simp]
+lemma Module.Basis.ofSplitExact_apply (hg : Function.Surjective g) (v : Basis ι R M)
+    (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
+    (hlib : LinearIndependent R (s ∘ v ∘ b))
+    (hab : Codisjoint (Set.range a) (Set.range b)) (k : κ) :
+    ofSplitExact hs hfg hg v hainj hsa hlib hab k = g (v (a k)) := by
+  simp [ofSplitExact]
+
 end
 
 section

@@ -55,7 +55,7 @@ and one for `HasFDerivAt`.
 ### Naming
 
 In literature, the integral of a function or a 1-form along a path
-is called “line integral”, “path integral”, “curve integral”, or “curvelinear integral”.
+is called “line integral”, “path integral”, “curve integral”, or “curvilinear integral”.
 
 We use the name “curve integral” instead of other names for the following reasons:
 

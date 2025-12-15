@@ -41,8 +41,8 @@ namespace CategoryTheory
 
 open Category Functor
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
-  [Category E]
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
+  [Category* E]
 
 namespace Functor
 
@@ -235,7 +235,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
-def whiskeringLeftFunctor' [L.IsLocalization W] (E : Type*) [Category E] :
+def whiskeringLeftFunctor' [L.IsLocalization W] (E : Type*) [Category* E] :
     (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 
@@ -260,11 +260,11 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   · infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
-lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
-lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category E] :
+lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
@@ -351,7 +351,7 @@ def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W
 namespace Lifting
 
 @[simps]
-instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
+instance compRight {E' : Type*} [Category* E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
     (G : E ⥤ E') : Lifting L W (F ⋙ G) (F' ⋙ G) :=
   ⟨isoWhiskerRight (iso L W F F') G⟩
 
@@ -391,7 +391,7 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
 
 /-- If `L : C ⥤ D` is a localization for `W : MorphismProperty C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
-theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
+theorem of_equivalence_target {E : Type*} [Category* E] (L' : C ⥤ E) (eq : D ≌ E)
     [L.IsLocalization W] (e : L ⋙ eq.functor ≅ L') : L'.IsLocalization W := by
   have h : W.IsInvertedBy L' := by
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso W e]
@@ -419,7 +419,7 @@ end Functor
 
 namespace Localization
 
-variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+variable {D₁ D₂ : Type _} [Category* D₁] [Category* D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
   (W' : MorphismProperty C) [L₁.IsLocalization W'] [L₂.IsLocalization W']
 
 /-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the

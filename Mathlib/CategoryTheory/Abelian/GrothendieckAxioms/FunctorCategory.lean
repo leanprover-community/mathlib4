@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 open CategoryTheory Limits Opposite
 
-variable {A C J : Type*} [Category A] [Category C] [Category J]
+variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
 
 instance [HasColimitsOfShape J A] [HasExactColimitsOfShape J A] [HasFiniteLimits A] :
     HasExactColimitsOfShape J (C ⥤ A) where

@@ -235,8 +235,8 @@ theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = if (u + v : ℕ) < n then (u + v : Int) else (u + v : Int) - n := by
   rw [Fin.add_def]
   split
-  · rw [natCast_emod, Int.emod_eq_of_lt] <;> omega
-  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_of_lt] <;> lia
+  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> lia
 
 theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
@@ -403,7 +403,7 @@ lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
     letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
-  simp only [coe_castLE, val_natCast]
+  simp only [val_castLE, val_natCast]
   rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
@@ -455,7 +455,7 @@ section AddGroup
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
+lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by lia
 
 @[deprecated (since := "2025-04-27")]
 alias eq_one_of_neq_zero := eq_one_of_ne_zero
@@ -464,7 +464,7 @@ alias eq_one_of_neq_zero := eq_one_of_ne_zero
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
-  rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
+  rw [Fin.val_neg', Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
@@ -475,7 +475,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
-  have hkb : k ≤ b := by omega
+  have hkb : k ≤ b := by lia
   refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
@@ -484,7 +484,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   cases n
   · lia
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
-  have hkb : k < b := by omega
+  have hkb : k < b := by lia
   refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 

@@ -141,7 +141,7 @@ def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupo
 
 end
 
-lemma isGroupoid_of_reflects_iso {C D : Type*} [Category C] [Category D]
+lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) [F.ReflectsIsomorphisms] [IsGroupoid D] :
     IsGroupoid C where
   all_isIso _ := isIso_of_reflects_iso _ F
@@ -192,7 +192,7 @@ instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Catego
 end
 
 open MorphismProperty in
-lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category C] :
+lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
     IsGroupoid C ↔ isomorphisms C = ⊤ := by
   constructor
   · rw [eq_top_iff]

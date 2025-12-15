@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Opposite
 
-variable {C D D' : Type*} [Category C] [Category D] [Category D']
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
 namespace Localization
 

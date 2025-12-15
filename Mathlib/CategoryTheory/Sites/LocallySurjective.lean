@@ -305,7 +305,7 @@ instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   infer_instance
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance isLocallySurjective_toSheafify' {D : Type*} [Category D] {FD : D → D → Type*}
+instance isLocallySurjective_toSheafify' {D : Type*} [Category* D] {FD : D → D → Type*}
     {CD : D → Type (max u v)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{max u v} D FD]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]

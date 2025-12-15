@@ -508,12 +508,12 @@ def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) 
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
   ext i
-  simp only [init, snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [init, snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_castSucc : snoc p x i.castSucc = p i := by
-  simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
@@ -1110,7 +1110,7 @@ grind_pattern Fin.find_spec => Fin.find p h
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
   @(Fin.findX p h).2.2
 
-/-- For `m : Fin n`, if `m` satsifies `p`, then `Fin.find p h ≤ m`. -/
+/-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
 
@@ -1208,10 +1208,7 @@ lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
 
 theorem find?_eq_dite {p : Fin n → Bool} :
     find? p = if h : ∃ i, p i then some (Fin.find (p ·) h) else none := by
-  split_ifs with h
-  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
-    grind
-  · simpa [find?_eq_none_iff] using h
+  split_ifs <;> grind
 
 theorem find?_decide_eq_dite :
     find? (p ·) = if h : ∃ i, p i then some (Fin.find p h) else none := by

@@ -80,7 +80,7 @@ theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot
 theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits) :
     A.det = (Matrix.charpoly A).roots.prod := by
   rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
-    Polynomial.coeff_zero_eq_prod_roots_of_monic_of_splits A.charpoly_monic hAps, ← mul_assoc,
+    hAps.coeff_zero_eq_prod_roots_of_monic A.charpoly_monic, ← mul_assoc,
     ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 
 theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits) :
@@ -90,7 +90,7 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits) :
       det_eq_one_of_card_eq_zero (Fintype.card_eq_zero_iff.2 h), Polynomial.roots_one,
       Multiset.empty_eq_zero, Multiset.sum_zero]
   · rw [trace_eq_neg_charpoly_nextCoeff, neg_eq_iff_eq_neg,
-      ← Polynomial.nextCoeff_eq_neg_sum_roots_of_monic_of_splits A.charpoly_monic hAps]
+      ← hAps.nextCoeff_eq_neg_sum_roots_of_monic A.charpoly_monic]
 
 variable (A)
 

@@ -255,7 +255,7 @@ protected lemma Commute.mul_geom_sum₂_Ico (h : Commute x y) {m n : ℕ}
     rw [← pow_add]
     congr
     rw [mem_range] at j_in
-    omega
+    lia
   rw [this]
   simp_rw [pow_mul_comm y (n - m) _]
   simp_rw [← mul_assoc]

@@ -106,7 +106,7 @@ section Equivalence
 variable {P}
 
 lemma IsSeparating.of_equivalence
-    (h : IsSeparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
@@ -114,7 +114,7 @@ lemma IsSeparating.of_equivalence
       H _ (P.strictMap_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
-    (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h

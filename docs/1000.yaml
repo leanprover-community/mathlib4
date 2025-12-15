@@ -1062,6 +1062,9 @@ Q925854:
 
 Q927051:
   title: Riemann mapping theorem
+  authors: Vincent Beffara
+  url: https://github.com/vbeffara/RMT4
+  date: 2024
 
 Q928813:
   title: Menger's theorem
@@ -1300,8 +1303,8 @@ Q1077741:
 
 Q1082910:
   title: Euler's partition theorem
-  authors: Bhavik Mehta and Aaron Anderson
-  decl: Theorems100.partition_theorem
+  authors: Bhavik Mehta, Aaron Anderson, and Weiyi Wang
+  decl: Nat.Partition.card_odds_eq_card_distincts
 
 Q1095330:
   title: Apéry's theorem
@@ -2138,7 +2141,7 @@ Q2379132:
     - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
     - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
     - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
-    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+    - Algebra.HasGoingDown.of_comap_localRingHom_surjective
   date: 2025
 
 Q2394548:

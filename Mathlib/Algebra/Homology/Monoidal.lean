@@ -32,7 +32,7 @@ open CategoryTheory Limits MonoidalCategory Category
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
   [(curriedTensor C).Additive] [∀ (X₁ : C), ((curriedTensor C).obj X₁).Additive]
   {I : Type*} [AddMonoid I] {c : ComplexShape I} [c.TensorSigns]
 
@@ -325,7 +325,7 @@ noncomputable def Monoidal.inducingFunctorData :
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
-noncomputable example {D : Type*} [Category D] [Preadditive D] [MonoidalCategory D]
+noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]
     [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).obj X)]

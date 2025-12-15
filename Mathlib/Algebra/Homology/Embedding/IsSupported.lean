@@ -35,7 +35,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (e' : K ≅ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
@@ -142,7 +142,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
 instance map_isStrictlySupported [K.IsStrictlySupported e] :

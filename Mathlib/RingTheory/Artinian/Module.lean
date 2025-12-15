@@ -430,6 +430,12 @@ theorem Ring.isArtinian_of_zero_eq_one {R} [Semiring R] (h01 : (0 : R) = 1) : Is
 instance (R) [Ring R] [IsArtinianRing R] (I : Ideal R) [I.IsTwoSided] : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
 
+instance (priority := low) (R) [Semiring R] [IsArtinianRing R] : IsDedekindFiniteMonoid R where
+  mul_eq_one_symm {a b} hab := by
+    have ⟨c, hca⟩ := IsArtinian.surjective_of_injective_endomorphism
+      (.toSpanSingleton R R a) (isRightRegular_of_mul_eq_one hab) 1
+    rwa [← left_inv_eq_right_inv hca hab]
+
 open Submodule Function
 
 instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]

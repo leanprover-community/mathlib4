@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,

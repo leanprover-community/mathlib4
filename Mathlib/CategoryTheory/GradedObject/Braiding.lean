@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 

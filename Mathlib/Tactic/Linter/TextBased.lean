@@ -230,7 +230,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set idx line.trimRight
+      fixedLines := fixedLines.set idx line.trimAsciiEnd.copy
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
@@ -246,7 +246,7 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
+    if pos != line.endPos && pos.prev!.get! == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
@@ -262,7 +262,7 @@ def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   for h : idx in [:lines.size] do
     let line := lines[idx]
     let pos := line.find (· == ' ')
-    if pos != line.rawEndPos then
+    if pos != line.endPos then
       errors := errors.push (StyleError.nonbreakingSpace, idx + 1)
   return (errors, none)
 

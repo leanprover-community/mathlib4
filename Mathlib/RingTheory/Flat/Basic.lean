@@ -39,7 +39,7 @@ the current `Module.Flat` to `Module.MonoFlat`.
 ## Main theorems
 
 * `Module.Flat.of_retract`: retracts of flat modules are flat
-* `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
+* `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat module are flat
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
@@ -47,7 +47,7 @@ the current `Module.Flat` to `Module.MonoFlat`.
   preserves injectivity of linear maps. This lemma is fully universally polymorphic in all
   arguments, i.e. `R`, `M` and linear maps `N → N'` can all have different universe levels.
 * `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring modules
-  in the higher universe preserves injectivity .
+  in the higher universe preserves injectivity.
 * `Module.Flat.lTensor_exact`: If `M` is a flat module then tensoring with `M` is an exact
   functor. This lemma is fully universally polymorphic in all arguments, i.e.
   `R`, `M` and linear maps `N → N' → N''` can all have different universe levels.

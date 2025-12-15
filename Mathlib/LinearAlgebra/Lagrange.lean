@@ -14,9 +14,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 # Lagrange interpolation
 
 ## Main definitions
-* In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-  indexing of the field over some type. We call the image of v on s the interpolation nodes,
-  though strictly unique nodes are only defined when v is injective on s.
+* In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
+  indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
+  though strictly unique nodes are only defined when `v` is injective on `s`.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
   the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
   are distinct.
@@ -452,17 +452,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
 open scoped Classical in
 theorem interpolate_poly_eq_self
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := by
-  classical
-  let t : Finset F := s.image v
-  have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
-  apply eq_of_degrees_lt_of_eval_finset_eq t
-  · rw [ht]
-    apply degree_interpolate_lt _ hvs
-  · rwa [ht]
-  · intro x hx
-    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
-    rw [eval_interpolate_at_node _ hvs hi]
+    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :

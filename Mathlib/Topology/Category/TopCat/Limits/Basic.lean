@@ -149,7 +149,7 @@ lemma hasLimit_iff_small_sections :
   · infer_instance
   · exact ⟨⟨_, isLimitConeOfForget _ (limit.isLimit _)⟩⟩
 
-instance topCat_hasLimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+instance topCat_hasLimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasLimitsOfShape J TopCat.{u} where
   has_limit := fun F => by
     rw [hasLimit_iff_small_sections]
@@ -271,7 +271,7 @@ lemma hasColimit_iff_small_colimitType :
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
 
-instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+instance topCat_hasColimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where
   has_colimit := fun F => by
     rw [hasColimit_iff_small_colimitType]

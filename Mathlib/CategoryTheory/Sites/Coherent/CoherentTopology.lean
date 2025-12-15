@@ -24,7 +24,7 @@ This file characterises the covering sieves of the coherent topology.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C] {X : C}
+variable {C : Type*} [Category* C] [Precoherent C] {X : C}
 
 /--
 For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the

@@ -33,7 +33,7 @@ reasons:
 
 * In the ring version of Hahn embedding theorem, the subtype `FiniteArchimedeanClass R` of non-top
   elements in `ArchimedeanClass R` naturally becomes the additive abelian group for the ring
-  `HahnSeries (FiniteArchimedeanClass R) ℝ`.
+  `ℝ⟦FiniteArchimedeanClass R⟧`.
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
@@ -53,6 +53,15 @@ instance : Zero (ArchimedeanClass R) where
   zero := mk 1
 
 @[simp] theorem mk_one : mk (1 : R) = 0 := rfl
+
+@[simp]
+theorem top_ne_zero [Nontrivial R] : (⊤ : ArchimedeanClass R) ≠ 0 := by
+  rw [← mk_one, ne_eq, top_eq_mk_iff]
+  exact one_ne_zero
+
+@[simp]
+theorem zero_ne_top [Nontrivial R] : 0 ≠ (⊤ : ArchimedeanClass R) :=
+  top_ne_zero.symm
 
 private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x₂) (hy : mk y₁ ≤ mk y₂) :
     mk (x₁ * y₁) ≤ mk (x₂ * y₂) := by
@@ -152,9 +161,8 @@ theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
 @[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
-  rw [← Int.cast_natCast]
-  exact mk_intCast (mod_cast h)
+theorem mk_natCast {n : ℕ} : n ≠ 0 → mk (n : S) = 0 :=
+  mod_cast mk_intCast (n := n)
 
 end IsOrderedRing
 
@@ -203,7 +211,6 @@ variable [Field R] [IsOrderedRing R]
 
 instance : Neg (ArchimedeanClass R) where
   neg := lift (fun x ↦ mk x⁻¹) fun x y h ↦ by
-    have := IsOrderedRing.toIsStrictOrderedRing R
     obtain rfl | hx := eq_or_ne x 0
     · simp_all
     obtain rfl | hy := eq_or_ne y 0
@@ -243,11 +250,9 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
 
 @[simp]
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
-  have := IsOrderedRing.toIsStrictOrderedRing R
   simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
 
 theorem mk_le_mk_iff_ratCast {x y : R} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
-  have := IsOrderedRing.toIsStrictOrderedRing R
   simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)
 
 end Field

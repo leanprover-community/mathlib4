@@ -345,7 +345,7 @@ theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i
   s.finite_toSet.isLindelof_biUnion hf
 
 theorem isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
-    IsLindelof (Accumulate K n) :=
+    IsLindelof (accumulate K n) :=
   (finite_le_nat n).isLindelof_biUnion fun k _ => hK k
 
 theorem Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)

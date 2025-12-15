@@ -31,7 +31,7 @@ namespace CategoryTheory
 
 open Functor
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type _} [Category* C] [Category* D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
   [((whiskeringLeft C D D).obj F).Full] [((whiskeringLeft C D D).obj F).Faithful]

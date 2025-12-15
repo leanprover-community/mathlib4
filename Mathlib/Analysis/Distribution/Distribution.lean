@@ -164,7 +164,7 @@ abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω F n
 
-/-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω`. Note that using `𝓓'`
+/-- We denote `𝓓'(Ω, F)` the space of `F`-valued distributions on `Ω`. Note that using `𝓓'`
 is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 

@@ -651,8 +651,37 @@ def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' 
   Fork.ext (Iso.refl _) (by simp [h])
 
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
+@[simps!]
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
+
+/--
+If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
+`X ≅ X'` and `Y ≅ Y'`, the categories of forks are equivalent.
+-/
+def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) :
+    Fork f g ≌ Fork f' g' :=
+  Cones.postcomposeEquivalence <|
+    parallelPair.ext e₀ e₁ (by simp [comm₁]) (by simp [comm₂])
+
+@[simp]
+lemma Fork.equivOfIsos_functor_obj_ι {X Y : C} {f g : X ⟶ Y}
+    {X' Y' : C} {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) (c : Fork f g) :
+    ((Fork.equivOfIsos e₀ e₁ comm₁ comm₂).functor.obj c).ι = c.ι ≫ e₀.hom :=
+  rfl
+
+@[simp]
+lemma Fork.equivOfIsos_inverse_obj_ι {X Y : C} {f g : X ⟶ Y}
+    {X' Y' : C} {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) (c : Fork f' g') :
+    ((Fork.equivOfIsos e₀ e₁ comm₁ comm₂).inverse.obj c).ι = c.ι ≫ e₀.inv :=
+  rfl
 
 /--
 Given two forks with isomorphic components in such a way that the natural diagrams commute, then

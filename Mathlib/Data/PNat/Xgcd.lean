@@ -234,7 +234,7 @@ theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   rw [one_mul, one_mul, zero_mul, zero_mul]
   have := a.pos
   have := b.pos
-  congr <;> omega
+  congr <;> lia
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

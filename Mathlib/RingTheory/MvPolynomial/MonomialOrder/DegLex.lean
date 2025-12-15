@@ -48,7 +48,7 @@ end LinearOrder
 
 section IsCancelMulZero
 
-variable [IsCancelMulZero R]
+variable [NoZeroDivisors R]
 
 theorem totalDegree_mul_of_isDomain (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
@@ -88,7 +88,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [IsCancelMulZero R] {p q r : MvPolynomial σ R}
+variable [CommRing R] [NoZeroDivisors R] {p q r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by

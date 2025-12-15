@@ -45,30 +45,24 @@ class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
 
-
 /-- Class for the `sInf` operator -/
+@[to_dual existing]
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
-
 
 export SupSet (sSup)
 
 export InfSet (sInf)
 
 /-- Indexed supremum -/
+@[to_dual /-- Indexed infimum -/]
 def iSup [SupSet α] (s : ι → α) : α :=
   sSup (range s)
 
-/-- Indexed infimum -/
-def iInf [InfSet α] (s : ι → α) : α :=
-  sInf (range s)
-
+@[to_dual]
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
-
-instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
-  ⟨sSup ∅⟩
 
 /-- Indexed supremum. -/
 notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r

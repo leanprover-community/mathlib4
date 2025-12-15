@@ -169,7 +169,6 @@
  ["docBlame", "Mathlib.Notation3.prettyPrintOpt"],
  ["docBlame", "Mathlib.Tactic.evalIntrov"],
  ["docBlame", "Mathlib.Tactic.setArgsRest"],
- ["docBlame", "Mathlib.Tactic.tacticMatch_target_"],
  ["docBlame", "Mathlib.Tactic.usingArg"],
  ["docBlame", "Mathlib.Tactic.withArgs"],
  ["docBlame", "Mathlib.WhatsNew.diffExtension"],

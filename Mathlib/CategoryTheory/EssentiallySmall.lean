@@ -299,4 +299,9 @@ instance [Small.{w} C] [LocallySmall.{w} C]
     rw [Arrow.mk_eq_mk_iff] at this
     tauto
 
+instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
+    LocallySmall.{w} (C ⥤ A) where
+  hom_small P Q :=
+    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
+
 end CategoryTheory

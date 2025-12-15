@@ -156,7 +156,7 @@ lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
     using leftAdjointObjIsDefined_of_adjunction (Adjunction.ofIsRightAdjoint F) X
 
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
-noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category J]
+noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialLeftAdjointSource}
     {c : Cocone (R ⋙ ObjectProperty.ι _)} (hc : IsColimit c)
     {c' : Cocone (R ⋙ F.partialLeftAdjoint)} (hc' : IsColimit c') :
@@ -183,14 +183,14 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
     simp only [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
       F.map_comp, assoc] )
 
-lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category J] {R : J ⥤ C} {c : Cocone R}
+lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category* J] {R : J ⥤ C} {c : Cocone R}
     (hc : IsColimit c) [HasColimitsOfShape J D]
     (h : ∀ (j : J), F.leftAdjointObjIsDefined (R.obj j)) :
     F.leftAdjointObjIsDefined c.pt :=
   (corepresentableByCompCoyonedaObjOfIsColimit
     (R := ObjectProperty.lift _ R h) hc (colimit.isColimit _)).isCorepresentable
 
-lemma leftAdjointObjIsDefined_colimit {J : Type*} [Category J] (R : J ⥤ C)
+lemma leftAdjointObjIsDefined_colimit {J : Type*} [Category* J] (R : J ⥤ C)
     [HasColimit R] [HasColimitsOfShape J D]
     (h : ∀ (j : J), F.leftAdjointObjIsDefined (R.obj j)) :
     F.leftAdjointObjIsDefined (colimit R) :=
@@ -311,7 +311,7 @@ lemma isLeftAdjoint_iff_rightAdjointObjIsDefined_eq_top :
     using rightAdjointObjIsDefined_of_adjunction (Adjunction.ofIsLeftAdjoint F) X
 
 /-- Auxiliary definition for `rightAdjointObjIsDefined_of_isLimit`. -/
-noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category J]
+noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialRightAdjointSource}
     {c : Cone (R ⋙ ObjectProperty.ι _)} (hc : IsLimit c)
     {c' : Cone (R ⋙ F.partialRightAdjoint)} (hc' : IsLimit c') :
@@ -338,14 +338,14 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category J]
     dsimp
     simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc] )
 
-lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category J] {R : J ⥤ D} {c : Cone R}
+lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category* J] {R : J ⥤ D} {c : Cone R}
     (hc : IsLimit c) [HasLimitsOfShape J C]
     (h : ∀ (j : J), F.rightAdjointObjIsDefined (R.obj j)) :
     F.rightAdjointObjIsDefined c.pt :=
   (representableByCompYonedaObjOfIsLimit
     (R := ObjectProperty.lift _ R h) hc (limit.isLimit _)).isRepresentable
 
-lemma rightAdjointObjIsDefined_limit {J : Type*} [Category J] (R : J ⥤ D)
+lemma rightAdjointObjIsDefined_limit {J : Type*} [Category* J] (R : J ⥤ D)
     [HasLimit R] [HasLimitsOfShape J C]
     (h : ∀ (j : J), F.rightAdjointObjIsDefined (R.obj j)) :
     F.rightAdjointObjIsDefined (limit R) :=

@@ -35,7 +35,7 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C]
+  {C : Type*} [Category* C]
 
 section
 

@@ -607,6 +607,11 @@ theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x =
 protected theorem Filter.EventuallyEq.deriv (h : f₁ =ᶠ[𝓝 x] f) : deriv f₁ =ᶠ[𝓝 x] deriv f :=
   h.eventuallyEq_nhds.mono fun _ h => h.deriv_eq
 
+theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv f₁ =ᶠ[𝓝[≠] x] deriv f := by
+  rw [Filter.EventuallyEq, ← eventually_nhdsNE_eventually_nhds_iff] at *
+  filter_upwards [h] with y hy
+  apply Filter.EventuallyEq.deriv hy
+
 end congr
 
 section id

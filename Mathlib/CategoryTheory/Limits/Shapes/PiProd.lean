@@ -20,7 +20,7 @@ and its complement.
 
 namespace CategoryTheory.Limits
 
-variable {C I : Type*} [Category C] {X Y : I → C}
+variable {C I : Type*} [Category* C] {X Y : I → C}
   (f : (i : I) → X i ⟶ Y i) (P : I → Prop)
   [HasProduct X] [HasProduct Y]
   [HasProduct (fun (i : {x : I // P x}) ↦ X i.val)]

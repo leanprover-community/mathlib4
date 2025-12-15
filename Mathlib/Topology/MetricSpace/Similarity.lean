@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Similarities
@@ -112,6 +113,39 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
+section Triangle
+
+variable {a b c : P₁} {a' b' c' : P₂}
+
+/-- Swapping the first two vertices preserves similarity. -/
+theorem comm_left (h : ![a, b, c] ∼ ![a', b', c']) :
+    ![b, a, c] ∼ ![b', a', c'] := by
+  have hl : ![b, a, c] = ![a, b, c] ∘ Equiv.swap 0 1 := by
+    ext i
+    fin_cases i <;> simp; rfl
+  have hr : ![b', a', c'] = ![a', b', c'] ∘ Equiv.swap 0 1 := by
+    ext i
+    fin_cases i <;> simp; rfl
+  grind [index_equiv]
+
+/-- Swapping the last two vertices preserves similarity. -/
+theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
+    ![a, c, b] ∼ ![a', c', b'] := by
+  have hl : ![a, c, b] = ![a, b, c] ∘ Equiv.swap 1 2 := by
+    ext i
+    fin_cases i <;> simp; rfl
+  have hr : ![a', c', b'] = ![a', b', c'] ∘ Equiv.swap 1 2 := by
+    ext i
+    fin_cases i <;> simp; rfl
+  grind [index_equiv]
+
+/-- Reversing the order of vertices preserves similarity. -/
+theorem reverse_of_three (h : ![a, b, c] ∼ ![a', b', c']) :
+    ![c, b, a] ∼ ![c', b', a'] :=
+  h.comm_left.comm_right.comm_left
+
+end Triangle
+
 end Similar
 
 end PseudoEMetricSpace
@@ -151,6 +185,39 @@ lemma similar_iff_exists_pairwise_dist_eq :
   simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
   exact_mod_cast Iff.rfl
 
+/-- Similarity holds if and only if all distances are proportional with a positive real ratio. -/
+lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
+    (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) := by
+  rw [similar_iff_exists_dist_eq]
+  constructor
+  · intro h
+    rcases h with ⟨r_nn, hr_ne, hdist⟩
+    set r : ℝ := r_nn.toReal with hr
+    have hr_pos : 0 < r := by positivity
+    use r
+  · intro h
+    rcases h with ⟨r, hr_pos, hdist⟩
+    set r_nn : ℝ≥0 := Real.toNNReal r with hr_nn
+    have hr_ne : r_nn ≠ 0 := by grind [Real.toNNReal_eq_zero]
+    have hr : r = r_nn.toReal := by grind [Real.coe_toNNReal']
+    use r_nn
+    grind
+
+/-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
+lemma similar_iff_exists_pos_pairwise_dist_eq :
+    Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
+      r * dist (v₂ i₁) (v₂ i₂))) := by
+  simp_rw [similar_iff_exists_pairwise_dist_eq]
+  constructor
+  · rintro ⟨r, hr0, h⟩
+    refine ⟨r, NNReal.coe_pos.mpr ?_, h⟩
+    positivity
+  · rintro ⟨r, hr0, h⟩
+    refine ⟨Real.toNNReal r, by simp [hr0], ?_⟩
+    intro i₁ i₂ hi
+    rw [h hi, Real.coe_toNNReal]
+    positivity
+
 namespace Similar
 
 /-- A similarity scales non-negative distance. Forward direction of
@@ -184,6 +251,45 @@ alias ⟨exists_pairwise_dist_eq, _⟩ := similar_iff_exists_pairwise_dist_eq
 `similar_iff_exists_pairwise_dist_eq`. -/
 alias ⟨_, of_exists_pairwise_dist_eq⟩ := similar_iff_exists_pairwise_dist_eq
 
+/-- Scales distance with positive ratio. Forward direction of
+`similar_iff_exists_pos_dist_eq`. -/
+alias ⟨exists_pos_dist_eq, _⟩ := similar_iff_exists_pos_dist_eq
+
+/-- Similarity from scaled positive distance. Backward direction of
+`similar_iff_exists_pos_dist_eq`. -/
+alias ⟨_, of_exists_pos_dist_eq⟩ := similar_iff_exists_pos_dist_eq
+
+/-- Scales pairwise distance with positive ratio. Forward of
+`similar_iff_exists_pos_pairwise_dist_eq`. -/
+alias ⟨exists_pos_pairwise_dist_eq, _⟩ := similar_iff_exists_pos_pairwise_dist_eq
+
+/-- Similarity from scaled pairwise positive distance. Backward of
+`similar_iff_exists_pos_pairwise_dist_eq`. -/
+alias ⟨_, of_exists_pos_pairwise_dist_eq⟩ := similar_iff_exists_pos_pairwise_dist_eq
+
 end Similar
+
+section Triangle
+
+variable {a b c : P₁} {a' b' c' : P₂}
+
+/-- If two triangles have two pairs of proportional adjacent sides, then the triangles are similar.
+-/
+theorem similar_of_dist_mul_eq_dist_mul_eq (h_ne : dist a b ≠ 0) (h_ne' : dist a' b' ≠ 0)
+    (heq1 : dist a b * dist b' c' = dist b c * dist a' b')
+    (heq2 : dist a b * dist c' a' = dist c a * dist a' b') :
+    Similar ![a, b, c] ![a', b', c'] := by
+  set r : ℝ := (dist a b / dist a' b') with hr
+  have hr_pos : 0 < r := by positivity
+  apply Similar.of_exists_pos_pairwise_dist_eq
+  use r
+  refine ⟨hr_pos, ?_⟩
+  intro i j hij
+  fin_cases i <;> fin_cases j <;> try {rw [dist_self, dist_self, mul_zero]}
+  all_goals simp; grind [dist_comm]
+
+alias similar_of_side_side := similar_of_dist_mul_eq_dist_mul_eq
+
+end Triangle
 
 end PseudoMetricSpace
