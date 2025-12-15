@@ -495,7 +495,7 @@ lemma cfc_add_const (r : R) (f : R → R) (a : A)
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (∑ i ∈ s, f i)  a = ∑ i ∈ s, cfc (f i) a := by
+    cfc (∑ i ∈ s, f i) a = ∑ i ∈ s, cfc (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
@@ -776,7 +776,7 @@ lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
 
 lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ (f x) ⁻¹) a = Ring.inverse (cfc f a) := by
+    cfc (fun x ↦ (f x)⁻¹) a = Ring.inverse (cfc f a) := by
   rw [← val_inv_cfcUnits f a hf', ← val_cfcUnits f a hf', Ring.inverse_unit]
 
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
@@ -801,7 +801,7 @@ variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [ContinuousIn
 variable [Algebra R A]
 
 @[fun_prop]
-lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (· ⁻¹) (spectrum R (a : A)) :=
+lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (·⁻¹) (spectrum R (a : A)) :=
   continuousOn_inv₀.mono <| by
     simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
@@ -865,7 +865,7 @@ lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
     congr
   · simp [cfc_apply_of_not_predicate a ha]
 
-lemma cfc_neg : cfc (fun x ↦ - (f x)) a = - (cfc f a) := by
+lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_neg, cfc_apply ..]
@@ -875,13 +875,13 @@ lemma cfc_neg : cfc (fun x ↦ - (f x)) a = - (cfc f a) := by
     · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
 
-lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
+lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (-· : R → R) a = -a := by
   rw [cfc_neg _ a, cfc_id' R a]
 
 variable [UniqueHom R A]
 
 lemma cfc_comp_neg (hf : ContinuousOn f ((-·) '' (spectrum R (a : A))) := by cfc_cont_tac)
-    (ha : p a := by cfc_tac) : cfc (f <| - ·) a = cfc f (-a) := by
+    (ha : p a := by cfc_tac) : cfc (f <| -·) a = cfc f (-a) := by
   rw [cfc_comp' .., cfc_neg_id _]
 
 end Neg
@@ -1050,7 +1050,7 @@ lemma le_algebraMap_iff_spectrum_le {r : R} {a : A} (ha : p a := by cfc_tac) :
   exact cfc_le_algebraMap_iff id r a
 
 lemma algebraMap_le_iff_le_spectrum {r : R} {a : A} (ha : p a := by cfc_tac) :
-    algebraMap R A r ≤ a ↔ ∀ x ∈ spectrum R a, r ≤ x:= by
+    algebraMap R A r ≤ a ↔ ∀ x ∈ spectrum R a, r ≤ x := by
   nth_rw 1 [← cfc_id R a]
   exact algebraMap_le_cfc_iff id r a
 

@@ -234,12 +234,12 @@ lemma expGrowthSup_mul_le (h : expGrowthSup u ≠ ⊥ ∨ expGrowthSup v ≠ ⊤
   refine (limsup_add_le h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, log_mul_add, add_div_of_nonneg_right n.cast_nonneg']
 
-lemma expGrowthInf_inv : expGrowthInf u⁻¹ = - expGrowthSup u := by
+lemma expGrowthInf_inv : expGrowthInf u⁻¹ = -expGrowthSup u := by
   rw [expGrowthSup, ← liminf_neg]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.inv_apply, div_eq_mul_inv, div_eq_mul_inv, ← EReal.neg_mul, log_inv]
 
-lemma expGrowthSup_inv : expGrowthSup u⁻¹ = - expGrowthInf u := by
+lemma expGrowthSup_inv : expGrowthSup u⁻¹ = -expGrowthInf u := by
   rw [expGrowthInf, ← limsup_neg]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.inv_apply, div_eq_mul_inv, div_eq_mul_inv, ← EReal.neg_mul, log_inv]

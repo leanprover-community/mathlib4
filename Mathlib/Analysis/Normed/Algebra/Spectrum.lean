@@ -212,7 +212,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [Nor
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
   r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
-  _ ≤ ‖a‖       := norm_le_norm_of_mem hr
+  _ ≤ ‖a‖ := norm_le_norm_of_mem hr
 
 theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖ :=
@@ -301,8 +301,8 @@ theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
       filter_upwards [isBounded_singleton (x := 0)] with z hz
       lift z to 𝕜ˣ using Ne.isUnit hz
       simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
-    _ =O[cobounded 𝕜] (· ⁻¹) := .of_norm_right <| by
-      simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
+    _ =O[cobounded 𝕜] (·⁻¹) := .of_norm_right <| by
+      simpa using (isBigO_refl (·⁻¹) (cobounded 𝕜)).norm_right.smul h
 
 theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
   resolvent_isBigO_inv a |>.trans_tendsto tendsto_inv₀_cobounded
