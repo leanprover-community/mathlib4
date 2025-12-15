@@ -306,7 +306,7 @@ theorem stdPart_natCast (n : ℕ) : stdPart (n : K) = n :=
   mod_cast stdPart_intCast n
 
 @[simp]
-theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (K := K) ofNat(n) = n :=
+theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (ofNat(n) : K) = n :=
   stdPart_natCast n
 
 @[simp]
