@@ -1097,7 +1097,7 @@ theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} 
   Finsupp.ext fun a => dif_neg a.prop
 
 /-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
-@[simps! (attr := grind =) support toFun]
+@[simps! (attr := grind =) support apply]
 def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
 
 theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
@@ -1106,8 +1106,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
   by_cases h : P a
   · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
-  · rw [embDomain_notin_range, extendDomain_toFun, dif_neg h]
-    simp [h]
+  · simp [embDomain, h]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by
@@ -1123,25 +1122,14 @@ theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
 
 theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
-  ext a
-  by_cases h : P a
-  · exact dif_pos h
-  · dsimp [extendDomain_toFun]
-    rw [if_neg h, eq_comm, ← notMem_support_iff]
-    refine mt ?_ h
-    exact hf _
+  ext a; by_cases P a <;> simp [*]; grind
 
 @[simp]
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  dsimp only [extendDomain_toFun]
-  obtain rfl | ha := eq_or_ne a' a.val
-  · simp_rw [single_eq_same, dif_pos a.prop]
-  · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
-    intro h
-    rw [single_eq_of_ne]
-    simp [Subtype.ext_iff, ha]
+  obtain rfl | ha := eq_or_ne a' a.val <;>
+    simp [*, a.prop, single, Pi.single, Function.update, Subtype.ext_iff]
 
 end
 

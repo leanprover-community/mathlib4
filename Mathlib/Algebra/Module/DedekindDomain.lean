@@ -68,7 +68,7 @@ theorem isInternal_prime_power_torsion [DecidableEq (Ideal R)] [Module.Finite R 
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
   refine isInternal_prime_power_torsion_of_is_torsion_by_ideal ?_ hM'
-  rw [← Set.nonempty_iff_ne_empty] at hI; rw [Submodule.ne_bot_iff]
+  rw [Submodule.ne_bot_iff]
   obtain ⟨x, H, hx⟩ := hI; exact ⟨x, H, nonZeroDivisors.ne_zero hx⟩
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its

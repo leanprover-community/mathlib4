@@ -29,9 +29,9 @@ namespace SimplexCategory
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
     (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
-      W (Truncated.δ d i (by dsimp; cutsat) (by dsimp; cutsat)))
+      W (Truncated.δ d i (by dsimp; lia) (by dsimp; lia)))
     (σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
-      W (Truncated.σ d i (by dsimp; cutsat) (by dsimp; cutsat))) :
+      W (Truncated.σ d i (by dsimp; lia) (by dsimp; lia))) :
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]
@@ -55,8 +55,8 @@ lemma Truncated.morphismProperty_eq_top
         replace hf' : f = Hom.tr g' ≫ Hom.tr (SimplexCategory.δ i) :=
           InducedCategory.hom_ext hf'
         rw [hf']
-        exact W.comp_mem _ _ (hc _ _ _ _ _ (by cutsat))
-          (δ_mem _ (by cutsat) _)
+        exact W.comp_mem _ _ (hc _ _ _ _ _ (by lia))
+          (δ_mem _ (by lia) _)
     by_cases h₂ : Function.Injective f.hom.toOrderHom; swap
     · obtain _ | a := a
       · exact (h₂ (Function.injective_of_subsingleton (α := Fin 1) _)).elim
@@ -64,7 +64,7 @@ lemma Truncated.morphismProperty_eq_top
         replace hf' : f = Hom.tr (SimplexCategory.σ i) ≫ Hom.tr g' :=
           InducedCategory.hom_ext hf'
         rw [hf']
-        exact W.comp_mem _ _ (σ_mem _ (by cutsat) _) (hc _ _ _ _ _ (by cutsat))
+        exact W.comp_mem _ _ (σ_mem _ (by lia) _) (hc _ _ _ _ _ (by lia))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
     obtain rfl : a = b := le_antisymm (len_le_of_mono f.hom) (len_le_of_epi f.hom)

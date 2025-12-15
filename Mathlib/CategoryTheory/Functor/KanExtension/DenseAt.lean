@@ -65,14 +65,14 @@ def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
 
 /-- If `F : C ⥤ D` is dense at `Y : D`, then so is `G ⋙ F` if `G` is an equivalence. -/
 noncomputable def DenseAt.precompEquivalence
-    {C' : Type*} [Category C'] (G : C' ⥤ C) [G.IsEquivalence] :
+    {C' : Type*} [Category* C'] (G : C' ⥤ C) [G.IsEquivalence] :
     (G ⋙ F).DenseAt Y :=
   hY.whiskerEquivalence (CostructuredArrow.pre G F Y).asEquivalence
 
 /-- If `F : C ⥤ D` is dense at `Y : D` and `G : D ⥤ D'` is an equivalence,
 then `F ⋙ G` is dense at `G.obj Y`. -/
 noncomputable def DenseAt.postcompEquivalence
-    {D' : Type*} [Category D'] (G : D ⥤ D') [G.IsEquivalence] :
+    {D' : Type*} [Category* D'] (G : D ⥤ D') [G.IsEquivalence] :
     (F ⋙ G).DenseAt (G.obj Y) :=
   IsColimit.ofWhiskerEquivalence (CostructuredArrow.post F G Y).asEquivalence
     (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocones.ext (Iso.refl _)))

@@ -961,7 +961,7 @@ end MonoidalCategory
 
 namespace NatTrans
 
-variable {J : Type*} [Category J] {C : Type*} [Category C] [MonoidalCategory C]
+variable {J : Type*} [Category* J] {C : Type*} [Category* C] [MonoidalCategory C]
   {F G F' G' : J ⥤ C} (α : F ⟶ F') (β : G ⟶ G')
 
 @[reassoc]
