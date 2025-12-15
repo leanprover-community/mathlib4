@@ -241,7 +241,7 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
 
 /-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
 noncomputable
-def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
+def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category* J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
     IsLimit c ≃ IsTerminal c.pt :=
   (IsLimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isLimitEmptyConeEquiv _ _ _ (.refl _))
@@ -271,7 +271,7 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
 /-- If `F` is an empty diagram,
 then a cocone over `F` is colimiting iff the cocone point is initial. -/
 noncomputable
-def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category J] [IsEmpty J]
+def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category* J] [IsEmpty J]
     {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c.pt :=
   (IsColimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isColimitEmptyCoconeEquiv _ _ _ (.refl _))
