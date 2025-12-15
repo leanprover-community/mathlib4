@@ -132,7 +132,6 @@ theorem id_hom_c (X : SheafedSpace C) :
     (𝟙 X : X ⟶ X).hom.c = eqToHom (Presheaf.Pushforward.id_eq X.presheaf).symm :=
   rfl
 
-@[simp]
 theorem id_hom_c_app (X : SheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).hom.c.app U = 𝟙 _ := rfl
 

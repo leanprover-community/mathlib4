@@ -101,9 +101,7 @@ theorem mk_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk f).arrow = f :=
 
 @[deprecated (since := "2025-07-03")] alias mk'_arrow := mk_arrow
 
-@[simp]
-theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
-  rfl
+theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow := rfl
 
 /-- The forget functor `MonoOver X ⥤ Over X` is fully faithful. -/
 def fullyFaithfulForget (X : C) : (forget X).FullyFaithful :=

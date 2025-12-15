@@ -112,7 +112,7 @@ noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSk
 @[deprecated (since := "2025-06-26")] alias preCounitIso :=
   fromSkeletonToSkeletonIso
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 

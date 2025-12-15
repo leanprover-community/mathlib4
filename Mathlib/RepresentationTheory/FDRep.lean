@@ -109,10 +109,10 @@ lemma endRingEquiv_symm_comp_ρ (V : FDRep R G) :
       InducedCategory.endEquiv.toMonoidHom.comp (Action.ρ V) :=
   rfl
 
-@[simp]
 lemma endRingEquiv_comp_ρ (V : FDRep R G) :
     (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp
-      (InducedCategory.endEquiv.toMonoidHom.comp (Action.ρ V)) = ρ V := rfl
+      (InducedCategory.endEquiv.toMonoidHom.comp (Action.ρ V)) = ρ V :=
+  rfl
 
 @[simp]
 lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ V g) := rfl
