@@ -42,8 +42,7 @@ where
     let some r ← Simp.tryTheorem? e thm | return .continue
     return .done r
 
-
-def refoldConsts (e expectedType : Expr) (b : UnfoldBoundaries) : MetaM Expr := do
+partial def refoldConsts (e expectedType : Expr) (b : UnfoldBoundaries) : MetaM Expr := do
   let goal ← mkFreshExprMVar expectedType
   go e goal.mvarId!
   instantiateMVars goal
@@ -68,7 +67,7 @@ where
       else
         throwError "Error: could not cast {e} into the type {← goal.getType}."
 
-def unfoldConsts (e : Expr) (b : UnfoldBoundaries) : MetaM Expr := do
+partial def unfoldConsts (e : Expr) (b : UnfoldBoundaries) : MetaM Expr := do
   let eType ← inferType e
   let eTypeWhnf ← whnf eType
   if let .const c us := eTypeWhnf.getAppFn then
