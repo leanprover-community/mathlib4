@@ -1421,6 +1421,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
+public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -5216,6 +5217,8 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
@@ -5920,6 +5923,7 @@ public import Mathlib.RingTheory.Grassmannian
 public import Mathlib.RingTheory.HahnSeries.Addition
 public import Mathlib.RingTheory.HahnSeries.Basic
 public import Mathlib.RingTheory.HahnSeries.Binomial
+public import Mathlib.RingTheory.HahnSeries.Cardinal
 public import Mathlib.RingTheory.HahnSeries.HEval
 public import Mathlib.RingTheory.HahnSeries.HahnEmbedding
 public import Mathlib.RingTheory.HahnSeries.Lex
@@ -6038,6 +6042,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.LocalRing.Subring
 public import Mathlib.RingTheory.Localization.Algebra
