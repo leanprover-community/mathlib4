@@ -61,7 +61,7 @@ info: import Mathlib.Data.Int.Notation
 info:
 import Batteries.Tactic.Init
 import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.ExtractGoal
+import MathlibInit.Tactic.ExtractGoal
 -/
 #guard_msgs in
 #min_imports in (← `(tactic| extract_goal; on_goal 1 => _))

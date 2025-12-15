@@ -1,4 +1,3 @@
-import Mathlib.Init
 
 set_option linter.mathlibStandardSet true
 
