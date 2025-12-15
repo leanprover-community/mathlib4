@@ -115,9 +115,11 @@ theorem IsOrdering.mk' [HasMemOrNegMem P]
 
 end ne_top
 
-@[deprecated (since := "2025-12-15")] alias HasIdealSupport.smul_mem := AddSubmonoid.smul_mem
+@[deprecated (since := "2025-12-15")]
+alias HasIdealSupport.smul_mem := AddSubmonoid.smul_mem
 
-@[deprecated (since := "2025-12-15")] alias HasIdealSupport.neg_smul_mem := AddSubmonoid.neg_smul_mem
+@[deprecated (since := "2025-12-15")]
+alias HasIdealSupport.neg_smul_mem := AddSubmonoid.neg_smul_mem
 
 
 theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := where
