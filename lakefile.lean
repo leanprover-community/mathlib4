@@ -43,7 +43,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`experimental.module, true⟩,
     -- Enforcing the module system's restrictions on using private declarations in public contexts
     -- will require further API changes specific to the respective usage, so we disable these checks
     -- for now until they can be addressed one by one.
