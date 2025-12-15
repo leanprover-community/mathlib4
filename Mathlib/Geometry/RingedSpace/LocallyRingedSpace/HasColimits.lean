@@ -217,32 +217,29 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  sorry
-  /-rw [-- Manually apply `elementwise_of%` to generate a `ConcreteCategory` lemma
-    elementwise_of% PresheafedSpace.stalkMap_germ
-      (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
+  rw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.toShHom g.toShHom).hom U _ hU] at ha
   let V := imageBasicOpen f g U s
-  have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
-      ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
+  have hV : (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
+      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1) = V.1 :=
     imageBasicOpen_image_preimage f g U s
-  have hV' : V = ⟨(coequalizer.π f.toShHom g.toShHom).base ⁻¹'
-      ((coequalizer.π f.toShHom g.toShHom).base '' V.1), hV.symm ▸ V.2⟩ :=
+  have hV' : V = ⟨(coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
+      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1), hV.symm ▸ V.2⟩ :=
     SetLike.ext' hV.symm
-  have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).base '' V.1) :=
+  have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1) :=
     imageBasicOpen_image_open f g U s
-  have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
+  have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).hom.base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
   rw [← (coequalizer f.toShHom g.toShHom).presheaf.germ_res_apply (homOfLE VleU) _
-      (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
+      (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).hom.base x V.1 hxV) s]
   apply RingHom.isUnit_map
-  rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom :).c.app _).hom,
+  rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom).hom.c.app _).hom,
     ← CommRingCat.comp_apply, NatTrans.naturality, CommRingCat.comp_apply,
     ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op).hom]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
-      (((coequalizer.π f.toShHom g.toShHom).c.app (op U)) s)-/
+      (((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 end HasCoequalizer
 
