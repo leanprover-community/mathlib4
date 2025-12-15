@@ -207,7 +207,8 @@ lemma ker_eval₂Hom_universalFactorizationMap :
       exact Ideal.mul_sub_mul_mem _ IH (Ideal.subset_span ⟨i, by simp [f]⟩)
   · simp only [Ideal.span_le, Set.range_subset_iff, SetLike.mem_coe, RingHom.mem_ker, map_sub,
       eval₂Hom_C, RingHom.coe_coe, eval₂Hom_map_hom, coe_eval₂Hom, sub_eq_zero, f]
-    simp only [← algebraMap_eq, AlgHom.comp_algebraMap_of_tower, ← aeval_def]
+    simp only [← AlgHom.toRingHom_eq_coe, ← algebraMap_eq, AlgHom.comp_algebraMap_of_tower,
+      ← aeval_def]
     intro i
     generalize universalFactorizationMap R n m k hn (X i) = p
     change AlgHom.id R _ p = ((aeval _).comp (tensorEquivSum R _ _ R).toAlgHom) p
@@ -447,8 +448,7 @@ def UniversalFactorizationRing.homEquiv :
     (𝓡 →ₐ[R] S) ≃ { q : MonicDegreeEq S m × MonicDegreeEq S k //
       q.1.1 * q.2.1 = p.1.map (algebraMap R S) } where
   toFun f := ⟨((factor₁ m k hn p).map f, (factor₂ m k hn p).map f), by
-    simp [-AlgHom.toRingHom_eq_coe, ← Polynomial.map_mul, factor₁_mul_factor₂ m k hn p,
-      Polynomial.map_map]⟩
+    simp [← Polynomial.map_mul, factor₁_mul_factor₂ m k hn p, Polynomial.map_map]⟩
   invFun q :=
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
@@ -478,7 +478,7 @@ def UniversalFactorizationRing.homEquiv :
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
-      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁, monicDegreeEq_coe,
+      Equiv.coe_fn_symm_mk, factor₁, monicDegreeEq_coe,
       MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor,
       MonicDegreeEq.map_coe, factor₂]
     ext <;> simp +contextual [coeff_freeMonic, apply_dite, MonicDegreeEq.coeff_of_ge]

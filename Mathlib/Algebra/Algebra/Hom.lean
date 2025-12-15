@@ -216,7 +216,7 @@ theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, 
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
+theorem comp_algebraMap : φ.toRingHom.comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext <| φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/

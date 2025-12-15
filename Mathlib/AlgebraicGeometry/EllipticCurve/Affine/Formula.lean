@@ -440,35 +440,35 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y x₁ y₁ x₂ y₂ ℓ : A)
 
 lemma baseChange_negPolynomial : (W'.baseChange B).toAffine.negPolynomial =
-    (W'.baseChange A).toAffine.negPolynomial.map (mapRingHom f) := by
+    (W'.baseChange A).toAffine.negPolynomial.map (mapRingHom f.toRingHom) := by
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY :
     (W'.baseChange B).toAffine.negY (f x) (f y) = f ((W'.baseChange A).toAffine.negY x y) := by
-  rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_negY, ← AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_addPolynomial : (W'.baseChange B).toAffine.addPolynomial (f x) (f y) (f ℓ) =
-    ((W'.baseChange A).toAffine.addPolynomial x y ℓ).map f := by
-  rw [← RingHom.coe_coe, ← map_addPolynomial, map_baseChange]
+    ((W'.baseChange A).toAffine.addPolynomial x y ℓ).map f.toRingHom := by
+  rw [← map_addPolynomial, map_baseChange, AlgHom.coe_toRingHom']
 
 lemma baseChange_addX : (W'.baseChange B).toAffine.addX (f x₁) (f x₂) (f ℓ) =
     f ((W'.baseChange A).toAffine.addX x₁ x₂ ℓ) := by
-  rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_addX, ← AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_negAddY : (W'.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) =
     f ((W'.baseChange A).toAffine.negAddY x₁ x₂ y₁ ℓ) := by
-  rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_negAddY, ← AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_addY : (W'.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) =
     f ((W'.baseChange A).toAffine.addY x₁ x₂ y₁ ℓ) := by
-  rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_addY, ← AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_slope [DecidableEq F] [DecidableEq K]
     [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
     [IsScalarTower R S K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
     (W'.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
     f ((W'.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
-  rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
+  rw [← RingHom.coe_coe, ← map_slope, ← AlgHom.toRingHom_eq_coe, map_baseChange]
 
 end Affine
 

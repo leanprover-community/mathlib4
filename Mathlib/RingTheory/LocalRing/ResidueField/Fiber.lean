@@ -64,8 +64,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal (Algebra.ofId _ _) congr($(q.2.symm).asIdeal))
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _).toRingHom, RingHom.ker_isPrime _⟩
   invFun q := ⟨Algebra.TensorProduct.includeRight.toRingHom.specComap q, by
-    simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← specComap_comp_apply,
-      AlgHom.comp_algebraMap_of_tower]
+    simp only [Set.mem_preimage, ← specComap_comp_apply, AlgHom.comp_algebraMap_of_tower]
     exact (residueField_specComap _).le ⟨(algebraMap _ _).specComap q, rfl⟩⟩
   left_inv q := by ext x; simp
   right_inv q := by

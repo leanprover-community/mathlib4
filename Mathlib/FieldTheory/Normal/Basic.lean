@@ -129,7 +129,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
   convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
-    Polynomial.map_map, AlgHom.toRingHom_eq_coe]
+    Polynomial.map_map]
 
 instance normal_sup
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :

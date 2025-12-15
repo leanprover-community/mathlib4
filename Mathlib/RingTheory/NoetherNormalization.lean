@@ -200,8 +200,7 @@ private noncomputable abbrev eqv1 :
     _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
       congrFun (congrArg Ideal.map this.symm) (I.map (T f))
     _ = _ := by
-      -- remove `AlgHom.toRingHom_eq_coe` when `Ideal.map` is restricted to `RingHom`s
-      simp [← Ideal.map_map, AlgHom.toRingHom_eq_coe, Ideal.map_coe]
+      simp [← Ideal.map_map, Ideal.map_coe]
 
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
