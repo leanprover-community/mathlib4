@@ -199,7 +199,7 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
     (hs : s.Nontrivial) (hB_ss_sc : B ⊂ sᶜ) (hG : stabilizer (alternatingGroup α) s ≤ G)
     (hB : IsBlock G B) :
     B.Subsingleton := by
-  apply hB.subsingleton_of_ssubset_compl_of_stabilizer_le hB_ss_sc
+  apply hB.subsingleton_of_ssubset_of_stabilizer_le hB_ss_sc
   intro g
   obtain ⟨⟨k, hk⟩, rfl⟩ := AlternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
   simp only [stabilizer_compl] at hk
@@ -213,9 +213,10 @@ namespace AlternatingGroup
 
 /- Note : The proof of this statement is close to that
 of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
-and while it would be absolutely impossible the proofs,
+and while it would not be absolutely impossible to abstract both proofs,
 the result would be slightly awkward because the
-details of the results involved in the proof differ slightly. -/
+details of the results involved in the proof differ in annoying details.
+And it would be used only twice. -/
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     (h0 : s.Nontrivial) (hs : s.ncard < (sᶜ : Set α).ncard) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by

@@ -218,7 +218,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     have : G = Subgroup.map G.subtype ⊤ := by
       rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
     rw [this, Subgroup.map_le_iff_le_comap]
-    rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, h]
+    rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, hG]
 
 end Equiv.Perm
 
@@ -226,42 +226,41 @@ namespace MulAction.IsBlock
 
 open Equiv Equiv.Perm MulAction SubMulAction
 
-lemma subsingleton_of_ssubset_compl_of_stabilizer_le
-    {B : Set α} (hB_ss_sc : B ⊂ sᶜ) (hB : IsBlock M B)
+lemma subsingleton_of_ssubset_of_stabilizer_le
+    {B : Set α} (hB_ss_sc : B ⊂ s) (hB : IsBlock M B)
     (hG : Function.Surjective
-      (MulAction.toPerm : stabilizer M (sᶜ : Set α) → Perm (sᶜ : Set α))) :
+      (MulAction.toPerm : stabilizer M (s : Set α) → Perm (s : Set α))) :
     B.Subsingleton := by
   rw [← inter_eq_self_of_subset_right (subset_of_ssubset hB_ss_sc), ← Subtype.image_preimage_val]
   apply Set.Subsingleton.image
-  suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
+  suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (s : Set α)) by
     apply Or.resolve_right this
     rw [preimage_eq_univ_iff, Subtype.range_coe_subtype]
     exact not_subset_of_ssubset hB_ss_sc
-  suffices IsPreprimitive (stabilizer M (sᶜ : Set α)) (sᶜ : Set α) by
+  suffices IsPreprimitive (stabilizer M (s : Set α)) (s : Set α) by
     apply this.isTrivialBlock_of_isBlock
-    let φ' : stabilizer M (sᶜ : Set α) → M := Subtype.val
-    let f' : (sᶜ : Set α) →ₑ[φ'] α := {
+    let φ' : stabilizer M (s : Set α) → M := Subtype.val
+    let f' : (s : Set α) →ₑ[φ'] α := {
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (sᶜ : Set α) → Perm (sᶜ : Set α) := MulAction.toPerm
-  let f : (sᶜ : Set α) →ₑ[φ] (sᶜ : Set α) := {
+  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
+  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
     toFun := id
     map_smul' _ _ := rfl }
   have hf : Function.Bijective f := Function.bijective_id
   rw [isPreprimitive_congr hG hf]
   infer_instance
 
-lemma subsingleton_of_ssubset_compl_of_stabilizer_perm_le
+lemma subsingleton_of_ssubset_of_stabilizer_Perm_le
     {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
-    (hB_ss_s : B ⊂ s) (hG : stabilizer (Perm α) s ≤ G) :
+    (hB_ss_sc : B ⊂ s) (hG : stabilizer (Perm α) s ≤ G) :
     B.Subsingleton := by
-  apply hB.subsingleton_of_ssubset_compl_of_stabilizer_le hB_ss_sc
+  apply hB.subsingleton_of_ssubset_of_stabilizer_le hB_ss_sc
   intro g
-  obtain ⟨⟨k, hk⟩, rfl⟩ := stabilizer.surjective_toPerm sᶜ g
-  simp only [stabilizer_compl] at hk
+  obtain ⟨⟨k, hk⟩, rfl⟩ := stabilizer.surjective_toPerm s g
   let h : G := ⟨k, hG hk⟩
-  have : h ∈ stabilizer G sᶜ := by aesop
+  have : h ∈ stabilizer G s := by aesop
   exact ⟨⟨h, this⟩, rfl⟩
 
 lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
@@ -346,6 +345,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
   refine ⟨stabilizer_ne_top_of_nonempty_of_nonempty_compl h0 h1, fun G hG ↦ ?_⟩
+  have hG' : stabilizer (Perm α) sᶜ < G := by rwa [stabilizer_compl]
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   -- We know that `G` contains a swap
   obtain ⟨g, hg_swap, hg⟩ := has_swap_mem_of_lt_stabilizer s G hG
@@ -386,11 +386,9 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
     -- uses Step 1
-    hB.subsingleton_of_ssubset_compl_of_stabilizer_Perm_le
-      (s := s) (hBsc.ssubset_of_ne (by aesop)) hG.le
+    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by aesop)) hG'.le
   -- Step 3 : A block contained in `s` is a subsingleton
-  have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
-      B.Subsingleton :=
+  have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) : B.Subsingleton :=
     have := isPreprimitive_stabilizer_subgroup hG.le
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : `sᶜ ⊆ B`
