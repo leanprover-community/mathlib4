@@ -210,3 +210,12 @@ theorem sort_of_perm (σ : Equiv.Perm (Fin n)) :
     simp_all [(Equiv.bijective σ⁻¹).1 ((Equiv.bijective σ).1 _)]
 
 end Tuple
+
+theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
+    Monotone σ ↔ σ = 1 := by
+  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_ofPerm]
+  constructor <;> intro h
+  · apply inv_eq_one.mp
+    rw [h]
+    rfl
+  · exact inv_eq_one.mp h
