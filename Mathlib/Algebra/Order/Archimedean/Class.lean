@@ -870,4 +870,52 @@ attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
 attribute [deprecated ballSubgroup_strictAnti (since := "2025-12-14")]
   MulArchimedeanClass.ballSubgroup_antitone
 
+attribute [deprecated FiniteArchimedeanClass.addSubgroup (since := "2025-12-14")]
+  ArchimedeanClass.addSubgroup
+attribute [deprecated FiniteArchimedeanClass.subsemigroup_eq_addSubgroup (since := "2025-12-14")]
+  ArchimedeanClass.subsemigroup_eq_addSubgroup_of_ne_top
+attribute [deprecated FiniteArchimedeanClass.addSubgroup_eq_bot (since := "2025-12-14")]
+  ArchimedeanClass.addSubgroup_eq_bot
+attribute [deprecated FiniteArchimedeanClass.mem_addSubgroup_iff (since := "2025-12-14")]
+  ArchimedeanClass.mem_addSubgroup_iff
+attribute [deprecated FiniteArchimedeanClass.addSubgroup_strictAnti (since := "2025-12-14")]
+  ArchimedeanClass.addSubgroup_strictAntiOn
+attribute [deprecated FiniteArchimedeanClass.addSubgroup_strictAnti (since := "2025-12-14")]
+  ArchimedeanClass.addSubgroup_antitone
+attribute [deprecated FiniteArchimedeanClass.ballAddSubgroup (since := "2025-12-14")]
+  ArchimedeanClass.ballAddSubgroup
+attribute [deprecated FiniteArchimedeanClass.closedBallAddSubgroup (since := "2025-12-14")]
+  ArchimedeanClass.closedBallAddSubgroup
+attribute [deprecated FiniteArchimedeanClass.mem_ballAddSubgroup_iff (since := "2025-12-14")]
+  ArchimedeanClass.mem_ballAddSubgroup_iff
+attribute [deprecated FiniteArchimedeanClass.mem_closedBallAddSubgroup_iff (since := "2025-12-14")]
+  ArchimedeanClass.mem_closedBallAddSubgroup_iff
+attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
+  ArchimedeanClass.ballAddSubgroup_top
+attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
+  ArchimedeanClass.closedBallAddSubgroup_top
+attribute [deprecated FiniteArchimedeanClass.ballAddSubgroup_strictAnti (since := "2025-12-14")]
+  ArchimedeanClass.ballAddSubgroup_antitone
+
+attribute [deprecated subgroup (since := "2025-12-14")] MulArchimedeanClass.subgroup
+attribute [deprecated subgroup_eq_bot (since := "2025-12-14")] MulArchimedeanClass.subgroup_eq_bot
+attribute [deprecated mem_subgroup_iff (since := "2025-12-14")] MulArchimedeanClass.mem_subgroup_iff
+attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
+  MulArchimedeanClass.subgroup_strictAntiOn
+attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
+  MulArchimedeanClass.subgroup_antitone
+attribute [deprecated ballSubgroup (since := "2025-12-14")] MulArchimedeanClass.ballSubgroup
+attribute [deprecated closedBallSubgroup (since := "2025-12-14")]
+  MulArchimedeanClass.closedBallSubgroup
+attribute [deprecated mem_ballSubgroup_iff (since := "2025-12-14")]
+  MulArchimedeanClass.mem_ballSubgroup_iff
+attribute [deprecated mem_closedBallSubgroup_iff (since := "2025-12-14")]
+  MulArchimedeanClass.mem_closedBallSubgroup_iff
+attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
+  MulArchimedeanClass.ballSubgroup_top
+attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
+  MulArchimedeanClass.closedBallSubgroup_top
+attribute [deprecated ballSubgroup_strictAnti (since := "2025-12-14")]
+  MulArchimedeanClass.ballSubgroup_antitone
+
 end FiniteMulArchimedeanClass
