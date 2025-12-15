@@ -684,6 +684,7 @@ theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
 theorem coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (StarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -696,6 +697,7 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 

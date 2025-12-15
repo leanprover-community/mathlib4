@@ -216,7 +216,7 @@ theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
 
@@ -233,7 +233,7 @@ theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
 
 @[deprecated (since := "2025-08-31")] alias finset_inf_coe := coe_finsetInf
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
   rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
 
