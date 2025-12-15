@@ -349,7 +349,6 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have c₃ : J = ⊤ := by grind
   apply LieAlgebra.IsKilling.l2 q
-  -- Unfold J in c₃ and extract the needed equality
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
   unfold J invtSubmoduleToLieIdeal at c₃
   simpa using c₃
