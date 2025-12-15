@@ -28,7 +28,7 @@ the vanishing of certain `Ext` typs and length of maximal regular sequence in a 
   `N →ₗ[R] M = 0` iff there is a `M`-regular in `Module.annihilator R N`.
   This is the case for `n = 0` in the Rees theorem.
 
-* `exist_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
+* `exists_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
   finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zero lucus of `I`, `∀ i < n, Ext N M i = 0`
@@ -125,18 +125,18 @@ variable {R : Type u} [CommRing R] [Small.{v} R]
 
 open Pointwise ModuleCat IsSMulRegular
 
-lemma exist_isRegular_of_exist_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
+lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, [Nontrivial M] → [Module.Finite R M] →
     I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
   induction n
-  · intro M ntr M_fin smul_lt exist_N
+  · intro M ntr M_fin smul_lt exists_N
     use []
     simp [isRegular_iff]
   · rename_i n ih
-    intro M ntrM M_fin smul_lt exist_N
-    rcases exist_N with ⟨N, ntr, fin, h_supp, h_ext⟩
+    intro M ntrM M_fin smul_lt exists_N
+    rcases exists_N with ⟨N, ntr, fin, h_supp, h_ext⟩
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
     have : Subsingleton (N →ₗ[R] M) :=
@@ -160,7 +160,7 @@ lemma exist_isRegular_of_exist_subsingleton_ext [IsNoetherianRing R] (I : Ideal 
       have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
         (Submodule.mkQ ((x ^ k) • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
       simpa [eq, le_smul] using this
-    have exist_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
+    have exists_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
         Module.support R N = PrimeSpectrum.zeroLocus I ∧
           ∀ i < n, Subsingleton (Abelian.Ext N (ModuleCat.of R M') i)) := by
       use N
@@ -173,7 +173,7 @@ lemma exist_isRegular_of_exist_subsingleton_ext [IsNoetherianRing R] (I : Ideal 
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N hxk.smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
-    rcases ih (ModuleCat.of R M') smul_lt' exist_N' with ⟨rs, len, mem, reg⟩
+    rcases ih (ModuleCat.of R M') smul_lt' exists_N' with ⟨rs, len, mem, reg⟩
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hxk, reg⟩
 
@@ -194,7 +194,7 @@ lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleC
       simpa [smulShortComplex, this, ModuleCat.ofHom_comp, ← extFunctorObj_map,
         (extFunctorObj N i).map_comp] using mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
-lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
     ∀ M : ModuleCat.{v} R, [Nontrivial M] → [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
@@ -231,7 +231,7 @@ lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n 
         have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
           (Submodule.mkQ (a • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
         simpa [eq, le_smul] using this
-      have exist_reg' : ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧
+      have exists_reg' : ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧
         IsRegular (ModuleCat.of R M') rs := by
         use rs'
         simp only [List.length_cons, Nat.add_left_inj] at len
@@ -248,7 +248,7 @@ lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n 
           apply (Ext.covariant_sequence_exact₁' N reg.1.smulShortComplex_shortExact (i - 1) i
             (by omega)).mono_g (IsZero.eq_zero_of_src _ _)
           exact @AddCommGrpCat.isZero_of_subsingleton _
-            (ih (ModuleCat.of R M') smul_lt' exist_reg' (i - 1) lt)
+            (ih (ModuleCat.of R M') smul_lt' exists_reg' (i - 1) lt)
         let gk := (AddCommGrpCat.ofHom
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk : Mono gk := pow_mono_of_mono a kpos i mono_g
@@ -266,7 +266,7 @@ For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated an
   zero lucus of `I`, `∀ i < n, Ext N M i = 0`
 · there exist a `M`-regular sequence of length `n` with every element in `I`
 -/
-lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
+lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
@@ -290,9 +290,9 @@ lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     intro h2
     use (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
     exact ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
-  tfae_have 3 → 4 := exist_isRegular_of_exist_subsingleton_ext I n M smul_lt
+  tfae_have 3 → 4 := exists_isRegular_of_exists_subsingleton_ext I n M smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
-    ext_subsingleton_of_exist_isRegular I n N Nsupp M smul_lt h4 i hi
+    ext_subsingleton_of_exists_isRegular I n N Nsupp M smul_lt h4 i hi
   tfae_finish
 
 section

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan
+Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 module
 
