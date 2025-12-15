@@ -466,7 +466,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
-    use p ⟨n, by omega⟩
+    use p ⟨n, by lia⟩
     constructor
     · rw [← hp]
       apply LTSeries.strictMono
