@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Aaron Liu
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Separation.GDelta
+module
+
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Separation.GDelta
 
 /-!
 # `Gδ` sets and metrizable spaces
@@ -16,6 +18,8 @@ We prove that the continuity set of a function from a topological space to a met
 Gδ set.
 
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
 open TopologicalSpace Metric Set
@@ -34,13 +38,14 @@ instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
     refine ⟨g ⁻¹' (Ioi 0), g ⁻¹' (Iio 0), isOpen_Ioi.preimage hg, isOpen_Iio.preimage hg,
       fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_same.preimage g⟩
     · simp [g, infDist_zero_of_mem hx,
-        (ht.not_mem_iff_infDist_pos hte).mp (hst.not_mem_of_mem_left hx)]
+        (ht.notMem_iff_infDist_pos hte).mp (hst.notMem_of_mem_left hx)]
     · simp [g, infDist_zero_of_mem hx,
-        (hs.not_mem_iff_infDist_pos hse).mp (hst.not_mem_of_mem_right hx)]
+        (hs.notMem_iff_infDist_pos hse).mp (hst.notMem_of_mem_right hx)]
 
 instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by
-    let _ := pseudoMetrizableSpacePseudoMetric X
+    let := pseudoMetrizableSpaceUniformity X
+    have := pseudoMetrizableSpaceUniformity_countably_generated X
     rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
     rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
     refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
@@ -57,7 +62,8 @@ variable {Y : Type*} [TopologicalSpace Y]
 
 theorem IsGδ.setOf_continuousAt [PseudoMetrizableSpace Y] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
-  let _ := pseudoMetrizableSpacePseudoMetric Y
+  let := pseudoMetrizableSpaceUniformity Y
+  have := pseudoMetrizableSpaceUniformity_countably_generated Y
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis,

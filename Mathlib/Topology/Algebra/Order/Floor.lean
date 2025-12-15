@@ -3,9 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Order.Filter.AtTopBot.Floor
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Order.Filter.AtTopBot.Floor
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`
@@ -23,6 +25,8 @@ This file proves statements about limits and continuity of functions involving `
 * `ContinuousOn.comp_fract`: Precomposing a continuous function satisfying `f 0 = f 1` with
   `Int.fract` yields another continuous function.
 -/
+
+@[expose] public section
 
 
 open Filter Function Int Set Topology
@@ -58,7 +62,7 @@ variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
 
 section
 variable [IsStrictOrderedRing α]
--- TODO: move to `Mathlib.Order.Filter.AtTopBot.Floor`
+-- TODO: move to `Mathlib/Order/Filter/AtTopBot/Floor.lean`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>

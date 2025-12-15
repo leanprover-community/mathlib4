@@ -3,8 +3,11 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.NormNum.Ineq
+import all Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings
@@ -34,12 +37,14 @@ goals, so it is available to the user indirectly as the "degenerate" case of tha
 by calling `linear_combination` without arguments.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.Ring
 
 open Lean Qq Meta
 
-/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE` and
-`Mathlib.Tactic.Ring.evalLT` perform all type class inference at the point of use, we record in
+/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE.lean` and
+`Mathlib.Tactic.Ring.evalLT.lean` perform all type class inference at the point of use, we record in
 advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no
 new information (they can already be proved by `inferInstance`).
 
@@ -63,8 +68,8 @@ end Typeclass
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
 typically just `[AddRightMono α]` or similar.  Here we restate these
 lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
-speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
-`Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in
+speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT.lean` and
+`Mathlib.Tactic.Ring.proveLE.lean`) substantially -- about a 50% reduction in heartbeat count in
 representative test cases -- since otherwise a substantial fraction of their runtime is devoted to
 type class inference.
 
@@ -75,10 +80,10 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+theorem add_le_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
-  _root_.add_le_add_right bc a
+  _root_.add_le_add_left bc a
 
 theorem add_le_of_nonpos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     (a : α) {b : α} (h : b ≤ 0) :
@@ -90,10 +95,10 @@ theorem le_add_of_nonneg_left {α : Type*} [CommSemiring α] [PartialOrder α] [
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+theorem add_lt_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
     {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
-  _root_.add_lt_add_right bc a
+  _root_.add_lt_add_left bc a
 
 theorem add_lt_of_neg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
     (a : α) {b : α} (h : b < 0) :
@@ -108,7 +113,7 @@ theorem lt_add_of_pos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsS
 end Lemma
 
 /-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
-`Mathlib.Tactic.Ring.evalLE` and `Mathlib.Tactic.Ring.evalLT`. -/
+`Mathlib.Tactic.Ring.evalLE.lean` and `Mathlib.Tactic.Ring.evalLT.lean`. -/
 inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 
@@ -121,9 +126,9 @@ def evalLE {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a ≤ $b)) := do
   let lα : Q(LE $α) := q(le_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -133,7 +138,7 @@ def evalLE {v : Level} {α : Q(Type v)}
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_le_add_right (a := $a') $pf):)
+    pure <| .ok (q(add_le_add_left (a := $a') $pf):)
   /- For a numeral `ca ≤ 0`, `ca + x ≤ x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
@@ -159,9 +164,9 @@ def evalLT {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a < $b)) := do
   let lα : Q(LT $α) := q(lt_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
@@ -171,7 +176,7 @@ def evalLT {v : Level} {α : Q(Type v)}
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_lt_add_right $pf $a'):)
+    pure <| .ok (q(add_lt_add_left $pf $a'):)
   /- For a numeral `ca < 0`, `ca + x < x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable

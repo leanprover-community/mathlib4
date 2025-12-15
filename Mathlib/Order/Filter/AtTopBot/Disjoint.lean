@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Order.Interval.Set.Disjoint
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # Disjointness of `Filter.atTop` and `Filter.atBot`
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -45,7 +49,7 @@ theorem disjoint_atBot_atTop [PartialOrder α] [Nontrivial α] :
   rcases exists_pair_ne α with ⟨x, y, hne⟩
   by_cases hle : x ≤ y
   · refine disjoint_of_disjoint_of_mem ?_ (Iic_mem_atBot x) (Ici_mem_atTop y)
-    exact Iic_disjoint_Ici.2 (hle.lt_of_ne hne).not_le
+    exact Iic_disjoint_Ici.2 (hle.lt_of_ne hne).not_ge
   · refine disjoint_of_disjoint_of_mem ?_ (Iic_mem_atBot y) (Ici_mem_atTop x)
     exact Iic_disjoint_Ici.2 hle
 

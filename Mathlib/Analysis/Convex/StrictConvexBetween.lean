@@ -3,10 +3,12 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
@@ -15,6 +17,8 @@ This file proves results about betweenness for points in an affine space for a s
 space.
 
 -/
+
+@[expose] public section
 
 open Metric
 open scoped Convex
@@ -60,13 +64,13 @@ theorem Collinear.wbtw_of_dist_eq_of_dist_le {p p₁ p₂ p₃ : P} {r : ℝ}
     have hs : Sbtw ℝ p₂ p₃ p₁ := ⟨hw, hp₃p₂, hp₁p₃.symm⟩
     have hs' := hs.dist_lt_max_dist p
     rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, or_false] at hs'
-    exact False.elim (hp₂.not_lt hs')
+    exact False.elim (hp₂.not_gt hs')
   · by_cases hp₁p₂ : p₁ = p₂
     · simp [hp₁p₂]
     have hs : Sbtw ℝ p₃ p₁ p₂ := ⟨hw, hp₁p₃, hp₁p₂⟩
     have hs' := hs.dist_lt_max_dist p
     rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, false_or] at hs'
-    exact False.elim (hp₂.not_lt hs')
+    exact False.elim (hp₂.not_gt hs')
 
 /-- Given three collinear points, two (not equal) with distance `r` from `p` and one with
 distance less than `r` from `p`, the third point is strictly between the other two points. -/

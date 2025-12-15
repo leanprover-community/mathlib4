@@ -3,10 +3,13 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -21,6 +24,8 @@ module.
 
 * `Module.Free R M` : the class of free `R`-modules.
 -/
+
+@[expose] public section
 
 assert_not_exists DirectSum Matrix TensorProduct
 
@@ -83,6 +88,7 @@ noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
+@[deprecated Module.Free.chooseBasis (since := "2025-08-01")]
 noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
   (chooseBasis R M).repr
 
@@ -109,7 +115,7 @@ theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
-  .of_injective _ (Module.Free.repr R M).symm.injective
+  .of_injective _ (chooseBasis R M).repr.symm.injective
 
 variable {R M N}
 
@@ -130,8 +136,8 @@ lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
   let I := Module.Free.ChooseBasisIndex R M
   obtain ⟨e₃ : M ≃ₗ[R] I →₀ R⟩ := Module.Free.chooseBasis R M
   let e : M' ≃+ (I →₀ R') :=
-    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (α := I) e₁.toAddEquiv)
-  have he (x) : e x = Finsupp.mapRange.addEquiv (α := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
+    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv)
+  have he (x) : e x = Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
   let e' : M' ≃ₗ[R'] (I →₀ R') :=
     { __ := e, map_smul' := fun m x ↦ Finsupp.ext fun i ↦ by simp [he, map_smulₛₗ] }
   exact of_basis (.ofRepr e')
@@ -154,13 +160,15 @@ instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
   of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
 
-instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :=
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+lemma of_subsingleton' [Subsingleton R] : Module.Free R N :=
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 
 end Semiring
 
-end Module.Free
+end Free
 
 namespace Basis
 
@@ -168,12 +176,11 @@ open Finset
 
 variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
+variable {R} in
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/
-theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
-    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
-  ext j
-  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
-  simp
+theorem repr_algebraMap {ι : Type*} {B : Basis ι R S} {i : ι} (hBi : B i = 1) (r : R) :
+    B.repr (algebraMap R S r) = Finsupp.single i r := by
+  ext j; simp [Algebra.algebraMap_eq_smul_one, ← hBi]
 
-end Basis
+end Module.Basis

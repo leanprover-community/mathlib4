@@ -3,7 +3,6 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -281,8 +280,8 @@ example (h₁ : 1 = a ^ 2 + b ^ 2) (h₂ : 1 - a ≠ 0) :
     = a • x + y := by
   match_scalars
   · field_simp
-    linear_combination 4 * (1 - a) * h₁
+    linear_combination 4 * h₁
   · field_simp
-    linear_combination 4 * (a - 1) ^ 3 * h₁
+    linear_combination 4 * (a - 1) * h₁
 
 end LinearOrderedField

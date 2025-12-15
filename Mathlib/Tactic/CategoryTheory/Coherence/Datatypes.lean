@@ -3,8 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.Basic
-import Mathlib.Init
+module
+
+public meta import Lean.Meta.Basic
+public import Mathlib.Init
 
 /-!
 # Datatypes for bicategory like structures
@@ -33,6 +35,8 @@ For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
 
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -289,7 +293,7 @@ structure Atom where
   deriving Inhabited
 
 /-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
-For `η : Mor₂` such that `η.isoLift? = .some isoLift`, we have the following data:
+For `η : Mor₂` such that `η.isoLift? = some isoLift`, we have the following data:
 - `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
 - `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/
@@ -443,7 +447,7 @@ class Context (ρ : Type) where
 export Context (mkContext?)
 
 /-- Construct a context from a lean expression for a 2-morphism. -/
-def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
+def mkContext {ρ : Type} [Context ρ] (e : Expr) : MetaM ρ := do
   match ← mkContext? e with
   | some c => return c
   | none => throwError "failed to construct a monoidal category or bicategory context from {e}"

@@ -3,14 +3,18 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Successors and predecessors of integers
 
 In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
+
+@[expose] public section
 
 
 open Function Order
@@ -27,7 +31,7 @@ instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
 @[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
-  min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
+  min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_ge ha).elim
   le_pred_of_lt {_ _} := le_sub_one_of_lt
 
 instance instPredSubOrder : PredSubOrder ℤ := ⟨fun _ => rfl⟩

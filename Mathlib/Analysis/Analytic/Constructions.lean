@@ -3,11 +3,13 @@ Copyright (c) 2023 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Analytic.OfScalars
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Various ways to combine analytic functions
@@ -18,6 +20,8 @@ We show that the following are analytic:
 2. Arithmetic on analytic functions: `mul`, `smul`, `inv`, `div`
 3. Finite sums and products: `Finset.sum`, `Finset.prod`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -40,7 +44,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
-  simp [constFormalMultilinearSeries_apply hn]
+  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
     HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
@@ -105,8 +109,6 @@ theorem AnalyticAt.fun_add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.add' := AnalyticAt.fun_add
-
 @[fun_prop]
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   hf.fun_add hg
@@ -153,8 +155,6 @@ theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   mp hf := by simpa using hf.neg
   mpr := .neg
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
-
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
     HasFPowerSeriesWithinOnBall (f - g) (pf - pg) s x r := by
@@ -186,8 +186,6 @@ theorem AnalyticAt.fun_sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x :=
   hf.fun_sub hg
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.sub' := AnalyticAt.fun_sub
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
@@ -224,8 +222,6 @@ theorem AnalyticAt.fun_const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (
 @[fun_prop]
 theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   hf.fun_const_smul
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.const_smul' := AnalyticAt.fun_const_smul
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
@@ -470,7 +466,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
-  rcases le_or_lt ((r' : ℝ)^n) 0 with hr' | hr'
+  rcases le_or_gt ((r' : ℝ)^n) 0 with hr' | hr'
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
   · simp only [pi]
     rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,
@@ -621,8 +617,6 @@ lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E �
     AnalyticAt 𝕜 (f • g) z :=
   hf.fun_smul hg
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.smul' := AnalyticAt.fun_smul
-
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
     {f : E → 𝕝} {g : E → F} {s : Set E}
@@ -653,8 +647,6 @@ lemma AnalyticAt.fun_mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg 
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
   hf.fun_mul hg
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.mul' := AnalyticAt.fun_mul
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E}
@@ -857,7 +849,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
     (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.ofScalars_radius_ge_inv_of_tendsto A _ one_ne_zero (by simp) |>.le
+    FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -907,7 +899,9 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       have : y = Units.ofNearby z y hy := rfl
       rw [this, Eq.comm]
       simp only [Ring.inverse_unit, Function.comp_apply]
-      simp [Units.ofNearby, f1, f2, f3, Units.add, _root_.mul_sub]
+      simp only [Units.ofNearby, Units.add, mul_sub, Units.inv_mul, neg_sub, add_sub_cancel,
+        mul_inv_rev, Units.val_mul, Units.val_inv_copy, Units.inv_eq_val_inv, Units.val_copy,
+        _root_.sub_sub_cancel, Units.mul_left_inj, f1, f2, f3]
       rw [← Ring.inverse_unit]
       congr
       simp
@@ -977,8 +971,6 @@ theorem AnalyticOn.fun_inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f 
     AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.inv' := AnalyticAt.fun_inv
-
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 f⁻¹ s :=
@@ -1016,7 +1008,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ}  (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+lemma AnalyticAt.fun_zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
@@ -1039,7 +1031,7 @@ lemma AnalyticOn.fun_zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyt
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ}  (h₁f : AnalyticOn 𝕜 f s)
+lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOn 𝕜 (f ^ n) s := by
   exact fun_zpow h₁f h₂f
@@ -1114,8 +1106,6 @@ theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     AnalyticAt 𝕜 (f / g) x :=
   fa.fun_div ga g0
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.div' := AnalyticAt.fun_div
-
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
     (fa : AnalyticOn 𝕜 f s) (ga : AnalyticOn 𝕜 g s) (g0 : ∀ x ∈ s, g x ≠ 0) :
@@ -1137,10 +1127,12 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.sum_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.sum_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.sum_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
@@ -1196,10 +1188,12 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.prod_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.prod_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.prod_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 
@@ -1301,3 +1295,68 @@ theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) 
   hrf.unshift.hasFPowerSeriesWithinAt
 
 end
+
+/-!
+### Composition with a linear map
+-/
+
+section compContinuousLinearMap
+
+variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F G} {s : Set F} {x : E}
+  {r : ℝ≥0∞}
+
+theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
+    HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖ₑ) where
+  r_le := by
+    calc
+      _ ≤ pf.radius / ‖u‖ₑ := by
+        gcongr
+        exact hf.r_le
+      _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
+  r_pos := by
+    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
+    exact pos_iff_ne_zero.mp hf.r_pos
+  hasSum hy1 hy2 := by
+    convert hf.hasSum _ _
+    · simp
+    · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
+      rcases hy1 with (hy1 | hy1) <;> simp [hy1]
+    · simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+      exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
+
+theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖ₑ) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.compContinuousLinearMap
+
+theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
+    HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
+    HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
+    AnalyticAt 𝕜 (f ∘ u) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s (u x)) :
+    AnalyticWithinAt 𝕜 (f ∘ u) (u ⁻¹' s) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
+
+theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAt.compContinuousLinearMap (hf (u x) hx)
+
+end compContinuousLinearMap

@@ -3,15 +3,19 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 
 # The light profinite set classifying convergent sequences
 
-This files defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
+This file defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
 `ℕ`.
 -/
+
+@[expose] public section
 
 open CategoryTheory OnePoint TopologicalSpace Topology
 
@@ -21,7 +25,7 @@ namespace LightProfinite
 noncomputable def natUnionInftyEmbedding : C(OnePoint ℕ, ℝ) where
   toFun
     | ∞ => 0
-    | OnePoint.some n => 1 / (n+1 : ℝ)
+    | OnePoint.some n => 1 / (n + 1 : ℝ)
   continuous_toFun := OnePoint.continuous_iff_from_nat _ |>.mpr
     tendsto_one_div_add_atTop_nhds_zero_nat
 
@@ -32,14 +36,12 @@ embedding.
 lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInftyEmbedding := by
   refine .of_continuous_injective_isClosedMap
     natUnionInftyEmbedding.continuous ?_ ?_
-  · rintro (_|n) (_|m) h
+  · rintro (_ | n) (_ | m) h
     · rfl
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, zero_eq_inv] at h
-      rw [← Nat.cast_one, ← Nat.cast_add, eq_comm, Nat.cast_eq_zero] at h
-      simp at h
+      assumption_mod_cast
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, inv_eq_zero] at h
-      rw [← Nat.cast_one, ← Nat.cast_add, Nat.cast_eq_zero] at h
-      simp at h
+      assumption_mod_cast
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, inv_inj, add_left_inj,
         Nat.cast_inj] at h
       rw [h]

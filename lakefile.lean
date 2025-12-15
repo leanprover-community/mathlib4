@@ -2,7 +2,6 @@ import Lake
 
 open Lake DSL
 
-
 /-!
 ## Mathlib dependencies on upstream projects
 -/
@@ -10,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.59" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.84" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -19,6 +18,7 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
+
 /-!
 ## Options for building mathlib
 -/
@@ -26,25 +26,16 @@ require "leanprover-community" / "plausible" @ git "main"
 /-- These options are used as `leanOptions`, prefixed by `` `weak``, so that
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
-  ⟨`linter.docPrime, false⟩,
-  ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.oldObtain, true⟩,
-  ⟨`linter.style.cases, true⟩,
-  ⟨`linter.style.cdot, true⟩,
-  ⟨`linter.style.docString, true⟩,
-  ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.mathlibStandardSet, true⟩,
+  -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
+  -- but we want to run this linter in files imported by `Mathlib.Init`.
   ⟨`linter.style.header, true⟩,
-  ⟨`linter.style.lambdaSyntax, true⟩,
-  ⟨`linter.style.longLine, true⟩,
+  ⟨`linter.checkInitImports, true⟩,
+  ⟨`linter.allScriptsDocumented, true⟩,
+  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
-  ⟨`linter.style.maxHeartbeats, true⟩,
+  -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
-  ⟨`linter.style.missingEnd, true⟩,
-  ⟨`linter.style.multiGoal, true⟩,
-  ⟨`linter.style.openClassical, true⟩,
-  ⟨`linter.style.refine, true⟩,
-  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
@@ -52,6 +43,18 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
+    ⟨`experimental.module, true⟩,
+    -- Enforcing the module system's restrictions on using private declarations in public contexts
+    -- will require further API changes specific to the respective usage, so we disable these checks
+    -- for now until they can be addressed one by one.
+    ⟨`backward.privateInPublic, true⟩,
+    -- We disable the many warnings for now; this can be switched locally to work on the offenders.
+    ⟨`backward.privateInPublic.warn, false⟩,
+    -- Similarly, enforcing that tactic blocks embedded in terms are elaborated in the private scope
+    -- can affect type inference, which breaks in multiple places and should be fixed separately.
+    -- Note that this should be fixed first such that access to private declarations in such proofs
+    -- is allowed even when disabling `backward.privateInPublic`.
+    ⟨`backward.proofsInPublic, true⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
@@ -80,6 +83,7 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
+  leanOptions := #[⟨`experimental.module, true⟩]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -121,17 +125,20 @@ lean_exe mk_all where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
-/-- `lake exe shake` checks files for unnecessary imports. -/
-lean_exe shake where
-  root := `Shake.Main
-  supportInterpreter := true
-
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
+  supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
+
+/-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
+Currently, these checks are quite lenient, but could be made stricter in the future. -/
+lean_exe «check_title_labels» where
+  srcDir := "scripts"
 
 /--
-`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+`lake exe pole` queries radar for build times for the current commit,
 and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
@@ -170,10 +177,31 @@ update its toolchain to match Mathlib's and fetch the new cache.
 -/
 post_update pkg do
   let rootPkg ← getRootPackage
-  if rootPkg.name = pkg.name then
+  if rootPkg.baseName = pkg.baseName then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
+    -- Check if Lake version matches toolchain version
+    let toolchainFile := rootPkg.dir / "lean-toolchain"
+    let toolchainContent ← IO.FS.readFile toolchainFile
+    let toolchainVersion := match toolchainContent.trimAscii.copy.splitOn ":" with
+      | [_, version] => version
+      | _ => toolchainContent.trimAscii.copy  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := (toolchainVersion.dropPrefix "v").copy
+    if Lean.versionString ≠ toolchainVersion then
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
+        You should run `lake exe cache get` manually."
+      return
     let exeFile ← runBuild cache.fetch
-    let exitCode ← env exeFile.toString #["get"]
+    -- Run the command in the root package directory,
+    -- which is the one that holds the .lake folder and lean-toolchain file.
+    let cwd ← IO.Process.getCurrentDir
+    let exitCode ← try
+      IO.Process.setCurrentDir rootPkg.dir
+      env exeFile.toString #["get"]
+    finally
+      IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
-      error s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.baseName}: failed to fetch cache"

@@ -3,7 +3,9 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental theorem of calculus for set integrals
@@ -18,6 +20,8 @@ as `s` tends to `l.smallSets`, i.e. for any `ε>0` there exists `t ∈ l` such t
 `‖∫ x in s, f x ∂μ - μ s • c‖ ≤ ε * μ s` whenever `s ⊆ t`. We also formulate a version of this
 theorem for a locally finite measure `μ` and a function `f` continuous at a point `a`.
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Topology Asymptotics Metric
 
@@ -52,7 +56,8 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     hfm.eventually, this]
   simp only [mem_closedBall, dist_eq_norm]
   intro s hμs h_integrable hfm h_norm
-  rw [← setIntegral_const, ← integral_sub h_integrable (integrableOn_const.2 <| Or.inr hμs),
+  rw [← setIntegral_const,
+    ← integral_sub h_integrable (integrableOn_const hμs.ne),
     Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
   exact norm_setIntegral_le_of_norm_le_const_ae' hμs h_norm
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Preadditive
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Distributive monoidal categories
@@ -54,6 +56,8 @@ pointed types and the coproduct given by the wedge sum is distributive.
   Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
 
 -/
+
+@[expose] public section
 
 universe v v₂ u u₂
 
@@ -113,7 +117,7 @@ lemma IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
 /-- The forward direction of the left distributivity isomorphism is the cogap morphism
 `coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)`. -/
 lemma leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
-  (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
+    (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
 @[reassoc (attr := simp)]
 lemma coprod_inl_leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
@@ -160,8 +164,6 @@ notation "∂R" => rightDistrib
 
 end Distributive
 
-open Distributive
-
 lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
     IsMonoidalRightDistrib C where
@@ -171,7 +173,7 @@ lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
 lemma rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
-  (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
+    (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
 @[reassoc (attr := simp)]
 lemma coprod_inl_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
@@ -241,7 +243,7 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
     IsMonoidalDistrib C := by
   apply SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
-/-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
+/-- The inverse of distributivity isomorphism from the closed monoidal structure -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =
       uncurry (coprod.desc (curry coprod.inl) (curry coprod.inr)) := by
@@ -255,7 +257,7 @@ attribute [local instance] endofunctorMonoidalCategory
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
 instance isMonoidalLeftDistrib.of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
   preservesBinaryCoproducts_tensorLeft F :=
-    inferInstanceAs (PreservesColimitsOfShape _ ((whiskeringLeft C C C).obj F))
+    inferInstanceAs (PreservesColimitsOfShape _ ((Functor.whiskeringLeft C C C).obj F))
 
 end Endofunctors
 

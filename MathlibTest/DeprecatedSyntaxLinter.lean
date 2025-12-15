@@ -5,11 +5,13 @@ set_option linter.style.refine true
 /--
 warning:
 The `refine'` tactic is discouraged: please strongly consider using `refine` or `apply` instead.
-note: this linter can be disabled with `set_option linter.style.refine false`
+
+Note: This linter can be disabled with `set_option linter.style.refine false`
 ---
 warning:
 The `refine'` tactic is discouraged: please strongly consider using `refine` or `apply` instead.
-note: this linter can be disabled with `set_option linter.style.refine false`
+
+Note: This linter can be disabled with `set_option linter.style.refine false`
 -/
 #guard_msgs in
 example : True := by
@@ -28,10 +30,12 @@ example : True := by
 set_option linter.style.cases true
 /--
 warning: The `cases'` tactic is discouraged: please strongly consider using `obtain`, `rcases` or `cases` instead.
-note: this linter can be disabled with `set_option linter.style.cases false`
+
+Note: This linter can be disabled with `set_option linter.style.cases false`
 ---
 warning: The `cases'` tactic is discouraged: please strongly consider using `obtain`, `rcases` or `cases` instead.
-note: this linter can be disabled with `set_option linter.style.cases false`
+
+Note: This linter can be disabled with `set_option linter.style.cases false`
 -/
 #guard_msgs in
 example (a : (True ∨ True) ∨ (True ∨ True)): True := by
@@ -42,12 +46,32 @@ set_option linter.style.cases false
 example (a : (True ∨ True) ∨ (True ∨ True)): True := by
   cases' a with b b <;> cases' b <;> trivial
 
+set_option linter.style.induction true
+/--
+warning: The `induction'` tactic is discouraged: please strongly consider using `induction` instead.
+
+Note: This linter can be disabled with `set_option linter.style.induction false`
+-/
+#guard_msgs in
+example {n : Nat} : n < 2 ^ n := by
+  induction' n with n ih
+  · simp
+  · grind
+
+set_option linter.style.induction false
+-- This is quiet because `linter.style.induction` is now false
+example {n : Nat} : n < 2 ^ n := by
+  induction' n with n ih
+  · simp
+  · grind
+
 set_option linter.style.admit true
 /--
 warning: declaration uses 'sorry'
 ---
 warning: The `admit` tactic is discouraged: please strongly consider using the synonymous `sorry` instead.
-note: this linter can be disabled with `set_option linter.style.admit false`
+
+Note: This linter can be disabled with `set_option linter.style.admit false`
 -/
 #guard_msgs in
 example : False := by admit
@@ -56,16 +80,20 @@ example : False := by admit
 warning: declaration uses 'sorry'
 ---
 warning: The `admit` tactic is discouraged: please strongly consider using the synonymous `sorry` instead.
-note: this linter can be disabled with `set_option linter.style.admit false`
+
+Note: This linter can be disabled with `set_option linter.style.admit false`
 ---
 warning: The `admit` tactic is discouraged: please strongly consider using the synonymous `sorry` instead.
-note: this linter can be disabled with `set_option linter.style.admit false`
+
+Note: This linter can be disabled with `set_option linter.style.admit false`
 ---
 warning: The `admit` tactic is discouraged: please strongly consider using the synonymous `sorry` instead.
-note: this linter can be disabled with `set_option linter.style.admit false`
+
+Note: This linter can be disabled with `set_option linter.style.admit false`
 ---
 warning: The `admit` tactic is discouraged: please strongly consider using the synonymous `sorry` instead.
-note: this linter can be disabled with `set_option linter.style.admit false`
+
+Note: This linter can be disabled with `set_option linter.style.admit false`
 -/
 #guard_msgs in
 example : True ∧ True := by
@@ -83,13 +111,77 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 example : False := by admit
 
+set_option linter.style.nativeDecide true
+
+/--
+warning: Using `native_decide` is not allowed in mathlib: because it trusts the entire Lean compiler
+(not just the Lean kernel), it could quite possibly be used to prove false.
+
+Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by native_decide
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+
+Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+
+Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+theorem foo : 1 + 1 = 2 := by decide -native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+
+Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +native +native
+#guard_msgs in
+example : 1 + 1 = 2 := by decide +native -native +kernel +native -kernel +native -native
+
+/--
+warning: Using `decide +native` is not allowed in mathlib:
+because it trusts the entire Lean compiler (not just the Lean kernel),
+it could quite possibly be used to prove false.
+
+Note: This linter can be disabled with `set_option linter.style.nativeDecide false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by decide (config := { native := true })
+example : 1 + 1 = 2 := by decide (config := { native := false })
+-- Not handled yet: since mathlib hardly uses the old config syntax and this linter is purely
+-- for user information (and not hard guarantees), we deem this acceptable.
+example : 1 + 1 = 2 := by decide (config := { native := true, kernel := false })
+
+set_option linter.style.nativeDecide false
+
 set_option linter.style.maxHeartbeats true
 /--
 warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
 set_option maxHeartbeats 10 in
 -- reason for change
 ...
- note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+
+Note: This linter can be disabled with `set_option linter.style.maxHeartbeats false`
 -/
 #guard_msgs in
 set_option maxHeartbeats 10 in
@@ -100,7 +192,8 @@ warning: Please, add a comment explaining the need for modifying the maxHeartbea
 set_option maxHeartbeats 10 in
 -- reason for change
 ...
- note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+
+Note: This linter can be disabled with `set_option linter.style.maxHeartbeats false`
 -/
 #guard_msgs in
 set_option maxHeartbeats 10 in
@@ -112,7 +205,8 @@ warning: Please, add a comment explaining the need for modifying the maxHeartbea
 set_option synthInstance.maxHeartbeats 10 in
 -- reason for change
 ...
- note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+
+Note: This linter can be disabled with `set_option linter.style.maxHeartbeats false`
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 10 in
@@ -123,7 +217,8 @@ warning: Please, add a comment explaining the need for modifying the maxHeartbea
 set_option maxHeartbeats 10 in
 -- reason for change
 ...
- note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+
+Note: This linter can be disabled with `set_option linter.style.maxHeartbeats false`
 -/
 #guard_msgs in
 set_option maxHeartbeats 10 in
@@ -149,7 +244,8 @@ warning: Please, add a comment explaining the need for modifying the maxHeartbea
 set_option maxHeartbeats 10 in
 -- reason for change
 ...
- note: this linter can be disabled with `set_option linter.style.maxHeartbeats false`
+
+Note: This linter can be disabled with `set_option linter.style.maxHeartbeats false`
 -/
 #guard_msgs in
 set_option maxHeartbeats 10 in

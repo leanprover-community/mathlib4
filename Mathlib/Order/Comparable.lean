@@ -3,7 +3,9 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Comparability and incomparability relations
@@ -31,6 +33,8 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -176,7 +180,7 @@ theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b :=
 
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
-  simp [← antisymmRel_compl, AntisymmRel, compl]
+  simp [← antisymmRel_compl, compl]
 
 @[simp]
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
@@ -251,13 +255,13 @@ theorem IncompRel.not_gt (h : IncompRel (· ≤ ·) a b) : ¬ b < a := mt le_of_
 theorem LT.lt.not_incompRel (h : a < b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_lt h
 
 theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ IncompRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, IncompRel]
+  rw [lt_iff_le_not_ge, IncompRel]
   tauto
 
 /-- Exactly one of the following is true. -/
 theorem lt_or_antisymmRel_or_gt_or_incompRel (a b : α) :
     a < b ∨ AntisymmRel (· ≤ ·) a b ∨ b < a ∨ IncompRel (· ≤ ·) a b := by
-  simp_rw [lt_iff_le_not_le]
+  simp_rw [lt_iff_le_not_ge]
   tauto
 
 @[trans]

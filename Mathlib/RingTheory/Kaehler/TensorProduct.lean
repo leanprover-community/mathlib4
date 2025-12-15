@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
-# Kaehler differential module under base change
+# Kähler differential module under base change
 
 ## Main results
 - `KaehlerDifferential.tensorKaehlerEquiv`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Localization.BaseChange
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
 -/
+
+@[expose] public section
 
 variable (R S A B : Type*) [CommRing R] [CommRing S] [Algebra R S] [CommRing A] [CommRing B]
 variable [Algebra R A] [Algebra R B]
@@ -28,8 +32,8 @@ namespace KaehlerDifferential
 
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
-abbrev mulActionBaseChange :
-  MulAction A (S ⊗[R] Ω[A⁄R]) := (TensorProduct.comm R S (Ω[A⁄R])).toEquiv.mulAction A
+abbrev mulActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
+  (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
 attribute [local instance] mulActionBaseChange
 
@@ -45,7 +49,7 @@ lemma mulActionBaseChange_smul_zero (a : A) :
 @[local simp]
 lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
     a • (x + y) = a • x + a • y := by
-  show (TensorProduct.comm R S (Ω[A⁄R])).symm (a • (TensorProduct.comm R S (Ω[A⁄R])) (x + y)) = _
+  change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
   rw [map_add, smul_add, map_add]
   rfl
 
@@ -53,7 +57,7 @@ lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
 noncomputable
 abbrev moduleBaseChange :
     Module A (S ⊗[R] Ω[A⁄R]) where
-  __ := (TensorProduct.comm R S (Ω[A⁄R])).toEquiv.mulAction A
+  __ := (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
   add_smul r s x := by induction x <;> simp [add_smul, tmul_add, *, add_add_add_comm]
   zero_smul x := by induction x <;> simp [*]
   smul_zero := by simp
@@ -92,7 +96,7 @@ instance [Algebra.IsPushout R S A B] :
     IsScalarTower A B (S ⊗[R] Ω[A⁄R]) := by
   apply IsScalarTower.of_algebraMap_smul
   intro r x
-  show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
+  change (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap A B r)) • x = r • x
   simp only [Algebra.pushoutDesc_right, Module.End.smul_def, Algebra.lsmul_coe]
@@ -101,7 +105,7 @@ instance [Algebra.IsPushout R S A B] :
     IsScalarTower S B (S ⊗[R] Ω[A⁄R]) := by
   apply IsScalarTower.of_algebraMap_smul
   intro r x
-  show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
+  change (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap S B r)) • x = r • x
   simp only [Algebra.pushoutDesc_left, Module.End.smul_def, Algebra.lsmul_coe]
@@ -124,7 +128,7 @@ The `S`-derivation `B = S ⊗[R] A` to `S ⊗[R] Ω[A⁄R]` sending `a ⊗ b` to
 noncomputable
 def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     Derivation S B (S ⊗[R] Ω[A⁄R]) where
-  __ := h.out.lift ((TensorProduct.mk R S (Ω[A⁄R]) 1).comp (D R A).toLinearMap)
+  __ := h.out.lift ((TensorProduct.mk R S Ω[A⁄R] 1).comp (D R A).toLinearMap)
   map_one_eq_zero' := by
     rw [← (algebraMap A B).map_one]
     refine (h.out.lift_eq _ _).trans ?_
@@ -191,6 +195,7 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
       dsimp
+      -- We use the specialized version of `map_smul` here for performance.
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
       induction y using h.1.inductionOn
@@ -198,7 +203,8 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
       · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]
-      · simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
+      · -- We use the specialized version of `map_smul` here for performance.
+        simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
       · simp only [map_add, smul_add, *]
 
 @[simp]
@@ -212,7 +218,7 @@ then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 -/
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     IsBaseChange S ((map R S A B).restrictScalars R) := by
-  convert (TensorProduct.isBaseChange R (Ω[A⁄R]) S).comp
+  convert (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
     (IsBaseChange.ofEquiv (tensorKaehlerEquiv R S A B))
   refine LinearMap.ext fun x ↦ ?_
   simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_coe,

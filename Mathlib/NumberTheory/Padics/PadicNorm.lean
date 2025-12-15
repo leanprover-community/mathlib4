@@ -3,7 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # p-adic norm
@@ -32,6 +35,8 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 p-adic, p adic, padic, norm, valuation
 -/
+
+@[expose] public section
 
 
 /-- If `q ≠ 0`, the `p`-adic norm of a rational `q` is `p ^ (-padicValRat p q)`.
@@ -151,9 +156,9 @@ private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicVal
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) :=
   have hnqp : padicNorm p q ≥ 0 := padicNorm.nonneg _
   have hnrp : padicNorm p r ≥ 0 := padicNorm.nonneg _
-  if hq : q = 0 then by simp [hq, max_eq_right hnrp, le_max_right]
+  if hq : q = 0 then by simp [hq, max_eq_right hnrp]
   else
-    if hr : r = 0 then by simp [hr, max_eq_left hnqp, le_max_left]
+    if hr : r = 0 then by simp [hr, max_eq_left hnqp]
     else
       if hqr : q + r = 0 then le_trans (by simpa [hqr] using hnqp) (le_max_left _ _)
       else by
@@ -173,7 +178,7 @@ protected theorem nonarchimedean {q r : ℚ} :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) := by
   wlog hle : padicValRat p q ≤ padicValRat p r generalizing q r
   · rw [add_comm, max_comm]
-    exact this (le_of_not_le hle)
+    exact this (le_of_not_ge hle)
   exact nonarchimedean_aux hle
 
 /-- The `p`-adic norm respects the triangle inequality: the norm of `p + q` is at most the norm of
@@ -196,7 +201,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) := by
   wlog hlt : padicNorm p r < padicNorm p q
   · rw [add_comm, max_comm]
-    exact this hne.symm (hne.lt_or_lt.resolve_right hlt)
+    exact this hne.symm (hne.lt_or_gt.resolve_right hlt)
   have : padicNorm p q ≤ max (padicNorm p (q + r)) (padicNorm p r) :=
     calc
       padicNorm p q = padicNorm p (q + r + (-r)) := by ring_nf
@@ -236,7 +241,7 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
 /-- The `p`-adic norm of an integer `m` is one iff `p` doesn't divide `m`. -/
 theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   nth_rw 2 [← pow_one p]
-  simp only [dvd_iff_norm_le, Int.cast_natCast, Nat.cast_one, zpow_neg, zpow_one, not_le]
+  simp only [dvd_iff_norm_le, Nat.cast_one, zpow_neg, zpow_one, not_le]
   constructor
   · intro h
     rw [h, inv_lt_one₀] <;> norm_cast

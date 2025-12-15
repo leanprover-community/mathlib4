@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-!
 # Multigraphs
@@ -34,6 +36,8 @@ For `G : Graph α β`, ...
 * `G.Adj x y` means that there is an edge `e` having `x` and `y` as its ends.
 * `G.IsLoopAt e x` means that `e` is a loop edge with both ends equal to `x`.
 * `G.IsNonloopAt e x` means that `e` is a non-loop edge with one end equal to `x`.
+* `G.incidenceSet x` is the set of edges incident to `x`.
+* `G.loopSet x` is the set of loops with both ends equal to `x`.
 
 ## Implementation notes
 
@@ -58,6 +62,8 @@ Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` t
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
 If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
 
@@ -152,12 +158,12 @@ lemma IsLink.eq_and_eq_or_eq_and_eq {x' y' : α} (h : G.IsLink e x y)
 lemma IsLink.isLink_iff (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
   refine ⟨h.eq_and_eq_or_eq_and_eq, ?_⟩
-  rintro (⟨rfl, rfl⟩ | ⟨rfl,rfl⟩)
+  rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · assumption
   exact h.symm
 
 lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
-    G.IsLink e x' y' ↔ s(x,y) = s(x',y') := by
+    G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
 /-! ### Edge-vertex incidence -/
@@ -167,19 +173,19 @@ is one or both of the ends of the edge `e`.
 In the `Inc` namespace, we use `edge` and `vertex` to refer to `e` and `x`. -/
 def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 
-@[simp]
+-- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ E(G) :=
   h.choose_spec.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` cannot be inferred by `simp`.
 lemma Inc.vertex_mem (h : G.Inc e x) : x ∈ V(G) :=
   h.choose_spec.left_mem
 
-@[simp]
+-- Cannot be @[simp] because `y` cannot be inferred by `simp`.
 lemma IsLink.inc_left (h : G.IsLink e x y) : G.Inc e x :=
   ⟨y, h⟩
 
-@[simp]
+-- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma IsLink.inc_right (h : G.IsLink e x y) : G.Inc e y :=
   ⟨x, h.symm⟩
 
@@ -216,11 +222,11 @@ lemma Inc.inc_other (h : G.Inc e x) : G.Inc e h.other :=
 
 lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
     x = y ∨ x = z ∨ y = z := by
-  by_contra! hcon
+  by_contra! ⟨hxy, hxz, hyz⟩
   obtain ⟨x', hx'⟩ := hx
-  obtain rfl := hy.eq_of_isLink_of_ne_left hx' hcon.1.symm
-  obtain rfl := hz.eq_of_isLink_of_ne_left hx' hcon.2.1.symm
-  exact hcon.2.2 rfl
+  obtain rfl := hy.eq_of_isLink_of_ne_left hx' hxy.symm
+  obtain rfl := hz.eq_of_isLink_of_ne_left hx' hxz.symm
+  exact hyz rfl
 
 /-- `G.IsLoopAt e x` means that both ends of the edge `e` are equal to the vertex `x`. -/
 def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
@@ -234,11 +240,11 @@ lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
 lemma IsLoopAt.eq_of_inc (h : G.IsLoopAt e x) (h' : G.Inc e y) : x = y := by
   obtain rfl | rfl := h'.eq_or_eq_of_isLink h <;> rfl
 
-@[simp]
+-- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma IsLoopAt.edge_mem (h : G.IsLoopAt e x) : e ∈ E(G) :=
   h.inc.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` cannot be inferred by `simp`.
 lemma IsLoopAt.vertex_mem (h : G.IsLoopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
@@ -250,11 +256,11 @@ def IsNonloopAt (G : Graph α β) (e : β) (x : α) : Prop := ∃ y ≠ x, G.IsL
 lemma IsNonloopAt.inc (h : G.IsNonloopAt e x) : G.Inc e x :=
   h.choose_spec.2.inc_left
 
-@[simp]
+-- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma IsNonloopAt.edge_mem (h : G.IsNonloopAt e x) : e ∈ E(G) :=
   h.inc.edge_mem
 
-@[simp]
+-- Cannot be @[simp] because `e` cannot be inferred by `simp`.
 lemma IsNonloopAt.vertex_mem (h : G.IsNonloopAt e x) : x ∈ V(G) :=
   h.inc.vertex_mem
 
@@ -286,11 +292,11 @@ protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
 lemma adj_comm (x y) : G.Adj x y ↔ G.Adj y x :=
   ⟨.symm, .symm⟩
 
-@[simp]
+-- Cannot be @[simp] because `y` cannot be inferred by `simp`.
 lemma Adj.left_mem (h : G.Adj x y) : x ∈ V(G) :=
   h.choose_spec.left_mem
 
-@[simp]
+-- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma Adj.right_mem (h : G.Adj x y) : y ∈ V(G) :=
   h.symm.left_mem
 
@@ -309,7 +315,7 @@ lemma mk_eq_self (G : Graph α β) {E : Set β} (hE : ∀ e, e ∈ E ↔ ∃ x y
     (fun _ _ _ _ _ h h' ↦ h.left_eq_or_eq h') hE
     (fun _ _ _ ↦ IsLink.left_mem) = G := by
   obtain rfl : E = E(G) := by simp [Set.ext_iff, hE, G.edge_mem_iff_exists_isLink]
-  cases G with | _ _ _ _ _ _ h _ => simp [← h]
+  cases G with | _ _ _ _ _ _ h _ => simp
 
 /-- Two graphs with the same vertex set and binary incidences are equal.
 (We use this as the default extensionality lemma rather than adding `@[ext]`
@@ -327,5 +333,27 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
   Graph.ext hV fun _ _ _ ↦ by simp_rw [isLink_iff_inc, h]
+
+/-! ### Sets of edges or loops incident to a vertex -/
+
+/-- `G.incidenceSet x` is the set of edges incident to `x` in `G`. -/
+def incidenceSet (x : α) : Set β := {e | G.Inc e x}
+
+@[simp]
+theorem mem_incidenceSet (x : α) (e : β) : e ∈ G.incidenceSet x ↔ G.Inc e x :=
+  Iff.rfl
+
+theorem incidenceSet_subset_edgeSet (x : α) : G.incidenceSet x ⊆ E(G) :=
+  fun _ ⟨_, hy⟩ ↦ hy.edge_mem
+
+/-- `G.loopSet x` is the set of loops at `x` in `G`. -/
+def loopSet (x : α) : Set β := {e | G.IsLoopAt e x}
+
+@[simp]
+theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
+  Iff.rfl
+
+/-- The loopSet is included in the incidenceSet. -/
+theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
 
 end Graph

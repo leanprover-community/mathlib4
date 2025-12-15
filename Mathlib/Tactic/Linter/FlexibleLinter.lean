@@ -3,11 +3,13 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Lean.Elab.Command
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "flexible" linter
+# The "flexible" linter
 
 The "flexible" linter makes sure that a "rigid" tactic (such as `rw`) does not act on the
 output of a "flexible" tactic (such as `simp`).
@@ -89,12 +91,14 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-open Lean Elab
+meta section
+
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
-register_option linter.flexible : Bool := {
+public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
 }
@@ -117,7 +121,7 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-###  Heuristics for determining goals goals that a tactic modifies what they become
+### Heuristics for determining goals that a tactic modifies and what they become
 
 The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
 `MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the
@@ -192,8 +196,7 @@ The function is used to extract "location" information about `stx`: either expli
 
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
-partial
-def toStained : Syntax → Std.HashSet Stained
+partial def toStained : Syntax → Std.HashSet Stained
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
@@ -260,7 +263,13 @@ def stoppers : Std.HashSet Name :=
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
     `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.Abel.tacticAbel_nf!__,
     `Mathlib.Tactic.RingNF.ringNF,
+    `Mathlib.Tactic.RingNF.tacticRing_nf!__,
+    `Mathlib.Tactic.Group.group,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
+    `Mathlib.Tactic.FieldSimp.field,
+    `finiteness_nonterminal,
     -- "continuators": the *effect* of these tactics is similar the "properly stoppers" above,
     -- though they typically wrap other tactics inside them.
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
@@ -277,8 +286,13 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `constructor`, `congr`, `done`, `rfl`, `omega`, `abel`,
-  `ring`, `linarith`, `nlinarith`, `norm_cast`, `aesop`, `tauto`, `fun_prop`, `split`, `split_ifs`.
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
+  `omega` and `lia`, `grobner`
+  `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
+  `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
+  `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
+  `continuity` and `measurability`, `finiteness`, `finiteness?`,
+  `split`, `split_ifs`.
 -/
 def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
@@ -289,27 +303,53 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
+    `Mathlib.Tactic.Abel.tacticAbel!,
+    `Mathlib.Tactic.Group.group,
     `Mathlib.Tactic.RingNF.ring,
+    `Mathlib.Tactic.RingNF.tacticRing!,
+    `Mathlib.Tactic.Ring.ring1,
+    `Mathlib.Tactic.Ring.tacticRing1!,
+    `Mathlib.Tactic.RingNF.ring1NF,
+    `Mathlib.Tactic.RingNF.tacticRing1_nf!_,
+    `Mathlib.Tactic.RingNF.ring1NF!,
+    `Mathlib.Tactic.Module.tacticModule,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
+    `Mathlib.Tactic.FieldSimp.field,
+    ``Lean.Parser.Tactic.grind,
+    ``Lean.Parser.Tactic.grobner,
+    ``Lean.Parser.Tactic.lia,
     `Mathlib.Tactic.normNum,
-    `linarith,
-    `nlinarith,
+    `Mathlib.Tactic.linarith,
+    `Mathlib.Tactic.nlinarith,
+    `Mathlib.Tactic.tacticNlinarith!_,
+    `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
+    -- `cfc_tac` and `cfc_zero_tac` use `aesop` under the hood,
+    -- `cfc_cont_tactic` uses `fun_prop`: in practice, this should be robust enough.
+    `cfcTac,
+    `cfcZeroTac,
+    `cfcContTac,
+    -- `continuity` and `measurability` also use `aesop` under the hood.
+    `tacticContinuity,
+    `Mathlib.Tactic.measurability,
+    `finiteness,
+    `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
-    `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
-For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false
   | ``Lean.Parser.Tactic.obtain => false
-  | ``Lean.Parser.Tactic.tacticHave_ => false
+  | ``Lean.Parser.Tactic.tacticHave__ => false
   | ``Lean.Parser.Tactic.rcases => false
   | ``Lean.Parser.Tactic.specialize => false
   | ``Lean.Parser.Tactic.subst => false
@@ -370,7 +410,7 @@ def reallyPersist
 
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
+  unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -416,8 +456,23 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    Linter.logLint linter.flexible stainStx m!"'{stainStx}' is a flexible tactic modifying '{d}'…"
-    logInfoAt s m!"… and '{s}' uses '{d}'!"
+    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trimAscii
+    let msg := match stainStx.getKind with
+      | ``Lean.Parser.Tactic.simp =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp?' and use the suggested 'simp only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAll =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp_all?' and use the suggested 'simp_all only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | `Aesop.Frontend.Parser.aesopTactic =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'aesop?' and use the suggested proof."
+      | _ =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'."
+    Linter.logLint linter.flexible stainStx msg
+    logInfoAt s m!"'{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
 

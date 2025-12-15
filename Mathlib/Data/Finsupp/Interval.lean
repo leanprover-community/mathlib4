@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Finsupp
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -22,6 +24,8 @@ finite and calculates the cardinality of its finite intervals.
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -41,7 +45,7 @@ def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   toFun i := {f i}
   support := f.support
   mem_support_toFun i := by
-    rw [← not_iff_not, not_mem_support_iff, not_ne_iff]
+    rw [← not_iff_not, notMem_support_iff, not_ne_iff]
     exact singleton_injective.eq_iff.symm
 
 theorem mem_rangeSingleton_apply_iff : a ∈ f.rangeSingleton i ↔ a = f i :=
@@ -55,12 +59,12 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq ι]
 variable {f g : ι →₀ α} {i : ι} {a : α}
 
 /-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
-@[simps toFun]
+@[simps apply]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support := f.support ∪ g.support
   mem_support_toFun i := by
-    rw [mem_union, ← not_iff_not, not_or, not_mem_support_iff, not_mem_support_iff, not_ne_iff]
+    rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
 
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl

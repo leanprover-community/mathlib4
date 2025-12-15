@@ -3,10 +3,12 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Control.Functor
-import Batteries.Data.List.Basic
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Control.Functor
+public import Batteries.Data.List.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
@@ -32,11 +34,11 @@ For more on how to use traversable, consider the Haskell tutorial:
 <https://en.wikibooks.org/wiki/Haskell/Traversable>
 
 ## Main definitions
-  * `Traversable` type class - exposes the `traverse` function
-  * `sequence` - based on `traverse`,
-    turns a collection of effects into an effect returning a collection
-  * `LawfulTraversable` - laws for a traversable functor
-  * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
+* `Traversable` type class - exposes the `traverse` function
+* `sequence` - based on `traverse`,
+  turns a collection of effects into an effect returning a collection
+* `LawfulTraversable` - laws for a traversable functor
+* `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
 
@@ -54,6 +56,8 @@ traversable iterator functor applicative
   in Mathematically-Structured Functional Programming, 2012,
   online at <http://arxiv.org/pdf/1202.2919>
 -/
+
+@[expose] public section
 
 open Function hiding comp
 
@@ -159,18 +163,14 @@ variable {H : Type u → Type s} [Applicative H]
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
   app _ x := η' (η x)
-  -- Porting note: something has gone wrong with `simp [functor_norm]`,
-  -- which should suffice for the next two.
-  preserves_pure' x := by simp only [preserves_pure]
-  preserves_seq' x y := by simp only [preserves_seq]
+  preserves_pure' x := by simp [functor_norm]
+  preserves_seq' x y := by simp [functor_norm]
 
 @[simp]
 theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
     {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
 
--- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
--- this was assumed
 theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
@@ -221,7 +221,7 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
   /-- `traverse` plays well with `pure` of the identity monad -/
-  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
+  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = pure x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
@@ -229,7 +229,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends L
       traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
   /-- An axiom for `traverse` involving `pure : β → Id β`. -/
   traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
-    traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
+    traverse ((pure : β → Id β) ∘ f) x = pure (f <$> x)
   /-- The naturality axiom explaining how lawful traversable functors should play with
   lawful applicative functors. -/
   naturality :

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets
@@ -12,8 +14,8 @@ A pre-set is inductively defined by its indexing type and its members, which are
 pre-sets.
 
 After defining pre-sets we define extensional equality over them, also inductively. We construct a
-`Setoid` instance from it, and in `Mathlib.SetTheory.ZFC.Basic` we define ZFC sets as the quotient
-of pre-sets by extensional equality.
+`Setoid` instance from it, and in `Mathlib/SetTheory/ZFC/Basic.lean` we define ZFC sets as the
+quotient of pre-sets by extensional equality.
 
 ## Main definitions
 
@@ -23,6 +25,8 @@ of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -183,6 +187,9 @@ protected def Mem (y x : PSet.{u}) : Prop :=
 instance : Membership PSet PSet :=
   ⟨PSet.Mem⟩
 
+theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
+  Iff.rfl
+
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
 
@@ -249,8 +256,10 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
 theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ <| mem_of_subset h' h
 
-theorem not_mem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
+theorem notMem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -304,8 +313,10 @@ theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
   simp [EmptyCollection.emptyCollection, PSet.empty]
 
 @[simp]
-theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
+theorem notMem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1
+
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
@@ -357,7 +368,7 @@ theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
   mem_insert_iff.trans
-    ⟨fun o => Or.rec id (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+    ⟨fun o => Or.rec id (fun n => absurd n (notMem_empty _)) o, Or.inl⟩
 
 theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
   simp
@@ -399,7 +410,7 @@ theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
 
 /-- The pre-set union operator -/
 def sUnion (a : PSet) : PSet :=
-  ⟨Σx, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
+  ⟨Σ x, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
 
 @[inherit_doc]
 prefix:110 "⋃₀ " => sUnion
@@ -426,7 +437,6 @@ theorem toSet_sUnion (x : PSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSe
 def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
   ⟨x.Type, f ∘ x.Func⟩
 
--- Porting note: H arguments made explicit.
 theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv (f x) (f y)) :
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>

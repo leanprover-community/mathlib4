@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.LinearDisjoint
+public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 
@@ -41,6 +43,8 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
+@[expose] public section
+
 open Polynomial IntermediateField Field
 
 noncomputable section
@@ -71,12 +75,12 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     by_cases hs : i ∈ l.support
     · convert pow_mem (hf i) (q ^ (n - f i)) using 1
       rw [← pow_mul, ← pow_add, Nat.add_sub_of_le (Finset.le_sup hs)]
-    exact ⟨0, by rw [map_zero, Finsupp.not_mem_support_iff.1 hs, zero_pow this]⟩
+    exact ⟨0, by rw [map_zero, Finsupp.notMem_support_iff.1 hs, zero_pow this]⟩
   choose lF hlF using hf
   let lF₀ := Finsupp.onFinset l.support lF fun i ↦ by
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
-    rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
+    rw [hlF, Finsupp.notMem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
@@ -84,7 +88,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
       Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
-  refine pow_eq_zero ((hlF _).symm.trans ?_)
+  refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
   convert map_zero (algebraMap F E)
   exact congr($h i)
 
@@ -95,7 +99,7 @@ linearly disjoint over `F`. -/
 theorem IntermediateField.linearDisjoint_of_isPurelyInseparable_of_isSeparable
     [IsPurelyInseparable F E] (S : IntermediateField F K) [Algebra.IsSeparable F S] :
     S.LinearDisjoint E :=
-  have ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
+  have ⟨ι, ⟨b⟩⟩ := Module.Basis.exists_basis F S
   .of_basis_left b <| b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective)
     |>.map_of_isPurelyInseparable_of_isSeparable E fun i ↦ by
@@ -269,7 +273,6 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
-  have := Algebra.IsSeparable.isAlgebraic E E⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
     finSepDegree_eq, finSepDegree_eq,

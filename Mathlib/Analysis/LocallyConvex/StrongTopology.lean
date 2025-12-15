@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Local convexity of the strong topology
@@ -25,6 +27,8 @@ locally convex.
 locally convex, bounded convergence
 -/
 
+@[expose] public section
+
 
 open Topology UniformConvergence
 
@@ -38,7 +42,7 @@ section General
 namespace UniformConvergenceCLM
 
 variable (R)
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable [Semiring R] [PartialOrder R]
 variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
@@ -59,7 +63,7 @@ section BoundedSets
 
 namespace ContinuousLinearMap
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable [Semiring R] [PartialOrder R]
 variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 

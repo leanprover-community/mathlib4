@@ -3,10 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Sublattice
 
 /-!
 # The lattice of invariant submodules
@@ -15,9 +17,11 @@ In this file we defined the type `Module.End.invtSubmodule`, associated to a lin
 a module. Its utility stems primarily from those occasions on which we wish to take advantage of the
 lattice structure of invariant submodules.
 
-See also `Mathlib.Algebra.Polynomial.Module.AEval`.
+See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
+
+@[expose] public section
 
 open Submodule (span)
 
@@ -39,6 +43,25 @@ def invtSubmodule : Sublattice (Submodule R M) where
 lemma mem_invtSubmodule {p : Submodule R M} :
     p ∈ f.invtSubmodule ↔ p ≤ p.comap f :=
   Iff.rfl
+
+/-- `p` is `f` invariant if and only if `p.map f ≤ p`. -/
+theorem mem_invtSubmodule_iff_map_le {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ p.map f ≤ p := Submodule.map_le_iff_le_comap.symm
+
+/-- `p` is `f` invariant if and only if `Set.MapsTo f p p`. -/
+theorem mem_invtSubmodule_iff_mapsTo {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ Set.MapsTo f p p := Iff.rfl
+
+alias ⟨_, _root_.Set.Mapsto.mem_invtSubmodule⟩ := mem_invtSubmodule_iff_mapsTo
+
+theorem mem_invtSubmodule_iff_forall_mem_of_mem {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ ∀ x ∈ p, f x ∈ p :=
+  Iff.rfl
+
+/-- `p` is `f.symm` invariant if and only if `p ≤ p.map f`. -/
+lemma mem_invtSubmodule_symm_iff_le_map {f : M ≃ₗ[R] M} {p : Submodule R M} :
+    p ∈ invtSubmodule f.symm ↔ p ≤ p.map f :=
+  (mem_invtSubmodule_iff_map_le _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
 
 namespace invtSubmodule
 
@@ -153,7 +176,7 @@ lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [CommSemiring
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R N}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
     p.map e ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
-  simp [← e.map_mem_invtSubmodule_conj_iff, ← LinearEquiv.trans_apply, LinearEquiv.conj_trans]
+  simp [← e.map_mem_invtSubmodule_conj_iff]
 
 end invtSubmodule
 

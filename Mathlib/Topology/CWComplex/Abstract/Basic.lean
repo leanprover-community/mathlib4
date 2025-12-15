@@ -3,9 +3,11 @@ Copyright (c) 2024 Elliot Dean Young and Jiazhen Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiazhen Xia, Elliot Dean Young, Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Category.TopCat.Sphere
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Category.TopCat.Sphere
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 
 /-!
 # CW-complexes
@@ -26,7 +28,7 @@ This file defines (relative) CW-complexes using a categorical approach.
 This file provides a categorical approach to CW complexes,
 defining them via colimits and transfinite compositions.
 For a classical approach that defines CW complexes via explicit cells and attaching maps,
-see `Mathlib.Topology.CWComplex.Classical.Basic`.
+see `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 The two approaches are equivalent but serve different purposes:
 * This approach is more suitable for categorical arguments and generalizations
 * The classical approach is more convenient for concrete geometric arguments
@@ -38,9 +40,11 @@ The two approaches are equivalent but serve different purposes:
 ## TODO
 
 * Prove the equivalence between this categorical approach and the classical approach in
-  `Mathlib.Topology.CWComplex.Classical.Basic`.
+  `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
   Currently there is no way to move between the two definitions.
 -/
+
+@[expose] public section
 
 open TopCat
 

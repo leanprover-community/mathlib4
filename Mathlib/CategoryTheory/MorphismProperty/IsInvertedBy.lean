@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Morphism properties that are inverted by a functor
@@ -16,6 +18,8 @@ isomorphisms by a functor `F : C ⥤ D`.
 This is used in the localization of categories API (folder `CategoryTheory.Localization`).
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -37,7 +41,7 @@ lemma of_le (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h 
     P.IsInvertedBy F :=
   fun _ _ _ hf => hQ _ (h _ hf)
 
-theorem of_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+theorem of_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
     W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
   haveI := hF f hf
@@ -68,9 +72,9 @@ theorem unop {W : MorphismProperty C} {L : Cᵒᵖ ⥤ Dᵒᵖ} (h : W.op.IsInve
   dsimp
   infer_instance
 
-lemma prod {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+lemma prod {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
-    {E₁ E₂ : Type*} [Category E₁] [Category E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
+    {E₁ E₂ : Type*} [Category* E₁] [Category* E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
     (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
     (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
   rw [isIso_prod_iff]
@@ -89,7 +93,7 @@ lemma pi {J : Type w} {C : J → Type u} {D : J → Type u'}
 end IsInvertedBy
 
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
-def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
+def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category* D] :=
   ObjectProperty.FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 
 @[ext]
@@ -100,7 +104,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
-instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
+instance (W : MorphismProperty C) (D : Type*) [Category* D] : Category (FunctorsInverting W D) :=
   ObjectProperty.FullSubcategory.category _
 
 @[ext]
@@ -109,7 +113,7 @@ lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsIn
   NatTrans.ext h
 
 /-- A constructor for `W.FunctorsInverting D` -/
-def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : C ⥤ D)
+def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category* D] (F : C ⥤ D)
     (hF : W.IsInvertedBy F) : W.FunctorsInverting D :=
   ⟨F, hF⟩
 
@@ -130,7 +134,7 @@ lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
     infer_instance
 
 @[simp]
-lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) [G.ReflectsIsomorphisms] :
     W.IsInvertedBy (F ⋙ G) ↔ W.IsInvertedBy F := by
   constructor
@@ -147,7 +151,7 @@ lemma IsInvertedBy.iff_map_le_isomorphisms (W : MorphismProperty C) (F : C ⥤ D
     W.IsInvertedBy F ↔ W.map F ≤ isomorphisms D := by
   rw [iff_le_inverseImage_isomorphisms, map_le_iff]
 
-lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
     (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
   simp only [IsInvertedBy.iff_map_le_isomorphisms, map_map]

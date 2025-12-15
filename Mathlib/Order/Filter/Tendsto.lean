@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Basic
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Convergence in terms of filters
@@ -17,6 +19,8 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 `M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -44,9 +48,12 @@ theorem Tendsto.eventually {f : α → β} {l₁ : Filter α} {l₂ : Filter β}
     (hf : Tendsto f l₁ l₂) (h : ∀ᶠ y in l₂, p y) : ∀ᶠ x in l₁, p (f x) :=
   hf h
 
-theorem not_tendsto_iff_exists_frequently_nmem {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
+theorem not_tendsto_iff_exists_frequently_notMem {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
     ¬Tendsto f l₁ l₂ ↔ ∃ s ∈ l₂, ∃ᶠ x in l₁, f x ∉ s := by
   simp only [tendsto_iff_forall_eventually_mem, not_forall, exists_prop, not_eventually]
+
+@[deprecated (since := "2025-05-24")]
+alias not_tendsto_iff_exists_frequently_nmem := not_tendsto_iff_exists_frequently_notMem
 
 theorem Tendsto.frequently {f : α → β} {l₁ : Filter α} {l₂ : Filter β} {p : β → Prop}
     (hf : Tendsto f l₁ l₂) (h : ∃ᶠ x in l₁, p (f x)) : ∃ᶠ y in l₂, p y :=

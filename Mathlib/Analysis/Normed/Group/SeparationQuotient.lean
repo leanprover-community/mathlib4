@@ -3,14 +3,16 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups
 
 For any `SeminormedAddCommGroup M`, a `NormedAddCommGroup` instance has been defined in
-`Mathlib.Analysis.Normed.Group.Uniform`.
+`Mathlib/Analysis/Normed/Group/Uniform.lean`.
 
 ## Main definitions
 
@@ -28,10 +30,12 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 ## Main results
 
-* `norm_normedMk_eq_one : the operator norm of the projection is `1` if the subspace is not `⊤`.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
+
+@[expose] public section
 
 section
 
@@ -88,7 +92,6 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
     intro x hx
     rw [← norm_mk, norm_eq_zero] at hx
     simp [hx]⟩
-  left_inv _ := rfl
   right_inv _ := by
     ext x
     obtain ⟨x, rfl⟩ := surjective_mk x

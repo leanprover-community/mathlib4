@@ -3,8 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # `Nat.Upto`
@@ -15,11 +17,13 @@ import Mathlib.Algebra.Order.Sub.Basic
 This type has the property that `>` is well-founded when `∃ i, p i`, which allows us to implement
 searches on `ℕ`, starting at `0` and with an unknown upper-bound.
 
-It is similar to the well founded relation constructed to define `Nat.find` with
+It is similar to the well-founded relation constructed to define `Nat.find` with
 the difference that, in `Nat.Upto p`, `p` does not need to be decidable. In fact,
 `Nat.find` could be slightly altered to factor decidability out of its
-well founded relation and would then fulfill the same purpose as this file.
+well-founded relation and would then fulfill the same purpose as this file.
 -/
+
+@[expose] public section
 
 
 namespace Nat
@@ -53,7 +57,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [InvImage, Upto.GT]
-    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_gt fun h' => ha _ h' h)]
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=

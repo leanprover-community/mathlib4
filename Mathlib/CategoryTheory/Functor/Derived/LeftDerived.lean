@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Left derived functors
@@ -23,7 +25,7 @@ Given `LF : D ⥤ H` and `α : L ⋙ RF ⟶ F`, we also introduce a type class
 along the localization functor `L`.
 
 (This file was obtained by dualizing the results in the file
-`CategoryTheory.Functor.Derived.RightDerived`.)
+`Mathlib.CategoryTheory.Functor.Derived.RightDerived`.)
 
 ## References
 
@@ -31,12 +33,14 @@ along the localization functor `L`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category C] [Category C']
-  [Category D] [Category D'] [Category H] [Category H']
+variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
+  [Category* D] [Category* D'] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)

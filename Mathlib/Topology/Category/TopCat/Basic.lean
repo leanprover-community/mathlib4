@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
@@ -12,8 +14,11 @@ import Mathlib.Topology.ContinuousMap.Basic
 We introduce the bundled category `TopCat` of topological spaces together with the functors
 `TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
 with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
+resp. right adjoint to the forgetful functor, see
+`Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module
 
@@ -23,7 +28,9 @@ universe u
 
 /-- The category of topological spaces. -/
 structure TopCat where
-  private mk ::
+  /-- The object in `TopCat` associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : TopologicalSpace carrier]
@@ -39,11 +46,6 @@ instance : CoeSort (TopCat) (Type u) :=
 
 attribute [coe] TopCat.carrier
 
-/-- The object in `TopCat` associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `TopCat`. -/
-abbrev of (X : Type u) [TopologicalSpace X] : TopCat :=
-  ⟨X⟩
-
 lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
   rfl
 
@@ -53,7 +55,7 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  private mk ::
+  --private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
@@ -113,7 +115,7 @@ lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
@@ -153,11 +155,6 @@ equal function coercion for a continuous map `C(X, Y)`.
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
-
-@[deprecated
-  "Simply remove this from the `simp`/`rw` set: the LHS and RHS are now identical."
-  (since := "2025-01-30")]
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f.hom x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where
@@ -210,6 +207,11 @@ lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
     (Equiv.ofBijective f hfbij).toHomeomorphOfContinuousClosed f.hom.continuous hfcl
   inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
 
+lemma isIso_iff_isHomeomorph {X Y : TopCat.{u}} (f : X ⟶ Y) :
+    IsIso f ↔ IsHomeomorph f :=
+  ⟨fun _ ↦ (homeoOfIso (asIso f)).isHomeomorph,
+    fun H ↦ isIso_of_bijective_of_isOpenMap _ H.bijective H.isOpenMap⟩
+
 theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
@@ -217,7 +219,7 @@ theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
 @[simp]
 theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_comp_isIso f g
 
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
@@ -231,7 +233,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
 @[simp]
 theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
-  simp only [← Functor.map_comp]
+  simp only
   exact isOpenEmbedding_iff_isIso_comp f g
 
 end TopCat
