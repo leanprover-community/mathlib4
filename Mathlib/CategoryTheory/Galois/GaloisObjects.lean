@@ -107,7 +107,7 @@ lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
     have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
       MonoidAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
     obtain ⟨φ, h⟩ := this
-    rw [← h, mulAction_naturality, ninstab, h]
+    rw [← h, monoidAction_naturality, ninstab, h]
     simp
 
 theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.Opposite
 # Group actions on embeddings
 
 This file provides a `MonoidAction G (α ↪ β)` instance that agrees with the `MonoidAction G (α → β)`
-instances defined by `Pi.mulAction`.
+instances defined by `Pi.monoidAction`.
 
 Note that unlike the `Pi` instance, this requires `G` to be a group.
 -/
@@ -60,6 +60,6 @@ instance [Group G] [MonoidAction G β] [MonoidAction Gᵐᵒᵖ β] [IsCentralSc
 
 @[to_additive]
 instance [Group G] [MonoidAction G β] : MonoidAction G (α ↪ β) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+  DFunLike.coe_injective.monoidAction _ coe_smul
 
 end Function.Embedding

@@ -105,7 +105,7 @@ instance : Inhabited 𝔻 :=
   ⟨0⟩
 
 instance circleAction : MonoidAction Circle 𝔻 :=
-  mulActionSphereBall
+  monoidActionSphereBall
 
 instance isScalarTower_circle_circle : IsScalarTower Circle Circle 𝔻 :=
   isScalarTower_sphere_sphere_ball
@@ -124,7 +124,7 @@ theorem coe_smul_circle (z : Circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :
   rfl
 
 instance closedBallAction : MonoidAction (closedBall (0 : ℂ) 1) 𝔻 :=
-  mulActionClosedBallBall
+  monoidActionClosedBallBall
 
 instance isScalarTower_closedBall_closedBall :
     IsScalarTower (closedBall (0 : ℂ) 1) (closedBall (0 : ℂ) 1) 𝔻 :=

@@ -227,7 +227,7 @@ theorem pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α G] {g
     {P : Sylow p G} : ↑(g • P) = g • (P : Subgroup G) :=
   rfl
 
-instance mulAction : MonoidAction G (Sylow p G) :=
+instance monoidAction : MonoidAction G (Sylow p G) :=
   compHom _ MulAut.conj
 
 theorem smul_def {g : G} {P : Sylow p G} : g • P = MulAut.conj g • P :=

@@ -184,7 +184,7 @@ homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
-  __ := hf.mulAction f smul
+  __ := hf.monoidAction f smul
   smul_mul c x y := hf <| by simp only [smul, f.map_mul, smul_mul']
   smul_one c := hf <| by simp only [smul, f.map_one, smul_one]
 
@@ -193,7 +193,7 @@ homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B where
-  __ := hf.mulAction f smul
+  __ := hf.monoidAction f smul
   smul_mul c := by simp only [hf.forall, smul_mul', ← smul, ← f.map_mul, implies_true]
   smul_one c := by rw [← f.map_one, ← smul, smul_one]
 

@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 /-! # Pointwise instances on `Subring`s
 
 This file provides the action `Subring.pointwiseMonoidAction` which matches the action of
-`mulActionSet`.
+`monoidActionSet`.
 
 This actions is available in the `Pointwise` locale.
 

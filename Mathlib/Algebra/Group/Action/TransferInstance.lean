@@ -33,7 +33,7 @@ protected abbrev monoidAction (e : α ≃ β) [MonoidAction M β] : MonoidAction
   mul_smul := by simp [smul_def, mul_smul]
 
 @[deprecated (since := "2025-12-12")] protected alias addAction := Equiv.addMonoidAction
-@[deprecated (since := "2025-12-12")] protected alias mulAction := Equiv.monoidAction
+@[deprecated (since := "2025-12-12")] protected alias monoidAction := Equiv.monoidAction
 
 variable (M N) [SMul M β] [SMul N β] in
 /-- Transfer `SMulCommClass` across an `Equiv` -/
@@ -74,7 +74,7 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
     letI := e.monoid
     MulDistribMulAction M N :=
   letI := e.monoid
-  { e.mulAction M with
+  { e.monoidAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
 

@@ -23,8 +23,8 @@ For most uses, typically `Submodule R M` is more powerful.
 
 ## Main definitions
 
-* `SubMulAction.mulAction` - the `MonoidAction R M` transferred to the subtype.
-* `SubMulAction.mulAction'` - the `MonoidAction S M` transferred to the subtype when
+* `SubMulAction.monoidAction` - the `MonoidAction R M` transferred to the subtype.
+* `SubMulAction.monoidAction'` - the `MonoidAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
 * `SubMulAction.inclusion` — the inclusion of a `SubMulAction`, as an equivariant map
@@ -315,7 +315,7 @@ variable [hA : SMulMemClass A R M] (S' : A)
 /-- A `SubMulAction` of a `MonoidAction` is a `MonoidAction`. -/
 @[to_additive /-- A `SubAddAction` of an `AddMonoidAction` is an `AddMonoidAction`. -/]
 instance (priority := 75) toMonoidAction : MonoidAction R S' :=
-  Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
+  Subtype.coe_injective.monoidAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 @[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]

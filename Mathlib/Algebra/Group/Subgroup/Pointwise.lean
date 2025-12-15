@@ -19,7 +19,7 @@ This file provides the actions
 * `Subgroup.pointwiseMonoidAction`
 * `AddSubgroup.pointwiseMonoidAction`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 These actions are available in the `Pointwise` locale.
 

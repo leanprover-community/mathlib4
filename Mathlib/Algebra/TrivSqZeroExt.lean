@@ -228,7 +228,7 @@ instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒ
 
 instance monoidAction [Monoid S] [MonoidAction S R] [MonoidAction S M] :
     MonoidAction S (tsze R M) :=
-  Prod.mulAction
+  Prod.monoidAction
 
 instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
     [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=

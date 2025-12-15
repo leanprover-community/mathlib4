@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 /-! # Pointwise instances on `Ideal`s
 
 This file provides the action `Ideal.pointwiseMonoidAction` which morally matches the action of
-`mulActionSet` (though here an extra `Ideal.span` is inserted).
+`monoidActionSet` (though here an extra `Ideal.span` is inserted).
 
 This action is available in the `Pointwise` locale.
 

@@ -21,7 +21,7 @@ and the actions
 * `Submodule.pointwiseDistribMulAction`
 * `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 This file also provides:
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on

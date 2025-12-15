@@ -357,7 +357,7 @@ instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
 instance instMonoidAction : MonoidAction G (AffineBasis ι k V) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+  DFunLike.coe_injective.monoidAction _ coe_smul
 
 end SMul
 end Ring

@@ -83,7 +83,7 @@ instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [Topologic
 @[to_additive]
 instance instMonoidAction {M X : Type*} [Monoid M] [MonoidAction M X] [TopologicalSpace X]
     [ContinuousConstSMul M X] : MonoidAction M (SeparationQuotient X) :=
-  surjective_mk.mulAction mk mk_smul
+  surjective_mk.monoidAction mk mk_smul
 
 section Monoid
 

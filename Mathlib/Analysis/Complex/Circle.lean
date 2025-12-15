@@ -165,7 +165,7 @@ instance instSMulCommClass_right [SMul ℂ β] [SMul α β] [SMulCommClass α �
 instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTower ℂ α β] :
     IsScalarTower Circle α β := Submonoid.isScalarTower _
 
-instance instMonoidAction [MonoidAction ℂ α] : MonoidAction Circle α := Submonoid.mulAction _
+instance instMonoidAction [MonoidAction ℂ α] : MonoidAction Circle α := Submonoid.monoidAction _
 
 instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
     DistribMulAction Circle M := Submonoid.distribMulAction _

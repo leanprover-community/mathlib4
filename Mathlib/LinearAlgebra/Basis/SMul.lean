@@ -56,7 +56,7 @@ theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g :
     (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
 
 instance : MonoidAction G (Basis ι R M) :=
-  Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
+  Function.Injective.monoidAction _ DFunLike.coe_injective coe_smul
 
 instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
   smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _

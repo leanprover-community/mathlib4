@@ -189,9 +189,9 @@ instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
   Pi.smulCommClass
 
-instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ β) := Pi.monoidAction _
 
-instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MonoidAction M β] : MonoidAction M (α →ᵤ[𝔖] β) := Pi.monoidAction _
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ β) :=

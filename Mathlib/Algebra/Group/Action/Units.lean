@@ -79,7 +79,7 @@ instance monoidAction' [Group G] [Monoid M] [MonoidAction G M] [SMulCommClass G 
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
-/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
+/-- This is not the usual `smul_eq_mul` because `monoidAction'` creates a diamond.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
@@ -120,14 +120,14 @@ instance isScalarTower'_left [Group G] [Monoid M] [MonoidAction G M] [SMul M α]
 
 -- Just to prove this transfers a particularly useful instance.
 example [Monoid M] [Monoid N] [MonoidAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :
-    MonoidAction Mˣ Nˣ := Units.mulAction'
+    MonoidAction Mˣ Nˣ := Units.monoidAction'
 
 section MulDistribMulAction
 variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
-/-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
+/-- Note this has different defeqs than `Units.monoidAction'`, but doesn't create a diamond
 with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
-we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
+we would need both instances to fire. But `Units.monoidAction'` assumes `SMulCommClass G M M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`), while
 `Units.instMulDistribMulActionRight` assumes `MulDistribMulAction G M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`.

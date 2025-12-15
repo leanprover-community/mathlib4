@@ -201,8 +201,8 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     IsCentralScalar R (Matrix m n α) :=
   Pi.isCentralScalar
 
-instance mulAction [Monoid R] [MonoidAction R α] : MonoidAction R (Matrix m n α) :=
-  Pi.mulAction _
+instance monoidAction [Monoid R] [MonoidAction R α] : MonoidAction R (Matrix m n α) :=
+  Pi.monoidAction _
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=

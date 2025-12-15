@@ -36,7 +36,7 @@ abbrev Function.Surjective.monoidActionLeft {R S M : Type*} [Monoid R] [MonoidAc
   mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
 
 @[deprecated (since := "2025-12-12")]
-alias Function.Surjective.mulActionLeft := Function.Surjective.monoidActionLeft
+alias Function.Surjective.monoidActionLeft := Function.Surjective.monoidActionLeft
 
 namespace MonoidAction
 

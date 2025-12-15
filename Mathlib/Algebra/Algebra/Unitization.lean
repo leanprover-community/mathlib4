@@ -201,7 +201,7 @@ instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul S�
 
 instance instMonoidAction [Monoid S] [MonoidAction S R] [MonoidAction S A] :
     MonoidAction S (Unitization R A) :=
-  Prod.mulAction
+  Prod.monoidAction
 
 instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
     [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=

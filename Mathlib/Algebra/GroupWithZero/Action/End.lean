@@ -23,12 +23,12 @@ variable {M N A α β : Type*}
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
-See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft`.
+See also `Function.Surjective.monoidActionLeft` and `Function.Surjective.moduleLeft`.
 -/
 abbrev Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
     [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
-  { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with }
+  { hf.distribSMulLeft f hsmul, hf.monoidActionLeft f hsmul with }
 
 section AddMonoid
 

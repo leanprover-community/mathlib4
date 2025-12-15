@@ -288,7 +288,7 @@ instance addCommMonoid : AddCommMonoid p := fast_instance%
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
-  { (show MonoidAction S p from p.toSubMulAction.mulAction') with
+  { (show MonoidAction S p from p.toSubMulAction.monoidAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]

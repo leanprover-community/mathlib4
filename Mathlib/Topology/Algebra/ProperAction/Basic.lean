@@ -24,7 +24,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 ## Main statements
 
-* `t2Space_quotient_mulAction_of_properSMul`: If a group `G` acts properly
+* `t2Space_quotient_monoidAction_of_properSMul`: If a group `G` acts properly
   on a topological space `X`, then the quotient space is Hausdorff (T2).
 * `t2Space_of_properSMul_of_t1Group`: If a T1 group acts properly on a topological space,
   then this topological space is T2.
@@ -111,7 +111,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/]
-instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
+instance t2Space_quotient_monoidAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MonoidAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MonoidAction.orbitRel G X
@@ -208,7 +208,7 @@ instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G
 @[to_additive]
 instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] :
     T2Space (G ⧸ H) :=
-  t2Space_quotient_mulAction_of_properSMul
+  t2Space_quotient_monoidAction_of_properSMul
 
 /-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g • t, t)` is still
 proper for *any* subset `T` of `X`. -/

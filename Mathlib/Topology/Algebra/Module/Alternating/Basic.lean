@@ -195,7 +195,7 @@ instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScal
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
 instance : MonoidAction R' (M [⋀^ι]→L[A] N) := fast_instance%
-  toContinuousMultilinearMap_injective.mulAction toContinuousMultilinearMap fun _ _ => rfl
+  toContinuousMultilinearMap_injective.monoidAction toContinuousMultilinearMap fun _ _ => rfl
 
 end SMul
 

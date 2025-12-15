@@ -20,7 +20,7 @@ namespace ConjAct
 variable {K : Type*} [DivisionRing K]
 
 instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
-  { ConjAct.mulAction₀ with
+  { ConjAct.monoidAction₀ with
     smul_zero := by simp [smul_def]
     smul_add := by simp [smul_def, mul_add, add_mul] }
 

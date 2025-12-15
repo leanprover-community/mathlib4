@@ -95,7 +95,7 @@ def subMulAction [DecidableEq α] : SubMulAction G (Finset α) where
 
 @[to_additive]
 instance [DecidableEq α] : MonoidAction G (n.Combination α) :=
-  (subMulAction G α n).mulAction
+  (subMulAction G α n).monoidAction
 
 variable {G}
 

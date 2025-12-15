@@ -259,7 +259,7 @@ instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 instance : MonoidAction S (P →ᴬ[R] W) :=
-  Function.Injective.mulAction _ coe_injective coe_smul
+  Function.Injective.monoidAction _ coe_injective coe_smul
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
 

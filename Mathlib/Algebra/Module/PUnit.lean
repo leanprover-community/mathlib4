@@ -46,18 +46,18 @@ instance smulWithZero [Zero R] : SMulWithZero R PUnit where
   smul_zero := by subsingleton
   zero_smul := by subsingleton
 
-instance mulAction [Monoid R] : MonoidAction R PUnit where
+instance monoidAction [Monoid R] : MonoidAction R PUnit where
   __ := PUnit.smul
   one_smul := by subsingleton
   mul_smul := by subsingleton
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit where
-  __ := PUnit.mulAction
+  __ := PUnit.monoidAction
   smul_zero := by subsingleton
   smul_add := by subsingleton
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
-  __ := PUnit.mulAction
+  __ := PUnit.monoidAction
   smul_mul := by subsingleton
   smul_one := by subsingleton
 
@@ -65,7 +65,7 @@ instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
 instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
-  { PUnit.mulAction, PUnit.smulWithZero with }
+  { PUnit.monoidAction, PUnit.smulWithZero with }
 
 instance module [Semiring R] : Module R PUnit where
   __ := PUnit.distribMulAction

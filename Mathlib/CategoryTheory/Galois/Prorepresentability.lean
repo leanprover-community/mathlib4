@@ -418,7 +418,7 @@ theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
   obtain ⟨(φ : Aut X), h⟩ := MonoidAction.IsPretransitive.exists_smul_eq (M := Aut X) x y
   obtain ⟨a, ha⟩ := AutGalois.π_surjective F ⟨X, x, inferInstance⟩ φ
   use (autMulEquivAutGalois F).symm ⟨a⟩
-  simpa [mulAction_def, ha]
+  simpa [monoidAction_def, ha]
 
 /-- The `Aut F` action on the fiber of a connected object is transitive. For a version
 with less restrictive universe assumptions, see `FiberFunctor.isPretransitive_of_isConnected`. -/

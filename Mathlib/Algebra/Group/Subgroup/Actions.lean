@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.Subgroup.Center
 /-!
 # Actions by `Subgroup`s
 
-These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
+These are just copies of the definitions about `Submonoid` starting from `Submonoid.monoidAction`.
 
 ## Tags
 subgroup, subgroups

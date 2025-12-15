@@ -29,6 +29,6 @@ instance : SMul (α ≃o α) (Flag α) where smul e := map e
 @[simp, norm_cast]
 lemma coe_smul (e : α ≃o α) (s : Flag α) : (↑(e • s) : Set α) = e • s := rfl
 
-instance : MonoidAction (α ≃o α) (Flag α) := SetLike.coe_injective.mulAction _ coe_smul
+instance : MonoidAction (α ≃o α) (Flag α) := SetLike.coe_injective.monoidAction _ coe_smul
 
 end Flag

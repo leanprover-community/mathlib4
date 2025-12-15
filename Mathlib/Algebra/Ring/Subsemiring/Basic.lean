@@ -868,7 +868,7 @@ end RingEquiv
 
 /-! ### Actions by `Subsemiring`s
 
-These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
+These are just copies of the definitions about `Submonoid` starting from `Submonoid.monoidAction`.
 The only new result is `Subsemiring.module`.
 
 When `R` is commutative, `Algebra.ofSubsemiring` provides a stronger result than those found in

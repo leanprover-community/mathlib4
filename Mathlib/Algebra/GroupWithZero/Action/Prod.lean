@@ -49,7 +49,7 @@ instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribS
 
 instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
-  { Prod.mulAction, Prod.distribSMul with }
+  { Prod.monoidAction, Prod.distribSMul with }
 
 instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
@@ -62,7 +62,7 @@ instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] 
 
 instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
     [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
-  { Prod.mulAction, Prod.smulWithZero with }
+  { Prod.monoidAction, Prod.smulWithZero with }
 
 end Prod
 

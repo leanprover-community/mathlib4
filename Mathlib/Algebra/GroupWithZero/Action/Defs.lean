@@ -226,13 +226,13 @@ lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : A) (i j : ι) :
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  { hf.mulAction f smul, hf.smulWithZero f smul with }
+  { hf.monoidAction f smul, hf.smulWithZero f smul with }
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  { hf.mulAction f smul, hf.smulWithZero f smul with }
+  { hf.monoidAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
 
@@ -365,14 +365,14 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
+  { hf.distribSMul f smul, hf.monoidAction f smul with }
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
 homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
+  { hf.distribSMul f smul, hf.monoidAction f smul with }
 
 variable (A)
 

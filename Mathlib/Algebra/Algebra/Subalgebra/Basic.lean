@@ -763,7 +763,7 @@ end equivMapOfInjective
 /-! ## Actions by `Subalgebra`s
 
 These are just copies of the definitions about `Subsemiring` starting from
-`Subring.mulAction`.
+`Subring.monoidAction`.
 -/
 
 

@@ -108,7 +108,7 @@ end SMul
 
 instance instMonoidAction {R : Type*} [Monoid R] [MonoidAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     MonoidAction R (OuterMeasure α) :=
-  Injective.mulAction _ coe_fn_injective coe_smul
+  Injective.monoidAction _ coe_fn_injective coe_smul
 
 instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
   Injective.addCommMonoid (show OuterMeasure α → Set α → ℝ≥0∞ from _) coe_fn_injective rfl

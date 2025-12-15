@@ -33,7 +33,7 @@ namespace KaehlerDifferential
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
 abbrev monoidActionBaseChange : MonoidAction A (S ⊗[R] Ω[A⁄R]) :=
-  (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
+  (TensorProduct.comm R S Ω[A⁄R]).toEquiv.monoidAction A
 
 @[deprecated (since := "2025-12-15")] alias mulActionBaseChange := monoidActionBaseChange
 
@@ -68,7 +68,7 @@ alias mulActionBaseChange_smul_add := monoidActionBaseChange_smul_add
 noncomputable
 abbrev moduleBaseChange :
     Module A (S ⊗[R] Ω[A⁄R]) where
-  __ := (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
+  __ := (TensorProduct.comm R S Ω[A⁄R]).toEquiv.monoidAction A
   add_smul r s x := by induction x <;> simp [add_smul, tmul_add, *, add_add_add_comm]
   zero_smul x := by induction x <;> simp [*]
   smul_zero := by simp

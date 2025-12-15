@@ -49,7 +49,7 @@ end SMul
 
 instance {M α N β : Type*} [Monoid M] [MonoidAction M α] [SMul N α]
     [SMulCommClass M N α] [SMul N β] : MonoidAction Mᵈᵐᵃ (α →[N] β) :=
-  DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.monoidAction _ fun _ _ ↦ rfl
 
 end MulActionSemiHom
 
@@ -80,7 +80,7 @@ end SMul
 instance {M N A B : Type*} [Monoid M] [AddMonoid A] [DistribMulAction M A] [Monoid N] [AddMonoid B]
     [DistribMulAction N A] [SMulCommClass M N A] [DistribMulAction N B] :
     MonoidAction Mᵈᵐᵃ (A →+[N] B) :=
-  DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
+  DFunLike.coe_injective.monoidAction _ fun _ _ ↦ rfl
 
 end DistribMulActionHom
 

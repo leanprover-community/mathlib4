@@ -114,6 +114,6 @@ instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.com
 
 @[to_additive]
 instance [Monoid M] [MonoidAction M α] : MonoidAction M (Shrink.{v} α) :=
-  (equivShrink α).symm.mulAction M
+  (equivShrink α).symm.monoidAction M
 
 end Shrink

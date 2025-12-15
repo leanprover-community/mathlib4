@@ -110,7 +110,7 @@ variable {K : Type*} [Field K] [DecidableEq K]
 /-- For a field `K`, the group `GL(2, K)` acts on `OnePoint K`, via the canonical identification
 with the `ℙ¹(K)` (which is given explicitly by Möbius transformations). -/
 instance instGLAction : MonoidAction (GL (Fin 2) K) (OnePoint K) :=
-  (equivProjectivization K).mulAction (GL (Fin 2) K)
+  (equivProjectivization K).monoidAction (GL (Fin 2) K)
 
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K (g 0 0, g 1 0) (fun h ↦ by

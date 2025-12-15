@@ -238,7 +238,7 @@ instance [CommRing Y] : CommRing (LocallyConstant X Y) :=
 variable {R : Type*}
 
 instance [Monoid R] [MonoidAction R Y] : MonoidAction R (LocallyConstant X Y) :=
-  Function.Injective.mulAction _ coe_injective fun _ _ => rfl
+  Function.Injective.monoidAction _ coe_injective fun _ _ => rfl
 
 instance [Monoid R] [AddMonoid Y] [DistribMulAction R Y] :
     DistribMulAction R (LocallyConstant X Y) :=

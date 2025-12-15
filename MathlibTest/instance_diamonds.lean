@@ -90,11 +90,11 @@ end TensorProduct
 section Units
 
 example (α : Type _) [Monoid α] :
-    (Units.instMonoidAction : MonoidAction αˣ (α × α)) = Prod.mulAction := by
+    (Units.instMonoidAction : MonoidAction αˣ (α × α)) = Prod.monoidAction := by
   with_reducible_and_instances rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MonoidAction R (β i)] :
-    (Units.instMonoidAction : MonoidAction Rˣ (∀ i, β i)) = Pi.mulAction _ := by
+    (Units.instMonoidAction : MonoidAction Rˣ (∀ i, β i)) = Pi.monoidActionion _ := by
   with_reducible_and_instances rfl
 
 example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
@@ -105,7 +105,7 @@ example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
 TODO: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/units.2Emul_action'.20diamond/near/246402813
 ```lean
 example {α : Type*} [CommMonoid α] :
-    (Units.mulAction' : MonoidAction αˣ αˣ) = Monoid.toMonoidAction _ :=
+    (Units.monoidAction' : MonoidAction αˣ αˣ) = Monoid.toMonoidAction _ :=
   rfl -- fails
 ```
 -/

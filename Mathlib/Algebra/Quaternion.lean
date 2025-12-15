@@ -371,7 +371,7 @@ theorem smul_mk (re im_i im_j im_k : R) :
 end SMul
 
 instance [Monoid S] [MonoidAction S R] : MonoidAction S ℍ[R,c₁,c₂,c₃] :=
-  (equivProd ..).injective.mulAction _ fun _ _ ↦ rfl
+  (equivProd ..).injective.monoidAction _ fun _ _ ↦ rfl
 
 instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
   apply (equivProd c₁ c₂ c₃).injective.addCommGroup <;> intros <;> rfl

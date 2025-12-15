@@ -408,7 +408,7 @@ instance monoidAction : MonoidAction S <| (restrictScalars f).obj (of _ S) →�
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
-  { CoextendScalars.mulAction f _ with
+  { CoextendScalars.monoidAction f _ with
     smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
     smul_zero := fun _ => LinearMap.ext fun _ : S => by simp }
 

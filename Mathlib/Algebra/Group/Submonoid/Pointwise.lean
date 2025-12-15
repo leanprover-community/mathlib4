@@ -23,7 +23,7 @@ and the actions
 * `Submonoid.pointwiseMonoidAction`
 * `AddSubmonoid.pointwiseAddMonoidAction`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 ## Implementation notes
 

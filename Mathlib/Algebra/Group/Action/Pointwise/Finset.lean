@@ -93,7 +93,7 @@ protected def monoidAction [DecidableEq α] [Monoid α] [MonoidAction α β] :
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
 protected def monoidActionFinset [Monoid α] [MonoidAction α β] : MonoidAction α (Finset β) :=
-  coe_injective.mulAction _ coe_smul_finset
+  coe_injective.monoidAction _ coe_smul_finset
 
 scoped[Pointwise]
 attribute [instance]

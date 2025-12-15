@@ -753,7 +753,7 @@ section MonoidAction
 variable [MonoidWithZero 𝕜] [Zero β] [MonoidAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance instMonoidAction : MonoidAction 𝕜 (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.mulAction _ coe_smul
+  DFunLike.coe_injective.monoidAction _ coe_smul
 
 end MonoidAction
 

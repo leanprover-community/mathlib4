@@ -128,7 +128,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
-def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
+def Subgroup.Centralizer.cycleFactorsFinset_monoidAction :
     MonoidAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
     Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩
@@ -144,7 +144,7 @@ def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
 
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
 scoped instance : MonoidAction (centralizer {g}) (g.cycleFactorsFinset) :=
-  (Subgroup.Centralizer.cycleFactorsFinset_mulAction g)
+  (Subgroup.Centralizer.cycleFactorsFinset_monoidAction g)
 
 /-- The canonical morphism from `Subgroup.centralizer {g}`
   to the group of permutations of `g.cycleFactorsFinset` -/

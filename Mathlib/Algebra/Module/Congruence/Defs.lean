@@ -55,7 +55,7 @@ instance [Zero S] [Zero M] [SMulWithZero S M] (c : SMulCon S M) : SMulWithZero S
 
 @[to_additive] instance [Monoid S] [MonoidAction S M] (c : SMulCon S M) :
     MonoidAction S c.Quotient :=
-  fast_instance% Quotient.mk''_surjective.mulAction (⟦·⟧) fun _ _ ↦ rfl
+  fast_instance% Quotient.mk''_surjective.monoidAction (⟦·⟧) fun _ _ ↦ rfl
 
 section addConGen
 
