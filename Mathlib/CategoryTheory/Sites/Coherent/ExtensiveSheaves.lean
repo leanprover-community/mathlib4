@@ -29,7 +29,7 @@ namespace CategoryTheory
 
 open Limits Presieve Opposite
 
-variable {C : Type*} [Category C] {D : Type*} [Category D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 variable [FinitaryPreExtensive C]
 

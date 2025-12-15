@@ -207,4 +207,11 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
 
 end Iso
 
+/-- The natural transformation `G.flip.obj Y ⟶ G'.flip.obj Y` induced by
+a natural transformation `τ : G ⟶ G'` between bifunctors. -/
+@[simps!]
+abbrev NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
+    G.flip.obj Y ⟶ G'.flip.obj Y :=
+  ((flipFunctor _ _ _).map τ).app Y
+
 end CategoryTheory

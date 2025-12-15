@@ -56,7 +56,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
   [Abelian C] [HasInjectiveResolutions C] [Abelian D]
 
 /-- When `F : C ⥤ D` is an additive functor, this is
@@ -256,14 +256,14 @@ noncomputable def toRightDerivedZero' {X : C}
       zero_comp, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma toRightDerivedZero'_comp_iCycles {C} [Category C] [Abelian C] {X : C}
+lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     P.toRightDerivedZero' F ≫
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
   simp [toRightDerivedZero']
 
 @[reassoc]
-lemma toRightDerivedZero'_naturality {C} [Category C] [Abelian C] {X Y : C} (f : X ⟶ Y)
+lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y)
     (φ : P.cocomplex ⟶ Q.cocomplex) (comm : P.ι.f 0 ≫ φ.f 0 = f ≫ Q.ι.f 0)
     (F : C ⥤ D) [F.Additive] :
