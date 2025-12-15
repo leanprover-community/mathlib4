@@ -188,7 +188,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
 
 @[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
-    x ∈ ⨅ i, . i ↔ ∀ i, x ∈ . i := by
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
