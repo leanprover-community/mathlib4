@@ -396,13 +396,6 @@ protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
     MemLp f ⊤ μ :=
   f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
 
-protected theorem integrable {μ : Measure E}
-    (H : ∀ K : Set E, IsCompact K → K ⊆ Ω → IsFiniteMeasure (μ.restrict K)) -- TODO
-    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
-  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
-  specialize H (tsupport f) f.hasCompactSupport f.tsupport_subset
-  exact f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
-
 protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
     (hφ : LocallyIntegrableOn φ Ω μ) (f : 𝓓^{n}(Ω, F₁)) :
     Integrable (fun x ↦ B (f x) (φ x)) μ := by
@@ -413,6 +406,15 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+protected theorem integrable {μ : Measure E}
+    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ) -- TODO
+    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
+  replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
+  exact f.memLp_top.smul H
 
 variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
 
