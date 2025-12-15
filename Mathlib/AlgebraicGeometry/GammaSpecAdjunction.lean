@@ -282,7 +282,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       rw [← IsLocalRing.comap_closedPoint (f.stalkMap x).hom, ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
         ← CommRingCat.hom_comp, ← CommRingCat.hom_comp]
-      congr 3
+      congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
     · intro r
       rw [LocallyRingedSpace.comp_c_app, ← Category.assoc]
