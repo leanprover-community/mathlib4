@@ -98,7 +98,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   let S := Algebra.adjoin R.toSubring {x}
   have : R.toSubring < S.toSubring := SetLike.lt_iff_le_and_exists.mpr
     ⟨fun r hr ↦ algebraMap_mem S ⟨r, hr⟩, ⟨x, Algebra.self_mem_adjoin_singleton _ _, hx⟩⟩
-  have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_idealMap_adjoin_add_span_eq_top x _
+  have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top x _
     (maximalIdeal.isMaximal R.toSubring).ne_top
     (top_unique <| (map_maximalIdeal_eq_top_of_isMax hR this).ge.trans le_self_add)
   have H : IsUnit p.leadingCoeff := of_not_not fun h ↦ by simpa using sub_mem h hp
@@ -160,7 +160,7 @@ open Polynomial in
   let B := Algebra.adjoin R {x⁻¹}
   let xinv : B.toSubring := ⟨x⁻¹, Algebra.subset_adjoin rfl⟩
   have : Ideal.span {xinv} ≠ ⊤ := fun eq ↦ hxR <|
-    have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_ideal_map_adjoin_add_span_eq_top _
+    have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top _
       (⊥ : Ideal R) bot_ne_top (top_unique <| eq.ge.trans le_add_self)
     (Subring.isIntegrallyClosedIn_iff).mp ‹_› ⟨p, by simpa [Monic, sub_eq_zero] using hp, hpx⟩
   have ⟨V, hV⟩ := Ideal.image_subset_nonunits_valuationSubring _ this
@@ -177,7 +177,7 @@ open Polynomial in
   let B := Algebra.adjoin R.toSubring {x⁻¹}
   let xinv : B.toSubring := ⟨x⁻¹, Algebra.subset_adjoin rfl⟩
   have : (maximalIdeal R.toSubring).map (algebraMap _ B) + .span {xinv} ≠ ⊤ := fun eq ↦ hxR <|
-    have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_ideal_map_adjoin_add_span_eq_top _ _
+    have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top _ _
       (maximalIdeal.isMaximal R.toSubring).ne_top eq
     have H : IsUnit p.leadingCoeff := of_not_not fun h ↦ by simpa using sub_mem h hp
     (Subring.isIntegrallyClosedIn_iff).mp ‹_›
