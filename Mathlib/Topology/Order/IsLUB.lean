@@ -190,7 +190,7 @@ protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
   have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
   exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
 
-lemma IsClosed.upperClosure {α : Type*} [TopologicalSpace α]
+protected lemma IsClosed.upperClosure {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     {s : Set α} (hs : IsClosed s) :
     IsClosed (upperClosure s).1 := by
@@ -204,7 +204,7 @@ lemma IsClosed.upperClosure {α : Type*} [TopologicalSpace α]
     exact Set.ext fun x ↦ ⟨fun _ ↦ trivial,
       fun _ ↦ ⟨_, (not_bddBelow_iff.mp h₂ x).choose_spec.imp id le_of_lt⟩⟩
 
-lemma IsClosed.lowerClosure {α : Type*} [TopologicalSpace α]
+protected lemma IsClosed.lowerClosure {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     {s : Set α} (hs : IsClosed s) :
     IsClosed (lowerClosure s).1 :=
