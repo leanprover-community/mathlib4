@@ -379,7 +379,9 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (h₁ : q ≠ ⊥) : q = ⊤ := by
   let J := (invtSubmoduleToLieIdeal q h₀)
-  have r_j2 : J ≠ ⊥ := by
+  have : IsSimple K L := inferInstance
+  have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
+  have c₂ : J ≠ ⊥ := by
     unfold J invtSubmoduleToLieIdeal
     simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
                iSup_eq_bot, not_forall]
@@ -389,9 +391,6 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     obtain ⟨e, he_mem, he_ne⟩ := α.exists_ne_zero
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
-  have : IsSimple K L := inferInstance
-  have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
-  have c₂ : J ≠ ⊥ := r_j2
   have c₃ : J = ⊤ := by grind
   apply LieAlgebra.IsKilling.l2 q h₀
   -- Unfold J in c₃ and extract the needed equality
