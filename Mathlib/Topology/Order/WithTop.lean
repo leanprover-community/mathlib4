@@ -46,7 +46,7 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
   obtain ⟨c', c'_count, hc'⟩ : ∃ c' : Set ι, c'.Countable ∧ Dense c' :=
     SeparableSpace.exists_countable_dense
   let x₁ : ι := if h : ∃ x, Ioi x = ∅ then h.choose else x₀
-  let d : Set (WithTop ι) := (↑)'' c ∪ (↑)'' c' ∪ {⊤} ∪ {(x₁ : WithTop ι)}
+  let d : Set (WithTop ι) := (↑) '' c ∪ (↑) '' c' ∪ {⊤} ∪ {(x₁ : WithTop ι)}
   suffices H : instWithTopOfOrderTopology
       = generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} by
     refine ⟨{s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a}, ?_, by rw [← H]⟩
