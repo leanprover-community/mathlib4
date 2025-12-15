@@ -45,11 +45,6 @@ limits of the disjointed components. There is a subtlety that the space of finit
 giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed in our general setting, but we only need to
 find *a* limit satisfying this condition. To ensure this, we modify the individual limits
 (again using Riesz-Markov-Kakutani) to make sure that they are inner-regular.
-
-For the version `isCompact_closure_of_isTightMeasureSet` in terms of the closure of a set of tight
-probability measures, we assume additionally that the set of probability measures is separated
-to guarantee that the closure is well behaved. This is satisfied for instance in metrizable spaces,
-or more generally for spaces with the `HasOuterApproxClosed` property.
 -/
 
 @[expose] public section
@@ -168,9 +163,14 @@ instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
   apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
 
+/- For the remainder of the file, we assume the space to be normal, which makes it possible to
+extend continuous functions defined on a closed subset to continuous functions on the whole
+space. -/
+variable [NormalSpace E]
+
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
-lemma isCompact_setOf_finiteMeasure_le_of_isCompact [NormalSpace E]
+lemma isCompact_setOf_finiteMeasure_le_of_isCompact
     (C : ℝ≥0) {K : Set E} (hK : IsCompact K) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ Kᶜ = 0} := by
   let f : K → E := Subtype.val
@@ -207,7 +207,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact [NormalSpace E]
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
 form a compact set. -/
-lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le [NormalSpace E]
+lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     {u : ℕ → ℝ≥0} {K : ℕ → Set E} (C : ℝ≥0)
     (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
@@ -423,7 +423,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le [NormalSpace E]
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
-lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le [NormalSpace E] {u : ℕ → ℝ≥0}
+lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
     {K : ℕ → Set E} (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
@@ -435,7 +435,7 @@ lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le [NormalSpace E] {
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the probability measures giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
-lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le [NormalSpace E] {u : ℕ → ℝ≥0}
+lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
     {K : ℕ → Set E} (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
     IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} := by
   apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
@@ -453,18 +453,10 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le [NormalSpace
   rw [this]
   exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK
 
-
--- check that the assumptions of next theorem are satisfied by metrizable spaces
-example {E : Type*} [TopologicalSpace E] [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] :
-    T2Space E ∧ NormalSpace E ∧ R1Space (ProbabilityMeasure E) :=
-  ⟨inferInstance, inferInstance, inferInstance⟩
-
 /-- **Prokhorov theorem**: the closure of a tight set of probability measures is compact.
 
-We require the space to be normal and T2, and the space of probability measures to be R1. All these
-properties are satisfied in metrizable spaces for instance. -/
-lemma isCompact_closure_of_isTightMeasureSet [NormalSpace E]
-    [R1Space (ProbabilityMeasure E)] {S : Set (ProbabilityMeasure E)}
+We only require the space to be normal and T2 (which follows for instance from metrizability). -/
+lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     (hS : IsTightMeasureSet {((μ : ProbabilityMeasure E) : Measure E) | μ ∈ S}) :
     IsCompact (closure S) := by
   obtain ⟨u, -, u_pos, u_lim⟩ :

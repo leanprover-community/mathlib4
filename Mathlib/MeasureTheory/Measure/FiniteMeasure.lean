@@ -563,6 +563,8 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
   simp_rw [toWeakDualBCNN_apply _ _, ← testAgainstNN_coe_eq, ENNReal.tendsto_coe,
     ENNReal.toNNReal_coe]
 
+instance : R1Space (FiniteMeasure Ω) := IsInducing.r1Space (f := toWeakDualBCNN) ⟨rfl⟩
+
 end weak_convergence -- section
 
 section Hausdorff
