@@ -315,11 +315,11 @@ lemma bracket_eq_of_two_splitting {s₁ s₂ : M →ₗ[R] E.L}
 include hE in
 lemma coboundary_of_two_splitting {s₁ s₂ : M →ₗ[R] E.L}
     (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂) :
-    (E.twoCocycleOfSplitting hE hs₁) - d₁₂ R M N (E.oneCochain_of_two_splitting hs₁ hs₂) =
+    (E.twoCocycleOfSplitting hE hs₁) - d₁₂ R M N (E.oneCochainOfTwoSplitting hs₁ hs₂) =
     (E.twoCocycleOfSplitting hE hs₂) := by
   ext
   simp only [AddSubgroupClass.coe_sub, LinearMap.sub_apply, d₁₂_apply_coe_apply_apply,
-    oneCochain_of_two_splitting_apply, trivial_lie_zero, sub_self, zero_sub, sub_neg_eq_add]
+    oneCochainOfTwoSplitting_apply, trivial_lie_zero, sub_self, zero_sub, sub_neg_eq_add]
   rw [twoCochain_val_apply, twoCocycleOfSplitting_apply_apply, twoCochain_val_apply,
     twoCocycleOfSplitting_apply_apply]
   rw [← map_add, EquivLike.apply_eq_iff_eq, AddMemClass.mk_add_mk]
