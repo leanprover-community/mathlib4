@@ -19,7 +19,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 ## Main declarations
 
 - `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
-  all of these express that some object is finitely generated *as algebra* over some base ring.
+  all of these express that some object is finitely generated *as an algebra* over some base ring.
 
 -/
 
@@ -681,7 +681,7 @@ This is a consequence of Noetherian case
 (`IsNoetherian.injective_of_surjective_of_injective`), which requires that `M` is a
 Noetherian module, but allows `R` to be non-commutative. The reduction of this result to
 Noetherian case is adapted from <https://math.stackexchange.com/a/1066110>:
-suppose `{ m_j }` is a finite set of generator of `M`, for any `n : N` one can write
+suppose `{ m_j }` is a finite set of generators of `M`, for any `n : N` one can write
 `i n = ∑ j, b_j * m_j` for `{ b_j }` in `R`, here `i : N →ₗ[R] M` is the standard inclusion.
 We can choose `{ n_j }` which are preimages of `{ m_j }` under `f`, and can choose
 `{ c_jl }` in `R` such that `i n_j = ∑ l, c_jl * m_l` for each `j`.

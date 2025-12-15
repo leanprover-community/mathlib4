@@ -56,7 +56,7 @@ In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply with `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
 

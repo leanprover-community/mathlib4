@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Complex
 For `n : ℕ` and an integral domain `R`, we define a modified version of the `n`-th cyclotomic
 polynomial with coefficients in `R`, denoted `cyclotomic' n R`, as `∏ (X - μ)`, where `μ` varies
 over the primitive `n`th roots of unity. If there is a primitive `n`th root of unity in `R` then
-this the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
+this is the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
 with coefficients in any ring `R`.
 
 ## Main definition
