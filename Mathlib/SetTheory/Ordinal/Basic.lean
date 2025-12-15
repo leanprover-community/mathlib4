@@ -1140,7 +1140,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
   exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
-theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
+theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
   refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, _, rfl⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
@@ -1232,7 +1232,7 @@ theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
 
 theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
   have := lift_lt.{_, max (u+1) v}.2 (lift_lt_univ c)
-  rw [lift_lift, lift_univ, univ_umax.{u,v}] at this
+  rw [lift_lift, lift_univ, univ_umax.{u, v}] at this
   exact this
 
 theorem aleph0_lt_univ : ℵ₀ < univ.{u, v} := by
@@ -1293,7 +1293,7 @@ end Cardinal
 namespace Ordinal
 
 @[simp]
-theorem card_univ : card univ.{u,v} = Cardinal.univ.{u,v} :=
+theorem card_univ : card univ.{u, v} = Cardinal.univ.{u, v} :=
   rfl
 
 @[simp]
