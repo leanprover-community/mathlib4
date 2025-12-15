@@ -120,7 +120,7 @@ def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
 variable (m) in
-/-- The leading term of of a multivariate polynomial with respect to a monomial ordering. -/
+/-- The leading term of a multivariate polynomial with respect to a monomial ordering. -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
