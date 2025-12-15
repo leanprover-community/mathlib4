@@ -64,20 +64,22 @@ instance [Nontrivial R] : Nontrivial (QuadraticAlgebra R a b) := (equivProd a b)
 section Zero
 variable [Zero R]
 
-/-- The natural function `R → QuadraticAlgebra R a b`. -/
-def C (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
+/-- The natural function `R → QuadraticAlgebra R a b`.
+
+Note that, if `R` is a ring` you should use `algebraMap` instead of `C`. -/
+protected def C (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
 
 @[simp]
-theorem re_C : (C r : QuadraticAlgebra R a b).re = r := rfl
+theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
 
 @[simp]
-theorem im_C : (C r : QuadraticAlgebra R a b).im = 0 := rfl
+theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
-theorem C_injective : Function.Injective (C : R → QuadraticAlgebra R a b) :=
+theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
   fun _ _ h => congr_arg re h
 
 @[simp]
-theorem C_inj {x y : R} : (C x : QuadraticAlgebra R a b) = C y ↔ x = y :=
+theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=
   C_injective.eq_iff
 
 instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
@@ -87,10 +89,10 @@ instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 @[simp] theorem im_zero : (0 : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp]
-theorem C_zero : (C 0 : QuadraticAlgebra R a b) = 0 := rfl
+theorem C_zero : (.C 0 : QuadraticAlgebra R a b) = 0 := rfl
 
 @[simp]
-theorem C_eq_zero_iff {r : R} : (C r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
+theorem C_eq_zero_iff {r : R} : (.C r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
   rw [← C_zero, C_inj]
 
 instance : Inhabited (QuadraticAlgebra R a b) := ⟨0⟩
@@ -105,10 +107,10 @@ instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 @[scoped simp] theorem im_one : (1 : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp]
-theorem C_one : (C 1 : QuadraticAlgebra R a b) = 1 := rfl
+theorem C_one : (.C 1 : QuadraticAlgebra R a b) = 1 := rfl
 
 @[simp]
-theorem C_eq_one_iff {r : R} : (C r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
+theorem C_eq_one_iff {r : R} : (.C r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
   rw [← C_one, C_inj]
 
 end One
@@ -137,7 +139,8 @@ section AddZeroClass
 variable [AddZeroClass R]
 
 @[simp]
-theorem C_add (x y : R) : (C (x + y) : QuadraticAlgebra R a b) = C x + C y := by ext <;> simp
+theorem C_add (x y : R) : (.C (x + y) : QuadraticAlgebra R a b) = .C x + .C y := by
+  ext <;> simp
 
 end AddZeroClass
 
@@ -159,7 +162,7 @@ end Neg
 section AddGroup
 
 @[simp]
-theorem C_neg [NegZeroClass R] (x : R) : (C (-x) : QuadraticAlgebra R a b) = -C x := by
+theorem C_neg [NegZeroClass R] (x : R) : (.C (-x) : QuadraticAlgebra R a b) = -.C x := by
   ext <;> simp
 
 instance [Sub R] : Sub (QuadraticAlgebra R a b) where
@@ -177,7 +180,7 @@ theorem mk_sub_mk [Sub R] (x1 y1 x2 y2 : R) :
 
 @[simp]
 theorem C_sub (r1 r2 : R) [SubNegZeroMonoid R] :
-    (C (r1 - r2) : QuadraticAlgebra R a b) = C r1 - C r2 :=
+    (.C (r1 - r2) : QuadraticAlgebra R a b) = .C r1 - .C r2 :=
   QuadraticAlgebra.ext rfl zero_sub_zero.symm
 
 end AddGroup
@@ -235,7 +238,7 @@ end MulAction
 
 @[simp]
 theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
-    (C (s • r) : QuadraticAlgebra R a b) = s • C r :=
+    (.C (s • r) : QuadraticAlgebra R a b) = s • .C r :=
   QuadraticAlgebra.ext rfl (smul_zero _).symm
 
 instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := fast_instance% by
@@ -262,13 +265,13 @@ section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
 
 instance : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
-  natCast n := C n
+  natCast n := .C n
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 
 @[simp]
 theorem C_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (C (ofNat(n) : R) : QuadraticAlgebra R a b) = ofNat(n) := by
+    (.C (ofNat(n) : R) : QuadraticAlgebra R a b) = ofNat(n) := by
   ext <;> rfl
 
 @[simp, norm_cast]
@@ -277,7 +280,7 @@ theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
 @[simp, norm_cast]
 theorem im_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
-theorem C_natCast (n : ℕ) : C (n : R) = (↑n : QuadraticAlgebra R a b) := rfl
+theorem C_natCast (n : ℕ) : .C (n : R) = (↑n : QuadraticAlgebra R a b) := rfl
 
 @[scoped simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
@@ -291,7 +294,7 @@ section AddCommGroupWithOne
 variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
-  intCast n := C n
+  intCast n := .C n
   intCast_ofNat n := by norm_cast
   intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
 
@@ -301,7 +304,7 @@ theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
 @[simp, norm_cast]
 theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
-theorem C_intCast (n : ℤ) : C (n : R) = (n : QuadraticAlgebra R a b) := rfl
+theorem C_intCast (n : ℤ) : .C (n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 end AddCommGroupWithOne
 
@@ -315,11 +318,11 @@ instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlg
   mul_zero _ := by ext <;> simp
 
 theorem C_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
-    (C r * x : QuadraticAlgebra R a b) = r • x := by
+    (.C r * x : QuadraticAlgebra R a b) = r • x := by
   ext <;> simp
 
 @[simp]
-theorem C_mul (x y : R) : C (x * y) = (C x * C y : QuadraticAlgebra R a b) := by
+theorem C_mul (x y : R) : .C (x * y) = (.C x * .C y : QuadraticAlgebra R a b) := by
   ext <;> simp
 
 end NonUnitalNonAssocSemiring
@@ -399,7 +402,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
 
 instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
     Algebra S (QuadraticAlgebra R a b) where
-  algebraMap.toFun s := C (algebraMap S R s)
+  algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y:= by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
@@ -428,18 +431,18 @@ instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
   ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[simp]
-theorem C_pow (n : ℕ) (r : R) : (C (r ^ n : R) : QuadraticAlgebra R a b) = (C r) ^ n :=
+theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
 
 theorem mul_C_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
-    (x * C r : QuadraticAlgebra R a b) = r • x := by
+    (x * .C r : QuadraticAlgebra R a b) = r • x := by
   rw [mul_comm, C_mul_eq_smul r x]
 
 @[simp]
-theorem C_eq_algebraMap : C = (algebraMap R (QuadraticAlgebra R a b)) := rfl
+theorem C_eq_algebraMap : QuadraticAlgebra.C = (algebraMap R (QuadraticAlgebra R a b)) := rfl
 
 theorem smul_C (r1 r2 : R) :
-    r1 • (C r2 : QuadraticAlgebra R a b) = C (r1 * r2) := by rw [C_mul, C_mul_eq_smul]
+    r1 • (.C r2 : QuadraticAlgebra R a b) = .C (r1 * r2) := by rw [C_mul, C_mul_eq_smul]
 
 theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     (algebraMap R (QuadraticAlgebra R a b) r) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
