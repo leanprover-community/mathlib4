@@ -1070,21 +1070,6 @@ noncomputable def OIC2.liftI : of (ULift I) ⟶ of OIC2.{u} :=
 lemma OIC2.liftI_toO1C2 : OIC2.liftI ≫ ofHom OIC2.toO1C2 = intervalToO1C2 := by
   unfold liftI; exact OIC2.lift_comp_toO1C2
 
--- --TODO Goes in `Mathlib.Topology.GDelta.Basic`
-
--- --TODO Goes in `Mathlib.Topology.Separation.GDelta`
--- lemma of_precise_separating {X} [TopologicalSpace X]
---     (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
---       {δ : C(X, I) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
---   __ := NormalSpace.of_separating fun {s t} sC tC disj ↦ (sep sC tC disj).map id
---       (fun _ ↦ And.imp (fun h₀ x hx ↦ h₀.symm.subset hx) fun h₁ x hx ↦ h₁.symm.subset hx)
---   closed_gdelta ⦃s⦄ sC := by
---     have Gδ₀ : IsGδ ({0} : Set I) := IsGδ.singleton 0
---     let ⟨δ, hδ₀, hδ₁⟩ := sep sC isClosed_empty (disjoint_empty s)
---     rw [← hδ₀]
---     apply Gδ₀.preimage
-
-
 open ContinuousMap Set.Notation in
 /-- A space `X` is perfectly normal if any morphism to `O1C2` (encoding two disjoint closed sets)
 can be lifted through `I`, the topological interval. -/
@@ -1107,149 +1092,13 @@ lemma of_lift (lift : (X ⟶ of O1C2) → (X ⟶ of (ULift I)))
       ← Homeomorph.ulift.image_symm_eq_preimage]
       simp [Homeomorph.ulift, fac₁]⟩
 
--- TODO goes in `Mathlib.Data.Set.Lattice` (iUnion_subtype' is in EquivHelpers already)
-lemma _root_.Set.iInter_subtype' {α β} (p : α → Prop) (f : (x : α) → p x → Set β) :
-    ⋂ x, ⋂ (h : p x), f x h = ⋂ (x : Subtype p), f x.val x.prop := by
-  ext y; simp
-
-lemma _root_.Set.iInter_diff {β ι} [Nonempty ι] (s : Set β) (t : ι → Set β) :
-    (⋂ n, t n) \ s = ⋂ n, (t n \ s) := by
-  ext x; simp [forall_and]
-
--- lemma _root_.Set.EqOn.notMem_of_ne {α β} {f g : α → β} {s : Set α} (h : s.EqOn f g)
---     {x : α} (hx : f x ≠ g x) : x ∉ s := by
---   contrapose! hx; exact h hx
-
--- lemma _root_.Set.EqOn.iff_notMem_of_ne {α β} {f g : α → β} {s : Set α} :
---     EqOn f g s ↔ ∀ x, f x ≠ g x → x ∉ s := by
---   unfold EqOn; simp [not_imp_not]
-
-/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
-then there exists a continuous function `f : X → ℝ` such that
-
-* `f` equals zero on `s`;
-* `f` equals one on `t`;
-* `0 ≤ f x ≤ 1` for all `x`.
-
-Moreover, if `s` and `t` are both `Gδ` sets, then `f` can be chosen so that `f ⁻¹ {0}` is exactly
-`s` and `f ⁻¹ {1}` is exactly `t`. -/
-lemma exists_continuous_zero_one_of_isClosed_of_isGδ {X} [TopologicalSpace X] [NormalSpace X]
-    {s t : Set X} (sC : IsClosed s) (sGδ : IsGδ s) (tC : IsClosed t) (tGδ : IsGδ t)
-    (disj : Disjoint s t) :
-    ∃ (f : C(X, ℝ)), f ⁻¹' {0} = s ∧ f ⁻¹' {1} = t ∧ ∀ x, f x ∈ Icc 0 1 := by
-  obtain ⟨u, anti_u, inter_u, uOΔ⟩ := anti sGδ tC disj
-  obtain ⟨v, anti_v, inter_v, vOΔ⟩ := anti tGδ sC disj.symm
-  have hδs n := exists_continuous_zero_one_of_isClosed (uOΔ n).1.isClosed_compl sC
-    (by simpa [← subset_compl_iff_disjoint_right, ← inter_u] using subset_iUnion (compl ∘ u) n)
-  have hδt n := exists_continuous_zero_one_of_isClosed (vOΔ n).1.isClosed_compl tC
-    (by simpa [← subset_compl_iff_disjoint_right, ← inter_v] using subset_iUnion (compl ∘ v) n)
-  choose δs hδs₀ hδs₁ hδsI using hδs; choose δt hδt₀ hδt₁ hδtI using hδt
-  let δ x := (1 + ∑' n, (δt - δs) n x / 2 / 2 ^ n) / 2
-  have bounded (i : ℕ) (x : X) : ‖((δt i - δs i) x) / 2 / 2 ^ i‖ ≤ 1 / 2 / 2 ^ i := by
-    simp_rw [norm_div, norm_pow, Real.norm_ofNat]
-    grw [div_le_div_iff_of_pos_right (by positivity), div_le_div_iff_of_pos_right Nat.ofNat_pos,
-    ContinuousMap.sub_apply, Real.norm_eq_abs, abs_le]
-    grind
-  have summable (x : X) : Summable fun b ↦ ((δt - δs) b x) / 2 / 2 ^ b := by
-    apply Summable.of_norm_bounded (summable_geometric_two' 1)
-    simpa using (bounded · x)
-  obtain ⟨hxs, hxt⟩ : (∀ x ∉ s, ∃ n, δs n x = 0) ∧ (∀ x ∉ t, ∃ n, δt n x = 0) := by
-    split_ands
-    all_goals
-      intro x; contrapose!; intro hx
-      simp_rw [EqOn, mem_compl_iff, @not_imp_comm (_ ∈ _), Pi.zero_apply] at hδs₀ hδt₀
-      simp [← inter_u, ← inter_v]; grind
-  use ⟨δ, ?cont⟩, ?δ₀, ?δ₁, ?δI
-  case cont =>
-    fapply Continuous.div₀ (.add continuous_const ?_) continuous_const (by simp)
-    exact continuous_tsum (hu := summable_geometric_two' 1) (fun n ↦ by fun_prop) bounded
-  case δI =>
-    intro x
-    simp only [ContinuousMap.mk_apply, δ]
-    split_ands -- <;> simp only [ContinuousMap.mk_apply, δ]
-    · conv in 1 + _ =>
-      rw [← tsum_geometric_two' 1, ← Summable.tsum_add (summable_geometric_two' 1) (summable x)]
-      simp_rw [← add_div, Pi.sub_apply, ContinuousMap.sub_apply]
-      apply div_nonneg _ <| Nat.ofNat_nonneg 2
-      fapply tsum_nonneg; intro n
-      apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
-      grind
-    · have {x : ℝ} : 1 + x ≤ 2 ↔ 0 ≤ 1 - x := by grind
-      simp only [Nat.ofNat_pos, div_le_one, this, ge_iff_le]
-      rw [← tsum_geometric_two' 1, ← Summable.tsum_sub (summable_geometric_two' 1) (summable x)]
-      simp_rw [← sub_div, Pi.sub_apply, ContinuousMap.sub_apply]
-      apply tsum_nonneg; intro n
-      apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
-      grind
-  all_goals
-    have {x : ℝ} : 1 + x = 2 ↔ 1 + -x = 0 := by grind
-    ext x; constructor
-    · specialize summable x; have summable' := summable.neg
-      simp only [ContinuousMap.coe_mk, mem_preimage, mem_singleton_iff, div_eq_zero_iff, ne_eq,
-      OfNat.ofNat_ne_zero, or_false, δ, not_false_eq_true, div_eq_one_iff_eq, this]
-      contrapose!; intro hx
-      obtain ⟨n, hn⟩ := by first | exact hxs x hx | exact hxt x hx
-      -- ‹∀ x ∉ _, _› x hx
-      simp +singlePass only [← tsum_geometric_two' 1, ← tsum_neg, summable, summable',
-      ← Summable.tsum_add (summable_geometric_two' 1)]
-      · apply ne_of_gt
-        -- obtain ⟨hδsI₁, hδsI₂⟩ := hδsI n x; obtain ⟨hδtI₁, hδtI₂⟩ := hδtI n x
-        fapply Summable.add (summable_geometric_two' 1) ‹_› |>.tsum_pos _ n <;>
-          simp only [← add_div, Pi.sub_apply, ContinuousMap.sub_apply, ← neg_div]
-        · apply div_pos _ (by positivity); apply div_pos _ Nat.ofNat_pos
-          grind
-        · intro n
-          apply div_nonneg _ (by positivity); apply div_nonneg _ <| Nat.ofNat_nonneg 2
-          grind
-    · intro hx
-      have hx' {n : ℕ} : x ∉ _ := ‹∀ n, IsOpen _ ∧ Disjoint _ _› n |>.2.notMem_of_mem_right hx
-      unfold EqOn at hδs₀ hδs₁ hδt₀ hδt₁
-      simp [δ, *, tsum_geometric_two', -one_div]
-where
-  anti {U V : Set X} (h : IsGδ U) (Vc : IsClosed V) (disj : Disjoint U V) :
-      ∃ (s : ℕ → Set X), Antitone s ∧ ⋂ n, s n = U ∧ ∀ n, IsOpen (s n) ∧ Disjoint (s n) V := by
-    rcases em (U = univ) with rfl | hntop
-    · use fun n ↦ univ; simp at disj; simp [antitone_const, disj]
-    · obtain ⟨T, To, cardT, hUT⟩ := h
-      have T₀ : T.Nonempty := by by_contra! hT₀; simp [hT₀] at hUT; simp [hUT] at hntop
-      obtain ⟨t, ht⟩ := cardT.exists_surjective T₀
-      use fun i ↦ (t i ∩ ⋂ j < i, t j) \ V; split_ands
-      · rintro i j hij x ⟨⟨hxj, hx⟩, hxV⟩
-        rcases em (i = j) with rfl | hne
-        · simp at hx; simpa using ⟨⟨hxj, hx⟩, hxV⟩
-        · replace hij := lt_of_le_of_ne hij hne
-          simp at hx; simpa using ⟨⟨hx _ hij, (hx · <| ·.trans hij)⟩, hxV⟩
-      · simp only
-        conv =>
-          enter [1, 1, i]; rw [inter_comm, ← biInter_lt_succ] --; simp only [Nat.lt_add_one_iff]
-        simp_rw [Nat.lt_add_one_iff, ← iInter_diff, biInter_le_eq_iInter,
-        iInter_congr_of_surjective t ht (fun _ ↦ rfl), ← sInter_eq_iInter, ← hUT]
-        tauto_set
-      · intro i; split_ands
-        · apply To _ (t i).prop |>.inter ?_ |>.sdiff Vc
-          rw [iInter_subtype']
-          apply isOpen_iInter_of_finite
-          simp [To]
-        · exact disjoint_sdiff_left
-
-/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a perfectly normal topological
-space `X`, then there exists a continuous function `f : X → ℝ` such that
-
-* `f ⁻¹ {0} = s`;
-* `f ⁻¹' {1} = t`;
-* `0 ≤ f x ≤ 1` for all `x`. -/
-lemma exists_continuous_zero_one_of_isClosed' {X} [TopologicalSpace X] [PerfectlyNormalSpace X]
-    {s t : Set X} (sC : IsClosed s) (tC : IsClosed t) (disj : Disjoint s t) :
-    ∃ (f : C(X, ℝ)), f ⁻¹' {0} = s ∧ f ⁻¹' {1} = t ∧ ∀ x, f x ∈ Icc 0 1 :=
-  exists_continuous_zero_one_of_isClosed_of_isGδ sC sC.isGδ tC tC.isGδ disj
-
 /-- A topological space `X` is normal iff its morphism from the initial object
 `initial.to : ⊥_ TopCat ⟶ X` has the left lifting property against
 `intervalToO1C2 : of (ULift I) ⟶ of O1C2`. -/
 lemma llp : PerfectlyNormalSpace X ↔ initial.to X ⧄ intervalToO1C2 where
   mp _ :=
   { sq_hasLift {ι τ} sq := by
-      obtain ⟨«λ», h₀, h₁, hI⟩ := exists_continuous_zero_one_of_isClosed'
+      obtain ⟨«λ», h₀, h₁, hI⟩ := exists_precise_continuous_zero_one_of_isClosed
         (O1C2.isClosed_left.preimage τ.continuous) (O1C2.isClosed_right.preimage τ.continuous)
         (by apply Disjoint.preimage; simp)
       use ofHom ⟨_, continuous_uliftUp.comp <| Continuous.subtype_coind «λ».continuous hI⟩

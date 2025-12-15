@@ -23,9 +23,9 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Data.Fin.SuccPred
 
-public import Mathlib.Tactic.TautoSet
 public import Mathlib.Tactic.DeriveFintype
--- import Mathlib.Util.Superscript
+import Mathlib.Tactic.TautoSet
+
 
 /-!
 # Separation
@@ -80,121 +80,11 @@ def decidable_of_bool' {a : Prop} : ∀ (b : Bool), (b ↔ a) → Decidable a
   | true, h => isTrue (h.1 rfl)
   | false, h => isFalse (mt h.2 Bool.noConfusion)
 
---TODO Put `one` and `zero` at the end of each inductive to save on `rotate`s
-
--- --TODO goes into `Mathlib.Topology.ContinuousMap.Basic`
--- private lemma ContinuousMap.mk_apply {X Y} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
---   (hf : Continuous f) (x : X) : { toFun := f, continuous_toFun := hf : C(X, Y) } x = f x := rfl
-
 --TODO goes into `Mathlib.Topology.Order`
 /- A topological space is discrete if only the empty set and `univ` are open, that is, its topology
 equals the codiscrete topology `⊤`. -/
 class CodiscreteTopology α [t : TopologicalSpace α] : Prop where
   eq_top : t = ⊤
-
-section
-open CategoryTheory Limits Set
-universe w v' u' v u
-
--- TODO goes into `Mathlib.Topology.Inseparable`
-attribute [aesop safe forward] Specializes.mem_open
-attribute [aesop unsafe 50% destruct] inseparable_iff_specializes_and
-
--- Generalize this for concrete categories
-/-- The unique continuous map from the terminal topology that picks out a single point `x`. -/
-def TopCat.terminal.homOfElement {X : TopCat.{u}} (x : X) : ⊤_ TopCat.{u} ⟶ X :=
-  ofHom (.const _ x)
-
-@[inherit_doc TopCat.terminal.homOfElement]
-abbrev TopCat.terminal.homOfElement' {X} [TopologicalSpace X] (x : X) : ⊤_ TopCat.{u} ⟶ of X :=
-  TopCat.terminal.homOfElement x
-
---   (map x)
--- where map {X} [TopologicalSpace X] (x : X) : C(⊤_ TopCat.{u}, X) := (ContinuousMap.const _ x)
-
---TODO goes into `TopCat.Limits.Basic`
-noncomputable instance TopCat.instUniqueTerminal : Unique (⊤_ TopCat.{u}) :=
-  Equiv.unique (homeoOfIso (TopCat.terminalIsoPUnit)).toEquiv
-
-lemma TopCat.terminal.homOfElement_eq {X : TopCat} (x : X) :
-    homOfElement x = ofHom (.const (⊤_ TopCat) x) := rfl
-
-@[simp]
-lemma TopCat.terminal.homOfElement_apply {X : TopCat.{u}} (x : X) (y : ⊤_ TopCat.{u} := default) :
-  TopCat.terminal.homOfElement x y = x := rfl
-
-@[simp↓]
-lemma TopCat.terminal.homOfElement'_apply {X} [TopologicalSpace X] (x : X)
-    (y : ⊤_ TopCat.{u} := default) : TopCat.terminal.homOfElement' x y = x := rfl
-
-@[simp↓]
-lemma TopCat.terminal.range_homOfElement {X : TopCat.{u}} (x : X) :
-    range (TopCat.terminal.homOfElement x) = {x} := by
-  ext y; simp [Unique.exists_iff, eq_comm]
-
-lemma TopCat.terminal.range_homOfElement' {X} [TopologicalSpace X] (x : X) :
-    range (TopCat.terminal.homOfElement' x) = {x} := by simp
-
-@[simp]
-lemma TopCat.terminal.homOfElement_inj_iff {X : TopCat.{u}} {x y : X} :
-    (TopCat.terminal.homOfElement x = TopCat.terminal.homOfElement y) ↔ x = y := by
-  constructor
-  · intro h
-    rw [← TopCat.terminal.homOfElement_apply x, ← TopCat.terminal.homOfElement_apply y, h]
-  · rintro rfl; rfl
-
-alias ⟨TopCat.terminal.homOfElement_inj, _⟩ := TopCat.terminal.homOfElement_inj_iff
-
-@[simp]
-lemma TopCat.terminal.homOfElement'_inj_iff {X} [TopologicalSpace X] {x y : X} :
-    (TopCat.terminal.homOfElement' x = TopCat.terminal.homOfElement' y) ↔ x = y := by
-  constructor
-  · intro h
-    rw [← TopCat.terminal.homOfElement'_apply x, ← TopCat.terminal.homOfElement'_apply y, h]
-  · rintro rfl; rfl
-
-alias ⟨TopCat.terminal.homOfElement'_inj, _⟩ := TopCat.terminal.homOfElement'_inj_iff
-
-@[simp↓]
-lemma TopCat.terminal.homOfElement_comp {X Y : TopCat.{u}} (x : X) (f : X ⟶ Y) :
-    TopCat.terminal.homOfElement x ≫ f = TopCat.terminal.homOfElement (f x) := by
-ext; simp
-
-@[simp↓]
-lemma TopCat.terminal.homOfElement'_comp {X Y} [TopologicalSpace X]
-    (x : X) (f : of X ⟶ Y) :
-    TopCat.terminal.homOfElement' x ≫ f = TopCat.terminal.homOfElement' (f x) := by
-  ext; simp
-
-lemma ConcreteCategory.hom_comp {C : Type u} [Category.{v, u} C]
-      {FC : outParam (C → C → Type v')} {CC : outParam (C → Type u')}
-      [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))] [ConcreteCategory C FC]
-      {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (ConcreteCategory.hom (f ≫ g)) = (ConcreteCategory.hom g) ∘ (ConcreteCategory.hom f) := by
-  ext x; exact ConcreteCategory.comp_apply f g x
-
-
-lemma ConcreteCategory.range_hom_comp {C : Type u} [Category.{v, u} C]
-    {FC : outParam (C → C → Type u')} {CC : outParam (C → Type w)}
-    [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))]
-    [ConcreteCategory C FC] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    range (f ≫ g) = g '' range f := by
-  simp [ConcreteCategory.hom_comp, range_comp]
-
-lemma ConcreteCategory.image_hom_comp {C : Type u} [Category.{v, u} C]
-    {FC : outParam (C → C → Type u')} {CC : outParam (C → Type w)}
-    [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))]
-    [ConcreteCategory C FC] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (s : Set (ToType X)) :
-    (f ≫ g) '' s = g '' (f '' s) := by
-  simp [← image_comp]
-
-lemma ConcreteCategory.preimage_hom_comp {C : Type u} [Category.{v, u} C]
-    {FC : outParam (C → C → Type u')} {CC : outParam (C → Type w)}
-    [outParam ((X Y : C) → FunLike (FC X Y) (CC X) (CC Y))]
-    [ConcreteCategory C FC] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (s : Set (ToType Z)) :
-    (f ≫ g) ⁻¹' s = f ⁻¹' (g ⁻¹' s) := by
-  simp [ConcreteCategory.hom_comp, ← preimage_comp]
-end
 
 lemma codiscreteTopology_top (α) : @CodiscreteTopology α ⊤ := @CodiscreteTopology.mk α ⊤ rfl
 
@@ -269,27 +159,6 @@ instance {α} : CodiscreteTopology (TopCat.trivial.obj α) := codiscreteTopology
 
 end CodiscreteTopology
 
-@[simp]
-lemma _root_.Set.sUnion_eq_singleton {α : Type*} {a : α} (S : Set (Set α)) (h₀ : (⋃₀ S).Nonempty) :
-    ⋃₀ S = {a} ↔ ∀ s ∈ S, s ⊆ {a} where
-  mp h s hs := by
-    by_contra! hs!
-    obtain ⟨b, hbs, hb⟩ := by simpa using hs!
-    have h! : b ∈ ⋃₀ S := ⟨s, hs, hbs⟩
-    simp [h, hb] at h!
-  mpr h := by
-    ext x
-    simp only [Set.subset_singleton_iff] at h
-    constructor
-    · rintro ⟨u, hu, hx⟩
-      simp [h u hu x hx]
-    · rintro ⟨⟩
-      obtain ⟨s, hs, hs₀⟩ := by simpa using h₀
-      exact ⟨s, hs, h s hs hs₀.some hs₀.some_mem ▸ hs₀.some_mem⟩
-
--- -- TODO Goes in `Mathlib.Topology.Order`
--- instance (n : ℕ) : TopologicalSpace (Fin2 n) := ⊥
--- instance (n : ℕ) : DiscreteTopology (Fin2 n) := ⟨rfl⟩
 
 universe u v
 open CategoryTheory Topology TopologicalSpace ContinuousMap Set
@@ -344,13 +213,13 @@ namespace Discrete2
 
 instance : DiscreteTopology Discrete2 := ⟨rfl⟩
 
-lemma _root_.TopCat.Discrete2.forall {p : Discrete2 → Prop} :
+lemma «forall» {p : Discrete2 → Prop} :
     (∀ z, p z) ↔ p .zero ∧ p .one := by
   constructor
   · intro h; exact ⟨h _, h _⟩
   · rintro ⟨h₀, h₁⟩ (_ | _) <;> assumption
 
-lemma _root_.TopCat.Discrete2.exists {p : Discrete2 → Prop} :
+lemma «exists» {p : Discrete2 → Prop} :
     (∃ z, p z) ↔ p .zero ∨ p .one := by
   constructor
   · rintro ⟨z, hz⟩; cases z <;> simp [hz]
@@ -409,13 +278,13 @@ def cases {C : Codiscrete2 → Sort v}
 instance : CodiscreteTopology Codiscrete2 := ⟨rfl⟩
 
 
-lemma _root_.TopCat.Codiscrete2.forall {p : Codiscrete2 → Prop} :
+lemma «forall» {p : Codiscrete2 → Prop} :
     (∀ z, p z) ↔ p .zero ∧ p .one := by
   constructor
   · intro h; exact ⟨h _, h _⟩
   · rintro ⟨h₀, h₁⟩ (_ | _) <;> assumption
 
-lemma _root_.TopCat.Codiscrete2.exists {p : Codiscrete2 → Prop} :
+lemma «exists» {p : Codiscrete2 → Prop} :
     (∃ z, p z) ↔ p .zero ∨ p .one := by
   constructor
   · rintro ⟨⟨⟨⟩⟩, hz⟩ <;> simp [hz]
@@ -476,13 +345,14 @@ instance : Preorder Z3 where
   le_refl := spec.refl
   le_trans {x y z} := by rintro ⟨⟩ ⟨⟩ <;> constructor
 
-instance : DecidableLE Z3 := fun x y ↦
-  let b :=
-    match x, y with
+instance : DecidableRel spec := fun x y ↦
+  decidable_of_bool' (match x, y with
     | .left, .zero => true
     | .right, .zero => true
-    | _ , _ => x == y
-  decidable_of_bool' b (by casesm* Z3 <;> simp [b, le_def, spec_iff])
+    | _ , _ => x == y)
+  (by casesm* Z3 <;> simp [spec_iff])
+
+instance : DecidableLE Z3 := inferInstanceAs (DecidableRel spec)
 
 lemma «forall» {p : Z3 → Prop} : (∀ z, p z) ↔ p .left ∧ p .zero ∧ p .right := by
   constructor
@@ -497,12 +367,7 @@ lemma «exists» {p : Z3 → Prop} : (∃ z, p z) ↔ p .left ∨ p .zero ∨ p 
 end Z3
 
 /-- The topology `L ⟶ 0 ⟵ R` with two open points and one closed point. -/
-inductive O2C1 : Type u where | as (x : Z3)
-  deriving DecidableEq, Inhabited
-  -- deriving Fintype, DecidableEq--, Preorder, DecidableLE, Inhabited, TopologicalSpace
-
--- def O2C1 : Type u := WithLowerSet Z3
---   deriving Fintype, DecidableEq, Preorder, DecidableLE, Inhabited, TopologicalSpace
+inductive O2C1 : Type u where | as (x : Z3) deriving DecidableEq, Inhabited
 
 namespace O2C1
 open Function
@@ -511,21 +376,10 @@ open Function
 @[match_pattern] abbrev zero : O2C1 := as Z3.zero
 @[match_pattern] abbrev right : O2C1 := as Z3.right
 
--- @[match_pattern] abbrev left : O2C1 := WithLowerSet.toLowerSet Z3.left
--- @[match_pattern] abbrev zero : O2C1 := WithLowerSet.toLowerSet Z3.zero
--- @[match_pattern] abbrev right : O2C1 := WithLowerSet.toLowerSet Z3.right
-
-section cases
-variable {C : O2C1 → Sort*} (x : O2C1) (zero : C zero) (left : C left) (right : C right)
-
 @[elab_as_elim, cases_eliminator, induction_eliminator, simp]
-def casesOn' : C x := x.casesOn (Z3.casesOn · zero left right)
-
--- @[simp] lemma casesOn_zero : casesOn .zero zero left right = zero := rfl
--- @[simp] lemma casesOn_left : casesOn .left zero left right = left := rfl
--- @[simp] lemma casesOn_right : casesOn .right zero left right = right := rfl
-
-end cases
+def casesOn' {C : O2C1 → Sort*} (x : O2C1)
+    (zero : C zero) (left : C left) (right : C right) : C x :=
+  x.casesOn (Z3.casesOn · zero left right)
 
 @[simps]
 def equivZ3 : O2C1 ≃ Z3 where
@@ -535,9 +389,6 @@ def equivZ3 : O2C1 ≃ Z3 where
 instance : Preorder O2C1 := .lift equivZ3
 instance : TopologicalSpace O2C1 := Topology.lowerSet _
 
--- @[simps!] def equivZ3 : O2C1 ≃ Z3 := WithLowerSet.toLowerSet.symm -- Equiv.cast rfl
-
--- lemma le_def (x y : O2C1) : x ≤ y ↔ @LE.le Z3 _ x y  := by rfl
 lemma le_def (x y : O2C1) : x ≤ y ↔ Z3.spec x.1 y.1 := by rfl
 
 instance : DecidableRel (@Specializes O2C1 _) := fun x y ↦
@@ -804,17 +655,10 @@ namespace O1C2
 @[match_pattern] abbrev left : O1C2 := .as Z3.left
 @[match_pattern] abbrev right : O1C2 := .as Z3.right
 
-section cases
-variable {C : O1C2 → Sort*} (x : O1C2) (one : C one) (left : C left) (right : C right)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator, simp]
-def casesOn' : C x := x.casesOn (Z3.casesOn · one left right)
-
--- @[simp] lemma casesOn_one : casesOn .one one left right = one := rfl
--- @[simp] lemma casesOn_left : casesOn .left one left right = left := rfl
--- @[simp] lemma casesOn_right : casesOn .right one left right = right := rfl
-
-end cases
+def casesOn' {C : O1C2 → Sort*} (x : O1C2) (one : C one) (left : C left) (right : C right) : C x :=
+  x.casesOn (Z3.casesOn · one left right)
 
 @[simps]
 def equivZ3 : O1C2 ≃ Z3 where
@@ -823,8 +667,6 @@ def equivZ3 : O1C2 ≃ Z3 where
 
 instance : Preorder O1C2 := .lift equivZ3
 instance : TopologicalSpace O1C2 := Topology.upperSet _
-
--- @[simps!] def equivZ3 : O1C2 ≃ Z3 := WithUpperSet.toUpperSet.symm
 
 lemma le_def (x y : O1C2) : x ≤ y ↔ Z3.spec x.1 y.1 := by rfl
 
@@ -971,26 +813,8 @@ noncomputable def uPropToO1C2R : of UProp ⟶ of O1C2 :=
 
 namespace O1C2
 
--- lemma isPushout : IsPushout (terminal.homOfElement' (⊤ : UProp))
---     (terminal.homOfElement' (⊤ : UProp)) uPropToO1C2L uPropToO1C2R := by
---   fconstructor
---   · constructor; ext; simp [uPropToO1C2L, uPropToO1C2R]
---   · constructor
---     fapply PushoutCocone.isColimitAux'
---     · intro s
---       haveI w : s.inl ⊤ = s.inr ⊤ := by
---         conv => args <;> { right; rw [← terminal.homOfElement'_apply ⊤] }
---         simp_rw [← ConcreteCategory.comp_apply, ← s.condition]
---       use desc (UProp.specializesOfHom s.inl)
---         (w ▸ UProp.specializesOfHom (X := s.pt) s.inr)
---       split_ands
---       · ext <;> simp [uPropToO1C2L]
---       · ext <;> simp [uPropToO1C2R, w]
---       · intro m hmL hmR
---         ext (_ | _ | _) <;> {simp [uPropToO1C2L, uPropToO1C2R] at hmL hmR ⊢; simp [← hmL, ← hmR] }
-
-
 open scoped Classical Set.Notation in
+/-- A morphism into `O1C2` can be constructed from a pair of disjoint closed sets. -/
 noncomputable abbrev lift {X : TopCat} {U V : Set X} (hU : IsClosed U) (hV : IsClosed V)
     (hUV : Disjoint U V) : X ⟶ of O1C2 :=
   ofHom <| map hU hV hUV
@@ -1135,19 +959,6 @@ end
 
 end N2C1
 
--- /-- The "identity" map from `O2C1` to `N2C1`. -/
--- def O2C1ToN2C1 : of O2C1 ⟶ of N2C1 :=
---   ofHom map
--- where
---   map : C(O2C1, N2C1) :=
---     let toFun : O2C1.{u} → N2C1.{u} | .left => .left | .zero => .zero | .right => .right
---   { toFun
---     continuous_toFun := by
---       rw [N2C1.basis.continuous_iff]
---       have : toFun ⁻¹' {N2C1.left, N2C1.right} = {O2C1.left, O2C1.right} := by
---         ext (_ | _ | _) <;> simp [toFun]
---       simpa [this] using IsOpen.union O2C1.isOpen_right O2C1.isOpen_left}
-
 /-- The topology
 ```
         1
@@ -1233,113 +1044,10 @@ lemma inseparable_of_hom {X : TopCat} (f : of O1N2 ⟶ X) : Inseparable (f left)
 
 end O1N2
 
--- def O1C2ToO1N2 : of O1C2 ⟶ of O1N2 :=
---   ofHom map
--- where
---   map : C(O1C2, O1N2) :=
---     let toFun : O1C2.{u} → O1N2.{u} | .left => .left | .one => .one | .right => .right
---   { toFun
---     continuous_toFun := by
---       constructor; intro s hs
---       rw [O1C2.isOpen_iff_empty_or_one_mem, or_iff_not_imp_left, ← ne_eq, ← nonempty_iff_ne_empty]
---       rintro ⟨_ | _ | _, hx⟩
---       all_goals
---         simp [toFun] at hx
---         simp [toFun, hx, O1N2.specializes_one_left.mem_open hs,
---         O1N2.specializes_one_right.mem_open hs] }
-
--- --TODO goes in `Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory`
--- @[simp]
--- lemma _root_.CategoryTheory.Limits.Concrete.pullbackEquiv_fst_symm_apply
---     {C : Type u} [Category.{v, u} C] {FC : C → C → Type*} {CC : C → Type v}
---     [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
---     {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) [HasPullback f₁ f₂]
---     [PreservesLimit (cospan f₁ f₂) (forget C)]
---     {x₁ : ToType X₁} {x₂ : ToType X₂} (hx : f₁ x₁ = f₂ x₂) :
---     (pullback.fst f₁ f₂) ((Concrete.pullbackEquiv f₁ f₂).symm ⟨(x₁, x₂), hx⟩) = x₁ := by
---   have := hasPullback_of_preservesPullback (forget C) f₁ f₂
---   simp [Concrete.pullbackEquiv, elementwise_of% PreservesPullback.iso_inv_fst (forget C)]
-
--- @[simp]
--- lemma _root_.CategoryTheory.Limits.Concrete.pullbackEquiv_snd_symm_apply
---     {C : Type u} [Category.{v, u} C] {FC : C → C → Type*} {CC : C → Type v}
---     [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
---     {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S) [HasPullback f₁ f₂]
---     [PreservesLimit (cospan f₁ f₂) (forget C)]
---     {x₁ : ToType X₁} {x₂ : ToType X₂} (hx : f₁ x₁ = f₂ x₂) :
---     (pullback.snd f₁ f₂) ((Concrete.pullbackEquiv f₁ f₂).symm ⟨(x₁, x₂), hx⟩) = x₂ := by
---   have := hasPullback_of_preservesPullback (forget C) f₁ f₂
---   simp [Concrete.pullbackEquiv, elementwise_of% PreservesPullback.iso_inv_snd (forget C)]
-
--- /-- Specialization with respect to a nonstandard topology -/
--- scoped[Topology] notation:300 (name := Specializes_of) x:300 " ⤳[" t "]" y:301 =>
---   @Specializes _ t x y
-
--- #check Specializes.mem_open
-
--- -- TODO change in `Mathlib.Topology.Inseparable`
--- lemma _root_.Specializes.mem_open' {X} [t : TopologicalSpace X] {x y : X} {s : Set X}
---     (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s := h.mem_open hs hy
-
---TODO goes in `Mathlib.Topology.AlexandrovDiscrete`
-
-/-- A function out of an `AlexandrovDiscrete` space is continuous iff it is monotone with respect
-to the specialization preorder. -/
-lemma _root_.AlexandrovDiscrete.continuous_iff_spec_monotone
-    {X Y} [TopologicalSpace X] [AlexandrovDiscrete X] [TopologicalSpace Y] {f : X → Y} :
-    Continuous f ↔ ∀ x y, x ⤳ y → (f x) ⤳ (f y) where
-  mp hf x y hxy := hxy.map hf
-  mpr hf := by
-    constructor; intro s hs
-    rw [isOpen_iff_forall_specializes]
-    intro x y hxy hy
-    exact hf x y hxy |>.mem_open hs hy
-
-
-
-
--- open Zigzag in
--- noncomputable abbrev liftThruEmbedding {X Z : TopCat.{u}} (f : Z ⟶ of Zigzag) [RegularMono f]
---     (S : Z → Set X)
---     (singletonOC : ∀ z, match f z with | O n => IsOpen (S z) | C n => IsClosed (S z))
---     (chevrons_open : ∀ z, IsOpen (⋃₀ (S '' (f ⁻¹' {O z, C z, O (z + 1)}))))
---     -- (even_open : ∀ z, Even (f z) → IsOpen (S z)) (odd_closed : ∀ z, Odd (f z) → IsClosed (S z))
---     -- (chevron_open : ∀ z, Odd (val z) → IsOpen (⋃₀ { S (succ z), S z, S (pred z) }))
---     (disjoint : univ.PairwiseDisjoint S) (codisjoint : ⋃ z, S z = univ) :
---     X ⟶ Z :=
---   ofHom <| map (regularMono_iff_isEmbedding f |>.mp ⟨inferInstance⟩) S singletonOC chevrons_open
---     disjoint codisjoint
--- where
---   map {X Z : Type u} [TopologicalSpace X] [TopologicalSpace Z]
---     {f : Z → Zigzag} (hf : IsEmbedding f) (S : Z → Set X)
---     (singletonOC : ∀ z, match f z with | O n => IsOpen (S z) | C n => IsClosed (S z))
---     (chevrons_open : ∀ z, IsOpen (⋃₀ (S '' (f ⁻¹' {O z, C z, O (z + 1)}))))
---     -- {S : ZigzagSeg m n → Set X}
---     -- (even_open : ∀ z, Even (val z) → IsOpen (S z)) (odd_closed : ∀ z, Odd (val z) → IsClosed (S z))
---     -- (chevron_open : ∀ z, Odd (val z) → IsOpen (⋃₀ { S (succ z), S z, S (pred z) }))
---     (disjoint : univ.PairwiseDisjoint S) (codisjoint : ⋃ z, S z = univ) : C(X, Z) :=
---   -- have codisjoint' := biUnion_univ S ▸ codisjoint
---   have h x := pairwiseDisjoint_unique disjoint (biUnion_univ S ▸ codisjoint ▸ mem_univ x)
---   let toFun x : ZigzagSeg m n := (h x).choose
---   have toFun_spec x : x ∈ S (toFun x) := (h x).choose_spec.1.2
---   have toFun_uniq x y (hx : x ∈ S y) : y = toFun x := (h x).choose_spec.2 y ⟨mem_univ _, hx⟩
---   have preimage_toFun (z : ZigzagSeg m n) : toFun ⁻¹' {z} = S z := by
---     ext x; constructor
---     · rintro rfl; exact toFun_spec x
---     · intro hx; exact toFun_uniq x z hx |>.symm
---   -- have
---   { toFun --x := (h x).choose
---     continuous_toFun := by
---       rw [basis.continuous_iff]
---       rintro s (⟨a, odd, rfl⟩ | ⟨a, even, rfl⟩)
---       · simpa [preimage_insert, preimage_toFun] using chevron_open a odd
---       · simpa [preimage_toFun] using even_open a even }
-
 /-- The preorder `L, M ≤ 0`, `M, R ≤ 1`. Putting the lower set topology on this gives `O3C2`;
 putting the upper set topology on this gives `O2C3`. -/
 inductive Z5 : Type u where | left | zero | mid | one | right
   deriving Fintype, DecidableEq, Inhabited, Repr
-
 namespace Z5
 @[mk_iff]
 inductive spec : Z5 → Z5 → Prop where
@@ -1444,22 +1152,10 @@ def equivZ5 : O3C2 ≃ Z5 where
 @[match_pattern] abbrev one : O3C2 := as Z5.one
 @[match_pattern] abbrev right : O3C2 := as Z5.right
 
-section cases
-variable {C : O3C2 → Sort*} (x : O3C2) (left : C left) (zero : C zero) (mid : C mid)
-    (one : C one) (right : C right)
-
 @[elab_as_elim, cases_eliminator, induction_eliminator, simp]
-def casesOn' : C x := x.casesOn (Z5.casesOn · left zero mid one right)
-
--- @[simp] lemma casesOn_left : casesOn .left left zero mid one right = left := rfl
--- @[simp] lemma casesOn_zero : casesOn .zero left zero mid one right = zero := rfl
--- @[simp] lemma casesOn_mid : casesOn .mid left zero mid one right = mid := rfl
--- @[simp] lemma casesOn_one : casesOn .one left zero mid one right = one := rfl
--- @[simp] lemma casesOn_right : casesOn .right left zero mid one right = right := rfl
-
-end cases
-  -- x.casesOn (·.casesOn left zero mid one right)
-
+def casesOn' {C : O3C2 → Sort*} (x : O3C2) (left : C left) (zero : C zero) (mid : C mid)
+    (one : C one) (right : C right) : C x :=
+  x.casesOn (Z5.casesOn · left zero mid one right)
 
 @[simps] instance : Preorder O3C2 := Preorder.lift equivZ5
 instance : TopologicalSpace O3C2 := Topology.lowerSet _
@@ -1475,7 +1171,6 @@ end Lex
 
 instance : DecidableRel (@Specializes O3C2 _) := fun x y ↦
   decidable_of_iff (x.1 ≤ y.1) (by simp [IsLowerSet.specializes_iff_le])
-
 
 @[simps]
 def flip : O3C2 ≃ₜ O3C2 where
@@ -1564,48 +1259,6 @@ lemma isPushout : IsPushout (terminal.homOfElement' O2C1.right) (terminal.homOfE
       · intro m hmL hmR
         ext ⟨⟨⟩⟩ <;> {simp [inl, inl.map, inr, inr.map] at hmL hmR ⊢; simp [← hmL, ← hmR] }
 
--- open scoped Classical in
--- open Zigzag in
--- noncomputable abbrev fromZigzag : of Zigzag ⟶ of O3C2 :=
---   ofHom map
--- where
---   map : C(Zigzag.{u}, O3C2.{u}) :=
---   { toFun | O n => match (compare n 1) with | .lt => .left | .eq => .mid | .gt => .right
---           | C n => if n ≤ 0 then .zero else .one
---     -- { toFun
---     continuous_toFun := by
---       simp_rw [AlexandrovDiscrete.continuous_iff_spec_monotone, Zigzag.specializes_iff]
---       rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> try rfl
---       all_goals
---         rename_i x
---         rcases x with (x | x) <;> simp only <;> split <;> rename_i h <;>
---         simp +arith [compare_iff, Int.not_ofNat_neg] at h <;> simp +decide [h, Int.negSucc_le_zero]
---       rotate_left
---       · grind
---       all_goals simp +decide [Nat.ne_zero_of_lt h] }
-
-      -- rw [← IsLowerSet.monotone_iff_continuous]
-      -- rintro x y hxy
-      -- casesm* Zigzag, _ ≤ _ <;> unfold_projs
-      -- all_goals try rfl
-      -- all_goals
-      --   simp only [Zigzag.specializes_open_closed, Zigzag.specializes_open_succ_closed,
-      --     O3C2.spec.left_zero, O3C2.spec.mid_zero, O3C2.spec.right_one, O3C2.spec.mid_one] }
-
--- TODO goes in ???
-lemma closure_eq_frontier_union_self {X : Type*} [TopologicalSpace X] (U : Set X) :
-    closure U = frontier U ∪ U := by
-  rw [union_comm, closure_eq_self_union_frontier]
-
--- TODO goes in ???
-alias ⟨_, _root_.IsOpen.disjoint_frontier⟩ := disjoint_frontier_iff_isOpen
-attribute [simp] _root_.IsOpen.disjoint_frontier
-
-@[simp]
-lemma _root_.IsOpen.frontier_disjoint {X} [TopologicalSpace X] {s : Set X} (hs : IsOpen s) :
-  Disjoint s (frontier s) := hs.disjoint_frontier.symm
--- lemma _root_.IsOpen.disjoint_frontier
-
 open scoped Classical in
 noncomputable abbrev liftOpen {X : TopCat} {U V : Set X} (hU : IsOpen U) (hV : IsOpen V)
     (hUV : Disjoint (closure U) (closure V)) : X ⟶ of O3C2 :=
@@ -1661,7 +1314,6 @@ where
       (hUV : Disjoint U V) : C(X, O3C2) :=
     inm.map.comp <| O1C2.lift.map hU hV hUV
 
-
 open scoped Classical in
 @[simp]
 lemma liftClosed_apply {X} [TopologicalSpace X] {U V : Set X} (hU : IsClosed U) (hV : IsClosed V)
@@ -1671,57 +1323,9 @@ lemma liftClosed_apply {X} [TopologicalSpace X] {U V : Set X} (hU : IsClosed U) 
   simp only [liftClosed.map, inm.map, ContinuousMap.comp_apply, O1C2.lift_apply, mk_apply]
   split_ifs <;> simp
 
-  -- all_goals
-  --   unfold lift liftOpen.map
-  --   try simp [IsCoherentWith.liftPair_apply_of_mem_left <| hU' ‹_›]
-  --   try simp [IsCoherentWith.liftPair_apply_of_mem_right <| hV' ‹_›]
-    -- simp [lift.map, IsCoherentWith.liftPair_apply_of_mem_left, hU',
-    --   IsCoherentWith.liftPair_apply_of_mem_right, hV']
-      -- if x ∈ closure U then
-      --   if x ∈ closure V then O3C2.mid else O3C2.left
-      -- else if x ∈ closure V then O3C2.right else O3C2.zero := by
-  -- simp [lift, map, IsCoherentWith.liftPair_apply, O2C1.lift_apply, inl.map, inr.map]
-  -- split_ifs <;> rfl
-
 end O3C2
 
--- #synth Fintype (Discrete2 → O3C2.{u})
-
-instance {X Y} [TopologicalSpace X] [DiscreteTopology X] [TopologicalSpace Y]
-    [Fintype X] [DecidableEq X] [Fintype Y] : Fintype (of X ⟶ of Y) :=
-  Fintype.ofEquiv (X → Y)
-    (ConcreteCategory.homEquiv (X := of _) (Y := of _) |>.trans equivFnOfDiscrete).symm
-
-instance {X Y} [TopologicalSpace X] [DiscreteTopology X] [TopologicalSpace Y]
-    [Fintype X] [DecidableEq Y] : DecidableEq (of X ⟶ of Y) :=
-  let ε : _ ≃ C(X, Y) := ConcreteCategory.homEquiv (X := of _) (Y := of _)
-  -- let := FunLike.toDecidableEq (F := C(X, Y))
-  Equiv.decidableEq ε
-
-instance {X Y : TopCat} [Repr (C(X, Y))] : Repr (X ⟶ Y) where
-  reprPrec f := Repr.reprPrec (Hom.hom f)
-
-instance {X Y} [TopologicalSpace X] [TopologicalSpace Y] [Repr (X → Y)] : Repr (C(X, Y)) where
-  reprPrec f := Repr.reprPrec f.toFun
-
-lemma isOpen_lowerSet_iff_isClosed_upperSet {X} [TopologicalSpace X] [Preorder X] (s : Set X) :
-    IsOpen[lowerSet X] s ↔ IsClosed[upperSet X] s := by
-  rw [@IsUpperSet.isClosed_iff_isLower, @IsLowerSet.isOpen_iff_isLowerSet]
-
-alias ⟨_root_.IsOpen.isClosed_lowerSet_of_upperSet, _root_.IsClosed.isOpen_upperSet_of_lowerSet⟩ :=
-  isOpen_lowerSet_iff_isClosed_upperSet
-
-lemma isOpen_upperSet_iff_isClosed_lowerSet {X} [TopologicalSpace X] [Preorder X] (s : Set X) :
-    IsOpen[upperSet X] s ↔ IsClosed[lowerSet X] s := by
-  rw [@IsLowerSet.isClosed_iff_isUpper, @IsUpperSet.isOpen_iff_isUpperSet]
-
-alias ⟨_root_.IsOpen.isClosed_upperSet_of_lowerSet, _root_.IsClosed.isOpen_lowerSet_of_upperSet⟩ :=
-  isOpen_upperSet_iff_isClosed_lowerSet
-
-inductive O2C3 : Type u where | as (x : Z5)
-  deriving Inhabited, DecidableEq, Repr
-
--- def O2C3 := O3C2 deriving Fintype, DecidableEq, Inhabited, Repr, Preorder
+inductive O2C3 : Type u where | as (x : Z5) deriving Inhabited, DecidableEq, Repr
 
 namespace O2C3
 
@@ -1749,10 +1353,6 @@ lemma «forall» {C : O2C3 → Prop} : (∀ x, C x) ↔ C left ∧ C zero ∧ C 
 lemma «exists» {C : O2C3 → Prop} : (∃ x, C x) ↔ C left ∨ C zero ∨ C mid ∨ C one ∨ C right where
   mp | ⟨x, hx⟩ => by cases x <;> simp [hx]
   mpr h := by casesm* _ ∨ _ <;> exact ⟨_, ‹_›⟩
-
--- def equivO3C2 : O2C3 ≃ O3C2 := Equiv.refl _
--- def toO3C2 : O2C3 → O3C2 := id
--- def ofO3C2 : O3C2 → O2C3 := id
 
 @[simps] instance : Preorder O2C3 := Preorder.lift equivZ5
 instance : TopologicalSpace O2C3 := WithUpperSet.instTopologicalSpace
@@ -1896,40 +1496,6 @@ lemma preimage_insert' {X Y} (f : X → Y) (y : Y) (s : Set Y) :
     f ⁻¹' (insert y s) = { x | f x = y } ∪ (f ⁻¹' s) := by
   ext x; simp
 
--- TODO goes in ???
--- open scoped Classical in
-lemma _root_.Set.preimage_if {α β} {f g : α → β} {p : α → Prop} [DecidablePred p] {s : Set β} :
-    (fun x ↦ if p x then f x else g x) ⁻¹' s =
-      (f ⁻¹' s ∩ {x | p x}) ∪ (g ⁻¹' s ∩ {x | ¬ p x}) := by
-  ext x
-  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
-  split_ifs with h <;> simp [h]
-
-lemma _root_.Set.preimage_dif {α β} {p : α → Prop} [DecidablePred p]
-    {f : (a : α) → p a → β} {g : (a : α) → ¬ p a → β} {s : Set β} :
-    (fun x ↦ if h : p x then f x h else g x h) ⁻¹' s =
-      { x | ∃ h : p x, f x h ∈ s } ∪ { x | ∃ h : ¬ p x, g x h ∈ s } := by
-  ext x
-  simp only [mem_preimage, mem_union, mem_setOf_eq]
-  split_ifs with h <;> simp [h]
-
--- open scoped Classical in
-lemma _root_.Set.preimage_if_const_left {α β} (p : α → Prop) [DecidablePred p]
-    (g : α → β) (b : β) (s : Set β) :
-    (fun x ↦ if p x then b else g x) ⁻¹' s = {x | p x ∧ b ∈ s} ∪ (g ⁻¹' s ∩ {x | ¬ p x}) := by
-  ext x
-  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
-  split_ifs with h <;> simp [h]
-
--- open scoped Classical in
-lemma _root_.Set.preimage_if_const_right {α β} (p : α → Prop) [DecidablePred p]
-    (f : α → β) (b : β) (s : Set β) :
-    (fun x ↦ if p x then f x else b) ⁻¹' s = (f ⁻¹' s ∩ {x | p x}) ∪ {x | ¬ p x ∧ b ∈ s} := by
-  ext x
-  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
-  split_ifs with h <;> simp [h]
-
-
 section
 open scoped unitInterval
 
@@ -2033,22 +1599,6 @@ lemma isClosed_right_one : IsClosed {right, 1} := by
   erw [← isOpen_compl_iff, isOpen_sup, isOpen_sup]; simp_rw [isOpen_compl_iff, isClosed_coinduced]
   simp [preimage, ite_eq_iff, ← ofI_one, setOf_or, ← UProp.univ_eq]; simp
 
--- lemma isCoherentWith : IsCoherentWith {range inl, range inI, range inr} := by
---   fapply IsCoherentWith.of_continuous_prop
---   intro f hf; simp_rw [continuousOn_iff_continuous_restrict] at hf
---   have : Continuous (f ∘ inl) ∧ Continuous (f ∘ inI) ∧ Continuous (f ∘ inr) := by
---     split_ands
---     all_goals
---       rw [← congrArg (f ∘ ·) (coe_comp_rangeFactorization _), ← Function.comp_assoc, ← restrict_eq]
---       exact (hf _ (by simp)).comp (ContinuousMap.continuous _).rangeFactorization
---   revert this
---   simp [continuous_iff_coinduced_le, instTopologicalSpace, coinduced_sup, coinduced_compose,
---   Function.comp_def, and_assoc, inI]
-    -- convert hf (range inl) (by simp)
-
-
-  -- rw [isCoherentW]
-
 lemma continuous_dom_iff {X} [TopologicalSpace X] (f : OIC2 → X) :
     Continuous f ↔ Continuous (f ∘ inl) ∧ Continuous (f ∘ ofI) ∧ Continuous (f ∘ inr) := by
   simp [continuous_iff_coinduced_le, instTopologicalSpace, coinduced_sup, coinduced_compose,
@@ -2096,7 +1646,6 @@ lemma specializes_zero_left : 0 ⤳ left := by
 lemma specializes_one_right : 1 ⤳ right := by
   convert UProp.specializes.map inr.continuous <;> simp
 
--- @[simps]
 def flip : OIC2 ≃ₜ OIC2 :=
   let toFun | left => right | ofI x => ofI (σ x) | right => left
   have continuous_toFun : Continuous toFun := by
@@ -2160,17 +1709,6 @@ lemma nhds_right : 𝓝 right.{u} = (𝓝 (1 : I)).comap toI.{u} := by  -- ⊔ p
 
 @[simp] lemma range_ofI_inter_preimage_toI {s : Set I} : range ofI ∩ toI ⁻¹' s = ofI '' s := by
   ext ⟨⟩ <;> simp [toI]
-
--- lemma exists₂_swap
-
-lemma bex_comm {α β} {p : α → Prop} {q : β → Prop} {r : α → β → Prop} :
-    (∃ x, p x ∧ ∃ y, q y ∧ r x y) ↔ (∃ y, q y ∧ ∃ x, p x ∧ r x y) := by tauto
-
--- TODO goes in `Mathlib.Topology.Neighborhoods`?
-lemma _root_.Filter.HasBasis.le_nhds_iff {X ι} [TopologicalSpace X] {f : Filter X}
-    {p : ι → Prop} {s : ι → Set X} (b : f.HasBasis p s) (x : X) :
-    f ≤ 𝓝 x ↔ ∀ t, x ∈ t → IsOpen t → ∃ i, p i ∧ s i ⊆ t := by
-  simp [b.le_basis_iff <| nhds_basis_opens x]
 
 open Filter in
 lemma topology_eq_induced : instTopologicalSpace.{u} =
@@ -2292,7 +1830,7 @@ instance : Preorder O3C4'.{u} where
   le_refl := by rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> constructor <;> rfl
   le_trans := by
     rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _)
-    <;> constructor <;> simp +decide [O3C2.le_def, O2C1.le_def, Z3.spec_iff]
+    <;> constructor <;> simp +decide [O3C2.le_def]
 
 
 instance : TopologicalSpace O3C4'.{u} := Topology.lowerSet _
@@ -2319,12 +1857,11 @@ instance : Preorder O1C1'.{u} where
   le_refl := by rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> constructor <;> rfl
   le_trans := by
     rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _) (⟨⟨⟩⟩ | ⟨⟨⟩⟩ | _)
-      <;> constructor <;> simp +decide [O1C2.le_def, O2C1.le_def, Z3.spec_iff]
+      <;> constructor <;> simp +decide
 
 instance : TopologicalSpace O1C1'.{u} := Topology.lowerSet _
 
 end O1C1'
-
 
 section
 open scoped unitInterval
