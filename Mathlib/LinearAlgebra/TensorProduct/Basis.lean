@@ -142,6 +142,18 @@ lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
     ℬ.repr m i • n := by
   simp only [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
 
+/-- Given a basis `𝒞` of `N`, `x ∈ M ⊗ N` can be written as `∑ᵢ mᵢ ⊗ 𝒞 i`. The coefficient `mᵢ`
+equals the `i`-th coordinate functional applied to the right tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisRight_apply (x : M ⊗[R] N) (i : κ) :
+    equivFinsuppOfBasisRight 𝒞 x i = TensorProduct.rid R M ((𝒞.coord i).lTensor _ x) := by
+  induction x <;> simp_all
+
+/-- Given a basis `ℬ` of `M`, `x ∈ M ⊗ N` can be written as `∑ᵢ ℬ i ⊗ nᵢ`. The coefficient `nᵢ`
+equals the `i`-th coordinate functional applied to the left tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisLeft_apply (x : M ⊗[R] N) (i : ι) :
+    equivFinsuppOfBasisLeft ℬ x i = TensorProduct.lid R N ((ℬ.coord i).rTensor _ x) := by
+  induction x <;> simp_all
+
 lemma TensorProduct.equivFinsuppOfBasisLeft_symm :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.toLinearMap =
     Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N) (ℬ i) := by
