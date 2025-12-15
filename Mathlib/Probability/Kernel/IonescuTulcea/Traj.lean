@@ -256,13 +256,6 @@ lemma trajContent_ne_top {a : ℕ} {x : Π i : Iic a, X i} {s : Set (Π n, X n)}
     trajContent κ x s ≠ ∞ :=
   projectiveFamilyContent_ne_top (isProjectiveMeasureFamily_partialTraj κ x)
 
-theorem nonempty_of_isProbabilityMeasure {α : Type*} {m : MeasurableSpace α} (μ : Measure α)
-    [IsProbabilityMeasure μ] : Nonempty α := by
-  by_contra! maybe_empty
-  have : μ Set.univ = 0 := by
-    rw [Set.univ_eq_empty_iff.mpr maybe_empty, measure_empty]
-  simp at this
-
 /-- This is an auxiliary result for `trajContent_tendsto_zero`. Consider `f` a sequence of bounded
 measurable functions such that `f n` depends only on the first coordinates up to `a n`.
 Assume that when integrating `f n` against `partialTraj (k + 1) (a n)`, one gets a non-increasing
