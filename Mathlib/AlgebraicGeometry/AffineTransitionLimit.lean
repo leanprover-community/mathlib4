@@ -32,16 +32,6 @@ namespace AlgebraicGeometry
 
 section stuff
 
-lemma Scheme.IsQuasiAffine.of_isAffineHom
-    {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasiAffine := by
-  have := QuasiCompact.compactSpace_of_compactSpace f
-  refine .of_forall_exists_mem_basicOpen _ fun x ↦ ?_
-  obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ := (IsQuasiAffine.isBasis_basicOpen
-    Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
-  refine ⟨f.appTop r, ?_⟩
-  rw [← preimage_basicOpen_top]
-  exact ⟨hr.preimage _, hxr⟩
-
 open pullback in
 attribute [simp] condition condition_assoc in
 lemma isPullback_of_openCover
@@ -88,28 +78,6 @@ def Scheme.openCoverBasicOpenTop (X : Scheme) [X.IsQuasiAffine] :
       (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     exact ⟨⟨r, hr⟩, (X.basicOpen r).opensRange_ι.ge hxr⟩
 
-@[reassoc (attr := simp)]
-lemma IsAffineOpen.fromSpec_toSpecΓ {X : Scheme} {U : X.Opens} (hU : IsAffineOpen U) :
-    hU.fromSpec ≫ X.toSpecΓ = Spec.map (X.presheaf.map (homOfLE le_top).op) := by
-  rw [fromSpec, Category.assoc, ← Scheme.Opens.toSpecΓ_SpecMap_map_top, isoSpec_inv_toSpecΓ_assoc]
-
-@[reassoc (attr := simp)]
-lemma Scheme.Opens.toSpecΓ_naturality {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) :
-    (f ⁻¹ᵁ U).toSpecΓ ≫ Spec.map (f.app U) = f ∣_ U ≫ U.toSpecΓ := by
-  simp only [toSpecΓ, topIso, Functor.op_obj, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
-    eqToHom_op, Hom.app_eq_appLE, Category.assoc, ← Spec.map_comp, Hom.appLE_map,
-    toSpecΓ_naturality_assoc, TopologicalSpace.Opens.map_top, morphismRestrict_appLE, Hom.map_appLE]
-
-@[reassoc (attr := simp)]
-theorem SpecMap_ΓSpecIso_inv_toSpecΓ (R : CommRingCat.{u}) :
-    Spec.map (Scheme.ΓSpecIso R).inv ≫ (Spec R).toSpecΓ = 𝟙 _ := by
-  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.hom_inv_id, Spec.map_id]
-
-@[reassoc (attr := simp)]
-theorem toSpecΓ_SpecMap_ΓSpecIso_inv (R : CommRingCat.{u}) :
-    (Spec R).toSpecΓ ≫ Spec.map (Scheme.ΓSpecIso R).inv = 𝟙 _ := by
-  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id]
-
 lemma isPullback_toSpecΓ_toSpecΓ {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :
     IsPullback f X.toSpecΓ Y.toSpecΓ (Spec.map f.appTop) := by
   have := QuasiCompact.compactSpace_of_compactSpace f
@@ -134,7 +102,7 @@ lemma isPullback_toSpecΓ_toSpecΓ {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] 
   · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
     simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,
-      Scheme.Opens.toSpecΓ_SpecMap_map_assoc, Scheme.Opens.toSpecΓ_naturality]
+      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_naturality]
     simp_rw [← Category.assoc]
     congr 1
     rw [← cancel_mono (Scheme.Opens.ι _)]
@@ -151,40 +119,6 @@ lemma preimage_opensRange_toSpecΓ
 @[simp]
 lemma Scheme.Hom.opensRange_eq_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : f.opensRange = ⊤ :=
   SetLike.coe_injective (Set.range_eq_univ.mpr f.surjective)
-
-theorem AffineTargetMorphismProperty.diagonal_of_openCover_source
-    {Q : AffineTargetMorphismProperty} [Q.IsLocal]
-    {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X) [∀ i, IsAffine (𝒰.X i)]
-    [IsAffine Y] (h𝒰 : ∀ i j, Q (pullback.mapDesc (𝒰.f i) (𝒰.f j) f)) :
-    Q.diagonal f := by
-  rw [HasAffineProperty.diagonal_iff (targetAffineLocally Q)]
-  let 𝒱 := Scheme.Pullback.openCoverOfLeftRight.{u} 𝒰 𝒰 f f
-  have i1 : ∀ i, IsAffine (𝒱.X i) := fun i => by dsimp [𝒱]; infer_instance
-  refine HasAffineProperty.of_openCover (P := targetAffineLocally Q) 𝒱 fun i ↦ ?_
-  dsimp [𝒱, Scheme.Cover.pullbackHom]
-  have : IsPullback (pullback.fst _ _ ≫ 𝒰.f _) (pullback.mapDesc (𝒰.f i.1) (𝒰.f i.2) f)
-      (pullback.diagonal f) (pullback.map _ _ _ _ (𝒰.f _) (𝒰.f _) (𝟙 Y) (by simp) (by simp)) :=
-    .of_iso (pullback_fst_map_snd_isPullback f (𝟙 _) (𝒰.f i.1 ≫ pullback.lift (𝟙 _) f)
-      (𝒰.f i.2 ≫ pullback.lift (𝟙 _) f)) (asIso (pullback.map _ _ _ _ (𝟙 _) (𝟙 _)
-      (pullback.fst _ _) (by simp) (by simp))) (.refl _) (pullback.congrHom (by simp) (by simp))
-      (.refl _) (by rw [pullback.condition_assoc]; simp) (by aesop) (by simp) (by aesop)
-  rw [← Q.cancel_left_of_respectsIso this.isoPullback.hom, IsPullback.isoPullback_hom_snd]
-  exact h𝒰 _ _
-
-theorem Scheme.quasiSeparatedSpace_of_isOpenCover
-    {X : Scheme.{u}} {I : Type u} (U : I → X.Opens) (hU : TopologicalSpace.IsOpenCover U)
-    (hU₁ : ∀ i, IsAffineOpen (U i)) (hU₂ : ∀ i j, IsCompact (X := X) (U i ∩ U j)) :
-    QuasiSeparatedSpace X := by
-  letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
-  rw [← quasiCompact_affineProperty_iff_quasiSeparatedSpace X.toSpecΓ]
-  have : ∀ i, IsAffine ((X.openCoverOfIsOpenCover U hU).X i) := hU₁
-  refine AffineTargetMorphismProperty.diagonal_of_openCover_source _
-    (Scheme.openCoverOfIsOpenCover _ _ hU) fun i j ↦ ?_
-  rw [← isCompact_univ_iff, (pullback.fst ((X.openCoverOfIsOpenCover U hU).f i)
-    ((X.openCoverOfIsOpenCover U hU).f j) ≫
-    (X.openCoverOfIsOpenCover U hU).f i).isOpenEmbedding.isCompact_iff, Set.image_univ,
-    IsOpenImmersion.range_pullback_to_base_of_left]
-  simpa using hU₂ i j
 
 open TopologicalSpace in
 lemma _root_.TopologicalSpace.Opens.IsBasis.isOpenCover
@@ -1357,7 +1291,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType
         simpa [t𝒱] using congr($(hk' j) ≫ Opens.ι _)
       simp [this]
     · have e : c.π.app i'' ⁻¹ᵁ D.map (fi''i' ≫ fi'i) ⁻¹ᵁ 𝒱 j ≤ c.π.app i' ⁻¹ᵁ 𝒱' j := by
-        simp only [← preimage_comp, Cone.w, 𝒱']; rfl
+        simp only [← Hom.comp_preimage, Cone.w, 𝒱']; rfl
       simpa [← AlgebraicGeometry.Scheme.Hom.resLE_eq_morphismRestrict,
         Scheme.Hom.resLE_comp_resLE_assoc] using congr(Scheme.homOfLE _ e ≫ $(hk j) ≫ Opens.ι _)
   choose k fki ak hak hak' using this
@@ -1400,7 +1334,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType
     simp only [pullback.condition_assoc, IsPullback.isoPullback_hom_snd_assoc,
       IsPullback.isoPullback_hom_fst_assoc, hF]
     have h : c.π.app l ⁻¹ᵁ D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j ≤ c.π.app k ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 j := by
-      simp only [← preimage_comp, c.w_assoc, c.w]; rfl
+      simp only [← Hom.comp_preimage, c.w_assoc, c.w]; rfl
     simpa [← Scheme.Hom.resLE_eq_morphismRestrict, Scheme.Hom.resLE_comp_resLE_assoc] using
       congr(Scheme.homOfLE _ h ≫ $(hak' j))
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_

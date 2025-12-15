@@ -196,18 +196,6 @@ lemma of_forall_source_exists_preimage
   · intro x
     exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
 
-lemma of_forall_source_exists_preimage
-    [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
-    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f.base x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
-    P f := by
-  choose U h₁ h₂ using hX
-  apply IsZariskiLocalAtTarget.of_range_subset_iSup U
-  · rintro y ⟨x, rfl⟩
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
-    exact ⟨x, h₁ x⟩
-  · intro x
-    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
-
 end IsZariskiLocalAtTarget
 
 /-- A property is Zariski-local at source if it is local at source in the Zariski topology. -/
