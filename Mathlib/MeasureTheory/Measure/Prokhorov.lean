@@ -163,11 +163,6 @@ instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
   apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
 
-/- For the remainder of the file, we assume the space to be normal, which makes it possible to
-extend continuous functions defined on a closed subset to continuous functions on the whole
-space. -/
-variable [NormalSpace E]
-
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
 lemma isCompact_setOf_finiteMeasure_le_of_isCompact
@@ -177,7 +172,6 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have hf : IsClosedEmbedding f := IsClosedEmbedding.subtypeVal hK.isClosed
   have rf : range f = K := Subtype.range_val
   let F : FiniteMeasure K → FiniteMeasure E := fun μ ↦ μ.map f
-  have hF : IsEmbedding F := hK.isClosed.isClosedEmbedding_subtypeVal.isEmbedding_map_finiteMeasure
   let T : Set (FiniteMeasure K) := {μ | μ.mass ≤ C}
   have : {μ : FiniteMeasure E | μ.mass ≤ C ∧ μ Kᶜ = 0} = F '' T := by
     apply Subset.antisymm
@@ -200,9 +194,15 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
       intro μ hμ
       rw [Measure.map_apply hf.continuous.measurable hK.measurableSet.compl]
       refine ⟨(mass_map_le _ _).trans hμ, by simp [f]⟩
-  rw [this, ← hF.isCompact_iff]
+  rw [this]
+  apply IsCompact.image _ (by fun_prop)
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
+
+/- In the rest of the file, we require the space to be normal to make sure that the measure of an
+open set can be approximated from inside using continuous functions. This is for instance
+satisfied in metrizable spaces. -/
+variable [NormalSpace E]
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
