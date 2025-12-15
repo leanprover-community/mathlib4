@@ -49,6 +49,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
+* `IsImmersion.ofOpen`: the inclusion of an open subset `s → M` of a smooth manifold is an immersion
 
 ## Implementation notes
 
@@ -389,6 +390,20 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
+open IsManifold in
+lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
+    IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
+    (chartAt H y) (chartAt H y.val) (mem_chart_source H y) (mem_chart_source H y.val)
+    (chart_mem_maximalAtlas y) (chart_mem_maximalAtlas y.val)
+  intro x hx
+  suffices I ((chartAt H ↑y) ((chartAt H y).symm (I.symm x))) = x by simpa +contextual
+  trans I (I.symm x)
+  · congr 1
+    apply OpenPartialHomeomorph.right_inv
+    simp_all
+  · exact I.right_inv (by simp_all)
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -553,6 +568,12 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
     |>.isImmersionAt
 
+lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
+    IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
+  rw [IsImmersionAt_def]
+  use PUnit, by infer_instance, by infer_instance
+  apply Manifold.IsImmersionAtOfComplement.ofOpen
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -629,6 +650,10 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
+lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) :
+    IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
+  fun y ↦ IsImmersionAtOfComplement.ofOpen s y
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -675,6 +700,10 @@ theorem prodMap {f : M → N} {g : M' → N'}
     (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
+
+lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) :
+    IsImmersion I I n (Subtype.val : s → M) :=
+  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.ofOpen s⟩
 
 end IsImmersion
 
