@@ -37,8 +37,8 @@ def MonoidAction.toPerm (a : α) : Equiv.Perm β :=
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddMonoidAction.toPerm
 
-@[to_additive (attr := deprecated (since := "2025-12-12"))]
-alias MulAction.toPerm := MonoidAction.toPerm
+@[deprecated (since := "2025-12-12")] alias MulAction.toPerm := MonoidAction.toPerm
+@[deprecated (since := "2025-12-12")] alias AddAction.toPerm := AddMonoidAction.toPerm
 
 /-- `MonoidAction.toPerm` is injective on faithful actions. -/
 @[to_additive /-- `AddMonoidAction.toPerm` is injective on faithful actions. -/]
@@ -46,29 +46,31 @@ lemma MonoidAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MonoidAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MonoidAction.toPerm) from smul_left_injective').of_comp
 
-@[to_additive (attr := deprecated (since := "2025-12-12"))]
+@[deprecated (since := "2025-12-12")]
 alias MulAction.toPerm_injective := MonoidAction.toPerm_injective
+@[deprecated (since := "2025-12-12")]
+alias AddAction.toPerm_injective := AddMonoidAction.toPerm_injective
 
 @[to_additive]
 protected lemma MonoidAction.bijective (g : α) : Function.Bijective (g • · : β → β) :=
   (MonoidAction.toPerm g).bijective
 
-@[to_additive (attr := deprecated (since := "2025-12-12"))]
-alias MulAction.bijective := MonoidAction.bijective
+@[deprecated (since := "2025-12-12")] alias MulAction.bijective := MonoidAction.bijective
+@[deprecated (since := "2025-12-12")] alias AddAction.bijective := AddMonoidAction.bijective
 
 @[to_additive]
 protected lemma MonoidAction.injective (g : α) : Function.Injective (g • · : β → β) :=
   (MonoidAction.bijective g).injective
 
-@[to_additive (attr := deprecated (since := "2025-12-12"))]
-alias MulAction.injective := MonoidAction.injective
+@[deprecated (since := "2025-12-12")] alias MulAction.injective := MonoidAction.injective
+@[deprecated (since := "2025-12-12")] alias AddAction.injective := AddMonoidAction.injective
 
 @[to_additive]
 protected lemma MonoidAction.surjective (g : α) : Function.Surjective (g • · : β → β) :=
   (MonoidAction.bijective g).surjective
 
-@[to_additive (attr := deprecated (since := "2025-12-12"))]
-alias MulAction.surjective := MonoidAction.surjective
+@[deprecated (since := "2025-12-12")] alias MulAction.surjective := MonoidAction.surjective
+@[deprecated (since := "2025-12-12")] alias AddAction.surjective := AddMonoidAction.surjective
 
 @[to_additive]
 lemma smul_left_cancel (g : α) {x y : β} (h : g • x = g • y) : x = y := MonoidAction.injective g h
