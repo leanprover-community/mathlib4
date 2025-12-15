@@ -40,7 +40,7 @@ of `1` in `L`.
 * `cyclotomicCharacter L p : (L ≃+* L) →* ℤ_[p]ˣ` sends `g` to the unique `j` such
   that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`-th roots of unity `ζ`.
 
-  Note: This is defined to be the trivial character if `L` has no enough roots of unity.
+  Note: This is defined to be the trivial character if `L` does not have enough roots of unity.
 
 ## Implementation note
 
