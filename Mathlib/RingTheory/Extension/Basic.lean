@@ -444,6 +444,31 @@ lemma Cotangent.finite (hP : P.ker.FG) :
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _
 
+variable (P) in
+/-- The cotangent is isomorphic to `S ⊗[P] I`. -/
+noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := by
+  refine .ofBijective (Cotangent.mk.liftBaseChange _) ⟨?_, ?_⟩
+  · refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
+    obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective P.Ring P.ker S P.algebraMap_surjective x
+    simp only [mk_apply, LinearMap.liftBaseChange_tmul, one_smul, Cotangent.mk_eq_zero_iff,
+      pow_two] at hx ⊢
+    refine Submodule.smul_induction_on' (p := fun x (hx : x ∈ P.ker * P.ker) ↦
+      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_right hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
+    · intro r hr s hs
+      trans (r • 1) ⊗ₜ[P.Ring] ⟨s, hs⟩
+      · rw [smul_tmul]; rfl
+      · simp_all [Algebra.smul_def]
+    · intro a ha b hb ha' hb'
+      convert congr($ha' + $hb')
+      rw [← tmul_add]
+      rfl
+  · intro x
+    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
+    exact ⟨1 ⊗ₜ x, by simp⟩
+
+@[simp]
+lemma contangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk x := rfl
+
 end Cotangent
 
 end Algebra.Extension
