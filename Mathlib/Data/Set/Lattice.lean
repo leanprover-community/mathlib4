@@ -360,6 +360,10 @@ theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂
 theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
   iUnion_inter _ _
 
+theorem iInter_diff [Nonempty ι] (s : Set β) (t : ι → Set β) :
+    (⋂ n, t n) \ s = ⋂ n, (t n \ s) := by
+  ext x; simp [forall_and]
+
 theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
   rw [diff_eq, compl_iUnion, inter_iInter]; rfl
 
@@ -653,9 +657,17 @@ theorem iUnion_subtype (p : α → Prop) (s : { x // p x } → Set β) :
     ⋃ x : { x // p x }, s x = ⋃ (x) (hx : p x), s ⟨x, hx⟩ :=
   iSup_subtype
 
+theorem iUnion_subtype' (p : α → Prop) (f : (x : α) → p x → Set β) :
+    ⋃ x, ⋃ (h : p x), f x h = ⋃ (x : Subtype p), f x.val x.prop := by
+  ext y; simp
+
 theorem iInter_subtype (p : α → Prop) (s : { x // p x } → Set β) :
     ⋂ x : { x // p x }, s x = ⋂ (x) (hx : p x), s ⟨x, hx⟩ :=
   iInf_subtype
+
+theorem iInter_subtype' (p : α → Prop) (f : (x : α) → p x → Set β) :
+    ⋂ x, ⋂ (h : p x), f x h = ⋂ (x : Subtype p), f x.val x.prop := by
+  ext y; simp
 
 theorem biInter_empty (u : α → Set β) : ⋂ x ∈ (∅ : Set α), u x = univ :=
   iInf_emptyset
