@@ -366,7 +366,7 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  refine LE.le.antisymm ?_ (Cardinal.zero_le _)
   rw [← card_zero]
   exact cof_le_card 0
 
