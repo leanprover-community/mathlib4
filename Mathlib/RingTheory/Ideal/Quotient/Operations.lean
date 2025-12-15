@@ -538,6 +538,39 @@ lemma quotientKerAlgEquivOfSurjective_symm_apply {f : A →ₐ[R₁] B} (hf : Fu
   apply (Ideal.quotientKerAlgEquivOfSurjective hf).injective
   simp
 
+section liftOfSurjective
+
+variable {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
+    [Algebra R A] [Algebra R B] [Algebra R C]
+
+/-- `AlgHom` version of `RingHom.liftOfSurjective` that descends an algebra homomorphism
+along a surjection. -/
+noncomputable
+def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
+  .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
+
+@[simp]
+lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
+    AlgHom.liftOfSurjective f hf g H (f x) = g x := by
+  dsimp [AlgHom.liftOfSurjective]
+  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
+  rfl
+
+lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) :
+    (AlgHom.liftOfSurjective f hf g H).comp f = g := by
+  ext; simp
+
+lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
+    (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
+  .of_comp (g := f) (by convert hg; ext; simp)
+
+end liftOfSurjective
+
 end
 
 section Ring_Ring
