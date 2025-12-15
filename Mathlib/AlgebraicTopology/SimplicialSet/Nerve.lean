@@ -135,7 +135,7 @@ lemma left_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
 
 @[simp]
 lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
-    ComposableArrows.right  (n := 1) e.edge = nerveEquiv y := by
+    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
   simp only [← e.tgt_eq]
   rfl
 

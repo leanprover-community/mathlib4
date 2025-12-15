@@ -76,7 +76,7 @@ variable [ModelCategory C]
 
 instance : MorphismProperty.IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C) :=
   MorphismProperty.IsWeakFactorizationSystem.mk' _ _ (fun {A B X Y} i p hi hp ↦ by
-    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i|>.mp hi
+    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i |>.mp hi
     rw [← fibration_iff] at hp
     infer_instance)
 

@@ -126,7 +126,7 @@ lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
 def ofNerve₂ (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation₂ ((truncation 2).obj (nerve C))) ≅ ReflQuiv.of C :=
-  ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv
+  ReflQuiv.isoOfEquiv.{u, u} OneTruncation₂.nerveEquiv
     (fun _ _ ↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
 
 lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
@@ -145,7 +145,7 @@ end OneTruncation₂
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
-    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
+    nerveFunctor₂.{u, u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
   NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C)
     (fun F ↦ ReflPrefunctor.ext (by cat_disch) (fun x y f ↦ by
       obtain ⟨f, rfl, rfl⟩ := f
@@ -456,7 +456,7 @@ lemma mapHomotopyCategory_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
 end
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
-def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
+def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u, u} where
   obj V := Cat.of V.HomotopyCategory
   map F := mapHomotopyCategory F
   map_id _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
@@ -482,7 +482,7 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 
 /-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
 def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
-  (Quotient.equiv.{u,u} _).trans (Quotient.equiv _)
+  (Quotient.equiv.{u, u} _).trans (Quotient.equiv _)
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
