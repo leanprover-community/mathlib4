@@ -107,21 +107,20 @@ are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflex
 `Module.instNoZeroSMulDivisorsOfIsDomain`, `Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
-/-- A root system is a root pairing for which the roots and coroots span their ambient modules.
-
-Note that this is slightly more general than the usual definition in the sense that `N` is not
-required to be the dual of `M`. -/
-structure RootSystem extends RootPairing ι R M N where
-  span_root_eq_top : span R (range root) = ⊤
-  span_coroot_eq_top : span R (range coroot) = ⊤
-
-attribute [simp] RootSystem.span_root_eq_top
-attribute [simp] RootSystem.span_coroot_eq_top
-
 namespace RootPairing
 
 variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
+
+/-- A root system is a root pairing for which the roots and coroots span their ambient modules. -/
+class IsRootSystem : Prop where
+  span_root_eq_top : span R (range P.root) = ⊤
+  span_coroot_eq_top : span R (range P.coroot) = ⊤
+
+@[deprecated (since := "2025-12-14")] alias RootSystem := IsRootSystem
+
+attribute [simp] IsRootSystem.span_root_eq_top
+attribute [simp] IsRootSystem.span_coroot_eq_top
 
 @[deprecated "Now a syntactic equality" (since := "2025-07-05"), nolint synTaut]
 lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
@@ -148,22 +147,9 @@ variable (ι R M N) in
   toFun P := P.flip
   invFun P := P.flip
 
-/-- If we interchange the roles of `M` and `N`, we still have a root system. -/
-protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
-  { toRootPairing := P.toRootPairing.flip
-    span_root_eq_top := P.span_coroot_eq_top
-    span_coroot_eq_top := P.span_root_eq_top }
-
-@[simp]
-protected lemma _root_.RootSystem.flip_flip (P : RootSystem ι R M N) :
-    P.flip.flip = P :=
-  rfl
-
-variable (ι R M N) in
-/-- `RootSystem.flip` as an equivalence. -/
-@[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
-  toFun P := P.flip
-  invFun P := P.flip
+instance [P.IsRootSystem] : P.flip.IsRootSystem where
+    span_root_eq_top := IsRootSystem.span_coroot_eq_top
+    span_coroot_eq_top := IsRootSystem.span_root_eq_top
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -590,11 +576,14 @@ lemma reflectionPerm_eq_reflectionPerm_iff_of_span :
 @[deprecated (since := "2025-05-28")]
 alias reflection_perm_eq_reflection_perm_iff_of_span := reflectionPerm_eq_reflectionPerm_iff_of_span
 
-lemma _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff (P : RootSystem ι R M N) (i j : ι) :
+lemma reflectionPerm_eq_reflectionPerm_iff [P.IsRootSystem] (i j : ι) :
     P.reflectionPerm i = P.reflectionPerm j ↔ P.reflection i = P.reflection j := by
   refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
   ext x
   exact (P.reflectionPerm_eq_reflectionPerm_iff_of_span i j).mp h x <| by simp
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff := reflectionPerm_eq_reflectionPerm_iff
 
 @[deprecated (since := "2025-05-28")]
 alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
@@ -741,11 +730,8 @@ protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N�
   reflectionPerm_root i j := by simp [reflection_apply]
   reflectionPerm_coroot i j := by simp [coreflection_apply]
 
-/-- Push forward a root system along linear equivalences, also reindexing the (co)roots. -/
-protected def _root_.RootSystem.map {P : RootSystem ι R M N}
-    (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
-    RootSystem ι₂ R M₂ N₂ where
-  __ := P.toRootPairing.map e f g
+instance [P.IsRootSystem] (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
+    (P.map e f g).IsRootSystem where
   span_root_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
   span_coroot_eq_top := by simp [Embedding.coe_trans, range_comp, span_image, RootPairing.map]
 

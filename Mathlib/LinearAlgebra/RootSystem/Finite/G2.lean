@@ -608,7 +608,7 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
   have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
+    Module.finrank_eq_card_basis b.toWeightBasis, Fintype.card_coe]
 
 variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :

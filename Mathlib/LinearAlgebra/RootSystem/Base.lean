@@ -294,7 +294,7 @@ end RootPairing
 
 section RootSystem
 
-variable {P : RootSystem ι R M N} (b : P.Base)
+variable {P : RootPairing ι R M N} (b : P.Base) [P.IsRootSystem]
 
 /-- A base of a root system yields a basis of the root space. -/
 def toWeightBasis :
