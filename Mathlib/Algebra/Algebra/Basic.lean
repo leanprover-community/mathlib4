@@ -74,40 +74,45 @@ theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down =
 
 end ULift
 
+section SubsemiringAlgebra
+
+variable {C : Type*} [SetLike C R] [SubsemiringClass C R]
+
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
-  algebraMap := (algebraMap R A).comp S.subtype
+instance (priority := 900) ofSubsemiring (S : C) : Algebra S A where
+  algebraMap := (algebraMap R A).comp (Subsemiring.subtype <| .ofClass S)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
 theorem algebraMap_ofSubsemiring (S : Subsemiring R) :
-    (algebraMap S R : S →+* R) = Subsemiring.subtype S :=
+    (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
-theorem coe_algebraMap_ofSubsemiring (S : Subsemiring R) : (algebraMap S R : S → R) = Subtype.val :=
+theorem coe_algebraMap_ofSubsemiring (S : C) : (algebraMap S R : S → R) = Subtype.val :=
   rfl
 
-theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap S R x = x :=
+theorem algebraMap_ofSubsemiring_apply (S : C) (x : S) : algebraMap S R x = x :=
   rfl
 
 /-- Algebra over a subring. This builds upon `Subring.module`. -/
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A where
-  algebraMap := (algebraMap R A).comp S.subtype
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
+    Algebra S A := inferInstance
 
 theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S →+* R) = Subring.subtype S :=
+    (algebraMap S R : S →+* R) = S.subtype :=
   rfl
 
+@[deprecated coe_algebraMap_ofSubsemiring (since := "2025-11-23")]
 theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S → R) = Subtype.val :=
   rfl
 
+@[deprecated algebraMap_ofSubsemiring_apply (since := "2025-11-23")]
 theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
     algebraMap S R x = x :=
   rfl
+
+end SubsemiringAlgebra
 
 /-- Explicit characterization of the submonoid map in the case of an algebra.
 `S` is made explicit to help with type inference -/

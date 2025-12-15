@@ -54,7 +54,7 @@ namespace CategoryTheory
 
 universe w w'
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type _} [Category* C] [Category* D]
 
 open Limits
 
