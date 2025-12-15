@@ -137,6 +137,7 @@ theorem coe_zero : ((0 : SummableFamily Γ R α) : α → R⟦Γ⟧) = 0 :=
 theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
 
+
 section SMul
 
 variable {M} [SMulZeroClass M R]
@@ -353,6 +354,7 @@ theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
+
 
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
@@ -655,7 +657,7 @@ theorem support_pow_subset_closure [AddCommMonoid Γ] [PartialOrder Γ] [IsOrder
     simp only [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   | succ n ih =>
-    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
+    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
     exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
 
 theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
@@ -693,7 +695,7 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
-    · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
+    · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
       refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
@@ -827,7 +829,7 @@ section IsDomain
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
-theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit x.leadingCoeff := by
+theorem isUnit_iff {x : R⟦Γ⟧} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine
@@ -851,8 +853,9 @@ variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
 
 @[simps -isSimp inv]
 instance : DivInvMonoid R⟦Γ⟧ where
-  inv x := single (-x.order) (x.leadingCoeff)⁻¹ *
-    (SummableFamily.powers <| 1 - single (-x.order) x.leadingCoeff⁻¹ * x).hsum
+  inv x :=
+    single (-x.order) (x.leadingCoeff)⁻¹ *
+      (SummableFamily.powers <| 1 - single (-x.order) (x.leadingCoeff)⁻¹ * x).hsum
 
 @[simp]
 theorem inv_single (a : Γ) (r : R) : (single a r)⁻¹ = single (-a) r⁻¹ := by
