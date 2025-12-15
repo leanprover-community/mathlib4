@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 
-* `AlternatingGroup.isCoatom_stabilizer`: if neither `s : Set α` nor its complement is empty,
+* `alternatingGroup.isCoatom_stabilizer`: if neither `s : Set α` nor its complement is empty,
   and if, moreover, `Nat.card α ≠ 2 * s.ncard`,
   then `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`.
 
@@ -188,11 +188,11 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
       Function.bijective_id]
 
-end AlternatingGroup
+end alternatingGroup
 
 namespace MulAction.IsBlock
 
-open AlternatingGroup
+open alternatingGroup
 
 theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
     {s B : Set α} {G : Subgroup (alternatingGroup α)}
@@ -201,13 +201,13 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
     B.Subsingleton := by
   apply hB.subsingleton_of_ssubset_of_stabilizer_le hB_ss_sc
   intro g
-  obtain ⟨⟨k, hk⟩, rfl⟩ := AlternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
+  obtain ⟨⟨k, hk⟩, rfl⟩ := alternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
   rw [stabilizer_compl] at hk
   exact ⟨⟨⟨k, hG hk⟩, by aesop⟩, rfl⟩
 
 end MulAction.IsBlock
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 /- Note : The proof of this statement is close to that
 of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
@@ -283,7 +283,7 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
   obtain ⟨a, ha⟩ := h
   rw [Subsingleton.eq_singleton_of_mem h1 ha, stabilizer_singleton]
   have : IsPreprimitive (alternatingGroup α) α :=
-    AlternatingGroup.isPreprimitive_of_three_le_card α h3
+    alternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
 /-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
@@ -305,4 +305,4 @@ theorem isCoatom_stabilizer {s : Set α}
       rw [← ncard_pos] at h0 h1
       grind
 
-end AlternatingGroup
+end alternatingGroup

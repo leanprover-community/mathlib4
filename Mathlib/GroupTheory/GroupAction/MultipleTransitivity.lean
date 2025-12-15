@@ -622,7 +622,7 @@ alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
@@ -659,7 +659,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.card_eq_fintype_card] at hα1
-    rw [alternatingGroup.eq_bot_of_card_le_two hα1.le]
+    rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
@@ -715,4 +715,4 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   letI := isPretransitive_of_three_le_card α h
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
-end AlternatingGroup
+end alternatingGroup
