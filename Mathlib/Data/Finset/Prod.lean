@@ -295,7 +295,7 @@ theorem diag_card : (diag s).card = s.card := by
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
   suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; lia
   by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
+     conv_rhs => rw [← card_filter_add_card_filter_not (fun a => a.1 = a.2)]
 
 @[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
@@ -319,7 +319,7 @@ theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
+  disjoint_filter_filter_not (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
 
 theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
 
@@ -357,11 +357,8 @@ theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a
 theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι]
     [DecidableEq ι] [DecidableLE ι] [DecidableLT ι] (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
-  rw [Finset.filter_inj']
-  rintro ⟨i, j⟩
-  simp_rw [mem_offDiag, and_imp]
-  rintro _ _ h
-  rw [Ne.le_iff_lt h]
+  ext
+  simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
 
 end Diag
 

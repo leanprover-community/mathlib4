@@ -965,7 +965,8 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
+  refine ⟨⟨_, (PrimeSpectrum.continuous_comap f).isOpen_preimage _ W.2⟩ ⊓ V,
+    ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
@@ -1080,7 +1081,7 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
 
 @[elementwise, reassoc]
 theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
-    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap (PrimeSpectrum.comap f) U)
+    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap ⟨_, PrimeSpectrum.continuous_comap f⟩ U)
         fun _ => id)) =
       CommRingCat.ofHom f ≫ toOpen S _ :=
   CommRingCat.hom_ext <| RingHom.ext fun _ => Subtype.ext <| funext fun _ =>
