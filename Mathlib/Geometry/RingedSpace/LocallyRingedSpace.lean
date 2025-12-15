@@ -306,7 +306,7 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
   obtain ⟨n, hn⟩ := hf
   cases n.eq_zero_or_pos with
   | inr h =>
-    rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
+    rw [← X.toRingedSpace.basicOpen_pow f n h, hn]
     simp [basicOpen_zero]
   | inl h =>
     rw [h, pow_zero] at hn
