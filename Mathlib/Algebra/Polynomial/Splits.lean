@@ -211,31 +211,14 @@ alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_
 @[deprecated (since := "2025-12-06")]
 alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
-variable (R) in
-theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
-    (hs : f.Splits) (hm : f.Monic)
-    (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) : f ∈ Polynomial.lifts (algebraMap R K) := by
-  rw [hs.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
-  refine Subring.multiset_prod_mem _ _ fun P hP => ?_
-  obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
-  exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
+@[deprecated (since := "2025-12-13")]
+alias mem_lift_of_splits_of_roots_mem_range := Splits.mem_lift_of_roots_mem_range
 
-/--
-A polynomial of degree `2` with a root splits.
--/
-theorem splits_of_natDegree_eq_two {f : Polynomial K} {x : L} (h₁ : f.natDegree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) := by
-  have hf₀ : f ≠ 0 := ne_zero_of_natDegree_gt (h₁ ▸ zero_lt_two)
-  have h : (map i f /ₘ (X - C x)).natDegree = 1 := by
-    rw [natDegree_divByMonic _ (monic_X_sub_C x), natDegree_map, h₁, natDegree_X_sub_C]
-  replace h₂ := (mem_roots'.mp <| (mem_roots_map_of_injective i.injective hf₀).mpr h₂).2
-  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂]
-  exact (splits_mul_iff (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
-    ⟨Splits.X_sub_C  _, Splits.of_natDegree_le_one (by rw [h])⟩
+@[deprecated (since := "2025-12-13")]
+alias splits_of_natDegree_eq_two := Splits.of_natDegree_eq_two
 
-theorem splits_of_degree_eq_two {f : Polynomial K} {x : L} (h₁ : f.degree = 2)
-    (h₂ : eval₂ i x f = 0) : Splits (f.map i) :=
-  splits_of_natDegree_eq_two i (natDegree_eq_of_degree_eq_some h₁) h₂
+@[deprecated (since := "2025-12-13")]
+alias splits_of_degree_eq_two := Splits.of_degree_eq_two
 
 section UFD
 
@@ -264,14 +247,11 @@ alias splits_comp_of_splits := Splits.map
 
 variable [Algebra R K] [Algebra R L]
 
-theorem splits_of_algHom {f : R[X]} (h : Splits (f.map (algebraMap R K))) (e : K →ₐ[R] L) :
-    Splits (f.map (algebraMap R L)) := by
-  rw [← e.comp_algebraMap_of_tower R, ← map_map]; exact h.map _
+@[deprecated (since := "2025-12-13")]
+alias splits_of_algHom := Splits.of_algHom
 
-variable (L) in
-theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
-    (h : Splits (f.map (algebraMap R K))) : Splits (f.map (algebraMap R L)) :=
-  splits_of_algHom h (IsScalarTower.toAlgHom R K L)
+@[deprecated (since := "2025-12-13")]
+alias splits_of_isScalarTower := Splits.of_isScalarTower
 
 @[deprecated (since := "2025-12-08")]
 alias eval₂_derivative_of_splits := Splits.eval_derivative
