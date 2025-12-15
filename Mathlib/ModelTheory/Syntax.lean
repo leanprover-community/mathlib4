@@ -308,10 +308,8 @@ bound variables indexed by `Fin n`. -/
 inductive BoundedFormula : ℕ → Type max u v u'
   | falsum {n} : BoundedFormula n
   | equal {n} (t₁ t₂ : L.Term (α ⊕ (Fin n))) : BoundedFormula n
-  | rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) : BoundedFormula n
-  /-- The implication between two bounded formulas. -/
-  | imp {n} (f₁ f₂ : BoundedFormula n) : BoundedFormula n
-  /-- The universal quantifier over bounded formulas. -/
+  | rel {n l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) : BoundedFormula n/-- The implication between two bounded formulas. -/
+  | imp {n} (f₁ f₂ : BoundedFormula n) : BoundedFormula n/-- The universal quantifier over bounded formulas. -/
   | all {n} (f : BoundedFormula (n + 1)) : BoundedFormula n
 
 /-- `Formula α` is the type of formulas with free variables indexed by `α` and no bound variables in
