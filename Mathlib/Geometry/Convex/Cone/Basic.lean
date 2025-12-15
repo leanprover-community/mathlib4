@@ -391,6 +391,22 @@ See `IsReproducing.isGenerating` and `IsGenerating.isReproducing` for details. -
 @[simp] def IsGenerating (C : ConvexCone R M) : Prop :=
   Submodule.span R (C : Set M) = ⊤
 
+/-- A sufficient criteria for a convex cone `C` to be generating is that top is less than or equal
+to the linear span of `C`. -/
+theorem IsGenerating.of_top_le_span {C : ConvexCone R M} (h : ⊤ ≤ Submodule.span R (C : Set M)) :
+    C.IsGenerating :=
+  eq_top_iff.mpr h
+
+/-- The linear span of a generating convex cone equals top. -/
+lemma IsGenerating.span_eq_top {C : ConvexCone R M} (hC : C.IsGenerating) :
+    Submodule.span R (C : Set M) = ⊤ :=
+  hC
+
+/-- Top is less than or equal to the linear span of a generating convex cone. -/
+lemma IsGenerating.top_le_span {C : ConvexCone R M} (hC : C.IsGenerating) :
+    ⊤ ≤ Submodule.span R (C : Set M) :=
+  hC.span_eq_top.ge
+
 /-- The whole `R`-module `M` (viewed as the top convex cone) is generating. -/
 theorem isGenerating_top : (⊤ : ConvexCone R M).IsGenerating := by
   simp
@@ -416,6 +432,22 @@ i.e., every element of `M` can be written as a difference of two elements of `C`
 See also (`IsGenerating`). -/
 def IsReproducing [AddCommGroup M] (C : ConvexCone R M) : Prop :=
   (C : Set M) - (C : Set M) = Set.univ
+
+/-- A sufficient criteria for a convex cone `C` to be reproducing is that `Set.univ` is a subset
+of `C - C`. -/
+theorem IsReproducing.of_univ_subset [AddCommGroup M] {C : ConvexCone R M}
+    (h : Set.univ ⊆ (C : Set M) - (C : Set M)) : C.IsReproducing :=
+  Set.eq_univ_iff_forall.mpr fun _ ↦ h trivial
+
+/-- The set difference of a reproducing cone with itself equals `Set.univ`. -/
+lemma IsReproducing.sub_eq_univ [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
+    (C : Set M) - (C : Set M) = Set.univ :=
+  hC
+
+/-- `Set.univ` is a subset of the set difference of a reproducing cone with itself. -/
+lemma IsReproducing.univ_subset_sub [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
+    Set.univ ⊆ (C : Set M) - (C : Set M) :=
+  hC.sub_eq_univ.ge
 
 /-- A reproducing cone is generating. -/
 theorem IsReproducing.isGenerating {R : Type*} {M : Type*} [Ring R] [PartialOrder R]
