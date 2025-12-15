@@ -47,8 +47,8 @@ attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 
-instance {J : Type u} [Finite J] [Category J] [Quiver.IsThin J] : FinCategory J := by
-  apply FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
+instance {J : Type u} [Finite J] [Category J] [Quiver.IsThin J] : FinCategory J :=
+  FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
 
 
 open Opposite
