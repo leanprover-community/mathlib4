@@ -277,24 +277,24 @@ open ZFSet
 
 The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
-  ⟨o.toType, fun a ↦ toPSet a⟩
+  ⟨o.ToType, fun a ↦ toPSet a⟩
 termination_by o
 decreasing_by exact a.toOrd.prop
 
 @[simp]
-theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.toType := by
+theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
   rfl
 
 theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, x.Equiv a.toPSet := by
   rw [toPSet, PSet.mem_def]
-  simpa using ((@toType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
+  simpa using ((@ToType.mk o).exists_congr_left (p := fun y ↦ x.Equiv y.1.toPSet)).symm
 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
   conv_rhs => rw [← _root_.iSup_succ o]
-  convert toType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
+  convert ToType.mk.symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
 decreasing_by rename_i x; exact x.2
@@ -366,7 +366,7 @@ namespace ZFSet
 open Ordinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
-  refine ⟨fun x hx y hy ↦ ?_, @fun z y x hz hy hx ↦ ?_⟩
+  refine ⟨fun x hx y hy ↦ ?_, fun {z y x} hz hy hx ↦ ?_⟩
   all_goals
     obtain ⟨a, ha, rfl⟩ := mem_toZFSet_iff.1 hx
     obtain ⟨b, hb, rfl⟩ := mem_toZFSet_iff.1 hy

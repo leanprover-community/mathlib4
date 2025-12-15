@@ -18,7 +18,6 @@ and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
 * Provide an API for computing `Ext`-groups using an injective resolution
-* Dualize everything
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
@@ -31,7 +30,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `K`

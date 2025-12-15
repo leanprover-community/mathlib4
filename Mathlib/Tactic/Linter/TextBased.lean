@@ -54,6 +54,8 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
+  /-- A line contains a non-breaking space character -/
+  | nonbreakingSpace
 deriving BEq
 
 /-- How to format style errors -/
@@ -76,6 +78,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
+  | nonbreakingSpace => "This line contains a non-breaking space character"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -85,6 +88,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.nonbreakingSpace => "ERR_NSP"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -165,6 +169,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_NSP" => some (StyleError.nonbreakingSpace)
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -225,7 +230,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set idx line.trimRight
+      fixedLines := fixedLines.set idx line.trimAsciiEnd.copy
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
@@ -241,12 +246,25 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
+    if pos != line.endPos && pos.prev!.get! == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
+/-- Lint a collection of input strings for a non-breaking space character. -/
+public register_option linter.nonbreakingSpace : Bool := { defValue := true }
+
+@[inherit_doc linter.nonbreakingSpace]
+def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.nonbreakingSpace opts do return (#[], none)
+  let mut errors := Array.mkEmpty 0
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
+    let pos := line.find (· == ' ')
+    if pos != line.endPos then
+      errors := errors.push (StyleError.nonbreakingSpace, idx + 1)
+  return (errors, none)
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -259,7 +277,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
+    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter, nonbreakingSpaceLinter
   ]
 
 

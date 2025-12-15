@@ -298,6 +298,146 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le
 
+/--
+Form a convex linear combination of two points in a closed interval.
+
+This should be removed once a general theory of convex spaces is available in Mathlib.
+-/
+def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
+  ⟨(1 - t) * x + t * y, by
+    constructor
+    · nlinarith [x.2.1, y.2.1, t.2.1, t.2.2]
+    · nlinarith [x.2.2, y.2.2, t.2.1, t.2.2]⟩
+
+@[simp, grind =]
+theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+  (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
+
+@[simp, grind =]
+theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+    convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
+  simp [convexCombo]
+  abel
+
+@[grind .]
+theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    x ≤ convexCombo x y t := by
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
+  nlinarith [t.2.1, t.2.2]
+
+@[grind .]
+theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    convexCombo x y t ≤ y := by
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
+  nlinarith [t.2.1, t.2.2]
+
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
+abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
+  ⟨s * (1 - t) / (1 - s * t),
+    by
+      apply div_nonneg
+      · nlinarith [s.2.1, t.2.2]
+      · nlinarith [s.2.2, t.2.2, t.2.1],
+    by
+      apply div_le_one_of_le₀
+      · nlinarith [s.2.2]
+      · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
+abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
+
+theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo x (convexCombo y z t) s =
+      convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
+        (convexCombo_assoc_coeff₂ s t) := by
+  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
+  by_cases hs : (s : ℝ) = 1
+  · simp only [hs]
+    by_cases ht : (t : ℝ) = 1
+    · simp [ht]
+    · have : (1 - t : ℝ) ≠ 0 := by grind
+      field_simp
+      simp
+  · by_cases ht : (t : ℝ) = 1
+    · simp [ht]
+    · have : (1 - s * t : ℝ) ≠ 0 := by
+        intro h
+        have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
+        grind
+      field_simp
+      ring_nf
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
+
+theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo (convexCombo x y s) z t =
+      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂' s t))
+        (convexCombo_assoc_coeff₁' s t) := by
+  rw [← convexCombo_symm, ← convexCombo_symm y x, convexCombo_assoc, ← convexCombo_symm x,
+    ← convexCombo_symm z y]
+  rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
+
+private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    0 ≤ ((y - x) / (z - x) : ℝ) := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_nonneg <;> grind
+
+private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    ((y - x) / (z - x) : ℝ) ≤ 1 := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_le_one_of_le₀ <;> grind
+
+/--
+A point between two points in a closed interval
+can be expressed as a convex combination of them.
+-/
+theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    y = convexCombo x z ⟨((y - x) / (z - x)),
+          eq_convexCombo.zero_le hxy hyz, eq_convexCombo.le_one hxy hyz⟩ := by
+  ext
+  simp only [coe_convexCombo]
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all only [div_zero, sub_zero, one_mul, zero_mul, add_zero]
+    replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    linarith
+  · field_simp
+    ring_nf
+
 end Set.Icc
 
 open scoped unitInterval

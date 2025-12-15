@@ -16,8 +16,8 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 
 ## Main definitions
 
-* `RingHom.specComap`: The induced map on prime spectra by a ring homomorphism. The bundled
-  continuous version is `PrimeSpectrum.comap` in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
+* `PrimeSpectrum.comap`: The induced map on prime spectra by a ring homomorphism. The proof that
+  it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 -/
 
@@ -31,9 +31,11 @@ open PrimeSpectrum
 
 /-- The pullback of an element of `PrimeSpectrum S` along a ring homomorphism `f : R →+* S`.
 The bundled continuous version is `PrimeSpectrum.comap`. -/
-abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-    PrimeSpectrum S → PrimeSpectrum R :=
-  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+def PrimeSpectrum.comap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S)
+    (p : PrimeSpectrum S) : PrimeSpectrum R :=
+  ⟨Ideal.comap f p.asIdeal, inferInstance⟩
+
+@[deprecated (since := "2025-12-10")] alias RingHom.specComap := PrimeSpectrum.comap
 
 namespace PrimeSpectrum
 
@@ -41,53 +43,70 @@ open RingHom
 
 variable {R S} {S' : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring S']
 
-theorem preimage_specComap_zeroLocus_aux (f : R →+* S) (s : Set R) :
-    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) := by
-  ext x
-  simp only [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus, Ideal.coe_comap]
-
 variable (f : R →+* S)
 
 @[simp]
-theorem specComap_asIdeal (y : PrimeSpectrum S) :
-    (f.specComap y).asIdeal = Ideal.comap f y.asIdeal :=
+theorem comap_asIdeal (y : PrimeSpectrum S) :
+    (comap f y).asIdeal = Ideal.comap f y.asIdeal :=
   rfl
+
+@[deprecated (since := "2025-12-10")] alias specComap_asIdeal := comap_asIdeal
 
 @[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
+theorem comap_id : comap (RingHom.id R) = fun x => x :=
   rfl
+
+@[deprecated (since := "2025-12-10")] alias specComap_id := comap_id
 
 @[simp]
-theorem specComap_comp (f : R →+* S) (g : S →+* S') :
-    (g.comp f).specComap = f.specComap.comp g.specComap :=
+theorem comap_comp (f : R →+* S) (g : S →+* S') :
+    comap (g.comp f) = (comap f).comp (comap g) :=
   rfl
 
-theorem specComap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum S') :
-    (g.comp f).specComap x = f.specComap (g.specComap x) :=
+@[deprecated (since := "2025-12-10")] alias specComap_comp := comap_comp
+
+theorem comap_comp_apply (f : R →+* S) (g : S →+* S') (x : PrimeSpectrum S') :
+    comap (g.comp f) x = comap f (comap g x) :=
   rfl
+
+@[deprecated (since := "2025-12-10")] alias specComap_comp_apply := comap_comp_apply
+
+theorem preimage_comap_zeroLocus_aux (f : R →+* S) (s : Set R) :
+    comap f ⁻¹' zeroLocus s = zeroLocus (f '' s) := by
+  ext x
+  simp [mem_zeroLocus, Set.image_subset_iff, Set.mem_preimage, mem_zeroLocus]
 
 @[simp]
-theorem preimage_specComap_zeroLocus (s : Set R) :
-    f.specComap ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
-  preimage_specComap_zeroLocus_aux f s
+theorem preimage_comap_zeroLocus (s : Set R) :
+    comap f ⁻¹' zeroLocus s = zeroLocus (f '' s) :=
+  preimage_comap_zeroLocus_aux f s
 
-theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
-    Function.Injective f.specComap := fun x y h =>
+@[deprecated (since := "2025-12-10")] alias preimage_specComap_zeroLocus := preimage_comap_zeroLocus
+
+theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
+    Function.Injective (comap f) := fun x y h =>
   PrimeSpectrum.ext
     (Ideal.comap_injective_of_surjective f hf
-      (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
+      (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 
-/-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
+@[deprecated (since := "2025-12-10")]
+alias specComap_injective_of_surjective := comap_injective_of_surjective
+
+instance [Algebra R S] (p : PrimeSpectrum S) :
+    p.asIdeal.LiesOver (p.comap <| algebraMap R S).asIdeal where
+  over := rfl
+
+/-- `RingHom.comap` of an isomorphism of rings as an equivalence of their prime spectra. -/
 @[simps apply symm_apply]
 def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
-  toFun := e.symm.toRingHom.specComap
-  invFun := e.toRingHom.specComap
+  toFun := comap e.symm.toRingHom
+  invFun := comap e.toRingHom
   left_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
+    rw [← comap_comp_apply, RingEquiv.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp]
     rfl
   right_inv x := by
-    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
+    rw [← comap_comp_apply, RingEquiv.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
   map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
@@ -100,8 +119,8 @@ variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
 the prime spectrum of the product semiring. -/
 /- TODO: show this is always a topological embedding (even when ι is infinite)
 and is a homeomorphism when ι is finite. -/
-@[simps] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
-  | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
+@[simps! asIdeal] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
+  | ⟨i, p⟩ => comap (Pi.evalRingHom R i) p
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical
@@ -152,7 +171,7 @@ theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fu
 lemma exists_comap_evalRingHom_eq
     {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
     (p : PrimeSpectrum (Π i, R i)) :
-    ∃ (i : ι) (q : PrimeSpectrum (R i)), (Pi.evalRingHom R i).specComap q = p := by
+    ∃ (i : ι) (q : PrimeSpectrum (R i)), comap (Pi.evalRingHom R i) q = p := by
   classical
   cases nonempty_fintype ι
   let e (i) : Π i, R i := Function.update 1 i 0
@@ -181,16 +200,19 @@ lemma sigmaToPi_bijective {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)
   obtain ⟨i, q, rfl⟩ := exists_comap_evalRingHom_eq q
   exact ⟨⟨i, q⟩, rfl⟩
 
-lemma iUnion_range_specComap_comp_evalRingHom
+lemma iUnion_range_comap_comp_evalRingHom
     {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)] [Finite ι]
     {S : Type*} [CommRing S] (f : S →+* Π i, R i) :
-    ⋃ i, Set.range ((Pi.evalRingHom R i).comp f).specComap = Set.range f.specComap := by
-  simp_rw [specComap_comp]
+    ⋃ i, Set.range (comap ((Pi.evalRingHom R i).comp f)) = Set.range (comap f) := by
+  simp_rw [comap_comp]
   apply subset_antisymm
   · exact Set.iUnion_subset fun _ ↦ Set.range_comp_subset_range _ _
   · rintro _ ⟨p, rfl⟩
     obtain ⟨i, p, rfl⟩ := exists_comap_evalRingHom_eq p
     exact Set.mem_iUnion_of_mem i ⟨p, rfl⟩
+
+@[deprecated (since := "2025-12-11")]
+alias iUnion_range_specComap_comp_evalRingHom := iUnion_range_comap_comp_evalRingHom
 
 end Pi
 
@@ -204,8 +226,8 @@ variable [CommRing R] [CommRing S]
 variable (f : R →+* S)
 variable {R}
 
-theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
-    f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
+theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
+    comap f '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
   refine fun p => ⟨?_, fun h_I_p => ?_⟩
   · rintro ⟨p, hp, rfl⟩ a ha
@@ -215,18 +237,24 @@ theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Id
     · obtain ⟨x', rfl⟩ := hf x
       exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
-      rw [specComap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
+      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
       refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
       refine p.asIdeal.sub_mem hx' (hp ?_)
       rwa [mem_ker, map_sub, sub_eq_zero]
 
-theorem range_specComap_of_surjective (hf : Surjective f) :
-    Set.range f.specComap = zeroLocus (ker f) := by
+@[deprecated (since := "2025-12-10")]
+alias image_specComap_zeroLocus_eq_zeroLocus_comap := image_comap_zeroLocus_eq_zeroLocus_comap
+
+theorem range_comap_of_surjective (hf : Surjective f) :
+    Set.range (comap f) = zeroLocus (ker f) := by
   rw [← Set.image_univ]
-  convert image_specComap_zeroLocus_eq_zeroLocus_comap _ _ hf _
+  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
+
+@[deprecated (since := "2025-12-10")]
+alias range_specComap_of_surjective := range_comap_of_surjective
 
 variable {S}
 
@@ -234,7 +262,7 @@ variable {S}
   where `I = ker f`. -/
 noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f) {I : Ideal R}
     (hI : RingHom.ker f = I) : PrimeSpectrum S ≃o (PrimeSpectrum.zeroLocus (R := R) I) where
-  toFun p := ⟨f.specComap p, hI.symm.trans_le (Ideal.ker_le_comap f)⟩
+  toFun p := ⟨p.comap f, hI.symm.trans_le (Ideal.ker_le_comap f)⟩
   invFun := fun ⟨⟨p, _⟩, hp⟩ ↦ ⟨p.map f, p.map_isPrime_of_surjective hf (hI.trans_le hp)⟩
   left_inv := by
     intro ⟨p, _⟩
@@ -242,7 +270,7 @@ noncomputable def Ideal.primeSpectrumOrderIsoZeroLocusOfSurj (hf : Surjective f)
     exact p.map_comap_of_surjective f hf
   right_inv := by
     intro ⟨⟨p, _⟩, hp⟩
-    simp only [Subtype.mk.injEq, PrimeSpectrum.mk.injEq]
+    simp only [Subtype.mk.injEq, PrimeSpectrum.ext_iff, comap_asIdeal]
     exact (p.comap_map_of_surjective f hf).trans <| sup_eq_left.mpr (hI.trans_le hp)
   map_rel_iff' {a b} := by
     change a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
@@ -257,7 +285,7 @@ noncomputable def Ideal.primeSpectrumQuotientOrderIsoZeroLocus (I : Ideal R) :
 /-- `p` is in the image of `Spec S → Spec R` if and only if `p` extended to `S` and
 restricted back to `R` is `p`. -/
 lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
-    p ∈ Set.range f.specComap ↔ (p.asIdeal.map f).comap f = p.asIdeal := by
+    p ∈ Set.range (comap f) ↔ (p.asIdeal.map f).comap f = p.asIdeal := by
   refine ⟨fun ⟨q, hq⟩ ↦ by simp [← hq], ?_⟩
   rw [Ideal.comap_map_eq_self_iff_of_isPrime]
   rintro ⟨q, _, hq⟩
@@ -268,24 +296,27 @@ open TensorProduct
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
 lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :
-    Nontrivial (p.asIdeal.ResidueField ⊗[R] S) ↔ p ∈ Set.range (algebraMap R S).specComap := by
+    Nontrivial (p.asIdeal.ResidueField ⊗[R] S) ↔ p ∈ Set.range (comap (algebraMap R S)) := by
   let k := p.asIdeal.ResidueField
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨m, hm⟩ := Ideal.exists_maximal (k ⊗[R] S)
-    use (Algebra.TensorProduct.includeRight).specComap ⟨m, hm.isPrime⟩
+    use PrimeSpectrum.comap (Algebra.TensorProduct.includeRight).toRingHom ⟨m, hm.isPrime⟩
     ext : 1
-    rw [← PrimeSpectrum.specComap_comp_apply,
-      ← Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap, specComap_comp_apply]
+    rw [← PrimeSpectrum.comap_comp_apply,
+      ← Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap, comap_comp_apply]
     simp [Ideal.eq_bot_of_prime, k, ← RingHom.ker_eq_comap_bot]
   · obtain ⟨q, rfl⟩ := h
     let f : k ⊗[R] S →ₐ[R] q.asIdeal.ResidueField :=
-      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ rfl)
+      Algebra.TensorProduct.lift (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
     exact RingHom.domain_nontrivial f.toRingHom
 
-lemma RingHom.strictMono_specComap_of_surjective {S : Type*} [CommRing S]
-    {f : R →+* S} (hf : Function.Surjective f) : StrictMono f.specComap :=
+lemma RingHom.strictMono_comap_of_surjective {S : Type*} [CommRing S]
+    {f : R →+* S} (hf : Function.Surjective f) : StrictMono (comap f) :=
   fun _ _ h ↦ (Ideal.relIsoOfSurjective _ hf).strictMono h
+
+@[deprecated (since := "2025-12-10")]
+alias RingHom.strictMono_specComap_of_surjective := RingHom.strictMono_comap_of_surjective
 
 end SpecOfSurjective
 
@@ -293,19 +324,25 @@ section ResidueField
 
 variable {R : Type*} [CommRing R]
 
-lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
-    Set.range (algebraMap R I.asIdeal.ResidueField).specComap = {I} := by
+lemma PrimeSpectrum.residueField_comap (I : PrimeSpectrum R) :
+    Set.range (comap (algebraMap R I.asIdeal.ResidueField)) = {I} := by
   rw [Set.range_unique, Set.singleton_eq_singleton_iff]
   exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
+
+@[deprecated (since := "2025-12-10")]
+alias PrimeSpectrum.residueField_specComap := PrimeSpectrum.residueField_comap
 
 end ResidueField
 
 variable {R S} in
-theorem IsLocalHom.of_specComap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
-    (hf : Function.Surjective f.specComap) : IsLocalHom f where
+theorem IsLocalHom.of_comap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
+    (hf : Function.Surjective (comap f)) : IsLocalHom f where
   map_nonunit x hfx := by
     by_contra hx
     obtain ⟨p, hp, _⟩ := exists_max_ideal_of_mem_nonunits hx
     obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
-    simp only [PrimeSpectrum.mk.injEq] at hq
+    simp only [PrimeSpectrum.ext_iff, comap_asIdeal] at hq
     exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)
+
+@[deprecated (since := "2025-12-10")]
+alias IsLocalHom.of_specComap_surjective := IsLocalHom.of_comap_surjective
