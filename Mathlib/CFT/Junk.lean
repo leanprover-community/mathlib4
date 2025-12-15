@@ -1,4 +1,4 @@
-import Mathlib
+-- import Mathlib
 -- import Mathlib.CFT.StandardEtale
 import Mathlib.CFT.No
 import Mathlib.CFT.SeparableResidueStruct
@@ -34,6 +34,7 @@ lemma Ideal.isMaximal_of_isMaximal_under_of_formallyUnramified
   refine ((PrimeSpectrum.primesOverOrderIsoFiber R S Q).le_iff_le
     (x := ⟨J, inferInstance, inferInstance⟩)
     (y := ⟨I, inferInstance, inferInstance⟩)).mp ?_
+  let : Module.Free Q.ResidueField (Q.ResidueField ⊗[R] S) := .of_divisionRing ..
   have := Algebra.FormallyUnramified.finite_of_free Q.ResidueField (Q.ResidueField ⊗[R] S)
   have : IsArtinianRing (Q.ResidueField ⊗[R] S) := .of_finite Q.ResidueField _
   rw [← PrimeSpectrum.asIdeal_le_asIdeal]
@@ -168,37 +169,6 @@ lemma Ideal.quotientKerAlgEquivOfSurjective_symm_apply' {R₁ A B : Type*} [Comm
     (hf : Function.Surjective ⇑f) (x : A) :
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm (f x) = x :=
   (Ideal.quotientKerAlgEquivOfSurjective hf).symm_apply_eq.mpr rfl
-
-noncomputable
-def AlgHom.liftOfSurjective {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
-  .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
-
-@[simp]
-lemma AlgHom.liftOfSurjective_apply
-    {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
-    liftOfSurjective f hf g H (f x) = g x := by
-  dsimp [liftOfSurjective]
-  erw [AlgEquiv.coe_algHom]
-  rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply']
-  rfl
-
-lemma AlgHom.liftOfSurjective_comp
-    {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) :
-    (liftOfSurjective f hf g H).comp f = g := by
-  ext; simp
-
-lemma AlgHom.liftOfSurjective_surjective
-    {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
-    [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (hf : Function.Surjective f)
-    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
-    (hg : Function.Surjective g) : Function.Surjective (liftOfSurjective f hf g H) :=
-  .of_comp (g := f) (by convert hg; ext; simp)
 
 lemma Module.finrank_pos_of_free {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Free R M] [Module.Finite R M] [Nontrivial M] : 0 < Module.finrank R M := by

@@ -4,6 +4,7 @@ public import Mathlib.RingTheory.Extension.Presentation.Submersive
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.Extension.Cotangent.Basis
 public import Mathlib.RingTheory.Extension.Cotangent.Free
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 
 @[expose] public section
@@ -148,112 +149,6 @@ def submersivePresentationOfHasCoeffs [FaithfulSMul R₀ R] :
     simp [PreSubmersivePresentation.jacobiMatrix_apply]
 
 end Algebra.SubmersivePresentation
-
-namespace Algebra -- start stolen from #31081
-
-open KaehlerDifferential
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
-namespace Generators
-
-open MvPolynomial
-
-variable {ι ι' : Type*} {σ κ : Type*}
-
-/-- Extend generators by more variables. -/
-noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
-  .ofSurjective (Sum.elim P.val b) fun s ↦ by
-    use rename Sum.inl (P.σ s)
-    simp [aeval_rename]
-
-@[simp]
-lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
-    (P.extend b).val (.inl i) = P.val i := rfl
-
-@[simp]
-lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
-    (P.extend b).val (.inr i) = b i := rfl
-
-variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u)
-  {v : κ → ι} (hv : Function.Injective v)
-
-lemma cotangentRestrict_bijective_of_basis_kaehlerDifferential
-    (huv : IsCompl (Set.range v) (Set.range u)) (b : Module.Basis κ S (Ω[S⁄R]))
-    (hb : ∀ k, b k = (D R S) (P.val (v k))) [Subsingleton (H1Cotangent R S)] :
-    Function.Bijective (cotangentRestrict P hu) := by
-  refine P.cotangentRestrict_bijective_of_isCompl _ huv ?_ ?_
-  · simp_rw [← hb]
-    exact b.span_eq
-  · apply disjoint_ker_toKaehler_of_linearIndependent
-    simp_rw [← hb]
-    exact b.linearIndependent
-
-end Generators
-
-/-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
-is `R`-standard smooth. -/
-theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
-    [Subsingleton (H1Cotangent R S)]
-    {I : Type*} (b : Module.Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
-    IsStandardSmooth R S := by
-  nontriviality S
-  obtain ⟨n, ⟨P⟩⟩ := (FiniteType.iff_exists_generators (R := R) (S := S)).mp inferInstance
-  choose f' hf' using hb
-  let P := P.extend fun i ↦ f' ⟨i, rfl⟩
-  have hb (i : I) : b i = D R S (P.val (Sum.inr i)) := by simp [P, hf']
-  have : Function.Bijective (P.cotangentRestrict _) :=
-    P.cotangentRestrict_bijective_of_basis_kaehlerDifferential Sum.inl_injective
-      Set.isCompl_range_inl_range_inr.symm b hb
-  let bcot' : Module.Basis (Fin n) S P.toExtension.Cotangent :=
-    .ofRepr (.ofBijective (P.cotangentRestrict _) this)
-  have : Finite I := Module.Finite.finite_basis b
-  obtain ⟨Q, bcot, hcomp, hbcot⟩ := P.exists_presentation_of_basis_cotangent bcot'
-  let P' : PreSubmersivePresentation R S (Unit ⊕ Fin n ⊕ I) (Unit ⊕ Fin n) :=
-    { __ := Q
-      map := Sum.map _root_.id Sum.inl
-      map_inj := Sum.map_injective.mpr ⟨fun _ _ h ↦ h, Sum.inl_injective⟩ }
-  have hcompl : IsCompl (Set.range (Sum.inr ∘ Sum.inr)) (Set.range P'.map) := by
-    simp [P', ← eq_compl_iff_isCompl, Set.ext_iff, Set.mem_compl_iff]
-  have hbij : Function.Bijective (P'.cotangentRestrict P'.map_inj) := by
-    apply P'.cotangentRestrict_bijective_of_basis_kaehlerDifferential P'.map_inj hcompl b
-    intro k
-    simp only [hb, ← hcomp, P', Function.comp_def]
-  let P'' : SubmersivePresentation R S _ _ :=
-    ⟨P', P'.isUnit_jacobian_of_cotangentRestrict_bijective bcot hbcot hbij⟩
-  exact P''.isStandardSmooth
-
-/-- An `R`-algebra `S` of finite presentation is standard smooth if and only if
-`H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`. -/
-theorem IsStandardSmooth.iff_exists_basis_kaehlerDifferential [FinitePresentation R S] :
-    IsStandardSmooth R S ↔ Subsingleton (H1Cotangent R S) ∧
-      ∃ (I : Type) (b : Module.Basis I S (Ω[S⁄R])), Set.range b ⊆ Set.range (D R S) := by
-  refine ⟨fun h ↦ ⟨inferInstance, ?_⟩, fun ⟨h, ⟨_, b, hb⟩⟩ ↦ .of_basis_kaehlerDifferential b hb⟩
-  obtain ⟨ι, σ, _, _, ⟨P⟩⟩ := Algebra.IsStandardSmooth.out (R := R) (S := S)
-  exact ⟨_, P.basisKaehler, by simp [Set.range_subset_iff, SubmersivePresentation.basisKaehler,
-    SubmersivePresentation.basisKaehlerOfIsCompl, Module.Basis.ofSplitExact]⟩
-
-lemma IsStandardSmoothOfRelativeDimension.iff_of_isStandardSmooth [Nontrivial S]
-    [IsStandardSmooth R S] (n : ℕ) :
-    IsStandardSmoothOfRelativeDimension n R S ↔ Module.rank S Ω[S⁄R] = n := by
-  refine ⟨fun h ↦ IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential _, fun h ↦ ?_⟩
-  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
-  refine ⟨_, _, _, ‹_›, ⟨P, ?_⟩⟩
-  apply Nat.cast_injective (R := Cardinal)
-  rwa [← P.rank_kaehlerDifferential]
-
-/-- `S` is an étale `R`-algebra if and only if it is standard smooth of relative dimension `0`. -/
-theorem Etale.iff_isStandardSmoothOfRelativeDimension_zero :
-    Etale R S ↔ IsStandardSmoothOfRelativeDimension 0 R S := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
-  nontriviality S
-  suffices h : IsStandardSmooth R S by
-    simp [IsStandardSmoothOfRelativeDimension.iff_of_isStandardSmooth]
-  rw [IsStandardSmooth.iff_exists_basis_kaehlerDifferential]
-  refine ⟨inferInstance, ⟨Empty, Module.Basis.empty Ω[S⁄R], ?_⟩⟩
-  simp [Set.range_subset_iff]
-
-end Algebra -- end stolen from #31081
 
 namespace Algebra
 

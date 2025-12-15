@@ -12,6 +12,10 @@ public import Mathlib.RingTheory.TensorProduct.Pi
 public import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.RingTheory.Finiteness.NilpotentKer
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
+public import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-! # Quasi-finite -/
 
@@ -20,7 +24,7 @@ public import Mathlib.RingTheory.Finiteness.NilpotentKer
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-open TensorProduct
+open TensorProduct PrimeSpectrum
 
 attribute [-instance] Module.free_of_finite_type_torsion_free'
   NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
@@ -33,11 +37,6 @@ variable (R S) in
 class QuasiFinite : Prop where
   finite_fiber (P : Ideal R) [P.IsPrime] :
     Module.Finite P.ResidueField (P.Fiber S) := by infer_instance
-  -- isDiscrete_specComap_preimage_singleton :
-  --   ∀ P : PrimeSpectrum R, IsDiscrete ((algebraMap R S).specComap ⁻¹' {P})
-  -- finite_residueField_residueField :
-  --   ∀ (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P],
-  --     Module.Finite P.ResidueField Q.ResidueField
 
 namespace QuasiFinite
 
@@ -47,7 +46,7 @@ instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] : IsArtinianRing (P.Fiber S
   .of_finite P.ResidueField _
 
 lemma finite_specComap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
-    ((algebraMap R S).specComap ⁻¹' {P}).Finite :=
+    (comap (algebraMap R S) ⁻¹' {P}).Finite :=
   (PrimeSpectrum.preimageEquivFiber R S P).finite_iff.mpr finite_of_compact_of_discrete
 
 lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finite := by
@@ -60,17 +59,17 @@ lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finit
     exact h inferInstance
 
 lemma finite_specComap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
-    ((algebraMap R S).specComap ⁻¹' s).Finite :=
+    (comap (algebraMap R S) ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ finite_specComap_preimage_singleton _
 
 lemma isDiscrete_specComap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
-    IsDiscrete ((algebraMap R S).specComap ⁻¹' {P}) :=
+    IsDiscrete (comap (algebraMap R S) ⁻¹' {P}) :=
   ⟨(PrimeSpectrum.preimageHomeomorphFiber R S P).symm.discreteTopology⟩
 
 lemma isDiscrete_specComap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)}
     (hs : IsDiscrete s) :
-    IsDiscrete ((algebraMap R S).specComap ⁻¹' s) :=
-  hs.preimage' (PrimeSpectrum.comap _).2.continuousOn
+    IsDiscrete (comap (algebraMap R S) ⁻¹' s) :=
+  hs.preimage' (PrimeSpectrum.continuous_comap _).continuousOn
     fun _ ↦ isDiscrete_specComap_preimage_singleton _
 
 instance (priority := low) [Module.Finite R S] : QuasiFinite R S where
@@ -250,7 +249,7 @@ instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [
 section Finite
 
 lemma iff_finite_specComap_preimage_singleton [FiniteType R S] :
-    QuasiFinite R S ↔ ∀ x, ((algebraMap R S).specComap ⁻¹' {x}).Finite := by
+    QuasiFinite R S ↔ ∀ x, (comap (algebraMap R S) ⁻¹' {x}).Finite := by
   refine ⟨fun H _ ↦ finite_specComap_preimage_singleton _, fun H ↦ ⟨fun P _ ↦ ?_⟩⟩
   rw [Module.finite_iff_isArtinianRing, isArtinianRing_iff_isNoetherianRing_krullDimLE_zero]
   have : IsJacobsonRing (P.Fiber S) := isJacobsonRing_of_finiteType (A := P.ResidueField)
@@ -271,7 +270,7 @@ lemma iff_finite_primesOver [FiniteType R S] :
     PrimeSpectrum.equivSubtype, Ideal.primesOver, and_comm, Ideal.liesOver_iff, Ideal.under]
 
 lemma iff_finite_specComap_preimage [FiniteType R S] :
-    QuasiFinite R S ↔ ∀ s, s.Finite → ((algebraMap R S).specComap ⁻¹' s).Finite :=
+    QuasiFinite R S ↔ ∀ s, s.Finite → (comap (algebraMap R S) ⁻¹' s).Finite :=
   ⟨fun _ _ ↦ finite_specComap_preimage, fun H ↦
     iff_finite_specComap_preimage_singleton.mpr fun _ ↦ H _ (Set.finite_singleton _)⟩
 
@@ -476,24 +475,13 @@ lemma Polynomial.ker_le_map_C_of_surjective_of_quasiFiniteAt
   have : IsScalarTower R (R[X] ⊗[R] p.ResidueField)
       (R[X] ⊗[R] p.ResidueField ⊗[R[X]] (R[X] ⧸ RingHom.ker f)) :=
     TensorProduct.isScalarTower_left
-  have H' : (RingHom.ker f).map (algebraMap R[X] (R[X] ⊗[R] p.ResidueField)) = ⊥ := by
+  have H' : (RingHom.ker f).map (mapRingHom (algebraMap R p.ResidueField)) = ⊥ := by
     rw [← le_bot_iff, Ideal.map_le_iff_le_comap]
     intro x hx
-    refine ((polyEquivTensor R _).trans (Algebra.TensorProduct.comm _ _ _)).symm.injective ?_
     simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using H hx
-  let g : p.Fiber S ≃ₐ[R] p.ResidueField[X] :=
-    .trans (Algebra.TensorProduct.congr .refl (Ideal.quotientKerAlgEquivOfSurjective hf).symm) <|
-    .trans (Algebra.TensorProduct.cancelBaseChangeLeft R R[X] _ _).symm <|
-    .trans ((Algebra.TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars R) <|
-    .trans (Ideal.quotientEquivAlgOfEq _ H') <|
-    .trans (AlgEquiv.quotientBot _ _) <|
-    .trans (Algebra.TensorProduct.comm _ _ _) <| (polyEquivTensor _ _).symm
-  have : g.symm.toRingHom.comp (algebraMap p.ResidueField _) = algebraMap _ _ := by
-    ext r
-    change g.symm _ = _
-    simp [g]
   let g' : p.ResidueField[X] ≃ₐ[p.ResidueField] p.Fiber S :=
-    { __ := g.symm.toRingEquiv, commutes' r := congr($this r) }
+    .trans ((AlgEquiv.quotientBot _ _).symm.trans (Ideal.quotientEquivAlgOfEq _ H'.symm))
+      (Polynomial.fiberEquivQuotient f hf _).symm
   obtain ⟨Q, hQ⟩ := (PrimeSpectrum.preimageEquivFiber _ _
       ⟨p, inferInstance⟩).symm.surjective ⟨⟨P, ‹_›⟩, PrimeSpectrum.ext (P.over_def p).symm⟩
   have inst : Algebra.QuasiFiniteAt p.ResidueField Q.asIdeal :=

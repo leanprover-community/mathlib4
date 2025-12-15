@@ -15,123 +15,6 @@ open TensorProduct IsLocalRing
 
 section
 
-namespace Algebra
-
-variable
-  {R S A P : Type*} [CommRing R] [CommRing A]
-  [CommRing S] [Algebra R S] [CommRing P] [Algebra R P] [Algebra P S]
-  [Algebra S A] [Algebra P A] [IsScalarTower P S A]
-  [IsScalarTower R P S]
-  (h₁ : Function.Surjective (algebraMap P S)) (h' : (RingHom.ker (algebraMap P S)).FG)
-
-local notation "𝓀[" R "]" => ResidueField R
-local notation "𝓂[" R "]" => maximalIdeal R
-
-def Extension.contangentEquiv (P : Extension.{u} R S) :
-    S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := by
-  refine .ofBijective (Cotangent.mk.liftBaseChange _) ⟨?_, ?_⟩
-  · refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
-    obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective P.Ring P.ker S P.algebraMap_surjective x
-    simp only [mk_apply, LinearMap.liftBaseChange_tmul, one_smul, Cotangent.mk_eq_zero_iff,
-      pow_two] at hx ⊢
-    refine Submodule.smul_induction_on' (p := fun x (hx : x ∈ P.ker * P.ker) ↦
-      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_right hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
-    · intro r hr s hs
-      trans (r • 1) ⊗ₜ[P.Ring] ⟨s, hs⟩
-      · rw [smul_tmul]; rfl
-      · simp_all [Algebra.smul_def]
-    · intro a ha b hb ha' hb'
-      convert congr($ha' + $hb')
-      rw [← tmul_add]
-      rfl
-  · intro x
-    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-    exact ⟨1 ⊗ₜ x, by simp⟩
-
-variable (R S A P) in
-def cotangentComplexBaseChange : A ⊗[P] RingHom.ker (algebraMap P S) →ₗ[A] A ⊗[P] Ω[P⁄R] :=
-  LinearMap.liftBaseChange _ (KaehlerDifferential.kerToTensor _ _ _ ∘ₗ Submodule.inclusion
-    (by rw [IsScalarTower.algebraMap_eq P S A]; intro; aesop))
-
-variable (R S A) in
-lemma cotangentComplexBaseChange_eq_lTensor_cotangentComplex (P : Extension.{u} R S)
-    [Algebra P.Ring A] [IsScalarTower P.Ring S A] :
-  cotangentComplexBaseChange R S A P.Ring =
-    AlgebraTensorModule.cancelBaseChange P.Ring S A A Ω[P.Ring⁄R] ∘ₗ
-      P.cotangentComplex.baseChange A ∘ₗ
-      ((AlgebraTensorModule.cancelBaseChange P.Ring S A A P.ker).symm ≪≫ₗ
-        P.contangentEquiv.baseChange (A := A)) := by
-  ext x
-  simp [LinearEquiv.baseChange, Extension.contangentEquiv, cotangentComplexBaseChange]
-
-variable (R S A) in
-lemma lTensor_cotangentComplex_eq_cotangentComplexBaseChange (P : Extension.{u} R S)
-    [Algebra P.Ring A] [IsScalarTower P.Ring S A] :
-  P.cotangentComplex.baseChange A =
-    (AlgebraTensorModule.cancelBaseChange P.Ring S A A Ω[P.Ring⁄R]).symm ∘ₗ
-      cotangentComplexBaseChange R S A P.Ring ∘ₗ
-      ((AlgebraTensorModule.cancelBaseChange P.Ring S A A P.ker).symm ≪≫ₗ
-        P.contangentEquiv.baseChange (A := A)).symm := by
-  apply LinearMap.coe_injective
-  dsimp
-  rw [LinearEquiv.eq_symm_comp, ← LinearEquiv.comp_symm_eq]
-  exact congr(($(cotangentComplexBaseChange_eq_lTensor_cotangentComplex R S A P) : _ → _)).symm
-
-def Extension.tensorCotangentEquiv (P : Extension.{u} R S)
-    [Algebra P.Ring A] [IsScalarTower P.Ring S A] :
-    A ⊗[S] P.Cotangent ≃ₗ[A] A ⊗[P.Ring] P.ker :=
-  P.contangentEquiv.symm.baseChange (A := A) ≪≫ₗ
-    AlgebraTensorModule.cancelBaseChange P.Ring S A A ↥P.ker
-
-def Extension.tensorCotangentSpaceEquiv (P : Extension.{u} R S)
-    [Algebra P.Ring A] [IsScalarTower P.Ring S A] :
-    A ⊗[S] P.CotangentSpace ≃ₗ[A] A ⊗[P.Ring] Ω[P.Ring⁄R] :=
-  AlgebraTensorModule.cancelBaseChange P.Ring S A A Ω[P.Ring⁄R]
-
-theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
-    {R S P : Type*} [CommRing R]
-    [CommRing S] [IsLocalRing S] [Algebra R S] [CommRing P] [Algebra R P] [Algebra P S]
-    [IsScalarTower R P S]
-    [FormallySmooth R P]
-    [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
-    (h₁ : Function.Surjective (algebraMap P S)) (h₂ : (RingHom.ker (algebraMap P S)).FG) :
-    Algebra.FormallySmooth R S ↔
-      Function.Injective (cotangentComplexBaseChange R S 𝓀[S] P) := by
-  let P' : Extension R S := { Ring := P, σ := _, algebraMap_σ := Function.surjInv_eq h₁ }
-  rw [Algebra.FormallySmooth.iff_injective_lTensor_residueField P' h₂]
-  rw [cotangentComplexBaseChange_eq_lTensor_cotangentComplex R S 𝓀[S] P']
-  refine .trans ?_ ((AlgebraTensorModule.cancelBaseChange P'.Ring S 𝓀[S] 𝓀[S]
-    Ω[P'.Ring⁄R]).comp_injective _).symm
-  refine (((AlgebraTensorModule.cancelBaseChange P'.Ring S _ _ P'.ker).symm ≪≫ₗ
-    P'.contangentEquiv.baseChange (A := 𝓀[S])).injective_comp _).symm
-
-theorem FormallySmooth.iff_injective_cotangentComplexBaseChange_of_field
-    {R S P K : Type*} [CommRing R] [Field K]
-    [CommRing S] [IsLocalRing S] [Algebra R S] [CommRing P] [Algebra R P] [Algebra P S]
-    [IsScalarTower R P S] [Algebra S K] [Algebra P K] [IsScalarTower P S K]
-    [FormallySmooth R P]
-    [Module.Free P Ω[P⁄R]] [Module.Finite P Ω[P⁄R]]
-    (h₁ : Function.Surjective (algebraMap P S)) (h₂ : (RingHom.ker (algebraMap P S)).FG)
-    (h₃ : 𝓂[S] ≤ RingHom.ker (algebraMap S K)) :
-    Algebra.FormallySmooth R S ↔
-      Function.Injective (cotangentComplexBaseChange R S K P) := by
-  let f : 𝓀[S] →ₐ[S] K := Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) h₃
-  let := f.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
-  have : IsScalarTower P 𝓀[S] K := .to₁₃₄ _ S _ _
-  rw [FormallySmooth.iff_injective_cotangentComplexBaseChange h₁ h₂,
-    ← Module.FaithfullyFlat.lTensor_injective_iff_injective 𝓀[S] K]
-  have : (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).toLinearMap ∘ₗ
-      (cotangentComplexBaseChange R S 𝓀[S] P).baseChange K ∘ₗ
-      (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.toLinearMap =
-      (cotangentComplexBaseChange R S K P) := by
-    ext; simp [cotangentComplexBaseChange]
-  rw [← this]
-  refine .trans ?_ ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).comp_injective _).symm
-  exact ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.injective_comp _).symm
-
-end Algebra
-
 attribute [local irreducible] KaehlerDifferential in
 def KaehlerDifferential.tensorKaehlerEquiv' (R S A B : Type*)
     [CommRing R] [CommRing S] [Algebra R S] [CommRing A] [CommRing B]
@@ -379,8 +262,8 @@ lemma FormallySmooth.of_formallySmooth_fiber_aux
     contrapose! hx
     replace hx : IsUnit x := by simpa using hx
     simpa using hx.map _
-  rw [Algebra.FormallySmooth.iff_injective_cotangentComplexBaseChange (P := P) h₁ h₂]
-  have := (Algebra.FormallySmooth.iff_injective_cotangentComplexBaseChange_of_field
+  rw [Algebra.FormallySmooth.iff_injective_cotangentComplexBaseChange_residueField (P := P) h₁ h₂]
+  have := (Algebra.FormallySmooth.iff_injective_cotangentComplexBaseChange
     (R := 𝓀[R]) (S := Sp) (K := 𝓀[S]) (P := Pp) h₁' h₂' h₃).mp inferInstance
   convert (e₂.injective.comp this).comp e₅.symm.injective
   ext x
@@ -389,8 +272,9 @@ lemma FormallySmooth.of_formallySmooth_fiber_aux
   | zero => simp only [map_zero]
   | add x y _ _ => simp only [map_add, *]
   | tmul x y =>
-  dsimp [e₅, e₄, e₂, cotangentComplexBaseChange, TensorProduct.one_def, Pp, smul_tmul']
-  rw [kerTensorProductEquivTensorTensorKer_symm_apply]
+  dsimp [e₅, e₄, e₂, KaehlerDifferential.cotangentComplexBaseChange,
+    TensorProduct.one_def, Pp, smul_tmul']
+  rw [kerTensorProductEquivTensorTensorKer_symm_apply h₁]
   dsimp [e₀]
   rw [KaehlerDifferential.tensorKaehlerEquiv'_symm_D_tmul]
   dsimp

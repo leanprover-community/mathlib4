@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
-public import Mathlib.RingTheory.Polynomial.IsIntegrallyClosed
+public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.QuasiFinite
 
 /-! # Algebraic ZMT -/
@@ -407,7 +407,7 @@ lemma ZariskiMainProperty.of_adjoin_eq_top
   · obtain ⟨a, ha⟩ := H.le (isIntegral_leadingCoeff_smul f x hf)
     refine IH _ ?_ (f.eraseLead + C a * X ^ m) (hm := rfl) ?_ n ?_
     · suffices f.eraseLead.natDegree < m + 1 by compute_degree!
-      exact (eraseLead_natDegree_le ..).trans_lt (by cutsat)
+      exact (eraseLead_natDegree_le ..).trans_lt (by lia)
     · simp [← self_sub_monomial_natDegree_leadingCoeff, hf, hm, pow_succ', ← Algebra.smul_def,
         ← Algebra.smul_mul_assoc, ← ha]
     · suffices algebraMap R S (f.coeff n) + algebraMap R S (if n = m then a else 0) ∉ p by
@@ -521,7 +521,7 @@ lemma ZariskiMainProperty.of_algHom_mvPolynomial
       refine RingHom.finite_iff_isIntegral_and_finiteType.mpr ⟨?_, ?_⟩
       · letI := φ.toAlgebra
         have : IsScalarTower (MvPolynomial (Fin n) R) R' S := .of_algebraMap_eq' <| by
-          ext <;> simp [φ, RingHom.algebraMap_toAlgebra, f',
+          ext <;> simp [φ, (f'.toRingHom.comp C).algebraMap_toAlgebra, φ.algebraMap_toAlgebra, f',
             MvPolynomial.finSuccEquiv, MvPolynomial.optionEquivLeft]
         refine algebraMap_isIntegral_iff.mpr (integralClosure_eq_top_iff.mp ?_)
         apply Subalgebra.restrictScalars_injective R

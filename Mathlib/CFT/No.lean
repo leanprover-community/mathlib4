@@ -110,7 +110,8 @@ theorem exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux.{v, u}
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hpP
     rw [Ideal.comap_comap]
     convert Ideal.comap_tensorProductEquivOfBijectiveResidueFieldMap_symm hpQ _
-    ext; simp [φ]
+    · ext; simp [φ]
+    · simp; rfl
   refine ⟨R'', inferInstance, _, .comp R R' R'', Q, ‹_›, .trans _ P _, _, _, he', Fin.cons P'φ
     Q', Fin.cases P'φ.2.1 ?_, Fin.cases P'φ.2.2 ?_, hpQ, Fin.cases ?_ ?_, ?_⟩
   · intro P'' _ _
@@ -218,7 +219,7 @@ lemma exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'.{u, v}
       let F := Ideal.tensorProductEquivOfBijectiveResidueFieldMap hpP (S := S)
       refine (exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux' _ _
         P' heP' (F.finite_iff.mpr hpSfin)).trans_le ?_
-      rw [← h, ← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq, Nat.card_congr F]
+      rw [← h, ← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq, Nat.card_congr F.toEquiv]
     obtain ⟨R'', _, _, _, Q, _, _, n, e' : _ → Thing R'' e, he', Q' : _ → Ideal (Thing R'' e),
       _, _, hPQ, hQ', H'⟩ :=
       IH _ this (R := R') (S := R' ⊗[R] S ⧸ Ideal.span {e}) P rfl
