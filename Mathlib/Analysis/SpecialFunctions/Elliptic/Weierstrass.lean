@@ -46,12 +46,6 @@ Weierstrass p-functions, Weierstrass p functions
 
 open Module
 
-section
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-
-end
-
 noncomputable section
 
 /-- A pair of `ℝ`-linearly independent complex numbers.
