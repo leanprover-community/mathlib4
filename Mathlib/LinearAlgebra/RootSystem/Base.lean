@@ -334,7 +334,7 @@ include b
 
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧
-      (P.root i =   ∑ j ∈ b.support, f j • P.root j ∨
+      (P.root i = ∑ j ∈ b.support, f j • P.root j ∨
        P.root i = - ∑ j ∈ b.support, f j • P.root j) := by
   classical
   simp_rw [← neg_eq_iff_eq_neg]
