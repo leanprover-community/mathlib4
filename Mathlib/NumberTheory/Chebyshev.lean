@@ -297,6 +297,7 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
+  --Rewrite in a form to which Abel summation can be applied
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero, sum_filter]
   push_cast
@@ -313,7 +314,8 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp [h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
-  · have int_deriv (f : ℝ → ℝ) :
+  · --Rewrite the derivative inside the intigral
+    have int_deriv (f : ℝ → ℝ) :
       ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
       ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
       apply intervalIntegral.integral_congr fun u hu ↦ ?_
@@ -324,12 +326,14 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       all_goals linarith [hu.1]
     simp [int_deriv, a, Set.indicator_apply, sum_filter, theta_eq_sum_Icc]
     grind
-  · intro z hz
+  · --Differentiability
+    intro z hz
     have : z ≠ 0 := by linarith [hz.1]
     have : log z ≠ 0 := by
       apply log_ne_zero_of_pos_of_ne_one <;> linarith [hz.1]
     fun_prop (disch := assumption)
-  · have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹ := by
+  · --Integrability of the derivative
+    have : ∀ y ∈ Set.Icc 2 x, deriv (fun x ↦ (log x)⁻¹) y = -(y * log y ^ 2)⁻¹ := by
       intro y hy
       rw [deriv_log_inv, mul_inv, ← div_eq_mul_inv, neg_div]
       all_goals linarith [hy.1]

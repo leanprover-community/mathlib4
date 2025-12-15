@@ -242,7 +242,8 @@ theorem sum_mul_eq_sub_integral_mul₁ (hc : c 0 = 0) (hc1 : c 1 = 0) (b : ℝ)
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 2 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
   by_cases! hb : b < 2
-  · have {n : ℕ} (hn : n ∈ Icc 0 ⌊b⌋₊) : c n = 0 := by
+  · --Easy case, everything is 0
+    have {n : ℕ} (hn : n ∈ Icc 0 ⌊b⌋₊) : c n = 0 := by
       have : n < 2 := by
         exact lt_of_le_of_lt (mem_Icc.mp hn).2 <| Nat.floor_lt' (by linarith)|>.mpr (mod_cast hb)
       lia
@@ -251,10 +252,12 @@ theorem sum_mul_eq_sub_integral_mul₁ (hc : c 0 = 0) (hc1 : c 1 = 0) (b : ℝ)
     · exact fun x hx ↦ this hx
     · intro x hx
       rw [this hx, mul_zero]
+  --Split off the first two terms of the sum
   rw [← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ, Nat.succ_eq_add_one,
     zero_add, ← add_sum_Ioc_eq_sum_Icc, ← Icc_succ_left_eq_Ioc, Nat.succ_eq_succ,
     Nat.succ_eq_add_one, one_add_one_eq_two, ← add_sum_Ioc_eq_sum_Icc]
-  · nth_rewrite 3 [show 2 = ⌊(2 : ℝ)⌋₊ by simp]
+  · --Apply Abel summation to the remainder
+    nth_rewrite 3 [show 2 = ⌊(2 : ℝ)⌋₊ by simp]
     rw [sum_mul_eq_sub_sub_integral_mul c zero_le_two hb hf_diff hf_int]
     simp [show Icc 0 2 = {0,1,2} by rfl, hc, hc1]
     grind
