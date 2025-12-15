@@ -334,7 +334,7 @@ noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
 variable (M) in
 @[to_additive (attr := simp)]
 lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
-    mapRangeAlgHom M f = mapRangeRingHom M f.toRingHom := rfl
+    (mapRangeAlgHom M f).toRingHom = mapRangeRingHom M f.toRingHom := rfl
 
 @[to_additive (attr := simp)]
 lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : A[M]) (m : M) :

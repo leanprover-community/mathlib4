@@ -421,7 +421,7 @@ variable {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J)
 
 @[simp]
 lemma Quotient.coe_factorₐ :
-    (Ideal.Quotient.factorₐ R₁ hIJ : A ⧸ I →+* A ⧸ J) = Ideal.Quotient.factor hIJ := rfl
+    (Ideal.Quotient.factorₐ R₁ hIJ).toRingHom = Ideal.Quotient.factor hIJ := rfl
 
 @[simp]
 lemma Quotient.factorₐ_apply_mk (x : A) :
@@ -509,7 +509,7 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
 
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
-    (kerLiftAlg f : A ⧸ f.ker →+* B) = RingHom.kerLift (f : A →+* B) :=
+    (kerLiftAlg f).toRingHom = RingHom.kerLift f.toRingHom :=
   rfl
 
 /-- The induced algebra morphism from the quotient by the kernel is injective. -/
@@ -673,8 +673,7 @@ def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
 @[simp]
 lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
-      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
-        AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
+      (by simp [hIJ, map_map, ← AlgEquiv.toRingHom_trans]) :=
   rfl
 
 @[simp]
@@ -947,7 +946,7 @@ def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
 
 @[simp]
 theorem quotLeftToQuotSupₐ_toRingHom :
-    (quotLeftToQuotSupₐ R I J : _ →+* _) = quotLeftToQuotSup I J :=
+    (quotLeftToQuotSupₐ R I J).toRingHom = quotLeftToQuotSup I J :=
   rfl
 
 @[simp]
@@ -961,8 +960,7 @@ def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A 
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
-    ((quotQuotToQuotSupₐ R I J) : _ ⧸ map (Ideal.Quotient.mkₐ R I) J →+* _) =
-      quotQuotToQuotSup I J :=
+    (quotQuotToQuotSupₐ R I J).toRingHom = quotQuotToQuotSup I J :=
   rfl
 
 @[simp]
@@ -976,7 +974,7 @@ def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
 
 @[simp]
 theorem quotQuotMkₐ_toRingHom :
-    (quotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = quotQuotMk I J :=
+    (quotQuotMkₐ R I J).toRingHom = quotQuotMk I J :=
   rfl
 
 @[simp]
@@ -990,7 +988,7 @@ def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :
-    (liftSupQuotQuotMkₐ R I J : _ →+* _ ⧸ J.map (Quotient.mkₐ R I)) = liftSupQuotQuotMk I J :=
+    (liftSupQuotQuotMkₐ R I J).toRingHom = liftSupQuotQuotMk I J :=
   rfl
 
 @[simp]

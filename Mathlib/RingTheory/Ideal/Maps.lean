@@ -743,7 +743,6 @@ theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
 theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   ext; simp
 
-@[simp]
 theorem ker_equiv (f : R ≃+* S) : ker f.toRingHom = ⊥ := by
   ext; simp
 

@@ -140,7 +140,7 @@ def toAlgHom : S →ₐ[R] A :=
 theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
 @[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+theorem coe_toAlgHom : (toAlgHom R S A).toRingHom = algebraMap S A :=
   RingHom.ext fun _ => rfl
 
 @[simp]
@@ -157,13 +157,8 @@ variable (R)
 
 @[simp]
 theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
-    (f : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext (AlgHom.map_algebraMap f)
-
-@[simp]
-theorem _root_.AlgHom.comp_algebraMap_of_tower' (f : A →ₐ[S] B) :
     f.toRingHom.comp (algebraMap R A) = algebraMap R B :=
-  f.comp_algebraMap_of_tower _
+  RingHom.ext (AlgHom.map_algebraMap f)
 
 -- conflicts with IsScalarTower.Subalgebra
 instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A :=
@@ -202,7 +197,7 @@ def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
 theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
 @[simp]
-theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R : A →+* B) = f := rfl
+theorem coe_restrictScalars (f : A →ₐ[S] B) : (f.restrictScalars R).toRingHom = f := rfl
 
 @[simp]
 theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl

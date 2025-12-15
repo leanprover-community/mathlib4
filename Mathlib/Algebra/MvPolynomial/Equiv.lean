@@ -770,7 +770,7 @@ lemma Polynomial.toMvPolynomial_injective (i : σ) :
 
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
-    (eval f).comp (toMvPolynomial (R := R) i) = Polynomial.evalRingHom (f i) := by
+    (eval f).comp (toMvPolynomial (R := R) i).toRingHom = Polynomial.evalRingHom (f i) := by
   ext <;> simp
 
 @[simp]

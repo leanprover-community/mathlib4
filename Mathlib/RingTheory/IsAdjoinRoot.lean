@@ -348,7 +348,7 @@ def liftHom : S →ₐ[R] T :=
   { h.lift (algebraMap R T) x hx' with commutes' a := h.lift_algebraMap hx' a }
 
 @[simp]
-theorem coe_liftHom : (h.liftHom x hx' : S →+* T) = h.lift (algebraMap R T) x hx' := rfl
+theorem coe_liftHom : (h.liftHom x hx').toRingHom = h.lift (algebraMap R T) x hx' := rfl
 
 theorem lift_algebraMap_apply (z : S) : h.lift (algebraMap R T) x hx' z = h.liftHom x hx' z := rfl
 

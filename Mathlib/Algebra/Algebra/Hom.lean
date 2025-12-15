@@ -172,11 +172,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : (f.toRingHom : A →+ B) = f :=
   rfl
 
 variable (φ : A →ₐ[R] B)
@@ -392,7 +392,7 @@ namespace AlgHomClass
 @[simp]
 lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+    (AlgHomClass.toAlgHom f).toRingHom = RingHomClass.toRingHom f := rfl
 
 end AlgHomClass
 

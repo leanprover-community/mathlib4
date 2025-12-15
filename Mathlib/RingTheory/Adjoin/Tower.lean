@@ -54,7 +54,7 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemirin
     (Algebra.adjoin E (algebraMap D F '' S)).restrictScalars C =
       (Algebra.adjoin D (algebraMap E F '' T)).restrictScalars C := by
   rw [adjoin_restrictScalars C E, adjoin_restrictScalars C D, ← hS, ← hT, ← Algebra.adjoin_image,
-    ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
+    ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom', ← AlgHom.coe_toRingHom',
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
     adjoin_union_eq_adjoin_adjoin, Set.union_comm]
 

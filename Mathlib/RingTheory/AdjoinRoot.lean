@@ -171,7 +171,7 @@ variable (S) in
 /-- Embedding of the original ring `R` into `AdjoinRoot p`. -/
 abbrev ofAlgHom : R →ₐ[S] AdjoinRoot p := Algebra.algHom S R <| AdjoinRoot p
 
-@[simp] lemma toRingHom_ofAlgHom : ofAlgHom S p = of p := rfl
+@[simp] lemma toRingHom_ofAlgHom : (ofAlgHom S p).toRingHom = of p := rfl
 
 @[simp] lemma coe_ofAlgHom : ⇑(ofAlgHom S p) = of p := rfl
 
@@ -309,7 +309,7 @@ def liftAlgHom (i : R →ₐ[S] T) (x : T) (h : p.eval₂ i x = 0) : AdjoinRoot 
   commutes' r := by simp [AdjoinRoot.algebraMap_eq']
 
 @[simp] lemma toRingHom_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) :
-    (liftAlgHom p i x h : AdjoinRoot p →+* T) = lift i.toRingHom _ h := rfl
+    (liftAlgHom p i x h).toRingHom = lift i.toRingHom _ h := rfl
 
 lemma coe_liftAlgHom (i : R →ₐ[S] T) (x : T) (h) : ⇑(liftAlgHom p i x h) = lift i.toRingHom _ h :=
   rfl
