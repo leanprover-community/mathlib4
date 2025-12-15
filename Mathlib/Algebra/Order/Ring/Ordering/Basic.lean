@@ -122,14 +122,14 @@ alias HasIdealSupport.smul_mem := AddSubmonoid.smul_mem
 alias HasIdealSupport.neg_smul_mem := AddSubmonoid.neg_smul_mem
 
 theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport where
-  smul_mem_support x a _ _ := by
-  rcases h.exists_right_inv with ⟨half, h2⟩
-  set y := (1 + x) * half
-  set z := (1 - x) * half
-  rw [show x = y ^ 2 - z ^ 2 by
-    linear_combination (- x - x * half * 2) * h2]
-  ring_nf
-  aesop (add simp sub_eq_add_neg)
+  smul_mem_support x a _ := by
+    rcases h.exists_right_inv with ⟨half, h2⟩
+    set y := (1 + x) * half
+    set z := (1 - x) * half
+    rw [show x = y ^ 2 - z ^ 2 by
+      linear_combination (- x - x * half * 2) * h2]
+    ring_nf
+    aesop (add simp sub_eq_add_neg)
 
 instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_two h.out
 
