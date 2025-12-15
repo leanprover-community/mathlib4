@@ -36,8 +36,8 @@ the twisted shift.
 
 namespace CategoryTheory
 
-variable {C₁ C₁' C₂ C₂' D : Type*} [Category C₁] [Category C₁']
-  [Category C₂] [Category C₂'] [Category D]
+variable {C₁ C₁' C₂ C₂' D : Type*} [Category* C₁] [Category* C₁']
+  [Category* C₂] [Category* C₂'] [Category* D]
 
 variable (D) in
 /-- Given a category `D` equipped with a shift by an additive monoid `M`, this
@@ -66,7 +66,7 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    cutsat
+    lia
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 

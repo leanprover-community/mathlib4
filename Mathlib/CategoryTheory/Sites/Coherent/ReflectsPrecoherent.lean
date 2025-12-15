@@ -21,7 +21,7 @@ effective epimorphic families, such that for every object `X` of `D` there exist
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.EffectivelyEnough]
   [Precoherent D] [F.Full] [F.Faithful]

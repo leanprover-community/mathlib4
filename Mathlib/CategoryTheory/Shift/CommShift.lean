@@ -35,7 +35,7 @@ open Category
 
 namespace Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   (F : C ⥤ D) (G : D ⥤ E) (A B : Type*) [AddMonoid A] [AddCommMonoid B]
   [HasShift C A] [HasShift D A] [HasShift E A]
   [HasShift C B] [HasShift D B]
@@ -238,7 +238,7 @@ end Functor
 
 namespace NatTrans
 
-variable {C D E J : Type*} [Category C] [Category D] [Category E] [Category J]
+variable {C D E J : Type*} [Category* C] [Category* D] [Category* E] [Category* J]
   {F₁ F₂ F₃ : C ⥤ D} (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (e : F₁ ≅ F₂)
     (G G' : D ⥤ E) (τ'' : G ⟶ G') (H : E ⥤ J)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] [HasShift E A] [HasShift J A]
@@ -331,7 +331,7 @@ namespace Functor
 
 namespace CommShift
 
-variable {C D E : Type*} [Category C] [Category D]
+variable {C D E : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
   [F.CommShift A]
@@ -386,7 +386,7 @@ are equipped with a shift by an additive monoid `A`, and all these functors comm
 these shifts, then the natural transformation `e₁₃` of the outer square commutes with the
 shift if all `α`, `e₂₃`, `e₁₂` and `β` do. -/
 lemma NatTrans.CommShift.verticalComposition {C₁ C₂ C₃ D₁ D₂ D₃ : Type*}
-    [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
+    [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]
     {F₁₂ : C₁ ⥤ C₂} {F₂₃ : C₂ ⥤ C₃} {F₁₃ : C₁ ⥤ C₃} (α : F₁₃ ⟶ F₁₂ ⋙ F₂₃)
     {G₁₂ : D₁ ⥤ D₂} {G₂₃ : D₂ ⥤ D₃} {G₁₃ : D₁ ⥤ D₃} (β : G₁₂ ⋙ G₂₃ ⟶ G₁₃)
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃}
