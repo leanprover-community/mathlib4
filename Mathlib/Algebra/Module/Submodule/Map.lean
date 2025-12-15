@@ -53,50 +53,43 @@ variable (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 /-- The pushforward of a submodule `p ⊆ M` by `f : M → M₂` -/
 def map : Submodule R₂ M₂ := span R₂ (f '' p)
 
-  -- { p.toAddSubmonoid.map f with
-  --   carrier := f '' p
-  --   smul_mem' := by
-  --     rintro c x ⟨y, hy, rfl⟩
-  --     obtain ⟨a, rfl⟩ := σ₁₂.surjective c
-  --     exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
+lemma map_def : p.map f = span R₂ (f '' p) := rfl
 
 lemma map_mem {x : M} (hx : x ∈ p) : f x ∈ p.map f := by
   apply mem_span_of_mem
-  refine ⟨_, hx, rfl⟩
+  exact ⟨_, hx, rfl⟩
 
-lemma map_carrier_eq_of_surjective [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    (p.map f).carrier =  f '' p := by
+lemma map_eq_of_surjective [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) :
+    p.map f = f '' p := by
   ext x
   refine ⟨fun hx ↦ ?_, mem_span_of_mem⟩
-  · let p' : Submodule R₂ M₂ :=
-    { p.toAddSubmonoid.map f with
-      carrier := f '' p
-      smul_mem' := by
-        rintro c x ⟨y, hy, rfl⟩
-        obtain ⟨a, rfl⟩ := σ₁₂.surjective c
-        exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
-    sorry
+  have hn : (f '' p).Nonempty := ⟨f 0, 0, by simp⟩
+  have h_mem : ∀ x₁ ∈ f '' p, ∀ x₂ ∈ f '' p, ∀ (a b : R₂), a • x₁ + b • x₂ ∈ f '' p := by
+    rintro _ ⟨z₁, hz₁⟩ _ ⟨z₂, hz₂⟩ a b
+    obtain ⟨a₀, ha₀⟩ : ∃ a₀ : R, σ₁₂ a₀ = a := σ₁₂.surjective ..
+    obtain ⟨b₀, hb₀⟩ : ∃ b₀ : R, σ₁₂ b₀ = b := σ₁₂.surjective ..
+    exact ⟨_, p.add_mem (p.smul_mem a₀ hz₁.1) (p.smul_mem b₀ hz₂.1), by simp_all⟩
+  rw [← coe_ofLinearComb _ hn h_mem]
+  apply mem_span.mp hx
+  simp only [coe_ofLinearComb, subset_refl]
 
 @[simp]
-theorem map_coe (g : M →ₛₗ[σ₁₂] M₂)(p : Submodule R M) : ((map' g p).carrier : Set M₂) = g '' p :=
-  rfl
+lemma mem_map_of_surjective [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} (x : M₂) :
+    x ∈ p.map f ↔ x ∈ f '' p := by
+  change x ∈ ((p.map f) : Set _) ↔ ∃ x_1 ∈ ↑p, f x_1 = x
+  simp [map_eq_of_surjective]
 
-@[simp]
-theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
+variable [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂)
 
-theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
-  SetLike.coe_injective rfl
-
-theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    (p.map f).toAddSubmonoid = p.toAddSubmonoid.map f :=
-  SetLike.coe_injective rfl
+theorem map_toAddSubmonoid (p : Submodule R M) :
+    (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) := by
+  ext x; simp
 
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
     (f : A →+ A₂) (s : AddSubgroup A) :
     (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
-      AddSubgroup.toIntSubmodule (s.map f) := rfl
+      AddSubgroup.toIntSubmodule (s.map f) := by sorry--rfl
 
 @[simp]
 theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
