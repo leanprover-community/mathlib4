@@ -98,6 +98,13 @@ theorem subsingleton_of_finrank_le_one [Module.Free R V] [Module.Finite R V]
     simpa [← Units.val_inj, LinearEquiv.coe_det, ← hc,
       LinearEquiv.smul_id_of_finrank_eq_one, d1] using hu
 
+theorem eq_of_finrank_le_one [Module.Free R V] [Module.Finite R V]
+    (d1 : Module.finrank R V ≤ 1) (x y : SpecialLinearGroup R V) :
+    x = y := by
+  suffices Subsingleton (SpecialLinearGroup R V) by
+    apply Subsingleton.allEq
+  apply subsingleton_of_finrank_le_one d1
+
 /-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
