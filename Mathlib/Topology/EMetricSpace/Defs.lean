@@ -724,6 +724,12 @@ theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
     (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
     (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
 
+theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
+    {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} (s : Set α) :
+    IsOpen[((WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace).toTopologicalSpace] s ↔
+    IsOpen[((uniformSpaceOfEDist
+    m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
+
 @[ext]
 protected theorem EMetricSpace.ext
     {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by

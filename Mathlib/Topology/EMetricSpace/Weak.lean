@@ -20,48 +20,65 @@ of weak (pseudo) extended metric spaces are weak (pseudo) extended metric spaces
 
 open Set Filter
 
-open scoped Uniformity Topology Filter NNReal ENNReal Pointwise OnePoint
+open scoped Uniformity Topology Filter NNReal Pointwise OnePoint
 
 universe u v w
 
 namespace WeakEMetric
 
+namespace OnePoint
 
-instance OnePoint.EDist {α : Type u} [EDist α] :
-    EDist (OnePoint α) where
+section
+
+variable {α : Type u} [EDist α]
+
+instance toEDist : EDist (OnePoint α) where
   edist := fun
     | some a, some b => edist a b
     | ∞, some _ => ⊤
     | some _, ∞ => ⊤
     | ∞, ∞ => 0
 
-section
-
-variable {α : Type u} [TopologicalSpace α] [WeakPseudoEMetricSpace α]
-
-#check EDist α
-
 @[simp]
-theorem OnePoint.edist_top_top : edist (self := OnePoint.EDist (α := α))
+theorem edist_top_top : edist (self := OnePoint.toEDist (α := α))
    ∞ ∞ = 0 := rfl
 
 @[simp]
-theorem OnePoint.edist_top_left {a : α} :
-    edist (self := OnePoint.EDist (α := α)) ∞ (some a) = ⊤ := rfl
+theorem edist_top_left {a : α} :
+    edist (self := OnePoint.toEDist (α := α)) ∞ (some a) = ⊤ := rfl
 
 @[simp]
-theorem OnePoint.edist_top_right {a : α} :
-    edist (self := OnePoint.EDist (α := α)) (some a) ∞ = ⊤ := rfl
+theorem edist_top_right {a : α} :
+    edist (self := OnePoint.toEDist (α := α)) (some a) ∞ = ⊤ := rfl
 
 @[simp]
-theorem OnePoint.edist_some_some {a b : α} :
-    edist (self := OnePoint.EDist (α := α)) (some a) (some b) = edist a b := rfl
+theorem edist_some_some {a b : α} :
+    edist (self := OnePoint.toEDist (α := α)) (some a) (some b) = edist a b := rfl
 
 end
 
-variable {α : Type u} [TopologicalSpace α] [PseudoEMetricSpace α]
+section
 
-instance OnePoint.toWeakPseudoEMetricSpace
+variable {α : Type u} [TopologicalSpace α] [WeakPseudoEMetricSpace α] {x : OnePoint α}
+
+theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
+    ball (∞ : OnePoint α) r = {∞} := by
+  refine eq_singleton_iff_unique_mem.mpr ⟨mem_ball.mpr hr, ?_⟩
+  intro x
+  match x with
+  | some _ => simp
+  | none => tauto
+
+theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ ball x r := by
+  match x with
+  | some a => simp
+  | ∞ => contradiction
+
+@[simp]
+theorem infty_not_mem_ball' {x : α} (r : ENNReal) : ∞ ∉ ball (↑x : OnePoint α) r :=
+  infty_not_mem_ball r (OnePoint.coe_ne_infty x)
+
+instance toWeakPseudoEMetricSpace
     {α : Type u} [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
     WeakPseudoEMetricSpace (OnePoint α) where
   edist := edist
@@ -84,16 +101,38 @@ instance OnePoint.toWeakPseudoEMetricSpace
   | ∞, ∞, ∞ => by simp
   topology_le := by
     intro s sh
+    let τ := (uniformSpaceOfEDist
+          m.edist m.edist_self m.edist_comm m.edist_triangle).toTopologicalSpace
 
     sorry
   topology_eq_on_restrict := by
     intro x s sO
     match x with
     | some x =>
-      rw [← toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist] at sO
-      sorry
+      refine (IsOpen.inter_preimage_val_iff ?_).mpr ?_
+      · refine (OnePoint.isOpen_iff_of_notMem ?_).mpr ?_
+        · apply infty_not_mem_ball ⊤
+          tauto
+        have e : OnePoint.some ⁻¹' ball (some x) ⊤ = ball x ⊤ := by
+          ext y
+          have : (↑y : OnePoint α) = some y := by congr
+          simp [this]
+        rw [e]
+        let τ := (uniformSpaceOfEDist
+          m.edist m.edist_self m.edist_comm m.edist_triangle).toTopologicalSpace
+        rw [toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr]
+        have : IsOpen[τ] (ball x ⊤) := by
+          -- toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
+          sorry
+
+        sorry
+      · sorry
     | ∞ =>
-      sorry
+      apply discreteTopology_iff_forall_isOpen.1
+      rw [ball_infty_of_pos ENNReal.zero_lt_top]
+      exact Subsingleton.discreteTopology
+
+end
 
 #check OnePoint
 example : 0 = 0 := by sorry
@@ -102,10 +141,6 @@ example : 0 = 0 := by sorry
 
 #check WithTop
 
+end OnePoint
+
 end WeakEMetric
-
-
-theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist
-    (α : Type u) [TopologicalSpace α] {m : WeakPseudoEMetricSpace α} :
-    (WeakPseudoEMetricSpace.toPseudoEMetricSpace α).toUniformSpace =
-    (uniformSpaceOfEDist m.edist m.edist_self m.edist_comm m.edist_triangle) := by rfl
