@@ -50,7 +50,6 @@ instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Di
 instance {J : Type u} [Finite J] [Category J] [Quiver.IsThin J] : FinCategory J :=
   FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
 
-
 open Opposite
 
 /-- The opposite of a finite category is finite.
