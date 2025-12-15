@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Function.FactorsThrough
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
@@ -281,7 +281,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Fₙ` is the integral of `fₙ` from time `k + 1` to `aₙ`.
   let F n : (Π n, X n) → ℝ≥0∞ := lmarginalPartialTraj κ (k + 1) (a n) (f n)
   -- `Fₙ` converges to `l` by hypothesis.
@@ -353,7 +353,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
-      exact ProbabilityMeasure.nonempty ⟨κ m Classical.ofNonempty, inferInstance⟩
+      exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
   -- `Aₙ` is a cylinder, it can be written as `cylinder (Iic (a n)) Sₙ`.
   have A_cyl n : ∃ a S, MeasurableSet S ∧ A n = cylinder (Iic a) S := by
     simpa [measurableCylinders_nat] using A_mem n
