@@ -113,8 +113,8 @@ lemma Abelian.Ext.mapExactFunctor_add [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n where
   toFun e := e.mapExactFunctor F
-  map_zero' := Ext.mapExactFunctor_zero F X Y n
-  map_add' := Ext.mapExactFunctor_add F X Y n
+  map_zero' := by simp
+  map_add' := by simp
 
 @[simp]
 lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -137,7 +137,7 @@ lemma Functor.mapExactFunctor_smul [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n :
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n where
   __ := F.mapExtAddHom X Y n
-  map_smul' := F.mapExactFunctor_smul R X Y n
+  map_smul' := by simp
 
 @[simp]
 lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
