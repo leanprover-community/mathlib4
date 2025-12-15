@@ -107,7 +107,7 @@ theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIn
   isIntegrallyClosed_iff_isIntegrallyClosedIn K
 
 /-- `R` is integrally closed in `A` iff all integral elements of `A` are also elements of `R`. -/
-theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
+theorem isIntegrallyClosedIn_iff :
     IsIntegrallyClosedIn R A ↔
       Function.Injective (algebraMap R A) ∧
         ∀ {x : A}, IsIntegral R x → ∃ y, algebraMap R A y = x := by
@@ -125,6 +125,39 @@ theorem isIntegrallyClosed_iff :
     IsIntegrallyClosed R ↔ ∀ {x : K}, IsIntegral R x → ∃ y, algebraMap R K y = x := by
   simp [isIntegrallyClosed_iff_isIntegrallyClosedIn K, isIntegrallyClosedIn_iff,
         IsFractionRing.injective R K]
+
+instance : IsIntegrallyClosedIn (integralClosure R A) A :=
+  isIntegrallyClosedIn_iff.mpr ⟨Subtype.val_injective, fun h ↦ ⟨⟨_, isIntegral_trans _ h⟩, rfl⟩⟩
+
+instance : IsIntegrallyClosedIn (integralClosure R A).toSubring A :=
+  inferInstanceAs (IsIntegrallyClosedIn (integralClosure R A) A)
+
+namespace Subring
+
+variable {C : Type*} [SetLike C A] [SubringClass C A] {S : C}
+
+protected theorem isIntegrallyClosedIn_iff :
+    IsIntegrallyClosedIn S A ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
+  rw [isIntegrallyClosedIn_iff, and_iff_right (by exact Subtype.val_injective)]
+  exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+
+protected theorem isIntegrallyClosed_iff [IsFractionRing S A] :
+    IsIntegrallyClosed S ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
+  rw [isIntegrallyClosed_iff A]; exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+
+theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
+    (integralClosure R A).toSubring ≤ T ↔ ∀ r, algebraMap R A r ∈ T where
+  mp h r := h (algebraMap_mem (integralClosure R A) r)
+  mpr h a ha := Subring.isIntegrallyClosedIn_iff.mp ‹_› <|
+    let : Algebra R T := RingHom.toAlgebra <| .codRestrict _ _ h
+    have : IsScalarTower R T A := .of_algebraMap_eq fun _ ↦ rfl
+    ha.tower_top
+
+theorem integralClosure_subring_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
+    (integralClosure S A).toSubring ≤ T ↔ .ofClass S ≤ T := by
+  rw [integralClosure_le_iff, Subtype.forall, SetLike.le_def]; rfl
+
+end Subring
 
 end Iff
 
