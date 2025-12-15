@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Hahn decomposition
@@ -33,6 +35,8 @@ being positive/negative with respect to the signed measure `s`.
 
 Hahn decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -207,7 +211,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   rintro x ⟨hx₁, hx₂⟩
-  cases m; · cutsat
+  cases m; · lia
   · rw [restrictNonposSeq] at hx₂
     exact
       (someExistsOneDivLT_subset hx₂).2

@@ -3,8 +3,10 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Tight sets of measures
@@ -27,6 +29,8 @@ measures in the set, the complement of `K` has measure at most `ε`.
 
 -/
 
+@[expose] public section
+
 open Filter Set
 
 open scoped ENNReal NNReal Topology
@@ -45,7 +49,7 @@ def IsTightMeasureSet (S : Set (Measure 𝓧)) : Prop :=
 
 /-- A set of measures `S` is tight if for all `0 < ε`, there exists a compact set `K` such that
 for all `μ ∈ S`, `μ Kᶜ ≤ ε`. -/
-lemma IsTightMeasureSet_iff_exists_isCompact_measure_compl_le :
+lemma isTightMeasureSet_iff_exists_isCompact_measure_compl_le :
     IsTightMeasureSet S ↔ ∀ ε, 0 < ε → ∃ K : Set 𝓧, IsCompact K ∧ ∀ μ ∈ S, μ (Kᶜ) ≤ ε := by
   simp only [IsTightMeasureSet, ENNReal.tendsto_nhds ENNReal.zero_ne_top, gt_iff_lt, zero_add,
     iSup_apply, mem_Icc, tsub_le_iff_right, zero_le, iSup_le_iff, true_and, eventually_smallSets,
@@ -56,17 +60,20 @@ lemma IsTightMeasureSet_iff_exists_isCompact_measure_compl_le :
   · obtain ⟨K, h1, h2⟩ := h ε hε
     exact ⟨Kᶜ, ⟨K, h1, subset_rfl⟩, fun A hA μ hμS ↦ (μ.mono hA).trans (h2 μ hμS)⟩
 
+@[deprecated (since := "2025-12-13")] alias
+IsTightMeasureSet_iff_exists_isCompact_measure_compl_le :=
+isTightMeasureSet_iff_exists_isCompact_measure_compl_le
+
 /-- Finite measures that are inner regular with respect to closed compact sets are tight. -/
 theorem isTightMeasureSet_singleton_of_innerRegularWRT [OpensMeasurableSpace 𝓧] [IsFiniteMeasure μ]
     (h : μ.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet) :
     IsTightMeasureSet {μ} := by
-  rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
+  rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le]
   intro ε hε
   let r := μ Set.univ
   cases lt_or_ge ε r with
   | inl hεr =>
-    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) (zero_le'.trans_lt hεr).ne'
-      hε.ne'
+    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) hεr.ne_bot hε.ne'
     obtain ⟨K, _, ⟨hK_compact, hK_closed⟩, hKμ⟩ := h .univ (r - ε) hεr'
     refine ⟨K, hK_compact, ?_⟩
     simp only [mem_singleton_iff, forall_eq]
@@ -118,7 +125,7 @@ protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure 𝓧)) :
 lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace 𝓨] [T2Space 𝓨]
     (hS : IsTightMeasureSet S) {f : 𝓧 → 𝓨} (hf : Continuous f) :
     IsTightMeasureSet (Measure.map f '' S) := by
-  rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
+  rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro ε hε
   obtain ⟨K, hK_compact, hKS⟩ := hS ε hε

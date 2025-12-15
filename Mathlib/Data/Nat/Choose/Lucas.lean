@@ -3,9 +3,11 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lucas's theorem
@@ -20,6 +22,8 @@ respectively.
 * `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
+
+@[expose] public section
 
 open Finset hiding choose
 
@@ -56,7 +60,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
   split_ifs with h
   · simp
-  · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
+  · rw [mem_product, mem_range, mem_range, not_and_or, Nat.lt_succ_iff, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`

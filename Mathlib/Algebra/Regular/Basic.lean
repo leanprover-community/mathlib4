@@ -3,10 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Regular.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Regular.Defs
 
 /-!
 # Regular elements
@@ -22,6 +24,8 @@ by adding one further `0`.
 
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
@@ -216,5 +220,19 @@ lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRe
 @[to_additive (attr := simp)] lemma IsRightRegular.mul_right_eq_self_iff (ha : IsRightRegular a) :
     b * a = a ↔ b = 1 :=
   ⟨fun h ↦ by rwa [← ha.eq_iff, one_mul], fun h ↦ by rw [h, one_mul]⟩
+
+namespace IsDedekindFiniteMonoid
+
+@[to_additive] lemma iff_isLeftRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsLeftRegular x where
+  mp _ x y eq := isLeftRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [← mul_assoc, eq]⟩
+
+@[to_additive] lemma iff_isRightRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsRightRegular y where
+  mp _ x y eq := isRightRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [mul_assoc, eq]⟩
+
+end IsDedekindFiniteMonoid
 
 end Monoid

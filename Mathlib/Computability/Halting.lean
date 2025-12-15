@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Computability.PartrecCode
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Computability theory and the halting problem
@@ -16,6 +18,8 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
+@[expose] public section
+
 open List (Vector)
 open Encodable Denumerable
 
@@ -23,6 +27,7 @@ namespace Nat.Partrec
 
 open Computable Part
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     ∃ h, Nat.Partrec h ∧
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
@@ -252,7 +257,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.
--- @[nolint decidable_classical]
+set_option linter.unusedDecidableInType false in
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a :=
   ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
@@ -321,10 +326,12 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     simp; rw [← ofFn_get v.tail]; congr; funext i; simp
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by

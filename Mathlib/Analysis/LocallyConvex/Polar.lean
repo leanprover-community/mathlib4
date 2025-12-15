@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.Topology.Algebra.Module.WeakBilin
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set
@@ -33,6 +35,8 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 polar
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*}
 
@@ -147,7 +151,7 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
-      rw [B.map_smul, LinearMap.smul_apply, Algebra.id.smul_eq_mul, norm_mul, norm_inv,
+      rw [B.map_smul, LinearMap.smul_apply, smul_eq_mul, norm_mul, norm_inv,
         mul_inv_cancel_left₀ hc.ne']
     _ ≤ ε * 1 := by gcongr; exact hy _ trivial
     _ = ε := mul_one _

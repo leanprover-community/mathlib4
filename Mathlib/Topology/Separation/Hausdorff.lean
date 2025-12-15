@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Topology.Compactness.SigmaCompact
+public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # T₂ and T₂.₅ spaces.
@@ -64,6 +66,8 @@ If the space is also compact:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -437,7 +441,7 @@ instance : T2Space (T2Quotient X) := by
   rw [t2Space_iff]
   rintro ⟨x⟩ ⟨y⟩ (h : ¬ T2Quotient.mk x = T2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
-    simpa [T2Quotient.mk_eq] using h
+    simpa [T2Quotient.mk_eq, Quotient.eq] using h
   exact separated_by_continuous (continuous_map_sInf (by exact hs)) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
@@ -445,7 +449,7 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
     ∀ (a b : X), a ≈ b → f a = f b := by
   change t2Setoid X ≤ Setoid.ker f
   exact sInf_le <| .of_injective_continuous
-    (Setoid.ker_lift_injective _) (hf.quotient_lift fun _ _ ↦ id)
+    (Setoid.kerLift_injective _) (hf.quotient_lift fun _ _ ↦ id)
 
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `T2Quotient X`. This declaration builds the
@@ -524,6 +528,7 @@ theorem Set.EqOn.of_subset_closure [T2Space Y] {s t : Set X} {f g : X → Y} (h 
     tendsto_nhds_unique_of_eventuallyEq ((hf x hx).mono_left <| nhdsWithin_mono _ hst)
       ((hg x hx).mono_left <| nhdsWithin_mono _ hst) (h.eventuallyEq_of_mem self_mem_nhdsWithin)
 
+/-- Retract subspaces of Hausdorff spaces are closed. -/
 theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
   have : EqOn (g ∘ f) id (closure <| range g) :=
@@ -539,9 +544,9 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 
-/-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
+/-- In a `R1Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
 there are neighbourhoods that separate `s` and `t`. -/
-lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
+lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [R1Space X] {s : Set X}
     {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
     (H4 : Disjoint s t) : SeparatedNhds s t := by
   -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
@@ -555,7 +560,7 @@ lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s 
   -- Since the frontier of `s` is compact (as it is a subset of `closure sᶜ`), we simply apply
   -- `SeparatedNhds_of_isCompact_isCompact`.
   rw [← H1.frontier_eq, frontier_eq_closure_inter_closure, H1.closure_eq]
-  refine .of_isCompact_isCompact ?_ ht (disjoint_of_subset_left inter_subset_left H4)
+  refine .of_isCompact_isCompact_isClosed ?_ ht H3 (disjoint_of_subset_left inter_subset_left H4)
   exact H2.of_isClosed_subset (H1.inter isClosed_closure) inter_subset_right
 
 section SeparatedFinset
@@ -589,7 +594,7 @@ lemma Pi.isCompact_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace 
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
 lemma Pi.isCompact_closure_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
+    [∀ i, R1Space (X i)] {s : Set (Π i, X i)} :
     IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
   simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
@@ -614,7 +619,7 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
-/-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
+/-- Two continuous maps into a Hausdorff space disagree at a point iff they disagree in a
 neighborhood. -/
 theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) :

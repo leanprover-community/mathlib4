@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits in functor categories.
@@ -19,6 +21,8 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 (`CategoryTheory.Limits.preservesLimits_of_evaluation` and
 `CategoryTheory.Limits.preservesColimits_of_evaluation`).
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
@@ -377,7 +381,7 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isLimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves limits of shape `J` if it does for each `k : K`. -/
-lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
@@ -409,7 +413,7 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isColimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves all colimits of shape `J` if it does for each `k : K`. -/
-lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesColimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesColimitsOfShape J F :=
   ⟨fun {G} => preservesColimit_of_evaluation F G fun _ => PreservesColimitsOfShape.preservesColimit⟩

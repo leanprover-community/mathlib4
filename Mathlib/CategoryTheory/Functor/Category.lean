@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.NatTrans
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.NatTrans
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # The category of functors and natural transformations between two fixed categories.
@@ -23,6 +25,8 @@ this is another small category at that level.
 However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 
@@ -202,5 +206,12 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
   cat_disch
 
 end Iso
+
+/-- The natural transformation `G.flip.obj Y ⟶ G'.flip.obj Y` induced by
+a natural transformation `τ : G ⟶ G'` between bifunctors. -/
+@[simps!]
+abbrev NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
+    G.flip.obj Y ⟶ G'.flip.obj Y :=
+  ((flipFunctor _ _ _).map τ).app Y
 
 end CategoryTheory

@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.Spectral.Hom
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Spectral.Hom
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Topology.Spectral.Hom
 In this file, we define prespectral spaces as spaces whose lattice of compact opens forms a basis.
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -72,6 +76,21 @@ lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
 lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
+
+/-- Let `f : X → Y` be an open embedding of topological spaces.
+If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
+then `X` is also a prespectral space. -/
+lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
+    {f : X → Y} (hf : IsOpenEmbedding f) :
+    PrespectralSpace X where
+  isTopologicalBasis := by
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
+      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
+        (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
+    refine ⟨f ⁻¹' V, ⟨hoV.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+    · exact hf.toIsInducing.isCompact_preimage' hcV <| Set.SurjOn.subset_range hVf
+    · exact hf.injective.mem_set_image.mp (hVf hy)
 
 instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
     [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=

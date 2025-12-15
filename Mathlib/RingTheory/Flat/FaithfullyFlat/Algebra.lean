@@ -3,11 +3,13 @@ Copyright (c) 2025 Christian Merten, Yi Song, Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.TensorProduct.Quotient
+module
+
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -23,18 +25,20 @@ Let `B` be a faithfully flat `A`-algebra:
   `A` to `B` is the ideal itself.
 - `Module.FaithfullyFlat.tensorProduct_mk_injective`: The natural map `M →ₗ[A] B ⊗[A] M` is
   injective for any `A`-module `M`.
-- `PrimeSpectrum.specComap_surjective_of_faithfullyFlat`: The map on prime spectra induced by
+- `PrimeSpectrum.comap_surjective_of_faithfullyFlat`: The map on prime spectra induced by
   a faithfully flat ring map is surjective. See also
   `Ideal.exists_isPrime_liesOver_of_faithfullyFlat` for a version stated in terms of
   `Ideal.LiesOver`.
 
 Conversely, let `B` be a flat `A`-algebra:
 
-- `Module.FaithfullyFlat.of_specComap_surjective`: `B` is faithfully flat over `A`,
+- `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -43,16 +47,19 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 open TensorProduct LinearMap
 
 /-- If `A →+* B` is flat and surjective on prime spectra, `B` is a faithfully flat `A`-algebra. -/
-lemma Module.FaithfullyFlat.of_specComap_surjective [Flat A B]
-    (h : Function.Surjective ((algebraMap A B).specComap)) :
+lemma Module.FaithfullyFlat.of_comap_surjective [Flat A B]
+    (h : Function.Surjective (PrimeSpectrum.comap (algebraMap A B))) :
     Module.FaithfullyFlat A B := by
   refine ⟨fun m hm ↦ ?_⟩
   obtain ⟨m', hm'⟩ := h ⟨m, hm.isPrime⟩
   have : m = Ideal.comap (algebraMap A B) m'.asIdeal := by
-    rw [← PrimeSpectrum.specComap_asIdeal (algebraMap A B) m', hm']
+    rw [← PrimeSpectrum.comap_asIdeal (algebraMap A B) m', hm']
   rw [Ideal.smul_top_eq_map, this]
   exact (Submodule.restrictScalars_eq_top_iff _ _ _).ne.mpr
     fun top ↦ m'.isPrime.ne_top <| top_le_iff.mp <| top ▸ Ideal.map_comap_le
+
+@[deprecated (since := "2025-12-10")]
+alias Module.FaithfullyFlat.of_specComap_surjective := Module.FaithfullyFlat.of_comap_surjective
 
 /-- If `A` is local and `B` is a local and flat `A`-algebra, then `B` is faithfully flat. -/
 lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B] [Flat A B]
@@ -125,7 +132,11 @@ lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat (p : Ideal A) [p.IsPrime] 
 
 /-- If `B` is a faithfully flat `A`-algebra, the induced map on the prime spectrum is
 surjective. -/
-lemma PrimeSpectrum.specComap_surjective_of_faithfullyFlat :
-    Function.Surjective (algebraMap A B).specComap := fun I ↦
+lemma PrimeSpectrum.comap_surjective_of_faithfullyFlat :
+    Function.Surjective (comap (algebraMap A B)) := fun I ↦
   (PrimeSpectrum.mem_range_comap_iff (algebraMap A B)).mpr
     I.asIdeal.comap_map_eq_self_of_faithfullyFlat
+
+@[deprecated (since := "2025-12-10")]
+alias PrimeSpectrum.specComap_surjective_of_faithfullyFlat :=
+  PrimeSpectrum.comap_surjective_of_faithfullyFlat

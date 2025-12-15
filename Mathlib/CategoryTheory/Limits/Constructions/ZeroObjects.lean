@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
 # Limits involving zero objects
@@ -13,12 +15,14 @@ Binary products and coproducts with a zero object always exist,
 and pullbacks/pushouts over a zero object are products/coproducts.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace CategoryTheory.Limits
 

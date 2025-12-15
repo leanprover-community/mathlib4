@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 /-!
 # Constructor for derivability structures
@@ -29,11 +31,13 @@ This statement is essentially Lemme 6.5 in
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -47,7 +51,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 namespace Constructor
 
-variable {D : Type*} [Category D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
+variable {D : Type*} [Category* D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
   {X₂ : C₂} {X₃ : D} (y : L.obj X₂ ⟶ X₃)
 
 /-- Given `Φ : LocalizerMorphism W₁ W₂`, `L : C₂ ⥤ D` a localization functor for `W₂` and

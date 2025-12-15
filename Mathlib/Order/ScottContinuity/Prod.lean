@@ -3,8 +3,10 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Order.Bounds.Lattice
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Order.Bounds.Lattice
 
 /-!
 # Scott continuity on product spaces
@@ -16,6 +18,8 @@ import Mathlib.Order.Bounds.Lattice
 - `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -34,10 +38,10 @@ lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
     ← isLUB_iUnion_iff_of_isLUB (fun a => by
       rw [singleton_prod, image_image f (fun b ↦ (a, b))]
       exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
-        (DirectedOn.snd hd₂) ((isLUB_prod (_,_)).mp hdp).2) _, Set.range]
+        (DirectedOn.snd hd₂) ((isLUB_prod (_, _)).mp hdp).2) _, Set.range]
   convert (h₂ _
     (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁) (DirectedOn.fst hd₂)
-    ((isLUB_prod (p1,p2)).mp hdp).1)
+    ((isLUB_prod (p1, p2)).mp hdp).1)
   ext : 1
   simp_all only [Subtype.exists, mem_image, Prod.exists,
     exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]

@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 /-!
 
 # Description of the covering sieves of the regular topology
@@ -16,11 +18,13 @@ This file characterises the covering sieves of the regular topology.
   regular topology if and only if it contains an effective epi.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.regularTopology
 
 open Limits
 
-variable {C : Type*} [Category C] [Preregular C] {X : C}
+variable {C : Type*} [Category* C] [Preregular C] {X : C}
 
 /--
 For a preregular category, any sieve that contains an `EffectiveEpi` is a covering sieve of the

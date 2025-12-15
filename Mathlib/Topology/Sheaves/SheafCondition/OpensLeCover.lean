@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Another version of the sheaf condition.
@@ -30,6 +32,8 @@ like `pairwise_intersections` and `equalizer_products`.
 * This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
 -/
 
+@[expose] public section
+
 
 universe w
 
@@ -39,7 +43,7 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Open
 
 namespace TopCat
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type*} (U : ι → Opens X)
 
 namespace Presheaf

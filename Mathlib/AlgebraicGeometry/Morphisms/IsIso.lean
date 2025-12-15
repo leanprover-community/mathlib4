@@ -3,13 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 /-!
 
 # Being an isomorphism is local at the target
 
 -/
+
+@[expose] public section
 
 open CategoryTheory MorphismProperty
 
@@ -18,7 +22,7 @@ namespace AlgebraicGeometry
 lemma isomorphisms_eq_isOpenImmersion_inf_surjective :
     isomorphisms Scheme = (@IsOpenImmersion ⊓ @Surjective : MorphismProperty Scheme) := by
   ext
-  exact (isIso_iff_isOpenImmersion _).trans
+  exact (isIso_iff_isOpenImmersion_and_epi_base _).trans
     (and_congr Iff.rfl ((TopCat.epi_iff_surjective _).trans (surjective_iff _).symm))
 
 lemma isomorphisms_eq_stalkwise :
@@ -32,8 +36,7 @@ lemma isomorphisms_eq_stalkwise :
     (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
-instance : IsZariskiLocalAtTarget (isomorphisms Scheme) :=
-  isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
+example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
   convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY

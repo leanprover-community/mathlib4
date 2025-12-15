@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Multicoequalizers that are pushouts
@@ -15,9 +17,11 @@ a pushout when `ι` has exactly two elements.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits.Multicofork.IsColimit
 
-variable {C : Type*} [Category C] {J : MultispanShape} [Unique J.L]
+variable {C : Type*} [Category* C] {J : MultispanShape} [Unique J.L]
   {I : MultispanIndex J C} (c : Multicofork I)
   (h : {J.fst default, J.snd default} = Set.univ) (h' : J.fst default ≠ J.snd default)
 

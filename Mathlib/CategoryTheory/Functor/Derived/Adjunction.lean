@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
 /-!
 # Derived adjunction
@@ -29,9 +31,11 @@ foncteurs dérivés, revisité*][Maltsiniotis2007]
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} (adj : G ⊣ F)
   {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]

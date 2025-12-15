@@ -3,13 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Complex.Order
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
+module
+
+public import Mathlib.Analysis.Complex.Order
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -36,6 +38,8 @@ namespace `Complex`.
 We also register the fact that `ℂ` is an `RCLike` field.
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Absorbs
@@ -244,6 +248,9 @@ theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
   ⟨ofRealAm.toLinearMap, norm_real⟩
+
+@[simp]
+theorem ofRealLI_apply (x : ℝ) : ofRealLI x = x := rfl
 
 theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
@@ -632,8 +639,8 @@ open Metric in
 the `slitPlane` if it does not contain `-r`. -/
 lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
     s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
-  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
-  push ¬ _
+  simp_rw [Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  contrapose!
   refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
   rintro ⟨z, hzs, hz⟩
   have : ‖z‖ = r := by simpa using hs hzs

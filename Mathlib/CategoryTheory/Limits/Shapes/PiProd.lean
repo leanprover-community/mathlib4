@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # A product as a binary product
@@ -14,9 +16,11 @@ and its complement.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits
 
-variable {C I : Type*} [Category C] {X Y : I → C}
+variable {C I : Type*} [Category* C] {X Y : I → C}
   (f : (i : I) → X i ⟶ Y i) (P : I → Prop)
   [HasProduct X] [HasProduct Y]
   [HasProduct (fun (i : {x : I // P x}) ↦ X i.val)]

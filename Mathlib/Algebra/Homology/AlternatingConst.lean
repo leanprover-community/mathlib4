@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.AlgebraicTopology.ExtraDegeneracy
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 
 /-!
 # The alternating constant complex
@@ -20,6 +22,8 @@ In particular, we show `... ⟶ X --𝟙--> X --0--> X --𝟙--> X --0--> X ⟶ 
 to the single complex where `X` is in degree `0`.
 
 -/
+
+@[expose] public section
 universe v u
 
 open CategoryTheory Limits
@@ -40,7 +44,7 @@ namespace HomologicalComplex
 
 open ShortComplex
 
-variable {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [Limits.HasZeroMorphisms C]
   (A : C) {φ : A ⟶ A} {ψ : A ⟶ A} (hOdd : φ ≫ ψ = 0) (hEven : ψ ≫ φ = 0)
 
 /-- Let `c : ComplexShape ℕ` be such that `i j : ℕ` have opposite parity if they are related by
@@ -138,7 +142,7 @@ end HomologicalComplex
 
 open CategoryTheory Limits AlgebraicTopology
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace ChainComplex
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.ModelTheory.Basic
+module
+
+public import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
@@ -31,6 +33,8 @@ For the Flypitch project:
 
 -/
 
+@[expose] public section
+
 universe u v u' v' w w'
 
 namespace FirstOrder
@@ -47,7 +51,7 @@ structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
   /-- The mapping of relations -/
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]

@@ -3,8 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Effective epimorphic sieves
@@ -19,11 +21,13 @@ The analogous statement for a family of morphisms is in the theorem
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- A sieve is effective epimorphic if the associated cocone is a colimit cocone. -/
 def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=

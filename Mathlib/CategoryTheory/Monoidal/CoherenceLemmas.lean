@@ -3,7 +3,9 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Lemmas which are consequences of monoidal coherence
@@ -15,12 +17,14 @@ Investigate whether these lemmas are really needed,
 or if they can be replaced by use of the `coherence` tactic.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Category Iso
 
 namespace CategoryTheory.MonoidalCategory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]

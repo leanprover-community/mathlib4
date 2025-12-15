@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 /-!
 # The action of bifunctors on graded objects
 
@@ -19,11 +21,13 @@ on `GradedObject I C` (TODO @joelriou).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject
