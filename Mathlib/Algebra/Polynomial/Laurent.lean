@@ -96,7 +96,7 @@ theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a =
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
-  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R)
+  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R).toRingHom
 
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
@@ -592,7 +592,7 @@ def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R 
 @[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
   AddMonoidAlgebra.domCongr_single _ _ _ _ _
 
-@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := rfl
+@[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := by simp [invert]
 
 @[simp] lemma invert_comp_C : invert ∘ (@C R _) = C := by ext; simp
 
