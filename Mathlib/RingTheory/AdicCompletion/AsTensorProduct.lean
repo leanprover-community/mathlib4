@@ -33,7 +33,8 @@ As a corollary we obtain
 ## TODO
 
 - Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
-  ring. This is mostly composing with the isomorphism to `R^n` and checking that a diagram commutes.
+  ring. This is mostly composing with the isomorphism to `R^n` and checking that the diagram
+  commutes.
 
 -/
 

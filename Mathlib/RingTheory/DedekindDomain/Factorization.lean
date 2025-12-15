@@ -37,7 +37,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   the fractional ideal `(k)` is equal to the product `∏_v v^(val_v(r) - val_v(s))`.
 - `FractionalIdeal.finite_factors` : If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many
   maximal ideals of `R`.
-- `IsDedekindDomain.exists_sup_span_eq`: For every ideals `0 < I ≤ J`,
+- `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
   there exists `a` such that `J = I + ⟨a⟩`.
 - `Ideal.map_algebraMap_eq_finset_prod_pow`: if `p` is a maximal ideal, then the lift of `p`
   in an extension is the product of the primes over `p` to the power the ramification index.
