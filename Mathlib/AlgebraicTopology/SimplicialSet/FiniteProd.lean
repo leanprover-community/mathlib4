@@ -63,7 +63,7 @@ lemma hasDimensionLT_prod
 variable (X₁ X₂) in
 lemma hasDimensionLE_prod
     (d₁ d₂ : ℕ) [X₁.HasDimensionLE d₁] [X₂.HasDimensionLE d₂]
-    (n : ℕ) (hn : d₁ + d₂ ≤ n) :
+    (n : ℕ) (hn : d₁ + d₂ ≤ n := by lia) :
     (X₁ ⊗ X₂).HasDimensionLE n :=
   hasDimensionLT_prod X₁ X₂ (d₁ + 1) (d₂ + 1) (n + 1)
 
