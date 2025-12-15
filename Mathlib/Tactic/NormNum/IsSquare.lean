@@ -26,6 +26,8 @@ theorem isSquare_nat_of_isNat (a n : ℕ) (h : IsNat a n) (m : ℕ) (hm : m * m 
     IsSquare a :=
   ⟨m, h.1.trans hm.symm⟩
 
+/-- If `m ^ 2 < n < (m + 1) ^ 2`, then `n` is not a square.
+We write this condition as `k < n ≤ k + 2 * m`, where `k = m * m`. -/
 theorem not_isSquare_nat_of_isNat (a n : ℕ) (h : IsNat a n) (m k : ℕ) (hm : m * m = k)
     (hk₁ : Nat.blt k n) (hk₂ : Nat.ble n (k + 2 * m)) :
     ¬IsSquare a := by
@@ -176,7 +178,7 @@ def evalIsSquareRat : NormNumExt where eval {u αP} e := do
       match ← deriveBool q($n = 0), ← deriveBool q($d = 0) with
       | .mk false pn, .mk false pd =>
         assertInstancesCommute
-        return .isFalse q(not_isSquare_of_isNegNNRat_rat $a $n $d $pn $pd $pa)
+        return .isFalse q(not_isSquare_of_isRat_neg $a $n $d $pn $pd $pa)
       | _, _ => failure
     | _ => failure
   | _ => failure
