@@ -193,12 +193,9 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
     Finset.mem_antidiagonal, Prod.exists, exists_and_right, exists_eq_right]
   use Finsupp.equivFunOnFinite.symm (Function.const σ n) - d
   ext x
-  simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply,
-    Finsupp.equivFunOnFinite_symm_apply_toFun, Function.const_apply]
-  rw [add_comm]
-  apply Nat.sub_add_cancel
-  apply le_trans (le_weight w (hw x) d)
-  simpa only [Set.mem_setOf_eq] using hd
+  dsimp at hd
+  grw [← le_weight _ (hw x)] at hd
+  simp [*]
 
 end CanonicallyOrderedAddCommMonoid
 
