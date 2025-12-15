@@ -12,8 +12,8 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating
 /-! # Maximal subgroups of the alternating group
 
 * `AlternatingGroup.isCoatom_stabilizer`: if neither `s : Set α` nor its complement is empty,
-and if, moreover, `Nat.card α ≠ 2 * s.ncard',
-then `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`.
+  and if, moreover, `Nat.card α ≠ 2 * s.ncard`,
+  then `stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`.
 
 This is the “intransitive case” of the O'Nan-Scott classification
 of maximal subgroups of the alternating groups.
@@ -77,7 +77,7 @@ theorem alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
 
 end Equiv.Perm
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     Function.Surjective (toPerm : stabilizer (alternatingGroup α) s → Perm s) := by
@@ -225,7 +225,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   have hα : 4 < Nat.card α := by
     rw [← Set.one_lt_ncard_iff_nontrivial] at h0
     grind
-  -- To prove that `stabilizer (alterntingGroup α) s` is maximal,
+  -- To prove that `stabilizer (alternatingGroup α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
   use stabilizer_ne_top h0.nonempty h1
   -- … and that every strict over-subgroup `G` is equal to `⊤`
