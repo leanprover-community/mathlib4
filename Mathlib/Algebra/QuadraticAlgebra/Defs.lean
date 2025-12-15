@@ -275,9 +275,11 @@ instance [Monoid S] [MulAction S R] : MulAction S (QuadraticAlgebra R a b) where
 end MulAction
 
 @[simp]
-theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
+theorem C_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (.C (s • r) : QuadraticAlgebra R a b) = s • .C r :=
   QuadraticAlgebra.ext rfl (smul_zero _).symm
+
+@[deprecated (since := "2025-12-15")] alias coe_smul := C_smul
 
 instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ <;> intros <;> rfl
@@ -512,7 +514,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
 @[deprecated (since := "2025-12-15")] alias coe_dvd_iff := algebraMap_dvd_iff
 
 @[simp]
-theorem algbraMap_dvd_iff_dvd {z w : R} :
+theorem algebraMap_dvd_iff_dvd {z w : R} :
     algebraMap R (QuadraticAlgebra R a b) z ∣ algebraMap R (QuadraticAlgebra R a b) w ↔ z ∣ w := by
   rw [algebraMap_dvd_iff]
   constructor
@@ -520,7 +522,7 @@ theorem algbraMap_dvd_iff_dvd {z w : R} :
     simpa using hx
   · simp [← C_eq_algebraMap]
 
-@[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algbraMap_dvd_iff_dvd
+@[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algebraMap_dvd_iff_dvd
 
 end CommSemiring
 
