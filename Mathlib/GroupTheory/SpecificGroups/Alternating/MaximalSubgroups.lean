@@ -202,10 +202,8 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
   apply hB.subsingleton_of_ssubset_of_stabilizer_le hB_ss_sc
   intro g
   obtain ⟨⟨k, hk⟩, rfl⟩ := AlternatingGroup.stabilizer.surjective_toPerm (by rwa [compl_compl]) g
-  simp only [stabilizer_compl] at hk
-  let h : G := ⟨k, hG hk⟩
-  have : h ∈ stabilizer G sᶜ := by aesop
-  exact ⟨⟨h, this⟩, rfl⟩
+  rw [stabilizer_compl] at hk
+  exact ⟨⟨⟨k, hG hk⟩, by aesop⟩, rfl⟩
 
 end MulAction.IsBlock
 
@@ -220,19 +218,16 @@ And it would be used only twice. -/
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     (h0 : s.Nontrivial) (hs : s.ncard < (sᶜ : Set α).ncard) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
+  have := ncard_add_ncard_compl s
   have h1 : sᶜ.Nontrivial := by
-    rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
-    apply lt_of_le_of_lt _ hs
-    exact h0.nonempty.ncard_pos
+    rw [← one_lt_ncard_iff_nontrivial]
+    exact lt_of_le_of_lt h0.nonempty.ncard_pos hs
   have hα : 4 < Nat.card α := by
     rw [← Set.one_lt_ncard_iff_nontrivial] at h0
-    rw [← ncard_add_ncard_compl s]
     grind
   -- To prove that `stabilizer (alterntingGroup α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
-  constructor
-  · -- `stabilizer (alternatingGroup α) s ≠ ⊤`
-    apply stabilizer_ne_top h0.nonempty h1
+  use stabilizer_ne_top h0.nonempty h1
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   intro G hG
   suffices IsPreprimitive G α from subgroup_eq_top_of_isPreprimitive hα G hG.le
@@ -247,8 +242,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   suffices sᶜ ⊆ B by
     apply hB.eq_univ_of_card_lt
     have : sᶜ.ncard ≤ B.ncard := ncard_le_ncard this
-    rw [← Set.ncard_add_ncard_compl s]
-    linarith
+    grind
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `s.ncard  < sᶜ.ncard`.
@@ -259,8 +253,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   have not_isBlock_sc : ¬ IsBlock G sᶜ := fun hsc ↦ by
     apply compl_ne_univ.mpr h0.nonempty -- `sᶜ ≠ univ`
     apply hsc.eq_univ_of_card_lt
-    rw [← ncard_add_ncard_compl s, mul_two]
-    simpa only [add_lt_add_iff_right]
+    grind
   -- Step 2 : A block contained in `sᶜ` is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
@@ -276,20 +269,16 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
   -- Step 4 : sᶜ ⊆ B : A block which is not a subsingleton contains `sᶜ`.
   suffices IsMultiplyPretransitive (↥(alternatingGroup α)) α (s.ncard + 1) by
     apply hB.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
-      hG.le <;> try grind
+      hG.le <;> grind
   have := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (Nat.sub_le _ _)
-  apply Nat.le_sub_of_add_le
-  simp only [add_assoc, ← ncard_add_ncard_compl s, Nat.reduceAdd,
-    add_le_add_iff_left, Nat.succ_le_iff]
-  apply lt_of_le_of_lt _ hs
-  rwa [Nat.succ_le_iff, one_lt_ncard]
+  grind
 
 theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     {s : Set α} (h : s.Nonempty) (h1 : s.Subsingleton) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by
   have : Nontrivial α := by
-    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
+    rw [← Finite.one_lt_card_iff_nontrivial]
     grind
   obtain ⟨a, ha⟩ := h
   rw [Subsingleton.eq_singleton_of_mem h1 ha, stabilizer_singleton]
@@ -307,17 +296,13 @@ theorem isCoatom_stabilizer {s : Set α}
   rw [← ncard_add_ncard_compl s, two_mul, ne_eq, Nat.add_left_cancel_iff] at hs
   wlog hs' : ncard s < ncard sᶜ
   · rw [← stabilizer_compl]
-    apply this h1 (by rwa [compl_compl]) _
-    · rw [compl_compl, ← not_le]
-      grind
-    · simp only [compl_compl]
-      grind
+    apply this h1 <;> rw [compl_compl] <;> grind
   · by_cases h0' : s.Nontrivial
     · apply isCoatom_stabilizer_of_ncard_lt_ncard_compl h0' hs'
     · simp only [not_nontrivial_iff] at h0'
       apply isCoatom_stabilizer_singleton _ h0 h0'
-      rw [← ncard_add_ncard_compl s] at ⊢
-      rw [← ncard_pos, ← Nat.succ_le_iff] at h0 h1
+      rw [← ncard_add_ncard_compl s]
+      rw [← ncard_pos] at h0 h1
       grind
 
 end AlternatingGroup
