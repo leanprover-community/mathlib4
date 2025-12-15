@@ -145,7 +145,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     · rw [eval_map_algebraMap, minpoly.aeval]
   have h_splits : Splits (h.map ιEE') := by
     rw [← Polynomial.gcd_map]
-    exact (SplittingField.splits _).splits_of_dvd (map_ne_zero map_g_ne_zero)
+    exact (SplittingField.splits _).of_dvd (map_ne_zero map_g_ne_zero)
       (EuclideanDomain.gcd_dvd_right _ _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx

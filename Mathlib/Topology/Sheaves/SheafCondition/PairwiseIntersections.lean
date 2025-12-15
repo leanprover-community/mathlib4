@@ -46,7 +46,7 @@ universe w
 
 open TopologicalSpace TopCat Opposite CategoryTheory CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X : TopCat.{w}}
+variable {C : Type*} [Category* C] {X : TopCat.{w}}
 
 namespace TopCat.Presheaf
 

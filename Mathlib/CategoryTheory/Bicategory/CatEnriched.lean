@@ -293,7 +293,7 @@ theorem hComp_id {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') 
 theorem hComp_id_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by simp [hComp_id]
 
-theorem id_eq_eqToHom {C} [Category C] (X : C) : 𝟙 X = eqToHom rfl := rfl
+theorem id_eq_eqToHom {C} [Category* C] (X : C) : 𝟙 X = eqToHom rfl := rfl
 
 theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :

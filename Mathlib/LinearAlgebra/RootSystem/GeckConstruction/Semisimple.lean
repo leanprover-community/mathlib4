@@ -179,7 +179,7 @@ section Field
 
 variable {ι K M N : Type*} [Field K] [CharZero K] [DecidableEq ι] [Fintype ι]
   [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
-  {P : RootSystem ι K M N} [P.IsCrystallographic] {b : P.Base}
+  {P : RootPairing ι K M N} [P.IsRootSystem] [P.IsCrystallographic] {b : P.Base}
 
 open LieModule Matrix
 
@@ -264,6 +264,7 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
+omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
@@ -330,6 +331,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
       exact U.lie_mem (hk aux)
     exact (U.smul_mem_iff (by norm_cast)).mp this
 
+omit [P.IsRootSystem] in
 lemma coe_genWeightSpace_zero_eq_span_range_u :
     genWeightSpace (b.support ⊕ ι → K) (0 : H → K) = span K (range <| u (b := b)) := by
   refine le_antisymm (fun w hw ↦ Pi.mem_span_range_single_inl_iff.mpr fun i ↦ ?_) ?_
