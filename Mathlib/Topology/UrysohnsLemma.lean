@@ -315,7 +315,6 @@ end CU
 
 end Urysohns
 
-
 /-- Urysohn's lemma: a topological space `X` is normal if for any two disjoint closed sets `s` and
 `t` there exists a continuous function `f : X → ℝ` such that
 
