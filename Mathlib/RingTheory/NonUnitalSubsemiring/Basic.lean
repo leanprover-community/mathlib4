@@ -159,7 +159,7 @@ theorem mem_srange_self (f : F) (x : R) : f x ∈ srange f :=
 theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
   simpa only [srange_eq_map] using (⊤ : NonUnitalSubsemiring R).map_map g f
 
-/-- The range of a morphism of non-unital semirings is finite if the domain is a finite. -/
+/-- The range of a morphism of non-unital semirings is finite if the domain is finite. -/
 instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
   (Set.finite_range f).to_subtype
 
