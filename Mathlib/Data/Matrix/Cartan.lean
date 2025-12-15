@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-!
 # Cartan matrices
@@ -166,27 +167,35 @@ theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
 
 /-! ### Small cases -/
 
-theorem A_one : A 1 = !![2] := by
-  ext i j; fin_cases i; fin_cases j; simp [A, Matrix.of_apply]
+theorem A_one : A 1 = !![2] := by decide
 
-theorem A_two : A 2 = !![2, -1; -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [A, Matrix.of_apply]
+theorem A_two : A 2 = !![ 2, -1;
+                         -1,  2] := by decide
 
-theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [A]
+theorem A_three : A 3 = !![ 2, -1,  0;
+                           -1,  2, -1;
+                            0, -1,  2] := by decide
 
+theorem B_one : B 1 = A 1 := by decide
 
-/-- The Cartan matrix B in explicit form. -/
-theorem B_two : B 2 = !![2, -2; -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [B, Matrix.of_apply]
+theorem C_one : C 1 = A 1 := by decide
 
-/-- The Cartan matrix C in explicit form. -/
-theorem C_two : C 2 = !![2, -1; -2, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [C, Matrix.of_apply]
+theorem B_two : B 2 = !![ 2, -2;
+                         -1,  2] := by decide
 
-/-- The Cartan matrix D in explicit form. -/
-theorem D_four : D 4 = !![2, -1, 0, 0; -1, 2, -1, -1; 0, -1, 2, 0; 0, -1, 0, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [D, Matrix.of_apply]
+theorem C_two : C 2 = !![ 2, -1;
+                         -2,  2] := by decide
+
+theorem D_three : D 3 = !![ 2, -1, -1;
+                           -1,  2,  0;
+                           -1,  0,  2] := by decide
+
+example : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
+
+theorem D_four : D 4 = !![ 2, -1,  0,  0;
+                          -1,  2, -1, -1;
+                           0, -1,  2,  0;
+                           0, -1,  0,  2] := by decide
 
 end Properties
 
