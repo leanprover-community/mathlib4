@@ -510,9 +510,8 @@ theorem support_monomial [h : Decidable (a = 0)] :
   rfl
 
 lemma support_C (c : R) [h : Decidable (c = 0)] :
-    (C (σ := σ) c).support = if c = 0 then ∅ else {0} := by
-  rw [← Subsingleton.elim (Classical.decEq R c 0) h]
-  rfl
+    (C (σ := σ) c).support = if c = 0 then ∅ else {0} :=
+  support_monomial
 
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
