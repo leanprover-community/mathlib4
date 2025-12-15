@@ -510,7 +510,7 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
       exact m.degree_sub_leadingTerm_lt_degree (m.degree_ne_zero_of_sub_leadingTerm_ne_zero h'.1)
   conv at h_sum_sPoly =>
     rhs
-    simp only [m.sPolynomial_mul_leadingTerm', ← G'.filter degFgEqA |>.sum_coe_sort]
+    simp only [m.sPolynomial_leadingTerm_mul', ← G'.filter degFgEqA |>.sum_coe_sort]
   /- For echo $g₁, g₂ ∈ G$, $0$ is a remainder of $sPoly(g₁, g₂)$ on division
   by G, and thus we obtain its "quotient" in form of a finitely supported function $q_{g₁, g₂}$
   s.t. it satisfies the following conditions (`hq`):

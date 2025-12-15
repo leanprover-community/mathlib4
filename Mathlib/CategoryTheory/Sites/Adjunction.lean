@@ -27,7 +27,7 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
