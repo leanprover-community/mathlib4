@@ -50,7 +50,7 @@ lemma Subcomplex.ofSimplexProd_eq_range {p q : ℕ} (x₁ : X₁ _⦋p⦌) (x₂
 variable (X₁ X₂) in
 lemma hasDimensionLT_prod
     (d₁ d₂ : ℕ) [X₁.HasDimensionLT d₁] [X₂.HasDimensionLT d₂]
-    (n : ℕ) (hn : d₁ + d₂ ≤ n + 1 := by cutsat) :
+    (n : ℕ) (hn : d₁ + d₂ ≤ n + 1 := by lia) :
     (X₁ ⊗ X₂).HasDimensionLT  n := by
   rw [← hasDimensionLT_subcomplex_top_iff, ← iSup_subcomplexOfSimplex_prod_eq_top]
   simp only [Subcomplex.ofSimplexProd_eq_range, hasDimensionLT_iSup_iff]
@@ -75,12 +75,10 @@ instance [X₁.Finite] [X₂.Finite] : (X₁ ⊗ X₂).Finite := by
 
 open CartesianMonoidalCategory in
 lemma finite_of_isPullback {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
-    (sq : IsPullback t l r b) [X₂.Finite] [X₃.Finite] : X₁.Finite := by
-  let φ : X₁ ⟶ X₂ ⊗ X₃ := lift t l
-  have hφ : Mono φ :=
-    ⟨fun a b h ↦ sq.hom_ext (by simpa [φ] using h =≫ fst _ _)
-      (by simpa [φ] using h =≫ snd _ _)⟩
-  exact finite_of_mono φ
+    (sq : IsPullback t l r b) [X₂.Finite] [X₃.Finite] : X₁.Finite :=
+  have : Mono (lift t l) :=
+    ⟨fun _ _ h ↦ sq.hom_ext (by simpa using h =≫ fst _ _) (by simpa using h =≫ snd _ _)⟩
+  finite_of_mono (lift t l)
 
 instance [X₂.Finite] [X₃.Finite] (r : X₂ ⟶ X₄) (b : X₃ ⟶ X₄) :
     (pullback r b).Finite :=
