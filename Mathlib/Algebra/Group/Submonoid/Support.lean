@@ -12,11 +12,8 @@ public import Mathlib.RingTheory.Ideal.Defs
 # Supports of submonoids
 
 Let `G` be an (additive) group, and let `M` be a submonoid of `G`.
-
 The *support* of `M` is `M ∩ -M`, the largest subgroup of `M`.
-
 When `M ∪ -M = G`, the support of `M` forms an ideal.
-
 We define supports and prove how they interact with operations.
 
 ## Main definitions
@@ -51,7 +48,7 @@ def supportSubgroup : Subgroup G where
   inv_mem' := by aesop
 
 variable {M} in
-@[to_additive]
+@[to_additive (attr := aesop simp)]
 theorem mem_supportSubgroup {x} : x ∈ M.supportSubgroup ↔ x ∈ M ∧ x⁻¹ ∈ M := .rfl
 
 @[to_additive]
@@ -70,19 +67,29 @@ variable (M : AddSubmonoid R)
 /-- Typeclass to track when the support of a submonoid forms an ideal. -/
 class HasIdealSupport (M : AddSubmonoid R) : Prop where
   smul_mem_support (M) (x : R) {a : R} (ha : a ∈ M.supportAddSubgroup) :
-    x * a ∈ M.supportAddSubgroup
+    x * a ∈ M.supportAddSubgroup := by aesop
 
 export HasIdealSupport (smul_mem_support)
 
 variable {M} in
 theorem hasIdealSupport_iff :
     M.HasIdealSupport ↔ ∀ x a : R, a ∈ M → -a ∈ M → x * a ∈ M ∧ -(x * a) ∈ M where
-  mp _ := by simpa [mem_supportAddSubgroup] using smul_mem_support M
-  mpr _ := ⟨by simpa [mem_supportAddSubgroup]⟩
+  mp _ := have := M.smul_mem_support; by aesop
+  mpr _ := { }
 
 section HasIdealSupport
 
 variable [M.HasIdealSupport]
+
+@[aesop unsafe 80% apply]
+theorem smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : x * a ∈ M := by
+  have := M.smul_mem_support
+  aesop
+
+@[aesop unsafe 80% apply]
+theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : -(x * a) ∈ M := by
+  have := M.smul_mem_support
+  aesop
 
 /--
 The support of a subsemiring `S` of a commutative ring `R` is
@@ -93,6 +100,7 @@ def support : Ideal R where
   smul_mem' := by simpa [mem_supportAddSubgroup] using smul_mem_support M
 
 variable {M} in
+@[aesop simp]
 theorem mem_support {x} : x ∈ M.support ↔ x ∈ M ∧ -x ∈ M := .rfl
 
 theorem coe_support : M.support = (M : Set R) ∩ -(M : Set R) := rfl
@@ -107,12 +115,10 @@ end AddSubmonoid
 namespace Subsemiring
 
 instance (M : Subsemiring R) [HasMemOrNegMem M] : M.HasIdealSupport where
-  smul_mem_support x a ha :=
-    match mem_or_neg_mem M x with
-    | .inl hx => ⟨by simpa using Subsemiring.mul_mem M hx ha.1,
-                  by simpa using Subsemiring.mul_mem M hx ha.2⟩
-    | .inr hx => ⟨by simpa using Subsemiring.mul_mem M hx ha.2,
-                  by simpa using Subsemiring.mul_mem M hx ha.1⟩
+  smul_mem_support x a ha := by
+    have := mem_or_neg_mem M x
+    have : ∀ x y, -x ∈ M → -y ∈ M → x * y ∈ M := fun _ _ hx hy ↦ by simpa using mul_mem hx hy
+    aesop (add unsafe 80% apply this)
 
 end Subsemiring
 
