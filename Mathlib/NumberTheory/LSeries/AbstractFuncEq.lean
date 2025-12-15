@@ -11,7 +11,7 @@ public import Mathlib.Analysis.MellinTransform
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
-zeta and L functions.
+zeta and L-functions.
 
 ### FE-pairs
 
@@ -60,7 +60,7 @@ See the sections *Main theorems on weak FE-pairs* and
 @[expose] public section
 
 
-/- TODO : Consider extending the results to allow functional equations of the form
+/- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
