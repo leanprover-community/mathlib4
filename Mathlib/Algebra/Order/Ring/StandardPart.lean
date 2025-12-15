@@ -203,17 +203,17 @@ instance : Archimedean (FiniteResidueField K) where
 `FiniteResidueField K`. -/
 @[simps!]
 def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
-  toFun r := mk <| .mk _ (mk_map_of_archimedean_nonneg f r)
+  toFun r := mk <| .mk _ (mk_map_nonneg_of_archimedean f r)
   map_zero' := by simp
   map_one' := by simp
   map_add' x y := by
     simp_rw [map_add]
     exact mk.map_add
-      (.mk _ (mk_map_of_archimedean_nonneg f x)) (.mk _ (mk_map_of_archimedean_nonneg f y))
+      (.mk _ (mk_map_nonneg_of_archimedean f x)) (.mk _ (mk_map_nonneg_of_archimedean f y))
   map_mul' x y := by
     simp_rw [map_mul]
     exact mk.map_mul
-      (.mk _ (mk_map_of_archimedean_nonneg f x)) (.mk _ (mk_map_of_archimedean_nonneg f y))
+      (.mk _ (mk_map_nonneg_of_archimedean f x)) (.mk _ (mk_map_nonneg_of_archimedean f y))
   monotone' x y h := mk.monotone' <| f.monotone' h
 
 end FiniteResidueField
