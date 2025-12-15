@@ -616,8 +616,7 @@ theorem archimedeanClassMk_le_of_eval_eq [IsOrderedAddMonoid R] [Archimedean R] 
   contrapose! h2
   exact ⟨FiniteArchimedeanClass.mk (z.val - y.val) hyz, h2, coeff_ne_zero _ _⟩
 
-theorem val_sub_ne_zero [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain)
-    (y : f.val.domain) : y.val - x ≠ 0 := by
+theorem val_sub_ne_zero {x : M} (hx : x ∉ f.val.domain) (y : f.val.domain) : y.val - x ≠ 0 := by
   contrapose! hx
   obtain rfl : x = y.val := (sub_eq_zero.mp hx).symm
   simp
