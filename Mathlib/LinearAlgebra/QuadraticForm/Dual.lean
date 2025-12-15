@@ -156,3 +156,57 @@ TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`
 end Ring
 
 end QuadraticForm
+
+/-- Vectors which subtend obtuse angles with each other and all lie in the same half-space are
+linearly independent.
+
+This is [serre1965](Ch. V, §9, Lemma 4). -/
+lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hB : B.toQuadraticMap.PosDef)
+    (f : Module.Dual R M) (v : ι → M)
+    (hp : ∀ i, 0 < f (v i))
+    (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
+    LinearIndependent R v := by
+  refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
+  set x := ∑ i ∈ s with 0 ≤ c i, c i • v i with hx
+  set y := ∑ i ∈ s with c i < 0, (-c i) • v i with hy
+  replace hc : x = y := by
+    simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg, ← hc]
+    simp [← s.sum_filter_add_sum_filter_not (p := fun i ↦ 0 ≤ c i) (f := fun i ↦ c i • v i)]
+  have hx₀ : x = 0 := by
+    rw [← hB.le_zero_iff, B.toQuadraticMap_apply]
+    nth_rw 1 [hx]
+    rw [hc, hy]
+    simp only [map_sum, map_smul, neg_smul, Finset.sum_neg_distrib, map_neg, LinearMap.coe_sum,
+      Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul, Finset.mul_sum, Left.neg_nonpos_iff]
+    refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
+    rcases eq_or_ne i j with rfl | hij
+    · rw [← mul_assoc]
+      exact mul_nonneg (mul_self_nonneg _) (hB.nonneg _)
+    · exact mul_nonneg_iff.mpr <|
+        Or.inr ⟨by grind, mul_nonpos_iff.mpr <| Or.inl ⟨by grind, hn hij.symm⟩⟩
+  replace hx : ∑ i ∈ s with 0 ≤ c i, c i * f (v i) = 0 := by
+    rw [hx₀] at hx
+    simpa using (congr(f $hx)).symm
+  replace hx (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
+    have aux (j : ι) (hj : j ∈ {i ∈ s | 0 ≤ c i}) : 0 ≤ c j * f (v j) := by
+      obtain ⟨hjs : j ∈ s, hj₀ : 0 ≤ c j⟩ := by simpa using hj
+      nlinarith [hp j]
+    rw [Finset.sum_eq_zero_iff_of_nonneg aux] at hx
+    by_contra! hi'
+    have : 0 < c i * f (v i) := mul_pos hi' (hp i)
+    grind
+  replace hy : ∑ i ∈ s with c i < 0, c i * f (v i) = 0 := by
+    rw [hx₀] at hc
+    rw [← hc] at hy
+    simpa using (congr(f $hy)).symm
+  replace hy (i : ι) (hi : i ∈ s) : 0 ≤ c i := by
+    have aux (j : ι) (hj : j ∈ {i ∈ s | c i < 0}) : c j * f (v j) ≤ 0 := by
+      obtain ⟨hjs : j ∈ s, hj₀ : c j < 0⟩ := by simpa using hj
+      nlinarith [hp j]
+    rw [Finset.sum_eq_zero_iff_of_nonpos aux] at hy
+    by_contra! hi'
+    have : c i * f (v i) < 0 := mul_neg_of_neg_of_pos hi' (hp i)
+    grind
+  exact fun i hi ↦ le_antisymm (hx i hi) (hy i hi)
