@@ -81,14 +81,14 @@ namespace FiniteElement
 /-- The constructor for `FiniteElement`. -/
 protected def mk (x : K) (h : 0 ≤ mk x) : FiniteElement K := ⟨x, h⟩
 
-@[simp] theorem mk_zero (h : 0 ≤ mk (0 : K)) : Finite.mk 0 h = 0 := rfl
-@[simp] theorem mk_one (h : 0 ≤ mk (1 : K)) : Finite.mk 1 h = 1 := rfl
-@[simp] theorem mk_natCast {n : ℕ} (h : 0 ≤ mk (n : K)) : Finite.mk (n : K) h = n := rfl
-@[simp] theorem mk_intCast {n : ℤ} (h : 0 ≤ mk (n : K)) : Finite.mk (n : K) h = n := rfl
+@[simp] theorem mk_zero (h : 0 ≤ mk (0 : K)) : FiniteElement.mk 0 h = 0 := rfl
+@[simp] theorem mk_one (h : 0 ≤ mk (1 : K)) : FiniteElement.mk 1 h = 1 := rfl
+@[simp] theorem mk_natCast {n : ℕ} (h : 0 ≤ mk (n : K)) : FiniteElement.mk (n : K) h = n := rfl
+@[simp] theorem mk_intCast {n : ℤ} (h : 0 ≤ mk (n : K)) : FiniteElement.mk (n : K) h = n := rfl
 
 @[simp]
-theorem mk_neg {x : K} (h : 0 ≤ mk (-x)) :
-    Finite.mk (-x) h  = -Finite.mk x (by rwa [← mk_neg]) :=
+theorem mk_neg {x : K} (h : 0 ≤ mk x) :
+    -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
@@ -97,7 +97,7 @@ theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1
 theorem isUnit_iff_mk_eq_zero {x : FiniteElement K} : IsUnit x ↔ mk x.1 = 0 := by
   rw [← not_iff_not, not_isUnit_iff_mk_pos, lt_iff_not_ge, x.2.ge_iff_eq']
 
-end Finite
+end FiniteElement
 
 variable (K) in
 /-- The residue field of `FiniteElement`. This quotient inherits an order from `K`,
@@ -116,7 +116,7 @@ private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.
   rintro x rfl y hy z ⟨hxz, hzy⟩
   have := hxz.trans hzy
   rw [Set.mem_preimage, Set.mem_singleton_iff, Quotient.eq, Submodule.quotientRel_def,
-    IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Finite.not_isUnit_iff_mk_pos] at hy ⊢
+    IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, FiniteElement.not_isUnit_iff_mk_pos] at hy ⊢
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
 noncomputable instance : LinearOrder (FiniteResidueField K) :=
@@ -138,7 +138,7 @@ instance ordConnected_preimage_mk :
 theorem mk_eq_mk {x y : FiniteElement K} : mk x = mk y ↔ 0 < ArchimedeanClass.mk (x.1 - y.1) := by
   apply Quotient.eq.trans
   rw [Submodule.quotientRel_def, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-    Finite.not_isUnit_iff_mk_pos, AddSubgroupClass.coe_sub]
+    FiniteElement.not_isUnit_iff_mk_pos, AddSubgroupClass.coe_sub]
 
 theorem mk_eq_zero {x : FiniteElement K} : mk x = 0 ↔ 0 < ArchimedeanClass.mk x.1 := by
   apply mk_eq_mk.trans
@@ -250,8 +250,10 @@ theorem standardPart_one : standardPart (1 : K) = 1 := by
 
 @[simp]
 theorem standardPart_neg (x : K) : standardPart (-x) = -standardPart x := by
-  simp_rw [standardPart, ArchimedeanClass.mk_neg]
-  split_ifs <;> simp
+  simp_rw [standardPart, ArchimedeanClass.mk_neg,]
+  split_ifs
+  · rw [← FiniteElement.mk_neg, map_neg]
+  · simp
 
 @[simp]
 theorem standardPart_inv (x : K) : standardPart x⁻¹ = (standardPart x)⁻¹ := by
@@ -260,7 +262,7 @@ theorem standardPart_inv (x : K) : standardPart x⁻¹ = (standardPart x)⁻¹ :
     have hx' : 0 ≤ mk x⁻¹ := by simp_all
     rw [dif_pos hx.ge, dif_pos hx']
     · apply eq_inv_of_mul_eq_one_left
-      suffices Finite.mk x⁻¹ hx' * .mk x hx.ge = 1 by
+      suffices FiniteElement.mk x⁻¹ hx' * .mk x hx.ge = 1 by
         rw [← map_mul, this, map_one]
       ext
       apply inv_mul_cancel₀
@@ -272,7 +274,7 @@ theorem standardPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     standardPart (x + y) = standardPart x + standardPart y := by
   unfold standardPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
-  exact map_add _ (Finite.mk x hx) (.mk y hy)
+  exact map_add _ (FiniteElement.mk x hx) (.mk y hy)
 
 theorem standardPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     standardPart (x - y) = standardPart x - standardPart y := by
@@ -283,7 +285,7 @@ theorem standardPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     standardPart (x * y) = standardPart x * standardPart y := by
   unfold standardPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
-  exact map_mul _ (Finite.mk x hx) (.mk y hy)
+  exact map_mul _ (FiniteElement.mk x hx) (.mk y hy)
 
 theorem standardPart_div (hx : 0 ≤ mk x) (hy : 0 ≤ -mk y) :
     standardPart (x / y) = standardPart x / standardPart y := by
@@ -295,7 +297,7 @@ theorem standardPart_intCast (n : ℤ) : standardPart (n : K) = n := by
   obtain rfl | hn := eq_or_ne n 0
   · simp
   · rw [standardPart, dif_pos]
-    · rw [Finite.mk_intCast]
+    · rw [FiniteElement.mk_intCast]
       simp
     · rw [mk_intCast hn]
 
