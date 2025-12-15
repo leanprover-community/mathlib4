@@ -155,10 +155,9 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))
   let px : F.obj P := is₁.inv (is₂.symm x)
   have hpx (i : ι) : F.map (Pi.π X i) px = x i := by
-    sorry
-    --simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom]
-    --simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply,
-    --  FintypeCat.productEquiv_symm_comp_π_apply]
+    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom,
+      FintypeCat.comp_apply]
+    rw [FintypeCat.inv_hom_id_apply, FintypeCat.productEquiv_symm_comp_π_apply]
   obtain ⟨A, f, a, _, hfa⟩ := exists_hom_from_galois_of_fiber F P px
   obtain ⟨g, hg⟩ := toAut_surjective_isGalois F G t A
   refine ⟨g, fun i y ↦ action_ext_of_isGalois F (x i) ?_ _⟩
