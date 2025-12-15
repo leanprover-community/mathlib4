@@ -13,11 +13,11 @@ public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 # Slash action on E2
 
 We show how the Eisenstein series `E2` transforms under the slash action of `SL(2, ℤ)`.
-In particular, we show that it is invariant under the action of `T = [[1, 1], [0, 1]] ` and we
+In particular, we show that it is invariant under the action of `T = [[1, 1], [0, 1]]` and we
 compute how it transforms under the action of `S = [[0, -1], [1, 0]]` in term of a correction term
 `D2`.
 
-The idea is then to rewrite the Eisenstein series `G2` as an absolutely convergent infinite sum of
+The proof relies on writing the Eisenstein series `G2` as an absolutely convergent infinite sum of
 terms of the form `(((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ(m)` for
 `m : Fin 2 → ℤ` where `δ(m)` is a small correction term. This allows us to link the sum when acted
 on by `S` (which swaps the co-ordinates of `m`) to the original sum plus some extra terms which
@@ -28,7 +28,7 @@ give rise to the correction term `D2`.
 
 open UpperHalfPlane hiding I
 
-open ModularForm TopologicalSpace ModularGroup Filter Complex MatrixGroups
+open ModularForm ModularGroup Filter Complex MatrixGroups
  Set SummationFilter
 
 open scoped Real Topology
@@ -47,7 +47,7 @@ private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 
 namespace EisensteinSeries
 
-/-- This gives term gives and alternative infinte sum for G2 which is absolutely convergent. -/
+/-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
 abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
 
@@ -82,6 +82,7 @@ lemma G2Term_summable (z : ℍ) : Summable fun m ↦ G2Term z m := by
   have hb2 : b.1 ≠ ![0, -1] := by aesop
   simp [δ, hb1, hb2]
 
+--This is the version we use the most.
 lemma G2Term_prod_summable (z : ℍ) : Summable (fun p : ℤ × ℤ ↦ G2Term z ![p.1, p.2]) := by
   apply (finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)
 
@@ -114,24 +115,20 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
   · rw [← tsum_eq_of_summable_unconditional (L := symmetricIcc ℤ)]
     · congr
       ext a
-      rw [e2Summand, tsum_eq_of_summable_unconditional (L := symmetricIco ℤ)
-        (summable_one_div_linear_sub_one_div_linear_succ z a), ← Summable.tsum_add _
-        (summable_one_div_linear_sub_one_div_linear_succ z a)]
-      · apply tsum_congr (fun b ↦ ?_)
-        simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+      rw [e2Summand, tsum_eq_of_summable_unconditional
+        (summable_right_one_div_linear_sub_one_div_linear_succ z a), ← Summable.tsum_add
+        ((G2Term_prod_summable z).prod_factor _)
+        (summable_right_one_div_linear_sub_one_div_linear_succ z a)]
+      apply tsum_congr (fun b ↦ ?_)
+      simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
           Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, G2Term, mul_inv_rev, one_div,
           aux_identity z a b, inv_inj]
-        rfl
-      · have := G2Term_prod_summable z
-        simp only [G2Term, Fin.isValue, mul_inv_rev, Matrix.cons_val_zero, Matrix.cons_val_one,
-          Matrix.cons_val_fin_one] at *
-        exact this.prod_factor _
+      rfl
     · conv =>
         enter [1, N]
         rw [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z N, add_zero]
       exact (G2Term_prod_summable z).prod
-  · apply ((G2Term_prod_summable z).prod).congr
-    simp
+  · grind [(G2Term_prod_summable z).prod.congr]
   · exact summable_zero.congr
       (fun b ↦ (by simp [← tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z b]))
 
@@ -147,10 +144,10 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
       nth_rw 1 [← aux_identity z M N]
       ring
     · simpa using linear_left_summable (ne_zero z) N (k := 2) (by norm_num)
-    · simpa [add_assoc] using summable_one_div_linear_sub_one_div_linear z N (N + 1)
+    · simpa [add_assoc] using summable_left_one_div_linear_sub_one_div_linear z N (N + 1)
   · apply HasSum.summable (a := (z.1 ^ 2)⁻¹ * G2 (S • z))
     rw [hasSum_symmetricIco_int_iff]
-    apply (tendsto_double_sum_eq_S_act z).congr (fun x ↦ ?_)
+    apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
     simpa using linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
   · apply HasSum.summable (a := -2 * π * I / z)

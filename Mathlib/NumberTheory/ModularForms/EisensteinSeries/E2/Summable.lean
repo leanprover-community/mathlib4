@@ -17,7 +17,7 @@ prove how it transforms under the slash action.
 
 The key identities used to prove these transformation formulae are `tsumFilter_tsum_eq` which says
 that  `∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))` equals
-`-2 * π * I / z` while if we take the sum the other way,  `tsum_tsumFilter_eq` tells us that
+`-2 * π * I / z` while if we take the sum the other way, `tsum_tsumFilter_eq` tells us that
 `∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0`.
 
 -/
@@ -101,7 +101,7 @@ open ModularGroup
 
 variable (z : ℍ)
 
-private lemma linear_sub_linear_eq  (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
+private lemma linear_sub_linear_eq (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧ b ≠ 0)) :
     1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
   rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
   · simp only [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
@@ -109,7 +109,7 @@ private lemma linear_sub_linear_eq  (a b m : ℤ) (hm : m ≠ 0 ∨ (a ≠ 0 ∧
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by aesop)
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by aesop)
 
-lemma summable_one_div_linear_sub_one_div_linear (a b : ℤ) :
+lemma summable_left_one_div_linear_sub_one_div_linear (a b : ℤ) :
     Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
   have := Summable.mul_left (b - a : ℂ) (summable_linear_mul_linear (ne_zero z) a b)
   rw [← Finset.summable_compl_iff (s := {0})] at *
@@ -117,15 +117,12 @@ lemma summable_one_div_linear_sub_one_div_linear (a b : ℤ) :
   rw [linear_sub_linear_eq z a b m (by grind)]
   simp
 
-lemma summable_one_div_linear_sub_one_div_linear_succ (a : ℤ) :
+lemma summable_right_one_div_linear_sub_one_div_linear_succ (a : ℤ) :
     Summable fun b : ℤ ↦ 1 / ((a : ℂ) * z + b) - 1 / ((a : ℂ) * z + b + 1) := by
-  have := (summable_linear_add_mul_linear_add z a a)
+  have := summable_linear_add_mul_linear_add z a a
   rw [← Finset.summable_compl_iff (s := {0, -1})] at *
   apply this.congr (fun b ↦ ?_)
-  have := linear_sub_linear_eq z b (b + 1) a (by grind)
-  simp only [Int.reduceNeg, add_assoc, mul_inv_rev, one_div, Int.cast_add, Int.cast_one,
-    add_sub_cancel_left, one_mul] at *
-  rw [this, mul_comm]
+  simpa [add_assoc, mul_comm] using (linear_sub_linear_eq z b (b + 1) a (by grind)).symm
 
 /- Acting by `S` (which sends `z` to `-z ⁻¹`) swaps the sums and pulls out a factor of
 `(z ^ 2)⁻¹`. -/
@@ -141,7 +138,7 @@ private lemma aux_sum_Ico_S_indentity (N : ℕ) :
   field_simp [ne_zero z]
   grind
 
-lemma tendsto_double_sum_eq_S_act :
+lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
     (𝓝 ((z.1 ^ 2)⁻¹ * G2 (S • z))) := by
   rw [G2_eq_tsum_symmetricIco, ← tsum_mul_left]
@@ -156,7 +153,7 @@ lemma tsumFilter_tsum_eq_S_act :
     ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) := by
   apply HasSum.tsum_eq
   rw [hasSum_symmetricIco_int_iff]
-  apply (tendsto_double_sum_eq_S_act z).congr (fun x ↦ ?_)
+  apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
   rw [Summable.tsum_finsetSum]
   exact fun i hi => by simpa using linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
@@ -194,12 +191,12 @@ private lemma aux_tsum_identity_1 (d : ℕ+) :
     rw [← Summable.tsum_add]
     · grind
     · apply (summable_pnat_iff_summable_nat.mpr ((summable_int_iff_summable_nat_and_neg.mp
-        (summable_one_div_linear_sub_one_div_linear z (-d) d)).1)).congr
+        (summable_left_one_div_linear_sub_one_div_linear z (-d) d)).1)).congr
       grind [Int.cast_natCast, Int.cast_neg, one_div]
     · apply (summable_pnat_iff_summable_nat.mpr ((summable_int_iff_summable_nat_and_neg.mp
-        (summable_one_div_linear_sub_one_div_linear z (-d) d)).2)).congr
+        (summable_left_one_div_linear_sub_one_div_linear z (-d) d)).2)).congr
       grind [Int.cast_neg, Int.cast_natCast, neg_mul, one_div]
-  · apply (summable_one_div_linear_sub_one_div_linear z (-d) d).congr
+  · apply (summable_left_one_div_linear_sub_one_div_linear z (-d) d).congr
     grind [Int.cast_neg, Int.cast_natCast, one_div, sub_left_inj, inv_inj]
 
 /- This sum of four terms can now be combined into a sum where `z` has changes for `-1 / z`.-/
@@ -259,7 +256,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
       ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) := by
     ext n
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
-    apply (summable_one_div_linear_sub_one_div_linear z (i : ℤ) (i + 1 : ℤ)).congr
+    apply (summable_left_one_div_linear_sub_one_div_linear z (i : ℤ) (i + 1 : ℤ)).congr
     grind [one_div, Int.cast_add, Int.cast_one, sub_right_inj, inv_inj]
   conv at this =>
     enter [2, n]
@@ -277,8 +274,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     exact tendsto_comp_val_Ioi_atTop.mpr (aux_tendsto_tsum z)
 
 /- These are the two key lemmas, which show that swapping the order of summation gives
-results differing by the term `-2 * π * I / z`.
--/
+results differing by the term `-2 * π * I / z`. -/
 lemma tsumFilter_tsum_sub_eq :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by

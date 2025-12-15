@@ -65,7 +65,6 @@ lemma int_div_upperHalfPlane_mem_integerComplement (z : ℍ) (n : ℤ) (hn : n �
   have him : (n / (z : ℂ)).im  ≠ 0:= by
     rw [div_im]
     simp [hn, z.im_pos.ne', ne_zero z]
-  rw [← hm] at him
-  simp at him
+  simp [← hm] at him
 
 end Complex
