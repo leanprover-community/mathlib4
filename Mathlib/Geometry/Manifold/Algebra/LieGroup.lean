@@ -16,7 +16,7 @@ multiplication is a `C^n` mapping of the product manifold `G` × `G` into `G`.
 
 Note that, since a manifold here is not second-countable and Hausdorff, a Lie group here is not
 guaranteed to be second-countable (even though it can be proved that it is Hausdorff). Note also
-that Lie groups here are not necessarily finite-dimensional.
+that Lie groups here are not necessarily finite dimensional.
 
 ## Main definitions
 
