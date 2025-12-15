@@ -80,7 +80,7 @@ variable [Zero R]
 
 /-- The natural function `R → QuadraticAlgebra R a b`.
 
-Note that, if `R` is a ring` you should use `algebraMap` instead of `C`. -/
+Note that, if `R` is a ring, you should use `algebraMap` instead of `C`. -/
 protected def C (x : R) : QuadraticAlgebra R a b := ⟨x, 0⟩
 
 @[deprecated (since := "2025-12-15")] alias coe := QuadraticAlgebra.C
