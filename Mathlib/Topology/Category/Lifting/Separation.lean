@@ -6,6 +6,7 @@ Authors: Robert Maxton
 module
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.Lifting.Defs
 public import Mathlib.Topology.UrysohnsLemma
 
@@ -384,16 +385,6 @@ lemma of_extend
       rw [IsLowerSet.isClosed_iff_isUpper, IsUpperSet]
       rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> simp
 
-noncomputable def pushout.mapIso {C : Type u} [Category.{v, u} C] {W X Y Z S T : C}
-    {f₁ : S ⟶ W} {f₂ : S ⟶ X} [HasPushout f₁ f₂] {g₁ : T ⟶ Y} {g₂ : T ⟶ Z} [HasPushout g₁ g₂]
-    (i₁ : W ≅ Y) (i₂ : X ≅ Z) (i₃ : S ≅ T)
-    (h₁ : f₁ ≫ i₁.hom = i₃.hom ≫ g₁) (h₂ : f₂ ≫ i₂.hom = i₃.hom ≫ g₂) :
-    pushout f₁ f₂ ≅ pushout g₁ g₂ where
-  hom := pushout.map f₁ f₂ g₁ g₂ i₁.hom i₂.hom i₃.hom h₁ h₂
-  inv := pushout.map g₁ g₂ f₁ f₂ i₁.inv i₂.inv i₃.inv
-    (by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, h₁])
-    (by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, h₂])
-
 open O3C2 in
 lemma O3C2.range_inl : range O3C2.inl.map = {left, zero, mid} := by
   ext x; cases x using O3C2.casesOn' <;> simp [O3C2.inl.map, O2C1.exists]
@@ -402,10 +393,6 @@ open O3C2 in
 lemma O3C2.range_inr : range O3C2.inr.map = {mid, one, right} := by
   ext x; cases x using O3C2.casesOn' <;> simp [O3C2.inr.map, O2C1.exists]
 
--- lemma O3C2.range_inr (x : of O3C2) : x ∈ range O3C2.inr.map ↔ 2 ≤ O3C2.toCtorIdx x := by
---     cases x <;> simp [O3C2.inr.map, O2C1.exists]
-
--- attribute [local simp\u] O3C2.Lex.idx in
 open scoped Finset Classical in
 lemma llp : T25Space X ↔
     ∀ (χ : of Discrete2 ⟶ X) [Mono χ], χ ⧄ terminal.from (of O3C2) where
@@ -503,40 +490,6 @@ end T25Space
 
 namespace RegularSpace
 
--- TODO move?
-lemma pushout_isOpen_iff {A X Y : TopCat.{u}} {f : A ⟶ X} {g : A ⟶ Y} (s : Set ↑(pushout f g)) :
-    IsOpen s ↔ IsOpen (pushout.inl f g ⁻¹' s) ∧ IsOpen (pushout.inr f g ⁻¹' s) := by
-  have «forall» {p : WalkingSpan → Prop} : (∀ x, p x) ↔ p .left ∧ p .zero ∧  p .right :=
-    ⟨fun h ↦ ⟨h _, h _, h _⟩, by rintro ⟨_, _, _⟩ (_ | _ | _) <;> assumption⟩
-  have {h : IsOpen (pushout.inr f g ⁻¹' s)} : IsOpen (colimit.ι (span f g) .zero ⁻¹' s) := by
-    rw [← colimit.w (span f g) WalkingSpan.Hom.snd, ConcreteCategory.preimage_hom_comp]
-    exact h.preimage g.continuous
-  rw [TopCat.colimit_isOpen_iff, «forall»]
-  conv_lhs =>
-    enter [2]; rw [and_iff_right_of_imp]
-    · rfl
-    · exact @this
-  rfl
-
-  -- mp sO := ⟨sO.preimage (pushout.inl f g).continuous, sO.preimage (pushout.inr f g).continuous⟩
-  -- mpr
-  -- | ⟨hL, hR⟩ => by
-  --   let χ : pushout f g ⟶ of UProp :=
-  --     pushout.desc hL.toHom hR.toHom (by ext; simp [elementwise_of% @pushout.condition])
-  --   convert IsOpen.ofHom χ
-  --   ext z
-  --   obtain (⟨(x : X), rfl⟩| ⟨(x : Y), rfl⟩) := Concrete.pushout_exists_rep _ _ z
-  --   · simp [χ, elementwise_of% @pushout.inl_desc]
-  --   · simp [χ, elementwise_of% @pushout.inr_desc]
-
-lemma isOpen_iff_of_isPushout {A X Y Z : TopCat.{u}} {f : A ⟶ X} {g : A ⟶ Y} {inl : X ⟶ Z}
-    {inr : Y ⟶ Z} (h : IsPushout f g inl inr) (s : Set Z) :
-    IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) := by
-  simp_rw [← (homeoOfIso <| h.isoPushout).symm.isOpen_preimage, pushout_isOpen_iff,
-  preimage_preimage]
-  simp [← ConcreteCategory.comp_apply]
-    -- rw [← h.isOpen_iff]; exact ⟨h.1, h.2⟩
-
 @[simp]
 noncomputable abbrev O2C2T :=
   pushout (terminal.homOfElement' O2C1.right) (terminal.homOfElement' (⊤ : UProp.{u}))
@@ -620,7 +573,7 @@ theorem of_lift {X}
     simp [Concrete.pushout_inl_eq_inr_iff, @eq_comm _ (pushout.inr (C := TopCat) _ _ _)]
 
 open scoped Classical in
-/--Let `O2C2T` denote the topology `L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥` made by gluing together `O2C1` and
+/-- Let `O2C2T` denote the topology `L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥` made by gluing together `O2C1` and
 `UProp` at `O2C1.right` and `⊤`. Then a space `X` is regular iff every morphism `⊤_ TopCat ⟶ X`
 picking out some point of `X` has the left lifting property against
 `「L ⟶ 0 ⟵ (R = ⊤) ⟶ ⊥」 ↦ 「⊤ ⟶ ⊥」`.
@@ -704,8 +657,6 @@ theorem llp : RegularSpace X ↔ ∀ (χ : ⊤_ TopCat.{u} ⟶ X), χ ⧄ O2C2T.
 
 end RegularSpace
 
--- namespace CompletelyRegularSpace
-
 namespace NormalSpace
 
 open O2C3 in
@@ -725,13 +676,18 @@ noncomputable def indicator : C(O2C3, O1C2) where
 Let `O2C3` be the topology constructed by gluing together two copies of `O1C2` at end points,
 and let `ofHom NormalSpace.indicator : O2C3 ⟶ O1C2` be the map
 ```
-「    0       1              「    M
-    🡗  🡖   🡗  🡖    |----->     🡗   🡖
-  L      M       R」           L       R 」
-
+「    0       1
+    🡗  🡖   🡗  🡖
+  L      M       R」
+     ---------
+         |
+         ↓
+ 「   0 = M = 1
+    🡗          🡖
+   L             R」
 ```
- sending `left` to `left` and `right` to `right`. If every arrow from `X` to `O1C2` lifts through
- `ofHom NormalSpace.indicator`, then `X` is a normal space. -/
+ If every arrow from `X` to `O1C2` lifts through `ofHom NormalSpace.indicator`, then `X` is a
+ normal space. -/
 lemma of_lift
     (lift : (X ⟶ of O1C2) → (X ⟶ of O2C3))
       -- pushout (terminal.homOfElement' O2C1.right) (terminal.homOfElement' O2C1.left))
@@ -763,16 +719,17 @@ lemma of_lift
 --TODO fix diagram
 open scoped Finset Classical in
 /-- Let `O2C3` be the topology constructed by gluing together two copies of `O1C2` at end points,
-and let `ofHom NormalSpace.indicator : O2C3 ⟶ O1C2` be the map sending
-`0` to the left `O2C1`'s left point and `1` to the right `O2C1`'s right point:
+and let `ofHom NormalSpace.indicator : O2C3 ⟶ O1C2` be the map
 ```
 「    0       1
     🡗  🡖   🡗  🡖
-  L      M      R」
+  L      M       R」
+     ---------
+         |
          ↓
-    「0       1
-       🡖   🡗
-         M     」
+ 「   0 = M = 1
+    🡗          🡖
+   L             R」
 ```
 Then a space `X` is normal iff `NormalSpace.indicator` has the right lifting property against
 the initial morphism `⊥_ TopCat ⟶ X`. -/
@@ -807,21 +764,7 @@ lemma lift_fac [NormalSpace X] (χ : X ⟶ of O1C2) :
   CommSq.fac_right (hsq := (rlp.mp ‹_›).sq_hasLift _)
 
 open scoped unitInterval
-open OIC2 --unitInterval'
-
-
--- TODO goes in the Urysohn lemma file
-lemma of_separating {X} [TopologicalSpace X]
-    (sep : {U V : Set X} → IsClosed U → IsClosed V → Disjoint U V →
-      { f : C(X, I) // EqOn f 0 U ∧ EqOn f 1 V }) : NormalSpace X where
-  normal {s t} sC tC disj := by
-    obtain ⟨f, hf₀, hf₁⟩ := sep sC tC disj
-    use f ⁻¹' (Iio ⟨0.5, by norm_num⟩), f ⁻¹' (Ioi ⟨0.5, by norm_num⟩),
-      isOpen_Iio.preimage f.continuous, isOpen_Ioi.preimage f.continuous
-    split_ands
-    · intro x hxs; simp [hf₀ hxs, ← Subtype.coe_lt_coe]; linarith
-    · intro x hxt; simp [hf₁ hxt, ← Subtype.coe_lt_coe]; linarith
-    · apply Disjoint.preimage; simp
+open OIC2
 
 /-- Alternative characterization by Urysohn's lemma: if every morphism from a space `X` to `O1C2`
 lifts through `I₀¹` -- specifically, through the morphism `endpointsIndicatorI'` that sends
@@ -847,11 +790,6 @@ lemma of_lift_separating
       simp [this, indicator]
   · rintro _ (rfl | rfl); simp [← Subtype.coe_lt_coe]; linarith
   · rintro _ (rfl | rfl); simp [← Subtype.coe_lt_coe]; linarith
-
--- TODO goes in `Mathlib.Topology.UnitInterval`
-instance : CanLift ℝ I (↑) (fun r ↦ 0 ≤ r ∧ r ≤ 1) :=
-  ⟨fun r ⟨h₀, h₁⟩ ↦ ⟨⟨r, ⟨h₀, h₁⟩⟩, rfl⟩⟩
-
 
 open scoped Classical Set.Notation in
 /-- Alternative characterization by Urysohn's lemma: a space `X` is normal iff
@@ -882,241 +820,20 @@ lemma rlp_separating : NormalSpace X ↔ initial.to X ⧄ ofHom OIC2.toO1C2 wher
 
 end NormalSpace
 
--- TODO fix in ???
-@[match_pattern] abbrev WithUpperSet.toUpperSet' {α} (a : α) : WithUpperSet α :=
-  WithUpperSet.toUpperSet a
+-- -- TODO goes in ???
+-- lemma _root_.WithBot.range_coe' {α} : range (WithBot.some : α → WithBot α) = {⊥}ᶜ := by
+--   ext x; cases x using WithBot.recBotCoe <;> simp
 
--- TODO goes in ???
-namespace IsUpperSet
-section
-variable {α β} [Preorder α] [TopologicalSpace α] [Topology.IsUpperSet α]
-    [Preorder β] [TopologicalSpace β] [Topology.IsUpperSet β]
-
-instance : Topology.IsUpperSet (α × β) := by
-  rw [Topology.isUpperSet_iff_nhds]
-  intro (a, b)
-  simp [nhds_prod_eq, IsUpperSet.nhds_eq_principal_Ici]
-
-lemma specializes_bot [OrderBot α] {a : α} : a ⤳ ⊥ := by
-  simp [IsUpperSet.specializes_iff_le]
-
-lemma specializes_top [OrderTop α] {a : α} : ⊤ ⤳ a := by
-  simp [IsUpperSet.specializes_iff_le]
-
-@[simps]
-instance [OrderBot α] : OrderBot (WithUpperSet α) where
-  bot := WithUpperSet.toUpperSet ⊥
-  bot_le a := by cases a; simp [WithUpperSet.toUpperSet_le_iff]
-
-@[simps]
-instance [OrderTop α] : OrderTop (WithUpperSet α) where
-  top := WithUpperSet.toUpperSet ⊤
-  le_top a := by cases a; simp [WithUpperSet.toUpperSet_le_iff]
-
-lemma WithBot.continuous_coe :
-    Continuous (Y := WithUpperSet <| WithBot α) (WithUpperSet.toUpperSet ∘ WithBot.some) := by
-  rw [← IsUpperSet.monotone_iff_continuous]
-  exact WithBot.coe_mono
-
-lemma WithTop.continuous_coe :
-    Continuous (Y := WithUpperSet <| WithTop α) (WithUpperSet.toUpperSet ∘ WithTop.some) := by
-  rw [← IsUpperSet.monotone_iff_continuous]
-  exact WithTop.coe_mono
-
-lemma WithBot.isOpenEmbedding_coe :
-    IsOpenEmbedding (Y := WithUpperSet <| WithBot α) (WithUpperSet.toUpperSet ∘ WithBot.some) :=
-  have inj : (WithUpperSet.toUpperSet ∘ WithBot.some).Injective := Option.some_injective _
-{ eq_induced := by
-    ext s
-    simp_rw [isOpen_induced_iff]
-    constructor
-    · intro hs; use WithUpperSet.toUpperSet ∘ WithBot.some '' s; split_ands
-      · rw [IsUpperSet.isOpen_iff_isUpperSet, IsUpperSet]
-        intro a b; cases a with | _ a => cases b with | _ b =>
-        cases a using WithBot.recBotCoe <;> cases b using WithBot.recBotCoe
-        rotate_right
-        · simp_rw [WithUpperSet.toUpperSet_le_iff, WithBot.coe_le_coe,
-           ← IsUpperSet.specializes_iff_le]; intro h
-          simp_rw [← Function.comp_apply (f := WithUpperSet.toUpperSet), inj.mem_set_image]
-          exact h.mem_open hs
-        all_goals simp [WithBot.some, WithUpperSet, WithUpperSet.toUpperSet, WithBot.le_bot_iff]
-      · rw [inj.preimage_image]
-    · rintro ⟨t, tO, rfl⟩
-      exact tO.preimage WithBot.continuous_coe
-  injective := inj
-  isOpen_range := by
-    rw [← isClosed_compl_iff]
-    convert_to IsClosed {(⊥ : WithUpperSet (WithBot α))}
-    · ext x
-      cases x using WithBot.recBotCoe <;> simp [WithUpperSet, WithUpperSet.toUpperSet]
-    · rw [IsUpperSet.isClosed_iff_isLower, IsLowerSet]
-      rintro a b h ⟨⟩; simpa [WithUpperSet, WithBot.le_bot_iff] using h }
-
---TODO WithTop.isOpenEmbedding_some
-
-lemma nhds_bot [OrderBot α] : 𝓝 (⊥ : α) = ⊤ := by
-  rw [eq_top_iff, le_nhds_iff]
-  intro s hs sO
-  rw [Filter.mem_top, eq_univ_iff_forall]
-  intro x; exact specializes_bot.mem_open sO hs
-
-omit [TopologicalSpace α] in
-lemma WithBot.isClosed_singleton_bot : IsClosed {(⊥ : WithUpperSet <| WithBot α)} := by
-  rw [IsUpperSet.isClosed_iff_isLower, IsLowerSet]
-  rintro x y h ⟨⟩; cases y
-  simp [WithUpperSet.toUpperSet_le_iff, WithBot.le_bot_iff] at h; simp [h]
-
-omit [TopologicalSpace α] in
-@[simp]
-lemma WithBot.le_bot_iff {a : WithUpperSet (WithBot α)} :
-    a ≤ WithUpperSet.toUpperSet (⊥ : WithBot α) ↔ a = WithUpperSet.toUpperSet (⊥ : WithBot α) :=
-  _root_.WithBot.le_bot_iff
-
-local instance {α} [TopologicalSpace α] : TopologicalSpace (Option α) :=
-  coinduced Option.some inferInstance ⊔ coinduced (fun () ↦ none) inferInstance
-
-lemma _root_.TopologicalSpace.IsTopologicalBasis.option {α} [TopologicalSpace α] {B : Set (Set α)}
-    (b : IsTopologicalBasis B) : IsTopologicalBasis (insert {none} (Set.image some '' B)) := by
-  have b₁ : IsTopologicalBasis {{()}} := by
-    convert isTopologicalBasis_singletons Unit
-    ext s; simp [Unique.exists_iff]
-  have : Set.image (fun () ↦ none : Unit → Option α) {()} = {none} := by ext; simp
-  rw [← union_singleton, ← this, ← image_singleton]
-  convert b.sum b₁ |>.induced <| Equiv.optionEquivSumPUnit α
-  · simp [instTopologicalSpaceSum, instTopologicalSpaceOption, ← Equiv.coinduced_symm,
-    coinduced_sup, coinduced_compose, Function.comp_def]
-  · simp [image_insert_eq, image_image, ← Equiv.image_symm_eq_preimage]
-
--- lemma basis_Ici : IsTopologicalBasis (range Ici : Set (Set α)) := by
---   convert isTopologicalBasis_opens
---   ext s
---   simp [IsUpperSet.isOpen_iff_isUpperSet, IsUpperSet]
---   constructor
---   · rintro ⟨a, rfl⟩ b c; exact le_trans'
---   · intro hs
-
-@[simps!?]
-def equiv : WithUpperSet (WithBot α) ≃ Option α :=
-  WithUpperSet.ofUpperSet.trans
-  { toFun := WithBot.recBotCoe none some
-    invFun := Option.rec ⊥ WithBot.some
-    left_inv x := by cases x <;> simp
-    right_inv x := by cases x <;> simp }
-
-@[simp]
-lemma exists_eq_or_and {α z} {p q : α → Prop} :
-    (∃ x, (x = z ∨ p x) ∧ q x) ↔ q z ∨ ∃ x, p x ∧ q x := by
-  exact exists_eq_or_imp
-
-open scoped Classical in
-@[simps?]
-noncomputable def WithBot.quot : C(α × UProp, WithUpperSet (WithBot α)) :=
-  let toFun ap := if ap.2 then WithUpperSet.toUpperSet (WithBot.some ap.1) else ⊥
-{ toFun
-  continuous_toFun := by
-    constructor; intro s sO
-    by_cases hb : ⊥ ∈ s
-    · have : s = univ := by
-        rw [eq_univ_iff_forall]; intro x; exact IsUpperSet.specializes_bot.mem_open sO hb
-      simp [this]
-    · simpa [toFun, preimage_if, hb, -bot_def, isOpen_prod_iff, UProp.top_def, UProp.bot_def,
-      UProp.isOpen_iff_empty_or_top_mem] using fun a ha ↦
-        ⟨_, sO.preimage WithBot.continuous_coe, {⊤}, rfl, ha, rfl,
-          by split_ands <;> { rintro ⟨b, p⟩ ⟨hb, ⟨⟩⟩; simp at hb; simp [hb]}⟩ }
-
-lemma WithBot.isQuotientMap_quot [Nonempty α] : IsQuotientMap (WithBot.quot (α := α)) where
-  surjective x := by
-    cases x with | _ x => cases x using WithBot.recBotCoe with
-    | bot => use (Classical.arbitrary α, ⊥); simp
-    | coe a => use (a, ⊤); simp
-  eq_coinduced := by
-    ext s; rw [isOpen_coinduced]
-    use IsOpen.preimage <| map_continuous _
-    simp_rw [IsUpperSet.isOpen_iff_isUpperSet, IsUpperSet]
-    simp_intro h a b hab ha
-    cases a with | _ a => cases b with | _ b =>
-    cases a using WithBot.recBotCoe with
-    | bot => cases b using WithBot.recBotCoe with
-      | bot => exact ha
-      | coe b => exact h b |>.2 b (le_refl _) ha
-    | coe a => cases b using WithBot.recBotCoe with
-      | bot => simp [WithUpperSet.toUpperSet_le_iff] at hab
-      | coe b => exact h a |>.1 b (by simpa [WithUpperSet.toUpperSet_le_iff] using hab) ha
--- end
--- section lift
--- variable {α} [Preorder α] [TopologicalSpace α]
-
-def WithBot.lift {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
-    (f : C(U, α)) : C(X, WithUpperSet (WithBot α)) where
-  toFun x := if h : x ∈ U then (WithUpperSet.toUpperSet ∘ WithBot.some) (f ⟨x, h⟩) else ⊥
-  continuous_toFun := by
-    constructor; intro s hs
-    by_cases hb : ⊥ ∈ s
-    · have : s = univ := by
-        rw [eq_univ_iff_forall]; intro x; exact IsUpperSet.specializes_bot.mem_open hs hb
-      simp [this]
-    · simp only [preimage_dif, hb, exists_false, setOf_false, union_empty]
-      rw [Uo.isOpenEmbedding_subtypeVal.isOpen_iff_preimage_isOpen, preimage_setOf_eq]
-      · simpa [← mem_preimage, setOf_mem_eq] using
-          hs.preimage WithBot.continuous_coe |>.preimage <| map_continuous f
-      · intro x; simp +contextual
-
-@[simp]
-lemma WithBot.lift_coe {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)] (Uo : IsOpen U)
-    (f : C(U, α)) (x : U) :
-    WithBot.lift Uo f (x : X) = (WithUpperSet.toUpperSet ∘ WithBot.some) (f x) := by
-  simp [WithBot.lift]
-
-@[simp]
-lemma WithBot.lift_of_mem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
-    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∈ U) :
-    WithBot.lift Uo f x = (WithUpperSet.toUpperSet ∘ WithBot.some) (f ⟨x, hx⟩) := by
-  simp [WithBot.lift, hx]
-
-@[simp]
-lemma WithBot.lift_of_notMem {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
-    (Uo : IsOpen U) (f : C(U, α)) {x : X} (hx : x ∉ U) : WithBot.lift Uo f x = ⊥ := by
-  simp [WithBot.lift, hx]
-
-@[simp]
-lemma WithBot.lift_restrict {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
-    (Uo : IsOpen U) (f : C(U, α)) :
-    (WithBot.lift Uo f).restrict U =
-      .comp ⟨WithUpperSet.toUpperSet ∘ WithBot.some, continuous_coe⟩ f := by
-  ext x; simp [WithBot.lift]
-
-@[simp]
-lemma WithBot.lift_restrict_compl {X} [TopologicalSpace X] {U : Set X} [DecidablePred (· ∈ U)]
-    (Uo : IsOpen U) (f : C(U, α)) :
-    (WithBot.lift Uo f).restrict Uᶜ = .const _ ⊥ := by
-  ext x; simpa [WithBot.lift, -Subtype.coe_prop] using x.2
-
-end
-end IsUpperSet
-
--- TODO goes in ???
-lemma _root_.WithBot.range_coe' {α} : range (WithBot.some : α → WithBot α) = {⊥}ᶜ := by
-  ext x; cases x using WithBot.recBotCoe <;> simp
-
-lemma _root_.WithTop.range_coe' {α} : range (WithTop.some : α → WithTop α) = {⊤}ᶜ := by
-  ext x; cases x using WithTop.recTopCoe <;> simp
+-- lemma _root_.WithTop.range_coe' {α} : range (WithTop.some : α → WithTop α) = {⊤}ᶜ := by
+--   ext x; cases x using WithTop.recTopCoe <;> simp
 
 namespace CompletelyNormalSpace
 
 #check CompletelyNormalSpace
--- def O2C3.quotO1C2
-
--- def O1C2.quotO2C3 : C(O2C3, O1C2) where
---   toFun | .left | .zero | .mid | .one => .one | .right => .right
---   continuous_toFun := by
---     rw [← IsUpperSet.monotone_iff_continuous]
---     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟩ <;> simp [O1C2.le_def, Z3.spec_iff]
 
 def O1C2.quotO2C3 : O2C3 →o O1C2 where
   toFun | .left => .left | .zero | .mid | .one => .one | .right => .right
   monotone' := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟩ <;> simp [O1C2.le_def, Z3.spec_iff]
-
--- noncomputable def foo := NormalSpace.disjointOpenNhdsIndicator.toOrderHom
 
 lemma _root_.WithBot.some_injective {α} : Function.Injective (WithBot.some : α → WithBot α) :=
   fun x y h ↦ by cases h; rfl
@@ -1127,9 +844,6 @@ lemma _root_.WithBot.some_injective {α} : Function.Injective (WithBot.some : α
 noncomputable def indicator : C(O2C3B, O1C2B) :=
   WithUpperSet.map <| OrderHom.withBotMap ⟨NormalSpace.indicator,
     IsUpperSet.monotone_iff_continuous.mpr <| map_continuous _⟩
-
-
--- #synth Coe O1C2 O1C2B
 
 @[coe] abbrev O1C2B.some (a : O1C2) : O1C2B := WithUpperSet.toUpperSet (WithBot.some a)
 @[coe] abbrev O2C3B.some (a : O2C3) : O2C3B := WithUpperSet.toUpperSet (WithBot.some a)
@@ -1299,7 +1013,9 @@ lemma llp : CompletelyNormalSpace X ↔ initial.to X ⧄ ofHom indicator where
   mp h :=
   { sq_hasLift {ι τ} sq := by
       rw [iff_subspaces_normal] at h
-      have rng_some : range O1C2B.some = {⊥}ᶜ := WithBot.range_coe'
+      have rng_some : range O1C2B.some = {⊥}ᶜ := by
+        change range WithBot.some = {⊥}ᶜ
+        ext x; cases x using WithBot.recBotCoe <;> simp
       let U := τ ⁻¹' range O1C2B.some
       have Uo : IsOpen U := by
         unfold U; rw [rng_some]
@@ -1354,30 +1070,22 @@ noncomputable def OIC2.liftI : of (ULift I) ⟶ of OIC2.{u} :=
 lemma OIC2.liftI_toO1C2 : OIC2.liftI ≫ ofHom OIC2.toO1C2 = intervalToO1C2 := by
   unfold liftI; exact OIC2.lift_comp_toO1C2
 
---TODO Goes in `Mathlib.Topology.GDelta.Basic`
-lemma _root_.IsGδ.preimage {X Y} [TopologicalSpace X] [TopologicalSpace Y]
-    (f : C(X, Y)) {s : Set Y} (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
-  rcases hs with ⟨T, To, cardT, hsT⟩
-  use Set.preimage f '' T
-  split_ands
-  · rintro _ ⟨t, ht, rfl⟩; exact (To t ht).preimage f.continuous
-  · exact Countable.image cardT (Set.preimage ⇑f)
-  · simp [hsT]
+-- --TODO Goes in `Mathlib.Topology.GDelta.Basic`
 
---TODO Goes in `Mathlib.Topology.Separation.GDelta`
-lemma of_precise_separating {X} [TopologicalSpace X]
-    (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
-      {δ : C(X, I) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
-  __ := NormalSpace.of_separating fun {s t} sC tC disj ↦ (sep sC tC disj).map id
-      (fun _ ↦ And.imp (fun h₀ x hx ↦ h₀.symm.subset hx) fun h₁ x hx ↦ h₁.symm.subset hx)
-  closed_gdelta ⦃s⦄ sC := by
-    have Gδ₀ : IsGδ ({0} : Set I) := IsGδ.singleton 0
-    let ⟨δ, hδ₀, hδ₁⟩ := sep sC isClosed_empty (disjoint_empty s)
-    rw [← hδ₀]
-    apply Gδ₀.preimage
+-- --TODO Goes in `Mathlib.Topology.Separation.GDelta`
+-- lemma of_precise_separating {X} [TopologicalSpace X]
+--     (sep : {s t : Set X} → IsClosed s → IsClosed t → Disjoint s t →
+--       {δ : C(X, I) // δ ⁻¹' {0} = s ∧ δ ⁻¹' {1} = t}) : PerfectlyNormalSpace X where
+--   __ := NormalSpace.of_separating fun {s t} sC tC disj ↦ (sep sC tC disj).map id
+--       (fun _ ↦ And.imp (fun h₀ x hx ↦ h₀.symm.subset hx) fun h₁ x hx ↦ h₁.symm.subset hx)
+--   closed_gdelta ⦃s⦄ sC := by
+--     have Gδ₀ : IsGδ ({0} : Set I) := IsGδ.singleton 0
+--     let ⟨δ, hδ₀, hδ₁⟩ := sep sC isClosed_empty (disjoint_empty s)
+--     rw [← hδ₀]
+--     apply Gδ₀.preimage
 
 
-open ContinuousMap in
+open ContinuousMap Set.Notation in
 /-- A space `X` is perfectly normal if any morphism to `O1C2` (encoding two disjoint closed sets)
 can be lifted through `I`, the topological interval. -/
 lemma of_lift (lift : (X ⟶ of O1C2) → (X ⟶ of (ULift I)))
@@ -1388,13 +1096,15 @@ lemma of_lift (lift : (X ⟶ of O1C2) → (X ⟶ of (ULift I)))
   have fac₁ χ : (lift χ) ⁻¹' {⟨1⟩} = χ ⁻¹' {O1C2.right} := by
     conv_rhs => rw [← fac χ]
     ext x; simp +contextual [intervalToO1C2, ite_eq_iff, ULift.ext_iff]
+  have preimageVal₀ : I ↓∩ {0} = {0} := by ext; simp
+  have preimageVal₁ : I ↓∩ {1} = {1} := by ext; simp
   of_precise_separating fun {s t} sC tC disj ↦
-    ⟨uliftDown.comp (Hom.hom <| lift (O1C2.lift sC tC disj)), by
-      simp [preimage_comp, uliftDown, ←Homeomorph.ulift.image_symm_eq_preimage,
-      ← Homeomorph.coe_toEquiv]
+    ⟨subtypeVal.comp <| uliftDown.comp <| Hom.hom <| lift (O1C2.lift sC tC disj), by
+      simp [preimage_comp, uliftDown, subtypeVal, preimageVal₀, ← Homeomorph.coe_toEquiv,
+      ←Homeomorph.ulift.image_symm_eq_preimage]
       simp [Homeomorph.ulift, fac₀], by
-      simp [preimage_comp, uliftDown, ← Homeomorph.ulift.image_symm_eq_preimage,
-      ← Homeomorph.coe_toEquiv]
+      simp [preimage_comp, uliftDown, subtypeVal, preimageVal₁, ← Homeomorph.coe_toEquiv,
+      ← Homeomorph.ulift.image_symm_eq_preimage]
       simp [Homeomorph.ulift, fac₁]⟩
 
 -- TODO goes in `Mathlib.Data.Set.Lattice` (iUnion_subtype' is in EquivHelpers already)
@@ -1406,13 +1116,13 @@ lemma _root_.Set.iInter_diff {β ι} [Nonempty ι] (s : Set β) (t : ι → Set 
     (⋂ n, t n) \ s = ⋂ n, (t n \ s) := by
   ext x; simp [forall_and]
 
-lemma _root_.Set.EqOn.notMem_of_ne {α β} {f g : α → β} {s : Set α} (h : EqOn f g s)
-    {x : α} (hx : f x ≠ g x) : x ∉ s := by
-  contrapose! hx; exact h hx
+-- lemma _root_.Set.EqOn.notMem_of_ne {α β} {f g : α → β} {s : Set α} (h : s.EqOn f g)
+--     {x : α} (hx : f x ≠ g x) : x ∉ s := by
+--   contrapose! hx; exact h hx
 
-lemma _root_.Set.EqOn.iff_notMem_of_ne {α β} {f g : α → β} {s : Set α} :
-    EqOn f g s ↔ ∀ x, f x ≠ g x → x ∉ s := by
-  unfold EqOn; simp [not_imp_not]
+-- lemma _root_.Set.EqOn.iff_notMem_of_ne {α β} {f g : α → β} {s : Set α} :
+--     EqOn f g s ↔ ∀ x, f x ≠ g x → x ∉ s := by
+--   unfold EqOn; simp [not_imp_not]
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 then there exists a continuous function `f : X → ℝ` such that
@@ -1447,7 +1157,7 @@ lemma exists_continuous_zero_one_of_isClosed_of_isGδ {X} [TopologicalSpace X] [
     split_ands
     all_goals
       intro x; contrapose!; intro hx
-      simp_rw [EqOn.iff_notMem_of_ne, notMem_compl_iff, Pi.zero_apply] at hδs₀ hδt₀
+      simp_rw [EqOn, mem_compl_iff, @not_imp_comm (_ ∈ _), Pi.zero_apply] at hδs₀ hδt₀
       simp [← inter_u, ← inter_v]; grind
   use ⟨δ, ?cont⟩, ?δ₀, ?δ₁, ?δI
   case cont =>
