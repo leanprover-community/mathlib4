@@ -7055,6 +7055,7 @@ public import Mathlib.Topology.EMetricSpace.BoundedVariation
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
 public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.EMetricSpace.OnePoint
 public import Mathlib.Topology.EMetricSpace.PairReduction
 public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.Topology.EMetricSpace.Pi
