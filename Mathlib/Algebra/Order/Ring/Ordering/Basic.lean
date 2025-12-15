@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Order.Support
+public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination

@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Order.Support
 public import Mathlib.RingTheory.Ideal.Prime
 
 /-!
