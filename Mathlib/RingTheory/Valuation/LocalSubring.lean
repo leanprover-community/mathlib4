@@ -98,7 +98,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   let S := Algebra.adjoin R.toSubring {x}
   have : R.toSubring < S.toSubring := SetLike.lt_iff_le_and_exists.mpr
     ⟨fun r hr ↦ algebraMap_mem S ⟨r, hr⟩, ⟨x, Algebra.self_mem_adjoin_singleton _ _, hx⟩⟩
-  have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_ideal_map_adjoin_add_span_eq_top x _
+  have ⟨p, hp, hpx⟩ := Algebra.exists_aeval_invOf_eq_zero_of_idealMap_adjoin_add_span_eq_top x _
     (maximalIdeal.isMaximal R.toSubring).ne_top
     (top_unique <| (map_maximalIdeal_eq_top_of_isMax hR this).ge.trans le_self_add)
   have H : IsUnit p.leadingCoeff := of_not_not fun h ↦ by simpa using sub_mem h hp
