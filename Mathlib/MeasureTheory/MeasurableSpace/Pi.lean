@@ -84,7 +84,6 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
-    apply mem_image_of_mem
     grind
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
