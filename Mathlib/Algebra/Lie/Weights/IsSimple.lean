@@ -286,21 +286,6 @@ lemma LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot
   simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
     using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
 
-lemma LieAlgebra.IsKilling.exists_orthogonal_element_of_ne_top
-    (q : Submodule K (Dual K H)) (hq : q ≠ ⊤) :
-    ∃ y : H, y ≠ 0 ∧ ∀ f ∈ q, f y = 0 := by
-      have h_dual_seq : q.dualAnnihilator ≠ ⊥ := by
-        norm_num +zetaDelta at *;
-        exact hq;
-      obtain ⟨ y, hy ⟩ := ( Submodule.ne_bot_iff _ ).mp h_dual_seq;
-      -- Since the dual space of H is isomorphic to H itself, there exists a non-zero element in H corresponding to y.
-      obtain ⟨x, hx⟩ : ∃ x : H, y = (Module.Dual.eval K H) x := by
-        have h_iso : Function.Surjective (Module.Dual.eval K H) := by
-          exact?;
-        exact h_iso y |> Exists.imp fun x hx => hx.symm;
-      simp +zetaDelta at *;
-      exact ⟨ x, x.2, by aesop_cat, fun f hf => by simpa [ hx ] using hy.1 f hf ⟩
-
 lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
     {y : H} {α : Weight K H L} (hα : α.IsNonZero) (hy : (α : H → K) y = 0)
     (z : L) (hz : z ∈ sl2SubmoduleOfRoot hα) : ⁅(y : L), z⁆ = 0 := by
@@ -317,11 +302,16 @@ lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
 
 open Weight in
 lemma LieAlgebra.IsKilling.l2 (q : Submodule K (Dual K H))
-    (h₁ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
     (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
     q = ⊤ := by
   by_contra hq_ne_top
-  obtain ⟨y, hy_ne_zero, hy_ortho⟩ := exists_orthogonal_element_of_ne_top q hq_ne_top
+  have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
+    contrapose! hq_ne_top
+    have := Subspace.finrank_add_finrank_dualCoannihilator_eq q
+    rw [hq_ne_top, finrank_bot, add_zero] at this
+    exact Submodule.eq_top_of_finrank_eq (this.trans Subspace.dual_finrank_eq.symm)
+  obtain ⟨y, hy_mem, hy_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_ne_bot
+  have hy_ortho : ∀ f ∈ q, f y = 0 := (Submodule.mem_dualCoannihilator y).mp hy_mem
   have h_comm : ∀ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
       ∀ z ∈ sl2SubmoduleOfRoot α.2.2, ⁅(y : L), z⁆ = 0 :=
     fun α z hz => ad_mem_sl2_eq_zero_of_root_eval_eq_zero α.2.2 (hy_ortho _ α.2.1) z hz
@@ -359,7 +349,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have c₃ : J = ⊤ := by grind
-  apply LieAlgebra.IsKilling.l2 q h₀
+  apply LieAlgebra.IsKilling.l2 q
   -- Unfold J in c₃ and extract the needed equality
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
   unfold J invtSubmoduleToLieIdeal at c₃
