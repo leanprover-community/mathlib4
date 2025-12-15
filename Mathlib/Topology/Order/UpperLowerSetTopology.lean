@@ -384,6 +384,15 @@ protected lemma _root_.Topology.isLowerSet_iff_nhds {α : Type*} [TopologicalSpa
   mp _ a := nhds_eq_principal_Iic a
   mpr hα := ⟨by simp [TopologicalSpace.ext_iff_nhds, hα, nhds_eq_principal_Iic]⟩
 
+protected lemma _root_.Topology.isUpperSet_orderDual [Preorder α] [TopologicalSpace α] :
+    Topology.IsUpperSet αᵒᵈ ↔ Topology.IsLowerSet α := by
+  constructor
+  · apply OrderDual.instIsLowerSet
+  · apply OrderDual.instIsUpperSet
+
+protected lemma _root_.Topology.isLowerSet_orderDual [Preorder α] [TopologicalSpace α] :
+    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := Topology.isUpperSet_orderDual.symm
+
 section maps
 
 variable [Preorder α] [Preorder β]
@@ -406,18 +415,36 @@ lemma lowerSet_le_lower {t₁ t₂ : TopologicalSpace α} [@Topology.IsLowerSet 
   rw [@isOpen_iff_isLowerSet α _ t₁]
   exact IsLower.isLowerSet_of_isOpen hs
 
+lemma antitone_iff_continuous [TopologicalSpace α] [TopologicalSpace β]
+    [hα : Topology.IsLowerSet α] [hβ : Topology.IsUpperSet β] (f : α → β) :
+    Antitone f ↔ Continuous f where
+  mp hf := by
+    have : OrderDual.ofDual ∘ OrderDual.toDual ∘ f = f := by ext; rfl
+    rw [← Topology.isLowerSet_orderDual] at hβ
+    rw [← monotone_toDual_comp_iff, IsLowerSet.monotone_iff_continuous] at hf
+    rw [← this]; exact continuous_ofDual.comp hf
+  mpr hf := by
+    rw [← Topology.isLowerSet_orderDual] at hβ
+    rw [← monotone_toDual_comp_iff, IsLowerSet.monotone_iff_continuous]
+    exact hf.comp continuous_ofDual
+
 end maps
 
 end IsLowerSet
 
-lemma isUpperSet_orderDual [Preorder α] [TopologicalSpace α] :
-    Topology.IsUpperSet αᵒᵈ ↔ Topology.IsLowerSet α := by
-  constructor
-  · apply OrderDual.instIsLowerSet
-  · apply OrderDual.instIsUpperSet
-
-lemma isLowerSet_orderDual [Preorder α] [TopologicalSpace α] :
-    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := isUpperSet_orderDual.symm
+lemma IsUpperSet.antitone_iff_continuous [Preorder α] [Preorder β]
+    [TopologicalSpace α] [TopologicalSpace β]
+    [hα : Topology.IsUpperSet α] [hβ : Topology.IsLowerSet β] (f : α → β) :
+    Antitone f ↔ Continuous f where
+  mp hf := by
+    have : OrderDual.ofDual ∘ OrderDual.toDual ∘ f = f := by ext; rfl
+    rw [← Topology.isUpperSet_orderDual] at hβ
+    rw [← monotone_toDual_comp_iff, IsUpperSet.monotone_iff_continuous] at hf
+    rw [← this]; exact continuous_ofDual.comp hf
+  mpr hf := by
+    rw [← Topology.isUpperSet_orderDual] at hβ
+    rw [← monotone_toDual_comp_iff, IsUpperSet.monotone_iff_continuous]
+    exact hf.comp continuous_ofDual
 
 namespace WithUpperSet
 variable [Preorder α] [Preorder β] [Preorder γ]
