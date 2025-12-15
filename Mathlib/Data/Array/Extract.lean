@@ -39,7 +39,6 @@ and should be upstreamed to replace that.
 -/
 theorem extract_append_right' {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     (a ++ b).extract i j = b.extract (i - a.size) (j - a.size) := by
-  simp only [extract_append]
   grind
 
 theorem extract_eq_of_size_le_end {l p : Nat} {a : Array α} (h : a.size ≤ l) :

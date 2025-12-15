@@ -423,7 +423,6 @@ theorem LowerSemicontinuousOn.inter_biInter_preimage_Iic_eq_empty_iff_exists_fin
   · rw [Set.eq_empty_iff_forall_notMem]
     simp only [mem_inter_iff, mem_iInter, mem_preimage, mem_Iic, not_and, not_forall,
       exists_prop, not_le]
-    simp only [Subtype.exists, exists_and_right] at hu
     grind
 
 open scoped Set.Notation in
