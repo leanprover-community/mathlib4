@@ -65,6 +65,7 @@ theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
 @[simp]
 theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
 
+@[simp]
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
   SetLike.coe_injective rfl
@@ -183,6 +184,11 @@ theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f �
 
 @[simp] theorem comap_coe_toLinearMap (f : F) (p : Submodule R₂ M₂) :
     comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
+
+@[simp]
+theorem comap_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) :
+    (p.comap f).toAddSubmonoid = p.toAddSubmonoid.comap (f : M →+ M₂) :=
+  SetLike.coe_injective rfl
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
@@ -493,9 +499,13 @@ lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
 
+@[simp]
 lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
-    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
-  rfl
+    (p.map f).toAddSubgroup = p.toAddSubgroup.map f.toAddMonoidHom := rfl
+
+@[simp]
+lemma comap_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M₂) :
+    (p.comap f).toAddSubgroup = p.toAddSubgroup.comap f.toAddMonoidHom := rfl
 
 end AddCommGroup
 

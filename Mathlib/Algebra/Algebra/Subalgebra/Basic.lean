@@ -395,7 +395,7 @@ def toSubmoduleEquiv (S : Subalgebra R A) : toSubmodule S ≃ₗ[R] S :=
   LinearEquiv.ofEq _ _ rfl
 
 /-- Transport a subalgebra via an algebra homomorphism. -/
-@[simps! coe toSubsemiring]
+@[simps! coe]
 def map (f : A →ₐ[R] B) (S : Subalgebra R A) : Subalgebra R B :=
   { S.toSubsemiring.map (f : A →+* B) with
     algebraMap_mem' := fun r => f.commutes r ▸ Set.mem_image_of_mem _ (S.algebraMap_mem r) }
@@ -419,12 +419,16 @@ theorem map_map (S : Subalgebra R A) (g : B →ₐ[R] C) (f : A →ₐ[R] B) :
 theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
 
+@[simp]
+theorem map_toSubsemiring {S : Subalgebra R A} {f : A →ₐ[R] B} :
+    (S.map f).toSubsemiring = S.toSubsemiring.map f.toRingHom := rfl
+
+@[simp]
 theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
-    (toSubmodule <| S.map f) = S.toSubmodule.map f.toLinearMap :=
-  SetLike.coe_injective rfl
+    (S.map f).toSubmodule = S.toSubmodule.map f.toLinearMap := rfl
 
 /-- Preimage of a subalgebra under an algebra homomorphism. -/
-@[simps! coe toSubsemiring]
+@[simps! coe]
 def comap (f : A →ₐ[R] B) (S : Subalgebra R B) : Subalgebra R A :=
   { S.toSubsemiring.comap (f : A →+* B) with
     algebraMap_mem' := fun r =>
@@ -441,6 +445,15 @@ theorem gc_map_comap (f : A →ₐ[R] B) : GaloisConnection (map f) (comap f) :=
 @[simp]
 theorem mem_comap (S : Subalgebra R B) (f : A →ₐ[R] B) (x : A) : x ∈ S.comap f ↔ f x ∈ S :=
   Iff.rfl
+
+@[simp]
+theorem comap_toSubsemiring (S : Subalgebra R B) (f : A →ₐ[R] B) :
+    (S.comap f).toSubsemiring = S.toSubsemiring.comap f.toRingHom := rfl
+
+@[simp]
+theorem comap_toSubmodule (S : Subalgebra R B) (f : A →ₐ[R] B) :
+    (S.comap f).toSubmodule = S.toSubmodule.comap f.toLinearMap :=
+  SetLike.coe_injective rfl
 
 instance noZeroDivisors {R A : Type*} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
     [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=

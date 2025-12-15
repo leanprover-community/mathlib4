@@ -82,6 +82,10 @@ theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻�
 theorem mem_comap {K : Subgroup N} {f : G →* N} {x : G} : x ∈ K.comap f ↔ f x ∈ K :=
   Iff.rfl
 
+@[to_additive (attr := simp)]
+theorem comap_toSubmonoid {K : Subgroup N} {f : G →* N} :
+    (K.comap f).toSubmonoid = K.toSubmonoid.comap f := rfl
+
 @[to_additive]
 theorem comap_mono {f : G →* N} {K K' : Subgroup N} : K ≤ K' → comap f K ≤ comap f K' :=
   preimage_mono
@@ -122,7 +126,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 
 @[to_additive (attr := simp)]
 theorem map_toSubmonoid (f : G →* G') (K : Subgroup G) :
-    (Subgroup.map f K).toSubmonoid = Submonoid.map f K.toSubmonoid := rfl
+    (K.map f).toSubmonoid = K.toSubmonoid.map f := rfl
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
@@ -452,10 +456,6 @@ namespace Subgroup
 open MonoidHom
 
 variable {N : Type*} [Group N] (f : G →* N)
-
-@[to_additive (attr := simp, norm_cast)]
-lemma comap_toSubmonoid (e : G ≃* N) (s : Subgroup N) :
-    (s.comap e).toSubmonoid = s.toSubmonoid.comap e.toMonoidHom := rfl
 
 @[to_additive]
 theorem map_comap_le (H : Subgroup N) : map f (comap f H) ≤ H :=

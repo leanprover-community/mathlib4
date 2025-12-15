@@ -368,14 +368,16 @@ theorem map_map (S : NonUnitalSubalgebra R A) (g : B →ₙₐ[R] C) (f : A →�
 theorem mem_map {S : NonUnitalSubalgebra R A} {f : F} {y : B} : y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   NonUnitalSubsemiring.mem_map
 
+@[simp]
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : F} :
     -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
     (map f S).toSubmodule = Submodule.map (LinearMapClass.linearMap f) S.toSubmodule :=
-  SetLike.coe_injective rfl
+  rfl
 
+@[simp]
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : F} :
     (map f S).toNonUnitalSubsemiring = S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) :=
-  SetLike.coe_injective rfl
+  rfl
 
 @[simp]
 theorem coe_map (S : NonUnitalSubalgebra R A) (f : F) : (map f S : Set B) = f '' S :=
@@ -398,6 +400,17 @@ theorem gc_map_comap (f : F) :
 @[simp]
 theorem mem_comap (S : NonUnitalSubalgebra R B) (f : F) (x : A) : x ∈ comap f S ↔ f x ∈ S :=
   Iff.rfl
+
+@[simp]
+theorem comap_toSubmodule (S : NonUnitalSubalgebra R B) (f : F) :
+    -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
+    (comap f S).toSubmodule = Submodule.comap (LinearMapClass.linearMap f) S.toSubmodule :=
+  rfl
+
+@[simp]
+theorem comap_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R B) (f : F) :
+    (comap f S).toNonUnitalSubsemiring = S.toNonUnitalSubsemiring.comap (f : A →ₙ+* B) :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_comap (S : NonUnitalSubalgebra R B) (f : F) : (comap f S : Set A) = f ⁻¹' (S : Set B) :=
