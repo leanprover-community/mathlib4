@@ -314,7 +314,7 @@ nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCa
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
 -- poor performance consequences.
-unif_hint forget_obj_eq_coe (X : Scheme) where ⊢forget.obj X ≟ (X : Type*)
+unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
 @[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = f := rfl
