@@ -305,7 +305,7 @@ theorem Definable.singleton_of_mem {a : M} {A : Set M} (h : a ∈ A) :
 
 /-- The 2-dimensional diagonal is definable independent from parameters. -/
 theorem Definable.diagonal (A : Set M) :
-    A.Definable₂ L {(x,y) : M × M | x = y} := by
+    A.Definable₂ L (diagonal M) := by
   exists (Term.var 0).equal (Term.var 1)
 
 end Set
@@ -423,16 +423,27 @@ noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α)
 
 end DefinableSet
 
+end Language
+
+end FirstOrder
+
 section
 
-open FirstOrder FirstOrder.Language Set
+open FirstOrder FirstOrder.Language Set Function
 
 variable {M : Type w} (L : Language) [L.Structure M]
 variable {α β : Type*} (A : Set M)
 
+namespace Function
+
+/-- The sum type style of `Function.graph`. -/
+@[simp]
+def tupleGraph (f : (α → M) → M) : Set ((α ⊕ Unit) → M) :=
+  { v : (α ⊕ Unit) → M | f (v ∘ Sum.inl) = v (Sum.inr ()) }
+
 /-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
 def DefinableFun (f : (α → M) → M) : Prop :=
-  A.Definable L { v : (α ⊕ Unit) → M | f (v ∘ Sum.inl) = v (Sum.inr ()) }
+  A.Definable L f.tupleGraph
 
 /-- A family of functions is definable when each coordinate is definable. -/
 def DefinableMap (F : (α → M) → (β → M)) : Prop :=
@@ -440,32 +451,25 @@ def DefinableMap (F : (α → M) → (β → M)) : Prop :=
 
 variable {L A}
 
-namespace DefinableFun
-
-/-- The sum type style of `Function.graph`. -/
-@[simp]
-def graph (f : (α → M) → M) : Set ((α ⊕ Unit) → M) :=
-  { v : (α ⊕ Unit) → M | f (v ∘ Sum.inl) = v (Sum.inr ()) }
-
-theorem mono {f : (α → M) → M} {B : Set M} (hAs : DefinableFun L A f) (hAB : A ⊆ B) :
+theorem DefinableFun.mono {f : (α → M) → M} {B : Set M} (hAs : DefinableFun L A f) (hAB : A ⊆ B) :
     DefinableFun L B f :=
   Set.Definable.mono hAs hAB
 
 theorem empty_definableFun_iff {f : (α → M) → M} :
     DefinableFun L (∅ : Set M) f ↔
-    ∃ φ : L.Formula (α ⊕ Unit), graph f = setOf φ.Realize := by
+    ∃ φ : L.Formula (α ⊕ Unit), tupleGraph f = setOf φ.Realize := by
   simp [DefinableFun, Set.empty_definable_iff]
 
 /-- A function symbol is a definable function. -/
-theorem fun_symbol {n : ℕ} (f : L.Functions n) :
+theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
     DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) := by
-  refine empty_definable_iff.mpr ?_
+  refine empty_definableFun_iff.mpr ?_
   exists (Term.func f (Term.var ∘ Sum.inl)).equal (Term.var (Sum.inr ()))
 
 /-- A term is a definable function. -/
-theorem term (t : L.Term α) :
+theorem DefinableFun.term (t : L.Term α) :
     DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
-  refine empty_definable_iff.mpr ?_
+  refine empty_definableFun_iff.mpr ?_
   exists (t.relabel Sum.inl).equal (Term.var (Sum.inr ()))
   ext v
   simp
@@ -473,7 +477,7 @@ theorem term (t : L.Term α) :
 variable (L A)
 
 /-- A constant function is a definable function. -/
-theorem const (γ : Type*) (a : M) :
+theorem _root_.FirstOrder.Language.definableFun_of_const (γ : Type*) (a : M) :
     DefinableFun L ({a} : Set M) (fun _ : γ → M => a) := by
   simp only [DefinableFun]
   convert Definable.preimage_comp (fun _ : Fin 1 => Sum.inr ()) (Definable.singleton L a) using 1
@@ -498,7 +502,7 @@ lemma _root_.Set.Definable.preimage_map
   simp [← funext_iff]
 
 /-- The equalizer of two definable functions is a definable. -/
-lemma equalizer {f g : (α → M) → M}
+lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
     A.Definable L {v : α → M | f v = g v} := by
   let F : (α → M) → Fin 2 → M := fun v => ![f v, g v]
@@ -510,16 +514,19 @@ lemma equalizer {f g : (α → M) → M}
   convert (Definable.diagonal L A).preimage_map hF
 
 /-- The fiber of a definable function is definable. -/
-lemma fiber {f : (α → M) → M} (hf : DefinableFun L A f)
+lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : DefinableFun L A f)
     {a : M} (ha : a ∈ A) :
     A.Definable L {v : α → M | f v = a} := by
-  refine equalizer hf ?_
-  exact Definable.mono (const L α (a : M)) (singleton_subset_iff.mpr ha)
+  refine hf.setOf_eq ?_
+  exact Definable.mono (L.definableFun_of_const α (a : M)) (singleton_subset_iff.mpr ha)
 
-end DefinableFun
+lemma DefinableFun.setOf_const_eq {f : (α → M) → M} (hf : DefinableFun L A f)
+    {a : M} (ha : a ∈ A) :
+    A.Definable L {v : α → M | a = f v} := by
+  have : DefinableFun L A fun v ↦ a :=
+    (L.definableFun_of_const α (a : M)).mono (singleton_subset_iff.mpr ha)
+  exact this.setOf_eq hf
+
+end Function
 
 end
-
-end Language
-
-end FirstOrder
