@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 /-!
 # Etale local structure of finite maps
 
-We show that we can construct etale neighborhoods that splits fibers of finite algebras.
+We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
