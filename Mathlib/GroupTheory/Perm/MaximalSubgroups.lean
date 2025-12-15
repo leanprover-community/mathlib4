@@ -100,8 +100,7 @@ namespace Equiv.Perm
 
 open MulAction
 
-theorem ofSubtype_mem_stabilizer {s : Set α} [DecidablePred fun x ↦ x ∈ s]
-    (g : Perm s) :
+theorem ofSubtype_mem_stabilizer [DecidablePred fun x ↦ x ∈ s] (g : Perm s) :
     g.ofSubtype ∈ stabilizer (Perm α) s := by
   rw [mem_stabilizer_iff]
   ext g'
@@ -125,11 +124,11 @@ theorem swap_mem_stabilizer [DecidableEq α]
   · have := swap_apply_of_ne_of_ne (a := a) (b := b) (x := x)
     aesop
 
-theorem exists_mem_stabilizer_smul_eq {s : Set α} :
+theorem exists_mem_stabilizer_smul_eq :
     ∀ a ∈ s, ∀ b ∈ s, ∃ g ∈ stabilizer (Perm α) s, g • a = b := by
   intro a ha b hb
   classical
-  exact ⟨swap a b, swap_mem_stabilizer ha hb, by simp⟩
+  exact ⟨swap a b, swap_mem_stabilizer ha hb, swap_apply_left a b⟩
 
 theorem stabilizer.surjective_toPerm (s : Set α) :
     Function.Surjective (toPerm : stabilizer (Perm α) s → Perm s) := fun g ↦ by
@@ -202,8 +201,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     simp_all
 
 lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
-    {M : Type*} [Group M] [MulAction M α]
-    {s : Set α} {G : Subgroup M} (hG : stabilizer M s < G)
+    {G : Subgroup M} (hG : stabilizer M s < G)
     (moves : ∀ {s : Set α}, ∀ a ∈ s, ∀ b ∈ s, ∃ g ∈ stabilizer M s, g • a = b) :
     IsPretransitive G α := by
   apply IsPretransitive.of_partition (s := s)
@@ -214,8 +212,8 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     obtain ⟨g, hg, rfl⟩ := moves a ha b hb
     rw [stabilizer_compl] at hg
     exact ⟨⟨g, hG.le hg⟩, rfl⟩
-  · intro h
-    apply lt_irrefl G; apply lt_of_le_of_lt _ hG
+  · contrapose! hG
+    apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
       rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
@@ -254,11 +252,9 @@ lemma subsingleton_of_ssubset_compl_of_stabilizer_le
   rw [isPreprimitive_congr hG hf]
   infer_instance
 
-lemma subsingleton_of_ssubset_compl_of_stabilizer_Perm_le
-    {B : Set α} {G : Subgroup (Perm α)}
-    (hB : IsBlock G B)
-    (hB_ss_sc : B ⊂ sᶜ)
-    (hG : stabilizer (Perm α) s ≤ G) :
+lemma subsingleton_of_ssubset_compl_of_stabilizer_perm_le
+    {B : Set α} {G : Subgroup (Perm α)} (hB : IsBlock G B)
+    (hB_ss_s : B ⊂ s) (hG : stabilizer (Perm α) s ≤ G) :
     B.Subsingleton := by
   apply hB.subsingleton_of_ssubset_compl_of_stabilizer_le hB_ss_sc
   intro g

@@ -1174,8 +1174,7 @@ theorem one_lt_ncard_iff_nontrivial_and_finite :
   refine ⟨fun hs ↦ ?_, fun ⟨hs_nontrivial, hs_finite⟩ ↦ ?_⟩
   · have := finite_of_ncard_pos (Nat.zero_lt_of_lt hs)
     rw [← Set.finite_coe_iff] at this
-    rw [Set.one_lt_ncard_iff_nontrivial] at hs
-    aesop
+    exact ⟨one_lt_ncard_iff_nontrivial.mp hs, this⟩
   · rw [← Set.finite_coe_iff] at hs_finite
     rwa [one_lt_ncard_iff_nontrivial]
 

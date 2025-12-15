@@ -212,7 +212,7 @@ end MulAction.IsBlock
 namespace AlternatingGroup
 
 /- Note : The proof of this statement is close to that
-of `Equiv.Perm.isCoato_stabilizer_of_ncard_lt_ncard_compl`,
+of `Equiv.Perm.isCoatom_stabilizer_of_ncard_lt_ncard_compl`,
 and while it would be absolutely impossible the proofs,
 the result would be slightly awkward because the
 details of the results involved in the proof differ slightly. -/
