@@ -896,8 +896,7 @@ section NumberField
 open Units
 
 theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] [NumberField K] {ζ : K}
-    (hζ : IsPrimitiveRoot ζ n) :
-    n ∣ torsionOrder K := by
+    (hζ : IsPrimitiveRoot ζ n) : n ∣ torsionOrder K := by
   rw [torsionOrder, Fintype.card_eq_nat_card]
   replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
   convert orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
@@ -923,7 +922,7 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
     ← IsPrimitiveRoot.coe_units_iff] at hμ
   replace hμ := hμ.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 K) K)
   -- Thus, `K` contains a primitive root of order `l = lcm (n, torsionOrder K)`.
-  have h := IsPrimitiveRoot.pow_mul_pow_lcm hζ hμ (NeZero.ne _) (torsionOrder_ne_zero K)
+  have h := hζ.pow_mul_pow_lcm hμ (NeZero.ne _) (torsionOrder_ne_zero K)
   have : NeZero (n.lcm (torsionOrder K)) :=
     NeZero.of_pos <| Nat.lcm_pos_iff.mpr ⟨NeZero.pos n, torsionOrder_pos K⟩
   -- and therefore `K` is the `l`-th cyclotomic field
@@ -937,7 +936,7 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
   obtain hn | hn := Nat.even_or_odd n
   · rw [if_pos hn]
     apply dvd_antisymm
-    · have := Nat.eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) hn h_main
+    · have := hn.eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main
       rwa [eq_comm, Nat.lcm_eq_left_iff_dvd] at this
     · exact dvd_torsionOrder_of_isPrimitiveRoot hζ
   · rw [if_neg (Nat.not_even_iff_odd.mpr hn)]

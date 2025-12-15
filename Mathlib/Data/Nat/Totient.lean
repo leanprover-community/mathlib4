@@ -401,7 +401,7 @@ theorem eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient
     · exact totient_pos.mpr <| pos_of_ne_zero ha
   · exact totient_pos.mpr <| zero_lt_of_ne_zero (by rwa [mul_assoc])
 
-theorem eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Even a)
+theorem _root_.Even.eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Even a)
     (h' : a.totient = b.totient) : a = b := by
   by_cases ha' : a = 0
   · rw [ha', totient_zero, eq_comm, totient_eq_zero] at h'
@@ -409,7 +409,7 @@ theorem eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Even a)
   refine (eq_or_eq_of_totient_eq_totient h h').resolve_right fun h ↦ ?_
   rw [← h, totient_mul_of_prime_of_dvd (prime_two) (even_iff_two_dvd.mp ha), eq_comm,
     mul_eq_right (totient_eq_zero.not.mpr ha')] at h'
-  cutsat
+  lia
 
 theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
       (p ^ k : ℕ) ^ φ (p ^ k) / ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) =
