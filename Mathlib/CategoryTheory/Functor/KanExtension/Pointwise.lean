@@ -37,7 +37,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C D D' H : Type*} [Category C] [Category D] [Category D'] [Category H]
+variable {C D D' H : Type*} [Category* C] [Category* D] [Category* D'] [Category* H]
   (L : C ⥤ D) (L' : C ⥤ D') (F : C ⥤ H)
 
 /-- The condition that a functor `F` has a pointwise left Kan extension along `L` at `Y`.

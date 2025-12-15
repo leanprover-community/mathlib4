@@ -330,17 +330,15 @@ theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
 @[grind .]
 theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
     x ≤ convexCombo x y t := by
-  change (x : ℝ) ≤ _
-  change (x : ℝ) ≤ _ at h
-  simp [convexCombo]
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
   nlinarith [t.2.1, t.2.2]
 
 @[grind .]
 theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
     convexCombo x y t ≤ y := by
-  change _ ≤ (y : ℝ)
-  change (x : ℝ) ≤ _ at h
-  simp [convexCombo]
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
   nlinarith [t.2.1, t.2.2]
 
 /--
@@ -368,7 +366,7 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexCombo x (convexCombo y z t) s =
       convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
         (convexCombo_assoc_coeff₂ s t) := by
-  simp [convexCombo, coe_mul]
+  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
   by_cases hs : (s : ℝ) = 1
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1

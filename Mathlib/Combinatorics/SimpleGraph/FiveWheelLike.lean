@@ -262,7 +262,7 @@ private lemma sum_degree_le_of_le_not_adj [Fintype α] [DecidableEq α] [Decidab
   _ ≤ _ := by
     simp_rw [← union_compl X, sum_union disjoint_compl_right (s₁ := X), neighborFinset_eq_filter,
              filter_inter, univ_inter, card_eq_sum_ones X, card_eq_sum_ones Xᶜ, sum_mul, one_mul]
-    gcongr <;> grind [filter_card_add_filter_neg_card_eq_card]
+    gcongr <;> grind [card_filter_add_card_filter_not]
 
 end Counting
 
@@ -405,7 +405,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
           simp [Xu, Wc, mul_comm]
         have w3 : 3 ≤ #W := two_lt_card.2 ⟨_, mem_insert_self .., _, by simp [W], _, by simp [W],
           hw.isPathGraph3Compl.ne_fst, hw.isPathGraph3Compl.ne_snd, hw.isPathGraph3Compl.fst_ne_snd⟩
-        have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
+        have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by lia
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
         lia

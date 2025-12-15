@@ -42,7 +42,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 its `m`-simplices are uniquely determined by their spine for all `m ≤ n + 1`. -/
 structure StrictSegal where
   /-- The inverse to `spine X m`. -/
-  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by omega) : Path X m → X _⦋m⦌ₙ₊₁
+  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by lia) : Path X m → X _⦋m⦌ₙ₊₁
   /-- `spineToSimplex` is a right inverse to `spine X m`. -/
   spine_spineToSimplex (m : ℕ) (h : m ≤ n + 1) :
     spine X m ∘ spineToSimplex m = id
@@ -120,7 +120,7 @@ lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ
 
 section autoParam
 
-variable (m : ℕ) (h : m ≤ n + 1 := by omega)
+variable (m : ℕ) (h : m ≤ n + 1 := by lia)
 
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋m⦌ₙ₊₁`
 and `Path X m`. -/
@@ -461,7 +461,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
         rw [map_mkOfSucc_zero_concat]
       · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
           op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
-          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind)] using
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/

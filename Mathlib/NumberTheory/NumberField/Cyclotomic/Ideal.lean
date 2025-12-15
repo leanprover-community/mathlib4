@@ -238,7 +238,7 @@ variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
 theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
-  replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
+  replace hm : p.Coprime m := hp.out.coprime_iff_not_dvd.mpr hm
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
@@ -253,7 +253,10 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · refine dvd_trans h₂.2.2 ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    rfl
+    simp [ζ]
+
+@[deprecated (since := "2025-12-10")]
+alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
@@ -273,6 +276,9 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
   · rw [ENat.coe_one]
     exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
+
+@[deprecated (since := "2025-12-10")]
+alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by

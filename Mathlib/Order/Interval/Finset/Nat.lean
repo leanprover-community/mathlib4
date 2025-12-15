@@ -36,10 +36,14 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
-  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
+  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+
+instance : Unique (Iic 0) := by
+  rw [← Nat.bot_eq_zero]
+  infer_instance
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -128,7 +132,7 @@ variable {a b c}
 
 lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
-lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
@@ -185,7 +189,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   | succ n ih =>
     rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-      Ico_succ_right_eq_insert_Ico (by omega)]
+      Ico_succ_right_eq_insert_Ico (by lia)]
     rintro k hk l hl (hkl : k % a = l % a)
     have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
     simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl

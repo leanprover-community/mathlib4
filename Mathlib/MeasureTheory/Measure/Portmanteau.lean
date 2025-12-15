@@ -795,7 +795,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     simp [← hT, hr]
   rcases T_count.exists_eq_range this with ⟨f, hf⟩
   have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
-  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+  have : Tendsto (fun i ↦ ν (accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
