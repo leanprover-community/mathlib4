@@ -198,6 +198,9 @@ noncomputable def MonoidAction.automorphize [Group α] [MonoidAction α β] (f :
   congr 1
   simp only [mul_smul]
 
+@[deprecated (since := "2025-12-15")] alias MulAction.automorphize := MonoidAction.automorphize
+@[deprecated (since := "2025-12-15")] alias AddAction.automorphize := AddMonoidAction.automorphize
+
 -- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
@@ -219,6 +222,9 @@ lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : �
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.automorphize_smul_left := MonoidAction.automorphize_smul_left
+
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma AddMonoidAction.automorphize_smul_left [AddGroup α] [AddMonoidAction α β] (f : β → M)
@@ -237,6 +243,9 @@ lemma AddMonoidAction.automorphize_smul_left [AddGroup α] [AddMonoidAction α �
   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
+
+@[deprecated (since := "2025-12-15")]
+alias AddAction.automorphize_smul_left := AddMonoidAction.automorphize_smul_left
 
 section
 

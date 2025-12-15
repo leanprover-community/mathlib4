@@ -146,6 +146,10 @@ theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
     ext
     simp [AddMonoidAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
+
 variable {hg hh hk} in
 @[to_additive existing]
 theorem _root_.MonoidAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
@@ -154,6 +158,10 @@ theorem _root_.MonoidAction.stabilizerEquivStabilizer_compTriple (H : k = h * g)
   comp_eq := by
     ext
     simp [stabilizerEquivStabilizer, H, MulAut.conj, ← mul_assoc]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.MonoidAction.stabilizerEquivStabilizer_compTriple
 
 variable {hg hh hk} in
 @[to_additive]

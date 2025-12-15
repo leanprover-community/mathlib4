@@ -72,6 +72,8 @@ noncomputable def subgroupOfMonoidAction (G H : Type*) [Group G] [MonoidAction G
     [FaithfulSMul G H] : G ≃* (MonoidAction.toPermHom G H).range :=
   MulEquiv.ofLeftInverse' _ (Classical.choose_spec MonoidAction.toPerm_injective.hasLeftInverse)
 
+@[deprecated (since := "2025-12-15")] alias subgroupOfMulAction := subgroupOfMonoidAction
+
 end Perm
 
 end Equiv

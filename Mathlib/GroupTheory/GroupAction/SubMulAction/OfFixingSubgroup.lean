@@ -529,4 +529,9 @@ theorem MonoidAction.fixingSubgroup_le_stabilizer (s : Set α) :
   apply Set.image_congr
   simpa only [mem_fixingSubgroup_iff, id] using hk
 
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixingSubgroup_le_stabilizer := MonoidAction.fixingSubgroup_le_stabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixingAddSubgroup_le_stabilizer := AddMonoidAction.fixingAddSubgroup_le_stabilizer
+
 end Pointwise

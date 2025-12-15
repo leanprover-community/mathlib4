@@ -68,7 +68,7 @@ theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SM
     (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2 := rfl
 
-theorem smul_apply_addAction [AddGroup G] [AddMonoidAction G P] [Zero R] [AddCommMonoid V]
+theorem smul_apply_addMonoidAction [AddGroup G] [AddMonoidAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.support, (f i) • x (-i +ᵥ p) := by
   rw [smul_eq, Finset.sum_of_injOn Prod.fst]
@@ -85,5 +85,7 @@ theorem smul_apply_addAction [AddGroup G] [AddMonoidAction G P] [Zero R] [AddCom
   · intro g hg
     rw [mem_vaddAntidiagonal_of_addGroup] at hg
     rw [hg.2.2]
+
+@[deprecated (since := "2025-12-14")] alias smul_apply_addAction := smul_apply_addMonoidAction
 
 end Finsupp

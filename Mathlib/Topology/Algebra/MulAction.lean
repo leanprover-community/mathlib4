@@ -208,6 +208,11 @@ theorem MonoidAction.continuousSMul_compHom
   let _ : MonoidAction N X := MonoidAction.compHom _ f
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.continuousSMul_compHom := MonoidAction.continuousSMul_compHom
+@[deprecated (since := "2025-12-15")]
+alias AddAction.continuousSMul_compHom := AddMonoidAction.continuousVAdd_compHom
+
 @[to_additive]
 instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
   IsInducing.id.continuousSMul continuous_subtype_val rfl

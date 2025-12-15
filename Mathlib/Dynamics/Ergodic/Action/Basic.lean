@@ -76,6 +76,10 @@ theorem _root_.MonoidAction.aeconst_of_aestabilizer_eq_top
     (hm : NullMeasurableSet s μ) (h : aestabilizer G μ s = ⊤) : EventuallyConst s (ae μ) :=
   aeconst_of_forall_smul_ae_eq G hm <| (Subgroup.eq_top_iff' _).1 h
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.aeconst_of_aestabilizer_eq_top :=
+  _root_.MonoidAction.aeconst_of_aestabilizer_eq_top
+
 end Group
 
 theorem _root_.ErgodicSMul.of_aestabilizer [Group G] [MonoidAction G α] [SMulInvariantMeasure G α μ]

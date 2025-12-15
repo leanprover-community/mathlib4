@@ -130,6 +130,7 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
     left
     exact Set.subsingleton_of_subsingleton
 
+@[to_additive]
 theorem isTrivialBlock_of_card_le_two
     [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
     IsTrivialBlock B := by
@@ -417,3 +418,77 @@ end IsPreprimitive
 end Finite
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-14")] alias MulAction.IsPreprimitive := MonoidAction.IsPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsQuasiPreprimitive := MonoidAction.IsQuasiPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.subsingleton_or_eq_univ := MonoidAction.IsBlock.subsingleton_or_eq_univ
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_subsingleton := MonoidAction.IsPreprimitive.of_subsingleton
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTrivialBlock_of_card_le_two := MonoidAction.isTrivialBlock_of_card_le_two
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_isTrivialBlock_base :=
+  MonoidAction.IsPreprimitive.of_isTrivialBlock_base
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints :=
+  MonoidAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.mk' := MonoidAction.IsPreprimitive.mk'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_surjective := MonoidAction.IsPreprimitive.of_surjective
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPreprimitive_congr := MonoidAction.isPreprimitive_congr
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isSimpleOrder_blockMem_iff_isPreprimitive :=
+  MonoidAction.isSimpleOrder_blockMem_iff_isPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isCoatom_stabilizer_iff_preprimitive :=
+  MonoidAction.isCoatom_stabilizer_iff_preprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive :=
+  MonoidAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_prime_card := MonoidAction.IsPreprimitive.of_prime_card
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.of_card_lt := MonoidAction.IsPreprimitive.of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul :=
+  MonoidAction.IsPreprimitive.exists_mem_smul_and_notMem_smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive := AddMonoidAction.IsPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsQuasiPreprimitive := AddMonoidAction.IsQuasiPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.subsingleton_or_eq_univ := AddMonoidAction.IsBlock.subsingleton_or_eq_univ
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_subsingleton := AddMonoidAction.IsPreprimitive.of_subsingleton
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_isTrivialBlock_base :=
+  AddMonoidAction.IsPreprimitive.of_isTrivialBlock_base
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints :=
+  AddMonoidAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.mk' := AddMonoidAction.IsPreprimitive.mk'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_surjective := AddMonoidAction.IsPreprimitive.of_surjective
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPreprimitive_congr := AddMonoidAction.isPreprimitive_congr
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isSimpleOrder_blockMem_iff_isPreprimitive :=
+  AddMonoidAction.isSimpleOrder_blockMem_iff_isPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isCoatom_stabilizer_iff_preprimitive :=
+  AddMonoidAction.isCoatom_stabilizer_iff_preprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive :=
+  AddMonoidAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_prime_card := AddMonoidAction.IsPreprimitive.of_prime_card
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.of_card_lt := AddMonoidAction.IsPreprimitive.of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd :=
+  AddMonoidAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd

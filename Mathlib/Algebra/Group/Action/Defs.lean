@@ -134,6 +134,14 @@ class MonoidAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
 
+@[deprecated (since := "2025-12-12")] alias AddAction := AddMonoidAction
+@[to_additive existing, deprecated (since := "2025-12-12")] alias MulAction := MonoidAction
+
+@[deprecated (since := "2025-12-12")]
+alias AddAction.zero_vadd := AddMonoidAction.zero_vadd
+@[to_additive existing, deprecated (since := "2025-12-12")]
+alias MulAction.one_smul := MonoidAction.one_smul
+
 /-! ### Scalar tower and commuting actions -/
 
 /-- A typeclass mixin saying that two additive actions on the same space commute. -/

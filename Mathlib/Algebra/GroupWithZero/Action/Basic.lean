@@ -66,6 +66,10 @@ protected lemma MonoidAction.injective₀ (ha : a ≠ 0) : Injective (a • · :
 protected lemma MonoidAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : α → α) :=
   (MonoidAction.bijective₀ ha).surjective
 
+@[deprecated (since := "2025-12-14")] alias MulAction.bijective₀ := MonoidAction.bijective₀
+@[deprecated (since := "2025-12-14")] alias MulAction.injective₀ := MonoidAction.injective₀
+@[deprecated (since := "2025-12-14")] alias MulAction.surjective₀ := MonoidAction.surjective₀
+
 end GroupWithZero
 
 section DistribMulAction

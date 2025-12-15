@@ -88,6 +88,9 @@ theorem MonoidAction.isClosedMap_quotient [CompactSpace α] :
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.isClosedMap_quotient := MonoidAction.isClosedMap_quotient
+
 end ContinuousSMul
 
 section ContinuousConstSMul

@@ -49,10 +49,14 @@ def ofMonoidAction (G : Type*) (H : Type u) [Monoid G] [MonoidAction G H] : Acti
   V := H
   ρ := @MonoidAction.toEndHom _ _ _ (by assumption)
 
+@[deprecated (since := "2025-12-14")] alias ofMulAction := ofMonoidAction
+
 @[simp]
 theorem ofMonoidAction_apply {G H : Type*} [Monoid G] [MonoidAction G H] (g : G) (x : H) :
     (ofMonoidAction G H).ρ g x = (g • x : H) :=
   rfl
+
+@[deprecated (since := "2025-12-14")] alias ofMulAction_apply := ofMonoidAction_apply
 
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
@@ -76,6 +80,8 @@ def ofMonoidActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι 
         dsimp at *
         rw [← h ⟨j⟩]
         rfl }
+
+@[deprecated (since := "2025-12-14")] alias ofMulActionLimitCone := ofMonoidActionLimitCone
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 abbrev leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
@@ -103,10 +109,14 @@ def ofMonoidAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MonoidAction G H
   V := H
   ρ := @MonoidAction.toEndHom _ _ _ (by assumption)
 
+@[deprecated (since := "2025-12-14")] alias ofMulAction := ofMonoidAction
+
 @[simp]
 theorem ofMonoidAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MonoidAction G H]
     (g : G) (x : H) : (FintypeCat.ofMonoidAction G H).ρ g x = (g • x : H) :=
   rfl
+
+@[deprecated (since := "2025-12-14")] alias ofMulAction_apply := ofMonoidAction_apply
 
 section
 

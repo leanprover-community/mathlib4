@@ -1051,7 +1051,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 `Filter α` on `Filter β`. -/
 @[to_additive /-- An additive action of an additive monoid `α` on a type `β` gives an additive
 action of `Filter α` on `Filter β`. -/]
-protected def mulAction [Monoid α] [MonoidAction α β] : MonoidAction (Filter α) (Filter β) where
+protected def monoidAction [Monoid α] [MonoidAction α β] : MonoidAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
   mul_smul _ _ _ := map₂_assoc mul_smul
 
@@ -1059,12 +1059,12 @@ protected def mulAction [Monoid α] [MonoidAction α β] : MonoidAction (Filter 
 -/
 @[to_additive /-- An additive action of an additive monoid on a type `β` gives an additive action on
 `Filter β`. -/]
-protected def mulActionFilter [Monoid α] [MonoidAction α β] : MonoidAction α (Filter β) where
+protected def monoidActionFilter [Monoid α] [MonoidAction α β] : MonoidAction α (Filter β) where
   mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
-scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter
-  Filter.addActionFilter
+scoped[Pointwise] attribute [instance] Filter.monoidAction Filter.addMonoidAction
+  Filter.monoidActionFilter Filter.addMonoidActionFilter
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Filter β`. -/

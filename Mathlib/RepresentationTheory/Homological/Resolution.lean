@@ -125,7 +125,7 @@ the left-hand side is `TensorProduct.leftModule`, whilst that of the right-hand 
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
 of the right-hand side. -/
 @[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
-def ofMonoidActionBasisAux :
+def ofMulActionBasisAux :
     k[G] ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[k[G]] (ofMonoidAction k G (Fin (n + 1) → G)).asModule :=
   haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
@@ -143,11 +143,11 @@ def ofMonoidActionBasisAux :
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
 @[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
 from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMonoidActionBasis := Representation.freeAsModuleBasis
+alias ofMulActionBasis := Representation.freeAsModuleBasis
 
 @[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
 from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMonoidAction_free := Representation.free_asModule_free
+alias ofMulAction_free := Representation.free_asModule_free
 
 end Basis
 

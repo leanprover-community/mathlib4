@@ -27,10 +27,13 @@ variable {M N O α β : Type*}
 variable (M) [Monoid M] in
 /-- Transfer `MonoidAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddMonoidAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MonoidAction M β] : MonoidAction M α where
+protected abbrev monoidAction (e : α ≃ β) [MonoidAction M β] : MonoidAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_smul]
+
+@[deprecated (since := "2025-12-12")] protected alias addAction := Equiv.addMonoidAction
+@[deprecated (since := "2025-12-12")] protected alias mulAction := Equiv.monoidAction
 
 variable (M N) [SMul M β] [SMul N β] in
 /-- Transfer `SMulCommClass` across an `Equiv` -/

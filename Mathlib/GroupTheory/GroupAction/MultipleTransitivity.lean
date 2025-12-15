@@ -743,3 +743,69 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end AlternatingGroup
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsMultiplyPretransitive := MonoidAction.IsMultiplyPretransitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPretransitive_iff := MonoidAction.isMultiplyPretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPretransitive.of_embedding := MonoidAction.IsPretransitive.of_embedding
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPretransitive.of_embedding_congr :=
+  MonoidAction.IsPretransitive.of_embedding_congr
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_zero_pretransitive := MonoidAction.is_zero_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_zero_pretransitive' := MonoidAction.is_zero_pretransitive'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.oneEmbedding_isPretransitive_iff := MonoidAction.oneEmbedding_isPretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_one_pretransitive_iff := MonoidAction.is_one_pretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_two_pretransitive_iff := MonoidAction.is_two_pretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPretransitive_of_is_two_pretransitive :=
+  MonoidAction.isPretransitive_of_is_two_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPreprimitive_of_is_two_pretransitive :=
+  MonoidAction.isPreprimitive_of_is_two_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPretransitive_of_le' := MonoidAction.isMultiplyPretransitive_of_le'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPretransitive_of_le := MonoidAction.isMultiplyPretransitive_of_le
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsMultiplyPretransitive.index_of_fixingSubgroup_mul :=
+  MonoidAction.IsMultiplyPretransitive.index_of_fixingSubgroup_mul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsMultiplyPretransitive.index_of_fixingSubgroup_eq :=
+  MonoidAction.IsMultiplyPretransitive.index_of_fixingSubgroup_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsMultiplyPretransitive := AddMonoidAction.IsMultiplyPretransitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPretransitive_iff := AddMonoidAction.isMultiplyPretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPretransitive.of_embedding := AddMonoidAction.IsPretransitive.of_embedding
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPretransitive.of_embedding_congr :=
+  AddMonoidAction.IsPretransitive.of_embedding_congr
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_zero_pretransitive := AddMonoidAction.is_zero_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_zero_pretransitive' := AddMonoidAction.is_zero_pretransitive'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.zeroEmbedding_isPretransitive_iff :=
+  AddMonoidAction.zeroEmbedding_isPretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_zero_pretransitive_iff := AddMonoidAction.is_zero_pretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_two_pretransitive_iff := AddMonoidAction.is_two_pretransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPretransitive_of_is_two_pretransitive :=
+  AddMonoidAction.isPretransitive_of_is_two_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPreprimitive_of_is_two_pretransitive :=
+  AddMonoidAction.isPreprimitive_of_is_two_pretransitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPretransitive_of_le' := AddMonoidAction.isMultiplyPretransitive_of_le'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPretransitive_of_le := AddMonoidAction.isMultiplyPretransitive_of_le

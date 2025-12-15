@@ -905,6 +905,11 @@ variable (G : Type*) {X : Type*} [Group G] [MonoidAction G X] (x : X)
 
 end MonoidAction
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.index_stabilizer := MonoidAction.index_stabilizer
+@[deprecated (since := "2025-12-15")]
+alias MulAction.index_stabilizer_of_transitive := MonoidAction.index_stabilizer_of_transitive
+
 namespace MonoidHom
 
 @[to_additive AddMonoidHom.surjective_of_card_ker_le_div]

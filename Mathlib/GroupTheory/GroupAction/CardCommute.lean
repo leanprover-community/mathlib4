@@ -57,12 +57,26 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
     simp_rw [this, ← Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ)]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.card_eq_sum_card_group_div_card_stabilizer' :=
+  card_eq_sum_card_group_div_card_stabilizer'
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer' :=
+  _root_.AddMonoidAction.card_eq_sum_card_addGroup_sub_card_stabilizer'
+
 /-- **Class formula** for a finite group acting on a finite type. -/
 @[to_additive /-- **Class formula** for a finite group acting on a finite type. -/]
 theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.card_eq_sum_card_group_div_card_stabilizer :=
+  card_eq_sum_card_group_div_card_stabilizer
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer :=
+  _root_.AddMonoidAction.card_eq_sum_card_addGroup_sub_card_stabilizer
 
 end MonoidAction
 

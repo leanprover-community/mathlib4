@@ -32,26 +32,37 @@ namespace KaehlerDifferential
 
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
-abbrev mulActionBaseChange : MonoidAction A (S ⊗[R] Ω[A⁄R]) :=
+abbrev monoidActionBaseChange : MonoidAction A (S ⊗[R] Ω[A⁄R]) :=
   (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
-attribute [local instance] mulActionBaseChange
+@[deprecated (since := "2025-12-15")] alias mulActionBaseChange := monoidActionBaseChange
+
+attribute [local instance] monoidActionBaseChange
 
 @[simp]
-lemma mulActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
+lemma monoidActionBaseChange_smul_tmul (a : A) (s : S) (x : Ω[A⁄R]) :
     a • (s ⊗ₜ[R] x) = s ⊗ₜ (a • x) := rfl
 
-@[local simp]
-lemma mulActionBaseChange_smul_zero (a : A) :
-    a • (0 : S ⊗[R] Ω[A⁄R]) = 0 := by
-  rw [← zero_tmul _ (0 : Ω[A⁄R]), mulActionBaseChange_smul_tmul, smul_zero]
+@[deprecated (since := "2025-12-15")]
+alias mulActionBaseChange_smul_tmul := monoidActionBaseChange_smul_tmul
 
 @[local simp]
-lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
+lemma monoidActionBaseChange_smul_zero (a : A) :
+    a • (0 : S ⊗[R] Ω[A⁄R]) = 0 := by
+  rw [← zero_tmul _ (0 : Ω[A⁄R]), monoidActionBaseChange_smul_tmul, smul_zero]
+
+@[deprecated (since := "2025-12-15")]
+alias mulActionBaseChange_smul_zero := monoidActionBaseChange_smul_zero
+
+@[local simp]
+lemma monoidActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
     a • (x + y) = a • x + a • y := by
   change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
   rw [map_add, smul_add, map_add]
   rfl
+
+@[deprecated (since := "2025-12-15")]
+alias mulActionBaseChange_smul_add := monoidActionBaseChange_smul_add
 
 /-- (Implementation). `A`-module structure on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
@@ -70,14 +81,15 @@ instance : IsScalarTower R A (S ⊗[R] Ω[A⁄R]) := by
   intro r x
   induction x
   · simp only [smul_zero]
-  · rw [mulActionBaseChange_smul_tmul, algebraMap_smul, tmul_smul]
+  · rw [monoidActionBaseChange_smul_tmul, algebraMap_smul, tmul_smul]
   · simp only [smul_add, *]
 
 instance : SMulCommClass S A (S ⊗[R] Ω[A⁄R]) where
   smul_comm s a x := by
     induction x
     · simp only [smul_zero]
-    · rw [mulActionBaseChange_smul_tmul, smul_tmul', smul_tmul', mulActionBaseChange_smul_tmul]
+    · rw [monoidActionBaseChange_smul_tmul, smul_tmul', smul_tmul',
+        monoidActionBaseChange_smul_tmul]
     · simp only [smul_add, *]
 
 instance : SMulCommClass A S (S ⊗[R] Ω[A⁄R]) where
@@ -152,7 +164,7 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
           ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
           ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq]
         simp only [LinearMap.coe_comp, Derivation.coeFn_coe, Function.comp_apply,
-          Derivation.leibniz, mk_apply, mulActionBaseChange_smul_tmul, TensorProduct.tmul_add]
+          Derivation.leibniz, mk_apply, monoidActionBaseChange_smul_tmul, TensorProduct.tmul_add]
       | smul _ _ e =>
         rw [mul_comm, smul_mul_assoc, map_smul, mul_comm, e,
             map_smul, smul_add, smul_comm, smul_assoc]

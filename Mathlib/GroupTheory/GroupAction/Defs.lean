@@ -554,3 +554,240 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 end Stabilizer
 
 end MonoidAction
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit := MonoidAction.orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_iff := MonoidAction.mem_orbit_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit := MonoidAction.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit := MonoidAction.mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_self := MonoidAction.mem_orbit_self
+@[deprecated (since := "2025-12-14")] alias MulAction.nonempty_orbit := MonoidAction.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mapsTo_smul_orbit := MonoidAction.mapsTo_smul_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_orbit_subset := MonoidAction.smul_orbit_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_smul_subset := MonoidAction.orbit_smul_subset
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit.coe_smul := MonoidAction.orbit.coe_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_submonoid_subset := MonoidAction.orbit_submonoid_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit_submonoid := MonoidAction.mem_orbit_of_mem_orbit_submonoid
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedPoints := MonoidAction.fixedPoints
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy := MonoidAction.fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixed_eq_iInter_fixedBy := MonoidAction.fixed_eq_iInter_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedPoints := MonoidAction.mem_fixedPoints
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_fixedBy := MonoidAction.mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedPoints' := MonoidAction.mem_fixedPoints'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizerSubmonoid := MonoidAction.stabilizerSubmonoid
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_stabilizerSubmonoid_iff := MonoidAction.mem_stabilizerSubmonoid_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit_smul := MonoidAction.orbit_smul
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit_eq_iff := MonoidAction.orbit_eq_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_smul := MonoidAction.mem_orbit_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_orbit_smul := MonoidAction.smul_mem_orbit_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.subgroup_smul_def := MonoidAction.subgroup_smul_def
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_subgroup_subset := MonoidAction.orbit_subgroup_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit_subgroup := MonoidAction.mem_orbit_of_mem_orbit_subgroup
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_symm := MonoidAction.mem_orbit_symm
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_subgroup_orbit_iff := MonoidAction.mem_subgroup_orbit_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.orbitRel := MonoidAction.orbitRel
+@[deprecated (since := "2025-12-14")] alias MulAction.orbitRel_apply := MonoidAction.orbitRel_apply
+@[deprecated (since := "2025-12-14")]
+alias MulAction.quotient_preimage_image_eq_union_mul :=
+  MonoidAction.quotient_preimage_image_eq_union_mul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.disjoint_image_image_iff := MonoidAction.disjoint_image_image_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.image_inter_image_iff := MonoidAction.image_inter_image_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient := MonoidAction.orbitRel.Quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit := MonoidAction.orbitRel.Quotient.orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_mk := MonoidAction.orbitRel.Quotient.orbit_mk
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_orbit := MonoidAction.orbitRel.Quotient.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_eq_orbit_out :=
+  MonoidAction.orbitRel.Quotient.orbit_eq_orbit_out
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_injective := MonoidAction.orbitRel.Quotient.orbit_injective
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_inj := MonoidAction.orbitRel.Quotient.orbit_inj
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.quotient_eq_of_quotient_subgroup_eq :=
+  MonoidAction.orbitRel.quotient_eq_of_quotient_subgroup_eq
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.quotient_eq_of_quotient_subgroup_eq' :=
+  MonoidAction.orbitRel.quotient_eq_of_quotient_subgroup_eq'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.nonempty_orbit :=
+  MonoidAction.orbitRel.Quotient.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mapsTo_smul_orbit :=
+  MonoidAction.orbitRel.Quotient.mapsTo_smul_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit.coe_smul :=
+  MonoidAction.orbitRel.Quotient.orbit.coe_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_subgroup_orbit_iff :=
+  MonoidAction.orbitRel.Quotient.mem_subgroup_orbit_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.subgroup_quotient_eq_iff :=
+  MonoidAction.orbitRel.Quotient.subgroup_quotient_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_subgroup_orbit_iff' :=
+  MonoidAction.orbitRel.Quotient.mem_subgroup_orbit_iff'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbits' := MonoidAction.selfEquivSigmaOrbits'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbits := MonoidAction.selfEquivSigmaOrbits
+@[deprecated (since := "2025-12-14")]
+alias MulAction.univ_eq_iUnion_orbit := MonoidAction.univ_eq_iUnion_orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.stabilizer := MonoidAction.stabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_stabilizer_iff := MonoidAction.mem_stabilizer_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.le_stabilizer_smul_left := MonoidAction.le_stabilizer_smul_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.le_stabilizer_smul_right := MonoidAction.le_stabilizer_smul_right
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_smul_eq_left := MonoidAction.stabilizer_smul_eq_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_smul_eq_right := MonoidAction.stabilizer_smul_eq_right
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_mul_eq_left := MonoidAction.stabilizer_mul_eq_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_mul_eq_right := MonoidAction.stabilizer_mul_eq_right
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit := AddMonoidAction.orbit
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_orbit_iff := AddMonoidAction.mem_orbit_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_orbit := AddMonoidAction.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit := AddMonoidAction.mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_self := AddMonoidAction.mem_orbit_self
+@[deprecated (since := "2025-12-14")]
+alias AddAction.nonempty_orbit := AddMonoidAction.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mapsTo_vadd_orbit := AddMonoidAction.mapsTo_vadd_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_orbit_subset := AddMonoidAction.vadd_orbit_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_vadd_subset := AddMonoidAction.orbit_vadd_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit.coe_vadd := AddMonoidAction.orbit.coe_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_addSubmonoid_subset := AddMonoidAction.orbit_addSubmonoid_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit_addSubmonoid :=
+  AddMonoidAction.mem_orbit_of_mem_orbit_addSubmonoid
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedPoints := AddMonoidAction.fixedPoints
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy := AddMonoidAction.fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixed_eq_iInter_fixedBy := AddMonoidAction.fixed_eq_iInter_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedPoints := AddMonoidAction.mem_fixedPoints
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_fixedBy := AddMonoidAction.mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedPoints' := AddMonoidAction.mem_fixedPoints'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizerAddSubmonoid := AddMonoidAction.stabilizerAddSubmonoid
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_stabilizerAddSubmonoid_iff := AddMonoidAction.mem_stabilizerAddSubmonoid_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit_vadd := AddMonoidAction.orbit_vadd
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit_eq_iff := AddMonoidAction.orbit_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_vadd := AddMonoidAction.mem_orbit_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_orbit_vadd := AddMonoidAction.vadd_mem_orbit_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.addSubgroup_vadd_def := AddMonoidAction.addSubgroup_vadd_def
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_addSubgroup_subset := AddMonoidAction.orbit_addSubgroup_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit_addSubgroup :=
+  AddMonoidAction.mem_orbit_of_mem_orbit_addSubgroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_symm := AddMonoidAction.mem_orbit_symm
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_addSubgroup_orbit_iff := AddMonoidAction.mem_addSubgroup_orbit_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.orbitRel := AddMonoidAction.orbitRel
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel_apply := AddMonoidAction.orbitRel_apply
+@[deprecated (since := "2025-12-14")]
+alias AddAction.quotient_preimage_image_eq_union_add :=
+  AddMonoidAction.quotient_preimage_image_eq_union_add
+@[deprecated (since := "2025-12-14")]
+alias AddAction.disjoint_image_image_iff := AddMonoidAction.disjoint_image_image_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.image_inter_image_iff := AddMonoidAction.image_inter_image_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient := AddMonoidAction.orbitRel.Quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit := AddMonoidAction.orbitRel.Quotient.orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_mk := AddMonoidAction.orbitRel.Quotient.orbit_mk
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_orbit := AddMonoidAction.orbitRel.Quotient.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_eq_orbit_out :=
+  AddMonoidAction.orbitRel.Quotient.orbit_eq_orbit_out
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_injective :=
+  AddMonoidAction.orbitRel.Quotient.orbit_injective
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_inj := AddMonoidAction.orbitRel.Quotient.orbit_inj
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq :=
+  AddMonoidAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq' :=
+  AddMonoidAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.nonempty_orbit :=
+  AddMonoidAction.orbitRel.Quotient.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mapsTo_vadd_orbit :=
+  AddMonoidAction.orbitRel.Quotient.mapsTo_vadd_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit.coe_vadd :=
+  AddMonoidAction.orbitRel.Quotient.orbit.coe_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff :=
+  AddMonoidAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.addSubgroup_quotient_eq_iff :=
+  AddMonoidAction.orbitRel.Quotient.addSubgroup_quotient_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff' :=
+  AddMonoidAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbits' := AddMonoidAction.selfEquivSigmaOrbits'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbits := AddMonoidAction.selfEquivSigmaOrbits
+@[deprecated (since := "2025-12-14")]
+alias AddAction.univ_eq_iUnion_orbit := AddMonoidAction.univ_eq_iUnion_orbit
+@[deprecated (since := "2025-12-14")] alias AddAction.stabilizer := AddMonoidAction.stabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_stabilizer_iff := AddMonoidAction.mem_stabilizer_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.le_stabilizer_vadd_left := AddMonoidAction.le_stabilizer_vadd_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.le_stabilizer_vadd_right := AddMonoidAction.le_stabilizer_vadd_right
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_vadd_eq_left := AddMonoidAction.stabilizer_vadd_eq_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_vadd_eq_right := AddMonoidAction.stabilizer_vadd_eq_right
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_add_eq_left := AddMonoidAction.stabilizer_add_eq_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_add_eq_right := AddMonoidAction.stabilizer_add_eq_right

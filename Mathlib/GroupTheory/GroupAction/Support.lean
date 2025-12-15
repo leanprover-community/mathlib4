@@ -62,3 +62,14 @@ theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g •
   rwa [smul_comm, smul_left_cancel_iff] at this
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-14")] alias MulAction.Supports := MonoidAction.Supports
+@[deprecated (since := "2025-12-14")]
+alias MulAction.supports_of_mem := MonoidAction.supports_of_mem
+@[deprecated (since := "2025-12-14")] alias MulAction.Supports.mono := MonoidAction.Supports.mono
+@[deprecated (since := "2025-12-14")] alias MulAction.Supports.smul := MonoidAction.Supports.smul
+@[deprecated (since := "2025-12-14")] alias AddAction.Supports := AddMonoidAction.Supports
+@[deprecated (since := "2025-12-14")]
+alias AddAction.supports_of_mem := AddMonoidAction.supports_of_mem
+@[deprecated (since := "2025-12-14")] alias AddAction.Supports.mono := AddMonoidAction.Supports.mono
+@[deprecated (since := "2025-12-14")] alias AddAction.Supports.vadd := AddMonoidAction.Supports.vadd

@@ -387,13 +387,13 @@ variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MonoidAction`, then the subset inherits this action -/
 @[to_additive]
-instance mulAction' : MonoidAction S p where
+instance monoidAction' : MonoidAction S p where
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
 @[to_additive]
-instance mulAction : MonoidAction R p :=
-  p.mulAction'
+instance monoidAction : MonoidAction R p :=
+  p.monoidAction'
 
 end
 
@@ -556,7 +556,7 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   smul_mem' := by simp [Units.smul_def]
 
 instance : MonoidAction Rˣ { x : M // x ≠ 0 } :=
-  SubMulAction.mulAction' (nonZeroSubMul R M)
+  SubMulAction.monoidAction' (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -588,7 +588,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   smul_mem' := smul_mem_fixedPoints_of_normal
 
 instance [hH : H.Normal] : MonoidAction G (MonoidAction.fixedPoints H α) :=
-  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+  SubMulAction.monoidAction' fixedPointsSubMulOfNormal
 
 @[simp]
 lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]

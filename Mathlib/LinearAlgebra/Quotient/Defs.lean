@@ -150,12 +150,12 @@ section Module
 
 variable {S : Type*}
 
-instance mulAction' [Monoid S] [SMul S R] [MonoidAction S M] [IsScalarTower S R M]
+instance monoidAction' [Monoid S] [SMul S R] [MonoidAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MonoidAction S (M ⧸ P) := fast_instance%
   Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P
 
-instance mulAction (P : Submodule R M) : MonoidAction R (M ⧸ P) :=
-  Quotient.mulAction' P
+instance monoidAction (P : Submodule R M) : MonoidAction R (M ⧸ P) :=
+  Quotient.monoidAction' P
 
 instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
     SMulZeroClass S (M ⧸ P) :=

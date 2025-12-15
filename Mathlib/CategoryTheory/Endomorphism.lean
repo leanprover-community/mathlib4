@@ -78,12 +78,12 @@ variable {C : Type u} [Category.{v} C]
 
 open Opposite
 
-instance mulActionRight {X Y : C} : MonoidAction (End Y) (X ⟶ Y) where
+instance monoidActionRight {X Y : C} : MonoidAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
-instance mulActionLeft {X Y : C} : MonoidAction (End X)ᵐᵒᵖ (X ⟶ Y) where
+instance monoidActionLeft {X Y : C} : MonoidAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _

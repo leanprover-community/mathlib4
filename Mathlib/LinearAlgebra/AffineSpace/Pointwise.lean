@@ -104,10 +104,10 @@ This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-protected def mulAction : MonoidAction M (AffineSubspace k V) :=
+protected def monoidAction : MonoidAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul
 
-scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
+scoped[Pointwise] attribute [instance] AffineSubspace.monoidAction
 
 lemma smul_eq_map (a : M) (s : AffineSubspace k V) :
     a • s = s.map (DistribMulAction.toLinearMap k _ a).toAffineMap := rfl

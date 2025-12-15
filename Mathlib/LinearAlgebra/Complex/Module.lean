@@ -76,7 +76,7 @@ instance (priority := 90) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R 
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
-instance (priority := 90) mulAction [Monoid R] [MonoidAction R ℝ] : MonoidAction R ℂ where
+instance (priority := 90) monoidAction [Monoid R] [MonoidAction R ℝ] : MonoidAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
@@ -87,7 +87,7 @@ instance (priority := 90) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ wh
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 90) [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
-  { Complex.distribSMul, Complex.mulAction with }
+  { Complex.distribSMul, Complex.monoidAction with }
 
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ where

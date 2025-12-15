@@ -163,6 +163,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 
+@[to_additive]
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
   (Set.smul_set_subset_smul_set_iff.mpr t_ss_s).trans s_in_fixedBy.subset
@@ -289,3 +290,92 @@ lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidActio
   simpa using congr_arg f ha
 
 end MulActionHom
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy_inv := MonoidAction.fixedBy_inv
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_fixedBy_iff_mem_fixedBy := MonoidAction.smul_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_inv_mem_fixedBy_iff_mem_fixedBy :=
+  MonoidAction.smul_inv_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.minimalPeriod_eq_one_iff_fixedBy := MonoidAction.minimalPeriod_eq_one_iff_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedBy_zpow := MonoidAction.mem_fixedBy_zpow
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy :=
+  MonoidAction.mem_fixedBy_zpowers_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_subset_fixedBy_zpow := MonoidAction.fixedBy_subset_fixedBy_zpow
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_one_eq_univ := MonoidAction.fixedBy_one_eq_univ
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy_mul := MonoidAction.fixedBy_mul
+@[deprecated (since := "2025-12-14")] alias MulAction.smul_fixedBy := MonoidAction.smul_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_iff := MonoidAction.set_mem_fixedBy_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_of_set_mem_fixedBy := MonoidAction.smul_mem_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_of_subset_fixedBy := MonoidAction.set_mem_fixedBy_of_subset_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_subset_of_set_mem_fixedBy := MonoidAction.smul_subset_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_of_movedBy_subset := MonoidAction.set_mem_fixedBy_of_movedBy_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_mem_fixedBy_of_commute := MonoidAction.fixedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_zpow_fixedBy_eq_of_commute := MonoidAction.smul_zpow_fixedBy_eq_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.movedBy_mem_fixedBy_of_commute := MonoidAction.movedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_zpow_movedBy_eq_of_commute := MonoidAction.smul_zpow_movedBy_eq_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_eq_univ_iff_eq_one := MonoidAction.fixedBy_eq_univ_iff_eq_one
+@[deprecated (since := "2025-12-14")]
+alias MulAction.not_commute_of_disjoint_movedBy_preimage :=
+  MonoidAction.not_commute_of_disjoint_movedBy_preimage
+
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy_neg := AddMonoidAction.fixedBy_neg
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_fixedBy_iff_mem_fixedBy := AddMonoidAction.vadd_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy :=
+  AddMonoidAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.minimalPeriod_eq_one_iff_fixedBy := AddMonoidAction.minimalPeriod_eq_one_iff_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedBy_zsmul := AddMonoidAction.mem_fixedBy_zsmul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedBy_zmultiples_iff_mem_fixedBy :=
+  AddMonoidAction.mem_fixedBy_zmultiples_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_subset_fixedBy_zsmul := AddMonoidAction.fixedBy_subset_fixedBy_zsmul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_zero_eq_univ := AddMonoidAction.fixedBy_zero_eq_univ
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy_add := AddMonoidAction.fixedBy_add
+@[deprecated (since := "2025-12-14")] alias AddAction.vadd_fixedBy := AddMonoidAction.vadd_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_iff := AddMonoidAction.set_mem_fixedBy_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_of_set_mem_fixedBy := AddMonoidAction.vadd_mem_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_of_subset_fixedBy :=
+  AddMonoidAction.set_mem_fixedBy_of_subset_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_of_movedBy_subset :=
+  AddMonoidAction.set_mem_fixedBy_of_movedBy_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_mem_fixedBy_of_addCommute :=
+  AddMonoidAction.fixedBy_mem_fixedBy_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_zsmul_fixedBy_eq_of_addCommute :=
+  AddMonoidAction.vadd_zsmul_fixedBy_eq_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.movedBy_mem_fixedBy_of_addCommute :=
+  AddMonoidAction.movedBy_mem_fixedBy_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_zsmul_movedBy_eq_of_addCommute :=
+  AddMonoidAction.vadd_zsmul_movedBy_eq_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_eq_univ_iff_eq_zero := AddMonoidAction.fixedBy_eq_univ_iff_eq_zero
+@[deprecated (since := "2025-12-14")]
+alias AddAction.not_addCommute_of_disjoint_movedBy_preimage :=
+  AddMonoidAction.not_addCommute_of_disjoint_movedBy_preimage

@@ -55,21 +55,41 @@ lemma fst_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MonoidAction.orbit 
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.fst_mem_orbit_of_mem_orbit := fst_mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.fst_mem_orbit_of_mem_orbit := AddMonoidAction.fst_mem_orbit_of_mem_orbit
+
 @[to_additive]
 lemma snd_mem_orbit_of_mem_orbit {x y : α × β} (h : x ∈ MonoidAction.orbit M y) :
     x.2 ∈ MonoidAction.orbit M y.2 := by
   rcases h with ⟨g, rfl⟩
   exact mem_orbit _ _
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.snd_mem_orbit_of_mem_orbit := snd_mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.snd_mem_orbit_of_mem_orbit := AddMonoidAction.snd_mem_orbit_of_mem_orbit
+
 @[to_additive]
-lemma _root_.Finite.finite_mulAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
+lemma _root_.Finite.finite_monoidAction_orbit [Finite M] (a : α) : Set.Finite (orbit M a) :=
   Set.finite_range _
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.Finite.finite_mulAction_orbit := _root_.Finite.finite_monoidAction_orbit
+@[deprecated (since := "2025-12-14")]
+alias _root_.Finite.finite_addAction_orbit := _root_.Finite.finite_addMonoidAction_orbit
 
 variable (M)
 
 @[to_additive]
 theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
   (surjective_smul M a).range_eq
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.orbit_eq_univ := orbit_eq_univ
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.orbit_eq_univ := AddMonoidAction.orbit_eq_univ
 
 end Orbit
 
@@ -86,12 +106,26 @@ theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
   · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
     simp only [h]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.subsingleton_orbit_iff_mem_fixedPoints :=
+  subsingleton_orbit_iff_mem_fixedPoints
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.subsingleton_orbit_iff_mem_fixedPoints :=
+  AddMonoidAction.subsingleton_orbit_iff_mem_fixedPoints
+
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
     Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.mem_fixedPoints_iff_card_orbit_eq_one :=
+  mem_fixedPoints_iff_card_orbit_eq_one
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.mem_fixedPoints_iff_card_orbit_eq_one :=
+  AddMonoidAction.mem_fixedPoints_iff_card_orbit_eq_one
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
@@ -123,11 +157,23 @@ variable {G α β : Type*} [Group G] [MonoidAction G α] [MonoidAction G β]
   intro x hx
   apply Subsingleton.elim ..
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.fixedPoints_of_subsingleton := fixedPoints_of_subsingleton
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.fixedPoints_of_subsingleton :=
+  AddMonoidAction.fixedPoints_of_subsingleton
+
 /-- If a group acts nontrivially, then the type is nontrivial -/
 @[to_additive /-- If a subgroup acts nontrivially, then the type is nontrivial. -/]
 theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
     Nontrivial α :=
   (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.nontrivial_of_fixedPoints_ne_univ := nontrivial_of_fixedPoints_ne_univ
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.nontrivial_of_fixedPoints_ne_univ :=
+  AddMonoidAction.nontrivial_of_fixedPoints_ne_univ
 
 section Orbit
 
@@ -139,6 +185,10 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
       _ ⊆ g • orbit G a := Set.image_mono (smul_orbit_subset _ _)
+
+@[deprecated (since := "2025-12-14")] alias _root_.MulAction.smul_orbit := smul_orbit
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.vadd_orbit := AddMonoidAction.vadd_orbit
 
 /-- The action of a group on an orbit is transitive. -/
 @[to_additive /-- The action of an additive group on an orbit is transitive. -/]
@@ -152,6 +202,11 @@ instance (a : α) : IsPretransitive G (orbit G a) :=
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
   Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.orbitRel_subgroup_le := orbitRel_subgroup_le
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.orbitRel_addSubgroup_le := AddMonoidAction.orbitRel_addSubgroup_le
 
 @[to_additive]
 lemma orbitRel_subgroupOf (H K : Subgroup G) :
@@ -172,6 +227,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
     · simp only [Subgroup.mem_subgroupOf]
       exact gp.1
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.orbitRel_subgroupOf := orbitRel_subgroupOf
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.orbitRel_addSubgroupOf := AddMonoidAction.orbitRel_addSubgroupOf
+
 variable (G α)
 
 /-- An action is pretransitive if and only if the quotient by `MonoidAction.orbitRel` is a
@@ -186,6 +246,13 @@ theorem pretransitive_iff_subsingleton_quotient :
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
     exact Quotient.eq''.mp h
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.pretransitive_iff_subsingleton_quotient :=
+  pretransitive_iff_subsingleton_quotient
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.pretransitive_iff_subsingleton_quotient :=
+  AddMonoidAction.pretransitive_iff_subsingleton_quotient
+
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
 @[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
@@ -194,6 +261,13 @@ theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
   exact fun _ ↦ (nonempty_quotient_iff _).mpr inferInstance
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.pretransitive_iff_unique_quotient_of_nonempty :=
+  pretransitive_iff_unique_quotient_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.pretransitive_iff_unique_quotient_of_nonempty :=
+  AddMonoidAction.pretransitive_iff_unique_quotient_of_nonempty
 
 variable {G α}
 
@@ -214,13 +288,20 @@ variable (G) (α)
 local notation "Ω" => orbitRel.Quotient G α
 
 @[to_additive]
-lemma _root_.Finite.of_finite_mulAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
+lemma _root_.Finite.of_finite_monoidAction_orbitRel_quotient [Finite G] [Finite Ω] : Finite α := by
   rw [(selfEquivSigmaOrbits' G _).finite_iff]
   have : ∀ g : Ω, Finite g.orbit := by
     intro g
     induction g using Quotient.inductionOn'
-    simpa [Set.finite_coe_iff] using Finite.finite_mulAction_orbit _
+    simpa [Set.finite_coe_iff] using Finite.finite_monoidAction_orbit _
   exact Finite.instSigma
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.Finite.of_finite_mulAction_orbitRel_quotient :=
+  _root_.Finite.of_finite_monoidAction_orbitRel_quotient
+@[deprecated (since := "2025-12-14")]
+alias _root_.Finite.of_finite_addAction_orbitRel_quotient :=
+  _root_.Finite.of_finite_addMonoidAction_orbitRel_quotient
 
 variable (β)
 
@@ -229,10 +310,20 @@ lemma orbitRel_le_fst :
     orbitRel G (α × β) ≤ (orbitRel G α).comap Prod.fst :=
   Setoid.le_def.2 fst_mem_orbit_of_mem_orbit
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.orbitRel_le_fst := orbitRel_le_fst
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.orbitRel_le_fst := AddMonoidAction.orbitRel_le_fst
+
 @[to_additive]
 lemma orbitRel_le_snd :
     orbitRel G (α × β) ≤ (orbitRel G β).comap Prod.snd :=
   Setoid.le_def.2 snd_mem_orbit_of_mem_orbit
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.orbitRel_le_snd := orbitRel_le_snd
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.orbitRel_le_snd := AddMonoidAction.orbitRel_le_snd
 
 end Orbit
 
@@ -255,6 +346,10 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizer_smul_eq_stabilizer_map_conj :=
+  stabilizer_smul_eq_stabilizer_map_conj
+
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
@@ -263,13 +358,22 @@ def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilize
     (MulEquiv.subgroupCongr (by
       rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← MulEquiv.toMonoidHom_eq_coe]))
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer := stabilizerEquivStabilizer
+
 theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = MulAut.conj g x := by
   simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_apply := stabilizerEquivStabilizer_apply
+
 theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer G b) :
     (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
   simp [stabilizerEquivStabilizer]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_symm_apply := stabilizerEquivStabilizer_symm_apply
 
 theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
     (H : k = h * g) :
@@ -277,24 +381,39 @@ theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (h
       stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_trans := stabilizerEquivStabilizer_trans
+
 theorem stabilizerEquivStabilizer_one :
     stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
   ext; simp [stabilizerEquivStabilizer_apply]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_one := stabilizerEquivStabilizer_one
 
 theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
     (stabilizerEquivStabilizer hg).symm =
       stabilizerEquivStabilizer (eq_inv_smul_iff.mpr hg.symm) := by
   ext x; simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_symm := stabilizerEquivStabilizer_symm
+
 theorem stabilizerEquivStabilizer_inv (hg : b = g⁻¹ • a) :
     stabilizerEquivStabilizer hg =
       (stabilizerEquivStabilizer (inv_smul_eq_iff.mp hg.symm)).symm := by
   ext; simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_inv := stabilizerEquivStabilizer_inv
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
   (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizerOfOrbitRel := stabilizerEquivStabilizerOfOrbitRel
 
 end Stabilizer
 
@@ -312,6 +431,10 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizer_vadd_eq_stabilizer_map_conj :=
+  stabilizer_vadd_eq_stabilizer_map_conj
+
 variable {g h k : G} {a b c : α}
 
 /-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
@@ -320,13 +443,22 @@ def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabiliz
     (AddEquiv.addSubgroupCongr (by
       rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← AddEquiv.toAddMonoidHom_eq_coe]))
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer := stabilizerEquivStabilizer
+
 theorem stabilizerEquivStabilizer_apply (hg : b = g +ᵥ a) (x : stabilizer G a) :
     stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
   simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_apply := stabilizerEquivStabilizer_apply
+
 theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer G b) :
     (stabilizerEquivStabilizer hg).symm x = (AddAut.conj (-g)).toMul x := by
   simp [stabilizerEquivStabilizer]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_symm_apply := stabilizerEquivStabilizer_symm_apply
 
 theorem stabilizerEquivStabilizer_trans
     (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
@@ -334,24 +466,39 @@ theorem stabilizerEquivStabilizer_trans
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_trans := stabilizerEquivStabilizer_trans
+
 theorem stabilizerEquivStabilizer_zero :
     stabilizerEquivStabilizer (zero_vadd G a).symm = AddEquiv.refl (stabilizer G a) := by
   ext; simp [stabilizerEquivStabilizer_apply]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_zero := stabilizerEquivStabilizer_zero
 
 theorem stabilizerEquivStabilizer_symm (hg : b = g +ᵥ a) :
     (stabilizerEquivStabilizer hg).symm =
       stabilizerEquivStabilizer (eq_neg_vadd_iff.mpr hg.symm) := by
   ext; simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_symm := stabilizerEquivStabilizer_symm
+
 theorem stabilizerEquivStabilizer_neg (hg : b = -g +ᵥ a) :
     stabilizerEquivStabilizer hg =
       (stabilizerEquivStabilizer (neg_vadd_eq_iff.mp hg.symm)).symm := by
   ext; simp [stabilizerEquivStabilizer]
 
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_neg := stabilizerEquivStabilizer_neg
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
   (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizerOfOrbitRel := stabilizerEquivStabilizerOfOrbitRel
 
 end AddMonoidAction
 
@@ -390,6 +537,11 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     · apply hyp g⁻¹ (inv_mem hg)
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.le_stabilizer_iff_smul_le := le_stabilizer_iff_smul_le
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.le_stabilizer_iff_vadd_le := AddMonoidAction.le_stabilizer_iff_vadd_le
 
 end MonoidAction
 

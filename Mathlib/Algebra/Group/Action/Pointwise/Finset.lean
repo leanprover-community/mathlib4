@@ -82,7 +82,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β` -/]
-protected def mulAction [DecidableEq α] [Monoid α] [MonoidAction α β] :
+protected def monoidAction [DecidableEq α] [Monoid α] [MonoidAction α β] :
     MonoidAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
@@ -92,12 +92,12 @@ protected def mulAction [DecidableEq α] [Monoid α] [MonoidAction α β] :
 @[to_additive
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
-protected def mulActionFinset [Monoid α] [MonoidAction α β] : MonoidAction α (Finset β) :=
+protected def monoidActionFinset [Monoid α] [MonoidAction α β] : MonoidAction α (Finset β) :=
   coe_injective.mulAction _ coe_smul_finset
 
 scoped[Pointwise]
-  attribute [instance]
-    Finset.mulActionFinset Finset.addActionFinset Finset.mulAction Finset.addAction
+attribute [instance]
+  Finset.monoidActionFinset Finset.addMonoidActionFinset Finset.monoidAction Finset.addMonoidAction
 
 end Instances
 

@@ -34,12 +34,16 @@ class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace �
     [AddMonoidAction M α] : Prop where
   dense_orbit : ∀ x : α, Dense (AddMonoidAction.orbit M x)
 
+@[deprecated (since := "2025-12-14")] alias AddAction.IsMinimal := AddMonoidAction.IsMinimal
+
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
 class MonoidAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MonoidAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (MonoidAction.orbit M x)
+
+@[deprecated (since := "2025-12-14")] alias MulAction.IsMinimal := MonoidAction.IsMinimal
 
 open MonoidAction Set
 
@@ -49,6 +53,8 @@ variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [
 @[to_additive]
 theorem MonoidAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
   MonoidAction.IsMinimal.dense_orbit x
+
+@[deprecated (since := "2025-12-14")] alias MulAction.dense_orbit := MonoidAction.dense_orbit
 
 @[to_additive]
 theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=

@@ -461,3 +461,128 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
   rfl
 
 end Subgroup
+
+@[deprecated (since := "2025-12-14")] alias MulAction.QuotientAction := MonoidAction.QuotientAction
+@[deprecated (since := "2025-12-14")]
+alias MulAction.Quotient.smul_mk := MonoidAction.Quotient.smul_mk
+@[deprecated (since := "2025-12-14")]
+alias MulAction.Quotient.smul_coe := MonoidAction.Quotient.smul_coe
+@[deprecated (since := "2025-12-14")]
+alias MulAction.Quotient.mk_smul_out := MonoidAction.Quotient.mk_smul_out
+@[deprecated (since := "2025-12-14")]
+alias MulAction.Quotient.coe_smul_out := MonoidAction.Quotient.coe_smul_out
+@[deprecated (since := "2025-12-14")]
+alias MulAction.ofQuotientStabilizer := MonoidAction.ofQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.ofQuotientStabilizer_mk := MonoidAction.ofQuotientStabilizer_mk
+@[deprecated (since := "2025-12-14")]
+alias MulAction.ofQuotientStabilizer_mem_orbit := MonoidAction.ofQuotientStabilizer_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.ofQuotientStabilizer_smul := MonoidAction.ofQuotientStabilizer_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.injective_ofQuotientStabilizer := MonoidAction.injective_ofQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitEquivQuotientStabilizer := MonoidAction.orbitEquivQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitProdStabilizerEquivGroup := MonoidAction.orbitProdStabilizerEquivGroup
+@[deprecated (since := "2025-12-14")]
+alias MulAction.card_orbit_mul_card_stabilizer_eq_card_group :=
+  MonoidAction.card_orbit_mul_card_stabilizer_eq_card_group
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitEquivQuotientStabilizer_symm_apply :=
+  MonoidAction.orbitEquivQuotientStabilizer_symm_apply
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_quotient := MonoidAction.stabilizer_quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbitsQuotientStabilizer' :=
+  MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbitsQuotientStabilizer :=
+  MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.sigmaFixedByEquivOrbitsProdGroup := MonoidAction.sigmaFixedByEquivOrbitsProdGroup
+@[deprecated (since := "2025-12-14")]
+alias MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group :=
+  MonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_group
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPretransitive_quotient := MonoidAction.isPretransitive_quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.finite_quotient_of_pretransitive_of_finite_quotient :=
+  MonoidAction.finite_quotient_of_pretransitive_of_finite_quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.equivSubgroupOrbitsSetoidComap := MonoidAction.equivSubgroupOrbitsSetoidComap
+@[deprecated (since := "2025-12-14")]
+alias MulAction.equivSubgroupOrbits := MonoidAction.equivSubgroupOrbits
+@[deprecated (since := "2025-12-14")]
+alias MulAction.finite_quotient_of_finite_quotient_of_finite_quotient :=
+  MonoidAction.finite_quotient_of_finite_quotient_of_finite_quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.equivSubgroupOrbitsQuotientGroup := MonoidAction.equivSubgroupOrbitsQuotientGroup
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivOrbitsQuotientProd' := MonoidAction.selfEquivOrbitsQuotientProd'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivOrbitsQuotientProd := MonoidAction.selfEquivOrbitsQuotientProd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.QuotientAction := AddMonoidAction.QuotientAction
+@[deprecated (since := "2025-12-14")]
+alias AddAction.Quotient.vadd_mk := AddMonoidAction.Quotient.vadd_mk
+@[deprecated (since := "2025-12-14")]
+alias AddAction.Quotient.vadd_coe := AddMonoidAction.Quotient.vadd_coe
+@[deprecated (since := "2025-12-14")]
+alias AddAction.Quotient.mk_vadd_out := AddMonoidAction.Quotient.mk_vadd_out
+@[deprecated (since := "2025-12-14")]
+alias AddAction.Quotient.coe_vadd_out := AddMonoidAction.Quotient.coe_vadd_out
+@[deprecated (since := "2025-12-14")]
+alias AddAction.ofQuotientStabilizer := AddMonoidAction.ofQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.ofQuotientStabilizer_mk := AddMonoidAction.ofQuotientStabilizer_mk
+@[deprecated (since := "2025-12-14")]
+alias AddAction.ofQuotientStabilizer_mem_orbit := AddMonoidAction.ofQuotientStabilizer_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.ofQuotientStabilizer_vadd := AddMonoidAction.ofQuotientStabilizer_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.injective_ofQuotientStabilizer := AddMonoidAction.injective_ofQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitEquivQuotientStabilizer := AddMonoidAction.orbitEquivQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitProdStabilizerEquivAddGroup := AddMonoidAction.orbitProdStabilizerEquivAddGroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.card_orbit_mul_card_stabilizer_eq_card_addGroup :=
+  AddMonoidAction.card_orbit_mul_card_stabilizer_eq_card_addGroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitEquivQuotientStabilizer_symm_apply :=
+  AddMonoidAction.orbitEquivQuotientStabilizer_symm_apply
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_quotient := AddMonoidAction.stabilizer_quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbitsQuotientStabilizer' :=
+  AddMonoidAction.selfEquivSigmaOrbitsQuotientStabilizer'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbitsQuotientStabilizer :=
+  AddMonoidAction.selfEquivSigmaOrbitsQuotientStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.sigmaFixedByEquivOrbitsProdAddGroup :=
+  AddMonoidAction.sigmaFixedByEquivOrbitsProdAddGroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup :=
+  AddMonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPretransitive_quotient := AddMonoidAction.isPretransitive_quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.finite_quotient_of_pretransitive_of_finite_quotient :=
+  AddMonoidAction.finite_quotient_of_pretransitive_of_finite_quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.equivAddSubgroupOrbitsSetoidComap :=
+  AddMonoidAction.equivAddSubgroupOrbitsSetoidComap
+@[deprecated (since := "2025-12-14")]
+alias AddAction.equivAddSubgroupOrbits := AddMonoidAction.equivAddSubgroupOrbits
+@[deprecated (since := "2025-12-14")]
+alias AddAction.finite_quotient_of_finite_quotient_of_finite_quotient :=
+  AddMonoidAction.finite_quotient_of_finite_quotient_of_finite_quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.equivAddSubgroupOrbitsQuotientAddGroup :=
+  AddMonoidAction.equivAddSubgroupOrbitsQuotientAddGroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivOrbitsQuotientProd' := AddMonoidAction.selfEquivOrbitsQuotientProd'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivOrbitsQuotientProd := AddMonoidAction.selfEquivOrbitsQuotientProd

@@ -29,7 +29,7 @@ variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [Seminorm
 
 section ClosedBall
 
-instance mulActionClosedBallBall : MonoidAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
+instance monoidActionClosedBallBall : MonoidAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_ball_zero_iff.2 <| by
@@ -42,7 +42,7 @@ instance mulActionClosedBallBall : MonoidAction (closedBall (0 : 𝕜) 1) (ball 
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 
-instance mulActionClosedBallClosedBall :
+instance monoidActionClosedBallClosedBall :
     MonoidAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
@@ -61,7 +61,7 @@ end ClosedBall
 
 section Sphere
 
-instance mulActionSphereBall : MonoidAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
+instance monoidActionSphereBall : MonoidAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
@@ -69,7 +69,7 @@ instance mulActionSphereBall : MonoidAction (sphere (0 : 𝕜) 1) (ball (0 : E) 
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 
-instance mulActionSphereClosedBall : MonoidAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
+instance monoidActionSphereClosedBall : MonoidAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
@@ -78,7 +78,7 @@ instance continuousSMul_sphere_closedBall :
     ContinuousSMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) :=
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 
-instance mulActionSphereSphere : MonoidAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
+instance monoidActionSphereSphere : MonoidAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_sphere_zero_iff_norm.2 <| by

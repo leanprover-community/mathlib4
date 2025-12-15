@@ -356,3 +356,72 @@ theorem isMultiplyPreprimitive_congr
         exact fun hy ↦ hx y hy rfl
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPreprimitive_of_fixingSubgroup_empty_iff :=
+  MonoidAction.isPreprimitive_of_fixingSubgroup_empty_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPreprimitive_ofFixingSubgroup_conj_iff :=
+  MonoidAction.isPreprimitive_ofFixingSubgroup_conj_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPreprimitive_fixingSubgroup_insert_iff :=
+  MonoidAction.isPreprimitive_fixingSubgroup_insert_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsMultiplyPreprimitive := MonoidAction.IsMultiplyPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_zero_preprimitive := MonoidAction.is_zero_preprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.is_one_preprimitive_iff := MonoidAction.is_one_preprimitive_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPreprimitive_ofStabilizer :=
+  MonoidAction.isMultiplyPreprimitive_ofStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPreprimitive_succ_iff_ofStabilizer :=
+  MonoidAction.isMultiplyPreprimitive_succ_iff_ofStabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.ofFixingSubgroup.isMultiplyPreprimitive :=
+  MonoidAction.ofFixingSubgroup.isMultiplyPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPreprimitive_of_isMultiplyPretransitive_succ :=
+  MonoidAction.isMultiplyPreprimitive_of_isMultiplyPretransitive_succ
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPreprimitive_of_le := MonoidAction.isMultiplyPreprimitive_of_le
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsMultiplyPreprimitive.of_bijective_map :=
+  MonoidAction.IsMultiplyPreprimitive.of_bijective_map
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isMultiplyPreprimitive_congr := MonoidAction.isMultiplyPreprimitive_congr
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPreprimitive_of_fixingAddSubgroup_empty_iff :=
+  AddMonoidAction.isPreprimitive_of_fixingAddSubgroup_empty_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPreprimitive_ofFixingAddSubgroup_conj_iff :=
+  AddMonoidAction.isPreprimitive_ofFixingAddSubgroup_conj_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPreprimitive_fixingAddSubgroup_insert_iff :=
+  AddMonoidAction.isPreprimitive_fixingAddSubgroup_insert_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsMultiplyPreprimitive := AddMonoidAction.IsMultiplyPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_zero_preprimitive := AddMonoidAction.is_zero_preprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.is_zero_preprimitive_iff := AddMonoidAction.is_zero_preprimitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPreprimitive_ofStabilizer :=
+  AddMonoidAction.isMultiplyPreprimitive_ofStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPreprimitive_succ_iff_ofStabilizer :=
+  AddMonoidAction.isMultiplyPreprimitive_succ_iff_ofStabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.ofFixingSubgroup.isMultiplyPreprimitive :=
+  AddMonoidAction.ofFixingSubgroup.isMultiplyPreprimitive
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPreprimitive_of_isMultiplyPretransitive_succ :=
+  AddMonoidAction.isMultiplyPreprimitive_of_isMultiplyPretransitive_succ
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPreprimitive_of_le := AddMonoidAction.isMultiplyPreprimitive_of_le
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsMultiplyPreprimitive.of_bijective_map :=
+  AddMonoidAction.IsMultiplyPreprimitive.of_bijective_map
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isMultiplyPreprimitive_congr := AddMonoidAction.isMultiplyPreprimitive_congr

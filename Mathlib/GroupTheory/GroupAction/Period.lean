@@ -128,3 +128,54 @@ end MonoidExponent
 
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-14")] alias MulAction.le_period := MonoidAction.le_period
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_le_of_fixed := MonoidAction.period_le_of_fixed
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_pos_of_fixed := MonoidAction.period_pos_of_fixed
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_eq_one_iff := MonoidAction.period_eq_one_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.pow_smul_ne_of_lt_period := MonoidAction.pow_smul_ne_of_lt_period
+@[deprecated (since := "2025-12-14")] alias MulAction.period_one := MonoidAction.period_one
+@[deprecated (since := "2025-12-14")] alias MulAction.period_inv := MonoidAction.period_inv
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_dvd_orderOf := MonoidAction.period_dvd_orderOf
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_pos_of_orderOf_pos := MonoidAction.period_pos_of_orderOf_pos
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_le_orderOf := MonoidAction.period_le_orderOf
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_dvd_exponent := MonoidAction.period_dvd_exponent
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_pos_of_exponent_pos := MonoidAction.period_pos_of_exponent_pos
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_le_exponent := MonoidAction.period_le_exponent
+@[deprecated (since := "2025-12-14")]
+alias MulAction.period_bounded_of_exponent_pos := MonoidAction.period_bounded_of_exponent_pos
+@[deprecated (since := "2025-12-14")] alias AddAction.le_period := AddMonoidAction.le_period
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_le_of_fixed := AddMonoidAction.period_le_of_fixed
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_pos_of_fixed := AddMonoidAction.period_pos_of_fixed
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_eq_zero_iff := AddMonoidAction.period_eq_zero_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.nsmul_vadd_ne_of_lt_period := AddMonoidAction.nsmul_vadd_ne_of_lt_period
+@[deprecated (since := "2025-12-14")] alias AddAction.period_zero := AddMonoidAction.period_zero
+@[deprecated (since := "2025-12-14")] alias AddAction.period_neg := AddMonoidAction.period_neg
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_dvd_addOrderOf := AddMonoidAction.period_dvd_addOrderOf
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_pos_of_addOrderOf_pos := AddMonoidAction.period_pos_of_addOrderOf_pos
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_le_addOrderOf := AddMonoidAction.period_le_addOrderOf
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_dvd_exponent := AddMonoidAction.period_dvd_exponent
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_pos_of_exponent_pos := AddMonoidAction.period_pos_of_exponent_pos
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_le_exponent := AddMonoidAction.period_le_exponent
+@[deprecated (since := "2025-12-14")]
+alias AddAction.period_bounded_of_exponent_pos := AddMonoidAction.period_bounded_of_exponent_pos

@@ -94,3 +94,10 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
   | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
 
 end MonoidAction.IwasawaStructure
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IwasawaStructure := MonoidAction.IwasawaStructure
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IwasawaStructure.commutator_le := MonoidAction.IwasawaStructure.commutator_le
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IwasawaStructure.isSimpleGroup := MonoidAction.IwasawaStructure.isSimpleGroup

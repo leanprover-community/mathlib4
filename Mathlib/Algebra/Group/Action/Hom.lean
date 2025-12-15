@@ -29,11 +29,14 @@ See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.mod
 -/
 @[to_additive
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`. -/]
-abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MonoidAction R M] [Monoid S]
+abbrev Function.Surjective.monoidActionLeft {R S M : Type*} [Monoid R] [MonoidAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MonoidAction S M where
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
+
+@[deprecated (since := "2025-12-12")]
+alias Function.Surjective.mulActionLeft := Function.Surjective.monoidActionLeft
 
 namespace MonoidAction
 
@@ -80,6 +83,31 @@ lemma IsPretransitive.of_compHom {M N α : Type*} [Monoid M] [Monoid N] [MonoidA
   letI := compHom α f; h.of_smul_eq f rfl
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-12")]
+alias MulAction.compHom := MonoidAction.compHom
+
+@[deprecated (since := "2025-12-12")]
+alias MulAction.compHom_smul_def := MonoidAction.compHom_smul_def
+
+@[deprecated (since := "2025-12-12")]
+alias MulAction.isPretransitive_compHom := MonoidAction.isPretransitive_compHom
+
+@[deprecated (since := "2025-12-12")]
+alias MulAction.IsPretransitive.of_compHom := MonoidAction.IsPretransitive.of_compHom
+
+@[deprecated (since := "2025-12-12")]
+alias AddAction.compHom := AddMonoidAction.compHom
+
+@[deprecated (since := "2025-12-12")]
+alias AddAction.compHom_vadd_def := AddMonoidAction.compHom_vadd_def
+
+@[deprecated (since := "2025-12-12")]
+alias AddAction.isPretransitive_compHom := AddMonoidAction.isPretransitive_compHom
+
+@[deprecated (since := "2025-12-12")]
+alias AddAction.IsPretransitive.of_compHom := AddMonoidAction.IsPretransitive.of_compHom
+
 end
 
 section CompatibleScalar
@@ -106,5 +134,8 @@ def monoidHomEquivMonoidActionIsScalarTower (M N) [Monoid M] [Monoid N] :
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
   left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
   right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MonoidAction.ext <| funext₂ <| smul_one_smul N
+
+@[deprecated (since := "2025-12-12")]
+alias monoidHomEquivMulActionIsScalarTower := monoidHomEquivMonoidActionIsScalarTower
 
 end CompatibleScalar

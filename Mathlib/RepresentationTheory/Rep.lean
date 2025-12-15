@@ -326,6 +326,8 @@ def linearizationTrivialIso (X : Type u) :
 abbrev ofMonoidAction (H : Type u) [MonoidAction G H] : Rep k G :=
   of <| Representation.ofMonoidAction k G H
 
+@[deprecated (since := "2025-12-15")] alias ofMulAction := ofMonoidAction
+
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
 abbrev leftRegular : Rep k G :=
   ofMonoidAction k G G
@@ -353,12 +355,17 @@ def ofMonoidActionSubsingletonIsoTrivial
     ModuleCat.hom_ext <| Finsupp.lhom_ext fun _ _ => by
       simp [Subsingleton.elim _ (1 : H), ModuleCat.endRingEquiv]
 
+@[deprecated (since := "2025-12-15")]
+alias ofMulActionSubsingletonIsoTrivial := ofMonoidActionSubsingletonIsoTrivial
+
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
 def linearizationOfMonoidActionIso (H : Type u) [MonoidAction G H] :
     (linearization k G).obj (Action.ofMonoidAction G H) ≅ ofMonoidAction k G H :=
   Iso.refl _
 
+@[deprecated (since := "2025-12-15")]
+alias linearizationOfMulActionIso := linearizationOfMonoidActionIso
 section
 
 variable (k G A : Type u) [CommRing k] [Monoid G] [AddCommGroup A]

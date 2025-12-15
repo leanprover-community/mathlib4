@@ -220,6 +220,10 @@ theorem MonoidAction.IsPreprimitive.is_two_motive_of_is_motive
     apply (hrec _ hmn hG htm htm').1
     exact IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans hsgs_ne_top
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.IsPreprimitive.is_two_motive_of_is_motive :=
+  MonoidAction.IsPreprimitive.is_two_motive_of_is_motive
+
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
 theorem MonoidAction.IsPreprimitive.is_two_pretransitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
@@ -228,6 +232,10 @@ theorem MonoidAction.IsPreprimitive.is_two_pretransitive
     IsMultiplyPretransitive G α 2 :=
   (hG.is_two_motive_of_is_motive hsn hsn').1 hs_trans
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.IsPreprimitive.is_two_pretransitive :=
+  MonoidAction.IsPreprimitive.is_two_pretransitive
+
 /-- A criterion due to Jordan for being 2-preprimitive (Wielandt, 13.1) -/
 theorem MonoidAction.IsPreprimitive.is_two_preprimitive
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
@@ -235,6 +243,10 @@ theorem MonoidAction.IsPreprimitive.is_two_preprimitive
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 :=
   (hG.is_two_motive_of_is_motive hsn hsn').2 hs_prim
+
+@[deprecated (since := "2025-12-15")]
+alias MulAction.IsPreprimitive.is_two_preprimitive :=
+  MonoidAction.IsPreprimitive.is_two_preprimitive
 
 -- Wielandt claims that this stronger version is proved in the same way
 proof_wanted is_two_preprimitive_strong_jordan
@@ -291,6 +303,10 @@ theorem MonoidAction.IsPreprimitive.isMultiplyPreprimitive
       ext x
       by_cases hx : x = a <;> simp [hx, mem_ofStabilizer_iff, ha]
     rw [← Set.ncard_pos, hsn]; apply Nat.succ_pos
+
+@[deprecated (since := "2025-12-15")]
+alias MulAction.IsPreprimitive.isMultiplyPreprimitive :=
+  MonoidAction.IsPreprimitive.isMultiplyPreprimitive
 
 end Jordan
 

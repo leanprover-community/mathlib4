@@ -162,6 +162,12 @@ instance Monoid.toOppositeMonoidAction [Monoid α] : MonoidAction αᵐᵒᵖ α
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 
+@[deprecated (since := "2025-12-12")]
+alias Monoid.toOppositeMulAction :=  Monoid.toOppositeMonoidAction
+
+@[deprecated (since := "2025-12-12")]
+alias AddMonoid.toOppositeAddAction :=  AddMonoid.toOppositeAddMonoidAction
+
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N where

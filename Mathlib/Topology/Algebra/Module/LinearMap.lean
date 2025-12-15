@@ -246,7 +246,7 @@ variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [Continuous
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
-instance mulAction : MonoidAction S₂ (M₁ →SL[σ₁₂] M₂) where
+instance monoidAction : MonoidAction S₂ (M₁ →SL[σ₁₂] M₂) where
   one_smul _f := ext fun _x => one_smul _ _
   mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
 

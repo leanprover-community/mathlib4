@@ -161,10 +161,14 @@ def MonoidAction.toEndHom [MonoidAction M α] : M →* Function.End α where
   map_one' := funext (one_smul M)
   map_mul' x y := funext (mul_smul x y)
 
+@[deprecated (since := "2025-12-12")] alias MulAction.toEndHom := MonoidAction.toEndHom
+
 /-- The monoid action induced by a monoid hom to `Function.End α`
 
 See note [reducible non-instances]. -/
 abbrev MonoidAction.ofEndHom (f : M →* Function.End α) : MonoidAction M α := .compHom α f
+
+@[deprecated (since := "2025-12-12")] alias MulAction.ofEndHom := MonoidAction.ofEndHom
 
 end Monoid
 
@@ -177,11 +181,15 @@ When `M` is a group, see `AddMonoidAction.toPermHom`. -/
 def AddMonoidAction.toEndHom [AddMonoidAction M α] : M →+ Additive (Function.End α) :=
   MonoidAction.toEndHom.toAdditiveRight
 
+@[deprecated (since := "2025-12-12")] alias AddAction.toEndHom := AddMonoidAction.toEndHom
+
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
 abbrev AddMonoidAction.ofEndHom (f : M →+ Additive (Function.End α)) :
     AddMonoidAction M α := .compHom α f
+
+@[deprecated (since := "2025-12-12")] alias AddAction.ofEndHom := AddMonoidAction.ofEndHom
 
 end AddMonoid
 
@@ -195,13 +203,19 @@ def MonoidAction.toPermHom : G →* Equiv.Perm α where
   map_one' := Equiv.ext <| one_smul G
   map_mul' u₁ u₂ := Equiv.ext <| mul_smul (u₁ : G) u₂
 
+@[deprecated (since := "2025-12-12")] alias MulAction.toPermHom := MonoidAction.toPermHom
+
 lemma MonoidAction.coe_toPermHom :
     ⇑(MonoidAction.toPermHom G α) = MonoidAction.toPerm :=
   rfl
 
+@[deprecated (since := "2025-12-12")] alias MulAction.coe_toPermHom := MonoidAction.coe_toPermHom
+
 lemma MonoidAction.toPerm_one :
     (MonoidAction.toPerm (1 : G))  = (1 : Equiv.Perm α) := by
   aesop
+
+@[deprecated (since := "2025-12-12")] alias MulAction.toPerm_one := MonoidAction.toPerm_one
 
 end Group
 
@@ -214,13 +228,19 @@ variable (G α) [AddGroup G] [AddMonoidAction G α]
 def AddMonoidAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
   (MonoidAction.toPermHom ..).toAdditiveRight
 
+@[deprecated (since := "2025-12-12")] alias AddAction.toPermHom := AddMonoidAction.toPermHom
+
 lemma AddMonoidAction.coe_toPermHom :
     ⇑(AddMonoidAction.toPermHom G α) = AddMonoidAction.toPerm :=
   rfl
 
+@[deprecated (since := "2025-12-12")] alias AddAction.coe_toPermHom := AddMonoidAction.coe_toPermHom
+
 theorem AddMonoidAction.toPerm_zero :
     (AddMonoidAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
   aesop
+
+@[deprecated (since := "2025-12-12")] alias AddAction.toPerm_zero := AddMonoidAction.toPerm_zero
 
 end AddGroup
 

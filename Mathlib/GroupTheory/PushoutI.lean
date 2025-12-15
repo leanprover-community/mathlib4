@@ -452,7 +452,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
-noncomputable instance mulAction : MonoidAction (PushoutI φ) (NormalWord d) :=
+noncomputable instance monoidAction : MonoidAction (PushoutI φ) (NormalWord d) :=
   MonoidAction.ofEndHom <|
     lift
       (fun _ => MonoidAction.toEndHom)

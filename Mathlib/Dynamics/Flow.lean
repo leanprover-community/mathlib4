@@ -158,6 +158,8 @@ def toAddMonoidAction : AddMonoidAction τ α where
   add_vadd  := ϕ.map_add'
   zero_vadd := ϕ.map_zero'
 
+@[deprecated (since := "2025-12-14")] alias toAddAction := toAddMonoidAction
+
 /-- Restrict a flow by `τ` to a flow by an additive submonoid of `τ`. -/
 def restrictAddSubmonoid (S : AddSubmonoid τ) : Flow S α where
   toFun t x := ϕ t x

@@ -87,3 +87,22 @@ theorem isPretransitive_congr {φ : M → N} {f : α →ₑ[φ] β}
     simp only [hk, map_smulₛₗ]
 
 end MonoidAction
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPretransitive_iff_base := MonoidAction.isPretransitive_iff_base
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPretransitive_iff_orbit_eq_univ := MonoidAction.isPretransitive_iff_orbit_eq_univ
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPretransitive.of_surjective_map := MonoidAction.IsPretransitive.of_surjective_map
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isPretransitive_congr := MonoidAction.isPretransitive_congr
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPretransitive_iff_base := AddMonoidAction.isPretransitive_iff_base
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPretransitive_iff_orbit_eq_univ :=
+  AddMonoidAction.isPretransitive_iff_orbit_eq_univ
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPretransitive.of_surjective_map :=
+  AddMonoidAction.IsPretransitive.of_surjective_map
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isPretransitive_congr := AddMonoidAction.isPretransitive_congr

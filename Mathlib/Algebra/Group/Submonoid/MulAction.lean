@@ -103,7 +103,7 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
-instance mulAction [MonoidAction M' α] (S : Submonoid M') : MonoidAction S α :=
+instance monoidAction [MonoidAction M' α] (S : Submonoid M') : MonoidAction S α :=
   inferInstance
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance

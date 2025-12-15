@@ -397,6 +397,8 @@ noncomputable def ofMonoidAction : Representation k G (H →₀ k) where
     ext z w
     simp [mul_smul]
 
+@[deprecated (since := "2025-12-15")] alias ofMulAction := ofMonoidAction
+
 /-- The natural `k`-linear `G`-representation on `k[G]` induced by left multiplication in `G`. -/
 noncomputable abbrev leftRegular := ofMonoidAction k G G
 
@@ -408,11 +410,14 @@ variable {k G H}
 theorem ofMonoidAction_def (g : G) : ofMonoidAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
+@[deprecated (since := "2025-12-15")] alias ofMulAction_def := ofMonoidAction_def
+
 @[simp]
 theorem ofMonoidAction_single (g : G) (x : H) (r : k) :
     ofMonoidAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
 
+@[deprecated (since := "2025-12-15")] alias ofMulAction_single := ofMonoidAction_single
 end MonoidAction
 section DistribMulAction
 
@@ -476,6 +481,8 @@ theorem ofMonoidAction_apply {H : Type*} [MonoidAction G H] (g : G) (f : H →�
     simp
   simp only [ofMonoidAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
 
+@[deprecated (since := "2025-12-15")] alias ofMulAction_apply := ofMonoidAction_apply
+
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance :
     HMul k[G] (ofMonoidAction k G G).asModule k[G] :=
@@ -493,12 +500,18 @@ theorem ofMonoidAction_self_smul_eq_mul (x : k[G]) (y : (ofMonoidAction k G G).a
   | hadd x y hx hy => simp only [hx, hy, add_mul, add_smul]
   | hsmul r x hx => simp [← hx]
 
+@[deprecated (since := "2025-12-15")]
+alias ofMulAction_self_smul_eq_mul := ofMonoidAction_self_smul_eq_mul
+
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/
 @[simps]
 noncomputable def ofMonoidActionSelfAsModuleEquiv : (ofMonoidAction k G G).asModule ≃ₗ[k[G]] k[G] :=
   { (asModuleEquiv _).toAddEquiv with map_smul' := ofMonoidAction_self_smul_eq_mul }
+
+@[deprecated (since := "2025-12-15")]
+alias ofMulActionSelfAsModuleEquiv := ofMonoidActionSelfAsModuleEquiv
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.
