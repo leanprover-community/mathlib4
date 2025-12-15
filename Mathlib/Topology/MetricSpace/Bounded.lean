@@ -336,7 +336,7 @@ theorem isBounded_Ioc (a b : α) : IsBounded (Ioc a b) :=
 theorem isBounded_Ioo (a b : α) : IsBounded (Ioo a b) :=
   (totallyBounded_Ioo a b).isBounded
 
-/-- In a pseudo metric space with a conditionally complete linear order such that the order and the
+/-- In a pseudometric space with a conditionally complete linear order such that the order and the
 metric structure give the same topology, any order-bounded set is metric-bounded. -/
 theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂ : BddBelow s) :
     IsBounded s :=
@@ -603,11 +603,11 @@ theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter
     (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
   ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 
-theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} (hsd : IsDiscrete s)
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
-  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  refine (IsCompact.finite ?_ ?_).subset (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
+  · exact hsd.mono Set.inter_subset_right
 
 end
 

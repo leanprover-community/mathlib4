@@ -602,7 +602,7 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
   rw [← spectralNorm.eq_of_normalClosure g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy,
-    ← spectralNorm.eq_of_normalClosure (-g) hy, RingHom.map_neg,
+    ← spectralNorm.eq_of_normalClosure (-g) hy, map_neg,
     ← spectralAlgNorm_of_finiteDimensional_normal_def]
   exact map_neg_eq_map _ _
 
@@ -953,7 +953,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits ((mapAlg K E (minpoly K x)).map (RingHom.id E)) :=
+  have hspl : Splits (mapAlg K E (minpoly K x)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
@@ -963,7 +963,7 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     ← @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
     @spectralNorm.eq_of_tower K _ E _ _ L, ← spectralMulAlgNorm_def,
     ← spectralMulAlgNorm_def, Polynomial.coeff_zero_of_isScalarTower,
-    Polynomial.coeff_zero_eq_prod_roots_of_monic_of_splits _ hspl, map_mul, map_pow,
+    hspl.coeff_zero_eq_prod_roots_of_monic _, map_mul, map_pow,
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]
   · simp [monic_mapAlg_iff, minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral]
   · exact_mod_cast (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x)).ne'

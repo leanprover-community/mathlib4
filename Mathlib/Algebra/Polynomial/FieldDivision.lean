@@ -135,7 +135,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by cutsat]
+  exacts [h0, h1, by lia]
 
 end CommRing
 
@@ -192,7 +192,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  cutsat
+  lia
 
 section NormalizationMonoid
 
@@ -201,7 +201,7 @@ variable [NormalizationMonoid R]
 instance instNormalizationMonoid : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
-      rw [← RingHom.map_mul, Units.mul_inv, C_1], by rw [← RingHom.map_mul, Units.inv_mul, C_1]⟩
+      rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
   normUnit_mul hp0 hq0 :=
     Units.ext

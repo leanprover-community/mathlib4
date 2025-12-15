@@ -24,9 +24,11 @@ namespace CategoryTheory
 
 open Functor
 
+open scoped Prod
+
 universe v u
 
-variable (A : Type*) [Category A] (A' : Type*) [Category A']
+variable (A : Type*) [Category* A] (A' : Type*) [Category* A']
   (B : Type u) [Category.{v} B]
 
 namespace Sum
@@ -36,13 +38,13 @@ namespace Sum
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ A A' ⋙ F, inr_ A A' ⋙ F⟩
-      map η := ⟨whiskerLeft (inl_ A A') η, whiskerLeft (inr_ A A') η⟩ }
+      map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
-  counitIso := NatIso.ofComponents <| fun F ↦
-    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F
+  counitIso := NatIso.ofComponents (fun F ↦
+    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
 
 variable {A A' B}
 
@@ -154,7 +156,7 @@ end Swap
 
 section CompatibilityWithProductAssociator
 
-variable (T : Type*) [Category T]
+variable (T : Type*) [Category* T]
 
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]

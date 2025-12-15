@@ -262,7 +262,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (T) implies also both
+Combining with earlier proven implications, we get that (T) implies also both
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G);
@@ -382,7 +382,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (B) implies also
+Combining with earlier proven implications, we get that (B) implies also
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
@@ -404,9 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
   have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
-  rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine ⟨r, r_in_Ioo, ?_⟩
-  simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
+  simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
 
 theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,
@@ -797,7 +795,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     simp [← hT, hr]
   rcases T_count.exists_eq_range this with ⟨f, hf⟩
   have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
-  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+  have : Tendsto (fun i ↦ ν (accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩

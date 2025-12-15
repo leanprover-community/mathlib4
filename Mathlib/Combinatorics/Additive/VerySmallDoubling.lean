@@ -146,8 +146,7 @@ private lemma weaken_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : #(A * A) < 2
   linarith only [h]
 
 private lemma nonempty_of_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : A.Nonempty := by
-  rw [nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   simp at h
 
 /-- If `A` has doubling strictly less than `3 / 2`, then `A⁻¹ * A` is a subgroup.
@@ -327,7 +326,8 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
   refine ⟨H, inferInstance, ?_, fun a ha ↦ ⟨?_, ?_⟩⟩
-  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, - coe_inv, H]
+  · simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+      mem_coe, ← Nat.card_eq_fintype_card, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
     exact_mod_cast A_subset_aH a ha
@@ -372,6 +372,7 @@ private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     simpa [eq_inv_mul_iff_mul_eq.2 h, mul_assoc] using mul_mem (inv_mem hh₂) hh₁
   simp_all
 
+set_option linter.flexible false in -- simp followed by positivity
 open goldenRatio in
 /-- If `A` has doubling `K` strictly less than `φ`, then `A * A⁻¹` is covered by
 at most a constant number of cosets of a finite subgroup of `G`. -/
@@ -451,7 +452,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
           · simp_all
         _ = l * #A + (#S - l) * (K - 1) * #A := by
           simp [hk, ← not_lt, mul_assoc,
-            ← S.filter_card_add_filter_neg_card_eq_card fun z ↦ (K - 1) * #A < r z]
+            ← S.card_filter_add_card_filter_not fun z ↦ (K - 1) * #A < r z]
         _ = ((2 - K) * l + (K - 1) * #S) * #A := by ring
     -- By cancelling `|A|` on both sides, we get `|A| ≤ (2 - K)l + (K - 1)|S|`.
     -- By composing with `|S| ≤ K|A|`, we get `|S| ≤ (2 - K)Kl + (K - 1)K|S|`.
@@ -526,7 +527,7 @@ private lemma mul_card_le_expansion (hS : S.Nonempty) : (1 - K) * #A ≤ expansi
 
 @[simp] private lemma expansion_pos_iff (hK : K < 1) (hS : S.Nonempty) :
     0 < expansion K S A ↔ A.Nonempty where
-  mp hA := by rw [nonempty_iff_ne_empty]; rintro rfl; simp at hA
+  mp hA := by by_contra! rfl; simp at hA
   mpr := expansion_pos hK hS
 
 @[simp] private lemma expansion_smul_finset (K : ℝ) (S A : Finset G) (a : G) :
@@ -674,8 +675,7 @@ private lemma not_isFragment_empty (hK : K < 1) (hS : S.Nonempty) : ¬ IsFragmen
 
 private lemma IsFragment.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsFragment K S A) :
     A.Nonempty := by
-  rw [nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   simp [*, not_isFragment_empty hK hS] at hA
 
 private lemma IsAtom.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsAtom K S A) : A.Nonempty :=
@@ -773,7 +773,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
     -- where we used `calc₁` again.
     rw [← mul_le_mul_iff_right₀ (show 0 < 1 - K by linarith [hK])]
     suffices (1 - K) * #(Set.toFinset H * S) ≤ (1 - ε / 2) * #(H : Set G).toFinset by
-      apply le_of_eq_of_le' _ this; simp [K]; field
+      apply le_of_le_of_eq this; simp [K]; field
     rw [sub_mul, one_mul, sub_le_iff_le_add]
     calc
           (#(Set.toFinset H * S) : ℝ)

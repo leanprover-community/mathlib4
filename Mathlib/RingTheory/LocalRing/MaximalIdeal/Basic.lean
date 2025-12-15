@@ -25,9 +25,7 @@ variable {R S K : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R]
-
-variable [IsLocalRing R]
+variable [CommSemiring R] [IsLocalRing R]
 
 @[simp]
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
@@ -96,9 +94,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
-
-variable [IsLocalRing R]
+variable [CommRing R] [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
     IsLocalRing.maximalIdeal R ≤ I.jacobson :=

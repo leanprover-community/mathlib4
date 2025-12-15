@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Ideal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 public import Mathlib.CategoryTheory.Sites.Sheafification
@@ -23,7 +23,7 @@ noncomputable section
 
 open CategoryTheory Presheaf
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C) (A : Type*) [Category* A]
 
 instance [HasSheafify J A] [CartesianMonoidalCategory A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=

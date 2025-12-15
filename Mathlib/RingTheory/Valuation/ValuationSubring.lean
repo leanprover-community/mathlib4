@@ -122,7 +122,7 @@ instance : ValuationRing A where
       ext
       simp [field]
 
-instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
+instance : Algebra A K := inferInstance
 
 instance isLocalRing : IsLocalRing A := inferInstance
 
