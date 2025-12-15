@@ -37,6 +37,9 @@ scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
 
+instance : CanLift ℝ I (↑) (fun r ↦ 0 ≤ r ∧ r ≤ 1) :=
+  ⟨fun r ⟨h₀, h₁⟩ ↦ ⟨⟨r, ⟨h₀, h₁⟩⟩, rfl⟩⟩
+
 theorem zero_mem : (0 : ℝ) ∈ I :=
   ⟨le_rfl, zero_le_one⟩
 
