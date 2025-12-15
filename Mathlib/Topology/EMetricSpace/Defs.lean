@@ -132,7 +132,7 @@ class WeakPseudoEMetricSpace
   /-- The ambient topology on `α` matches the `edist` topology on balls of finite radius`. -/
   topology_eq_on_restrict :
     letI τ' := (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace
-    ∀ {x : α} {s : Set α},
+    ∀ (x : α) {s : Set α},
     IsOpen[τ'] s → IsOpen[instTopologicalSpaceSubtype (t := τ)] ((ball x ⊤) ↓∩ s)
 
 attribute [instance] PseudoEMetricSpace.toUniformSpace
