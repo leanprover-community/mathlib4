@@ -136,6 +136,35 @@ lemma exists_eq_const_of_preimage_singleton [Nonempty β] {f : α → β}
       eq_empty_iff_forall_notMem.1 ((hf b).resolve_right fun h ↦ hf' ⟨b, h⟩) x
     exact ⟨Classical.arbitrary β, funext fun x ↦ absurd rfl (this x _)⟩
 
+lemma preimage_if {α β} {f g : α → β} {p : α → Prop} [DecidablePred p] {s : Set β} :
+    (fun x ↦ if p x then f x else g x) ⁻¹' s =
+      (f ⁻¹' s ∩ {x | p x}) ∪ (g ⁻¹' s ∩ {x | ¬ p x}) := by
+  ext x
+  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
+  split_ifs with h <;> simp [h]
+
+lemma preimage_dif {α β} {p : α → Prop} [DecidablePred p]
+    {f : (a : α) → p a → β} {g : (a : α) → ¬ p a → β} {s : Set β} :
+    (fun x ↦ if h : p x then f x h else g x h) ⁻¹' s =
+      { x | ∃ h : p x, f x h ∈ s } ∪ { x | ∃ h : ¬ p x, g x h ∈ s } := by
+  ext x
+  simp only [mem_preimage, mem_union, mem_setOf_eq]
+  split_ifs with h <;> simp [h]
+
+lemma preimage_if_const_left {α β} (p : α → Prop) [DecidablePred p]
+    (g : α → β) (b : β) (s : Set β) :
+    (fun x ↦ if p x then b else g x) ⁻¹' s = {x | p x ∧ b ∈ s} ∪ (g ⁻¹' s ∩ {x | ¬ p x}) := by
+  ext x
+  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
+  split_ifs with h <;> simp [h]
+
+lemma preimage_if_const_right {α β} (p : α → Prop) [DecidablePred p]
+    (f : α → β) (b : β) (s : Set β) :
+    (fun x ↦ if p x then f x else b) ⁻¹' s = (f ⁻¹' s ∩ {x | p x}) ∪ {x | ¬ p x ∧ b ∈ s} := by
+  ext x
+  simp only [mem_preimage, mem_union, mem_inter_iff, mem_setOf_eq]
+  split_ifs with h <;> simp [h]
+
 theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
   rfl
 
