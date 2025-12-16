@@ -291,8 +291,12 @@ lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
 
 section
 
-lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
-    (f : M ⟶ N) (mono : Mono f) :
+universe w
+
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+
+lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism
+    (L M N : C) (f : M ⟶ N) (mono : Mono f) :
     Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
   rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
   apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
@@ -303,7 +307,7 @@ lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : M
   exact Ext.addEquiv₀.map_eq_zero_iff.mp (zero_of_comp_mono f this)
 
 lemma CategoryTheory.Abelian.extFunctor_post_apply_zero_preserve_momoMorphism
-    (L M N : ModuleCat.{v} R) (g : M ⟶ N) (mono : Epi g) :
+    (L M N : C) (g : M ⟶ N) (mono : Epi g) :
     Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ g)).precomp L (zero_add 0)) := by
   rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
   apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
