@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 open CategoryTheory Functor Limits GrothendieckTopology
 
-universe v u
+universe v' v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} [Subcanonical J]
   {K : Type*} [Category K]
@@ -28,6 +28,17 @@ instance : PreservesColimitsOfShape K J.yoneda where
     intro X
     suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
       (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
+    exact isLimitOfPreserves _ hc.op⟩ }
+
+instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val]
+    : PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+  preservesColimit {F} := { preserves {c} hc := ⟨by
+    suffices IsLimit (coyoneda.mapCone (J.uliftYoneda.mapCocone c).op) from
+      isColimitOfOp (isLimitOfReflects _ this)
+    apply evaluationJointlyReflectsLimits
+    intro X
+    suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
+      (isoWhiskerRight (J.largeCurriedYonedaLemma') ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
 
 instance Subcanonical.preservesFiniteCoproductsYoneda
