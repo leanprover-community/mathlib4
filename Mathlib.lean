@@ -7363,6 +7363,7 @@ public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
 public import Mathlib.Util.AddRelatedDecl
+public import Mathlib.Util.AliasIn
 public import Mathlib.Util.AssertExists
 public import Mathlib.Util.AssertExistsExt
 public import Mathlib.Util.AssertNoSorry
