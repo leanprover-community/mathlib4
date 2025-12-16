@@ -156,7 +156,7 @@ lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
   obtain rfl | hn := eq_or_ne n 0
   · simp
   refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ ?_
-  simp only [Option.ite_none_right_eq_some, Option.some.injEq,
+  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt,
     and_imp, Prod.forall, Prod.mk.injEq]
   rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
