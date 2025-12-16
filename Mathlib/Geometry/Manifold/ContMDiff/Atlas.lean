@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
 ## Smoothness of charts and local structomorphisms
@@ -356,20 +357,11 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
         simp only [Function.comp_apply, f']
         rw [φ.extend_left_inv hy, ψ.extend_left_inv hgy]
       exact step2.congr_of_eventuallyEq (eventually_nhdsWithin_of_forall eq2) eq_at_y
-    · -- ContDiffWithinAt part
-      simp only [ContMDiffWithinAt, liftPropWithinAt_iff', ContDiffWithinAtProp, mfld_simps] at h
-      exact h.2
+    · rwa [← contMDiffWithinAt_iff_contDiffWithinAt]
   · -- Forward direction: from smoothness on manifold to smoothness in coordinates
-    -- Apply the characterization to h
     rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy] at h
-    -- XXX: proof has a code smell!
-    -- Now h : ContinuousWithinAt f s y ∧
-    --   ContDiffWithinAt 𝕜 n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
-    --     ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y)
-    -- For model spaces 𝓘(𝕜, E) and 𝓘(𝕜, F), ContMDiffWithinAt is equivalent to ContDiffWithinAt
-    -- We prove this directly by unfolding definitions
-    simp only [ContMDiffWithinAt, liftPropWithinAt_iff', ContDiffWithinAtProp, mfld_simps]
-    exact ⟨h.2.continuousWithinAt, h.2⟩
+    rw [contMDiffWithinAt_iff_contDiffWithinAt]
+    exact h.2
 
 -- TODO: prove the analogous statement for `ContMDiffWithinAt`, and deduce a `ContMDiffAt` version
 -- and this statement from it
