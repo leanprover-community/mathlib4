@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
@@ -21,6 +23,8 @@ center to itself.
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -95,7 +99,7 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   field_simp
   simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
     abs_dist, ← dist_eq_norm_vsub]
-  field_simp
+  field
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -161,8 +165,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   have hy' : inversion c R y ≠ c := by simp [*]
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp
+  field [dist_ne_zero.2 hx]
 
 /-!
 ### Ptolemy's inequality

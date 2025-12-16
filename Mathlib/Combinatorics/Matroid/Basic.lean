@@ -3,11 +3,13 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -160,6 +162,8 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set
@@ -291,7 +295,7 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
-  exact add_le_add_right hencard 1
+  gcongr
 termination_by (B₂ \ B₁).encard
 
 variable {B₁ B₂ : Set α}
@@ -417,15 +421,15 @@ theorem IsBase.finite_of_finite {B' : Set α}
   (finite_iff_finite_of_encard_eq_encard (hB.encard_eq_encard_of_isBase hB')).mp h
 
 theorem IsBase.infinite_of_infinite (hB : M.IsBase B) (h : B.Infinite) (hB₁ : M.IsBase B₁) :
-    B₁.Infinite :=
-  by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
+    B₁.Infinite := by
+  contrapose! h; exact hB₁.finite_of_finite h hB
 
 theorem IsBase.finite [RankFinite M] (hB : M.IsBase B) : B.Finite :=
-  let ⟨_,hB₀⟩ := ‹RankFinite M›.exists_finite_isBase
+  let ⟨_, hB₀⟩ := ‹RankFinite M›.exists_finite_isBase
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem IsBase.infinite [RankInfinite M] (hB : M.IsBase B) : B.Infinite :=
-  let ⟨_,hB₀⟩ := ‹RankInfinite M›.exists_infinite_isBase
+  let ⟨_, hB₀⟩ := ‹RankInfinite M›.exists_infinite_isBase
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_isBase [h : RankPos M] : ¬M.IsBase ∅ :=
@@ -455,8 +459,6 @@ theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := 
 theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.imp hB.rankFinite_of_finite hB.rankInfinite_of_infinite
-
-@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
 
 @[simp]
 theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
@@ -680,7 +682,7 @@ theorem Indep.exists_insert_of_not_maximal (M : Matroid α) ⦃I B : Set α⦄ (
 
 theorem Indep.isBase_of_forall_insert (hB : M.Indep B)
     (hBmax : ∀ e ∈ M.E \ B, ¬ M.Indep (insert e B)) : M.IsBase B := by
-  refine by_contra fun hnb ↦ ?_
+  by_contra hnb
   obtain ⟨B', hB'⟩ := M.exists_isBase
   obtain ⟨e, he, h⟩ := hB.exists_insert_of_not_isBase hnb hB'
   exact hBmax e ⟨hB'.subset_ground he.1, he.2⟩ h

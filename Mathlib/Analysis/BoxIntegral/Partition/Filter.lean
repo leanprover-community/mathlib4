@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Split
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
 
 /-!
 # Filters used in box-based integrals
@@ -162,6 +164,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 
 integral, rectangular box, partition, filter
 -/
+
+@[expose] public section
 
 open Set Function Filter Metric Finset Bool
 open scoped Topology Filter NNReal

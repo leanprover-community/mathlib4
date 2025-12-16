@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Subobject.FactorThru
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Subobject.FactorThru
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # The lattice of subobjects
@@ -14,6 +16,8 @@ import Mathlib.Data.Finset.Lattice.Fold
 We provide the `SemilatticeInf` with `OrderTop (Subobject X)` instance when `[HasPullback C]`,
 and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCoproducts C]`.
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ u₁ u₂
@@ -154,7 +158,7 @@ def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf
   intro k₁ k₂
   refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
   · rw [w k₁, w k₂]
-  · erw [pullback.lift_snd_assoc, w k₁]
+  · simp [w k₁]
 
 end Inf
 
@@ -310,8 +314,7 @@ theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
 theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
-    simp only [MonoOver.bot_arrow_eq_zero, Functor.id_obj, Functor.const_obj_obj,
-      MonoOver.bot_left, comp_zero],
+    simp only [MonoOver.bot_arrow_eq_zero, MonoOver.bot_left, comp_zero],
    by
     rintro rfl
     exact ⟨0, by simp⟩⟩

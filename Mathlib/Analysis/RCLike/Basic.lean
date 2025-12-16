@@ -3,14 +3,16 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Balance
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Ring.Finite
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.BigOperators.Balance
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Ring.Finite
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -41,6 +43,8 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 
 A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
+
+@[expose] public section
 
 open Fintype
 open scoped BigOperators ComplexConjugate
@@ -163,10 +167,10 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 
 @[norm_cast]
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
-  algebraMap.coe_inj
+  algebraMap.coe_inj _ _
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.lift_map_eq_zero_iff x
+  algebraMap.coe_eq_zero_iff _ _ _
 
 theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not
@@ -211,8 +215,6 @@ theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α →
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   map_finsuppProd _ f g
 
-@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
-
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
   real_smul_eq_coe_mul _ _
@@ -236,6 +238,14 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 @[rclike_simps, norm_cast]
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
+
+@[simp]
+theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
+  rw [← ofReal_pow, @ofReal_re]
+
+@[simp]
+theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
+  rw [← @ofReal_pow, @ofReal_im_ax]
 
 /-! ### Characteristic zero -/
 
@@ -750,7 +760,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
-  I_re_ax := by simp only [AddMonoidHom.map_zero]
+  I_re_ax := by simp only [map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
     simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
@@ -760,7 +770,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
   conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
-  conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
+  conj_I_ax := by simp only [map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
@@ -1130,14 +1140,14 @@ lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y
   simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
   calc ‖re x - re y‖ₑ
-  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   intro x y
   simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
   calc ‖im x - im y‖ₑ
-  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 end LinearMaps

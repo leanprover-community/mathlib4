@@ -3,8 +3,10 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Rank of a group
@@ -16,6 +18,8 @@ This file defines the rank of a group, namely the minimum size of a generating s
 Should we define `erank G : ℕ∞` the rank of a not necessarily finitely generated group `G`,
 then redefine `rank G` as `(erank G).toNat`? Maybe a `Cardinal`-valued version too?
 -/
+
+@[expose] public section
 
 open Function Group
 

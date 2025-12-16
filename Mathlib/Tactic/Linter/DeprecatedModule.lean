@@ -3,11 +3,13 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Std.Time.Format
-import Mathlib.Init
+module
+
+public meta import Std.Time.Format
+public import Mathlib.Init
 
 /-!
-#  The `deprecated.module` linter
+# The `deprecated.module` linter
 
 The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
@@ -25,6 +27,8 @@ This triggers the `deprecated.module` linter to notify every file with `import A
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
+meta section
+
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -35,7 +39,7 @@ is imported.
 The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
 of refactors and deprecations in `Mathlib` itself.
 -/
-register_option linter.deprecated.module : Bool := {
+public register_option linter.deprecated.module : Bool := {
   defValue := true
   descr := "enable the `deprecated.module` linter"
 }
@@ -48,7 +52,7 @@ Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
 
 to the environment.
 -/
-initialize deprecatedModuleExt :
+public initialize deprecatedModuleExt :
     SimplePersistentEnvExtension
       (Name × Array Name × Option String) (Std.HashSet (Name × Array Name × Option String)) ←
   registerSimplePersistentEnvExtension {
@@ -112,7 +116,7 @@ namespace DeprecatedModule
 
 /--
 `IsLaterCommand` is an `IO.Ref` that starts out being `false`.
-As soon as a (non-import) command in a file is processed, the `deprecated.module` linter`
+As soon as a (non-import) command in a file is processed, the `deprecated.module` linter
 sets it to `true`.
 If it is `false`, then the `deprecated.module` linter will check for deprecated modules.
 

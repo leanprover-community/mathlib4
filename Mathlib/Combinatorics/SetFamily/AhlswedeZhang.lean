@@ -3,26 +3,29 @@ Copyright (c) 2023 Yaël Dillies, Vladimir Ivanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Sups
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Data.Rat.Defs
 
 /-!
 # The Ahlswede-Zhang identity
 
 This file proves the Ahlswede-Zhang identity, which is a nontrivial relation between the size of the
-"truncated unions"  of a set family. It sharpens the Lubell-Yamamoto-Meshalkin inequality
+"truncated unions" of a set family. It sharpens the Lubell-Yamamoto-Meshalkin inequality
 `Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose`, by making explicit the correction
 term.
 
 For a set family `𝒜` over a ground set of size `n`, the Ahlswede-Zhang identity states that the sum
-of `|⋂ B ∈ 𝒜, B ⊆ A, B|/(|A| * n.choose |A|)` over all set `A` is exactly `1`. This implies the LYM
+of `|⋂ B ∈ 𝒜, B ⊆ A, B|/(|A| * n.choose |A|)` over all sets `A` is exactly `1`. This implies the LYM
 inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 `|⋂ B ∈ 𝒜, B ⊆ A, B|/(|A| * n.choose |A|) = 1 / n.choose |A|`.
 
@@ -42,6 +45,8 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 * [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](https://doi.org/10.1016/0001-8708(90)90023-G)
 * [D. T. Tru, *An AZ-style identity and Bollobás deficiency*](https://doi.org/10.1016/j.jcta.2007.03.005)
 -/
+
+@[expose] public section
 
 section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
@@ -418,7 +423,7 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   cases m
   · cases h𝒜₁.card_pos.ne hm
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
-  have h𝒜 : 𝒜.Nonempty := nonempty_iff_ne_empty.2 (by rintro rfl; simp at h𝒜₃)
+  have h𝒜 : 𝒜.Nonempty := by by_contra! rfl; simp at h𝒜₃
   rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
     supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)

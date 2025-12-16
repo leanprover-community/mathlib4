@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Changing origin in a power series
@@ -32,6 +34,8 @@ point `y` of this ball, and the power series there can be expressed in terms of 
 series `p` as `p.changeOrigin y`. See `HasFPowerSeriesOnBall.changeOrigin`. It follows in particular
 that the set of points at which a given function is analytic is open, see `isOpen_analyticAt`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -383,5 +387,12 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
+/-- Sum of series is analytic on its ball of convergence. -/
+protected theorem FormalMultilinearSeries.analyticOnNhd :
+    AnalyticOnNhd 𝕜 p.sum (EMetric.ball 0 p.radius) := by
+  by_cases hr : p.radius = 0
+  · simp [hr]
+  exact (FormalMultilinearSeries.hasFPowerSeriesOnBall _ (pos_of_ne_zero hr)).analyticOnNhd
 
 end

@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -22,10 +24,6 @@ has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
-
-Two classes helping construct concrete categories in the two most
-common cases are provided in the files `BundledHom` and
-`UnbundledHom`, see their documentation for details.
 
 ## Implementation notes
 
@@ -54,6 +52,8 @@ have a `HasForget` instance.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+
+@[expose] public section
 
 
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
@@ -84,7 +84,7 @@ abbrev forget (C : Type u) [Category.{v} C] [HasForget.{w} C] : C ⥤ Type w :=
   HasForget.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
-@[instance] abbrev HasForget.types : HasForget.{u, u, u+1} (Type u) where
+@[instance] abbrev HasForget.types : HasForget.{u, u, u + 1} (Type u) where
   forget := 𝟭 _
 
 /-- Provide a coercion to `Type u` for a concrete category. This is not marked as an instance
@@ -349,7 +349,7 @@ theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 
 /-- Using the `FunLike` coercion of `HasForget` does the same as the original coercion.
 -/
-theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+theorem coe_toHasForget_instFunLike {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
     [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
@@ -368,7 +368,7 @@ instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   ((forget C).mapIso (asIso f)).isIso_hom
 
 @[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+lemma NatTrans.naturality_apply {C D : Type*} [Category* C] [Category* D] {FD : D → D → Type*}
     {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
     {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by

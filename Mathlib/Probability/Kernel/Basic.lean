@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Defs
+module
+
+public import Mathlib.Probability.Kernel.Defs
 
 /-!
 # Basic kernels
@@ -35,6 +37,8 @@ kernels.
 ## Main statements
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 
@@ -254,6 +258,13 @@ theorem restrict_apply (κ : Kernel α β) (hs : MeasurableSet s) (a : α) :
 theorem restrict_apply' (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (ht : MeasurableSet t) :
     κ.restrict hs a t = (κ a) (t ∩ s) := by
   rw [restrict_apply κ hs a, Measure.restrict_apply ht]
+
+/-- The restriction of a constant kernel to a measurable set is equal
+to the constant kernel of the restricted measure. -/
+theorem restrict_const {μ : Measure β} (hs : MeasurableSet s) :
+    (Kernel.const α μ).restrict hs = Kernel.const α (μ.restrict s) := by
+  ext a
+  simp [Kernel.restrict_apply, Kernel.const_apply]
 
 @[simp]
 theorem restrict_univ : κ.restrict MeasurableSet.univ = κ := by

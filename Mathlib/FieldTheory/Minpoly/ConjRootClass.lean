@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.FieldTheory.Minpoly.IsConjRoot
+module
+
+public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
 /-!
 # Conjugate root classes
@@ -11,6 +13,8 @@ import Mathlib.FieldTheory.Minpoly.IsConjRoot
 In this file, we define the `ConjRootClass` of a field extension `L / K` as the quotient of `L` by
 the relation `IsConjRoot K`.
 -/
+
+@[expose] public section
 
 variable (K L S : Type*) [Field K] [Field L] [Field S]
 variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
@@ -51,7 +55,7 @@ theorem mk_zero : mk K (0 : L) = 0 :=
 theorem mk_eq_zero_iff (x : L) : mk K x = 0 ↔ x = 0 := by
   rw [eq_comm (b := 0), ← mk_zero, mk_eq_mk, isConjRoot_zero_iff_eq_zero]
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] : DecidableEq (ConjRootClass K L) :=
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] : DecidableEq (ConjRootClass K L) :=
   Quotient.decidableEq (d := IsConjRoot.decidable)
 
 /-- `c.carrier` is the set of conjugates represented by `c`. -/
@@ -97,15 +101,15 @@ theorem exists_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
     induction y with
     | h y => exact ⟨-y, mk_neg y, y, rfl, neg_add_cancel _⟩
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L) :
     DecidablePred (· ∈ c.carrier) := fun x ↦
   decidable_of_iff (mk K x = c) (by simp)
 
-instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
+instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L) :
     Fintype c.carrier :=
   Quotient.recOnSubsingleton c fun x =>
     .ofFinset
-      ((Finset.univ (α := L ≃ₐ[K] L)).image (· x))
+      ((Finset.univ (α := Gal(L/K))).image (· x))
       (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
 
 open Polynomial
@@ -128,7 +132,7 @@ theorem minpoly_injective : Function.Injective (ConjRootClass.minpoly (K := K) (
   fun _ _ ↦ minpoly_inj.mp
 
 theorem splits_minpoly [n : Normal K L] (c : ConjRootClass K L) :
-    Splits (algebraMap K L) c.minpoly := by
+    Splits (c.minpoly.map (algebraMap K L)) := by
   induction c
   rw [minpoly_mk]
   exact n.splits _
@@ -191,7 +195,7 @@ theorem minpoly.map_eq_prod [Normal K L] (c : ConjRootClass K L) [Fintype c.carr
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots c.separable_minpoly.map),
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq (c.monic_minpoly.map _)]
-  rw [← splits_iff_card_roots, splits_id_iff_splits]
+  rw [← splits_iff_card_roots]
   exact c.splits_minpoly
 
 end IsSeparable

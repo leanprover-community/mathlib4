@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 /-!
 
 # The simplicial nerve of a simplicial category
@@ -23,8 +25,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 
 ## Projects
 
-* Prove that the 0-simplicies of `SimplicialNerve C` may be identified with the objects of `C`
-* Prove that the 1-simplicies of `SimplicialNerve C` may be identified with the morphisms of `C`
+* Prove that the 0-simplices of `SimplicialNerve C` may be identified with the objects of `C`
+* Prove that the 1-simplices of `SimplicialNerve C` may be identified with the morphisms of `C`
 * Prove that the simplicial nerve of a simplicial category `C`, such that `sHom X Y` is a Kan
   complex for every pair of objects `X Y : C`, is a quasicategory.
 * Define the quasicategory of anima as the simplicial nerve of the simplicial category of
@@ -34,6 +36,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 ## References
 * [Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -116,7 +120,7 @@ namespace SimplicialCategory
 variable {J : Type*} [LinearOrder J]
 
 /-- The hom simplicial set of the simplicial category structure on `SimplicialThickening J` -/
-abbrev Hom (i j : SimplicialThickening J) : SSet := (nerve (i ⟶ j))
+abbrev Hom (i j : SimplicialThickening J) : SSet := nerve (i ⟶ j)
 
 /-- The identity of the simplicial category structure on `SimplicialThickening J` -/
 abbrev id (i : SimplicialThickening J) : 𝟙_ SSet ⟶ Hom i i :=
@@ -151,7 +155,8 @@ noncomputable instance (J : Type*) [LinearOrder J] :
   Hom := Hom
   id := id
   comp := comp
-  homEquiv {i j} := (nerveEquiv _).symm.trans (SSet.unitHomEquiv _).symm
+  homEquiv {i j} :=
+    nerveEquiv.symm.trans (SSet.unitHomEquiv (SimplicialCategory.Hom i j)).symm
 
 /-- Auxiliary definition for `SimplicialThickening.functorMap` -/
 def orderHom {J K : Type*} [LinearOrder J] [LinearOrder K] (f : J →o K) :
@@ -164,6 +169,8 @@ noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨Set.image_mono f.1.1⟩⟩
+
+attribute [local simp] nerveMap_app
 
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

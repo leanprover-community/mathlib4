@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Uniformly locally doubling measures
@@ -22,6 +24,8 @@ This file records basic facts about uniformly locally doubling measures.
   * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
   appearing in the definition of a uniformly locally doubling measure.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -123,7 +127,7 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec
       (exists_eventually_forall_measure_closedBall_le_mul μ K)] with r hr x
-  exact (hr x K le_rfl).trans (mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _)
+  grw [hr x K le_rfl, scalingConstantOf, ← le_max_left]
 
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,

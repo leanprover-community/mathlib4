@@ -3,15 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Algebra.Ring.Submonoid.Pointwise
-import Mathlib.Data.Set.Semiring
-import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
+public import Mathlib.Data.Set.Semiring
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -42,6 +44,8 @@ by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` a
 
 multiplication of submodules, division of submodules, submodule semiring
 -/
+
+@[expose] public section
 
 
 universe uι u v
@@ -94,6 +98,9 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 @[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   simp [one_eq_span]
+
+instance : AddCommMonoidWithOne (Submodule R A) where
+  add_comm := sup_comm
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
@@ -542,7 +549,7 @@ lemma mem_smul_iff_inv_mul_mem {S} [DivisionSemiring S] [Algebra R S] {x : S} {p
   · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
   · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
 
-lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+lemma mul_mem_smul_iff {S} [Ring S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
     (hx : x ∈ nonZeroDivisors S) :
     x * y ∈ x • p ↔ y ∈ p := by
   simp [mem_smul_pointwise_iff_exists, mul_cancel_left_mem_nonZeroDivisors hx]
@@ -559,8 +566,6 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 variable (M)
 
@@ -814,7 +819,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
+  simpa using mul_le_mul_right (one_le_one_div.mpr hI) _
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   rw [Submodule.mul_le]

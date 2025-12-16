@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Left and right limits
@@ -29,6 +31,8 @@ We also port the API to antitone functions.
 
 Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions.
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -80,6 +84,17 @@ theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space
 theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
   @leftLim_eq_of_eq_bot αᵒᵈ _ _ _ _ _  f a h
+
+theorem ContinuousWithinAt.leftLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} (hf : ContinuousWithinAt f (Iic a) a) : leftLim f a = f a := by
+  rcases eq_or_ne (𝓝[<] a) ⊥ with h' | h'
+  · simp [leftLim_eq_of_eq_bot f h']
+  apply leftLim_eq_of_tendsto h'
+  exact hf.tendsto.mono_left (nhdsWithin_mono _ Iio_subset_Iic_self)
+
+theorem ContinuousWithinAt.rightLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} (hf : ContinuousWithinAt f (Ici a) a) : rightLim f a = f a :=
+  ContinuousWithinAt.leftLim_eq (α := αᵒᵈ) hf
 
 end
 

@@ -3,16 +3,20 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Algebra.Ring.Units
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings
 This file contains lemmas about prime elements of commutative rings.
 -/
+
+@[expose] public section
 
 
 section CancelCommMonoidWithZero

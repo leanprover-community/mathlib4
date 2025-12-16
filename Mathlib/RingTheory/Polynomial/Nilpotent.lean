@@ -3,12 +3,14 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotency in polynomial rings.
@@ -20,6 +22,8 @@ This file is a place for results related to nilpotency in (single-variable) poly
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -120,9 +124,9 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
   · simp_rw [P₁, ← h, hdeg₂]
   · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
-  · by_cases H : i ≤ P₁.natDegree
+  · by_cases! H : i ≤ P₁.natDegree
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
-    · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+    · simp_rw [coeff_eq_zero_of_natDegree_lt H, IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
@@ -132,7 +136,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
+  · refine .of_mul_eq_one (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
   · intro n hn

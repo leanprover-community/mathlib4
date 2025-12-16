@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
@@ -70,12 +72,14 @@ inductive approach where one would prove smoothness statements without giving a 
 derivative). In the end, this approach is still satisfactory as it is good to have formulas for the
 iterated derivatives in various constructions.
 
-One point where we depart from this explicit approach is in the proof of smoothness of a
+One point where this explicit approach is particularly delicate is in the proof of smoothness of a
 composition: there is a formula for the `n`-th derivative of a composition (Faà di Bruno's formula),
-but it is very complicated and barely usable, while the inductive proof is very simple. Thus, we
-give the inductive proof. As explained above, it works by generalizing over the target space, hence
-it only works well if all spaces belong to the same universe. To get the general version, we lift
-things to a common universe using a trick.
+but it is very complicated, while the inductive proof is very simple. The inductive proof would
+be good enough for `C^n` functions with `n ∈ ℕ ∪ {∞}` (modulo polymorphism issues, i.e., one would
+need to first prove inductively the result when all spaces belong to the same universe, and then
+prove the general result by lifting all the spaces to a common universe). However, it would not
+work for `C^ω` functions. Therefore, we give the proof based on Faà di Bruno's formula, which is
+more complicated but more general.
 
 ### Variables management
 
@@ -96,6 +100,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 In this file, we denote `⊤ : ℕ∞` with `∞`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -188,7 +194,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; omega)
+      apply (H m.succ).fderivWithin m (by norm_cast; lia)
     · intro m _
       apply (H m).cont m (by simp)
 
@@ -819,11 +825,11 @@ theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
-      subset_closure) isClosed_closure
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans subset_closure)
+      isClosed_closure
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans
       ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
 
 theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=

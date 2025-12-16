@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Defs
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Definition of `0` and `::ₘ`
@@ -30,6 +32,8 @@ It also defines the following predicates on multisets:
 
 * `Multiset.rec`: recursion on adding one element to a multiset at a time.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
@@ -184,7 +188,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp, grind]
+@[simp, grind ←]
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 
