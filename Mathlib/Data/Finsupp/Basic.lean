@@ -1110,10 +1110,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by
-  intro x
-  rw [extendDomain_support, mem_coe, mem_map, Embedding.coe_subtype]
-  rintro ⟨x, -, rfl⟩
-  exact x.prop
+  grind
 
 @[simp]
 theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
