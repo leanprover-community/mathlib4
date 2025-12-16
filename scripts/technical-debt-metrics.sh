@@ -80,7 +80,7 @@ titlesPathsAndRegexes=(
   "backwards compatibility flags"  "*"      "set_option.*backward"
   "proofsInPublic flags"           "*"      "set_option backward.proofsInPublic"
   "privateInPublic flags"          "*"      "set_option backward.privateInPublic"
-  "flexible linter exceptions"     "*"      "set_option linter.flexible"
+  "flexible linter exceptions"     ":^MathlibTest"      "set_option linter.flexible"
   "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean :^Mathlib/Tactic/Linter"
                                             "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
