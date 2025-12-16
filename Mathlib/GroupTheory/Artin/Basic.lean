@@ -49,7 +49,7 @@ variable (M : CoxeterMatrix B)
 
 /-! ### Alternating words -/
 
-/-- The word of length `m` that alternates between `i` and `j`, ending with `j`.
+/-- The word of length `m` that alternates between `i` and `j`, ending with `i`.
 For example, `alternatingWord i j 3 = [i, j, i]` and `alternatingWord i j 4 = [j, i, j, i]`. -/
 def alternatingWord (i j : B) : ℕ → List B
   | 0 => []
@@ -57,6 +57,15 @@ def alternatingWord (i j : B) : ℕ → List B
 
 @[simp]
 theorem alternatingWord_zero (i j : B) : alternatingWord i j 0 = [] := rfl
+
+@[simp]
+theorem alternatingWord_one (i j : B) : alternatingWord i j 1 = [i] := rfl
+
+@[simp]
+theorem alternatingWord_two (i j : B) : alternatingWord i j 2 = [j, i] := rfl
+
+@[simp]
+theorem alternatingWord_three (i j : B) : alternatingWord i j 3 = [i, j, i] := rfl
 
 theorem alternatingWord_succ (i j : B) (m : ℕ) :
     alternatingWord i j (m + 1) = (alternatingWord j i m).concat i := rfl
@@ -66,12 +75,6 @@ theorem length_alternatingWord (i j : B) (m : ℕ) : (alternatingWord i j m).len
   induction m generalizing i j with
   | zero => rfl
   | succ m ih => simp [alternatingWord_succ, ih]
-
-theorem alternatingWord_one (i j : B) : alternatingWord i j 1 = [i] := rfl
-
-theorem alternatingWord_two (i j : B) : alternatingWord i j 2 = [j, i] := rfl
-
-theorem alternatingWord_three (i j : B) : alternatingWord i j 3 = [i, j, i] := rfl
 
 /-! ### Free group product of a word -/
 
