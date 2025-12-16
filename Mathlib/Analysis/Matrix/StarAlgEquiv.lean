@@ -98,7 +98,7 @@ section
 open Matrix
 variable {n : Type*} [Fintype n]
 
--- wait for other PR
+-- TODO: wait for other PR
 proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {m : Type*} [Fintype m] [DecidableEq m]
     [DecidableEq n] {K : Type*} [Field K] (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
     ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V
@@ -214,3 +214,12 @@ theorem ContinuousStarAlgEquiv.coe_eq_conjugate
   obtain ⟨U, hU⟩ := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := ℂ)
     1 f.toStarAlgEquiv (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
   exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
+
+/- TODO: probably just a copy of the above proof
+`StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate` -/
+proof_wanted ContinuousStarAlgEquiv.coe_eq_conjugate'
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (f : (V →L[𝕜] V) ≃⋆A[𝕜] (W →L[𝕜] W)) :
+    ∃ U : V ≃ₗᵢ[𝕜] W, f.toFun =
+      fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv
