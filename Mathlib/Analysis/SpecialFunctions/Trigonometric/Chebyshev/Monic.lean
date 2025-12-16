@@ -77,6 +77,8 @@ lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree 
   · exact fun i hi => prod_pos hi |> inv_pos.mpr
   · have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T ℝ n))
     rw [leadingCoeff_T, Int.natAbs_natCast] at this
+  · have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T ℝ n))
+    rw [leadingCoeff_T, Int.natAbs_natCast] at this
     rw [this]
     congr! 1 with i hi
     dsimp
@@ -132,20 +134,9 @@ theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
   constructor
   case mp =>
     intro hsSup
-    let extrema := (Finset.range (n + 1)).image (fun (k : ℕ) => cos (k * π / n))
-    have card_extrema : extrema.card = n + 1 := by
-      rw [Finset.card_image_of_injOn, Finset.card_range]
-      apply injOn_cos.comp (by aesop)
-      intro k hk
-      apply Set.mem_Icc.mpr
-      constructor
-      · positivity
-      · field_simp
-        norm_cast
-        grind
-    apply eq_of_degrees_lt_of_eval_finset_eq extrema
-    · rw [Pdeg, card_extrema]; norm_cast; simp
-    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T, card_extrema]
+    apply eq_of_degrees_lt_of_eval_finset_eq (T_real_extrema n)
+    · rw [Pdeg, card_T_real_extrema]; norm_cast; simp
+    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T, card_T_real_extrema]
       norm_cast; simp
     obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
     rw [Pmonic] at hform
