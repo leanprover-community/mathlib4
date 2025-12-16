@@ -71,10 +71,18 @@ package mathlib where
 ## Mathlib libraries
 -/
 
+
+lean_lib MathlibInit where
+  leanOptions := mathlibLeanOptions
+  defaultFacets := #[LeanLib.sharedFacet]
+  moreLinkObjs := #[`@importGraph/ImportGraph:static, `@batteries/Batteries:static]
+
 @[default_target]
 lean_lib Mathlib where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
+  needs := #[`@mathlib/MathlibInit:shared]
+  plugins := #[`@mathlib/MathlibInit:shared]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
