@@ -494,7 +494,7 @@ theorem isChain_cons_of_lt (l : MaxProducts C ho)
     List.IsChain (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
   have : Inhabited I := ⟨term I ho⟩
   rw [List.isChain_iff_pairwise]
-  simp only [gt_iff_lt, List.pairwise_cons]
+  simp only [List.pairwise_cons]
   refine ⟨fun a ha ↦ lt_of_le_of_lt (Products.rel_head!_of_mem ha) ?_,
     List.isChain_iff_pairwise.mp q.prop⟩
   refine lt_of_le_of_lt (Products.head!_le_of_lt hq (q.val.ne_nil_of_mem ha)) ?_

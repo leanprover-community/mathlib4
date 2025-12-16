@@ -126,7 +126,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
   intro ε hε
-  simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
+  simp only [Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
     sub_add_cancel] at this
   have ha : 0 < ε / (2 * Real.exp a) := by positivity
   have H := this 0 (ε / (2 * Real.exp a)) ha
@@ -141,7 +141,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
     ring_nf
   rw [this, mul_comm]
   have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
-  simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
+  simp only [dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
   simp [field]
 

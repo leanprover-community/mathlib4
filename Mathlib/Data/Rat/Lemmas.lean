@@ -316,8 +316,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a := by simp
 theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 := by
   -- This proof is quite unpleasant: golf / find better simp lemmas?
   have : 2 ≤ a := Nat.AtLeastTwo.prop
-  simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos,
-    gt_iff_lt]
+  simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos]
   change 0 < (a : ℤ)
   lia
 

@@ -209,7 +209,7 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
     rw [← Nat.cofinite_eq_atTop, ← cocompact_eq_cofinite, ← coclosedCompact_eq_cocompact]
     exact tendsto_coe_infty
   apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
-  · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
+  · simp only [Function.comp_apply, mem_preimage, eventually_atTop]
     exact ⟨0, fun b _ ↦ hu b⟩
   · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ))) ⟨g, by fun_prop⟩
 

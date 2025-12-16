@@ -309,7 +309,7 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
     (by norm_cast; lia) ![1, -(n + 1)] hB (z := ⟨a, (hK ha)⟩) (A := A) (by aesop))
   simp only [Fin.isValue, Matrix.cons_val_zero, Int.cast_one, coe_mk_subtype, one_mul,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.cast_add, Int.cast_natCast, neg_add_rev,
-    abs_norm_eq_max_natAbs, Int.reduceNeg, Int.cast_neg, sub_eq_add_neg, ge_iff_le] at h1 h2 ⊢
+    abs_norm_eq_max_natAbs, Int.reduceNeg, Int.cast_neg, sub_eq_add_neg] at h1 h2 ⊢
   refine le_trans (norm_add_le _ _) (add_le_add ?_ ?_) <;>
     {simp only [Int.reduceNeg, norm_zpow]; norm_cast at h1 h2 ⊢}
 

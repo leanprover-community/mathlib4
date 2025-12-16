@@ -454,7 +454,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
     simp [zero_lt_iff, hg, hx]
-  · simp only [mem_setOf_eq, Function.onFun, gt_iff_lt]
+  · simp only [mem_setOf_eq, Function.onFun]
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
@@ -465,7 +465,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     intro hxg hx
     refine inv_anti₀ ?_ hxg
     simp [zero_lt_iff, hx]
-  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
+  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]

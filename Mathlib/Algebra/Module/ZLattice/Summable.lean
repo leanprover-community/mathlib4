@@ -195,7 +195,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
         (by simpa using (e.image_symm_image _).symm)⟩
     dsimp
     simp only [EmbeddingLike.apply_eq_iff_eq, implies_true, Set.injOn_of_eq_iff_eq,
-      Finset.sum_image, ge_iff_le]
+      Finset.sum_image]
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩

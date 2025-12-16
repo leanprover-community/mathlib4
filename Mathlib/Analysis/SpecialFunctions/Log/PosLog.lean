@@ -101,7 +101,7 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   · tauto
   · right
     have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
-    simp only [this, and_true, ge_iff_le]
+    simp only [this, and_true]
     linarith
 
 @[gcongr]

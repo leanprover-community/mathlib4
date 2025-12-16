@@ -47,7 +47,7 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
     apply (tendsto_const_mul_atTop_of_pos (by simpa using hy)).2
     apply tendsto_inv_nhdsGT_zero.comp
     simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
-      eventually_atTop, ge_iff_le]
+      eventually_atTop]
     have B (n : ℕ) : ‖d n‖ ≤ u n := by simpa [dist_eq_norm] using hvu n
     refine ⟨?_, 0, fun n hn ↦ by simpa using d_ne n⟩
     exact squeeze_zero (fun n ↦ by positivity) B u_lim

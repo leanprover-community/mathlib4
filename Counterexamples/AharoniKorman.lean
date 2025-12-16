@@ -310,7 +310,7 @@ theorem scattered {f : ℚ → Hollom} (hf : StrictMono f) : False := by
     rw [antitone_iff_forall_lt]
     intro x y hxy
     have : f x < f y := hf hxy
-    simp only [ge_iff_le, g]
+    simp only [g]
     cases hx : f x with | h x₁ x₂ x₃ =>
     cases hy : f y with | h y₁ y₂ y₃ =>
     rw [hx, hy] at this
@@ -836,7 +836,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   -- With this pair, we can use the "base" of the square as `max a b + 1`.
   rw [eventually_atTop]
   refine ⟨max a b + 1, ?_⟩
-  simp +contextual only [ge_iff_le, sup_le_iff, embed, RelEmbedding.coe_mk,
+  simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk,
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
     Set.mem_setOf_eq, forall_exists_index, Prod.mk.injEq,
@@ -954,7 +954,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
   have : ∀ᶠ a in atTop, embed n '' .Ici (a, a) ⊆ {x | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x} := by
     rw [eventually_atTop, level_eq]
     refine ⟨max b c, ?_⟩
-    simp only [ge_iff_le, sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
+    simp only [sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
       Set.mem_inter_iff, Set.mem_setOf_eq, and_imp, «forall», Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
       Prod.mk.injEq, Hollom.ext_iff]

@@ -80,7 +80,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
   simp only [nnnorm_mul, nnnorm_pow, nnnorm_neg] at h
   suffices ‖a‖₊ ^ p.natDegree ≤ (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x by
     rcases eq_or_ne ‖a‖₊ 1 with ha | ha
-    · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one, gt_iff_lt] at this ⊢
+    · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one] at this ⊢
       apply lt_of_le_of_ne (by simp)
       intro nh
       simp [← nh, tsub_self] at this

@@ -183,7 +183,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   classical
   simp only [unconditional, comap]
   congr 1 with s
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, mem_preimage]
+  simp only [mem_map, mem_atTop_sets, Finset.le_eq_subset, mem_preimage]
   constructor <;> rintro ⟨t, ht⟩
   · refine ⟨t.preimage f (by simp), fun x hx ↦ ?_⟩
     simpa [Finset.union_eq_right.mpr hx] using ht (t ∪ x.map f) t.subset_union_left

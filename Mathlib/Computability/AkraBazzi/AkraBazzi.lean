@@ -530,7 +530,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
         · exact le_of_lt <| R.a_pos _
         · by_cases! ri_lt_n₀ : r i n < n₀
           · exact h_base _ <| by
-              simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
+              simp_all only [Nat.ofNat_pos, div_pos_iff_of_pos_right,
                 eventually_atTop, sub_pos, one_div, mem_Ico, and_imp,
                 forall_true_left, mem_univ, and_self, b', C, base_max]
           · exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀

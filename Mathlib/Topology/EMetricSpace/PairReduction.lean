@@ -113,7 +113,7 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
     ∃ r : ℕ, 1 ≤ r ∧ #(V.filter fun x ↦ edist t x ≤ r * c) ≤ a ^ r := by
   have := ENNReal.tendsto_nhds_top_iff_nat.1
     ((ENNReal.tendsto_rpow_atTop_of_one_lt_base ha).comp tendsto_natCast_atTop_atTop) #V
-  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop, ge_iff_le] at this
+  simp only [Function.comp_apply, ENNReal.rpow_natCast, Filter.eventually_atTop] at this
   obtain ⟨r, hr⟩ := this
   exact ⟨max r 1, le_max_right r 1,
     le_trans (mod_cast Finset.card_filter_le V _) (hr (max r 1) (le_max_left r 1)).le⟩

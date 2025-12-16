@@ -87,7 +87,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp only [unpair]
-  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte, gt_iff_lt, s]
+  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte, s]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp only [not_lt] at h
     have s0 : 0 < s := sqrt_pos.2 n1

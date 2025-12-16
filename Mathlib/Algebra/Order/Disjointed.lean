@@ -42,7 +42,7 @@ lemma partialSups_add_one_eq_sup_disjointed (f : ι → α) (i : ι) :
         rw [← Order.succ_eq_add_one]
         apply Order.le_succ
       exact le_antisymm (hi h) h
-    simp only [this, left_eq_sup, ge_iff_le, disjointed, sdiff_le_iff]
+    simp only [this, left_eq_sup, disjointed, sdiff_le_iff]
     apply le_trans (le_partialSups _ _) le_sup_right
   · rw [← Order.succ_eq_add_one, disjointed_succ _ hi]
     simp

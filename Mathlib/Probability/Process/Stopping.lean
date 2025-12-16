@@ -1186,7 +1186,7 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   lift τ ω to ℕ using h_top with t ht
   simp only [Nat.cast_le] at hbdd
   simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio, Nat.cast_inj,
-    exists_eq_right, gt_iff_lt]
+    exists_eq_right]
   grind
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +

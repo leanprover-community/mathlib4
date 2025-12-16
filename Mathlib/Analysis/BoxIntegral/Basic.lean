@@ -779,7 +779,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     box `J` in the `δ`-neighborhood of `x`. -/
   refine ((l.hasBasis_toFilteriUnion_top _).tendsto_iff Metric.nhds_basis_closedBall).2 ?_
   intro ε ε0
-  simp only [← exists_prop, gt_iff_lt, Subtype.exists'] at H₁ H₂
+  simp only [← exists_prop, Subtype.exists'] at H₁ H₂
   choose! δ₁ Hδ₁ using H₁
   choose! δ₂ Hδ₂ using H₂
   have ε0' := half_pos ε0; have H0 : 0 < (2 : ℝ) ^ Fintype.card ι := pow_pos zero_lt_two _

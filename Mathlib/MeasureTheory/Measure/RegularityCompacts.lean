@@ -129,7 +129,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
     refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
     have h'' n : Prod.swap ⁻¹' t n = t n := by ext; exact (t n).comm
-    simp only [h'', compl_iUnion, ge_iff_le]
+    simp only [h'', compl_iUnion]
     exact (s'bound n (δ n) (hδ1 n)).le
 
 theorem innerRegularWRT_isCompact_closure [UniformSpace α] [CompleteSpace α]

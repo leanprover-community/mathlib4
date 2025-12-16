@@ -51,7 +51,7 @@ def IsTightMeasureSet (S : Set (Measure 𝓧)) : Prop :=
 for all `μ ∈ S`, `μ Kᶜ ≤ ε`. -/
 lemma isTightMeasureSet_iff_exists_isCompact_measure_compl_le :
     IsTightMeasureSet S ↔ ∀ ε, 0 < ε → ∃ K : Set 𝓧, IsCompact K ∧ ∀ μ ∈ S, μ (Kᶜ) ≤ ε := by
-  simp only [IsTightMeasureSet, ENNReal.tendsto_nhds ENNReal.zero_ne_top, gt_iff_lt, zero_add,
+  simp only [IsTightMeasureSet, ENNReal.tendsto_nhds ENNReal.zero_ne_top, zero_add,
     iSup_apply, mem_Icc, tsub_le_iff_right, zero_le, iSup_le_iff, true_and, eventually_smallSets,
     mem_cocompact]
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩

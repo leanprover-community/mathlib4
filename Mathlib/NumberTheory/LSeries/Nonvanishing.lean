@@ -298,7 +298,7 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
   rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
     ← hsum₀.tsum_add hsum₁, ← (hsum₀.add hsum₁).tsum_add hsum₂]
-  simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, ge_iff_le, add_re, one_re,
+  simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, add_re, one_re,
     ofReal_re, ofReal_add, ofReal_one] using
       tsum_nonneg fun (p : Nat.Primes) ↦ χ.re_log_comb_nonneg p.prop.two_le h₀ y
 

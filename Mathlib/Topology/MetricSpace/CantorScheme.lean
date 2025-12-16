@@ -124,7 +124,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
   specialize hA x
   rw [ENNReal.tendsto_atTop_zero] at hA
   obtain ⟨n, hn⟩ := hA (ENNReal.ofReal (ε / 2)) (by
-    simp only [gt_iff_lt, ENNReal.ofReal_pos]; linarith)
+    simp only [ENNReal.ofReal_pos]; linarith)
   use n
   intro y hy z hz
   rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← edist_dist]

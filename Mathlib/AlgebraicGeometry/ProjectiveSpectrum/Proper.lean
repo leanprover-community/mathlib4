@@ -229,10 +229,10 @@ theorem valuativeCriterion_existence_aux
   induction this using Submodule.span_induction with
   | zero => simp
   | add x y hx hy hhx hhy =>
-    simp only [RingHom.coe_comp, Function.comp_apply, map_add, ge_iff_le]
+    simp only [RingHom.coe_comp, Function.comp_apply, map_add]
     exact ((valuation O K).map_add _ _).trans <| sup_le_iff.mpr ⟨hhx, hhy⟩
   | smul a x₀ hx hx1 =>
-    simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul, ge_iff_le]
+    simp only [Algebra.smul_def, RingHom.coe_comp, Function.comp_apply, map_mul]
     refine mul_le_one' ?_ hx1
     rw [RingHom.algebraMap_toAlgebra, awayMap_fromZeroRingHom 𝒜 (hxdi j) (mul_comm (x j) (x i₀)),
       ← awayMap_fromZeroRingHom 𝒜 (hxdi i₀) rfl a, hφ'1]

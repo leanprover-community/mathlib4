@@ -611,7 +611,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node3R, node']; abel
           · simp [node4R, node', sl.2.2.1]; abel
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
-    · simp only [balance, id_eq, balance', size_node, gt_iff_lt]
+    · simp only [balance, id_eq, balance', size_node]
       symm; rw [if_neg]
       · split_ifs with h h_1
         · have rd : delta ≤ size rl + size rr := by

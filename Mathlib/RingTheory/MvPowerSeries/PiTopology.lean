@@ -300,7 +300,7 @@ theorem summable_pow_of_constantCoeff_eq_zero {f : MvPowerSeries σ R}
   apply summable_of_tendsto_order_atTop_nhds_top
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
   refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _)⟩
-  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
+  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm)).trans_le ?_
   simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
 
 section GeomSeries

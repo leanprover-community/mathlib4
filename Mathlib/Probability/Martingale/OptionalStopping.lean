@@ -105,7 +105,7 @@ protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submart
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
     have hπ_top ω : π ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) (hπ_le_n ω)
     have hσ_top ω : σ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hσ_le_π ω)
-    simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top, ge_iff_le]
+    simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top]
     exact h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)
       (fun ω => min_le_min (hσ_le_π ω) le_rfl) fun ω => (min_le_left _ _).trans (hπ_le_n ω)
   · exact Adapted.stoppedProcess_of_discrete h.adapted hτ
@@ -206,7 +206,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         intro m hm hεm
         exact False.elim
           ((not_le.2 hω) ((le_sup'_iff _).2 ⟨m, mem_range.2 (Nat.lt_succ_of_le hm.2), hεm⟩))
-      simp only [stoppedValue, this, ge_iff_le]
+      simp only [stoppedValue, this]
       refine le_of_eq ?_
       congr
     _ = ENNReal.ofReal

@@ -100,7 +100,7 @@ protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf 
   match c with
   | ⊤ => simp [← coe_mul, mul_top h₀.ne']
   | (c : α) =>
-  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  simp only [coe_pos, coe_lt_coe, ← coe_mul] at *
   exact mul_lt_mul_of_pos_left hbc h₀
 
 protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
@@ -111,7 +111,7 @@ protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf :
   match c with
   | ⊤ => simp [← coe_mul, top_mul h₀.ne']
   | (c : α) =>
-  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  simp only [coe_pos, coe_lt_coe, ← coe_mul] at *
   exact mul_lt_mul_of_pos_right hbc h₀
 
 end MulZeroClass

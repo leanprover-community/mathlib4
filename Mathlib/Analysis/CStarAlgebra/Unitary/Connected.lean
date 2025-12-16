@@ -288,7 +288,7 @@ noncomputable def Unitary.openPartialHomeomorph :
     rw [← sq_lt_sq₀ (by positivity) (by positivity), norm_sq_expUnitary_sub_one hx.le]
     have : -1 < Real.cos ‖(x : A)‖ :=
       Real.cos_pi ▸ Real.cos_lt_cos_of_nonneg_of_le_pi (by positivity) le_rfl hx
-    simp only [AddSubgroupClass.coe_norm, mul_sub, mul_one, sq, gt_iff_lt]
+    simp only [AddSubgroupClass.coe_norm, mul_sub, mul_one, sq]
     linarith
   left_inv' u hu := expUnitary_argSelfAdjoint <| by
     simpa [Subtype.dist_eq, dist_eq_norm] using hu

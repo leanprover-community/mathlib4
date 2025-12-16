@@ -124,7 +124,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
     simp only [oscillationWithin, Filter.mem_map, iInf_lt_iff] at this
     obtain ⟨n, hn₁, hn₂⟩ := this
     obtain ⟨r, r0, hr⟩ := mem_nhdsWithin_iff.1 hn₁
-    simp only [gt_iff_lt, mem_iUnion, exists_prop]
+    simp only [mem_iUnion, exists_prop]
     have : ∀ r', (ENNReal.ofReal r') ≤ r → diam (f '' (ball x (ENNReal.ofReal r') ∩ D)) ≤ ε := by
       intro r' hr'
       grw [← hn₂, ← image_subset_iff.2 hr, hr']

@@ -104,7 +104,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   have h : v.FineSubfamilyOn f s := by
     intro x hx ε εpos
     rw [hs] at hx
-    simp only [frequently_filterAt_iff, gt_iff_lt, mem_setOf_eq] at hx
+    simp only [frequently_filterAt_iff, mem_setOf_eq] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
   refine le_antisymm ?_ bot_le

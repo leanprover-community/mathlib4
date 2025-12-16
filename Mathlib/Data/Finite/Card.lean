@@ -150,7 +150,7 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
   classical
   haveI := Fintype.ofFinite α
-  simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
+  simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_lt hx
 
 end Finite
 

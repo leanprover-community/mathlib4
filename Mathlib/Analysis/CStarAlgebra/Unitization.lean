@@ -35,7 +35,7 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   refine le_antisymm
     (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
   suffices ‖mul 𝕜 E (star a)‖ ≤ ‖(mul 𝕜 E).flip a‖ by
-    simpa only [ge_iff_le, opNorm_mul_apply, norm_star] using this
+    simpa only [opNorm_mul_apply, norm_star] using this
   refine opNorm_le_bound _ (norm_nonneg _) fun b => ?_
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by
         simpa only [mul_apply', flip_apply, star_mul, star_star] using norm_star (star b * a)

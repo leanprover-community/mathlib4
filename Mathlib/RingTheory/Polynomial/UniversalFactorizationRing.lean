@@ -409,7 +409,7 @@ def UniversalFactorizationRing.fromTensor :
 @[simps] def UniversalFactorizationRing.monicDegreeEq :
     MonicDegreeEq 𝓡 n :=
   ⟨p.1.map (algebraMap _ _), by simp +contextual only [Polynomial.coeff_map, p.2,
-    map_one, map_zero, gt_iff_lt, implies_true, and_self]⟩
+    map_one, map_zero, implies_true, and_self]⟩
 
 lemma UniversalFactorizationRing.fromTensor_comp_universalFactorizationMap :
   (fromTensor m k hn p).comp (MvPolynomial.universalFactorizationMap R n m k hn) =

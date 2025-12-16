@@ -248,7 +248,7 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv I 𝓘(ℝ, E) (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
-  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
+  simp only [NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
   simp only [enorm, nnnorm]
@@ -286,7 +286,7 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ₑ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
-  simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
+  simp only [NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
   simp only [enorm, nnnorm]
@@ -421,7 +421,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0, ball (extChartAt I x x) r ⊆ (extChartAt I x).symm ⁻¹' v :=
     Metric.mem_nhds_iff.1 (extChartAt_preimage_mem_nhds v_mem)
   lift r to ℝ≥0 using r_pos.le
-  simp only [gt_iff_lt, NNReal.coe_pos] at r_pos
+  simp only [NNReal.coe_pos] at r_pos
   -- the desired constant will be `c := r / C`
   refine ⟨r / C, by positivity, ?_⟩
   intro y hy

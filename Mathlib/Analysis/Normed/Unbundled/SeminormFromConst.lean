@@ -123,7 +123,7 @@ theorem seminormFromConst_isLimit (x : R) :
 theorem seminormFromConst_one : seminormFromConst' hf1 hc hpm 1 = 1 := by
   apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm 1)
     tendsto_const_nhds
-  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [EventuallyEq, eventually_atTop]
   exact ⟨1, seminormFromConst_seq_one hc hpm⟩
 
 /-- The function `seminormFromConst` is a `RingSeminorm` on `R`. -/
@@ -196,7 +196,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) :=
 /-- The function `seminormFromConst' hf1 hc hpm` is bounded above by `f`. -/
 theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' hf1 hc hpm x ≤ f x := by
   apply le_of_tendsto (seminormFromConst_isLimit hf1 hc hpm x)
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   use 1
   intro n hn
   rw [seminormFromConst_seq, div_le_iff₀ (by positivity), ← hpm c hn]

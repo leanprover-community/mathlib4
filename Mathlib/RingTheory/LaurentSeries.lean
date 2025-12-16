@@ -863,7 +863,7 @@ theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
   use P
   apply hT₁
   apply hγ
-  simpa only [add_comm, ← sub_eq_add_neg, gt_iff_lt, Set.mem_setOf_eq]
+  simpa only [add_comm, ← sub_eq_add_neg, Set.mem_setOf_eq]
 
 end Dense
 

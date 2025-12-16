@@ -568,7 +568,7 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
       simp [Measure.restrict_eq_zero.mpr hfm]
     rcases (this.and_eventually hC).exists with ⟨x, hx, h'x⟩
     have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
-    simp only [norm_zero, ge_iff_le]
+    simp only [norm_zero]
     positivity
 
 theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
