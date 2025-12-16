@@ -3,20 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Logic.Small.Set
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basic results on cardinal numbers
 
-We provide a collection of basic results on cardinal numbers, in particular focussing on
+We provide a collection of basic results on cardinal numbers, in particular focusing on
 finite/countable/small types and sets.
 
 ## Main definitions
@@ -32,6 +33,8 @@ finite/countable/small types and sets.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -98,14 +101,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
-
-@[deprecated (since := "2024-11-10")]
-alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
-
-private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} _) = #(ULift.{u} _) + 1
-  rw [← mk_option]
-  simp
 
 /-! ### Order properties -/
 
@@ -196,19 +191,28 @@ instance uncountable : Uncountable Cardinal.{u} :=
 
 /-! ### Bounds on suprema -/
 
-theorem sum_le_iSup_lift {ι : Type u}
-    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
-  rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
+theorem sum_le_lift_mk_mul_iSup_lift {ι : Type u} (f : ι → Cardinal.{v}) :
+    sum f ≤ lift #ι * ⨆ i, lift (f i) := by
+  rw [← (sum f).lift_id, lift_sum, ← lift_umax.{u, v}, ← (⨆ i, lift (f i)).lift_id,
+    lift_umax.{max v u, u}, ← sum_const]
+  refine sum_le_sum _ _ fun i => ?_
+  rw [lift_umax.{v, u}]
+  exact le_ciSup (bddAbove_of_small _) i
 
-theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
-  rw [← lift_id #ι]
-  exact sum_le_iSup_lift f
+theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
+    sum f ≤ lift #ι * ⨆ i, f i := by
+  simpa [← lift_umax] using sum_le_lift_mk_mul_iSup_lift f
+
+theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
+  simpa using sum_le_lift_mk_mul_iSup_lift f
+
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
 
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
-  apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
+  apply ((le_csSup_iff' (bddAbove_image.{_, u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
     obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
@@ -254,10 +258,15 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
   lift_iSup_le_lift_iSup hf hf' h
 
+theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) :
+    lift (⨆ i, f i) ≤ sum f := by
+  rw [lift_iSup (bddAbove_of_small _)]
+  exact ciSup_le' fun i => lift_le_sum f i
+
 /-! ### Properties about the cast from `ℕ` -/
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
-  simp [Pow.pow]
+  simp
 
 @[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
@@ -283,18 +292,23 @@ theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 -- This works generally to prove inequalities between numeric cardinals.
 theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
 
-theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
+theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
+    ∃ s : Finset α, n = s.card := by
   obtain hα|hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [mk_fintype, Nat.cast_le] using h
+    obtain ⟨t, -, rfl⟩ := @Finset.exists_subset_card_eq α .univ n <| by simpa using h
+    exact ⟨t, rfl⟩
   · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
+    exact ⟨s, hs.symm⟩
+
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card :=
+  have ⟨s, eq⟩ := exists_finset_eq_card h
+  ⟨s, eq.le⟩
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
-  apply exists_finset_le_card α (n+1)
+  apply exists_finset_le_card α (n + 1)
   simpa only [nat_succ, succ_le_iff] using H
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
@@ -606,7 +620,7 @@ theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σ n, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -619,16 +633,17 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
+theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
+  ⟨Set.embeddingOfSubset s t h⟩
+
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
 theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ := by
-  constructor
-  · intro h
-    rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
-  · rintro rfl
-    exact mk_emptyCollection _
+  rw [mk_eq_zero_iff, isEmpty_coe_sort]
+
+lemma mk_set_ne_zero_iff {α : Type u} (s : Set α) : #s ≠ 0 ↔ s.Nonempty := by
+  rw [mk_ne_zero_iff, nonempty_coe_sort]
 
 @[simp]
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
@@ -638,7 +653,7 @@ theorem mk_univ {α : Type u} : #(@univ α) = #α :=
   rw [mul_def, mk_congr (Equiv.Set.prod ..)]
 
 theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : #(f '' s) ≤ #s :=
-  mk_le_of_surjective surjective_onto_image
+  mk_le_of_surjective imageFactorization_surjective
 
 lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : Set β} :
     #(image2 f s t) ≤ #s * #t := by
@@ -647,14 +662,14 @@ lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : 
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} #(f '' s) ≤ lift.{v} #s :=
-  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ imageFactorization_surjective⟩
 
 theorem mk_range_le {α β : Type u} {f : α → β} : #(range f) ≤ #α :=
-  mk_le_of_surjective surjective_onto_range
+  mk_le_of_surjective rangeFactorization_surjective
 
 theorem mk_range_le_lift {α : Type u} {β : Type v} {f : α → β} :
     lift.{u} #(range f) ≤ lift.{v} #α :=
-  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ rangeFactorization_surjective⟩
 
 theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
   mk_congr (Equiv.ofInjective f h).symm
@@ -700,39 +715,43 @@ theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
 theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
   simpa using mk_image_embedding_lift f s
 
+theorem iSup_mk_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} :
+    ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
+  ciSup_le' fun _ => mk_le_mk_of_subset (subset_iUnion _ _)
+
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
+    #(⋃ i, f i) ≤ #(Σ i, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α} :
     lift.{v} #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) ≤ #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) ≤ #(Σ i, f i) :=
       mk_le_of_surjective <| ULift.up_surjective.comp (Set.sigmaToiUnion_surjective f)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
+    #(⋃ i, f i) = #(Σ i, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) :
     lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
-    lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
+    lift.{v} #(⋃ i, f i) = #(Σ i, f i) :=
       mk_congr <| .trans Equiv.ulift (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #ι * ⨆ i, #(f i) :=
-  mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
+  mk_iUnion_le_sum_mk.trans (sum_le_mk_mul_iSup _)
 
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
-  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
-  rw [← lift_sum, lift_id'.{_,u}]
+  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
+  rw [← lift_sum, lift_id'.{_, u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
@@ -801,9 +820,6 @@ theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
   classical
   exact mk_congr (Equiv.Set.sumCompl s)
 
-theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
-  ⟨Set.embeddingOfSubset s t h⟩
-
 theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set α} :
     #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
@@ -811,9 +827,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   classical
   let u : Finset α := s.image Subtype.val
   have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
-  rw [← this]
-  apply H
-  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  grind
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=
@@ -826,9 +840,18 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #
   refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
+lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+  rw [← mk_set_ne_zero_iff]
+  intro h'
+  exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
+
+lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
+  rw [← mk_univ (α := α)] at h
+  simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
+
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
-  simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
+  simp only [le_aleph0_iff_subtype_countable, setOf_mem_eq, Set.union_def,
     ← countable_union]
 
 theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=
@@ -837,7 +860,6 @@ theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 

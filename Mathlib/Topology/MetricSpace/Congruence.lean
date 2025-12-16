@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Congruences
@@ -25,6 +27,8 @@ For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#na
 
 * `v₁ ≅ v₂`: for `Congruent v₁ v₂`.
 -/
+
+@[expose] public section
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
@@ -71,7 +75,7 @@ alias ⟨pairwise_edist_eq, _⟩ := congruent_iff_pairwise_edist_eq
 `congruent_iff_pairwise_edist_eq`. -/
 alias ⟨_, of_pairwise_edist_eq⟩ := congruent_iff_pairwise_edist_eq
 
-@[refl] protected lemma refl (v₁ : ι → P₁): v₁ ≅ v₁ := fun _ _ ↦ rfl
+@[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ≅ v₁ := fun _ _ ↦ rfl
 
 @[symm] protected lemma symm (h : v₁ ≅ v₂) : v₂ ≅ v₁ := fun i₁ i₂ ↦ (h i₁ i₂).symm
 

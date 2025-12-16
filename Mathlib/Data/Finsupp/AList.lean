@@ -3,8 +3,10 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.List.AList
+module
+
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.List.AList
 
 /-!
 # Connections between `Finsupp` and `AList`
@@ -16,6 +18,8 @@ import Mathlib.Data.List.AList
   via `AList.lookup`, sending absent keys to zero.
 
 -/
+
+@[expose] public section
 
 
 namespace Finsupp
@@ -38,7 +42,7 @@ noncomputable def toAList (f : α →₀ M) : AList fun _x : α => M :=
 theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) :
     f.toAList.keys.toFinset = f.support := by
   ext
-  simp [toAList, AList.mem_keys, AList.keys, List.keys]
+  simp [toAList, AList.keys, List.keys]
 
 @[simp]
 theorem mem_toAlist {f : α →₀ M} {x : α} : x ∈ f.toAList ↔ f x ≠ 0 := by
@@ -89,10 +93,7 @@ theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun _x : α => M} 
   rcases lookup a l with - | m <;> simp
 
 @[simp]
-theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := by
-  classical
-    ext
-    simp
+theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := rfl
 
 @[simp]
 theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : α) (m : M) :
@@ -113,7 +114,7 @@ theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.looku
     by_cases h : f a = 0
     · suffices f.toAList.lookup a = none by simp [h, this]
       simp [lookup_eq_none, h]
-    · suffices f.toAList.lookup a = some (f a) by simp [h, this]
+    · suffices f.toAList.lookup a = some (f a) by simp [this]
       apply mem_lookup_iff.2
       simpa using h
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Measure.Tight
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Tight sets of measures in normed spaces
@@ -21,6 +23,8 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
   tends to `0` at infinity for all `y`.
 
 -/
+
+@[expose] public section
 
 open Filter
 
@@ -45,7 +49,7 @@ lemma tendsto_measure_compl_closedBall_of_isTightMeasureSet (hS : IsTightMeasure
 lemma isTightMeasureSet_of_tendsto_measure_compl_closedBall [ProperSpace E] {x : E}
     (h : Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ (Metric.closedBall x r)ᶜ) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
-  refine IsTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
+  refine isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
   rw [ENNReal.tendsto_atTop_zero] at h
   obtain ⟨r, h⟩ := h ε hε
   exact ⟨Metric.closedBall x r, isCompact_closedBall x r, by simpa using h r le_rfl⟩
@@ -142,7 +146,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h
   by_cases hy : y = 0
-  · simp only [hy, inner_zero_left, abs_zero]
+  · simp only [hy, inner_zero_left]
     refine (tendsto_congr' ?_).mpr tendsto_const_nhds
     filter_upwards [eventually_ge_atTop 0] with r hr
     simp [not_lt.mpr hr]

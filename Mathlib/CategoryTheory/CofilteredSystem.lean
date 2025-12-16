@@ -3,7 +3,9 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered systems
@@ -14,7 +16,7 @@ This file deals with properties of cofiltered (and inverse) systems.
 
 Given a functor `F : J ⥤ Type v`:
 
-* For `j : J`, `F.eventualRange j` is the intersections of all ranges of morphisms `F.map f`
+* For `j : J`, `F.eventualRange j` is the intersection of all ranges of morphisms `F.map f`
   where `f` has codomain `j`.
 * `F.IsMittagLeffler` states that the functor `F` satisfies the Mittag-Leffler
   condition: the ranges of morphisms `F.map f` (with `f` having codomain `j`) stabilize.
@@ -48,6 +50,8 @@ Given a functor `F : J ⥤ Type v`:
 Mittag-Leffler, surjective, eventual range, inverse system,
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -90,7 +94,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
+  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map] at h
   simp_rw [← h]
 
 /-- The inverse limit of nonempty finite types is nonempty.
@@ -103,13 +107,9 @@ This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
-theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
+theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
-    F.sections.Nonempty := by
-  cases isEmpty_or_nonempty J
-  · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩ -- TODO: this should be a global instance
-    exact ⟨isEmptyElim, by apply isEmptyElim⟩
-  · exact nonempty_sections_of_finite_cofiltered_system _
+    F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
 end FiniteKonig
 
@@ -117,7 +117,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
@@ -193,7 +193,8 @@ theorem eventualRange_mapsTo (f : j ⟶ i) :
 
 theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i = F.map f '' F.eventualRange j :=
-  (h.subset_image_eventualRange F f).antisymm <| mapsTo'.1 (F.eventualRange_mapsTo f)
+  (h.subset_image_eventualRange F f).antisymm <| mapsTo_iff_image_subset.1
+    (F.eventualRange_mapsTo f)
 
 theorem eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔
@@ -265,12 +266,6 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
     ⟨fun _ => ⟨_, mem_iInter₂.2 fun _ f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/
@@ -325,7 +320,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
   refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, ?_⟩
   · have := (sec i).prop
-    simp only [mem_iInter, mem_preimage, mem_singleton_iff] at this
+    simp only [mem_iInter, mem_preimage] at this
     have := this (𝟙 i)
     rwa [map_id_apply] at this
 

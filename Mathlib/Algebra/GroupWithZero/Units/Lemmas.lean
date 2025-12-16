@@ -3,14 +3,18 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Hom
+module
+
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered MulAction Ring
 
@@ -61,18 +65,30 @@ protected lemma inv_mul_eq_inv_mul_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : 
 
 end Commute
 
+section MulZeroOneClass
+
+variable [GroupWithZero G₀] [MulZeroOneClass M₀'] [Nontrivial M₀'] [FunLike F G₀ M₀']
+  [MonoidWithZeroHomClass F G₀ M₀']
+  (f : F) {a : G₀}
+
+theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 := by
+  refine ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, ?_⟩
+  intro hx H
+  lift a to G₀ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := M₀')
+  rw [← map_one f, ← Units.mul_inv a, map_mul, H, zero_mul]
+
+@[simp]
+theorem map_eq_zero : f a = 0 ↔ a = 0 :=
+  not_iff_not.1 (map_ne_zero f)
+
+end MulZeroOneClass
+
 section MonoidWithZero
 
 variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
   [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀']
   (f : F) {a : G₀}
-
-theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
-  ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩
-
-@[simp]
-theorem map_eq_zero : f a = 0 ↔ a = 0 :=
-  not_iff_not.1 (map_ne_zero f)
 
 theorem eq_on_inv₀ [MonoidWithZeroHomClass F' G₀ M₀'] (f g : F') (h : f a = g a) :
     f a⁻¹ = g a⁻¹ := by

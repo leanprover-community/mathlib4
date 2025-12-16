@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Action.Basic
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 
@@ -25,9 +27,11 @@ of `HasForget₂` instances.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
-variable (V : Type*) [Category V] [HasForget V] [HasForget₂ V TopCat]
+variable (V : Type*) [Category* V] [HasForget V] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
@@ -38,10 +42,10 @@ instance : HasForget₂ (Action V G) TopCat :=
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
-    show ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
+    change ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
     simp
   mul_smul g h x := by
-    show (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
+    change (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
       ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h) ≫
         (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
     rw [← Functor.map_comp, map_mul]
@@ -113,7 +117,7 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     let u : H × (forget₂ _ TopCat).obj X → (forget₂ _ TopCat).obj X :=
       fun p ↦ (forget₂ _ TopCat).map (X.obj.ρ p.1) p.2
     have : Continuous u := X.2.1
-    show Continuous (u ∘ v)
+    change Continuous (u ∘ v)
     fun_prop
 
 /-- Restricting scalars along a composition is naturally isomorphic to restricting scalars twice. -/
@@ -180,8 +184,8 @@ end DiscreteContAction
 
 namespace CategoryTheory
 
-variable {V W : Type*} [Category V] [HasForget V] [HasForget₂ V TopCat]
-  [Category W] [HasForget W] [HasForget₂ W TopCat]
+variable {V W : Type*} [Category* V] [HasForget V] [HasForget₂ V TopCat]
+  [Category* W] [HasForget W] [HasForget₂ W TopCat]
   (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Functor
@@ -194,7 +198,7 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
 
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
-def mapContActionComp {T : Type*} [Category T] [HasForget T] [HasForget₂ T TopCat]
+def mapContActionComp {T : Type*} [Category* T] [HasForget T] [HasForget₂ T TopCat]
     (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (F' : W ⥤ T) (H' : ∀ X : ContAction W G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G (F ⋙ F') (fun X ↦ H' ((F.mapContAction G H).obj X)) ≅

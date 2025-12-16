@@ -14,3 +14,9 @@ example (h : y = z) : x + 0 = y → x = z := by
   simp_intro .. [h]
 
 example (h : y = z) : x + 0 = y → x = z := by simp_intro _; exact h
+
+example : ∀ (r : Nat → Prop), (∀ x, x > 0 → r x) → ∀ y z, y = 0 → z > y → r z := by
+  simp_intro ..
+
+example : ∀ (r : Nat → Prop), (∀ x, x > 0 → r x) → ∀ y z, y = 0 → z > y → r z := by
+  simp_intro r hr y z hy hz

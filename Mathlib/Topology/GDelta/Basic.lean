@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Closure
 
 /-!
 # `Gδ` sets
@@ -39,6 +41,8 @@ continuity set of a function from a topological space to a metrizable space is a
 
 Gδ set, residual set, nowhere dense set, meagre set
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 
@@ -85,10 +89,10 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
   refine ⟨?_, ?_⟩
   · rintro ⟨T, hT, T_count, rfl⟩
-    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    rcases Set.eq_empty_or_nonempty T with rfl | hT
     · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
     · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
-      exact ⟨f, by aesop, by simp [hf]⟩
+      exact ⟨f, by simp_all, by simp [hf]⟩
   · rintro ⟨f, hf, rfl⟩
     exact .iInter_of_isOpen hf
 
@@ -101,8 +105,6 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
-
-@[deprecated (since := "2024.02.15")] alias isGδ_iInter := IsGδ.iInter
 
 theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
@@ -179,7 +181,7 @@ theorem mem_residual_iff {s : Set X} :
 
 end residual
 
-section meagre
+section IsMeagre
 open Function TopologicalSpace Set
 variable {X : Type*} [TopologicalSpace X]
 
@@ -216,20 +218,27 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
 /-- The empty set is meagre. -/
-lemma meagre_empty : IsMeagre (∅ : Set X) := by
+lemma IsMeagre.empty : IsMeagre (∅ : Set X) := by
   rw [IsMeagre, compl_empty]
   exact Filter.univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
-lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts : t ⊆ s) : IsMeagre t :=
+@[gcongr]
+lemma IsMeagre.mono {s t : Set X} (hts : t ⊆ s) (hs : IsMeagre s) : IsMeagre t :=
   Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/
 lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono inter_subset_left
 
+/-- A union of two meagre sets is meagre. -/
+lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagre (s ∪ t) := by
+  rw [IsMeagre, compl_union]
+  exact inter_mem hs ht
+
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion [Countable ι'] {f : ι' → Set X} (hs : ∀ i, IsMeagre (f i)) :
+    IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
@@ -247,4 +256,9 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
-end meagre
+/-- A set of second category (i.e. non-meagre) is nonempty. -/
+lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by
+  contrapose! hs
+  simpa [hs] using IsMeagre.empty
+
+end IsMeagre

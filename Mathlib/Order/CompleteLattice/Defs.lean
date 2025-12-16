@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -39,6 +41,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -157,16 +161,14 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
-  CompleteSemilatticeInf α, Top α, Bot α where
-  /-- Any element is less than the top one. -/
-  protected le_top : ∀ x : α, x ≤ ⊤
-  /-- Any element is more than the bottom one. -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+    CompleteSemilatticeInf α, BoundedOrder α
 
--- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
-    BoundedOrder α :=
-  { ‹CompleteLattice α› with }
+-- Shortcut instance to ensure that the path
+-- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
+-- as it tricks `#min_imports` into believing `Order.CompletePartialOrder` is a necessary import.
+-- See note [lower instance priority]
+instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] : PartialOrder α :=
+  inferInstance
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
@@ -369,6 +371,12 @@ theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
 
 theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
   sInf_lt_iff.trans exists_range_iff
+
+theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
+  simp [lt_iSup_iff]
+
+theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
+  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 

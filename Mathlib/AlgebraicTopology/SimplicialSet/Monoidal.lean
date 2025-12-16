@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 /-!
 # The monoidal category structure on simplicial sets
@@ -19,14 +21,19 @@ category structure on `SSet`.
 
 -/
 
+@[expose] public section
+
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory
+open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits
 
 namespace SSet
 
-noncomputable instance : CartesianMonoidalCategory SSet.{u} :=
+instance : CartesianMonoidalCategory SSet.{u} :=
   (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
+
+instance : MonoidalClosed (SSet.{u}) :=
+  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -47,7 +54,7 @@ lemma rightUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x :
 @[simp]
 lemma tensorHom_app_apply {K K' L L' : SSet.{u}} (f : K ⟶ K') (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ⊗ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
+    (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerLeft_app_apply (K : SSet.{u}) {L L' : SSet.{u}} (g : L ⟶ L')
@@ -85,5 +92,55 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
     rw [← FunctorToTypes.naturality]
     rfl
   right_inv x := by simp
+
+/-- The object `Δ[0]` is terminal in `SSet`. -/
+def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ SSet.const (obj₀Equiv.symm 0))
+    (fun _ _ ↦ by
+      ext ⟨n⟩
+      exact objEquiv.injective (by ext; simp))
+
+@[ext]
+lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
+  isTerminalObj₀.hom_ext _ _
+
+instance (X Y : SSet.{u}) (n : SimplexCategoryᵒᵖ)
+    [Finite (X.obj n)] [Finite (Y.obj n)] :
+    Finite ((X ⊗ Y).obj n) :=
+  inferInstanceAs (Finite (X.obj n × Y.obj n))
+
+/-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `0` on the second factor. -/
+noncomputable def ι₀ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
+  lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 0))
+
+@[reassoc (attr := simp)]
+lemma ι₀_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
+    ι₀ ≫ f ▷ _ = f ≫ ι₀ := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₀_fst (X : SSet.{u}) : ι₀ ≫ fst X _ = 𝟙 X := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₀_snd (X : SSet.{u}) : ι₀ ≫ snd X _ = const (stdSimplex.obj₀Equiv.{u}.symm 0) := rfl
+
+@[simp]
+lemma ι₀_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₀.app _ x).1 = x := rfl
+
+/-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `1` on the second factor. -/
+noncomputable def ι₁ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
+  lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 1))
+
+@[reassoc (attr := simp)]
+lemma ι₁_fst (X : SSet.{u}) : ι₁ ≫ fst X _ = 𝟙 X := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₁_snd (X : SSet.{u}) : ι₁ ≫ snd X _ = (const (stdSimplex.obj₀Equiv.{u}.symm 1)) := rfl
+
+@[reassoc (attr := simp)]
+lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
+    ι₁ ≫ f ▷ _ = f ≫ ι₁ := rfl
+
+@[simp]
+lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
 
 end SSet

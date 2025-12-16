@@ -3,7 +3,9 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
 
 /-!
 # Lattice ordered groups
@@ -34,6 +36,8 @@ in mathlib.
 
 lattice, order, group
 -/
+
+@[expose] public section
 
 open Function
 
@@ -115,7 +119,7 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
 
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
-@[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
+@[to_additive /-- Every lattice ordered commutative additive group is a distributive lattice -/]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
     [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by

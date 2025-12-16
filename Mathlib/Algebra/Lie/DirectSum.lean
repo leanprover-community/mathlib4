@@ -3,10 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Ideal
-import Mathlib.Algebra.Lie.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Direct sums of Lie algebras and Lie modules
@@ -17,6 +19,8 @@ Direct sums of Lie algebras and Lie modules carry natural algebra and module str
 
 lie algebra, lie module, direct sum
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -107,10 +111,10 @@ instance lieRing : LieRing (⨁ i, L i) :=
       simp only [zipWith_apply, add_apply, lie_add]
     lie_self := fun x => by
       ext
-      simp only [zipWith_apply, add_apply, lie_self, zero_apply]
+      simp only [zipWith_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
       ext
-      simp only [sub_apply, zipWith_apply, add_apply, zero_apply]
+      simp only [zipWith_apply, add_apply]
       apply leibniz_lie }
 
 @[simp]
@@ -125,8 +129,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
     ⁅of L i x, of L j y⁆ = 0 := by
   ext k
   rw [bracket_apply]
-  obtain rfl | hik := Decidable.eq_or_ne i k
-  · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
+  obtain rfl | hik := Decidable.eq_or_ne k i
+  · rw [of_eq_of_ne _ _ _ hij, lie_zero, zero_apply]
   · rw [of_eq_of_ne _ _ _ hik, zero_lie, zero_apply]
 
 @[simp]
@@ -134,13 +138,13 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : i = j then of L i ⁅x, hij.symm.recOn y⁆ else 0 := by
   obtain rfl | hij := Decidable.eq_or_ne i j
   · simp only [lie_of_same L x y, dif_pos]
-  · simp only [lie_of_of_ne L hij x y, hij, dif_neg, dite_false]
+  · simp only [lie_of_of_ne L hij x y, hij, dite_false]
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
       ext
-      simp only [zipWith_apply, smul_apply, bracket_apply, lie_smul] }
+      simp only [smul_apply, bracket_apply, lie_smul] }
 
 variable (R ι)
 
@@ -192,7 +196,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
-        simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
+        simp only [map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x

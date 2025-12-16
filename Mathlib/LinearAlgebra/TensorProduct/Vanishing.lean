@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -53,6 +55,8 @@ is injective for every submodule $M' \subseteq M$.
 * Prove the same theorems with $M$ and $N$ swapped.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -117,7 +121,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   -- Define a map $G \colon R^\iota \to M$ whose matrix entries are the $m_i$. It is surjective.
   set G : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R m with hG
-  have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
+  have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG]
   have G_surjective : Surjective G := by
     apply LinearMap.range_eq_top.mp
     apply top_le_iff.mp
@@ -273,10 +277,5 @@ theorem rTensor_injective_of_forall_fg_rTensor_injective
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) :=
   (forall_vanishesTrivially_iff_forall_rTensor_injective R).mp
     ((forall_vanishesTrivially_iff_forall_fg_rTensor_injective R).mpr hMN) M'
-
-@[deprecated (since := "2025-01-03")] alias forall_vanishesTrivially_iff_forall_FG_rTensor_injective
-  := forall_vanishesTrivially_iff_forall_fg_rTensor_injective
-@[deprecated (since := "2025-01-03")] alias rTensor_injective_of_forall_FG_rTensor_injective :=
-  rTensor_injective_of_forall_fg_rTensor_injective
 
 end TensorProduct

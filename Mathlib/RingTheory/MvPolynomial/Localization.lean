@@ -3,12 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -23,6 +25,8 @@ In this file we show some results connecting multivariate polynomial rings and l
   `MvPolynomial σ R`.
 
 -/
+
+@[expose] public section
 
 variable {σ R : Type*} [CommRing R] (M : Submonoid R)
 variable (S : Type*) [CommRing S] [Algebra R S]
@@ -99,7 +103,7 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
       Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
       lift_mk'_spec]
-    simp only [map_one, RingHom.coe_comp, Function.comp_apply]
+    simp only [map_one]
     rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
       ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)
