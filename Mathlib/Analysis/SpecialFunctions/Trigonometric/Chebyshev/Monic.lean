@@ -5,8 +5,8 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev.Basic
-public import Mathlib.RingTheory.Polynomial.Chebyshev.RootsExtrema
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.Topology.Algebra.Polynomial
 
