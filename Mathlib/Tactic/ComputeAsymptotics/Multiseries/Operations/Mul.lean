@@ -720,7 +720,29 @@ end
 
 instance {basis_hd basis_tl} :
     FriendOperationClass (mul (basis := basis_hd :: basis_tl)) := by
-  sorry
+  apply FriendOperationClass.mk'
+  intro c
+  cases c with
+  | nil =>
+    convert FriendOperation.const (s := nil)
+    simp
+  | cons c_exp c_coef c_tl =>
+  let motive (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
+    op = mul (.cons c_exp c_coef c_tl)
+  apply FriendOperation.coind_comp_friend_left motive
+  · rfl
+  rintro _ ⟨rfl⟩
+  use fun hd? ↦ match hd? with
+  | none => none
+  | some (exp, coef) =>
+    some (c_exp + exp, c_coef.mul coef,
+      ⟨add (mulMonomial c_tl coef exp), FriendOperationClass.FriendOperation _⟩,
+      ⟨mul (.cons c_exp c_coef c_tl), rfl⟩)
+  intro x
+  cases x with
+  | nil => simp
+  | cons x_exp x_coef x_tl =>
+  simp [mul_cons_cons, add_def]
 
 theorem WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}

@@ -74,9 +74,9 @@ open Filter Asymptotics
 
 @[simp]
 theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) nil ms = ms := by
+    nil + ms = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
-    X = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) nil Y
+    X = nil + Y
   apply eq_of_bisim motive
   · simp only [motive]
   · intro X Y ih
@@ -107,9 +107,9 @@ private theorem zero_add' {basis : Basis} {ms : PreMS basis} :
 -- copypaste from above
 @[simp]
 theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) ms nil = ms := by
+    ms + nil = ms := by
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun X Y =>
-    X = HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) Y nil
+    X = Y + nil
   apply eq_of_bisim motive
   · simp only [motive]
   · intro X Y ih
@@ -173,7 +173,7 @@ theorem add_unfold {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (bas
 /-- `((X_exp, X_coef) :: X_tl) + Y = (X_exp, X_coef) :: (X_tl + Y)` when `X_exp > Y.leadingExp`. -/
 theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_coef : PreMS basis_tl}
     {X_tl Y : PreMS (basis_hd :: basis_tl)} (h_lt : Y.leadingExp < X_exp) :
-    HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (cons X_exp X_coef X_tl) Y =
+    (cons X_exp X_coef X_tl) + Y =
     cons X_exp X_coef (X_tl + Y) := by
   rw [add_unfold, add']
   cases Y with
@@ -581,7 +581,42 @@ theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
 
 instance {basis_hd basis_tl} :
     FriendOperationClass (add (basis := basis_hd :: basis_tl)) := by
-  sorry
+  apply FriendOperationClass.mk'
+  intro c
+  let motive (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
+    ∃ (c : PreMS (basis_hd :: basis_tl)), op = add c
+  apply FriendOperation.coind_comp_friend_right motive
+  · use c
+  rintro _ ⟨c, rfl⟩
+  simp only [← add_def]
+  cases c with
+  | nil =>
+    use fun hd? ↦ match hd? with
+    | none => none
+    | some (exp, coef) => some (exp, coef, ⟨id, FriendOperation.id⟩, ⟨fun x ↦ nil + x, _, rfl⟩)
+    intro x
+    cases x <;> simp
+  | cons c_exp c_coef c_tl =>
+    use fun hd? ↦ match hd? with
+    | none => some (c_exp, c_coef, ⟨fun _ ↦ c_tl, FriendOperation.const⟩, ⟨fun x ↦ nil + x, _, rfl⟩)
+    | some (exp, coef) =>
+      if exp < c_exp then
+        some (c_exp, c_coef, ⟨PreMS.cons exp coef, FriendOperation.cons _ _⟩,
+          ⟨fun x ↦ c_tl + x, _, rfl⟩)
+      else if c_exp < exp then
+        some (exp, coef, ⟨id, FriendOperation.id⟩, ⟨fun x ↦ (cons c_exp c_coef c_tl) + x, _, rfl⟩)
+      else
+        some (exp, c_coef + coef, ⟨id, FriendOperation.id⟩, ⟨fun x ↦ c_tl + x, _, rfl⟩)
+    intro x
+    cases x with
+    | nil => simp
+    | cons x_exp x_coef x_tl =>
+      simp [add_cons_cons]
+      split_ifs with h1 h2
+      · simp
+      · simp
+      · simp
+        linarith
 
 theorem eq_of_bisim_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {x y : PreMS (basis_hd :: basis_tl)}

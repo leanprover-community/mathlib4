@@ -14,7 +14,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 * `PreMS basis` is the type of lazy formal multiseries, where `basis` is the list of basis
 functions. It is defined recursively as `PreMS [] = ℝ` (constants), and
 `PreMS (b₁ :: tl) = Seq (ℝ × PreMS tl)`. This is lazy possibly infinite list of pairs, where each
-pair `(exp, coef)` represents the monomial `b₁^exp * coef`. The type is isomorphic to the type
+pair `(exp, coef)` represents the monomial `b₁ ^ exp * coef`. The type is isomorphic to the type
 of trees of finite fixed depth with possibly infinite branching and `ℝ`-valued labels in vertexes.
 * `WellOrdered ms` is the predicate meaning that at each level of `ms` as a nested tree all
 exponents are Pairwise by TODO (убывание).
@@ -94,6 +94,59 @@ def FriendOperation {basis_hd basis_tl}
 class FriendOperationClass {basis_hd basis_tl} {γ : Type*}
     (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop
     extends Stream'.Seq.FriendOperationClass op
+
+theorem FriendOperationClass.mk' {basis_hd basis_tl} {γ : Type*}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (h : ∀ c, FriendOperation (op c)) :
+    FriendOperationClass op := by
+  suffices Stream'.Seq.FriendOperationClass op by constructor
+  exact ⟨h⟩
+
+private lemma destruct_eq_destruct_map {basis_hd basis_tl} (s : Stream'.Seq (ℝ × PreMS basis_tl)) :
+    s.destruct = (PreMS.destruct (basis_hd := basis_hd) s).map
+      (fun (exp, coef, tl) => ((exp, coef), tl)) := by
+  simp only [destruct, Option.map_map]
+  exact Option.map_id_apply.symm
+
+theorem FriendOperation.coind_comp_friend_left {basis_hd basis_tl}
+    {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (motive : (PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive op)
+    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × PreMS basis_tl) →
+        Option (ℝ × PreMS basis_tl × Subtype FriendOperation × Subtype motive),
+      ∀ s, (op s).destruct =
+        (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, opf.val <| op'.val (s.tail)))) :
+    FriendOperation op := by
+  apply Stream'.Seq.FriendOperation.coind_comp_friend_left motive h_base
+  intro op h_op
+  specialize h_step op h_op
+  obtain ⟨T, hT⟩ := h_step
+  use fun hd? ↦ (T hd?).map (fun (exp, coef, opf, op') => ((exp, coef), opf, op'))
+  intro s
+  specialize hT s
+  rw [destruct_eq_destruct_map, hT]
+  simp [head]
+  rfl
+
+theorem FriendOperation.coind_comp_friend_right {basis_hd basis_tl}
+    {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    (motive : (PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) → Prop)
+    (h_base : motive op)
+    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × PreMS basis_tl) →
+        Option (ℝ × PreMS basis_tl × Subtype FriendOperation × Subtype motive),
+      ∀ s, (op s).destruct =
+        (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, op'.val <| opf.val (s.tail)))) :
+    FriendOperation op := by
+  apply Stream'.Seq.FriendOperation.coind_comp_friend_right motive h_base
+  intro op h_op
+  specialize h_step op h_op
+  obtain ⟨T, hT⟩ := h_step
+  use fun hd? ↦ (T hd?).map (fun (exp, coef, opf, op') => ((exp, coef), opf, op'))
+  intro s
+  specialize hT s
+  rw [destruct_eq_destruct_map, hT]
+  simp [head]
+  rfl
 
 noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
     (F : β → Option (ℝ × PreMS basis_tl × γ × β))
@@ -191,11 +244,15 @@ theorem FriendOperation.ite {basis_hd basis_tl}
     FriendOperation (fun ms ↦ if P ms.head then op₁ ms else op₂ ms) :=
   Stream'.Seq.FriendOperation.ite h₁ h₂
 
+theorem FriendOperation.cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl) :
+    FriendOperation (cons (basis_hd := basis_hd) exp coef) :=
+  Stream'.Seq.FriendOperation.cons _
+
 theorem FriendOperation.cons_tail {basis_hd basis_tl}
     {op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
     {exp : ℝ} {coef : PreMS basis_tl}
     (h : FriendOperation op) :
-    FriendOperation (fun ms ↦ (op (cons exp coef ms)).tail) :=
+    FriendOperation (fun ms ↦ (op (.cons exp coef ms)).tail) :=
   Stream'.Seq.FriendOperation.cons_tail h
 
 theorem FriendOperationClass.comp {basis_hd basis_tl} {γ γ' : Type*}
