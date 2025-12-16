@@ -11,9 +11,12 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Algebra.Central.Matrix
+import Mathlib.Analysis.InnerProductSpace.StarOrder
 import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
@@ -91,16 +94,14 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
   rw [← Unitary.coe_star, Unitary.star_eq_inv, ← Uinv]
   simp [αa, Algebra.smul_mul_assoc, U, smul_smul, ← RCLike.ofReal_mul, ← Real.rpow_add this2, hy]
 
+section
 open Matrix
-
 variable {n : Type*} [Fintype n]
 
-public theorem Matrix.AlgEquiv.coe_eq_conjugate {m : Type*} [Fintype m] [DecidableEq m] [DecidableEq n] {K : Type*} [Field K]
-    (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
-    ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V := by
-  let e : m ≃ n :=
-    Fintype.equivOfCardEq <| by simpa [Module.finrank_matrix, ← sq] using f.toLinearEquiv.finrank_eq
-  sorry
+-- wait for other PR
+proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {m : Type*} [Fintype m] [DecidableEq m]
+    [DecidableEq n] {K : Type*} [Field K] (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
+    ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V
 
 -- TODO: change `Matrix` to any central and simple finite algebra
 -- and then also add the `AlgHom` version of this
@@ -131,4 +132,85 @@ public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut [DecidableEq n]
   obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct
   have := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := 𝕜) 1 f (by simp)
   obtain ⟨U, hU⟩ := this.mp ⟨g, congr($hg)⟩
+  exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
+
+end
+
+theorem ContinuousLinearEquiv.eq_comp_toContinuousLinearMap_symm
+    {R₁ R₂ R₃ M₁ M₂ M₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [AddCommMonoid M₃] {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂}
+    {module_M₃ : Module R₃ M₃} [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+    {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₁₃ : R₁ →+* R₃}
+    {σ₂₃ : R₂ →+* R₃} {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {e₁₂ : M₁ ≃SL[σ₁₂] M₂} [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
+    (f : M₂ →SL[σ₂₃] M₃) (g : M₁ →SL[σ₁₃] M₃) :
+    f = g.comp e₁₂.symm.toContinuousLinearMap ↔ f.comp e₁₂.toContinuousLinearMap = g := by
+  aesop
+
+/-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
+def ContinuousAlgHom.toContinuousLinearMap {R A B : Type*} [CommSemiring R] [Semiring A]
+    [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
+    (e : A →A[R] B) : A →L[R] B :=
+  { e with map_smul' := by simp }
+
+/-- Interpret a `ContinuousAlgEquiv` as a `ContinuousLinearMap`. -/
+abbrev ContinuousAlgEquiv.toContinuousLinearMap {R A B : Type*} [CommSemiring R] [Semiring A]
+    [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
+    (e : A ≃A[R] B) : A →L[R] B := e.toContinuousAlgHom.toContinuousLinearMap
+
+@[simp] theorem ContinuousAlgEquiv.coe_toContinuousLinearMap {R A B : Type*} [CommSemiring R]
+    [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
+    (e : A ≃A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
+
+open ContinuousLinearMap
+
+theorem ContinuousAlgEquiv.coe_eq_conjugate {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup V] [NormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+    [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W] [CompleteSpace V] [CompleteSpace W]
+    (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
+    ∃ U : V ≃L[𝕜] W, ⇑f = fun x ↦ U ∘L x ∘L U.symm := by
+  /- basically copied the same proof as the linear one -/
+  by_cases! hV : Subsingleton V
+  · by_cases! hV : Subsingleton W
+    · use { toLinearEquiv := 0, continuous_invFun := by fun_prop }
+      exact Subsingleton.allEq _ _
+    simpa using congr(f $(Subsingleton.allEq 0 1))
+  simp_rw [funext_iff, ← comp_assoc, ContinuousLinearEquiv.eq_comp_toContinuousLinearMap_symm]
+  obtain ⟨u, hu⟩ := exists_ne (0 : V)
+  obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
+  obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
+    rw [← not_forall, ← ContinuousLinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff,
+      ContinuousLinearMap.ext_iff]
+    exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
+  set T := ContinuousLinearMap.apply' _ (.id 𝕜) z ∘L f.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
+  have hT x : T x = f (smulRight v x) z := rfl
+  have this A x : T (A x) = f A (T x) := by
+    simp only [hT, ← ContinuousLinearMap.mul_apply, ← map_mul]
+    congr; ext; simp
+  have surj : Function.Surjective T := fun w ↦ by
+    obtain ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
+    exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
+  have inj : Function.Injective T := fun x y hxy ↦ by
+    have h_smul : smulRightL 𝕜 _ _ v x = smulRightL 𝕜 _ _ v y := by
+      apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
+      obtain ⟨w, rfl⟩ := surj z
+      simp [← this, hxy]
+    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+  exact ⟨.ofBijective T ((LinearMapClass.ker_eq_bot _).mpr inj)
+    (LinearMap.range_eq_top_of_surjective T surj), fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
+
+/-- A continuous ⋆-algebra equivalence. -/
+structure ContinuousStarAlgEquiv (R A B : Type*) [CommSemiring R] [Semiring A]
+    [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
+    [Star R] [Star A] [Star B] extends A ≃A[R] B, A ≃⋆ₐ[R] B
+
+@[inherit_doc] notation:50 A " ≃⋆A[" R "] " B => ContinuousStarAlgEquiv R A B
+
+theorem ContinuousStarAlgEquiv.coe_eq_conjugate
+    {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V] [CompleteSpace V]
+    (f : (V →L[ℂ] V) ≃⋆A[ℂ] (V →L[ℂ] V)) :
+    ∃ U : unitary (V →L[ℂ] V), f.toStarAlgEquiv = Unitary.conjStarAlgAut ℂ _ U := by
+  obtain ⟨g, hg⟩ := f.toContinuousAlgEquiv.coe_eq_conjugate
+  obtain ⟨U, hU⟩ := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := ℂ)
+    1 f.toStarAlgEquiv (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
   exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
