@@ -221,7 +221,7 @@ lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Sheaf J (Type
   obtain ⟨u, rfl⟩ := J.uliftYonedaEquiv.surjective t
   rw [uliftYonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
 
-def largeCurriedYonedaLemma' : (GrothendieckTopology.uliftYoneda.{v', v, u} J).op ⋙ coyoneda ≅
+def largeCurriedUliftYonedaLemma : (GrothendieckTopology.uliftYoneda.{v', v, u} J).op ⋙ coyoneda ≅
       sheafSections J (Type (max v v')) ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{max u v}
   := NatIso.ofComponents (fun Y ↦ NatIso.ofComponents (fun X ↦
     (J.uliftYonedaEquiv.trans (Equiv.ulift (α := X.val.obj Y)).symm).toIso) (by cat_disch)) <| by

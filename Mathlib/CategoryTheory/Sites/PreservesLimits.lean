@@ -38,7 +38,7 @@ instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.va
     apply evaluationJointlyReflectsLimits
     intro X
     suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
-      (isoWhiskerRight (J.largeCurriedYonedaLemma') ((evaluation _ _ ).obj X)).symm this
+      (isoWhiskerRight (J.largeCurriedUliftYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
 
 instance Subcanonical.preservesFiniteCoproductsYoneda
