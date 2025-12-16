@@ -83,7 +83,7 @@ abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
 instance : Algebra P.Ring S := P.algebra
 
-/-- The designated section of w.r.t. a family of generators. -/
+/-- The designated section w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/
@@ -250,6 +250,20 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+/-- Extend generators by more variables. -/
+noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
+  .ofSurjective (Sum.elim P.val b) fun s ↦ by
+    use rename Sum.inl (P.σ s)
+    simp [aeval_rename]
+
+@[simp]
+lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
+    (P.extend b).val (.inl i) = P.val i := rfl
+
+@[simp]
+lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
+    (P.extend b).val (.inr i) = b i := rfl
 
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/

@@ -23,7 +23,7 @@ The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
-* The so called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
+* The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
@@ -652,7 +652,7 @@ private lemma formula2 :
   simp only [zero_mul, add_mul]
   rw [← formula1 S]
   congrm ?_ + ?_ + ?_
-  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; omega
+  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; lia
     calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ) := by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
@@ -664,7 +664,7 @@ private lemma formula2 :
 set_option linter.style.commandStart false in
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   use λ^(3*S.multiplicity-5)*S.u₅*(S.X^3)
-  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; omega
+  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; lia
   calc _ = λ^(3*(S.multiplicity-1))*S.u₅*S.X^3 := by ring
   _ = λ^2*λ^(3*S.multiplicity-5)*S.u₅*S.X^3 := by rw [this, pow_add]
   _ = λ^2*(λ^(3*S.multiplicity-5)*S.u₅*S.X^3) := by ring

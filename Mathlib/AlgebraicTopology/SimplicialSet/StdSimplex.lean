@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
@@ -127,7 +128,7 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
-  objMk (OrderHom.const _ k )
+  objMk (OrderHom.const _ k)
 
 @[simp]
 lemma const_down_toOrderHom (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) :
@@ -207,6 +208,17 @@ lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
 end Subcomplex
 
 namespace stdSimplex
+
+lemma obj₀Equiv_symm_mem_face_iff
+    {n : ℕ} (S : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
+  ⟨fun h ↦ by simpa using h, by aesop⟩
+
+lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
+    face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
+  refine ⟨fun h i hi ↦ ?_, fun h d a ha ↦ ha.trans h⟩
+  simp only [← obj₀Equiv_symm_mem_face_iff.{u}] at hi ⊢
+  exact h _ hi
 
 lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin (m + 1) ≃o S) :
     face.{u} S =
@@ -322,6 +334,16 @@ def nonDegenerateEquiv {n d : ℕ} :
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
 
+instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
+  degenerate_eq_top i hi := by
+    ext x
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+    by_contra hx
+    have : Mono (objEquiv x) := by rwa [← mem_nonDegenerate_iff_mono]
+    have := SimplexCategory.len_le_of_mono (objEquiv x)
+    dsimp at this
+    lia
+
 /-- If `i : Fin (n + 2)`, this is the order isomorphism between `Fin (n +1)`
 and the complement of `{i}` as a finset. -/
 def finSuccAboveOrderIsoFinset {n : ℕ} (i : Fin (n + 2)) :
@@ -371,6 +393,21 @@ noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
     Δ[1] ≅ (face {i, j} : SSet.{u}) :=
   stdSimplex.isoOfRepresentableBy
     (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
+
+instance (n : SimplexCategory) (d : SimplexCategoryᵒᵖ) :
+    Finite ((stdSimplex.{u}.obj n).obj d) := by
+  rw [objEquiv.finite_iff]
+  infer_instance
+
+instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).Finite := by
+  induction n using SimplexCategory.rec with | _ n
+  exact finite_of_hasDimensionLT _ (n + 1) inferInstance
+
+instance {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
+    SSet.Finite (Subcomplex.ofSimplex x) := by
+  obtain ⟨f, rfl⟩ := yonedaEquiv.surjective x
+  rw [← Subcomplex.range_eq_ofSimplex]
+  infer_instance
 
 end stdSimplex
 

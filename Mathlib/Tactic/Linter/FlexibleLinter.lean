@@ -332,8 +332,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.FieldSimp.field,
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
-    ``Lean.Parser.Tactic.cutsat,
-    `tacticLia,
+    ``Lean.Parser.Tactic.lia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
@@ -494,7 +493,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   for (s, stainData) in msgs do
     let stainStx := stainData.stx
     let d := stainData.stained
-    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trim
+    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trimAscii
     -- Try to generate a "simp only [...]" suggestion by re-running simp
     let suggestion? ← match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp | ``Lean.Parser.Tactic.simpAll => try
