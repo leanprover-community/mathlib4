@@ -1180,6 +1180,19 @@ theorem ncard_le_one_of_subsingleton [Subsingleton α] (s : Set α) : s.ncard �
   rw [ncard_eq_toFinset_card]
   exact Finset.card_le_one_of_subsingleton _
 
+theorem one_lt_ncard_iff_nontrivial [Finite s] :
+    1 < s.ncard ↔ s.Nontrivial := by
+  rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
+
+theorem one_lt_ncard_iff_nontrivial_and_finite :
+    1 < s.ncard ↔ s.Nontrivial ∧ s.Finite := by
+  refine ⟨fun hs ↦ ?_, fun ⟨hs_nontrivial, hs_finite⟩ ↦ ?_⟩
+  · have := finite_of_ncard_pos (Nat.zero_lt_of_lt hs)
+    rw [← Set.finite_coe_iff] at this
+    exact ⟨one_lt_ncard_iff_nontrivial.mp hs, this⟩
+  · rw [← Set.finite_coe_iff] at hs_finite
+    rwa [one_lt_ncard_iff_nontrivial]
+
 theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.one_lt_card, Finite.mem_toFinset]
