@@ -5,19 +5,15 @@ Authors: Lua Viana Reis, Oliver Butterley
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Algebra.Order.SuccPred.PartialSups
-public import Mathlib.Algebra.Order.Group.PartialSups
-public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
-public import Mathlib.Data.Real.StarOrdered
-public import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.MeasurableSpace.Invariants
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+import Mathlib.Algebra.Order.Group.PartialSups
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Pointwise Ergodic Theorem
@@ -388,7 +384,7 @@ private lemma ae_tendsTo_birkhoffAverage_condExp_aux
 /-- **Pointwise Ergodic Theorem** a.k.a. **Birkhoff's Ergodic Theorem**
 
 Time average coincides with conditional expectation for typical points. -/
-theorem ae_tendsTo_birkhoffAverage_condExp {Φ : α → ℝ} (hf : MeasurePreserving f μ μ)
+public theorem ae_tendsTo_birkhoffAverage_condExp {Φ : α → ℝ} (hf : MeasurePreserving f μ μ)
     (hΦ : Integrable Φ μ) :
     ∀ᵐ x ∂μ, Tendsto (birkhoffAverage ℝ f Φ · x) atTop (𝓝 (μ[Φ|invariants f] x)) := by
   let φ := hΦ.left.mk
