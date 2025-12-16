@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Condensed.Light.CartesianClosed
 public import Mathlib.Condensed.Light.TopCatAdjunction
-public import Mathlib.CategoryTheory.Sites.Coherent.PreservesCoproducts
+public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
