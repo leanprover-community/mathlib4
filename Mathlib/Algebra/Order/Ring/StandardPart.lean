@@ -200,7 +200,6 @@ instance : Archimedean (FiniteResidueField K) where
 
 /-- An embedding from an Archimedean field into `K` induces an embedding into
 `FiniteResidueField K`. -/
-@[simps!]
 def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
   toFun r := mk <| .mk _ (mk_map_nonneg_of_archimedean f r)
   map_zero' := by simp
@@ -214,6 +213,22 @@ def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
     exact mk.map_mul
       (.mk _ (mk_map_nonneg_of_archimedean f x)) (.mk _ (mk_map_nonneg_of_archimedean f y))
   monotone' x y h := mk.monotone' <| f.monotone' h
+
+theorem ofArchimedean_apply (f : R →+*o K) (r : R) :
+    ofArchimedean f r = mk (.mk _ (mk_map_nonneg_of_archimedean f r)) :=
+  rfl
+
+theorem ofArchimedean_injective (f : R →+*o K) : Function.Injective (ofArchimedean f) := by
+  rw [injective_iff_map_eq_zero]
+  intro r hr
+  contrapose! hr
+  rw [ofArchimedean_apply, mk_ne_zero]
+  exact mk_map_of_archimedean' f hr
+
+@[simp]
+theorem ofArchimedean_inj (f : R →+*o K) {x y : R} :
+    ofArchimedean f x = ofArchimedean f y ↔ x = y :=
+  (ofArchimedean_injective f).eq_iff
 
 end FiniteResidueField
 
@@ -324,5 +339,21 @@ theorem stdPart_ratCast (q : ℚ) : stdPart (q : K) = q := by
 theorem stdPart_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
   rw [stdPart, dif_pos]
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
+
+theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
+    FiniteResidueField.ofArchimedean f (stdPart x) = FiniteResidueField.mk (.mk x hx) := by
+  rw [stdPart, dif_pos hx, ← OrderRingHom.comp_apply, ← OrderRingHom.comp_assoc,
+    OrderRingHom.comp_apply, OrderRingHom.apply_eq_self]
+
+/-- The standard part of `x` is the unique real `r` such that `x - r` is infinitesimal. -/
+theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
+    0 < mk (x - f r) ↔ stdPart x = r := by
+  refine (FiniteResidueField.mk_eq_zero
+    (x := FiniteElement.mk x hx - .mk _ (mk_map_nonneg_of_archimedean f r))).symm.trans ?_
+  rw [map_sub, ← FiniteResidueField.ofArchimedean_apply, ← ofArchimedean_stdPart f hx,
+    sub_eq_zero, FiniteResidueField.ofArchimedean_inj f]
+
+theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
+  (mk_sub_pos_iff f hx).2 rfl
 
 end ArchimedeanClass
