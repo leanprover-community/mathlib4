@@ -120,6 +120,10 @@ protected def ArtinGroup : Type _ := PresentedGroup M.artinRelationsSet
 
 instance : Group M.ArtinGroup := QuotientGroup.Quotient.group _
 
+/-- An Artin group with no generators is trivial. -/
+instance instUniqueArtinGroupOfIsEmpty [IsEmpty B] : Unique M.ArtinGroup :=
+  PresentedGroup.instUniqueOfIsEmpty _
+
 /-- The `i`-th generator of the Artin group. -/
 def artinGenerator (i : B) : M.ArtinGroup := PresentedGroup.of i
 

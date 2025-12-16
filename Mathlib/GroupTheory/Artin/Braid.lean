@@ -281,24 +281,13 @@ theorem toPermHom_surjective (hn : 2 ≤ n) : Function.Surjective (toPermHom hn)
 
 /-! ### Small braid groups -/
 
-/-- The braid group B_0 is trivial (no generators).
-Since `BraidGroup 0 = (typeA 0).ArtinGroup` (as `0 - 1 = 0` in ℕ), and `typeA 0` has
-no generators (`Fin 0` is empty), the Artin group is the trivial group. -/
-instance uniqueZero : Unique (BraidGroup 0) where
-  default := 1
-  uniq x := by
-    -- Every element of BraidGroup 0 comes from FreeGroup (Fin 0), which is trivial
-    induction x using PresentedGroup.induction_on with
-    | _ z => exact congrArg _ (Unique.eq_default (α := FreeGroup (Fin 0)) z)
+/-- The braid group B_0 is trivial (no generators). -/
+instance : Unique (BraidGroup 0) :=
+  inferInstanceAs (Unique (CoxeterMatrix.typeA 0).ArtinGroup)
 
-/-- The braid group B_1 is trivial (no generators).
-Since `BraidGroup 1 = (typeA 0).ArtinGroup`, and `typeA 0` has
-no generators (`Fin 0` is empty), the Artin group is the trivial group. -/
-instance uniqueOne : Unique (BraidGroup 1) where
-  default := 1
-  uniq x := by
-    induction x using PresentedGroup.induction_on with
-    | _ z => exact congrArg _ (Unique.eq_default (α := FreeGroup (Fin 0)) z)
+/-- The braid group B_1 is trivial (no generators). -/
+instance : Unique (BraidGroup 1) :=
+  inferInstanceAs (Unique (CoxeterMatrix.typeA 0).ArtinGroup)
 
 /-- The Artin relations for `typeA 1` are all trivial.
 When i = j, the relation is `of i * (of i)⁻¹ = 1`. -/
@@ -318,47 +307,27 @@ theorem artinRelationsSet_typeA_one_eq_one :
     simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.typeA_M_diag,
       CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel, hr]
 
-/-- The normal closure of {1} is the trivial subgroup. -/
-theorem normalClosure_singleton_one {G : Type*} [Group G] :
-    Subgroup.normalClosure ({1} : Set G) = ⊥ := by
-  apply le_antisymm
-  · apply Subgroup.normalClosure_le_normal
-    simp only [Set.singleton_subset_iff, SetLike.mem_coe, Subgroup.mem_bot]
-  · exact bot_le
-
-/-- Auxiliary MulEquiv from FreeGroup Unit to Multiplicative ℤ. -/
-def freeGroupUnitEquivMulInt : FreeGroup Unit ≃* Multiplicative ℤ where
-  toFun x := Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-  invFun n := FreeGroup.freeGroupUnitEquivInt.symm n.toAdd
-  left_inv x := by simp
-  right_inv n := by simp
-  map_mul' x y := by
-    rw [← ofAdd_add]
-    congr 1
-    -- freeGroupUnitEquivInt (x * y) = freeGroupUnitEquivInt x + freeGroupUnitEquivInt y
-    change ((FreeGroup.map fun _ => (1 : ℤ)) (x * y)).sum =
-      ((FreeGroup.map fun _ => (1 : ℤ)) x).sum + ((FreeGroup.map fun _ => (1 : ℤ)) y).sum
-    rw [(FreeGroup.map fun _ => (1 : ℤ)).map_mul, FreeGroup.sum.map_mul]
-
 /-- The braid group B_2 is isomorphic to ℤ (one generator, no non-trivial relations).
 The isomorphism sends the unique generator σ_0 to 1 ∈ ℤ. -/
-def equivIntTwo : BraidGroup 2 ≃* Multiplicative ℤ := by
+def braidGroupTwoEquivInt : BraidGroup 2 ≃* Multiplicative ℤ := by
   -- BraidGroup 2 = (typeA 1).ArtinGroup = PresentedGroup (typeA 1).artinRelationsSet
   -- The relations are all trivial, so this equals FreeGroup (Fin 1) / ⊥ ≃ FreeGroup (Fin 1)
   -- First, show the quotient is by the trivial subgroup
   have h : Subgroup.normalClosure (CoxeterMatrix.typeA 1).artinRelationsSet = ⊥ := by
-    rw [artinRelationsSet_typeA_one_eq_one, normalClosure_singleton_one]
+    rw [artinRelationsSet_typeA_one_eq_one, Subgroup.normalClosure_singleton_one]
   -- Chain: PresentedGroup rels ≃* FreeGroup (Fin 1) ⧸ ⊥ ≃*
   --        FreeGroup (Fin 1) ≃* FreeGroup Unit ≃* Multiplicative ℤ
   exact (QuotientGroup.quotientMulEquivOfEq h).trans
     (QuotientGroup.quotientBot.trans
-      ((FreeGroup.freeGroupCongr (Equiv.equivPUnit (Fin 1))).trans freeGroupUnitEquivMulInt))
+      ((FreeGroup.freeGroupCongr (Equiv.equivPUnit (Fin 1))).trans
+        FreeGroup.freeGroupUnitEquivMulInt))
 
 /-- The generator σ_0 of B_2 maps to 1 under the isomorphism with ℤ. -/
 @[simp]
-theorem equivIntTwo_σ : equivIntTwo (σ ⟨0, by omega⟩) = Multiplicative.ofAdd 1 := by
-  simp only [equivIntTwo, MulEquiv.trans_apply, QuotientGroup.quotientBot_apply,
-    FreeGroup.freeGroupCongr_apply, freeGroupUnitEquivMulInt]
+theorem braidGroupTwoEquivInt_σ :
+    braidGroupTwoEquivInt (σ ⟨0, by omega⟩) = Multiplicative.ofAdd 1 := by
+  simp only [braidGroupTwoEquivInt, MulEquiv.trans_apply, QuotientGroup.quotientBot_apply,
+    FreeGroup.freeGroupCongr_apply, FreeGroup.freeGroupUnitEquivMulInt]
   rfl
 
 end BraidGroup
