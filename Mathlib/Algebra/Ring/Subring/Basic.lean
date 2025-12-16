@@ -313,6 +313,7 @@ instance : InfSet (Subring R) :=
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -320,7 +321,8 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]

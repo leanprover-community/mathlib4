@@ -200,7 +200,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
