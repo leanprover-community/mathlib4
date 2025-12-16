@@ -59,16 +59,14 @@ def alternatingWord (i j : B) : ℕ → List B
 theorem alternatingWord_zero (i j : B) : alternatingWord i j 0 = [] := rfl
 
 @[simp]
-theorem alternatingWord_one (i j : B) : alternatingWord i j 1 = [i] := rfl
-
-@[simp]
-theorem alternatingWord_two (i j : B) : alternatingWord i j 2 = [j, i] := rfl
-
-@[simp]
-theorem alternatingWord_three (i j : B) : alternatingWord i j 3 = [i, j, i] := rfl
-
 theorem alternatingWord_succ (i j : B) (m : ℕ) :
     alternatingWord i j (m + 1) = (alternatingWord j i m).concat i := rfl
+
+theorem alternatingWord_one (i j : B) : alternatingWord i j 1 = [i] := rfl
+
+theorem alternatingWord_two (i j : B) : alternatingWord i j 2 = [j, i] := rfl
+
+theorem alternatingWord_three (i j : B) : alternatingWord i j 3 = [i, j, i] := rfl
 
 @[simp]
 theorem length_alternatingWord (i j : B) (m : ℕ) : (alternatingWord i j m).length = m := by
