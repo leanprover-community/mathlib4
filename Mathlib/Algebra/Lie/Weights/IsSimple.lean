@@ -278,20 +278,7 @@ lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
   simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
     using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
 
-lemma ad_mem_sl2_eq_zero_of_root_eval_eq_zero
-    {y : H} {α : Weight K H L} (hα : α.IsNonZero) (hy : (α : H → K) y = 0)
-    (z : L) (hz : z ∈ sl2SubmoduleOfRoot hα) : ⁅(y : L), z⁆ = 0 := by
-  rw [sl2SubmoduleOfRoot_eq_sup] at hz
-  obtain ⟨z_αneg, hz_αneg, z_cor, ⟨h_cor, hh_cor, rfl⟩, rfl⟩ := Submodule.mem_sup.mp hz
-  obtain ⟨z_α, hz_α, z_negα, hz_negα, rfl⟩ := Submodule.mem_sup.mp hz_αneg
-  simp only [lie_add, ← LieSubalgebra.coe_bracket_of_module]
-  rw [lie_eq_smul_of_mem_rootSpace hz_α, hy, zero_smul, zero_add,
-      lie_eq_smul_of_mem_rootSpace hz_negα, Pi.neg_apply, hy, neg_zero, zero_smul, zero_add]
-  have h_cor_in_zero : (h_cor : L) ∈ rootSpace H (0 : H → K) := by
-    rw [rootSpace_zero_eq]; exact h_cor.property
-  convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
-
-lemma l2 (q : Submodule K (Dual K H))
+private lemma eq_top_of_sl2Submodule_iSup_eq_top (q : Submodule K (Dual K H))
     (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
     q = ⊤ := by
   by_contra hq_ne_top
@@ -303,8 +290,17 @@ lemma l2 (q : Submodule K (Dual K H))
   obtain ⟨y, hy_mem, hy_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot h_ne_bot
   have hy_ortho : ∀ f ∈ q, f y = 0 := (Submodule.mem_dualCoannihilator y).mp hy_mem
   have h_comm : ∀ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
-      ∀ z ∈ sl2SubmoduleOfRoot α.2.2, ⁅(y : L), z⁆ = 0 :=
-    fun α z hz => ad_mem_sl2_eq_zero_of_root_eval_eq_zero α.2.2 (hy_ortho _ α.2.1) z hz
+      ∀ z ∈ sl2SubmoduleOfRoot α.2.2, ⁅(y : L), z⁆ = 0 := fun α z hz => by
+    have hy : (α.1 : H → K) y = 0 := hy_ortho _ α.2.1
+    rw [sl2SubmoduleOfRoot_eq_sup] at hz
+    obtain ⟨z_αneg, hz_αneg, z_cor, ⟨h_cor, _, rfl⟩, rfl⟩ := Submodule.mem_sup.mp hz
+    obtain ⟨z_α, hz_α, z_negα, hz_negα, rfl⟩ := Submodule.mem_sup.mp hz_αneg
+    simp only [lie_add, ← LieSubalgebra.coe_bracket_of_module]
+    rw [lie_eq_smul_of_mem_rootSpace hz_α, hy, zero_smul, zero_add,
+        lie_eq_smul_of_mem_rootSpace hz_negα, Pi.neg_apply, hy, neg_zero, zero_smul, zero_add]
+    have h_cor_in_zero : (h_cor : L) ∈ rootSpace H (0 : H → K) := by
+      rw [rootSpace_zero_eq]; exact h_cor.property
+    convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
   have h_comm_all : ∀ z : L, ⁅(y : L), z⁆ = 0 := fun z => by
     have hz : z ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
         (sl2SubmoduleOfRoot α.2.2).toSubmodule := by
@@ -314,7 +310,7 @@ lemma l2 (q : Submodule K (Dual K H))
     exact hz (LinearMap.ker (ad K L y)) fun α z hz => by simpa using h_comm α z hz
   have h_y_center : (y : L) ∈ LieAlgebra.center K L := fun z => by
     rw [← lie_skew, h_comm_all, neg_zero]
-  simp only [LieAlgebra.center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
+  simp only [center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
   exact hy_ne_zero h_y_center
 
 section IsSimple
@@ -338,7 +334,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have c₃ : J = ⊤ := by grind
-  apply LieAlgebra.IsKilling.l2 q
+  apply eq_top_of_sl2Submodule_iSup_eq_top q
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
   unfold J invtSubmoduleToLieIdeal at c₃
   simpa using c₃
