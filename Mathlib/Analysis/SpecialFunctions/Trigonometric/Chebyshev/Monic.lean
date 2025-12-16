@@ -15,8 +15,8 @@ public import Mathlib.Topology.Algebra.Polynomial
 * Chebyshev polynomials minimize deviation from zero,
   following proof in https://math.stackexchange.com/a/978145/1277
 ## Main statements
-* `min_abs_of_monic` provides a lower bound on the maximum of |P(x)| on [-1, 1] for monic P
-* `min_abs_of_monic_extrema` characterizes the equality case
+* `le_sup_abs_eval_of_monic` provides a lower bound on the maximum of |P(x)| on [-1, 1] for monic P
+* `sup_abs_eval_eq_iff_of_monic` characterizes the equality case
 -/
 
 namespace Polynomial.Chebyshev
@@ -108,35 +108,24 @@ namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
-    1/2^(n - 1) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
-  set M := sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 }
-  suffices 1 ≤ M * 2^(n - 1) by calc
-    1/2^(n - 1) ≤ (M * 2^(n - 1))/2^(n - 1) := by gcongr
-    _ = M := by rw [mul_div_assoc, div_self, mul_one]; simp
+theorem le_sup_abs_eval_of_monic {n : ℕ} (hn : n ≠ 0)
+    {P : ℝ[X]} (Pdeg : P.degree = n) (Pmonic : P.Monic) :
+    1 / 2 ^ (n - 1) ≤ sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } := by
+  suffices 1 ≤ 2 ^ (n - 1) * sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } by field_simp; assumption
   obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
   calc 1 = P.leadingCoeff := Pmonic.symm
     _ = ∑ i ∈ Finset.range (n + 1), (c i) * ((-1)^i * P.eval (cos (i * π / n))) := hform.symm
-    _ ≤ ∑ i ∈ Finset.range (n + 1), (c i) * M := by
+    _ ≤ ∑ i ∈ Finset.range (n + 1), (c i) * sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } := by
       gcongr with i hi
       · exact le_of_lt (hpos i hi)
-      exact P_eval_bound P n i
-    _ = M * 2^(n - 1) := by
-      rw [← Finset.sum_mul, mul_comm, hsum]
+      · exact P_eval_bound P n i
+    _ = 2 ^ (n - 1) * sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } := by
+      rw [← Finset.sum_mul, hsum]
 
-/-- `normalized_T n` is `T n` normalized to a monic polynomial. -/
-noncomputable def normalized_T (n : ℕ) : ℝ[X] := (Polynomial.C (1 / 2^(n - 1))) * T ℝ n
-
-@[simp]
-theorem normalized_T_eval (n : ℕ) (x : ℝ) :
-    (normalized_T n).eval x = ((T ℝ n).eval x) / 2^(n - 1) := by
-  unfold normalized_T
-  rw [eval_mul, eval_C]
-  field_simp
-
-theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
+theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
     (Pdeg : P.degree = n) (Pmonic : P.Monic) :
-    1/2^(n - 1) = sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } ↔ P = normalized_T n := by
+     sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } = 1 / 2 ^ (n - 1) ↔ P = (1 / 2 ^ (n - 1)) • (T ℝ n) :=
+    by
   constructor
   case mp =>
     intro h
