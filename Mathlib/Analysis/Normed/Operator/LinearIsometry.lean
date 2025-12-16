@@ -842,27 +842,21 @@ instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
 /-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearMap`. -/
-def toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] E₂) : E →SL[σ₁₂] E₂ := (e : E →SL[σ₁₂] E₂)
+abbrev toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] E₂) : E →SL[σ₁₂] E₂ :=
+  e.toContinuousLinearEquiv.toContinuousLinearMap
 
 @[simp] theorem coe_eq_toContinuousLinearMap : (e : E →SL[σ₁₂] E₂) = e.toContinuousLinearMap := rfl
 @[simp] theorem coe_toContinuousLinearMap : ⇑e.toContinuousLinearMap = e := rfl
 theorem toContinuousLinearMap_toContinuousLinearEquiv :
     e.toContinuousLinearEquiv.toContinuousLinearMap = e.toContinuousLinearMap := rfl
+
 theorem toContinuousLinearMap_toLinearIsometry :
     e.toLinearIsometry.toContinuousLinearMap = e.toContinuousLinearMap := rfl
 
-@[simp← ] theorem toContinuousLinearMap_trans {E₃ : Type*} [SeminormedAddCommGroup E₃]
-    [Module R₃ E₃] {e : E₂ ≃ₛₗᵢ[σ₂₁] E} {f : E₃ ≃ₛₗᵢ[σ₃₂] E₂} :
+@[simp] theorem toContinuousLinearMap_refl : (refl R E).toContinuousLinearMap = .id R E := rfl
+
+theorem toContinuousLinearMap_trans {e : E₂ ≃ₛₗᵢ[σ₂₁] E} {f : E₃ ≃ₛₗᵢ[σ₃₂] E₂} :
     (f.trans e).toContinuousLinearMap = e.toContinuousLinearMap.comp f.toContinuousLinearMap := rfl
-
-@[simp] theorem toContinuousLinearMap_refl :
-    (LinearIsometryEquiv.refl R E).toContinuousLinearMap = .id R E := rfl
-
-@[simp] theorem toContinuousLinearMap_comp_toContinuousLinearMap_symm :
-    e.toContinuousLinearMap.comp e.symm.toContinuousLinearMap = .id R₂ E₂ := by ext; simp
-@[simp] theorem toContinuousLinearMap_symm_comp_toContinuousLinearMap :
-    e.symm.toContinuousLinearMap.comp e.toContinuousLinearMap = .id R E := by ext; simp
-
 
 @[simp]
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=

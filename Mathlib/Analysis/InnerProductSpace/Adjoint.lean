@@ -665,7 +665,7 @@ lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
   calc
     _ = adjoint e.toContinuousLinearMap ∘L
         (e.toContinuousLinearMap ∘L e.symm.toContinuousLinearMap) := by
-      ext; simp
+      rw [← LinearIsometryEquiv.toContinuousLinearMap_trans]; simp
     _ = e.symm.toContinuousLinearMap := by
       rw [← comp_assoc, norm_map_iff_adjoint_comp_self _ |>.mp e.norm_map, one_def, id_comp]
 
