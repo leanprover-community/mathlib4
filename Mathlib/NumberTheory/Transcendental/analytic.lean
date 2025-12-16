@@ -805,4 +805,4 @@ lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
   · intros x' hx'
     apply Finset.min'_le (image f s) (f x') (mem_image_of_mem _ hx')
 
-#find_home AnalyticOnAt exists_mem_finset_min'
+#find_home exists_mem_finset_min'
