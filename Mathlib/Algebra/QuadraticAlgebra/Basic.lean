@@ -26,6 +26,11 @@ We prove :
   `w.norm` isn't a zero divisor in `R`.
 
 * If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
+
+## Warning
+If you are working over `ℚ`, note the existence of the diamond explained in
+`Mathlib.Algebra.QuadraticAlgebra.Defs`.
+
 -/
 
 @[expose] public section
@@ -71,13 +76,14 @@ theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = �
   ext <;> simp
 
 @[simp]
-theorem omega_mul_coe_mul_mk (n x y : R) :
-    (ω : QuadraticAlgebra R a b) * n * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
-  ext <;> simp only [re_mul, omega_re, re_coe, zero_mul, omega_im, mul_one, im_coe, mul_zero,
-    add_zero, im_mul, one_mul, zero_add]; ring
+theorem omega_mul_algebraMap_mul_mk (n x y : R) :
+    (ω : QuadraticAlgebra R a b) * algebraMap _ _ n * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
+  ext <;> simp; ring
+
+@[deprecated (since := "2025-12-15")] alias omega_mul_coe_mul_mk := omega_mul_algebraMap_mul_mk
 
 theorem mk_eq_add_smul_omega (x y : R) :
-    (⟨x, y⟩ : QuadraticAlgebra R a b) = x + y • (ω : QuadraticAlgebra R a b) := by
+    (⟨x, y⟩ : QuadraticAlgebra R a b) = algebraMap _ _ x + y • ω := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
@@ -86,7 +92,7 @@ variable {A : Type*} [Ring A] [Algebra R A]
 theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
-  simp [mk_eq_add_smul_omega, h, ← coe_algebraMap]
+  simp [mk_eq_add_smul_omega, h]
 
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
@@ -164,11 +170,10 @@ theorem im_star (z : QuadraticAlgebra R a b) :
   rfl
 
 theorem mul_star (x y : R) :
-    (⟨x, y⟩ * star ⟨x, y⟩ : QuadraticAlgebra R a b) =
-      x * x + b * x * y - a * y * y := by
-  ext <;>
-  simp only [star_mk, mk_mul_mk, mul_neg, im_sub, im_add, im_mul, re_coe, im_coe, mul_zero,
-    zero_mul, add_zero, re_mul, sub_self, re_sub, re_add] <;> ring
+    (⟨x, y⟩ * star ⟨x, y⟩ : QuadraticAlgebra R a b) = (algebraMap _ _ x) * (algebraMap _ _ x) +
+      (algebraMap _ _ b) * (algebraMap _ _ x) * (algebraMap _ _ y) - (algebraMap _ _ a) *
+      (algebraMap _ _ y) * (algebraMap _ _ y) := by
+  ext <;> simp <;> ring
 
 instance : StarRing (QuadraticAlgebra R a b) where
   star_involutive _ := by
@@ -200,7 +205,10 @@ theorem norm_zero : norm (0 : QuadraticAlgebra R a b) = 0 := by simp [norm]
 theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 
 @[simp]
-theorem norm_coe (r : R) : norm (r : QuadraticAlgebra R a b) = r ^ 2 := by simp [norm_def, pow_two]
+theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
+  simp [norm_def, pow_two]
+
+@[deprecated (since := "2025-12-15")] alias norm_coe := norm_algebraMap
 
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
@@ -210,9 +218,11 @@ theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
 theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
   simp [norm_def, pow_two]
 
-theorem coe_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
-    ((norm z : R) : QuadraticAlgebra R a b) = z * star z := by
+theorem algebraMap_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
+    (algebraMap R _ (norm z : R)) = z * star z := by
   ext <;> simp [norm, star, mul_comm] <;> ring
+
+@[deprecated (since := "2025-12-15")] alias coe_norm_eq_mul_star := algebraMap_norm_eq_mul_star
 
 @[simp]
 theorem norm_neg (x : QuadraticAlgebra R a b) : (-x).norm = x.norm := by
@@ -230,8 +240,8 @@ theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
   · exact IsUnit.map norm
   · simp only [isUnit_iff_exists]
     rintro ⟨r, hr, hr'⟩
-    rw [← coe_inj (R := R) (a := a) (b := b), coe_mul,
-      coe_norm_eq_mul_star, mul_assoc, coe_one] at hr
+    rw [← C_inj (R := R) (a := a) (b := b), C_mul, C_eq_algebraMap, algebraMap_norm_eq_mul_star,
+      mul_assoc, map_one] at hr
     refine ⟨_, hr, ?_⟩
     rw [mul_comm, hr]
 
@@ -239,7 +249,8 @@ theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
 if and only if it is contained in the submonoid of unitary elements. -/
 theorem norm_eq_one_iff_mem_unitary {z : QuadraticAlgebra R a b} :
     z.norm = 1 ↔ z ∈ unitary (QuadraticAlgebra R a b) := by
-  rw [Unitary.mem_iff_self_mul_star, ← coe_norm_eq_mul_star, coe_eq_one_iff]
+  rw [Unitary.mem_iff_self_mul_star, ← algebraMap_norm_eq_mul_star]
+  simp [← algebraMap_inj (R := R) (a := a) (b := b)]
 
 alias ⟨mem_unitary, norm_eq_one⟩ := norm_eq_one_iff_mem_unitary
 
@@ -251,18 +262,21 @@ theorem mker_norm_eq_unitary :
 
 open nonZeroDivisors
 
-theorem coe_mem_nonZeroDivisors_iff {r : R} :
-    (r : QuadraticAlgebra R a b) ∈ (QuadraticAlgebra R a b)⁰ ↔ r ∈ R⁰ := by
+theorem algebraMap_mem_nonZeroDivisors_iff {r : R} :
+    algebraMap R (QuadraticAlgebra R a b) r ∈ (QuadraticAlgebra R a b)⁰ ↔ r ∈ R⁰ := by
   simp only [mem_nonZeroDivisors_iff_right]
   constructor
   · intro H x hxr
-    rw [← coe_inj, coe_zero]
+    rw [← algebraMap_inj, map_zero]
     apply H
-    rw [← coe_mul, hxr, coe_zero]
+    rw [← map_mul, hxr, map_zero]
   · intro h z hz
     rw [QuadraticAlgebra.ext_iff, re_zero, im_zero] at hz
-    simp only [re_mul, re_coe, im_coe, mul_zero, add_zero, im_mul, zero_add] at hz
+    simp only [re_mul, algebraMap_re, algebraMap_im, mul_zero, add_zero, im_mul, zero_add] at hz
     simp [QuadraticAlgebra.ext_iff, re_zero, im_zero, h _ hz.left, h _ hz.right]
+
+@[deprecated (since := "2025-12-15")]
+alias coe_mem_nonZeroDivisors_iff := algebraMap_mem_nonZeroDivisors_iff
 
 theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
     (hz : z ∈ (QuadraticAlgebra R a b)⁰) :
@@ -286,12 +300,13 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
   · simp only [mem_nonZeroDivisors_iff_right]
     intro h w hw
     have : norm z • w = 0 := by
-      rw [← coe_mul_eq_smul, coe_norm_eq_mul_star, mul_comm, ← mul_assoc, hw, zero_mul]
+      rw [← C_mul_eq_smul, C_eq_algebraMap, algebraMap_norm_eq_mul_star, mul_comm, ← mul_assoc, hw,
+        zero_mul]
     simp only [QuadraticAlgebra.ext_iff, re_smul, smul_eq_mul, mul_comm, re_zero, im_smul,
       im_zero] at this
     ext <;> simp [h _ this.left, h _ this.right]
   · intro hz
-    rw [← coe_mem_nonZeroDivisors_iff, coe_norm_eq_mul_star]
+    rw [← algebraMap_mem_nonZeroDivisors_iff, algebraMap_norm_eq_mul_star]
     exact Submonoid.mul_mem _ hz (star_mem_nonZeroDivisors hz)
 
 end norm
@@ -322,8 +337,8 @@ instance : Field (QuadraticAlgebra R a b) where
   mul_inv_cancel z hz := by
     rw [ne_eq, ← norm_eq_zero_iff_eq_zero] at hz
     simp only [Algebra.mul_smul_comm]
-    rw [← coe_mul_eq_smul, ← coe_norm_eq_mul_star, ← coe_mul, coe_eq_one_iff]
-    exact inv_mul_cancel₀ hz
+    rw [← C_mul_eq_smul, C_eq_algebraMap, ← algebraMap_norm_eq_mul_star, ← map_mul,
+      inv_mul_cancel₀ hz, map_one]
   inv_zero := by simp
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
