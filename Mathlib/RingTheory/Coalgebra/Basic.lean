@@ -433,3 +433,35 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
     simp [LinearMap.comp_assoc]
 
 end Finsupp
+
+namespace Equiv
+variable {R A B : Type*} [CommSemiring R]
+
+variable (R) in
+/-- Transfer `CoalgebraStruct` across an `Equiv`. -/
+abbrev coalgebraStruct [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    CoalgebraStruct R A :=
+  letI := e.addCommMonoid
+  letI := e.module R
+  { comul :=
+      TensorProduct.map (e.linearEquiv R).symm.toLinearMap (e.linearEquiv R).symm.toLinearMap ∘ₗ
+        comul ∘ₗ (e.linearEquiv R).toLinearMap
+    counit := counit ∘ₗ (e.linearEquiv R).toLinearMap }
+
+variable (R) in
+/-- Transfer `Coalgebra` across an `Equiv`. -/
+abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    Coalgebra R A :=
+  letI := e.addCommMonoid
+  letI := e.module R
+  { __ := e.coalgebraStruct R
+    rTensor_counit_comp_comul := by ext; simp [coalgebraStruct]
+    lTensor_counit_comp_comul := by ext; simp [coalgebraStruct]
+    coassoc := by ext; simp [coalgebraStruct]
+  }
+
+end Equiv
