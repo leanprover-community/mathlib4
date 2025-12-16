@@ -811,14 +811,15 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 end RingRing
 
 /-- The kernel of a homomorphism to a domain is a completely prime ideal. -/
-theorem ker_isCompletelyPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
+theorem ker_isCompletelyPrime {F : Type*} [Semiring R] [Semiring S]
+    [NoZeroDivisors S] [Nontrivial S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsCompletelyPrime :=
   have := Ideal.bot_isCompletelyPrime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsCompletelyPrime
 
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
-theorem ker_isPrime {F : Type*} [Semiring R] [CommSemiring S] [IsDomain S]
+theorem ker_isPrime {F : Type*} [Semiring R] [CommSemiring S] [NoZeroDivisors S] [Nontrivial S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
   (ker_isCompletelyPrime f).isPrime
