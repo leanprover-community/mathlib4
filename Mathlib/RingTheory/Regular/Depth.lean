@@ -126,46 +126,50 @@ variable {R : Type u} [CommRing R] [Small.{v} R]
 open Pointwise ModuleCat IsSMulRegular
 
 lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
-    ∀ M : ModuleCat.{v} R, [Nontrivial M] → [Module.Finite R M] →
+    ∀ M : ModuleCat.{v} R, [Module.Finite R M] →
     I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
-  induction n
-  · intro M ntr M_fin smul_lt exists_N
+  induction n with
+  | zero =>
+    intro M M_fin smul_lt exists_N
+    let : Nontrivial M := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt _ _ smul_lt)
     use []
     simp [isRegular_iff]
-  · rename_i n ih
-    intro M ntrM M_fin smul_lt exists_N
+  | succ n ih =>
+    intro M M_fin smul_lt exists_N
     rcases exists_N with ⟨N, ntr, fin, h_supp, h_ext⟩
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
-    have : Subsingleton (N →ₗ[R] M) :=
-      let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
-      ModuleCat.homAddEquiv.symm.subsingleton
+    -- use `Ext N M 0` vanish to obtain an `M`-regular element `x` in `Ann(N)`
+    let _ : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
+    have : Subsingleton (N →ₗ[R] M) := ModuleCat.homAddEquiv.symm.subsingleton
     rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
+    -- take a power of it to make `xᵏ` fall into `I`
     have := Ideal.le_radical mem_ann
     rw [h_supp', Ideal.mem_radical_iff] at this
     rcases this with ⟨k, hk⟩
     have hxk := IsSMulRegular.pow k hx
-    let M' := QuotSMulTop (x ^ k) M
+    -- prepare to apply induction hypotesis to `M ⧸ xᵏM`
     have le_smul : x ^ k • (⊤ : Submodule R M) ≤ I • ⊤ := by
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
-    have ntr' : Nontrivial M' :=
-      Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
-    have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
+    have smul_lt' : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
       absurd lt_top_iff_ne_top.mp smul_lt
       have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
         (Submodule.mkQ ((x ^ k) • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
       simpa [eq, le_smul] using this
+    -- verify that `N` indeed make `M ⧸ xᵏM` satisfy the induction hypothesis
     have exists_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
         Module.support R N = PrimeSpectrum.zeroLocus I ∧
-          ∀ i < n, Subsingleton (Abelian.Ext N (ModuleCat.of R M') i)) := by
+          ∀ i < n, Subsingleton (Abelian.Ext N (ModuleCat.of R (QuotSMulTop (x ^ k) M)) i)) := by
       use N
       simp only [ntr, fin, h_supp, true_and]
       intro i hi
+      -- the vanishing of `Ext` is obtained from the (covariant) long exact sequence given by
+      -- `M.smulShortComplex (x ^ k)`
       have zero1 : IsZero (AddCommGrpCat.of (Ext N M i)) :=
         @AddCommGrpCat.isZero_of_subsingleton _ (h_ext i (Nat.lt_add_right 1 hi))
       have zero2 : IsZero (AddCommGrpCat.of (Ext N M (i + 1))) :=
@@ -173,7 +177,7 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N hxk.smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
-    rcases ih (ModuleCat.of R M') smul_lt' exists_N' with ⟨rs, len, mem, reg⟩
+    rcases ih (ModuleCat.of R (QuotSMulTop (x ^ k) M)) smul_lt' exists_N' with ⟨rs, len, mem, reg⟩
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hxk, reg⟩
 
