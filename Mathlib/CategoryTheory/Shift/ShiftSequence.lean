@@ -16,7 +16,7 @@ shift by an additive monoid `M`. In this file, we define a typeclass
 `F.shift a : C ⥤ A` for all `a : A`. For each `a : A`, we have
 an isomorphism `F.isoShift a : shiftFunctor C a ⋙ F ≅ F.shift a` which
 satisfies some coherence relations. This allows to state results
-(e.g. the long exact sequence of an homology functor (TODO)) using
+(e.g. the long exact sequence of a homology functor (TODO)) using
 functors `F.shift a` rather than `shiftFunctor C a ⋙ F`. The reason
 for this design is that we can often choose functors `F.shift a` that
 have better definitional properties than `shiftFunctor C a ⋙ F`.
@@ -31,7 +31,7 @@ in degree `n`.
 
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type*} [Category C] [Category A] (F : C ⥤ A)
+variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
   (M : Type*) [AddMonoid M] [HasShift C M]
   {G : Type*} [AddGroup G] [HasShift C G]
 

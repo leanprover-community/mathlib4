@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 In this file we prove formulas for `(f x * g x)'` and `(f x • g x)'`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
@@ -372,6 +372,9 @@ theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
     HasDerivAt (fun y => c * d y) (c * d') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hd.const_mul c
+
+theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
+  simpa only [mul_one] using (hasDerivAt_id' x).const_mul c
 
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by

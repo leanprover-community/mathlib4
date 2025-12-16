@@ -58,7 +58,7 @@ lemma mapComp'_hom_naturality :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
   (F.mapComp' f g fg hfg).hom.naturality a
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma mapComp'_inv_naturality :
     (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
     (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=

@@ -22,10 +22,11 @@ The topological closure of a subalgebra is still a subalgebra, which as an algeb
 topological algebra.
 
 In this file we define continuous algebra homomorphisms, as algebra homomorphisms between
-topological (semi-)rings which are continuous. The set of continuous algebra homomorphisms between
-the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
+topological (semi-)rings which are continuous. The type `ContinuousAlgHom R A B` of continuous
+algebra homomorphisms between the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 
-TODO: add continuous algebra isomorphisms.
+See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
+the topological `R`-algebras `A` and `B`.
 
 -/
 
@@ -72,11 +73,18 @@ def algebraMapCLM : R →L[R] A :=
     toFun := algebraMap R A
     cont := continuous_algebraMap R A }
 
-theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
+theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
 
-theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
+theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
+
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
+
+lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
+    toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
+  ext; simp
 
 end
 

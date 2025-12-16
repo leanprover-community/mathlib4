@@ -224,7 +224,7 @@ variable {a : A} (ha : p a)
 -- Note: since `spectrum R a` is closed, we may always extend `f : C(spectrum R a, R)` to a function
 -- of type `C(R, R)` by the Tietze extension theorem (assuming `R` is either `ℝ`, `ℂ` or `ℝ≥0`).
 
-/-- The star algebra homomorphism underlying a instance of the continuous functional calculus;
+/-- The star algebra homomorphism underlying an instance of the continuous functional calculus;
 a version for continuous functions on the spectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`, for otherwise it
@@ -676,13 +676,13 @@ lemma CFC.spectrum_algebraMap_eq [Nontrivial A] (r : R) :
 include instCFC in
 lemma CFC.spectrum_zero_eq [Nontrivial A] :
     spectrum R (0 : A) = {0} := by
-  have : (0 : A) = algebraMap R A 0 := Eq.symm (RingHom.map_zero (algebraMap R A))
+  have : (0 : A) = algebraMap R A 0 := Eq.symm (map_zero (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 include instCFC in
 lemma CFC.spectrum_one_eq [Nontrivial A] :
     spectrum R (1 : A) = {1} := by
-  have : (1 : A) = algebraMap R A 1 := Eq.symm (RingHom.map_one (algebraMap R A))
+  have : (1 : A) = algebraMap R A 1 := Eq.symm (map_one (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 @[simp]

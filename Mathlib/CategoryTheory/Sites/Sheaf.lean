@@ -152,7 +152,7 @@ theorem isLimit_iff_isSheafFor :
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
     morphism from every cone in the same category (i.e. over the same diagram),
-    iff `Hom (E, P -)`is separated for the sieve `S` and all `E : A`. -/
+    iff `Hom (E, P -)` is separated for the sieve `S` and all `E : A`. -/
 theorem subsingleton_iff_isSeparatedFor :
     (∀ c, Subsingleton (c ⟶ P.mapCone S.arrows.cocone.op)) ↔
       ∀ E : Aᵒᵖ, IsSeparatedFor (P ⋙ coyoneda.obj E) S.arrows := by
@@ -321,6 +321,8 @@ instance instCategorySheaf : Category (Sheaf J A) where
   comp_id _ := Hom.ext <| comp_id _
   assoc _ _ _ := Hom.ext <| assoc _ _ _
 
+attribute [reassoc] comp_val
+
 -- Let's make the inhabited linter happy.../sips
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
@@ -353,10 +355,44 @@ def sheafSectionsNatIsoEvaluation {X : C} :
 def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
   preimage f := ⟨f⟩
 
-variable {J A} in
+section
+
+variable {J A}
+
 /-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
 abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
+
+/-- `Sheaf.homEquiv` as a natural isomorphism. -/
+@[simps!]
+def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
+    sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
+      yoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.symm.{max u₁ v₂} _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compUliftYonedaCompWhiskeringLeft ≪≫
+    uliftYonedaIsoYoneda
+
+lemma sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf.app X).app (op Y) =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
+
+/-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
+@[simps!]
+def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
+    (sheafToPresheaf J A).op ⋙ coyoneda ⋙
+      (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A) ≅
+      coyoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.symm.{max u₁ v₂} _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compUliftCoyonedaCompWhiskeringLeft ≪≫
+    uliftCoyonedaIsoCoyoneda
+
+lemma sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.app (op X)).app Y =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
+
+end
 
 instance : (sheafToPresheaf J A).Full :=
   (fullyFaithfulSheafToPresheaf J A).full

@@ -813,6 +813,10 @@ theorem isOpen_induced_eq {s : Set α} :
 theorem isOpen_induced {s : Set β} (h : IsOpen s) : IsOpen[induced f t] (f ⁻¹' s) :=
   ⟨s, h, rfl⟩
 
+theorem isClosed_induced {s : Set β} (h : IsClosed s) : IsClosed[induced f t] (f ⁻¹' s) := by
+  simp_rw [← isOpen_compl_iff]
+  exact isOpen_induced h.isOpen_compl
+
 theorem map_nhds_induced_eq (a : α) : map f (@nhds α (induced f t) a) = 𝓝[range f] f a := by
   rw [nhds_induced, Filter.map_comap, nhdsWithin]
 

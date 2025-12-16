@@ -108,6 +108,9 @@ theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
+theorem tangentConeAt_of_mem_nhds (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
+  rw [← univ_inter s, tangentConeAt_inter_nhds h, tangentConeAt_univ]
+
 end TVS
 
 section Normed
