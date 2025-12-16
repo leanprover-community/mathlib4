@@ -611,7 +611,7 @@ theorem add_vecMulVec [Mul α] [Add α] [RightDistribClass α] (w₁ w₂ : m �
   ext fun _ _ => add_mul _ _ _
 
 theorem vecMulVec_add [Mul α] [Add α] [LeftDistribClass α] (w : m → α) (v₁ v₂ : n → α) :
-    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂  :=
+    vecMulVec w (v₁ + v₂) = vecMulVec w v₁ + vecMulVec w v₂ :=
   ext fun _ _ => mul_add _ _ _
 
 @[simp]

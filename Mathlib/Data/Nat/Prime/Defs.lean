@@ -390,8 +390,7 @@ theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
       apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ
-      )).one_lt
+      apply Nat.zero_lt_succ)).one_lt
 
 end MinFac
 
