@@ -659,7 +659,7 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
 
 open IsManifold in
 /-- The identity map is an immersion with complement `PUnit`. -/
-lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
+protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
   intro x
   apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
     (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
@@ -723,7 +723,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
 
 open IsManifold in
 /-- The identity map is an immersion. -/
-lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
+protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/

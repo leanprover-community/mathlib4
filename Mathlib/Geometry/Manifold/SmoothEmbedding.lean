@@ -51,14 +51,13 @@ noncomputable section
 namespace Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E E' E'' E''' F F' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {E₁ E₂ E₃ E₄ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
+  [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
+  [NormedAddCommGroup E₃] [NormedSpace 𝕜 E₃] [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₄]
   {H H' G G' : Type*} [TopologicalSpace H] [TopologicalSpace H']
   [TopologicalSpace G] [TopologicalSpace G']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 E'' G} {J' : ModelWithCorners 𝕜 E''' G'}
+  {I : ModelWithCorners 𝕜 E₁ H} {I' : ModelWithCorners 𝕜 E₂ H'}
+  {J : ModelWithCorners 𝕜 E₃ G} {J' : ModelWithCorners 𝕜 E₄ G'}
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
@@ -79,7 +78,7 @@ variable {f g : M → N}
 -- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
 proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : ContMDiff I J n f
 
-lemma id [IsManifold I n M] : IsSmoothEmbedding I I n (@id M) := ⟨.id, .id⟩
+protected lemma id [IsManifold I n M] : IsSmoothEmbedding I I n (@id M) := ⟨.id, .id⟩
 
 /-- If `f: M → N` and `g: M' × N'` are smooth embeddings, respectively,
 then so is `f × g: M × M' → N × N'`. -/
