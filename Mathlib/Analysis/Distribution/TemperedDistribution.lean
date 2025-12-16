@@ -142,9 +142,9 @@ theorem ker_toTemperedDistributionCLM_eq_bot {p : ℝ≥0∞} [hp : Fact (1 ≤ 
   intro f hf
   rw [eq_zero_iff_ae_eq_zero]
   apply ae_eq_zero_of_integral_contDiff_smul_eq_zero
-  · exact MemLp.locallyIntegrable (μ := μ) (Lp.memLp f) hp.elim
+  · exact (Lp.memLp f).locallyIntegrable hp.elim
   · intro g g_smooth g_cpt
-    have hg₁ : HasCompactSupport (Complex.ofRealCLM ∘ g) := HasCompactSupport.comp_left g_cpt rfl
+    have hg₁ : HasCompactSupport (Complex.ofRealCLM ∘ g) := g_cpt.comp_left rfl
     have hg₂ : ContDiff ℝ ∞ (Complex.ofRealCLM ∘ g) := by fun_prop
     calc
       _ = toTemperedDistributionCLM F μ p f (hg₁.toSchwartzMap hg₂) := by simp
