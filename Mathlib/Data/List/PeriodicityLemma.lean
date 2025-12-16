@@ -97,7 +97,7 @@ lemma hasPeriod_iff_forall_getElem?_mod {p : ℕ} {w : List α} :
     HasPeriod w p ↔ (∀ i < w.length, w[i]? = w[i % p]?) := by
   constructor
   · intro per i len
-    exact  Eq.symm (per.getElem?_mod p i w len)
+    exact Eq.symm (per.getElem?_mod p i w len)
   · intro mod
     rw [hasPeriod_iff_getElem?]
     intro i less
@@ -163,7 +163,7 @@ lemma HasPeriod.take_append (p n : ℕ) (w : List α) (dvd : p ∣ n)
       have j_mod : (j - n) % p = j % p := by
         calc
           (j - n) % p = (j - p * (n / p)) % p := by rw [Nat.mul_div_cancel' dvd]
-          _           = j % p := sub_mul_mod ((Nat.mul_div_cancel' dvd).symm ▸ n_le_j)
+          _ = j % p := sub_mul_mod ((Nat.mul_div_cancel' dvd).symm ▸ n_le_j)
       calc
         (take n w ++ w)[j]? = w[j - (take n w).length]? := getElem?_append_right (by simp_all)
         _ = w[j - n]? := by simp_all
@@ -182,9 +182,9 @@ lemma HasPeriod.drop_of_hasPeriod_add {q k : ℕ} {w : List α}
   intro i i_lt
   calc
      w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
-     _         = w[i]? := (per_q i (by lia)).symm
-     _         = w[i + (k + q)]? := per_plus i (by lia)
-     _         = w[q + (i + k)]? := congr_arg (getElem? w) (by lia)
+     _ = w[i]? := (per_q i (by lia)).symm
+     _ = w[i + (k + q)]? := per_plus i (by lia)
+     _ = w[q + (i + k)]? := congr_arg (getElem? w) (by lia)
 
 /-- The **Periodicity Lemma**, also known as the **Fine and Wilf theorem**, shows that
 if word `w` of length at least `p + q - gcd p q` has two periods `p` and `q`,
