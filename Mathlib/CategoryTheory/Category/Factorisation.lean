@@ -35,9 +35,9 @@ structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The midpoint of the factorisation. -/
   mid : C
   /-- The morphism into the factorisation midpoint. -/
-  ι : X ⟶ mid
+  ι   : X ⟶ mid
   /-- The morphism out of the factorisation midpoint. -/
-  π : mid ⟶ Y
+  π   : mid ⟶ Y
   /-- The factorisation condition. -/
   ι_π : ι ≫ π = f := by cat_disch
 
