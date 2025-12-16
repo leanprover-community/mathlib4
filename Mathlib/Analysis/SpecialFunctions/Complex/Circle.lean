@@ -203,4 +203,4 @@ theorem Circle.isAddQuotientCoveringMap_exp :
 theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
 
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
-  homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+  Circle.isCoveringMap_exp.isLocalHomeomorph
