@@ -110,7 +110,7 @@ theorem cof_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] :
     (@type α (· < ·) _).cof = @Order.cof α (· ≤ ·) := by
   rw [cof_type, compl_lt, swap_ge]
 
-theorem cof_eq_cof_toType (o : Ordinal) : o.cof = @Order.cof o.toType (· ≤ ·) := by
+theorem cof_eq_cof_toType (o : Ordinal) : o.cof = @Order.cof o.ToType (· ≤ ·) := by
   conv_lhs => rw [← type_toType o, cof_type_lt]
 
 theorem le_cof_type [IsWellOrder α r] {c} : c ≤ cof (type r) ↔ ∀ S, Unbounded r S → c ≤ #S :=
@@ -181,7 +181,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     refine
       (cof_type_le fun a => ?_).trans
         (@mk_le_of_injective _ _
-          (fun s : typein ((· < ·) : o.toType → o.toType → Prop) ⁻¹' Set.range f =>
+          (fun s : typein ((· < ·) : o.ToType → o.ToType → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
           fun s t hst => by
           let H := congr_arg f hst
@@ -190,13 +190,13 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     obtain ⟨i, hi⟩ := this
-    refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
+    refine ⟨enum (α := o.ToType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
     · rw [type_toType, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
     · rwa [← typein_le_typein, typein_enum]
-  · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
+  · rcases cof_eq (α := o.ToType) (· < ·) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
       (le_of_forall_lt fun a ha => ?_), by rwa [type_toType o] at hS'⟩
@@ -366,7 +366,7 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
 
 @[simp]
 theorem cof_zero : cof 0 = 0 := by
-  refine LE.le.antisymm  ?_ (Cardinal.zero_le _)
+  refine LE.le.antisymm ?_ (Cardinal.zero_le _)
   rw [← card_zero]
   exact cof_le_card 0
 

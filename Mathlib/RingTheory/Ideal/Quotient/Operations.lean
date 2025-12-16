@@ -20,8 +20,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
   for a morphism from a commutative ring to a semiring.
 - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
   for a morphism of algebras (over a commutative semiring)
-- `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
-  for a morphism from a commutative ring to a semiring.
 - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
@@ -436,6 +434,12 @@ theorem Quotient.factorₐ_apply (x : A ⧸ I) :
     Quotient.factorₐ R₁ hIJ x = Quotient.factor hIJ x := rfl
 
 @[simp]
+lemma Quotient.factorₐ_refl {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] (I : Ideal A) :
+    Ideal.Quotient.factorₐ R (le_refl I) = AlgHom.id R _ := by
+  ext
+  simp
+
+@[simp]
 lemma Quotient.factorₐ_comp {K : Ideal A} [K.IsTwoSided] (hJK : J ≤ K) :
     (Ideal.Quotient.factorₐ R₁ hJK).comp (Ideal.Quotient.factorₐ R₁ hIJ) =
       Ideal.Quotient.factorₐ R₁ (hIJ.trans hJK) :=
@@ -518,10 +522,54 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
     kerLiftAlg f with }
 
 /-- The **first isomorphism theorem** for algebras. -/
-@[simps!]
+@[simps! -isSimp apply]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
     (A ⧸ (RingHom.ker f)) ≃ₐ[R₁] B :=
   quotientKerAlgEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
+
+@[simp]
+lemma quotientKerAlgEquivOfSurjective_mk {f : A →ₐ[R₁] B} (hf : Function.Surjective f)
+    (a : A) : Ideal.quotientKerAlgEquivOfSurjective hf (Ideal.Quotient.mk _ a) = f a :=
+  rfl
+
+@[simp]
+lemma quotientKerAlgEquivOfSurjective_symm_apply {f : A →ₐ[R₁] B} (hf : Function.Surjective f)
+    (a : A) : (Ideal.quotientKerAlgEquivOfSurjective hf).symm (f a) = a := by
+  apply (Ideal.quotientKerAlgEquivOfSurjective hf).injective
+  simp
+
+section liftOfSurjective
+
+variable {R A B C : Type*} [CommRing R] [CommRing A] [CommRing B] [CommRing C]
+    [Algebra R A] [Algebra R B] [Algebra R C]
+
+/-- `AlgHom` version of `RingHom.liftOfSurjective` that descends an algebra homomorphism
+along a surjection. -/
+noncomputable
+def _root_.AlgHom.liftOfSurjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) : B →ₐ[R] C :=
+  .comp (Ideal.Quotient.liftₐ _ g H) (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
+
+@[simp]
+lemma _root_.AlgHom.liftOfSurjective_apply (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) (x) :
+    AlgHom.liftOfSurjective f hf g H (f x) = g x := by
+  dsimp [AlgHom.liftOfSurjective]
+  erw [AlgEquiv.coe_algHom] -- fixed after #21031
+  rw [Ideal.quotientKerAlgEquivOfSurjective_symm_apply]
+  rfl
+
+lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom) :
+    (AlgHom.liftOfSurjective f hf g H).comp f = g := by
+  ext; simp
+
+lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
+    (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
+    (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
+  .of_comp (g := f) (by convert hg; ext; simp)
+
+end liftOfSurjective
 
 end
 
@@ -1066,6 +1114,13 @@ theorem quotQuotEquivQuotOfLE_comp_quotQuotMkₐ (h : I ≤ J) :
 @[simp]
 theorem quotQuotEquivQuotOfLE_symm_comp_mkₐ (h : I ≤ J) :
     AlgHom.comp (↑(quotQuotEquivQuotOfLEₐ R h).symm) (Quotient.mkₐ R J) = quotQuotMkₐ R I J :=
+  rfl
+
+lemma quotQuotEquivQuotOfLEₐ_comp_mkₐ (h : I ≤ J) :
+    (quotQuotEquivQuotOfLEₐ R h).toAlgHom.comp (Ideal.Quotient.mkₐ _ _) =
+      Ideal.Quotient.factorₐ _ h := by
+  ext x
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   rfl
 
 end AlgebraQuotient

@@ -46,7 +46,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology E}
 
@@ -111,7 +111,7 @@ namespace Functor
 namespace IsCoverDense
 
 variable {K}
-variable {A : Type*} [Category A] (G : C ⥤ D)
+variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` cannot be inferred from the type
 theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
@@ -479,12 +479,12 @@ end IsCoverDense
 /-- If `G : C ⥤ D` is cover dense and full, then the
 map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf. -/
 lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
-    [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category A]
+    [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category* A]
     (P Q : Dᵒᵖ ⥤ A) (hQ : Presheaf.IsSheaf K Q) :
     Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
   (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
 
-variable {A : Type*} [Category A] (G : C ⥤ D)
+variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 /-- The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`
 if `G` is cover-dense, locally fully-faithful,
