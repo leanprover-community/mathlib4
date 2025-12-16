@@ -278,7 +278,7 @@ lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
   simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
     using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
 
-private theorem eq_top_of_sl2Submodule_iSup_eq_top (q : Submodule K (Dual K H))
+private theorem eq_top_of_iSup_sl2Submodule_eq_top_aux (q : Submodule K (Dual K H))
     (h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤) :
     q = ⊤ := by
   by_contra hq_ne_top
@@ -334,7 +334,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have c₃ : J = ⊤ := by grind
-  apply eq_top_of_sl2Submodule_iSup_eq_top q
+  apply eq_top_of_iSup_sl2Submodule_eq_top_aux q
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
   unfold J invtSubmoduleToLieIdeal at c₃
   simpa using c₃
