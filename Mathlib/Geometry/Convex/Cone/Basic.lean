@@ -444,11 +444,6 @@ lemma IsReproducing.sub_eq_univ [AddCommGroup M] {C : ConvexCone R M} (hC : C.Is
     (C : Set M) - (C : Set M) = Set.univ :=
   hC
 
-/-- `Set.univ` is a subset of the set difference of a reproducing cone with itself. -/
-lemma IsReproducing.univ_subset_sub [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
-    Set.univ ⊆ (C : Set M) - (C : Set M) :=
-  hC.sub_eq_univ.ge
-
 /-- A reproducing cone is generating. -/
 theorem IsReproducing.isGenerating {R : Type*} {M : Type*} [Ring R] [PartialOrder R]
     [AddCommGroup M] [Module R M] {C : ConvexCone R M} (h : C.IsReproducing) :
