@@ -138,7 +138,7 @@ open Basis OnCycleFactors
 theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
-  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by lia
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from

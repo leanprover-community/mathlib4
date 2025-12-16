@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
 
 namespace Linear

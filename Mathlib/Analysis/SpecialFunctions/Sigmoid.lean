@@ -43,11 +43,11 @@ that the composition of this embedding with the measurable embedding from a stan
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
-* `OrderEmbedding.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
+* `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
+* `measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
   measurable embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
+* `measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
