@@ -16,7 +16,6 @@ This file defines the braid groups as Artin groups of type A.
 
 ## Main definitions
 
-* `CoxeterMatrix.typeA`: The Coxeter matrix of type A_n.
 * `BraidGroup`: The braid group B_n on n strands.
 * `BraidGroup.σ`: The standard Artin generators σ_i of the braid group.
 * `BraidGroup.toPermHom`: The canonical surjection from B_n to S_n.
@@ -47,49 +46,16 @@ open Equiv Fin
 
 namespace CoxeterMatrix
 
-/-! ### The Coxeter matrix of type A -/
-
-/-- The Coxeter matrix of type A_n. This is the matrix with:
-- M i i = 1 (diagonal)
-- M i j = 3 if |i - j| = 1 (adjacent indices)
-- M i j = 2 if |i - j| ≥ 2 (far indices commute)
-
-This gives rise to the braid group B_{n+1}. -/
-def typeA (n : ℕ) : CoxeterMatrix (Fin n) where
-  M i j :=
-    if i = j then 1
-    else if (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i then 3
-    else 2
-  isSymm := by
-    ext i j
-    simp only [Matrix.transpose_apply]
-    by_cases hij : i = j
-    · simp [hij]
-    · simp only [hij, Ne.symm hij, ↓reduceIte]
-      by_cases hadj : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i
-      · have hadj' : (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j := hadj.symm
-        simp [hadj, hadj']
-      · have hadj' : ¬((j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j) := by
-          push_neg at hadj ⊢; exact hadj.symm
-        simp [hadj, hadj']
-  diagonal i := by simp only [↓reduceIte]
-  off_diagonal i j hij := by
-    simp only [hij, ↓reduceIte]
-    intro h
-    split_ifs at h with h1
-    · omega
-    · omega
-
 @[simp]
-theorem typeA_M_diag (n : ℕ) (i : Fin n) : (typeA n).M i i = 1 := by simp [typeA]
+theorem Aₙ_M_diag (n : ℕ) (i : Fin n) : (Aₙ n).M i i = 1 := by simp [Aₙ]
 
-theorem typeA_M_adjacent (n : ℕ) (i : Fin n) (hi : i.val + 1 < n) :
-    (typeA n).M i ⟨i.val + 1, hi⟩ = 3 := by
-  simp [typeA, Fin.ext_iff]
+theorem Aₙ_M_adjacent (n : ℕ) (i : Fin n) (hi : i.val + 1 < n) :
+    (Aₙ n).M i ⟨i.val + 1, hi⟩ = 3 := by
+  simp [Aₙ, Fin.ext_iff]
 
-theorem typeA_M_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
-    (h3 : (j : ℕ) + 1 ≠ i) : (typeA n).M i j = 2 := by
-  simp only [typeA, h1, ↓reduceIte]
+theorem Aₙ_M_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
+    (h3 : (j : ℕ) + 1 ≠ i) : (Aₙ n).M i j = 2 := by
+  simp only [Aₙ, Matrix.of_apply, h1, ↓reduceIte]
   split_ifs with h4
   · obtain h4 | h4 := h4 <;> omega
   · rfl
@@ -99,7 +65,7 @@ end CoxeterMatrix
 /-! ### The braid group -/
 
 /-- The braid group `B_n` on `n` strands. This is the Artin group of type A_{n-1}. -/
-abbrev BraidGroup (n : ℕ) : Type _ := (CoxeterMatrix.typeA (n - 1)).ArtinGroup
+abbrev BraidGroup (n : ℕ) : Type _ := (CoxeterMatrix.Aₙ (n - 1)).ArtinGroup
 
 namespace BraidGroup
 
@@ -108,7 +74,7 @@ variable {n : ℕ}
 /-- The i-th standard Artin generator σ_i of the braid group B_n.
 This corresponds to crossing strand i over strand i+1. -/
 def σ (i : Fin (n - 1)) : BraidGroup n :=
-  (CoxeterMatrix.typeA (n - 1)).artinGenerator i
+  (CoxeterMatrix.Aₙ (n - 1)).artinGenerator i
 
 /-! ### The surjection to the symmetric group -/
 
@@ -118,14 +84,15 @@ def swapFun (n : ℕ) : Fin n → Perm (Fin (n + 1)) := fun i =>
 
 /-- Adjacent transpositions satisfy the Artin relations (braid relations). -/
 theorem swapFun_isArtinLiftable (n : ℕ) :
-    (CoxeterMatrix.typeA n).IsArtinLiftable (swapFun n) := by
+    (CoxeterMatrix.Aₙ n).IsArtinLiftable (swapFun n) := by
   intro i j
   by_cases hij : i = j
   · simp [hij]
   by_cases hadj : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i
   · -- Adjacent case: m = 3, braid relation
-    have hM : (CoxeterMatrix.typeA n).M i j = 3 := by
-      simp only [CoxeterMatrix.typeA, hij, ↓reduceIte, hadj]
+    have hM : (CoxeterMatrix.Aₙ n).M i j = 3 := by
+      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, hij, ↓reduceIte]
+      grind
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
     -- Need: swapFun i * swapFun j * swapFun i = swapFun j * swapFun i * swapFun j
@@ -148,7 +115,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
       · simp [Fin.ext_iff, Fin.val_succ]; omega
       · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
   · -- Far case: m = 2, commutativity
-    have hM : (CoxeterMatrix.typeA n).M i j = 2 := CoxeterMatrix.typeA_M_far _ i j hij
+    have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_M_far _ i j hij
         (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
@@ -165,13 +132,13 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
 /-- The canonical surjection from the braid group B_{n+1} to the symmetric group S_{n+1},
 sending σ_i to the adjacent transposition (i, i+1). -/
 def toPermHom (n : ℕ) : BraidGroup (n + 1) →* Perm (Fin (n + 1)) :=
-  (CoxeterMatrix.typeA n).artinLift (swapFun n) (swapFun_isArtinLiftable n)
+  (CoxeterMatrix.Aₙ n).artinLift (swapFun n) (swapFun_isArtinLiftable n)
 
 @[simp]
 theorem toPermHom_σ (n : ℕ) (i : Fin n) :
     toPermHom n (σ i) = swapFun n i := by
-  change ((CoxeterMatrix.typeA n).artinLift (swapFun n) (swapFun_isArtinLiftable n))
-      ((CoxeterMatrix.typeA n).artinGenerator i) = swapFun n i
+  change ((CoxeterMatrix.Aₙ n).artinLift (swapFun n) (swapFun_isArtinLiftable n))
+      ((CoxeterMatrix.Aₙ n).artinGenerator i) = swapFun n i
   rw [CoxeterMatrix.artinLift_artinGenerator]
 
 /-- The surjection from B_{n+1} to S_{n+1} is surjective. -/
@@ -203,16 +170,16 @@ theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) := by
 
 /-- The braid group B_0 is trivial (no generators). -/
 instance : Unique (BraidGroup 0) :=
-  inferInstanceAs (Unique (CoxeterMatrix.typeA 0).ArtinGroup)
+  inferInstanceAs (Unique (CoxeterMatrix.Aₙ 0).ArtinGroup)
 
 /-- The braid group B_1 is trivial (no generators). -/
 instance : Unique (BraidGroup 1) :=
-  inferInstanceAs (Unique (CoxeterMatrix.typeA 0).ArtinGroup)
+  inferInstanceAs (Unique (CoxeterMatrix.Aₙ 0).ArtinGroup)
 
-/-- The Artin relations for `typeA 1` are all trivial.
+/-- The Artin relations for `Aₙ 1` are all trivial.
 When i = j, the relation is `of i * (of i)⁻¹ = 1`. -/
-theorem artinRelationsSet_typeA_one_eq_one :
-    (CoxeterMatrix.typeA 1).artinRelationsSet = {1} := by
+theorem artinRelationsSet_Aₙ_one_eq_one :
+    (CoxeterMatrix.Aₙ 1).artinRelationsSet = {1} := by
   ext r
   simp only [CoxeterMatrix.artinRelationsSet, Set.mem_range, Prod.exists, Set.mem_singleton_iff]
   constructor
@@ -220,21 +187,21 @@ theorem artinRelationsSet_typeA_one_eq_one :
     -- i, j : Fin 1, so i = j = 0
     fin_cases i; fin_cases j
     -- artinRelation 0 0 with M 0 0 = 1
-    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.typeA_M_diag,
+    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.Aₙ_M_diag,
       CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel]
   · intro hr
     use 0, 0
-    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.typeA_M_diag,
+    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.Aₙ_M_diag,
       CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel, hr]
 
 /-- The braid group B_2 is isomorphic to ℤ (one generator, no non-trivial relations).
 The isomorphism sends the unique generator σ_0 to 1 ∈ ℤ. -/
 def braidGroupTwoEquivInt : BraidGroup 2 ≃* Multiplicative ℤ := by
-  -- BraidGroup 2 = (typeA 1).ArtinGroup = PresentedGroup (typeA 1).artinRelationsSet
+  -- BraidGroup 2 = (Aₙ 1).ArtinGroup = PresentedGroup (Aₙ 1).artinRelationsSet
   -- The relations are all trivial, so this equals FreeGroup (Fin 1) / ⊥ ≃ FreeGroup (Fin 1)
   -- First, show the quotient is by the trivial subgroup
-  have h : Subgroup.normalClosure (CoxeterMatrix.typeA 1).artinRelationsSet = ⊥ := by
-    rw [artinRelationsSet_typeA_one_eq_one, Subgroup.normalClosure_singleton_one]
+  have h : Subgroup.normalClosure (CoxeterMatrix.Aₙ 1).artinRelationsSet = ⊥ := by
+    rw [artinRelationsSet_Aₙ_one_eq_one, Subgroup.normalClosure_singleton_one]
   -- Chain: PresentedGroup rels ≃* FreeGroup (Fin 1) ⧸ ⊥ ≃*
   --        FreeGroup (Fin 1) ≃* FreeGroup Unit ≃* Multiplicative ℤ
   exact (QuotientGroup.quotientMulEquivOfEq h).trans
