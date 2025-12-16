@@ -212,8 +212,8 @@ lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
   simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerLeft_snd R f)
 
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) := by
-  cat_disch
+    (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) :=
+  rfl
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
