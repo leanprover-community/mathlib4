@@ -170,7 +170,7 @@ section CompleteEquipartiteGraph
 
 variable {r t : ℕ}
 
-/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
+/-- The injection `(x₁, x₂) ↦ x₁` is always an `r`-coloring of a `completeEquipartiteGraph r ·`. -/
 def Coloring.completeEquipartiteGraph :
   (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
 

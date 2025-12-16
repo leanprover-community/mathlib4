@@ -39,7 +39,7 @@ or establish appropriate generalizations.
 
 ## Main definitions/lemmas
 
-* Instance : `Module R (M →ₚₗ[R] N)` shows that polynomial laws form a `R`-module.
+* Instance : `Module R (M →ₚₗ[R] N)` shows that polynomial laws form an `R`-module.
 
 * `PolynomialLaw.ground f` is the map `M → N` corresponding to `PolynomialLaw.toFun' f R` under
   the isomorphisms `R ⊗[R] M ≃ₗ[R] M`, and similarly for `N`.

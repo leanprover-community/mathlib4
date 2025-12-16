@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Homology.LeftResolution.Basic
 /-!
 # Functorial projective resolutions of modules
 
-The fact that a `R`-module `M` can be functorially written as a quotient of a
+The fact that an `R`-module `M` can be functorially written as a quotient of a
 projective `R`-module is expressed as the definition `ModuleCat.projectiveResolution`.
 Using the construction in the file `Mathlib/Algebra/Homology/LeftResolution/Basic.lean`,
 we may obtain a functor `(projectiveResolution R).chainComplexFunctor` which
@@ -36,7 +36,7 @@ instance (X : Type u) : Projective ((free R).obj X) where
     obtain ⟨s, hs⟩ := hp.hasRightInverse
     exact ⟨freeDesc (fun x ↦ s (f (freeMk x))), by cat_disch⟩
 
-/-- A `R`-module `M` can be functorially written as a quotient of a
+/-- An `R`-module `M` can be functorially written as a quotient of a
 projective `R`-module. -/
 noncomputable def projectiveResolution :
     LeftResolution (ObjectProperty.ι (isProjective (ModuleCat.{u} R))) where

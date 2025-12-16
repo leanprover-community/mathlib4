@@ -37,7 +37,7 @@ variable [AddCommMonoid M] [Module R M] [Module S M] [AddCommMonoid N] [Module R
   {r : R} {m m₁ m₂ : M}
 
 variable (R M) in
-/-- A `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
+/-- An `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
 multiplication (on `R`) by `r` is.
 
 For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`.

@@ -12,9 +12,9 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 /-!
 # Center of a linear category
 
-If `C` is a `R`-linear category, we define a ring morphism `R →+* CatCenter C`
+If `C` is an `R`-linear category, we define a ring morphism `R →+* CatCenter C`
 and conversely, if `C` is a preadditive category, and `φ : R →+* CatCenter C`
-is a ring morphism, we define a `R`-linear structure on `C` attached to `φ`.
+is a ring morphism, we define an `R`-linear structure on `C` attached to `φ`.
 
 -/
 
@@ -30,7 +30,7 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
-/-- The canonical morphism `R →+* CatCenter C` when `C` is a `R`-linear category. -/
+/-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=

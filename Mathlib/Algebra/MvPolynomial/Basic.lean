@@ -994,7 +994,7 @@ variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i 
   {n : ℕ}
 
 variable (σ M) in
-/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}

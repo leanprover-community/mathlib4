@@ -309,7 +309,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen_prime [IsCyclotomicExtension {p ^
   simpa only [subOneIntegralPowerBasisOfPrimePow_gen] using hζ.zeta_sub_one_prime
 
 /--
-The norm, relative to `ℤ`, of `ζ - 1` in a `n`-th cyclotomic extension of `ℚ` where `n` is not a
+The norm, relative to `ℤ`, of `ζ - 1` in an `n`-th cyclotomic extension of `ℚ` where `n` is not a
 power of a prime number is `1`.
 -/
 theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K]
@@ -821,7 +821,7 @@ namespace IsPrimitiveRoot
 variable [NeZero n] [CharZero K]
 
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `n`-th root of
-unity and `K` is a `n`-th cyclotomic extension of `ℚ`. -/
+unity and `K` is an `n`-th cyclotomic extension of `ℚ`. -/
 @[simps!]
 noncomputable def adjoinEquivRingOfIntegers [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) :
@@ -829,7 +829,7 @@ noncomputable def adjoinEquivRingOfIntegers [IsCyclotomicExtension {n} ℚ K]
   let _ := isIntegralClosure_adjoin_singleton hζ
   IsIntegralClosure.equiv ℤ (adjoin ℤ ({ζ} : Set K)) K (𝓞 K)
 
-/-- The ring of integers of a `n`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
+/-- The ring of integers of an `n`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} ℚ K] :
     IsCyclotomicExtension {n} ℤ (𝓞 K) :=
   let _ := (zeta_spec n ℚ K).adjoin_isCyclotomicExtension ℤ
@@ -838,7 +838,7 @@ instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} 
 @[deprecated (since := "2025-11-26")] alias _root_.IsCyclotomicExtension.ring_of_integers' :=
   _root_.IsCyclotomicExtension.ringOfIntegers
 
-/-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is a `n`-th
+/-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is an `n`-th
 cyclotomic extension of `ℚ`. -/
 noncomputable def integralPowerBasis [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) : PowerBasis ℤ (𝓞 K) :=

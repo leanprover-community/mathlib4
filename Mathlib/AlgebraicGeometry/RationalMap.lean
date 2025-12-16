@@ -52,7 +52,7 @@ structure PartialMap (X Y : Scheme.{u}) where
   hom : ↑domain ⟶ Y
 
 variable (S) in
-/-- A partial map is a `S`-map if the underlying morphism is. -/
+/-- A partial map is an `S`-map if the underlying morphism is. -/
 abbrev PartialMap.IsOver [X.Over S] [Y.Over S] (f : X.PartialMap Y) :=
   f.hom.IsOver S
 
@@ -327,7 +327,7 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (S) in
-/-- A rational map is a `S`-map if some partial map in the equivalence class is a `S`-map. -/
+/-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
