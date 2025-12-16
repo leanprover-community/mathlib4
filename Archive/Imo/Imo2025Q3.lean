@@ -82,7 +82,9 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
   by_cases ch : k = 0
   · simpa [ch] using ha2
   · have {p : ℕ} (pp : p.Prime) (hp : p > N) : (q : ℤ) ∣ p ^ q - 1 := by calc
-      _ ∣ (f q : ℤ) := by simp [ha2, natCast_pow q k, ch]
+      _ ∣ (f q : ℤ) := by
+        rw [ha2, natCast_pow q k]
+        exact dvd_pow_self (q : ℤ) ch
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
     obtain ⟨p, hp⟩ : ∃ p > N, p.Prime ∧ p ≡ -1 [ZMOD q] :=
       forall_exists_prime_gt_and_zmodEq N (by omega) isCoprime_one_left.neg_left
@@ -115,20 +117,32 @@ def fExample : ℕ → ℕ := fun x ↦
   else if x = 2 then 4
   else 2 ^ (padicValNat 2 x + 2)
 
+lemma LTE_lemma_of_pow_sub {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
+    (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
+  have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
+    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
+    simpa [← pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+  have := padicValNat.pow_two_sub_pow h1b (by grind) hb ha Evena
+  grind [← padicValNat.mul]
+
+lemma padicValNat_lemma {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
+  rcases dvd with ⟨k, hk⟩
+  have : padicValNat 2 k < k := by calc
+    _ ≤ log 2 k := padicValNat_le_nat_log k
+    _ < _ := log_lt_self 2 (by omega)
+  grind [padicValNat.mul, padicValNat.self]
+
 lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
-  · rcases ha2 with ⟨k, hk⟩
-    have : padicValNat 2 k < k := by calc
-      _ ≤ log 2 k := padicValNat_le_nat_log k
-      _ < _ := log_lt_self 2 (by omega)
-    calc
-      _ ∣ (2 : ℤ) ^ a := by grind [pow_dvd_pow, padicValNat.mul, padicValNat.self]
-      _ ∣ _ := pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a
+  · exact (pow_dvd_pow 2 (padicValNat_lemma ha ha2)).trans
+      (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
   · calc
-    _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := pow_dvd_pow 2 (by calc
+    _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
+      refine pow_dvd_pow 2 ?_
+      calc
       _ < 2 ^ (padicValNat 2 a + 1) := Nat.lt_two_pow_self
-      _ ≤ _ := by simp [Nat.pow_le_pow_iff_right le.refl])
+      _ ≤ _ := by simp [Nat.pow_le_pow_iff_right le.refl]
     _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
 /-- To verify the example is a bonza function -/
@@ -154,13 +168,9 @@ lemma bonza_fExample : fExample ∈ bonza := by
       · by_cases lt : b = 1
         · simp [lt]
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
-          rw [← LucasLehmer.Int.natCast_pow_pred b a hb, padicValInt.of_nat]
-          have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
-            refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-            simpa [← pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
-          have := padicValNat.pow_two_sub_pow (x := b) (y := 1) (n := a) (by omega) (by omega)
-            (by omega) (by omega) (by grind)
-          grind [← padicValNat.mul]
+          rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
+          exact LTE_lemma_of_pow_sub (by omega) (two_dvd_ne_zero.mpr hb1) (by omega)
+            (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · grind [verify_case_two_dvd]
       · grind [verify_case_two_dvd]
