@@ -35,6 +35,8 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
   locally path-connected space, the quotient of paths by homotopy has the discrete topology.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open CategoryTheory FundamentalGroupoid Topology
@@ -121,7 +123,8 @@ theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set
     split_ifs <;> [exact hp (Set.mem_range_self _); exact hq (Set.mem_range_self _)]
   -- Move to quotient and work there
   replace h_loop := Path.Homotopic.Quotient.eq.mpr h_loop
-  simp at h_loop
+  simp only [Path.Homotopic.Quotient.mk_trans, Path.Homotopic.Quotient.mk_symm,
+    Path.Homotopic.Quotient.mk_refl] at h_loop
   apply Path.Homotopic.Quotient.exact
   generalize Path.Homotopic.Quotient.mk p = p' at h_loop ⊢
   generalize Path.Homotopic.Quotient.mk q = q' at h_loop ⊢
@@ -619,7 +622,6 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
         (part.h_mono.monotone (Fin.le_last i)))).cast
       (by rw [part.h_start, γ.source])
       (by rw [part.h_end, γ'.target])
-
   -- Base case: γ_aux 0 ≃ α_0 · γ'
   -- At i=0, γ|[0,0] is constant, and γ'|[0,1] is all of γ', so this simplifies to α_0 · γ'
   have h_base : Path.Homotopic (γ_aux 0)
@@ -628,7 +630,6 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     apply exact
     dsimp [γ_aux]
     simp
-
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
   have h_final : Path.Homotopic (γ_aux (Fin.last n))
@@ -638,7 +639,6 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     apply exact
     dsimp [γ_aux]
     simp
-
   -- Lift h_rectangles to the quotient with an arbitrary suffix
   -- This allows simp to apply the rectangle homotopy in context
   have rectangle_with_suffix : ∀ (i : Fin n) {w : X}
@@ -656,7 +656,6 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     exact ((Path.Homotopic.trans_assoc _ _ _).symm.trans
       (Path.Homotopic.hcomp (h_rectangles i) (Path.Homotopic.refl suffix))).trans
       (Path.Homotopic.trans_assoc _ _ _)
-
   -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
   -- This follows from decomposing using subpathOn_trans and applying h_rectangles i
   have h_step : ∀ (i : Fin n), Path.Homotopic (γ_aux i.succ) (γ_aux i.castSucc) := by
@@ -677,17 +676,14 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     simp only [trans_assoc]
     -- Now apply the rectangle homotopy with suffix
     rw [rectangle_with_suffix]
-
   -- Chain all homotopies together
   -- γ · α_n ≃ γ_aux n ≃ γ_aux (n-1) ≃ ... ≃ γ_aux 0 ≃ α_0 · γ'
-
   -- Build a chain from any γ_aux i down to γ_aux 0 using h_step
   have h_chain : ∀ i : Fin (n + 1), Path.Homotopic (γ_aux i) (γ_aux 0) := by
     intro i
     induction i using Fin.induction with
     | zero => exact Path.Homotopic.refl _
     | succ i ih => exact (h_step i).trans ih
-
   -- Now combine everything: γ · α_n ≃ γ_aux n ≃ γ_aux 0 ≃ α_0 · γ'
   exact h_final.symm.trans ((h_chain (Fin.last n)).trans h_base)
 
@@ -718,14 +714,12 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
   -- Step 1: Apply the basic pasting lemma
   -- This gives us: γ · αₙ ≃ α₀ · γ'
   have h_paste := paste_segment_homotopies γ γ' part α h_rectangles
-
   -- Step 2: Define the endpoint loops with proper casts
   let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
   let αₙ := (α (Fin.last n)).cast
               (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
               (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
-
   -- Step 3: Show α₀ is null-homotopic using SLSC property of U₀
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
     apply h_U₀_slsc
@@ -743,12 +737,12 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
       exact h_α₀_in_U₀
     · -- range (refl x) ⊆ U₀
       intro z hz
-      simp [Path.refl] at hz
+      simp only [Path.refl, Path.coe_mk', ContinuousMap.coe_const, Set.mem_range,
+        Function.const_apply, exists_const] at hz
       rw [← hz]
       have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
       rw [← this]
       exact h_α₀_in_U₀ ⟨0, rfl⟩
-
   -- Step 4: Show αₙ is null-homotopic using SLSC property of Uₙ
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
     apply h_Uₙ_slsc
@@ -768,19 +762,18 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
       exact h_αₙ_in_Uₙ
     · -- range (refl y) ⊆ Uₙ
       intro z hz
-      simp [Path.refl] at hz
+      simp only [Path.refl, Path.coe_mk', ContinuousMap.coe_const, Set.mem_range,
+        Function.const_apply, exists_const] at hz
       rw [← hz]
       have : (α (Fin.last n)) 0 = y := by
         simp [(α (Fin.last n)).source, part.h_end]
       rw [← this]
       exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-
   -- Step 5: Combine using homotopy manipulation
   -- From h_paste: γ · αₙ ≃ α₀ · γ'
   -- From h_α₀_null: α₀ ≃ refl x
   -- From h_αₙ_null: αₙ ≃ refl y
   -- Therefore: γ ≃ γ
-
   -- Left side: γ · αₙ ≃ γ · refl y ≃ γ
   have lhs : Path.Homotopic (γ.trans αₙ) γ := by
     have step1 : Path.Homotopic (γ.trans αₙ) (γ.trans (Path.refl y)) :=
@@ -788,7 +781,6 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     have step2 : Path.Homotopic (γ.trans (Path.refl y)) γ :=
       Path.Homotopic.trans_refl γ
     exact Path.Homotopic.trans step1 step2
-
   -- Right side: α₀ · γ' ≃ refl x · γ' ≃ γ'
   have rhs : Path.Homotopic (α₀.trans γ') γ' := by
     have step1 : Path.Homotopic (α₀.trans γ') ((Path.refl x).trans γ') :=
@@ -796,7 +788,6 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     have step2 : Path.Homotopic ((Path.refl x).trans γ') γ' :=
       Path.Homotopic.refl_trans γ'
     exact Path.Homotopic.trans step1 step2
-
   -- Combine: γ ≃ γ · αₙ ≃ α₀ · γ' ≃ γ'
   exact Path.Homotopic.trans (Path.Homotopic.symm lhs) (Path.Homotopic.trans h_paste rhs)
 
@@ -812,7 +803,6 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     Path.Homotopic γ' γ := by
   -- Step 1: Construct rungs connecting partition points
   obtain ⟨α, hα_ranges⟩ := Path.exists_rung_paths γ γ' part T hγ hγ'
-
   -- Step 2: For each segment i, prove the rectangle homotopy using segment_rung_homotopy
   -- The subpaths γ|[t_i, t_{i+1}] and γ'|[t_i, t_{i+1}] both lie in U_i
   -- The rungs α_i and α_{i+1} also lie in U_i
@@ -834,10 +824,8 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       exact (hα_ranges i).1
     · -- α i.succ has range in U_i
       exact (hα_ranges i).2
-
   -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops
   -- We need to identify which neighborhoods contain the endpoint rungs
-
   -- First, handle the case where n = 0 separately
   cases n with
   | zero =>
@@ -848,21 +836,18 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
     -- α (Fin.last n) has range in V (Fin.last n), and V (Fin.last n) ⊆ U n'
     -- (right endpoint of last segment)
-
     -- For α 0: it has range in V 0 ⊆ U 0
     let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
     have h_α₀_range : Set.range (α 0) ⊆ T.U i_first := by
       have h1 : i_first.castSucc = 0 := rfl
       rw [← h1]
       exact (hα_ranges i_first).1
-
     -- For α (Fin.last (n' + 1)): it has range in V (Fin.last (n' + 1)) ⊆ U n'
     let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩
     have h_αₙ_range : Set.range (α (Fin.last (n' + 1))) ⊆ T.U i_last := by
       have h1 : i_last.succ = Fin.last (n' + 1) := rfl
       rw [← h1]
       exact (hα_ranges i_last).2
-
     -- Now apply the stronger pasting lemma and use symmetry
     apply Path.Homotopic.symm
     refine paste_segment_homotopies_slsc γ γ' part α h_rectangles
@@ -884,7 +869,6 @@ theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
-
   -- Step 1: Get partition and SLSC neighborhoods
   obtain ⟨n, part, T_data, hp_in_tube⟩ :=
     Path.exists_partition_in_slsc_neighborhoods hX p
