@@ -49,11 +49,6 @@ abbrev mathlibLeanOptions := #[
     ⟨`backward.privateInPublic, true⟩,
     -- We disable the many warnings for now; this can be switched locally to work on the offenders.
     ⟨`backward.privateInPublic.warn, false⟩,
-    -- Similarly, enforcing that tactic blocks embedded in terms are elaborated in the private scope
-    -- can affect type inference, which breaks in multiple places and should be fixed separately.
-    -- Note that this should be fixed first such that access to private declarations in such proofs
-    -- is allowed even when disabling `backward.privateInPublic`.
-    ⟨`backward.proofsInPublic, true⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
