@@ -222,7 +222,7 @@ instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
     using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
 set_option linter.flexible false in -- simp followed by infer_instance
-instance [Nonempty β] [IsDirected β (· ≤ ·)] [IsDirected β (· ≥ ·)] : (conditional β).NeBot :=
+instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
   ⟨by simp; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
