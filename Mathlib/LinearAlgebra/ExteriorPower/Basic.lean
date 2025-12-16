@@ -50,7 +50,7 @@ open Function
 
 /-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
+/-- `exteriorPower.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
@@ -93,6 +93,37 @@ lemma ιMulti_span :
   simp only [Submodule.coe_subtype, ιMulti_apply_coe, Set.image_univ, Submodule.map_top,
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
+
+lemma ιMulti_span_fixedDegree_of_span (s : Set M) (hs : Submodule.span R s = ⊤) :
+    Submodule.span R ((ExteriorAlgebra.ιMulti R n) '' {a | Set.range a ⊆ s}) = ⋀[R]^n M := by
+  rw [← ιMulti_span_fixedDegree]
+  apply Submodule.span_eq_span
+  · rintro _ ⟨a, ⟨ha, rfl⟩⟩
+    apply Submodule.mem_span_of_mem
+    simp
+  · rintro _ ⟨a, rfl⟩
+    have : ∀ i, ∃ (f : M → R) (t : Finset M), ↑t ⊆ s ∧ Function.support f ⊆ ↑t ∧
+      ∑ m ∈ t, f m • m = a i := by
+      intro i
+      rw [← Submodule.mem_span_iff_exists_finset_subset, hs]
+      exact Submodule.mem_top
+    let f : Fin n → M → R := fun i m => (this i).choose m
+    rw [SetLike.mem_coe, Submodule.mem_span_iff_exists_finset_subset]
+
+
+    sorry
+
+/-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
+`ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
+lemma ιMulti_family_span_fixedDegree {I : Type*} [LinearOrder I] (v : I → M)
+    (hv : Submodule.span R (Set.range v) = ⊤) :
+    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) = ⋀[R]^n M := by
+  sorry
+
+/-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
+lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
+    Submodule.span R (Set.range (ιMulti_family R n v)) = (⊤ : Submodule R (⋀[R]^n M)) := by
+  sorry
 
 namespace presentation
 

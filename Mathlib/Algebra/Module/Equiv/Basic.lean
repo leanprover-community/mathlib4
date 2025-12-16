@@ -825,6 +825,80 @@ end LinearEquiv
 
 end FunLeft
 
+section FunRight
+
+variable {N P : Type*} (m : Type*)
+variable (R) [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [AddCommMonoid P] [Module R P]
+
+namespace LinearMap
+
+/-- Given an arbitrary type `m` and `R`-linear map `f : M →ₗ[R] N`, construct a linear map
+`(m → M) →ₗ[R] (m → N)` -/
+def funRight (f : M →ₗ[R] N) : (m → M) →ₗ[R] m → N where
+  toFun := (f ∘ ·)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem funRight_apply (f : M →ₗ[R] N) (g : m → M) (i : m) : funRight R m f g i = f (g i) :=
+  rfl
+
+@[simp]
+theorem funRight_id (g : m → M) : funRight R m id g = g :=
+  rfl
+
+theorem funRight_comp (f₁ : N →ₗ[R] P) (f₂ : M →ₗ[R] N) :
+    funRight R m (f₁ ∘ₗ f₂) = (funRight R m f₁) ∘ₗ (funRight R m f₂) :=
+  rfl
+
+theorem funRight_injective (f : M →ₗ[R] N) (hf : Injective f) :
+    Injective (funRight R m f) :=
+  hf.comp_left
+
+theorem funRight_surjective (f : M →ₗ[R] N) (hf : Surjective f) :
+    Surjective (funRight R m f) :=
+  hf.comp_left
+
+end LinearMap
+
+namespace LinearEquiv
+
+open LinearMap
+
+/-- Given an arbitrary type `m` and `R`-linear equivalence `f : M ≃ₗ[R] N`, construct a linear map
+`(m → M) →ₗ[R] (m → N)` -/
+def funCongrRight (e : M ≃ₗ[R] N) : (m → M) ≃ₗ[R] m → N :=
+  LinearEquiv.ofLinear (funRight R m e) (funRight R m e.symm)
+    (LinearMap.ext fun x ↦ funext fun i ↦ by
+      rw [id_apply, ← funRight_comp, LinearEquiv.comp_symm, LinearMap.funRight_id])
+    (LinearMap.ext fun x ↦ funext fun i ↦ by
+      rw [id_apply, ← funRight_comp, LinearEquiv.symm_comp, LinearMap.funRight_id])
+
+@[simp]
+theorem funCongrRight_apply (e : M ≃ₗ[R] N) (x : m → M) :
+    funCongrRight R m e x = funRight R m e x :=
+  rfl
+
+@[simp]
+theorem funCongrRight_id : funCongrRight R m (LinearEquiv.refl R M) = LinearEquiv.refl R (m → M) :=
+  rfl
+
+@[simp]
+theorem funCongrRight_comp (e₁ : M ≃ₗ[R] N) (e₂ : N ≃ₗ[R] P) :
+    funCongrRight R m (LinearEquiv.trans e₁ e₂) =
+      LinearEquiv.trans (funCongrRight R m e₁) (funCongrRight R m e₂) :=
+  rfl
+
+@[simp]
+theorem funCongrRight_symm (e : M ≃ₗ[R] N) :
+    (funCongrRight R m e).symm = funCongrRight R m e.symm :=
+  rfl
+
+end LinearEquiv
+
+end FunRight
+
 section Pi
 
 namespace LinearEquiv
