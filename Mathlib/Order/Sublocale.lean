@@ -28,6 +28,9 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {X : Type*} [Order.Frame X]
 open Set
 

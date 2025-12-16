@@ -14,6 +14,9 @@ public import Mathlib.Logic.Equiv.List
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {α : Type*}
 
 open Encodable

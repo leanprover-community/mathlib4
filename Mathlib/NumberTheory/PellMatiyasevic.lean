@@ -52,6 +52,9 @@ Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 namespace Pell
 

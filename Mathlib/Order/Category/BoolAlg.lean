@@ -16,6 +16,9 @@ This defines `BoolAlg`, the category of Boolean algebras.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 open OrderDual Opposite Set
 

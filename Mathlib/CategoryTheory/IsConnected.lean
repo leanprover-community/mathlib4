@@ -45,6 +45,9 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 

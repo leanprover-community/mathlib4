@@ -27,6 +27,9 @@ such that `a ≤ b` and `b ≤ a`.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open Function OrderDual
 
 variable {α β : Type*} {a b c d : α}

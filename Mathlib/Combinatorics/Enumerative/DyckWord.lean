@@ -47,6 +47,9 @@ to emphasise that the definition of a Dyck word does not depend on that underlyi
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open List
 
 /-- A `DyckStep` is either `U` or `D`, corresponding to `(` and `)` respectively. -/

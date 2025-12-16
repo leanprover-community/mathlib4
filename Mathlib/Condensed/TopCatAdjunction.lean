@@ -21,6 +21,9 @@ The counit is an isomorphism for compactly generated spaces, and we conclude tha
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe u
 
 open Condensed CondensedSet CategoryTheory CompHaus

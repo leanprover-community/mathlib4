@@ -34,6 +34,9 @@ and then as a right-rigid monoidal category.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 noncomputable section
 
@@ -239,7 +242,7 @@ theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
       (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
       (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
-
+set_option backward.privateInPublic true in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
@@ -247,6 +250,7 @@ private theorem coevaluation_evaluation :
   ext : 1
   apply contractLeft_assoc_coevaluation K V
 
+set_option backward.privateInPublic true in
 private theorem evaluation_coevaluation :
     FGModuleCatCoevaluation K V ▷ V ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
@@ -254,6 +258,8 @@ private theorem evaluation_coevaluation :
   ext : 1
   apply contractLeft_assoc_coevaluation' K V
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V
   evaluation' := FGModuleCatEvaluation K V

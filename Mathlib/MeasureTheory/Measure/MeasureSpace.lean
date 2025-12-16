@@ -81,6 +81,9 @@ measure, almost everywhere, measure space, completion, null set, null measurable
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 open Set

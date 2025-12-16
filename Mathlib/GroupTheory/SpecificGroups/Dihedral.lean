@@ -24,6 +24,9 @@ represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the r
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists Ideal TwoSidedIdeal
 
 /-- For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n`-gon.

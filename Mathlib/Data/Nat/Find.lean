@@ -14,6 +14,9 @@ public import Mathlib.Tactic.Push
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
 namespace Nat

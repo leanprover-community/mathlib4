@@ -23,6 +23,9 @@ The main results are the following:
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 namespace List
 
 variable {α : Type*} {m : List α}

@@ -16,6 +16,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 open CategoryTheory
 
@@ -145,6 +148,7 @@ variable {R : Type u} {A M B : Type v} [Ring R] [AddCommGroup A] [Module R A] [A
 variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
 
+set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
@@ -153,6 +157,7 @@ private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj :
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _ ).symm.toLinearEquiv
 
+set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
@@ -174,6 +179,8 @@ variable {j : A →ₗ[R] M} {g : M →ₗ[R] B}
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules. -/
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   have := lequivProdOfRightSplitExact'
@@ -188,6 +195,8 @@ noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules. -/
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   have := lequivProdOfLeftSplitExact'

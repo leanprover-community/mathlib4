@@ -28,6 +28,9 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter

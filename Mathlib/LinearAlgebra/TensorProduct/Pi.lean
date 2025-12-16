@@ -30,6 +30,9 @@ See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable (R : Type*) [CommSemiring R]
 variable (S : Type*) [CommSemiring S] [Algebra R S]
 variable (N : Type*) [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]

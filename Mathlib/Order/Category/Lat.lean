@@ -24,6 +24,9 @@ The free functor from `Lat` to `BddLat` is `X → WithTop (WithBot X)`.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe u
 
 open CategoryTheory

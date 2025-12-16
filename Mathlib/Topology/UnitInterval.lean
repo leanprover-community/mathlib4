@@ -21,6 +21,9 @@ We provide basic instances, as well as a custom tactic for discharging
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 open Topology Filter Set Int Set.Icc
@@ -405,6 +408,7 @@ theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     ← convexCombo_symm z y]
   rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
 
+set_option backward.privateInPublic true in
 private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
@@ -413,6 +417,7 @@ private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x �
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_nonneg <;> grind
 
+set_option backward.privateInPublic true in
 private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     ((y - x) / (z - x) : ℝ) ≤ 1 := by
   by_cases h : (z - x : ℝ) = 0
@@ -421,6 +426,7 @@ private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_le_one_of_le₀ <;> grind
 
+set_option backward.privateInPublic true in
 /--
 A point between two points in a closed interval
 can be expressed as a convex combination of them.

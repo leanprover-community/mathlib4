@@ -26,6 +26,9 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]

@@ -38,6 +38,9 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 namespace LieAlgebra.IsKilling

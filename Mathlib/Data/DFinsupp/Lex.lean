@@ -18,6 +18,9 @@ This file defines the lexicographic order on `DFinsupp`.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 variable {ι : Type*} {α : ι → Type*}
 

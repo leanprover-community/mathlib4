@@ -55,6 +55,9 @@ In a field extension `K/k`
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open CategoryTheory Opposite
 
 variable {k K : Type*} [Field k] [Field K] [Algebra k K]

@@ -30,6 +30,9 @@ of topological (semi)rings.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists Cardinal
 
 open Set Filter TopologicalSpace Function Topology Filter

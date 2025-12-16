@@ -30,6 +30,9 @@ identifier `W` in the root namespace.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 -- For "W_type"
 
 /--

@@ -39,6 +39,9 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 namespace LocalizedModule
 

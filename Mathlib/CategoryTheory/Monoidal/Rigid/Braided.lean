@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open CategoryTheory Category BraidedCategory MonoidalCategory
 
 variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}

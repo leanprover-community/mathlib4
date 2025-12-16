@@ -61,6 +61,9 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists Field
 
 open List Function Order Set

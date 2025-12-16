@@ -38,6 +38,9 @@ public import Mathlib.RingTheory.Ideal.Defs
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists ModuleCat
 
 noncomputable section

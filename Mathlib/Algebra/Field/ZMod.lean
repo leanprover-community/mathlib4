@@ -14,9 +14,13 @@ public import Mathlib.Data.ZMod.Basic
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
 
+set_option backward.privateInPublic true in
 private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 := by
   obtain ⟨k, rfl⟩ := natCast_zmod_surjective a
   apply coe_mul_inv_eq_one
@@ -24,6 +28,8 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p

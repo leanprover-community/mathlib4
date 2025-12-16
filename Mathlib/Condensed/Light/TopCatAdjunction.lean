@@ -22,6 +22,9 @@ The counit is an isomorphism for sequential spaces, and we conclude that the fun
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe u
 
 open LightCondensed LightCondSet CategoryTheory LightProfinite

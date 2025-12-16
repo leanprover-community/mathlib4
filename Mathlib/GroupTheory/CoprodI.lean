@@ -82,6 +82,9 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 open Set
 

@@ -62,6 +62,9 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open WithZero
 
 -- TODO: fix non-terminal simp; acts on 8 goals, leaving one

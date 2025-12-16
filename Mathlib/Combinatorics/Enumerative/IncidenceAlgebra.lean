@@ -71,6 +71,9 @@ Here are some additions to this file that could be made in the future:
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open Finset OrderDual
 
 variable {F 𝕜 𝕝 𝕞 α β : Type*}

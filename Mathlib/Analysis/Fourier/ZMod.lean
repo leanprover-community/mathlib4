@@ -28,6 +28,9 @@ Basic definitions and properties of the discrete Fourier transform for functions
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open MeasureTheory Finset AddChar ZMod
 
 namespace ZMod

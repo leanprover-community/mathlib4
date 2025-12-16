@@ -24,6 +24,9 @@ Since everything runs in parallel for quotients of `R`-algebras, we do that case
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄

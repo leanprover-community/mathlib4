@@ -33,6 +33,9 @@ Lattice, Congruence
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {F α β : Type*} [Lattice α] [Lattice β]
 
 variable (α) in

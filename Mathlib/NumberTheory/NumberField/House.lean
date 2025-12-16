@@ -25,6 +25,9 @@ number field, algebraic number, house
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {K : Type*} [Field K] [NumberField K]
 
 namespace NumberField

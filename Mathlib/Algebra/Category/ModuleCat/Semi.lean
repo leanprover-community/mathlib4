@@ -38,6 +38,9 @@ Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a 
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 open CategoryTheory Limits WalkingParallelPair
 
@@ -45,6 +48,7 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
@@ -67,6 +71,8 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=

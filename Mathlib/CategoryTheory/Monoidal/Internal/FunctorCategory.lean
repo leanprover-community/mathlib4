@@ -30,6 +30,9 @@ if the appropriate framework was available.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 universe v₁ v₂ u₁ u₂
 

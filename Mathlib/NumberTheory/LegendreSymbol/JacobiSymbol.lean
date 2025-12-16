@@ -62,6 +62,9 @@ Jacobi symbol, quadratic reciprocity
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 section Jacobi
 

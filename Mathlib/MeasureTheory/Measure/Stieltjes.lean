@@ -106,6 +106,9 @@ end Prerequisites
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable (R : Type*) [ConditionallyCompleteLinearOrder R] [TopologicalSpace R]
 
 /-! ### Basic properties of Stieltjes functions -/

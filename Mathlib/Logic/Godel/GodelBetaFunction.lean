@@ -47,6 +47,9 @@ Gödel, beta function
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 namespace Nat
 
 lemma coprime_mul_succ {n m a} (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a + 1) :=

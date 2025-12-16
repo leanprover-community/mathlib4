@@ -40,6 +40,9 @@ As a corollary we obtain
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 suppress_compilation
 
 universe u v

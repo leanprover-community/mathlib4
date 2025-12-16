@@ -19,6 +19,9 @@ and exact and its precomposition with `F` is full if `F` is.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe v u
 
 open CategoryTheory Limits Opposite ZeroObject

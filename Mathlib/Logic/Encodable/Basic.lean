@@ -39,6 +39,9 @@ to make the range of `encode` decidable even when the finiteness of `α` is not.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists Monoid
 
 -- We want the theorems in this file to be constructive.

@@ -48,6 +48,9 @@ algebraic closure, algebraically closed
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe u v w
 
 open Polynomial

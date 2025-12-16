@@ -25,6 +25,9 @@ along with the relevant forgetful functors between them.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists MonoidWithZero
 
 universe u v
@@ -72,6 +75,7 @@ structure AddMonCat.Hom (A B : AddMonCat.{u}) where
 
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
+set_option backward.privateInPublic true in
 structure MonCat.Hom (A B : MonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
@@ -80,12 +84,16 @@ structure MonCat.Hom (A B : MonCat.{u}) where
 namespace MonCat
 
 @[to_additive]
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category MonCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory MonCat (· →* ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

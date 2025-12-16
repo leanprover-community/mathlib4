@@ -28,6 +28,9 @@ are defined on `ONote` and `NONote`.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open Ordinal Order
 
 -- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,

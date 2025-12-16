@@ -21,6 +21,9 @@ This file defines `Frm`, the category of frames.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 universe u
 

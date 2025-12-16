@@ -61,6 +61,9 @@ The following notation is declared in scope `SimpleGraph`:
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open Finset Function
 open Fintype (card)
 

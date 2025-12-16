@@ -45,6 +45,9 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open List (Vector)
 open Denumerable Encodable Function
 

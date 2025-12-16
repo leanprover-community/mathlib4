@@ -24,6 +24,9 @@ along with the relevant forgetful functors between them, and to the bundled mono
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 universe u v
 
 open CategoryTheory
@@ -69,6 +72,7 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
 
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
+set_option backward.privateInPublic true in
 structure GrpCat.Hom (A B : GrpCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
@@ -77,12 +81,16 @@ structure GrpCat.Hom (A B : GrpCat.{u}) where
 namespace GrpCat
 
 @[to_additive]
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

@@ -32,6 +32,9 @@ general theory of Lie algebra cohomology.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 namespace LieModule.Cohomology
 
 variable (R : Type*) [CommRing R]

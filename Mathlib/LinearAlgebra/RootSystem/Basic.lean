@@ -30,6 +30,9 @@ This file contains basic results for root systems and root data.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open Set Function
 open Module hiding reflection
 open Submodule (span)

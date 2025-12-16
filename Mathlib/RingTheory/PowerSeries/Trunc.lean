@@ -21,6 +21,9 @@ and `0` otherwise.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 open Polynomial

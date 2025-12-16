@@ -34,6 +34,9 @@ end monoid, aut group
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
 variable {A M G α β γ : Type*}

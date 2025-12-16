@@ -29,6 +29,9 @@ In this file we establish functorial properties of the adic completion.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 suppress_compilation
 
 variable {R : Type*} [CommRing R] (I : Ideal R)

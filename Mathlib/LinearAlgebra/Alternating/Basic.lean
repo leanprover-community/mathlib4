@@ -43,6 +43,9 @@ using `map_swap` as a definition, and does not require `Neg N`.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 -- semiring / add_comm_monoid
 

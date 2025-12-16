@@ -32,6 +32,9 @@ Please `open scoped MatrixOrder` to use this.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 variable {𝕜 n : Type*} [RCLike 𝕜]
 
 open scoped ComplexOrder

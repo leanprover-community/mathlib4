@@ -36,6 +36,9 @@ choosing `S` to itself be a submodule of morphisms.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 
 namespace CliffordAlgebra
 

@@ -26,6 +26,9 @@ TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 open DividedPowers DividedPowers.OfInvertibleFactorial Nat Ring
 
 section Injective

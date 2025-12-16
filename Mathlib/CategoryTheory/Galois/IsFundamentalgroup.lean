@@ -49,6 +49,9 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 -/
 
 @[expose] public section
+
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
 universe u₁ u₂ w
 
 namespace CategoryTheory
