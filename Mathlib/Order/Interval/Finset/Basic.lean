@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Cover
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Preorder.Finite
-public import Mathlib.Order.Basic
 
 /-!
 # Intervals as finsets
