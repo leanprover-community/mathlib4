@@ -136,7 +136,7 @@ def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F
 variable {e₁ e₂}
 
 theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
-    (π (F₁ × F₂)(E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
+    (π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
     fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
@@ -165,7 +165,7 @@ noncomputable def Prod.invFun' (p : B × F₁ × F₂) : TotalSpace (F₁ × F�
 variable {e₁ e₂}
 
 theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
-    (h : x ∈ π (F₁ × F₂)(E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) :
+    (h : x ∈ π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) :
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
@@ -191,7 +191,7 @@ variable (e₁ e₂)
 trivialization for the fiberwise product of `E₁` and `E₂`, whose base set is
 `e₁.baseSet ∩ e₂.baseSet`. -/
 @[simps!]
-noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂)(E₁ ×ᵇ E₂)) where
+noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂)) where
   toFun := Prod.toFun' e₁ e₂
   invFun := Prod.invFun' e₁ e₂
   source := π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
@@ -243,7 +243,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
 
 instance {e₁ : Trivialization F₁ (π F₁ E₁)} {e₂ : Trivialization F₂ (π F₂ E₂)}
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₂] :
-    MemTrivializationAtlas (e₁.prod e₂ : Trivialization (F₁ × F₂) (π (F₁ × F₂)(E₁ ×ᵇ E₂))) where
+    MemTrivializationAtlas (e₁.prod e₂ : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂))) where
   out := ⟨e₁, e₂, inferInstance, inferInstance, rfl⟩
 
 end Prod
