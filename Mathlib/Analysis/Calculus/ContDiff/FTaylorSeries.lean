@@ -478,13 +478,13 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
             (tail m) := by
         simp [iteratedFDerivWithin_succ_eq_comp_left]
       _ = (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E [×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E [×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
         simp [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
-              E → E [×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := by
+              E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := by
         simp [I]
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
             (m (last (n + 1))) := by
@@ -775,7 +775,7 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
 variable (𝕜)
 
 /-- The `n`-th derivative of a function, as a multilinear map, defined inductively. -/
-noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[𝕜] F :=
+noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 
@@ -802,7 +802,7 @@ theorem iteratedFDerivWithin_zero_eq : iteratedFDerivWithin 𝕜 0 f s = iterate
 
 theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDeriv 𝕜 (n + 1) f x : (Fin (n + 1) → E) → F) m =
-      (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
+      (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,

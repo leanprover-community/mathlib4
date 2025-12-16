@@ -547,7 +547,7 @@ theorem lineDeriv_smul {c : 𝕜} : lineDeriv 𝕜 f x (c • v) = c • lineDer
       simpa [lineDifferentiableAt_smul_iff hc] using H
     simp [lineDeriv_zero_of_not_lineDifferentiableAt, H, H']
 
-theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = -lineDeriv 𝕜 f x v := by
+theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
   rw [← neg_one_smul (R := 𝕜) v, lineDeriv_smul, neg_one_smul]
 
 end SMul
