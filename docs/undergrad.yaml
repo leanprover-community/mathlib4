@@ -614,7 +614,7 @@ Distribution calculus:
     derivation of tempered distributions: ''
     multiplication by a function $C^\infty$ of slow growth: ''
     $L^2$ functions and Riesz representation: ''
-    $L^p$ functions: ''
+    $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''
     Dirac comb: ''
     Fourier transforms: 'TemperedDistribution.fourierTransformCLM'
