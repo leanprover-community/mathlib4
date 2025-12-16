@@ -676,7 +676,7 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
 
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· <| ·)
   smul_zero := map_zero

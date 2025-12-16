@@ -16,7 +16,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
+assert_not_exists MonoidWithZero MonoidAction IsOrderedMonoid
 
 variable {ι β : Type*}
 

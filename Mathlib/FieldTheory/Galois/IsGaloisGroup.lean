@@ -299,7 +299,7 @@ variable [hGKL : IsGaloisGroup G K L]
 -- and if the theorem was `fixingSubgroup G Set.univ = ⊥` then `K` couldn't be inferred
 theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
   have := hGKL.faithful
-  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
+  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MonoidAction.fixedBy_eq_univ_iff_eq_one
 
 @[simp]
 theorem fixedPoints_top :

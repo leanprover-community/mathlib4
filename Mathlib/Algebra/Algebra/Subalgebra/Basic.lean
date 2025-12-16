@@ -701,7 +701,7 @@ scoped instance isScalarTower_left (X) [SMul X R] [SMul X A] [IsScalarTower X R 
       Algebra.smul_def, Algebra.smul_def]
     apply mul_assoc⟩
 
-scoped instance isScalarTower_right (X) [MulAction A X] :
+scoped instance isScalarTower_right (X) [MonoidAction A X] :
     letI := (inclusion h).toModule; IsScalarTower S T X :=
   letI := (inclusion h).toModule; ⟨fun _ ↦ mul_smul _⟩
 
@@ -771,7 +771,7 @@ end equivMapOfInjective
 /-! ## Actions by `Subalgebra`s
 
 These are just copies of the definitions about `Subsemiring` starting from
-`Subring.mulAction`.
+`Subring.monoidAction`.
 -/
 
 
@@ -807,8 +807,8 @@ instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S �
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+instance [MonoidAction A α] (S : Subalgebra R A) : MonoidAction S α :=
+  inferInstanceAs (MonoidAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
 instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=

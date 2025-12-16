@@ -205,7 +205,7 @@ def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M
   l.map (fun ⟨s, x⟩ ↦ (_root_.algebraMap S R s, x))
 
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
-    [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
+    [MonoidAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
   simp only [NF.eval, algebraMap, map_map]
   congr

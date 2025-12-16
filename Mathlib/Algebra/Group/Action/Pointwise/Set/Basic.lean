@@ -46,12 +46,12 @@ lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) 
   prodMap_image_prod (c • ·) (c • ·) s t
 
 @[to_additive]
-lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
+lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MonoidAction G (α i)]
     (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
-  smul_set_pi_of_surjective c I s fun _ _ ↦ (MulAction.bijective c).surjective
+  smul_set_pi_of_surjective c I s fun _ _ ↦ (MonoidAction.bijective c).surjective
 
 @[to_additive]
-lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MulAction M (α i)]
+lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MonoidAction M (α i)]
     {c : M} (hc : IsUnit c) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) := by
   lift c to Mˣ using hc
   exact smul_set_pi c I s
@@ -171,30 +171,32 @@ on `Set β`. -/
 @[to_additive
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
-protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
+protected noncomputable def monoidAction [Monoid α] [MonoidAction α β] :
+    MonoidAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
-protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
+protected def monoidActionSet [Monoid α] [MonoidAction α β] : MonoidAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
   one_smul _ := by simp only [← image_smul, one_smul, image_id']
 
-scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
+scoped[Pointwise]
+attribute [instance] Set.monoidActionSet Set.monoidActionSet Set.monoidAction Set.addMonoidAction
 
 section Group
 
-variable [Group α] [MulAction α β] {s t A B : Set β} {a b : α} {x : β}
+variable [Group α] [MonoidAction α β] {s t A B : Set β} {a b : α} {x : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
-  (MulAction.injective _).mem_set_image
+  (MonoidAction.injective _).mem_set_image
 
 @[to_additive]
 theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
-  show x ∈ MulAction.toPerm a '' A ↔ _ from mem_image_equiv
+  show x ∈ MonoidAction.toPerm a '' A ↔ _ from mem_image_equiv
 
 @[to_additive]
 theorem mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
@@ -206,7 +208,7 @@ lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
-  ((MulAction.toPerm a).image_symm_eq_preimage _).symm
+  ((MonoidAction.toPerm a).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
@@ -214,40 +216,40 @@ theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹
 
 @[to_additive (attr := simp)]
 theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
-  image_subset_image_iff <| MulAction.injective _
+  image_subset_image_iff <| MonoidAction.injective _
 
 @[to_additive]
 theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
   refine image_subset_iff.trans ?_
   congr! 1
-  exact ((MulAction.toPerm _).image_symm_eq_preimage _).symm
+  exact ((MonoidAction.toPerm _).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
   refine (image_subset_iff.trans ?_ ).symm; congr! 1;
-  exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
+  exact ((MonoidAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter <| MulAction.injective a
+  image_inter <| MonoidAction.injective a
 
 @[to_additive]
 theorem smul_set_iInter {ι : Sort*}
     (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
-  image_iInter (MulAction.bijective a) t
+  image_iInter (MonoidAction.bijective a) t
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_diff (MulAction.injective a) _ _
+  image_diff (MonoidAction.injective a) _ _
 
 open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff (MulAction.injective a) _ _
+  image_symmDiff (MonoidAction.injective a) _ _
 
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
-  image_univ_of_surjective <| MulAction.surjective a
+  image_univ_of_surjective <| MonoidAction.surjective a
 
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
@@ -317,7 +319,7 @@ lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹
 
 @[to_additive (attr := simp)]
 lemma disjoint_smul_set : Disjoint (a • s) (a • t) ↔ Disjoint s t :=
-  disjoint_image_iff <| MulAction.injective _
+  disjoint_image_iff <| MonoidAction.injective _
 
 @[to_additive]
 lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t) := by
@@ -350,7 +352,7 @@ lemma exists_smul_inter_smul_subset_smul_inv_mul_inter_inv_mul (s t : Set α) (a
 end Group
 
 section Monoid
-variable [Monoid α] [MulAction α β] {s : Set β} {a : α} {b : β}
+variable [Monoid α] [MonoidAction α β] {s : Set β} {a : α} {b : β}
 
 @[simp] lemma mem_invOf_smul_set [Invertible a] : b ∈ ⅟a • s ↔ a • b ∈ s :=
   mem_inv_smul_set_iff (a := unitOfInvertible a)

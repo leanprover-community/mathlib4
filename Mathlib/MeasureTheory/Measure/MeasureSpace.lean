@@ -885,9 +885,9 @@ instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTo
     [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
   eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne, ext_iff', forall_or_left] using h
 
-instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    {_ : MeasurableSpace α} : MulAction R (Measure α) :=
-  Injective.mulAction _ toOuterMeasure_injective smul_toOuterMeasure
+instance instMonoidAction [Monoid R] [MonoidAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    {_ : MeasurableSpace α} : MonoidAction R (Measure α) :=
+  Injective.monoidAction _ toOuterMeasure_injective smul_toOuterMeasure
 
 instance instAddCommMonoid {_ : MeasurableSpace α} : AddCommMonoid (Measure α) :=
   toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure

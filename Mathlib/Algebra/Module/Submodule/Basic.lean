@@ -87,13 +87,13 @@ instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
     have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 
-section AddAction
+section AddMonoidAction
 
 /-! ### Additive actions by `Submodule`s
 These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
-These instances work particularly well in conjunction with `AddGroup.toAddAction`, enabling
+These instances work particularly well in conjunction with `AddGroup.toAddMonoidAction`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 
@@ -114,7 +114,7 @@ variable {p}
 theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
   rfl
 
-end AddAction
+end AddMonoidAction
 
 end AddCommMonoid
 

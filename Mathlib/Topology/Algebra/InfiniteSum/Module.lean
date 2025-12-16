@@ -185,8 +185,8 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Typ
 @[to_additive /-- Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
   we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
   `b ↦ ∑' (a : α), f(a • b)`. -/]
-noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
-    Quotient (MulAction.orbitRel α β) → M := by
+noncomputable def MonoidAction.automorphize [Group α] [MonoidAction α β] (f : β → M) :
+    Quotient (MonoidAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   simp only
@@ -198,45 +198,54 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
+@[deprecated (since := "2025-12-15")] alias MulAction.automorphize := MonoidAction.automorphize
+@[deprecated (since := "2025-12-15")] alias AddAction.automorphize := AddMonoidAction.automorphize
+
 -- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
-    (g : Quotient (MulAction.orbitRel α β) → R) :
-    MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
+lemma MonoidAction.automorphize_smul_left [Group α] [MonoidAction α β] (f : β → M)
+    (g : Quotient (MonoidAction.orbitRel α β) → R) :
+    MonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (MonoidAction.automorphize f : Quotient (MonoidAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn' β (MonoidAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
+  set π : β → Quotient (MonoidAction.orbitRel α β) := Quotient.mk (MonoidAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a • b) = π b := by
     intro a
-    apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
+    apply (@Quotient.eq _ (MonoidAction.orbitRel α β) (a • b) b).mpr
     use a
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
+@[deprecated (since := "2025-12-15")]
+alias MulAction.automorphize_smul_left := MonoidAction.automorphize_smul_left
+
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
-    (g : Quotient (AddAction.orbitRel α β) → R) :
-    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
+lemma AddMonoidAction.automorphize_smul_left [AddGroup α] [AddMonoidAction α β] (f : β → M)
+    (g : Quotient (AddMonoidAction.orbitRel α β) → R) :
+    AddMonoidAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (AddMonoidAction.automorphize f : Quotient (AddMonoidAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn' β (AddMonoidAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
+  set π : β → Quotient (AddMonoidAction.orbitRel α β) := Quotient.mk (AddMonoidAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by
     intro a
-    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
+    apply (@Quotient.eq _ (AddMonoidAction.orbitRel α β) (a +ᵥ b) b).mpr
     use a
   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
+
+@[deprecated (since := "2025-12-15")]
+alias AddAction.automorphize_smul_left := AddMonoidAction.automorphize_smul_left
 
 section
 
@@ -247,14 +256,14 @@ variable {G : Type*} [Group G] {Γ : Subgroup G}
 @[to_additive /-- Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
   automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
   `g ↦ ∑' (γ : Γ), f(γ • g)`. -/]
-noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MonoidAction.automorphize f
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
       = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) :=
-  MulAction.automorphize_smul_left f g
+  MonoidAction.automorphize_smul_left f g
 
 end
 
@@ -267,7 +276,7 @@ variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
 lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
-  AddAction.automorphize_smul_left f g
+  AddMonoidAction.automorphize_smul_left f g
 
 end
 

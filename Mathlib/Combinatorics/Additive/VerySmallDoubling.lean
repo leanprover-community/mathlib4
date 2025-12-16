@@ -38,7 +38,7 @@ For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file charac
 
 @[expose] public section
 
-open MulOpposite MulAction
+open MulOpposite MonoidAction
 open scoped Pointwise RightActions
 
 namespace Finset

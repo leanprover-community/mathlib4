@@ -312,7 +312,7 @@ theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap
 end algEquiv
 
 /-- If `P` lies over `p`, then the stabilizer of `P` acts on the extension `(B ⧸ P) / (A ⧸ p)`. -/
-def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
+def stabilizerHom : MonoidAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B ⧸ P)) where
   toFun g := algEquivOfEqMap p (MulSemiringAction.toAlgEquiv A B g) g.2.symm
   map_one' := by
     ext ⟨x⟩
@@ -321,7 +321,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     ext ⟨x⟩
     exact congrArg (Ideal.Quotient.mk P) (mul_smul g h x)
 
-@[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
+@[simp] theorem stabilizerHom_apply (g : MonoidAction.stabilizer G P) (b : B) :
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 

@@ -16,7 +16,7 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 
 @[expose] public section
 
-assert_not_exists MulAction Ring
+assert_not_exists MonoidAction Ring
 
 universe u v
 

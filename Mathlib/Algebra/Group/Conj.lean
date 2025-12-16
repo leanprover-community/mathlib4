@@ -16,7 +16,7 @@ See also `MulAut.conj` and `Quandle.conj`.
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero Multiset MulAction
+assert_not_exists MonoidWithZero Multiset MonoidAction
 
 universe u v
 

@@ -919,23 +919,23 @@ end ConjClasses
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
 The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/
 def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
-    [Group G] [MulAction G M] : Subgroup G where
+    [Group G] [MonoidAction G M] : Subgroup G where
   carrier := { σ | ∀ x, σ • x - x ∈ I }
   mul_mem' {a b} ha hb x := by simpa [mul_smul] using add_mem (ha (b • x)) (hb x)
   one_mem' := by simp [zero_mem]
   inv_mem' {a} ha x := by simpa using sub_mem_comm_iff.mp (ha (a⁻¹ • x))
 
 @[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
-    [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+    [Group G] [MonoidAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
 
 @[simp]
 lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    {G : Type*} [Group G] [MonoidAction G M] (H : Subgroup G) :
     (I.inertia G).subgroupOf H = I.inertia H :=
   rfl
 
 @[simp]
 lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    {G : Type*} [Group G] [MonoidAction G M] (H : Subgroup G) :
     (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]

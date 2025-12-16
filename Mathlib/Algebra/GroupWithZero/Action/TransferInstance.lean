@@ -51,7 +51,7 @@ protected abbrev mulActionWithZero (e : A ≃ B) [MonoidWithZero M₀] [Zero B]
     letI := e.zero
     MulActionWithZero M₀ A := by
   letI := e.zero
-  exact { e.smulWithZero M₀, e.mulAction M₀ with }
+  exact { e.smulWithZero M₀, e.monoidAction M₀ with }
 
 variable (M) in
 /-- Transfer `DistribSMul` across an `Equiv` -/
@@ -70,6 +70,6 @@ protected abbrev distribMulAction (e : A ≃ B) [Monoid M] [AddMonoid B] [Distri
     letI := e.addMonoid
     DistribMulAction M A := by
   letI := e.addMonoid
-  exact { e.distribSMul M, e.mulAction M with }
+  exact { e.distribSMul M, e.monoidAction M with }
 
 end Equiv

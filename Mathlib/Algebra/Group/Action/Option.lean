@@ -70,8 +70,8 @@ instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
 
 end SMul
 
-instance [Monoid M] [MulAction M α] :
-    MulAction M (Option α) where
+instance [Monoid M] [MonoidAction M α] :
+    MonoidAction M (Option α) where
   one_smul b := by
     cases b
     exacts [rfl, congr_arg some (one_smul _ _)]

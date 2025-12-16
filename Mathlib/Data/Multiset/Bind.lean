@@ -22,7 +22,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 universe v
 

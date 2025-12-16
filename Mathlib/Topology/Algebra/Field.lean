@@ -211,7 +211,7 @@ end Preconnected
 section ContinuousSMul
 
 variable {F : Type*} [DivisionRing F] [TopologicalSpace F] [IsTopologicalRing F]
-    (X : Type*) [TopologicalSpace X] [MulAction F X] [ContinuousSMul F X]
+    (X : Type*) [TopologicalSpace X] [MonoidAction F X] [ContinuousSMul F X]
 
 instance Subfield.continuousSMul (M : Subfield F) : ContinuousSMul M X :=
   Subring.continuousSMul M.toSubring X

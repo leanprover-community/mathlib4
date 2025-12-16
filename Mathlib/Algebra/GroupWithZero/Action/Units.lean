@@ -26,7 +26,7 @@ We previously had
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
   [IsScalarTower G M M] : MulDistribMulAction G Mˣ
 ```
-as a strengthening of `Units.mulAction'`, but in fact this instance (almost) never applies!
+as a strengthening of `Units.monoidAction'`, but in fact this instance (almost) never applies!
 `MulDistribMulAction G M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`, while
 `SMulCommClass G M M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`.
 In particular, if `M` is cancellative, then we obtain
@@ -54,7 +54,7 @@ lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : 
 end Units
 
 section GroupWithZero
-variable [GroupWithZero α] [MulAction α β] {a : α}
+variable [GroupWithZero α] [MonoidAction α β] {a : α}
 
 @[simp] lemma inv_smul_smul₀ (ha : a ≠ 0) (x : β) : a⁻¹ • a • x = x :=
   inv_smul_smul (Units.mk0 a ha) x

@@ -21,7 +21,7 @@ Such actions
 for the fixing subgroup of a set acting on the complement of that set)
 are useful to study the multiple transitivity of the group `G`,
 since `n`-transitivity of `G` on `α` is equivalent to `n - 1`-transitivity
-of `MulAction.stabilizer G a` on the complement of `a`.
+of `MonoidAction.stabilizer G a` on the complement of `a`.
 
 We define equivariant maps that relate various of these `SubMulAction`s
 and permit to manipulate them in a relatively smooth way.
@@ -43,11 +43,11 @@ Consider `a b : α` and `g : G` such that `hg : g • b = a`.
 
 open scoped Pointwise
 
-open MulAction Function.Embedding
+open MonoidAction Function.Embedding
 
 namespace SubMulAction
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+variable (G : Type*) [Group G] {α : Type*} [MonoidAction G α]
 
 /-- Action of the stabilizer of a point on the complement. -/
 @[to_additive /-- Action of the stabilizer of a point on the complement. -/]
@@ -111,14 +111,14 @@ variable {G}
 
 /-- Conjugation induces an equivariant map between the SubAddAction of
 the stabilizer of a point and that of its translate. -/
-def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
+def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*}
+    [AddMonoidAction G α] {g : G} {a b : α} (hg : b = g +ᵥ a) :
+    AddActionHom (AddMonoidAction.stabilizerEquivStabilizer hg)
       (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
   toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
   map_vadd' := fun ⟨k, hk⟩ x ↦ by
-    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
-      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
+    simp [← SetLike.coe_eq_coe, AddMonoidAction.addSubgroup_vadd_def,
+      AddMonoidAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate. -/
@@ -136,23 +136,32 @@ variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
-theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
-    {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
+theorem _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
+    {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α]
     {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
-    CompTriple (AddAction.stabilizerEquivStabilizer hg)
-      (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
+    CompTriple (AddMonoidAction.stabilizerEquivStabilizer hg)
+      (AddMonoidAction.stabilizerEquivStabilizer hh)
+      (AddMonoidAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
+    simp [AddMonoidAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.AddAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.AddMonoidAction.stabilizerEquivStabilizer_compTriple
 
 variable {hg hh hk} in
 @[to_additive existing]
-theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
+theorem _root_.MonoidAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
     CompTriple (stabilizerEquivStabilizer hg)
       (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
     simp [stabilizerEquivStabilizer, H, MulAut.conj, ← mul_assoc]
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.MulAction.stabilizerEquivStabilizer_compTriple :=
+  _root_.MonoidAction.stabilizerEquivStabilizer_compTriple
 
 variable {hg hh hk} in
 @[to_additive]
@@ -181,7 +190,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp only [Subtype.mk_eq_mk]
-    apply (MulAction.injective g)
+    apply (MonoidAction.injective g)
     rwa [← SetLike.coe_eq_coe, conjMap_apply] at hxy
   · intro x
     exact ⟨conjMap _ x, inv_conjMap_comp_apply _ x⟩
@@ -227,9 +236,9 @@ end SubMulAction
 
 section Pointwise
 
-open MulAction Set
+open MonoidAction Set
 
-variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
+variable (G : Type*) [Group G] (α : Type*) [MonoidAction G α]
 
 /-- The stabilizer of a set acts on that set. -/
 @[to_additive /-- The stabilizer of a set acts on that set. -/]
@@ -246,7 +255,7 @@ theorem _root_.SMul.smul_stabilizer_def (s : Set α) (g : stabilizer G s) (x : s
 
 /-- The stabilizer of a set acts on that set -/
 @[to_additive /-- The stabilizer of a set acts on that set. -/]
-instance (s : Set α) : MulAction (stabilizer G s) s where
+instance (s : Set α) : MonoidAction (stabilizer G s) s where
   one_smul x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by

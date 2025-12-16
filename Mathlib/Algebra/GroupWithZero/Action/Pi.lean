@@ -57,12 +57,12 @@ instance distribSMul' {g : I → Type*} {n : ∀ i, AddZeroClass <| g i}
 
 instance distribMulAction (α) {m : Monoid α} {n : ∀ i, AddMonoid <| f i}
     [∀ i, DistribMulAction α <| f i] : @DistribMulAction α (∀ i : I, f i) m (@Pi.addMonoid I f n) :=
-  { Pi.mulAction _, Pi.distribSMul _ with }
+  { Pi.monoidAction _, Pi.distribSMul _ with }
 
 instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ i, AddMonoid <| g i}
     [∀ i, DistribMulAction (f i) (g i)] :
     @DistribMulAction (∀ i, f i) (∀ i : I, g i) (@Pi.monoid I f m) (@Pi.addMonoid I g n) :=
-  { Pi.mulAction', Pi.distribSMul' with }
+  { Pi.monoidAction', Pi.distribSMul' with }
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
@@ -78,11 +78,11 @@ instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
 
 instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
-  { Pi.mulAction _, Pi.smulWithZero _ with }
+  { Pi.monoidAction _, Pi.smulWithZero _ with }
 
 instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.mulAction', Pi.smulWithZero' with }
+  { Pi.monoidAction', Pi.smulWithZero' with }
 
 theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMulAction α <| f i]
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
@@ -102,7 +102,7 @@ theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, A
 instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
     [∀ i, MulDistribMulAction α <| f i] :
     @MulDistribMulAction α (∀ i : I, f i) m (@Pi.monoid I f n) :=
-  { Pi.mulAction _ with
+  { Pi.monoidAction _ with
     smul_one := fun _ => funext fun _ => smul_one _
     smul_mul := fun _ _ _ => funext fun _ => smul_mul' _ _ _ }
 

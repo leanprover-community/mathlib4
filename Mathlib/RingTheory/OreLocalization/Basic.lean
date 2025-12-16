@@ -231,7 +231,7 @@ instance : DistribMulAction R[S⁻¹] X[S⁻¹] where
   smul_zero := OreLocalization.smul_zero
   smul_add := OreLocalization.smul_add
 
-instance {R₀} [Monoid R₀] [MulAction R₀ X] [MulAction R₀ R]
+instance {R₀} [Monoid R₀] [MonoidAction R₀ X] [MonoidAction R₀ R]
     [IsScalarTower R₀ R X] [IsScalarTower R₀ R R] :
     DistribMulAction R₀ X[S⁻¹] where
   smul_zero _ := by rw [← smul_one_oreDiv_one_smul, smul_zero]

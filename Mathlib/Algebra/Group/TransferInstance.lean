@@ -23,7 +23,7 @@ When adding new definitions that transfer type-classes across an equivalence, pl
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 namespace Equiv
 variable {M α β : Type*} (e : α ≃ β)

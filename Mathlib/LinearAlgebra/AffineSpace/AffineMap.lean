@@ -163,7 +163,7 @@ def const (p : P2) : P1 →ᵃ[k] P2 where
   toFun := Function.const P1 p
   linear := 0
   map_vadd' _ _ :=
-    letI : AddAction V2 P2 := inferInstance
+    letI : AddMonoidAction V2 P2 := inferInstance
     by simp
 
 @[simp]
@@ -213,7 +213,7 @@ section SMul
 
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
+instance monoidAction : MonoidAction R (P1 →ᵃ[k] V2) where
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _

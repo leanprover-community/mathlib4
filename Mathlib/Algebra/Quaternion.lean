@@ -370,8 +370,8 @@ theorem smul_mk (re im_i im_j im_k : R) :
 
 end SMul
 
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] :=
-  (equivProd ..).injective.mulAction _ fun _ _ ↦ rfl
+instance [Monoid S] [MonoidAction S R] : MonoidAction S ℍ[R,c₁,c₂,c₃] :=
+  (equivProd ..).injective.monoidAction _ fun _ _ ↦ rfl
 
 instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
   apply (equivProd c₁ c₂ c₃).injective.addCommGroup <;> intros <;> rfl
@@ -800,8 +800,8 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,0,-1]
 
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] :=
-  inferInstanceAs <| MulAction S ℍ[R,-1,0,-1]
+instance [Monoid S] [MonoidAction S R] : MonoidAction S ℍ[R] :=
+  inferInstanceAs <| MonoidAction S ℍ[R,-1,0,-1]
 
 instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] :=
   inferInstanceAs <| DistribMulAction S ℍ[R,-1,0,-1]

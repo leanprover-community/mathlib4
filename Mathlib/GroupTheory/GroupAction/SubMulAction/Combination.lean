@@ -24,7 +24,7 @@ of this set is equal to `(Nat.card α).choose n`.
 * `Nat.Combination.subMulAction`:
 When a group `G` acts on `α`, the `SubMulAction` of `G` on `n.Combination α`.
 
-This induces a `MulAction G (n.Combination α)` instance. Then:
+This induces a `MonoidAction G (n.Combination α)` instance. Then:
 
 * `EmbeddingToCombination.map`: the equivariant map from `Fin n ↪ α` to `n.Combination α`.
 
@@ -45,7 +45,7 @@ The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 @[expose] public section
 
-variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
+variable (G : Type*) [Group G] (α : Type*) [MonoidAction G α]
 
 /-- The type of combinations of `n` elements of a type `α` -/
 def Nat.Combination (n : ℕ) := {s : Finset α | s.card = n}
@@ -56,7 +56,7 @@ namespace Nat.Combination
 
 open scoped Pointwise
 
-open MulAction Finset
+open MonoidAction Finset
 
 @[simp]
 theorem mem_iff {s : Finset α} :
@@ -94,8 +94,8 @@ def subMulAction [DecidableEq α] : SubMulAction G (Finset α) where
   smul_mem' g s := (Finset.card_smul_finset g s).trans
 
 @[to_additive]
-instance [DecidableEq α] : MulAction G (n.Combination α) :=
-  (subMulAction G α n).mulAction
+instance [DecidableEq α] : MonoidAction G (n.Combination α) :=
+  (subMulAction G α n).monoidAction
 
 variable {G}
 
@@ -104,10 +104,10 @@ theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
     ((g • s : n.Combination α) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
-theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
+theorem addMonoidAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
-      ↔ AddAction.toPerm g = (1 : Equiv.Perm α) := by
+    AddMonoidAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
+      ↔ AddMonoidAction.toPerm g = (1 : Equiv.Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
     have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
@@ -116,28 +116,30 @@ theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α
     rw [Equiv.ext_iff, not_forall]
     use s
     contrapose! has'
-    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
+    simp only [AddMonoidAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
     rw [← has']
     simpa [← mem_coe_iff]
-  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
+  · simp only [Equiv.ext_iff, AddMonoidAction.toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
+
+@[deprecated (since := "2025-12-14")] alias addAction_faithful := addMonoidAction_faithful
 
 /-- If an additive group `G` acts faithfully on `α`,
 then it acts faithfully on `n.Combination α`,
 provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
+theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddMonoidAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
     FaithfulVAdd G (n.Combination α) := by
   rw [faithfulVAdd_iff]
   intro g hg
-  apply AddAction.toPerm_injective (α := G) (β := α)
-  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
+  apply AddMonoidAction.toPerm_injective (α := G) (β := α)
+  rw [AddMonoidAction.toPerm_zero, ← addMonoidAction_faithful hn hα]
   exact Equiv.Perm.ext_iff.mpr hg
 
-theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MulAction G α] {n : ℕ}
+theorem monoidAction_faithful {G : Type*} [Group G] {α : Type*} [MonoidAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    MulAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
-      ↔ MulAction.toPerm g = (1 : Equiv.Perm α) := by
+    MonoidAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
+      ↔ MonoidAction.toPerm g = (1 : Equiv.Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose h with h
     have : ∃ a, (g • a : α) ≠ a := by simpa [Equiv.ext_iff] using h
@@ -146,11 +148,13 @@ theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MulAction G α] {
     rw [Equiv.ext_iff, not_forall]
     use s
     contrapose! has'
-    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
+    simp only [MonoidAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
     rw [← has']
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
-  · simp only [Equiv.ext_iff, MulAction.toPerm_apply] at h ⊢
+  · simp only [Equiv.ext_iff, MonoidAction.toPerm_apply] at h ⊢
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
+
+@[deprecated (since := "2025-12-14")] alias mulAction_faithful := monoidAction_faithful
 
 /-- If a group `G` acts faithfully on `α`,
 then it acts faithfull on `n.Combination α`,
@@ -159,8 +163,8 @@ theorem faithfulSMul [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) [F
     FaithfulSMul G (n.Combination α) := by
   rw [faithfulSMul_iff]
   intro g hg
-  apply MulAction.toPerm_injective (α := G) (β := α)
-  rw [MulAction.toPerm_one, ← mulAction_faithful hn hα]
+  apply MonoidAction.toPerm_injective (α := G) (β := α)
+  rw [MonoidAction.toPerm_one, ← monoidAction_faithful hn hα]
   exact Equiv.Perm.ext_iff.mpr hg
 
 attribute [to_additive existing] faithfulSMul

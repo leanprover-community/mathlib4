@@ -23,7 +23,7 @@ public import Mathlib.GroupTheory.Index
 
 assert_not_exists Field
 
-open MulAction MonoidHom Nat
+open MonoidAction MonoidHom Nat
 
 variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
 

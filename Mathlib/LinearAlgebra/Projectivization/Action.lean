@@ -27,7 +27,7 @@ variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
 
 /-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
 @[simps -isSimp]
-instance : MulAction G (ℙ K V) where
+instance : MonoidAction G (ℙ K V) where
   smul g x := x.map (DistribMulAction.toModuleEnd _ _ g)
     (DistribMulAction.toLinearEquiv _ _ g).injective
   one_smul x := show map _ _ _ = _ by simp [map_one, Module.End.one_eq_id]

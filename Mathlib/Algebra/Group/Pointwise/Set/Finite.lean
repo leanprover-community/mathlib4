@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 @[expose] public section
 
-assert_not_exists MulAction MonoidWithZero
+assert_not_exists MonoidAction MonoidWithZero
 
 open Pointwise
 

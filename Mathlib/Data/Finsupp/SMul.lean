@@ -44,7 +44,7 @@ end
 
 section
 
-variable [Monoid G] [MulAction G α] [AddCommMonoid M]
+variable [Monoid G] [MonoidAction G α] [AddCommMonoid M]
 
 /-- Scalar multiplication acting on the domain.
 
@@ -62,12 +62,15 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `Finsupp.comapSMul` is multiplicative -/
-def comapMulAction : MulAction G (α →₀ M) where
+def comapMonoidAction : MonoidAction G (α →₀ M) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
     rw [comapSMul_def, comapSMul_def, comapSMul_def, ← comp_smul_left, mapDomain_comp]
 
-attribute [local instance] comapMulAction
+@[deprecated (since := "2025-12-14")]
+noncomputable alias comapMulAction := comapMonoidAction
+
+attribute [local instance] comapMonoidAction
 
 /-- `Finsupp.comapSMul` is distributive -/
 def comapDistribMulAction : DistribMulAction G (α →₀ M) where
@@ -84,16 +87,16 @@ end
 
 section
 
-variable [Group G] [MulAction G α] [AddCommMonoid M]
+variable [Group G] [MonoidAction G α] [AddCommMonoid M]
 
-attribute [local instance] comapSMul comapMulAction comapDistribMulAction
+attribute [local instance] comapSMul comapMonoidAction comapDistribMulAction
 
 /-- When `G` is a group, `Finsupp.comapSMul` acts by precomposition with the action of `g⁻¹`.
 -/
 @[simp]
 theorem comapSMul_apply (g : G) (f : α →₀ M) (a : α) : (g • f) a = f (g⁻¹ • a) := by
   conv_lhs => rw [← smul_inv_smul g a]
-  exact mapDomain_apply (MulAction.injective g) _ (g⁻¹ • a)
+  exact mapDomain_apply (MonoidAction.injective g) _ (g⁻¹ • a)
 
 end
 

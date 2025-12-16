@@ -40,7 +40,7 @@ variable (R)
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
 
-See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
+See also `Function.Surjective.monoidActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
 abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)

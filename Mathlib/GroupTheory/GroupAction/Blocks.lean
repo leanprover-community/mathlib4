@@ -16,10 +16,10 @@ public import Mathlib.Tactic.IntervalCases
 
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
-- the predicate `MulAction.IsBlock G B` states that `B : Set X` is a block,
+- the predicate `MonoidAction.IsBlock G B` states that `B : Set X` is a block,
   which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
-  Under `Group G` and `MulAction G X`, this is equivalent to the classical
-  definition `MulAction.IsBlock.def_one`
+  Under `Group G` and `MonoidAction G X`, this is equivalent to the classical
+  definition `MonoidAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
   and non-trivial blocks: orbit of the group, orbit of a normal subgroup…
@@ -28,19 +28,19 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## Results for actions on finite sets
 
-- `MulAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
+- `MonoidAction.IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
   multiplied by the number of its translates is the cardinal of the ambient type
 
-- `MulAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
+- `MonoidAction.IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `MulAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
+- `MonoidAction.IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
-- `MulAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
+- `MonoidAction.IsBlock.of_subset` : the intersections of the translates of a finite subset
   that contain a given point is a block
 
-- `MulAction.BlockMem` : the type of blocks containing a given element
+- `MonoidAction.BlockMem` : the type of blocks containing a given element
 
-- `MulAction.BlockMem.instBoundedOrder` :
+- `MonoidAction.BlockMem.instBoundedOrder` :
   the type of blocks containing a given element is a bounded order.
 
 ## References
@@ -54,11 +54,11 @@ We follow [Wielandt-1964].
 open Set
 open scoped Pointwise
 
-namespace MulAction
+namespace MonoidAction
 
 section orbits
 
-variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
+variable {G : Type*} [Group G] {X : Type*} [MonoidAction G X]
 
 @[to_additive]
 theorem orbit.eq_or_disjoint (a b : X) :
@@ -82,7 +82,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.nonempty_orbit a).ne_empty ha
+    exact (MonoidAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
@@ -119,7 +119,7 @@ variable {M α N β : Type*}
 
 section monoid
 
-variable [Monoid M] [MulAction M α] [Monoid N] [MulAction N β]
+variable [Monoid M] [MonoidAction M α] [Monoid N] [MonoidAction N β]
 
 @[to_additive]
 theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
@@ -140,7 +140,7 @@ theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
 
 end monoid
 
-variable [Group M] [MulAction M α] [Monoid N] [MulAction N β]
+variable [Group M] [MonoidAction M α] [Monoid N] [MonoidAction N β]
 
 @[to_additive]
 theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
@@ -148,10 +148,10 @@ theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
   cases hB with
   | inl h =>
     left
-    exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
+    exact (Function.Injective.subsingleton_image_iff (MonoidAction.injective g)).mpr h
   | inr h =>
     right
-    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
+    rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MonoidAction.surjective g)]
 
 @[to_additive]
 theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
@@ -239,7 +239,7 @@ lemma IsFixedBlock.isInvariantBlock (hB : IsFixedBlock G B) : IsInvariantBlock G
 end SMul
 
 section Monoid
-variable {M X : Type*} [Monoid M] [MulAction M X] {B : Set X} {s : Set M}
+variable {M X : Type*} [Monoid M] [MonoidAction M X] {B : Set X} {s : Set M}
 
 @[to_additive]
 lemma IsBlock.disjoint_smul_right (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint B (s • B) := by
@@ -253,7 +253,7 @@ end Monoid
 
 section Group
 
-variable {G : Type*} [Group G] {X : Type*} [MulAction G X] {B : Set X}
+variable {G : Type*} [Group G] {X : Type*} [MonoidAction G X] {B : Set X}
 
 @[to_additive]
 lemma isBlock_iff_disjoint_smul_of_ne :
@@ -345,7 +345,7 @@ lemma isBlock_top : IsBlock (⊤ : Subgroup G) B ↔ IsBlock G B :=
   Subgroup.topEquiv.toEquiv.forall_congr fun _ ↦ Subgroup.topEquiv.toEquiv.forall_congr_left
 
 @[to_additive]
-lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
+lemma IsBlock.preimage {H Y : Type*} [Group H] [MonoidAction H Y]
     {φ : H → G} (j : Y →ₑ[φ] X) (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
   rintro g₁ g₂ hg
@@ -371,11 +371,11 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
-    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
-  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
+theorem _root_.AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
+    {G : Type*} [AddGroup G] {X : Type*} [AddMonoidAction G X] {B : Set X}
+    {H : AddSubgroup G} (hB : AddMonoidAction.IsBlock H B) (g : G) :
+    AddMonoidAction.IsBlock (H.map (AddAut.conj g).toMul.toAddMonoidHom) (g +ᵥ B) := by
+  rw [AddMonoidAction.isBlock_iff_vadd_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
   simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
@@ -383,7 +383,7 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
     simp only [this]
     apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
     · intro hB'; congr
-    · exact Set.disjoint_image_of_injective (AddAction.injective g)
+    · exact Set.disjoint_image_of_injective (AddMonoidAction.injective g)
   suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
     exact this
   rw [← hh, vadd_vadd, vadd_vadd]
@@ -399,19 +399,19 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
     simp only [this]
     apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
     · intro; congr
-    · exact Set.disjoint_image_of_injective (MulAction.injective g)
+    · exact Set.disjoint_image_of_injective (MonoidAction.injective g)
   suffices (h' : G) • g • B = g • h • B by
     rw [← this]; rfl
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
-theorem _root_.AddAction.IsBlock.translate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
-    (g : G) (hB : AddAction.IsBlock G B) :
-    AddAction.IsBlock G (g +ᵥ B) := by
-  rw [← AddAction.isBlock_top] at hB ⊢
+theorem _root_.AddMonoidAction.IsBlock.translate
+    {G : Type*} [AddGroup G] {X : Type*} [AddMonoidAction G X] (B : Set X)
+    (g : G) (hB : AddMonoidAction.IsBlock G B) :
+    AddMonoidAction.IsBlock G (g +ᵥ B) := by
+  rw [← AddMonoidAction.isBlock_top] at hB ⊢
   rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
+  · apply AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
     rwa [AddSubgroup.comap_top]
   · exact (AddAut.conj g).surjective
 
@@ -434,7 +434,7 @@ def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄,
 
 /-- Translates of a block form a block system -/
 @[to_additive /-- Translates of a block form a block system -/]
-theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
+theorem IsBlock.isBlockSystem [hGX : MonoidAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
   refine ⟨⟨?nonempty, ?cover⟩, ?mem_blocks⟩
@@ -496,12 +496,12 @@ Annoyingly, it seems like the following two lemmas cannot be unified.
 -/
 
 section Left
-variable [MulAction G H] [IsScalarTower G H H]
+variable [MonoidAction G H] [IsScalarTower G H H]
 
-/-- See `MulAction.isBlock_subgroup'` for a version that works for the right action of a group on
+/-- See `MonoidAction.isBlock_subgroup'` for a version that works for the right action of a group on
 itself. -/
-@[to_additive /-- See `AddAction.isBlock_subgroup'` for a version that works for the right action
-of a group on itself. -/]
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup'` for a version that works for the right
+action of a group on itself. -/]
 lemma isBlock_subgroup : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
   rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
@@ -511,14 +511,14 @@ lemma isBlock_subgroup : IsBlock G (s : Set H) := by
 end Left
 
 section Right
-variable [MulAction G H] [IsScalarTower G Hᵐᵒᵖ H]
+variable [MonoidAction G H] [IsScalarTower G Hᵐᵒᵖ H]
 
 open MulOpposite
 
-/-- See `MulAction.isBlock_subgroup` for a version that works for the left action of a group on
+/-- See `MonoidAction.isBlock_subgroup` for a version that works for the left action of a group on
 itself. -/
-@[to_additive /-- See `AddAction.isBlock_subgroup` for a version that works for the left action
-of a group on itself. -/]
+@[to_additive /-- See `AddMonoidAction.isBlock_subgroup` for a version that works for the left
+action of a group on itself. -/]
 lemma isBlock_subgroup' : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
   rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
@@ -535,7 +535,7 @@ section Stabilizer
 
 /- For transitive actions, construction of the lattice equivalence
   `block_stabilizerOrderIso` between
-  - blocks of `MulAction G X` containing a point `a ∈ X`,
+  - blocks of `MonoidAction G X` containing a point `a ∈ X`,
   and
   - subgroups of G containing `stabilizer G a`.
   (Wielandt, th. 7.5) -/
@@ -543,7 +543,7 @@ section Stabilizer
 /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
 @[to_additive /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/]
 theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
-    IsBlock G (MulAction.orbit H a) := by
+    IsBlock G (MonoidAction.orbit H a) := by
   rw [isBlock_iff_smul_eq_of_nonempty]
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, h₂, rfl⟩
   suffices g ∈ H by
@@ -562,7 +562,7 @@ theorem IsBlock.stabilizer_le (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
 @[to_additive /-- A block containing `a` is the orbit of `a` under its stabilizer -/]
 theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
-    MulAction.orbit (stabilizer G B) a = B := by
+    MonoidAction.orbit (stabilizer G B) a = B := by
   ext x
   constructor
   · rintro ⟨⟨k, k_mem⟩, rfl⟩
@@ -601,7 +601,7 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
   invFun := fun ⟨H, hH⟩ =>
-    ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
+    ⟨MonoidAction.orbit H a, MonoidAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
   left_inv := fun ⟨_, ha, hB⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
   right_inv := fun ⟨_, hH⟩ =>
@@ -781,4 +781,321 @@ end Finite
 
 end Group
 
-end MulAction
+end MonoidAction
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit.eq_or_disjoint := MonoidAction.orbit.eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit.eq_or_disjoint := AddMonoidAction.orbit.eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit.pairwiseDisjoint := MonoidAction.orbit.pairwiseDisjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit.pairwiseDisjoint := AddMonoidAction.orbit.pairwiseDisjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsPartition.of_orbits := MonoidAction.IsPartition.of_orbits
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsPartition.of_orbits := AddMonoidAction.IsPartition.of_orbits
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsFixedBlock := MonoidAction.IsFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsFixedBlock := AddMonoidAction.IsFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsInvariantBlock := MonoidAction.IsInvariantBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsInvariantBlock := AddMonoidAction.IsInvariantBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock := MonoidAction.IsTrivialBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock := AddMonoidAction.IsTrivialBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock.image := MonoidAction.IsTrivialBlock.image
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock.image := AddMonoidAction.IsTrivialBlock.image
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock.preimage := MonoidAction.IsTrivialBlock.preimage
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock.preimage := AddMonoidAction.IsTrivialBlock.preimage
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock.smul := MonoidAction.IsTrivialBlock.smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock.vadd := AddMonoidAction.IsTrivialBlock.vadd
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock.smul_iff := MonoidAction.IsTrivialBlock.smul_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock.vadd_iff := AddMonoidAction.IsTrivialBlock.vadd_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock := MonoidAction.IsBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock := AddMonoidAction.IsBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_smul_eq_smul_of_nonempty :=
+  MonoidAction.isBlock_iff_smul_eq_smul_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_vadd_eq_vadd_of_nonempty :=
+  AddMonoidAction.isBlock_iff_vadd_eq_vadd_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_pairwiseDisjoint_range_smul :=
+  MonoidAction.isBlock_iff_pairwiseDisjoint_range_smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_pairwiseDisjoint_range_vadd :=
+  AddMonoidAction.isBlock_iff_pairwiseDisjoint_range_vadd
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_smul_eq_smul_or_disjoint :=
+  MonoidAction.isBlock_iff_smul_eq_smul_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_vadd_eq_vadd_or_disjoint :=
+  AddMonoidAction.isBlock_iff_vadd_eq_vadd_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_smul_of_subset := MonoidAction.IsBlock.smul_eq_smul_of_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_vadd_of_subset := AddMonoidAction.IsBlock.vadd_eq_vadd_of_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.not_smul_set_ssubset_smul_set :=
+  MonoidAction.IsBlock.not_smul_set_ssubset_smul_set
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.not_vadd_set_ssubset_vadd_set :=
+  AddMonoidAction.IsBlock.not_vadd_set_ssubset_vadd_set
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.disjoint_smul_set_smul := MonoidAction.IsBlock.disjoint_smul_set_smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.disjoint_vadd_set_vadd := AddMonoidAction.IsBlock.disjoint_vadd_set_vadd
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.disjoint_smul_smul_set := MonoidAction.IsBlock.disjoint_smul_smul_set
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.disjoint_vadd_vadd_set := AddMonoidAction.IsBlock.disjoint_vadd_vadd_set
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_smul_of_nonempty := MonoidAction.IsBlock.smul_eq_smul_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_vadd_of_nonempty := AddMonoidAction.IsBlock.vadd_eq_vadd_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.pairwiseDisjoint_range_smul :=
+  MonoidAction.IsBlock.pairwiseDisjoint_range_smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.pairwiseDisjoint_range_vadd :=
+  AddMonoidAction.IsBlock.pairwiseDisjoint_range_vadd
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_smul_or_disjoint := MonoidAction.IsBlock.smul_eq_smul_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_vadd_or_disjoint := AddMonoidAction.IsBlock.vadd_eq_vadd_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsFixedBlock.isBlock := MonoidAction.IsFixedBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsFixedBlock.isBlock := AddMonoidAction.IsFixedBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.empty := MonoidAction.IsBlock.empty
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.empty := AddMonoidAction.IsBlock.empty
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.singleton := MonoidAction.IsBlock.singleton
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.singleton := AddMonoidAction.IsBlock.singleton
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.of_subsingleton := MonoidAction.IsBlock.of_subsingleton
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.of_subsingleton := AddMonoidAction.IsBlock.of_subsingleton
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsFixedBlock.isInvariantBlock := MonoidAction.IsFixedBlock.isInvariantBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsFixedBlock.isInvariantBlock := AddMonoidAction.IsFixedBlock.isInvariantBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.disjoint_smul_right := MonoidAction.IsBlock.disjoint_smul_right
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.disjoint_vadd_right := AddMonoidAction.IsBlock.disjoint_vadd_right
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.disjoint_smul_left := MonoidAction.IsBlock.disjoint_smul_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.disjoint_vadd_left := AddMonoidAction.IsBlock.disjoint_vadd_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_disjoint_smul_of_ne := MonoidAction.isBlock_iff_disjoint_smul_of_ne
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_disjoint_vadd_of_ne := AddMonoidAction.isBlock_iff_disjoint_vadd_of_ne
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_smul_eq_of_nonempty := MonoidAction.isBlock_iff_smul_eq_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_vadd_eq_of_nonempty := AddMonoidAction.isBlock_iff_vadd_eq_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_smul_eq_or_disjoint := MonoidAction.isBlock_iff_smul_eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_vadd_eq_or_disjoint := AddMonoidAction.isBlock_iff_vadd_eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_iff_smul_eq_of_mem := MonoidAction.isBlock_iff_smul_eq_of_mem
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_iff_vadd_eq_of_mem := AddMonoidAction.isBlock_iff_vadd_eq_of_mem
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.disjoint_smul_of_ne := MonoidAction.IsBlock.disjoint_smul_of_ne
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.disjoint_vadd_of_ne := AddMonoidAction.IsBlock.disjoint_vadd_of_ne
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_of_nonempty := MonoidAction.IsBlock.smul_eq_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_of_nonempty := AddMonoidAction.IsBlock.vadd_eq_of_nonempty
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_or_disjoint := MonoidAction.IsBlock.smul_eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_or_disjoint := AddMonoidAction.IsBlock.vadd_eq_or_disjoint
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.smul_eq_of_mem := MonoidAction.IsBlock.smul_eq_of_mem
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.vadd_eq_of_mem := AddMonoidAction.IsBlock.vadd_eq_of_mem
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.subgroup := MonoidAction.IsBlock.subgroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.addSubgroup := AddMonoidAction.IsBlock.addSubgroup
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isInvariantBlock_iff_isFixedBlock :=
+  MonoidAction.isInvariantBlock_iff_isFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isInvariantBlock_iff_isFixedBlock :=
+  AddMonoidAction.isInvariantBlock_iff_isFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsInvariantBlock.isFixedBlock := MonoidAction.IsInvariantBlock.isFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsInvariantBlock.isFixedBlock := AddMonoidAction.IsInvariantBlock.isFixedBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsInvariantBlock.isBlock := MonoidAction.IsInvariantBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsInvariantBlock.isBlock := AddMonoidAction.IsInvariantBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsFixedBlock.univ := MonoidAction.IsFixedBlock.univ
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsFixedBlock.univ := AddMonoidAction.IsFixedBlock.univ
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.univ := MonoidAction.IsBlock.univ
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.univ := AddMonoidAction.IsBlock.univ
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.inter := MonoidAction.IsBlock.inter
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.inter := AddMonoidAction.IsBlock.inter
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.iInter := MonoidAction.IsBlock.iInter
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.iInter := AddMonoidAction.IsBlock.iInter
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTrivialBlock.isBlock := MonoidAction.IsTrivialBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTrivialBlock.isBlock := AddMonoidAction.IsTrivialBlock.isBlock
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsFixedBlock.orbit := MonoidAction.IsFixedBlock.orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsFixedBlock.orbit := AddMonoidAction.IsFixedBlock.orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.orbit := MonoidAction.IsBlock.orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.orbit := AddMonoidAction.IsBlock.orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_top := MonoidAction.isBlock_top
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_top := AddMonoidAction.isBlock_top
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.preimage := MonoidAction.IsBlock.preimage
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.preimage := AddMonoidAction.IsBlock.preimage
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.image := MonoidAction.IsBlock.image
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.image := AddMonoidAction.IsBlock.image
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.subtype_val_preimage := MonoidAction.IsBlock.subtype_val_preimage
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.subtype_val_preimage := AddMonoidAction.IsBlock.subtype_val_preimage
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_subtypeVal := MonoidAction.isBlock_subtypeVal
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_subtypeVal := AddMonoidAction.isBlock_subtypeVal
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.of_subgroup_of_conjugate :=
+  MonoidAction.IsBlock.of_subgroup_of_conjugate
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.of_addSubgroup_of_conjugate :=
+  AddMonoidAction.IsBlock.of_addSubgroup_of_conjugate
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.translate := MonoidAction.IsBlock.translate
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.translate := AddMonoidAction.IsBlock.translate
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlockSystem := MonoidAction.IsBlockSystem
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlockSystem := AddMonoidAction.IsBlockSystem
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.isBlockSystem := MonoidAction.IsBlock.isBlockSystem
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.isBlockSystem := AddMonoidAction.IsBlock.isBlockSystem
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_orbit_eq_orbit_smul := MonoidAction.smul_orbit_eq_orbit_smul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_orbit_eq_orbit_vadd := AddMonoidAction.vadd_orbit_eq_orbit_vadd
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.orbit_of_normal := MonoidAction.IsBlock.orbit_of_normal
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.orbit_of_normal := AddMonoidAction.IsBlock.orbit_of_normal
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlockSystem.of_normal := MonoidAction.IsBlockSystem.of_normal
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlockSystem.of_normal := AddMonoidAction.IsBlockSystem.of_normal
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_subgroup := MonoidAction.isBlock_subgroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_addSubgroup := AddMonoidAction.isBlock_addSubgroup
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isBlock_subgroup' := MonoidAction.isBlock_subgroup'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isBlock_addSubgroup' := AddMonoidAction.isBlock_addSubgroup'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.of_orbit := MonoidAction.IsBlock.of_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.of_orbit := AddMonoidAction.IsBlock.of_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.stabilizer_le := MonoidAction.IsBlock.stabilizer_le
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.stabilizer_le := AddMonoidAction.IsBlock.stabilizer_le
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.orbit_stabilizer_eq := MonoidAction.IsBlock.orbit_stabilizer_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.orbit_stabilizer_eq := AddMonoidAction.IsBlock.orbit_stabilizer_eq
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_orbit_eq := MonoidAction.stabilizer_orbit_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_orbit_eq := AddMonoidAction.stabilizer_orbit_eq
+@[deprecated (since := "2025-12-14")]
+alias MulAction.block_stabilizerOrderIso := MonoidAction.block_stabilizerOrderIso
+@[deprecated (since := "2025-12-14")]
+alias AddAction.block_stabilizerOrderIso := AddMonoidAction.block_stabilizerOrderIso
+@[deprecated (since := "2025-12-14")]
+alias MulAction.BlockMem := MonoidAction.BlockMem
+@[deprecated (since := "2025-12-14")]
+alias AddAction.BlockMem := AddMonoidAction.BlockMem
+@[deprecated (since := "2025-12-14")]
+alias MulAction.BlockMem.coe_top := MonoidAction.BlockMem.coe_top
+@[deprecated (since := "2025-12-14")]
+alias AddAction.BlockMem.coe_top := AddMonoidAction.BlockMem.coe_top
+@[deprecated (since := "2025-12-14")]
+alias MulAction.BlockMem.coe_bot := MonoidAction.BlockMem.coe_bot
+@[deprecated (since := "2025-12-14")]
+alias AddAction.BlockMem.coe_bot := AddMonoidAction.BlockMem.coe_bot
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.ncard_block_eq_relIndex := MonoidAction.IsBlock.ncard_block_eq_relIndex
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.ncard_block_eq_relIndex := AddMonoidAction.IsBlock.ncard_block_eq_relIndex
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.ncard_block_mul_ncard_orbit_eq :=
+  MonoidAction.IsBlock.ncard_block_mul_ncard_orbit_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.ncard_block_add_ncard_orbit_eq :=
+  AddMonoidAction.IsBlock.ncard_block_add_ncard_orbit_eq
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.ncard_dvd_card := MonoidAction.IsBlock.ncard_dvd_card
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.ncard_dvd_card := AddMonoidAction.IsBlock.ncard_dvd_card
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.eq_univ_of_card_lt := MonoidAction.IsBlock.eq_univ_of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.eq_univ_of_card_lt := AddMonoidAction.IsBlock.eq_univ_of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.subsingleton_of_card_lt := MonoidAction.IsBlock.subsingleton_of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.subsingleton_of_card_lt := AddMonoidAction.IsBlock.subsingleton_of_card_lt
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsBlock.of_subset := MonoidAction.IsBlock.of_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsBlock.of_subset := AddMonoidAction.IsBlock.of_subset

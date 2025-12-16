@@ -230,7 +230,7 @@ section SMul
 section
 
 variable {A : Type*}
-  [Monoid R] [Monoid A] [MulAction R A] [SMulCommClass R A A]
+  [Monoid R] [Monoid A] [MonoidAction R A] [SMulCommClass R A A]
   [IsScalarTower R A A] [StarMul R] [StarMul A] [StarModule R A]
 
 lemma smul_mem_of_mem {r : R} {a : A} (hr : r ∈ unitary R) (ha : a ∈ unitary A) :
@@ -247,7 +247,7 @@ instance : SMul (unitary R) (unitary A) where
 @[simp, norm_cast]
 lemma coe_smul (r : unitary R) (a : unitary A) : ↑(r • a) = r • (a : A) := rfl
 
-instance : MulAction (unitary R) (unitary A) where
+instance : MonoidAction (unitary R) (unitary A) where
   one_smul _ := Subtype.ext <| one_smul ..
   mul_smul _ _ _ := Subtype.ext <| mul_smul ..
 
@@ -260,7 +260,7 @@ section
 
 variable {S A : Type*}
   [Monoid R] [Monoid S] [Monoid A] [StarMul R] [StarMul S] [StarMul A]
-  [MulAction R S] [MulAction R A] [MulAction S A]
+  [MonoidAction R S] [MonoidAction R A] [MonoidAction S A]
   [StarModule R S] [StarModule R A] [StarModule S A]
   [IsScalarTower R A A] [IsScalarTower S A A]
   [SMulCommClass R A A] [SMulCommClass S A A]

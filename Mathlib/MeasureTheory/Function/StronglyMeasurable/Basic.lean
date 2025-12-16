@@ -501,13 +501,13 @@ theorem _root_.Measurable.stronglyMeasurable_add
 
 end Arithmetic
 
-section MulAction
+section MonoidAction
 
 variable {M G G₀ : Type*}
 variable [TopologicalSpace β]
-variable [Monoid M] [MulAction M β] [ContinuousConstSMul M β]
-variable [Group G] [MulAction G β] [ContinuousConstSMul G β]
-variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
+variable [Monoid M] [MonoidAction M β] [ContinuousConstSMul M β]
+variable [Group G] [MonoidAction G β] [ContinuousConstSMul G β]
+variable [GroupWithZero G₀] [MonoidAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
@@ -523,7 +523,7 @@ theorem _root_.stronglyMeasurable_const_smul_iff₀ {_ : MeasurableSpace α} {c 
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
   (IsUnit.mk0 _ hc).stronglyMeasurable_const_smul_iff
 
-end MulAction
+end MonoidAction
 
 section Order
 

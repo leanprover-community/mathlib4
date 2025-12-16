@@ -68,7 +68,7 @@ variable {M G X}
 
 section EMetric
 
-variable [PseudoEMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
+variable [PseudoEMetricSpace X] [Group G] [MonoidAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
 theorem edist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
@@ -133,7 +133,7 @@ namespace IsometryEquiv
 then `IsometryEquiv.constVAdd` is the isometry of `X` given by addition of a constant element of the
 group. -/]
 def constSMul (c : G) : X ≃ᵢ X where
-  toEquiv := MulAction.toPerm c
+  toEquiv := MonoidAction.toPerm c
   isometry_toFun := isometry_smul X c
 
 @[to_additive (attr := simp)]
@@ -317,7 +317,7 @@ theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSM
 
 namespace Metric
 
-variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
+variable [PseudoMetricSpace X] [Group G] [MonoidAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
 theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=

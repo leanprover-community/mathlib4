@@ -577,8 +577,8 @@ instance [SMul R M] [ContinuousConstSMul R M] [Mul M] [ContinuousMul M] [SMulCom
     SMulCommClass C(α, M) R C(α, M) where
   smul_comm _ _ _ := ext fun _ => smul_comm (_ : M) ..
 
-instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
-  Function.Injective.mulAction _ coe_injective coe_smul
+instance [Monoid R] [MonoidAction R M] [ContinuousConstSMul R M] : MonoidAction R C(α, M) :=
+  Function.Injective.monoidAction _ coe_injective coe_smul
 
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
     [ContinuousConstSMul R M] : DistribMulAction R C(α, M) :=

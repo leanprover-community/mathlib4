@@ -53,8 +53,9 @@ instance [Zero M] [SMulZeroClass S M] (c : SMulCon S M) : SMulZeroClass S c.Quot
 instance [Zero S] [Zero M] [SMulWithZero S M] (c : SMulCon S M) : SMulWithZero S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.smulWithZero ⟨_, rfl⟩ fun _ _ ↦ rfl
 
-@[to_additive] instance [Monoid S] [MulAction S M] (c : SMulCon S M) : MulAction S c.Quotient :=
-  fast_instance% Quotient.mk''_surjective.mulAction (⟦·⟧) fun _ _ ↦ rfl
+@[to_additive] instance [Monoid S] [MonoidAction S M] (c : SMulCon S M) :
+    MonoidAction S c.Quotient :=
+  fast_instance% Quotient.mk''_surjective.monoidAction (⟦·⟧) fun _ _ ↦ rfl
 
 section addConGen
 
@@ -119,8 +120,8 @@ instance [Zero S] [Zero M] [Add M] [SMulWithZero S M] (c : ModuleCon S M) :
     SMulWithZero S c.Quotient :=
   inferInstanceAs (SMulWithZero S c.toSMulCon.Quotient)
 
-instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.Quotient :=
-  inferInstanceAs (MulAction S c.toSMulCon.Quotient)
+instance [Monoid S] [Add M] [MonoidAction S M] (c : ModuleCon S M) : MonoidAction S c.Quotient :=
+  inferInstanceAs (MonoidAction S c.toSMulCon.Quotient)
 
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl

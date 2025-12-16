@@ -460,7 +460,7 @@ section RestrictScalars
 namespace NonUnitalAlgHom
 
 variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
-    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MulAction R S]
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [MonoidAction R S]
     [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
     [IsScalarTower R S A] [IsScalarTower R S B]
 

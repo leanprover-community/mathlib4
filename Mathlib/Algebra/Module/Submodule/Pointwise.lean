@@ -21,7 +21,7 @@ and the actions
 * `Submodule.pointwiseDistribMulAction`
 * `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of `Set.monoidActionSet`.
 
 This file also provides:
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
@@ -504,8 +504,8 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
 -- should be true.
 /-- A subset of a ring `R` has a multiplicative action on submodules of a module over `R`. -/
-protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
-    MulAction (Set R) (Submodule R M) where
+protected noncomputable def pointwiseSetMonoidAction [SMulCommClass R R M] :
+    MonoidAction (Set R) (Submodule R M) where
   one_smul x := show {(1 : R)} • x = x from SetLike.ext fun m =>
     (mem_singleton_set_smul _ _ _).trans ⟨by rintro ⟨_, h, rfl⟩; rwa [one_smul],
       fun h => ⟨m, h, (one_smul _ _).symm⟩⟩
@@ -519,9 +519,9 @@ protected noncomputable def pointwiseSetMulAction [SMulCommClass R R M] :
       exact Submodule.sum_mem _ fun r' hr' ↦
         mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
+scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMonoidAction
 
--- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
+-- This cannot be generalized to `Set S` because `MonoidAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/
 protected noncomputable def pointwiseSetDistribMulAction [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where

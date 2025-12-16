@@ -26,7 +26,7 @@ Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MonoidAction
 
 open Function
 

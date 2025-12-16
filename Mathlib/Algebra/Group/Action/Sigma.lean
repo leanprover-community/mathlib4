@@ -77,8 +77,8 @@ instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σ i, α
 end SMul
 
 @[to_additive]
-instance {m : Monoid M} [∀ i, MulAction M (α i)] :
-    MulAction M (Σ i, α i) where
+instance {m : Monoid M} [∀ i, MonoidAction M (α i)] :
+    MonoidAction M (Σ i, α i) where
   mul_smul a b x := by
     cases x
     rw [smul_mk, smul_mk, smul_mk, mul_smul]

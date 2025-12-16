@@ -39,13 +39,13 @@ namespace QuotientGroup
 variable {G H I M : Type*} [Group G] [Group H] [Monoid M] {N : Subgroup G}
 
 @[to_additive (attr := simp)] lemma leftRel_eq_top : leftRel N = ⊤ ↔ N = ⊤ := by
-  simpa [leftRel, MulAction.orbitRel, funext_iff, MulAction.mem_orbit_iff,
-    MulAction.subgroup_smul_def, ← eq_inv_mul_iff_mul_eq]
+  simpa [leftRel, MonoidAction.orbitRel, funext_iff, MonoidAction.mem_orbit_iff,
+    MonoidAction.subgroup_smul_def, ← eq_inv_mul_iff_mul_eq]
     using ⟨fun h ↦ by ext; simpa using h _ 1, fun h ↦ by simp [h]⟩
 
 @[to_additive (attr := simp)] lemma rightRel_eq_top : rightRel N = ⊤ ↔ N = ⊤ := by
-  simpa [rightRel, MulAction.orbitRel, funext_iff, MulAction.mem_orbit_iff,
-    MulAction.subgroup_smul_def, ← eq_mul_inv_iff_mul_eq]
+  simpa [rightRel, MonoidAction.orbitRel, funext_iff, MonoidAction.mem_orbit_iff,
+    MonoidAction.subgroup_smul_def, ← eq_mul_inv_iff_mul_eq]
     using ⟨fun h ↦ by ext; simpa using h _ 1, fun h ↦ by simp [h]⟩
 
 @[to_additive (attr := simp)] protected lemma subsingleton_iff : Subsingleton (G ⧸ N) ↔ N = ⊤ := by

@@ -59,14 +59,14 @@ variable [DistribMulAction M A]
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
+protected def pointwiseMonoidAction : MonoidAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (map_one _)).trans S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (map_mul _ _ _)).trans (S.map_map _ _).symm
 
-scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
+scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMonoidAction
 
 @[simp, norm_cast]
 lemma coe_pointwise_smul (m : M) (S : AddSubmonoid A) : ↑(m • S) = m • (S : Set A) := rfl

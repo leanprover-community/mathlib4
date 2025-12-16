@@ -25,12 +25,15 @@ namespace Equiv
 variable {M N O α β : Type*}
 
 variable (M) [Monoid M] in
-/-- Transfer `MulAction` across an `Equiv` -/
-@[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
+/-- Transfer `MonoidAction` across an `Equiv` -/
+@[to_additive /-- Transfer `AddMonoidAction` across an `Equiv` -/]
+protected abbrev monoidAction (e : α ≃ β) [MonoidAction M β] : MonoidAction M α where
   __ := e.smul M
   one_smul := by simp [smul_def]
   mul_smul := by simp [smul_def, mul_smul]
+
+@[deprecated (since := "2025-12-12")] protected alias addAction := Equiv.addMonoidAction
+@[deprecated (since := "2025-12-12")] protected alias mulAction := Equiv.monoidAction
 
 variable (M N) [SMul M β] [SMul N β] in
 /-- Transfer `SMulCommClass` across an `Equiv` -/
@@ -71,7 +74,7 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
     letI := e.monoid
     MulDistribMulAction M N :=
   letI := e.monoid
-  { e.mulAction M with
+  { e.monoidAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
 

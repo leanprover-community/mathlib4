@@ -46,7 +46,7 @@ For each of the following structures we prove that if `β` has this structure, t
 
 * one-operation algebraic structures up to `CommGroup`;
 * `MulZeroClass`, `Distrib`, `Semiring`, `CommSemiring`, `Ring`, `CommRing`;
-* `MulAction`, `DistribMulAction`, `Module`;
+* `MonoidAction`, `DistribMulAction`, `Module`;
 * `Preorder`, `PartialOrder`, and `Lattice` structures, as well as `BoundedOrder`;
 
 ## Tags
@@ -620,7 +620,7 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
   rfl
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
+instance instMonoidAction [Monoid M] [MonoidAction M β] : MonoidAction M (Germ l β) where
   one_smul f :=
     inductionOn f fun f => by
       norm_cast
@@ -631,7 +631,7 @@ instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) whe
       simp [mul_smul]
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
+instance instMonoidAction' [Monoid M] [MonoidAction M β] : MonoidAction (Germ l M) (Germ l β) where
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by

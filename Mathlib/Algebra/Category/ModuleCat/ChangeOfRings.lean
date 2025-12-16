@@ -402,13 +402,13 @@ theorem smul_apply' (s : S) (g : (restrictScalars f).obj (of _ S) →ₗ[R] M) (
     (s • g) s' = g (s' * s : S) :=
   rfl
 
-instance mulAction : MulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
+instance monoidAction : MonoidAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.hasSMul f _ with
     one_smul := fun g => LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
-  { CoextendScalars.mulAction f _ with
+  { CoextendScalars.monoidAction f _ with
     smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
     smul_zero := fun _ => LinearMap.ext fun _ : S => by simp }
 

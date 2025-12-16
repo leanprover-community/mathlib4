@@ -39,7 +39,7 @@ namespace Action
 instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
-instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
+instance (X : Action V G) : MonoidAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
   smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
   one_smul x := by
     change ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x

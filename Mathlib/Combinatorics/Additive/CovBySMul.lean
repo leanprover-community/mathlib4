@@ -22,7 +22,7 @@ This is a fundamental relation to study in additive combinatorics.
 
 open scoped Finset Pointwise
 
-variable {M N X : Type*} [Monoid M] [Monoid N] [MulAction M X] [MulAction N X] {K L : ℝ}
+variable {M N X : Type*} [Monoid M] [Monoid N] [MonoidAction M X] [MonoidAction N X] {K L : ℝ}
   {A A₁ A₂ B B₁ B₂ C : Set X}
 
 variable (M) in

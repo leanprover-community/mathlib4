@@ -57,7 +57,7 @@ instance (priority := 100) {M X : Type*} [SMul M X] [TopologicalSpace X] [Contin
   ⟨fun c ↦ (continuous_const_smul c).isProperMap⟩
 
 @[to_additive]
-instance (priority := 100) {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace X]
+instance (priority := 100) {G X : Type*} [Group G] [MonoidAction G X] [TopologicalSpace X]
     [ContinuousConstSMul G X] : ProperConstSMul G X :=
   ⟨fun c ↦ (Homeomorph.smul c).isProperMap⟩
 

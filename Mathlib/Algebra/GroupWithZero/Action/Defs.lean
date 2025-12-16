@@ -177,10 +177,10 @@ instance AddGroup.intSMulWithZero [AddGroup A] : SMulWithZero ℤ A where
 section MonoidWithZero
 variable (M₀ A) [MonoidWithZero M₀] [MonoidWithZero M₀'] [Zero A]
 
-/-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MulAction` and
+/-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MonoidAction` and
 is compatible with `0` (both in `M₀` and in `A`), with `1 ∈ M₀`, and with associativity of
 multiplication on the monoid `A`. -/
-class MulActionWithZero extends MulAction M₀ A where
+class MulActionWithZero extends MonoidAction M₀ A where
   -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : M₀, r • (0 : A) = 0
@@ -194,12 +194,12 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : Monoid
 
 /-- See also `Semiring.toModule` -/
 instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
-  { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
+  { MulZeroClass.toSMulWithZero M₀, Monoid.toMonoidAction M₀ with }
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero M₀ᵐᵒᵖ M₀ :=
-  { MulZeroClass.toOppositeSMulWithZero M₀, Monoid.toOppositeMulAction with }
+  { MulZeroClass.toOppositeSMulWithZero M₀, Monoid.toOppositeMonoidAction with }
 
 protected lemma MulActionWithZero.subsingleton [MulActionWithZero M₀ A] [Subsingleton M₀] :
     Subsingleton A where
@@ -226,13 +226,13 @@ lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : A) (i j : ι) :
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  { hf.mulAction f smul, hf.smulWithZero f smul with }
+  { hf.monoidAction f smul, hf.smulWithZero f smul with }
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  { hf.mulAction f smul, hf.smulWithZero f smul with }
+  { hf.monoidAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
 
@@ -260,7 +260,7 @@ end GroupWithZero
 
 /-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
 
-This is exactly `DistribMulAction` without the `MulAction` part.
+This is exactly `DistribMulAction` without the `MonoidAction` part.
 -/
 @[ext]
 class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
@@ -339,7 +339,7 @@ Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure
 a `ℤ[G]`-module.
 -/
 @[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MonoidAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
@@ -356,7 +356,7 @@ instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
 /-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
-    (DistribMulAction.toMulAction.toSMul : SMul M A) =
+    (DistribMulAction.toMonoidAction.toSMul : SMul M A) =
       DistribMulAction.toDistribSMul.toSMul :=
   rfl
 
@@ -365,14 +365,14 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
+  { hf.distribSMul f smul, hf.monoidAction f smul with }
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
 homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.distribSMul f smul, hf.mulAction f smul with }
+  { hf.distribSMul f smul, hf.monoidAction f smul with }
 
 variable (A)
 

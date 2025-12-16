@@ -21,7 +21,7 @@ pointwise subtraction
 
 @[expose] public section
 
-assert_not_exists MulAction IsOrderedMonoid Field
+assert_not_exists MonoidAction IsOrderedMonoid Field
 
 open Function
 open scoped Pointwise

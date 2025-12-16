@@ -25,10 +25,10 @@ groups, and the identity from `G` to `H` is continuous but not open.
 
 open scoped Topology Pointwise
 
-open MulAction Set Function
+open MonoidAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
-  [Group G] [IsTopologicalGroup G] [MulAction G X]
+  [Group G] [IsTopologicalGroup G] [MonoidAction G X]
   [SigmaCompactSpace G] [BaireSpace X] [T2Space X]
   [ContinuousSMul G X] [IsPretransitive G X]
 
@@ -115,9 +115,9 @@ theorem MonoidHom.isOpenMap_of_sigmaCompact
     {H : Type*} [Group H] [TopologicalSpace H] [BaireSpace H] [T2Space H] [ContinuousMul H]
     (f : G →* H) (hf : Function.Surjective f) (h'f : Continuous f) :
     IsOpenMap f := by
-  let A : MulAction G H := MulAction.compHom _ f
+  let A : MonoidAction G H := MonoidAction.compHom _ f
   have : ContinuousSMul G H := continuousSMul_compHom h'f
   have : IsPretransitive G H := isPretransitive_compHom hf
-  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [A, MulAction.compHom_smul_def]
+  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [A, MonoidAction.compHom_smul_def]
   rw [this]
   exact isOpenMap_smul_of_sigmaCompact _

@@ -49,7 +49,7 @@ instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribS
 
 instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
-  { Prod.mulAction, Prod.distribSMul with }
+  { Prod.monoidAction, Prod.distribSMul with }
 
 instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
@@ -62,7 +62,7 @@ instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] 
 
 instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
     [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
-  { Prod.mulAction, Prod.smulWithZero with }
+  { Prod.monoidAction, Prod.smulWithZero with }
 
 end Prod
 
@@ -75,7 +75,7 @@ variable (M N α) [Monoid M] [Monoid N] [AddMonoid α]
 /-- Construct a `DistribMulAction` by a product monoid from `DistribMulAction`s by the factors. -/
 abbrev DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulAction N α]
     [SMulCommClass M N α] : DistribMulAction (M × N) α where
-  __ := MulAction.prodOfSMulCommClass M N α
+  __ := MonoidAction.prodOfSMulCommClass M N α
   smul_zero mn := by change mn.1 • mn.2 • 0 = (0 : α); rw [smul_zero, smul_zero]
   smul_add mn a a' := by change mn.1 • mn.2 • _ = (_ : α); rw [smul_add, smul_add]; rfl
 
@@ -86,7 +86,7 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
   toFun _ :=
     letI instM := DistribMulAction.compHom α (.inl M N)
     letI instN := DistribMulAction.compHom α (.inr M N)
-    ⟨instM, instN, (MulAction.prodEquiv M N α inferInstance).2.2⟩
+    ⟨instM, instN, (MonoidAction.prodEquiv M N α inferInstance).2.2⟩
   invFun _insts :=
     letI := _insts.1; letI := _insts.2.1; have := _insts.2.2
     DistribMulAction.prodOfSMulCommClass M N α

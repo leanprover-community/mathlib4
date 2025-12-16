@@ -136,7 +136,7 @@ end Absorbs
 
 section GroupWithZero
 
-variable {G₀ α : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G₀ α]
+variable {G₀ α : Type*} [GroupWithZero G₀] [Bornology G₀] [MonoidAction G₀ α]
   {s t u : Set α} {S : Set (Set α)}
 
 @[simp]
@@ -239,7 +239,7 @@ end Absorbent
 
 section GroupWithZero
 
-variable {G₀ α E : Type*} [GroupWithZero G₀] [Bornology G₀] [MulAction G₀ α]
+variable {G₀ α E : Type*} [GroupWithZero G₀] [Bornology G₀] [MonoidAction G₀ α]
 
 lemma absorbent_univ : Absorbent G₀ (univ : Set α) := fun _ ↦ .univ
 
@@ -254,7 +254,7 @@ lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulActio
 end GroupWithZero
 
 protected theorem Absorbs.restrict_scalars
-    {M N α : Type*} [Monoid N] [SMul M N] [SMul M α] [MulAction N α]
+    {M N α : Type*} [Monoid N] [SMul M N] [SMul M α] [MonoidAction N α]
     [IsScalarTower M N α] [Bornology M] [Bornology N] {s t : Set α} (h : Absorbs N s t)
     (hbdd : Tendsto (· • 1 : M → N) (cobounded M) (cobounded N)) :
     Absorbs M s t :=

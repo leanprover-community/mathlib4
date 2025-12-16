@@ -93,7 +93,7 @@ end AE_smul
 
 section AE
 
-variable {m : MeasurableSpace α} [Group G] [MulAction G α]
+variable {m : MeasurableSpace α} [Group G] [MonoidAction G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
@@ -235,7 +235,7 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MonoidAction G α] (μ : Measure α)
 
 variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
@@ -309,7 +309,7 @@ theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
 section IsMinimal
 
 variable (G)
-variable [TopologicalSpace α] [ContinuousConstSMul G α] [MulAction.IsMinimal G α] {K U : Set α}
+variable [TopologicalSpace α] [ContinuousConstSMul G α] [MonoidAction.IsMinimal G α] {K U : Set α}
 
 include G in
 /-- If measure `μ` is invariant under a group action and is nonzero on a compact set `K`, then it is

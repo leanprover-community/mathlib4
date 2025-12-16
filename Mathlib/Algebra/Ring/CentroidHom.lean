@@ -387,7 +387,7 @@ The following instances show that `α` is a non-unital and non-associative algeb
 
 /-- The tautological action by `CentroidHom α` on `α`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMonoidAction`. -/
 instance applyModule : Module (CentroidHom α) α where
   smul T a := T a
   add_smul _ _ _ := rfl

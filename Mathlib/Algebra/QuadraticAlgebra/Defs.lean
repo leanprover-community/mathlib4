@@ -228,13 +228,13 @@ theorem smul_mk (s : S) (x y : R) :
 
 end SMul
 
-section MulAction
+section MonoidAction
 
-instance [Monoid S] [MulAction S R] : MulAction S (QuadraticAlgebra R a b) where
+instance [Monoid S] [MonoidAction S R] : MonoidAction S (QuadraticAlgebra R a b) where
   one_smul _ := by ext <;> simp
   mul_smul _ _ _ := by ext <;> simp [mul_smul]
 
-end MulAction
+end MonoidAction
 
 @[simp, norm_cast]
 theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :

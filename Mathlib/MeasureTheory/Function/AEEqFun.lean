@@ -813,9 +813,9 @@ section Module
 
 variable {𝕜 : Type*}
 
-instance instMulAction [Monoid 𝕜] [MulAction 𝕜 γ] [ContinuousConstSMul 𝕜 γ] :
-    MulAction 𝕜 (α →ₘ[μ] γ) :=
-  toGerm_injective.mulAction toGerm smul_toGerm
+instance instMonoidAction [Monoid 𝕜] [MonoidAction 𝕜 γ] [ContinuousConstSMul 𝕜 γ] :
+    MonoidAction 𝕜 (α →ₘ[μ] γ) :=
+  toGerm_injective.monoidAction toGerm smul_toGerm
 
 instance instDistribMulAction [Monoid 𝕜] [AddMonoid γ] [ContinuousAdd γ] [DistribMulAction 𝕜 γ]
     [ContinuousConstSMul 𝕜 γ] : DistribMulAction 𝕜 (α →ₘ[μ] γ) :=

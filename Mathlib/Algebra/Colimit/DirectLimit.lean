@@ -108,9 +108,9 @@ variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)
 
 end SMul
 
-@[to_additive] instance [Monoid R] [∀ i, MulAction R (G i)]
+@[to_additive] instance [Monoid R] [∀ i, MonoidAction R (G i)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
-    MulAction R (DirectLimit G f) where
+    MonoidAction R (DirectLimit G f) where
   one_smul := DirectLimit.induction _ fun i _ ↦ by rw [smul_def, one_smul]
   mul_smul _ _ := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, mul_smul]
 

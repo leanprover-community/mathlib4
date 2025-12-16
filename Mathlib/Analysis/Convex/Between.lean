@@ -82,7 +82,7 @@ variable {R}
 @[simp]
 theorem mem_const_vadd_affineSegment {x y z : P} (v : V) :
     v +ᵥ z ∈ affineSegment R (v +ᵥ x) (v +ᵥ y) ↔ z ∈ affineSegment R x y := by
-  rw [← affineSegment_const_vadd_image, (AddAction.injective v).mem_set_image]
+  rw [← affineSegment_const_vadd_image, (AddMonoidAction.injective v).mem_set_image]
 
 @[simp]
 theorem mem_vadd_const_affineSegment {x y z : V} (p : P) :
@@ -271,8 +271,8 @@ alias ⟨_, Wbtw.sub_const⟩ := wbtw_sub_const_iff
 @[simp]
 theorem sbtw_const_vadd_iff {x y z : P} (v : V) :
     Sbtw R (v +ᵥ x) (v +ᵥ y) (v +ᵥ z) ↔ Sbtw R x y z := by
-  rw [Sbtw, Sbtw, wbtw_const_vadd_iff, (AddAction.injective v).ne_iff,
-    (AddAction.injective v).ne_iff]
+  rw [Sbtw, Sbtw, wbtw_const_vadd_iff, (AddMonoidAction.injective v).ne_iff,
+    (AddMonoidAction.injective v).ne_iff]
 
 alias ⟨_, Sbtw.const_vadd⟩ := sbtw_const_vadd_iff
 

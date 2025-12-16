@@ -75,7 +75,7 @@ then the scalar multiplication by `g` is an ergodic map. -/
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace M]
-    [MulAction M X] [ContinuousSMul M X] {g : M} (hg : DenseRange (g ^ · : ℕ → M))
+    [MonoidAction M X] [ContinuousSMul M X] {g : M} (hg : DenseRange (g ^ · : ℕ → M))
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul M X μ] :
     Ergodic (g • ·) μ := by
   borelize M
@@ -97,30 +97,30 @@ then the corresponding action of `M` on `X` is ergodic. -/
 @[to_additive
   /-- If `N` acts additively continuously and ergodically on `X` and `M` acts minimally on `N`,
 then the corresponding action of `M` on `X` is ergodic. -/]
-theorem ErgodicSMul.trans_isMinimal (N : Type*) [MulAction M N]
-    [Monoid N] [TopologicalSpace N] [MulAction.IsMinimal M N]
-    [MulAction N X] [IsScalarTower M N X] [ContinuousSMul N X] [ErgodicSMul N X μ] :
+theorem ErgodicSMul.trans_isMinimal (N : Type*) [MonoidAction M N]
+    [Monoid N] [TopologicalSpace N] [MonoidAction.IsMinimal M N]
+    [MonoidAction N X] [IsScalarTower M N X] [ContinuousSMul N X] [ErgodicSMul N X μ] :
     ErgodicSMul M X μ where
   measure_preimage_smul c s hsm := by
     simpa only [smul_one_smul] using SMulInvariantMeasure.measure_preimage_smul (c • 1 : N) hsm
   aeconst_of_forall_preimage_smul_ae_eq {s} hsm hs := by
     refine aeconst_of_dense_setOf_preimage_smul_ae (M := N) hsm.nullMeasurableSet ?_
-    refine (MulAction.dense_orbit M 1).mono ?_
+    refine (MonoidAction.dense_orbit M 1).mono ?_
     rintro _ ⟨g, rfl⟩
     simpa using hs g
 
 end IsScalarTower
 
-section MulActionGroup
+section MonoidActionGroup
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousInv G]
   {X : Type*} [TopologicalSpace X] [R1Space X] [MeasurableSpace X] [BorelSpace X]
-  [MulAction G X] [ContinuousSMul G X]
+  [MonoidAction G X] [ContinuousSMul G X]
   {μ : Measure X} [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul G X μ] {s : Set X}
 
 @[to_additive]
 theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
-    (hd : Dense (MulAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
+    (hd : Dense (MonoidAction.aestabilizer G μ s : Set G)) : EventuallyConst s (ae μ) :=
   aeconst_of_dense_setOf_preimage_smul_ae hsm <| (hd.preimage (isOpenMap_inv _)).mono fun g hg ↦ by
     simpa only [preimage_smul] using hg
 
@@ -139,9 +139,9 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   refine ⟨measurePreserving_smul _ _, ⟨fun s hsm hs ↦ ?_⟩⟩
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
-    MulAction.mem_aestabilizer, ← preimage_smul, hs]
+    MonoidAction.mem_aestabilizer, ← preimage_smul, hs]
 
-end MulActionGroup
+end MonoidActionGroup
 
 section IsTopologicalGroup
 

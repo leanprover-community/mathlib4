@@ -18,10 +18,10 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 ## Main definitions
 
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
+* `MonoidAction.orbit`
+* `MonoidAction.fixedPoints`
+* `MonoidAction.fixedBy`
+* `MonoidAction.stabilizer`
 
 -/
 
@@ -35,9 +35,9 @@ open Pointwise
 
 open Function
 
-namespace MulAction
+namespace MonoidAction
 
-variable (M γ α : Type*) [SMul γ α] [Monoid M] [MulAction M α]
+variable (M γ α : Type*) [SMul γ α] [Monoid M] [MonoidAction M α]
 
 section Orbit
 
@@ -89,7 +89,7 @@ theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
   Set.range_subset_iff.2 fun m' => mul_smul m' m a ▸ mem_orbit _ _
 
 @[to_additive]
-instance {a : α} : MulAction M (orbit M a) where
+instance {a : α} : MonoidAction M (orbit M a) where
   smul m := (mapsTo_smul_orbit m a).restrict _ _ _
   one_smul m := Subtype.ext (one_smul M (m : α))
   mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
@@ -171,7 +171,7 @@ theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid
 
 end Stabilizers
 
-end MulAction
+end MonoidAction
 
 section FixedPoints
 
@@ -183,7 +183,7 @@ variable [Monoid α] [MulDistribMulAction M α]
 
 /-- The submonoid of elements fixed under the whole action. -/
 def FixedPoints.submonoid : Submonoid α where
-  carrier := MulAction.fixedPoints M α
+  carrier := MonoidAction.fixedPoints M α
   one_mem' := smul_one
   mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
@@ -217,8 +217,8 @@ end FixedPoints
 end Group
 end FixedPoints
 
-namespace MulAction
-variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+namespace MonoidAction
+variable {G α β : Type*} [Group G] [MonoidAction G α] [MonoidAction G β]
 
 section Orbit
 
@@ -242,8 +242,8 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
-instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
+instance instMonoidAction (H : Subgroup G) : MonoidAction H α :=
+  inferInstanceAs (MonoidAction H.toSubmonoid α)
 
 @[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
@@ -263,15 +263,15 @@ lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit
 
 @[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
-    a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
+    a ∈ MonoidAction.orbit H b ↔ (a : α) ∈ MonoidAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
     rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
 
 variable (G α)
 
@@ -298,7 +298,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
   · rintro ⟨b, hb, hab⟩
@@ -319,7 +319,7 @@ theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quotient (MonoidAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
       h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
@@ -338,22 +338,23 @@ theorem image_inter_image_iff (U V : Set α) :
 
 variable (G α)
 
-/-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
+/-- The quotient by `MonoidAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive
-    /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
+    /-- The quotient by `AddMonoidAction.orbitRel`, given a name to enable dot notation. -/]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
 
-/-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
-@[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
+/-- The orbit corresponding to an element of the quotient by `MonoidAction.orbitRel` -/
+@[to_additive /-- The orbit corresponding to an element of the quotient by
+`AddMonoidAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn' x (orbit G) fun _ _ => MonoidAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
-    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
+    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MonoidAction.orbit G a :=
   rfl
 
 @[to_additive]
@@ -367,7 +368,7 @@ theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
 @[to_additive /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
-    orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
+    orbitRel.Quotient.orbit x = MonoidAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
   rfl
 
@@ -411,7 +412,7 @@ nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient 
   exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
-instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
+instance (x : orbitRel.Quotient G α) : MonoidAction G x.orbit where
   smul g := (orbitRel.Quotient.mapsTo_smul_orbit g x).restrict _ _ _
   one_smul a := Subtype.ext (one_smul G (a : α))
   mul_smul g g' a' := Subtype.ext (mul_smul g g' (a' : α))
@@ -423,15 +424,15 @@ lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a :
 
 @[to_additive (attr := norm_cast, simp)]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
-    {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
+    {a b : x.orbit} : (a : α) ∈ MonoidAction.orbit H (b : α) ↔ a ∈ MonoidAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
     dsimp at h
     rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    exact MulAction.mem_orbit _ g
+    exact MonoidAction.mem_orbit _ g
 
 @[to_additive]
 lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
@@ -443,7 +444,7 @@ lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.
 @[to_additive]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
-    (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
+    (a : α) ∈ MonoidAction.orbit H c ↔ (b : α) ∈ MonoidAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
   convert Iff.rfl using 2
   rw [orbit_eq_iff]
@@ -461,13 +462,13 @@ local notation "Ω" => orbitRel.Quotient G α
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
-This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
+This version is expressed in terms of `MonoidAction.orbitRel.Quotient.orbit` instead of
+`MonoidAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
   /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-  This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-  `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
+  This version is expressed in terms of `AddMonoidAction.orbitRel.Quotient.orbit` instead of
+  `AddMonoidAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -485,9 +486,9 @@ def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
       Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
-Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
+Phrased as a set union. See `MonoidAction.selfEquivSigmaOrbits` for the type isomorphism. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
-group action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type
+group action. Phrased as a set union. See `AddMonoidAction.selfEquivSigmaOrbits` for the type
 isomorphism. -/]
 lemma univ_eq_iUnion_orbit :
     Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
@@ -521,10 +522,10 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
     stabilizer G a ≤ stabilizer G (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
--- This lemma does not need `MulAction G α`, only `SMul G α`.
+-- This lemma does not need `MonoidAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
 @[to_additive]
-lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
+lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MonoidAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
@@ -536,7 +537,8 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
-lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+lemma stabilizer_smul_eq_right {α} [Group α] [MonoidAction α β]
+    [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]
@@ -551,4 +553,241 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 
 end Stabilizer
 
-end MulAction
+end MonoidAction
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit := MonoidAction.orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_iff := MonoidAction.mem_orbit_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit := MonoidAction.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit := MonoidAction.mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_self := MonoidAction.mem_orbit_self
+@[deprecated (since := "2025-12-14")] alias MulAction.nonempty_orbit := MonoidAction.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mapsTo_smul_orbit := MonoidAction.mapsTo_smul_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_orbit_subset := MonoidAction.smul_orbit_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_smul_subset := MonoidAction.orbit_smul_subset
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit.coe_smul := MonoidAction.orbit.coe_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_submonoid_subset := MonoidAction.orbit_submonoid_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit_submonoid := MonoidAction.mem_orbit_of_mem_orbit_submonoid
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedPoints := MonoidAction.fixedPoints
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy := MonoidAction.fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixed_eq_iInter_fixedBy := MonoidAction.fixed_eq_iInter_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedPoints := MonoidAction.mem_fixedPoints
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_fixedBy := MonoidAction.mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedPoints' := MonoidAction.mem_fixedPoints'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizerSubmonoid := MonoidAction.stabilizerSubmonoid
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_stabilizerSubmonoid_iff := MonoidAction.mem_stabilizerSubmonoid_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit_smul := MonoidAction.orbit_smul
+@[deprecated (since := "2025-12-14")] alias MulAction.orbit_eq_iff := MonoidAction.orbit_eq_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_smul := MonoidAction.mem_orbit_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_orbit_smul := MonoidAction.smul_mem_orbit_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.subgroup_smul_def := MonoidAction.subgroup_smul_def
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbit_subgroup_subset := MonoidAction.orbit_subgroup_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_orbit_of_mem_orbit_subgroup := MonoidAction.mem_orbit_of_mem_orbit_subgroup
+@[deprecated (since := "2025-12-14")] alias MulAction.mem_orbit_symm := MonoidAction.mem_orbit_symm
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_subgroup_orbit_iff := MonoidAction.mem_subgroup_orbit_iff
+@[deprecated (since := "2025-12-14")] alias MulAction.orbitRel := MonoidAction.orbitRel
+@[deprecated (since := "2025-12-14")] alias MulAction.orbitRel_apply := MonoidAction.orbitRel_apply
+@[deprecated (since := "2025-12-14")]
+alias MulAction.quotient_preimage_image_eq_union_mul :=
+  MonoidAction.quotient_preimage_image_eq_union_mul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.disjoint_image_image_iff := MonoidAction.disjoint_image_image_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.image_inter_image_iff := MonoidAction.image_inter_image_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient := MonoidAction.orbitRel.Quotient
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit := MonoidAction.orbitRel.Quotient.orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_mk := MonoidAction.orbitRel.Quotient.orbit_mk
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_orbit := MonoidAction.orbitRel.Quotient.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_eq_orbit_out :=
+  MonoidAction.orbitRel.Quotient.orbit_eq_orbit_out
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_injective := MonoidAction.orbitRel.Quotient.orbit_injective
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit_inj := MonoidAction.orbitRel.Quotient.orbit_inj
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.quotient_eq_of_quotient_subgroup_eq :=
+  MonoidAction.orbitRel.quotient_eq_of_quotient_subgroup_eq
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.quotient_eq_of_quotient_subgroup_eq' :=
+  MonoidAction.orbitRel.quotient_eq_of_quotient_subgroup_eq'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.nonempty_orbit :=
+  MonoidAction.orbitRel.Quotient.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mapsTo_smul_orbit :=
+  MonoidAction.orbitRel.Quotient.mapsTo_smul_orbit
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.orbit.coe_smul :=
+  MonoidAction.orbitRel.Quotient.orbit.coe_smul
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_subgroup_orbit_iff :=
+  MonoidAction.orbitRel.Quotient.mem_subgroup_orbit_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.subgroup_quotient_eq_iff :=
+  MonoidAction.orbitRel.Quotient.subgroup_quotient_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.orbitRel.Quotient.mem_subgroup_orbit_iff' :=
+  MonoidAction.orbitRel.Quotient.mem_subgroup_orbit_iff'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbits' := MonoidAction.selfEquivSigmaOrbits'
+@[deprecated (since := "2025-12-14")]
+alias MulAction.selfEquivSigmaOrbits := MonoidAction.selfEquivSigmaOrbits
+@[deprecated (since := "2025-12-14")]
+alias MulAction.univ_eq_iUnion_orbit := MonoidAction.univ_eq_iUnion_orbit
+@[deprecated (since := "2025-12-14")] alias MulAction.stabilizer := MonoidAction.stabilizer
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_stabilizer_iff := MonoidAction.mem_stabilizer_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.le_stabilizer_smul_left := MonoidAction.le_stabilizer_smul_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.le_stabilizer_smul_right := MonoidAction.le_stabilizer_smul_right
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_smul_eq_left := MonoidAction.stabilizer_smul_eq_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_smul_eq_right := MonoidAction.stabilizer_smul_eq_right
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_mul_eq_left := MonoidAction.stabilizer_mul_eq_left
+@[deprecated (since := "2025-12-14")]
+alias MulAction.stabilizer_mul_eq_right := MonoidAction.stabilizer_mul_eq_right
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit := AddMonoidAction.orbit
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_orbit_iff := AddMonoidAction.mem_orbit_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_orbit := AddMonoidAction.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit := AddMonoidAction.mem_orbit_of_mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_self := AddMonoidAction.mem_orbit_self
+@[deprecated (since := "2025-12-14")]
+alias AddAction.nonempty_orbit := AddMonoidAction.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mapsTo_vadd_orbit := AddMonoidAction.mapsTo_vadd_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_orbit_subset := AddMonoidAction.vadd_orbit_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_vadd_subset := AddMonoidAction.orbit_vadd_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit.coe_vadd := AddMonoidAction.orbit.coe_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_addSubmonoid_subset := AddMonoidAction.orbit_addSubmonoid_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit_addSubmonoid :=
+  AddMonoidAction.mem_orbit_of_mem_orbit_addSubmonoid
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedPoints := AddMonoidAction.fixedPoints
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy := AddMonoidAction.fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixed_eq_iInter_fixedBy := AddMonoidAction.fixed_eq_iInter_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedPoints := AddMonoidAction.mem_fixedPoints
+@[deprecated (since := "2025-12-14")] alias AddAction.mem_fixedBy := AddMonoidAction.mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedPoints' := AddMonoidAction.mem_fixedPoints'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizerAddSubmonoid := AddMonoidAction.stabilizerAddSubmonoid
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_stabilizerAddSubmonoid_iff := AddMonoidAction.mem_stabilizerAddSubmonoid_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit_vadd := AddMonoidAction.orbit_vadd
+@[deprecated (since := "2025-12-14")] alias AddAction.orbit_eq_iff := AddMonoidAction.orbit_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_vadd := AddMonoidAction.mem_orbit_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_orbit_vadd := AddMonoidAction.vadd_mem_orbit_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.addSubgroup_vadd_def := AddMonoidAction.addSubgroup_vadd_def
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbit_addSubgroup_subset := AddMonoidAction.orbit_addSubgroup_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_of_mem_orbit_addSubgroup :=
+  AddMonoidAction.mem_orbit_of_mem_orbit_addSubgroup
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_orbit_symm := AddMonoidAction.mem_orbit_symm
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_addSubgroup_orbit_iff := AddMonoidAction.mem_addSubgroup_orbit_iff
+@[deprecated (since := "2025-12-14")] alias AddAction.orbitRel := AddMonoidAction.orbitRel
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel_apply := AddMonoidAction.orbitRel_apply
+@[deprecated (since := "2025-12-14")]
+alias AddAction.quotient_preimage_image_eq_union_add :=
+  AddMonoidAction.quotient_preimage_image_eq_union_add
+@[deprecated (since := "2025-12-14")]
+alias AddAction.disjoint_image_image_iff := AddMonoidAction.disjoint_image_image_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.image_inter_image_iff := AddMonoidAction.image_inter_image_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient := AddMonoidAction.orbitRel.Quotient
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit := AddMonoidAction.orbitRel.Quotient.orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_mk := AddMonoidAction.orbitRel.Quotient.orbit_mk
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_orbit := AddMonoidAction.orbitRel.Quotient.mem_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_eq_orbit_out :=
+  AddMonoidAction.orbitRel.Quotient.orbit_eq_orbit_out
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_injective :=
+  AddMonoidAction.orbitRel.Quotient.orbit_injective
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit_inj := AddMonoidAction.orbitRel.Quotient.orbit_inj
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq :=
+  AddMonoidAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq' :=
+  AddMonoidAction.orbitRel.quotient_eq_of_quotient_addSubgroup_eq'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.nonempty_orbit :=
+  AddMonoidAction.orbitRel.Quotient.nonempty_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mapsTo_vadd_orbit :=
+  AddMonoidAction.orbitRel.Quotient.mapsTo_vadd_orbit
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.orbit.coe_vadd :=
+  AddMonoidAction.orbitRel.Quotient.orbit.coe_vadd
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff :=
+  AddMonoidAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.addSubgroup_quotient_eq_iff :=
+  AddMonoidAction.orbitRel.Quotient.addSubgroup_quotient_eq_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff' :=
+  AddMonoidAction.orbitRel.Quotient.mem_addSubgroup_orbit_iff'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbits' := AddMonoidAction.selfEquivSigmaOrbits'
+@[deprecated (since := "2025-12-14")]
+alias AddAction.selfEquivSigmaOrbits := AddMonoidAction.selfEquivSigmaOrbits
+@[deprecated (since := "2025-12-14")]
+alias AddAction.univ_eq_iUnion_orbit := AddMonoidAction.univ_eq_iUnion_orbit
+@[deprecated (since := "2025-12-14")] alias AddAction.stabilizer := AddMonoidAction.stabilizer
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_stabilizer_iff := AddMonoidAction.mem_stabilizer_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.le_stabilizer_vadd_left := AddMonoidAction.le_stabilizer_vadd_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.le_stabilizer_vadd_right := AddMonoidAction.le_stabilizer_vadd_right
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_vadd_eq_left := AddMonoidAction.stabilizer_vadd_eq_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_vadd_eq_right := AddMonoidAction.stabilizer_vadd_eq_right
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_add_eq_left := AddMonoidAction.stabilizer_add_eq_left
+@[deprecated (since := "2025-12-14")]
+alias AddAction.stabilizer_add_eq_right := AddMonoidAction.stabilizer_add_eq_right

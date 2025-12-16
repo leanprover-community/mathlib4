@@ -461,8 +461,8 @@ instance [SMul M X] [AddCommMonoid Y] [DistribSMul N Y] :
   add_comm _ _ := ext fun _ ↦ add_comm _ _
 
 @[to_additive]
-instance [SMul M X] [SMul N Y] [Monoid R] [MulAction R Y] [SMulCommClass N R Y] :
-    MulAction R (X →ₑ[σ] Y) where
+instance [SMul M X] [SMul N Y] [Monoid R] [MonoidAction R Y] [SMulCommClass N R Y] :
+    MonoidAction R (X →ₑ[σ] Y) where
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
 
@@ -474,7 +474,7 @@ instance [AddZeroClass Y] [SMul M X] [DistribSMul N Y] [DistribSMul R Y] [SMulCo
 instance [AddMonoid Y] [Monoid R] [SMul M X] [DistribSMul N Y]
     [DistribMulAction R Y] [SMulCommClass N R Y] :
     DistribMulAction R (X →ₑ[σ] Y) where
-  __ := inferInstanceAs (MulAction _ _)
+  __ := inferInstanceAs (MonoidAction _ _)
   __ := inferInstanceAs (DistribSMul _ _)
 
 instance [AddCommMonoid Y] [Semiring R] [SMul M X] [DistribSMul N Y]

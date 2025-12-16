@@ -89,8 +89,9 @@ instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
   (WithLp.equiv p V).addCommGroup
 @[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) :=
   (WithLp.equiv p V).smul K
-@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K (WithLp p V) :=
-  fast_instance% (WithLp.equiv p V).mulAction K
+@[to_additive] instance instMonoidAction [Monoid K] [MonoidAction K V] :
+    MonoidAction K (WithLp p V) :=
+  fast_instance% (WithLp.equiv p V).monoidAction K
 instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
     DistribMulAction K (WithLp p V) := fast_instance% (WithLp.equiv p V).distribMulAction K
 instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=

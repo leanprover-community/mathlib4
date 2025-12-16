@@ -28,42 +28,60 @@ open scoped Pointwise
 /-- An action of an additive monoid `M` on a topological space `α` is called
 *topologically transitive* if for any pair of nonempty open sets `U` and `V` in `α` there exists an
 `m : M` such that `(m +ᵥ U) ∩ V` is nonempty. -/
-class AddAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
-    [AddAction M α] : Prop where
+class AddMonoidAction.IsTopologicallyTransitive (M α : Type*) [AddMonoid M] [TopologicalSpace α]
+    [AddMonoidAction M α] : Prop where
   exists_vadd_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m +ᵥ U) ∩ V).Nonempty
+
+@[deprecated (since := "2025-12-14")]
+alias AddAction.IsTopologicallyTransitive := AddMonoidAction.IsTopologicallyTransitive
 
 /-- An action of a monoid `M` on a topological space `α` is called *topologically transitive* if for
 any pair of nonempty open sets `U` and `V` in `α` there exists an `m : M` such that `(m • U) ∩ V` is
 nonempty. -/
 @[to_additive]
-class MulAction.IsTopologicallyTransitive (M α : Type*) [Monoid M] [TopologicalSpace α]
-    [MulAction M α] : Prop where
+class MonoidAction.IsTopologicallyTransitive (M α : Type*) [Monoid M] [TopologicalSpace α]
+    [MonoidAction M α] : Prop where
   exists_smul_inter : ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V → V.Nonempty →
     ∃ m : M, ((m • U) ∩ V).Nonempty
 
-open MulAction Set
+@[deprecated (since := "2025-12-14")]
+alias MulAction.IsTopologicallyTransitive := MonoidAction.IsTopologicallyTransitive
 
-variable (M : Type*) {α : Type*} [TopologicalSpace α] [Monoid M] [MulAction M α]
+open MonoidAction Set
+
+variable (M : Type*) {α : Type*} [TopologicalSpace α] [Monoid M] [MonoidAction M α]
 
 section IsTopologicallyTransitive
 
 @[to_additive]
-theorem MulAction.isTopologicallyTransitive_iff :
+theorem MonoidAction.isTopologicallyTransitive_iff :
     IsTopologicallyTransitive M α ↔ ∀ {U V : Set α}, IsOpen U → U.Nonempty → IsOpen V →
     V.Nonempty → ∃ m : M, ((m • U) ∩ V).Nonempty := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTopologicallyTransitive_iff := MonoidAction.isTopologicallyTransitive_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isTopologicallyTransitive_iff := AddMonoidAction.isTopologicallyTransitive_iff
 
 /-- An action of a monoid `M` on `α` is topologically transitive if and only if for any nonempty
 open subset `U` of `α` the union over the elements of `M` of images of `U` is dense in `α`. -/
 @[to_additive /-- An action of an additive monoid `M` on `α` is topologically transitive if and only
 if for any nonempty open subset `U` of `α` the union over the elements of `M` of images of `U` is
 dense in `α`. -/]
-theorem MulAction.isTopologicallyTransitive_iff_dense_iUnion :
+theorem MonoidAction.isTopologicallyTransitive_iff_dense_iUnion :
     IsTopologicallyTransitive M α ↔
     ∀ {U : Set α}, IsOpen U → U.Nonempty → Dense (⋃ m : M, m • U) := by
   simp only [isTopologicallyTransitive_iff, inter_comm, dense_iff_inter_open, inter_iUnion,
     nonempty_iUnion]
   exact ⟨fun h _ h₁ h₂ _ h₃ h₄ ↦ h h₁ h₂ h₃ h₄, fun h _ _ h₁ h₂ h₃ h₄ ↦ h h₁ h₂ _ h₃ h₄⟩
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTopologicallyTransitive_iff_dense_iUnion :=
+  MonoidAction.isTopologicallyTransitive_iff_dense_iUnion
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isTopologicallyTransitive_iff_dense_iUnion :=
+  AddMonoidAction.isTopologicallyTransitive_iff_dense_iUnion
 
 /-- An action of a monoid `M` on `α` is topologically transitive if and only if for any nonempty
 open subset `U` of `α` the union of the preimages of `U` over the elements of `M` is dense in `α`.
@@ -71,11 +89,18 @@ open subset `U` of `α` the union of the preimages of `U` over the elements of `
 @[to_additive /-- An action of an additive monoid `M` on `α` is topologically transitive if and only
 if for any nonempty open subset `U` of `α` the union of the preimages of `U` over the elements of
 `M` is dense in `α`. -/]
-theorem MulAction.isTopologicallyTransitive_iff_dense_iUnion_preimage :
+theorem MonoidAction.isTopologicallyTransitive_iff_dense_iUnion_preimage :
     IsTopologicallyTransitive M α ↔
     ∀ {U : Set α}, IsOpen U → U.Nonempty → Dense (⋃ m : M, (m • ·) ⁻¹' U) := by
   simp only [dense_iff_inter_open, inter_iUnion, nonempty_iUnion, ← image_inter_nonempty_iff]
   exact ⟨fun h _ h₁ h₂ _ h₃ h₄ ↦ h.1 h₃ h₄ h₁ h₂, fun h ↦ ⟨fun h₁ h₂ h₃ h₄ ↦ h h₃ h₄ _ h₁ h₂⟩⟩
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTopologicallyTransitive_iff_dense_iUnion_preimage :=
+  MonoidAction.isTopologicallyTransitive_iff_dense_iUnion_preimage
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isTopologicallyTransitive_iff_dense_iUnion_preimage :=
+  AddMonoidAction.isTopologicallyTransitive_iff_dense_iUnion_preimage
 
 @[to_additive]
 theorem IsOpen.dense_iUnion_smul [h : IsTopologicallyTransitive M α] {U : Set α}
@@ -102,7 +127,7 @@ transitive if and only if any nonempty open subset `U` of `α` with `(m • ·) 
 @[to_additive /-- An action of an additive monoid `M` on `α` that is continuous in the second
 argument is topologically transitive if and only if any nonempty open subset `U` of `α` with
 `(m +ᵥ ·) ⁻¹' U ⊆ U` for all `m : M` is dense in `α`. -/]
-theorem MulAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
+theorem MonoidAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
     [h : ContinuousConstSMul M α] : IsTopologicallyTransitive M α ↔
     ∀ {U : Set α}, IsOpen U → U.Nonempty → (∀ m : M, (m • ·) ⁻¹' U ⊆ U) → Dense U := by
   refine ⟨fun _ _ h₀ h₁ h₂ ↦ h₀.dense_of_preimage_smul_invariant M h₁ h₂, fun h₄ ↦ ?_⟩
@@ -112,10 +137,24 @@ theorem MulAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
   · simp only [preimage_iUnion, mem_iUnion, mem_preimage, smul_smul, forall_exists_index]
     exact fun c hc ↦ ⟨c * b, hc⟩
 
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant :=
+  MonoidAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant :=
+  AddMonoidAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
+
 @[to_additive]
-instance MulAction.isTopologicallyTransitive_of_isMinimal [IsMinimal M α] :
+instance MonoidAction.isTopologicallyTransitive_of_isMinimal [IsMinimal M α] :
     IsTopologicallyTransitive M α := by
   refine (isTopologicallyTransitive_iff_dense_iUnion_preimage M).mpr fun h hn ↦ ?_
   simp only [h.iUnion_preimage_smul M hn, dense_univ]
+
+@[deprecated (since := "2025-12-14")]
+alias MulAction.isTopologicallyTransitive_of_isMinimal :=
+  MonoidAction.isTopologicallyTransitive_of_isMinimal
+@[deprecated (since := "2025-12-14")]
+alias AddAction.isTopologicallyTransitive_of_isMinimal :=
+  AddMonoidAction.isTopologicallyTransitive_of_isMinimal
 
 end IsTopologicallyTransitive

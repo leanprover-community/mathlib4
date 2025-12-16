@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
-This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
+This file provides the additive action `AffineSubspace.pointwiseAddMonoidAction` in the
 `Pointwise` locale.
 
 -/
@@ -44,10 +44,10 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
+protected def pointwiseAddMonoidAction : AddMonoidAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
 
-scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
+scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddMonoidAction
 
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
@@ -104,10 +104,10 @@ This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-protected def mulAction : MulAction M (AffineSubspace k V) :=
-  SetLike.coe_injective.mulAction _ coe_smul
+protected def monoidAction : MonoidAction M (AffineSubspace k V) :=
+  SetLike.coe_injective.monoidAction _ coe_smul
 
-scoped[Pointwise] attribute [instance] AffineSubspace.mulAction
+scoped[Pointwise] attribute [instance] AffineSubspace.monoidAction
 
 lemma smul_eq_map (a : M) (s : AffineSubspace k V) :
     a • s = s.map (DistribMulAction.toLinearMap k _ a).toAffineMap := rfl

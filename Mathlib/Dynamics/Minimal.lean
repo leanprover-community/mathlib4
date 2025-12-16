@@ -30,32 +30,38 @@ open Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
-class AddAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
-    Prop where
-  dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
+class AddMonoidAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α]
+    [AddMonoidAction M α] : Prop where
+  dense_orbit : ∀ x : α, Dense (AddMonoidAction.orbit M x)
+
+@[deprecated (since := "2025-12-14")] alias AddAction.IsMinimal := AddMonoidAction.IsMinimal
 
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
-class MulAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
+class MonoidAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MonoidAction M α] :
     Prop where
-  dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
+  dense_orbit : ∀ x : α, Dense (MonoidAction.orbit M x)
 
-open MulAction Set
+@[deprecated (since := "2025-12-14")] alias MulAction.IsMinimal := MonoidAction.IsMinimal
 
-variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [MulAction M α]
-  [MulAction G α]
+open MonoidAction Set
+
+variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [MonoidAction M α]
+  [MonoidAction G α]
 
 @[to_additive]
-theorem MulAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
-  MulAction.IsMinimal.dense_orbit x
+theorem MonoidAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
+  MonoidAction.IsMinimal.dense_orbit x
+
+@[deprecated (since := "2025-12-14")] alias MulAction.dense_orbit := MonoidAction.dense_orbit
 
 @[to_additive]
 theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=
-  MulAction.dense_orbit M x
+  MonoidAction.dense_orbit M x
 
 @[to_additive]
-instance (priority := 100) MulAction.isMinimal_of_pretransitive [IsPretransitive M α] :
+instance (priority := 100) MonoidAction.isMinimal_of_pretransitive [IsPretransitive M α] :
     IsMinimal M α :=
   ⟨fun x ↦ (surjective_smul M x).denseRange⟩
 
@@ -88,7 +94,7 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul
 theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
     (hsmul : ∀ c : M, c • s ⊆ s) : Dense s :=
   let ⟨x, hx⟩ := hne
-  (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
+  (MonoidAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
 
 @[to_additive]
 theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} (hs : IsClosed s)

@@ -636,8 +636,8 @@ instance [SMul K X] [FaithfulSMul K X] (F : Subfield K) : FaithfulSMul F X :=
   inferInstanceAs (FaithfulSMul F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
-instance [MulAction K X] (F : Subfield K) : MulAction F X :=
-  inferInstanceAs (MulAction F.toSubsemiring X)
+instance [MonoidAction K X] (F : Subfield K) : MonoidAction F X :=
+  inferInstanceAs (MonoidAction F.toSubsemiring X)
 
 /-- The action by a subfield is the action by the underlying field. -/
 instance [AddMonoid X] [DistribMulAction K X] (F : Subfield K) : DistribMulAction F X :=

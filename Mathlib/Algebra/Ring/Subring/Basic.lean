@@ -1040,8 +1040,8 @@ instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [MulAction R α] (S : Subring R) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
+instance [MonoidAction R α] (S : Subring R) : MonoidAction S α :=
+  inferInstanceAs (MonoidAction S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=

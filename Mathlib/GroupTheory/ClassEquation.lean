@@ -26,7 +26,7 @@ This file establishes the class equation for finite groups.
 
 @[expose] public section
 
-open MulAction ConjClasses
+open MonoidAction ConjClasses
 
 variable (G : Type*) [Group G]
 

@@ -53,7 +53,7 @@ theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := isOpenMap_quotient_
 
 @[to_additive]
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : G → G ⧸ N) :=
-  MulAction.isOpenQuotientMap_quotientMk
+  MonoidAction.isOpenQuotientMap_quotientMk
 
 @[to_additive (attr := simp)]
 theorem dense_preimage_mk {s : Set (G ⧸ N)} : Dense ((↑) ⁻¹' s : Set G) ↔ Dense s :=
@@ -76,14 +76,14 @@ instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) := inferInsta
 @[to_additive]
 theorem t1Space_iff :
     T1Space (G ⧸ N) ↔ IsClosed (N : Set G) := by
-  rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.t1Space_iff G (mk 1),
+  rw [← QuotientGroup.preimage_mk_one, MonoidAction.IsPretransitive.t1Space_iff G (mk 1),
       isClosed_coinduced]
   rfl
 
 @[to_additive]
 theorem discreteTopology_iff :
     DiscreteTopology (G ⧸ N) ↔ IsOpen (N : Set G) := by
-  rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.discreteTopology_iff G (mk 1),
+  rw [← QuotientGroup.preimage_mk_one, MonoidAction.IsPretransitive.discreteTopology_iff G (mk 1),
       isOpen_coinduced]
   rfl
 

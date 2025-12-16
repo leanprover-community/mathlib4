@@ -79,7 +79,7 @@ end SMul
 section Monoid
 
 variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
-  [MulAction M α] [MulAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β]
+  [MonoidAction M α] [MonoidAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β]
   {f : F} {s : Set α} {t : Set β} {c : M}
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
@@ -109,7 +109,7 @@ end Monoid
 /-- `preimage_smul_setₛₗ` in the context of groups -/
 @[to_additive]
 theorem Group.preimage_smul_setₛₗ {G H α β : Type*} [Group G] [Group H] (σ : G → H)
-    [MulAction G α] [MulAction H β]
+    [MonoidAction G α] [MonoidAction H β]
     {F : Type*} [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (c : G) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit _ (Group.isUnit _) (Group.isUnit _) _
@@ -138,7 +138,7 @@ theorem Set.MapsTo.smul_set {f : F} {s : Set α} {t : Set β} (hst : MapsTo f s 
 end SMul
 
 @[to_additive]
-theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MulAction M α] [MulAction M β]
+theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MonoidAction M α] [MonoidAction M β]
     [FunLike F α β] [MulActionHomClass F M α β] (f : F) {c : M} (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit f hc hc t
@@ -146,8 +146,9 @@ theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MulAction M α]
 -- TODO: when you remove the next 2 aliases,
 -- please move the `Group` version to the root namespace.
 @[to_additive]
-theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*} [MulAction G α] [MulAction G β]
-    {F : Type*} [FunLike F α β] [MulActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
+theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*}
+    [MonoidAction G α] [MonoidAction G β] {F : Type*} [FunLike F α β]
+    [MulActionHomClass F G α β] (f : F) (c : G) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   (Group.isUnit c).preimage_smul_set f t
 

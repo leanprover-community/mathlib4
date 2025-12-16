@@ -30,9 +30,9 @@ General algebra:
   Group theory:
     group: 'Group'
     group morphism: 'MonoidHom'
-    group action: 'MulAction'
-    class formula: 'MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
-    Burnside lemma: 'MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group'
+    group action: 'MonoidAction'
+    class formula: 'MonoidAction.selfEquivSigmaOrbitsQuotientStabilizer'
+    Burnside lemma: 'MonoidAction.sum_card_fixedBy_eq_card_orbits_mul_card_group'
     subgroup: 'Subgroup'
     index of a subgroup: 'Subgroup.index'
     normal subgroup: 'Subgroup.Normal'
@@ -49,7 +49,7 @@ General algebra:
     cyclic group: 'IsCyclic'
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
-    Cayley's theorem: 'Equiv.Perm.subgroupOfMulAction'
+    Cayley's theorem: 'Equiv.Perm.subgroupOfMonoidAction'
     alternating group: 'alternatingGroup'
     A5 is simple: 'alternatingGroup.isSimpleGroup_five'
     classification of abelian simple groups: CommGroup.is_simple_iff_prime_card

@@ -14,25 +14,25 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
-This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
+This module contains some useful properties of `MonoidAction.fixedPoints` and `MonoidAction.fixedBy`
 that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
 as well as their interaction with `MulActionHom`.
 
 ## Main theorems
 
-* `MulAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
-* `MulAction.fixedBy_conj` and `MulAction.smul_fixedBy`: the pointwise group action of `h` on
+* `MonoidAction.fixedBy_mul`: `fixedBy α (g * h) ⊆ fixedBy α g ∪ fixedBy α h`
+* `MonoidAction.fixedBy_conj` and `MonoidAction.smul_fixedBy`: the pointwise group action of `h` on
   `fixedBy α g` is equal to the `fixedBy` set of the conjugation of `h` with `g`
   (`fixedBy α (h * g * h⁻¹)`).
-* `MulAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
+* `MonoidAction.set_mem_fixedBy_of_movedBy_subset` shows that if a set `s` is a superset of
   `(fixedBy α g)ᶜ`, then the group action of `g` cannot send elements of `s` outside of `s`.
-  This is expressed as `s ∈ fixedBy (Set α) g`, and `MulAction.set_mem_fixedBy_iff` allows one
+  This is expressed as `s ∈ fixedBy (Set α) g`, and `MonoidAction.set_mem_fixedBy_iff` allows one
   to convert the relationship back to `g • x ∈ s ↔ x ∈ s`.
-* `MulAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
+* `MonoidAction.not_commute_of_disjoint_smul_movedBy` allows one to prove that `g` and `h`
   do not commute from the disjointness of the `(fixedBy α g)ᶜ` set and `h • (fixedBy α g)ᶜ`,
   which is a property used in the proof of Rubin's theorem.
 
-The theorems above are also available for `AddAction`.
+The theorems above are also available for `AddMonoidAction`.
 
 ## Pointwise group action and `fixedBy (Set α) g`
 
@@ -41,7 +41,7 @@ a set `s : Set α` can be expressed using `fixedBy (Set α) g`.
 To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise` in your file.
 
 `s ∈ fixedBy (Set α) g` means that `g • s = s`, which is equivalent to say that
-`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MulAction.set_mem_fixedBy_iff`).
+`∀ x, g • x ∈ s ↔ x ∈ s` (the translation can be done using `MonoidAction.set_mem_fixedBy_iff`).
 
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
@@ -49,12 +49,12 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 
 @[expose] public section
 
-namespace MulAction
+namespace MonoidAction
 open Pointwise
 
 variable {α : Type*}
-variable {G : Type*} [Group G] [MulAction G α]
-variable {M : Type*} [Monoid M] [MulAction M α]
+variable {G : Type*} [Group G] [MonoidAction G α]
+variable {M : Type*} [Monoid M] [MonoidAction M α]
 
 
 section FixedPoints
@@ -163,13 +163,15 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rw [← fixedBy_inv] at s_ss_fixedBy
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 
+@[to_additive]
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
   (Set.smul_set_subset_smul_set_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 
 /-!
-If a set `s : Set α` is a superset of `(MulAction.fixedBy α g)ᶜ` (resp. `(AddAction.fixedBy α g)ᶜ`),
-then no point or subset of `s` can be moved outside of `s` by the group action of `g`.
+If a set `s : Set α` is a superset of `(MonoidAction.fixedBy α g)ᶜ`
+(resp. `(AddMonoidAction.fixedBy α g)ᶜ`), then no point or subset of `s` can be moved outside of `s`
+by the group action of `g`.
 -/
 
 /-- If `(fixedBy α g)ᶜ ⊆ s`, then `g` cannot move a point of `s` outside of `s`. -/
@@ -268,23 +270,112 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
 
 end Faithful
 
-end MulAction
+end MonoidAction
 
 namespace MulActionHom
 
 /-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
 @[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
-lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
-    f a ∈ MulAction.fixedPoints H B := by
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MonoidAction.fixedPoints H A) :
+    f a ∈ MonoidAction.fixedPoints H B := by
   intro ⟨h, _⟩
   simp_all [← f.map_smul h a]
 
 /-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
 @[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
-lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
-    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
-    f a ∈ MulAction.fixedBy B g := by
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MonoidAction G A] [MonoidAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MonoidAction.fixedBy A g) :
+    f a ∈ MonoidAction.fixedBy B g := by
   simpa using congr_arg f ha
 
 end MulActionHom
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy_inv := MonoidAction.fixedBy_inv
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_fixedBy_iff_mem_fixedBy := MonoidAction.smul_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_inv_mem_fixedBy_iff_mem_fixedBy :=
+  MonoidAction.smul_inv_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.minimalPeriod_eq_one_iff_fixedBy := MonoidAction.minimalPeriod_eq_one_iff_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedBy_zpow := MonoidAction.mem_fixedBy_zpow
+@[deprecated (since := "2025-12-14")]
+alias MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy :=
+  MonoidAction.mem_fixedBy_zpowers_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_subset_fixedBy_zpow := MonoidAction.fixedBy_subset_fixedBy_zpow
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_one_eq_univ := MonoidAction.fixedBy_one_eq_univ
+@[deprecated (since := "2025-12-14")] alias MulAction.fixedBy_mul := MonoidAction.fixedBy_mul
+@[deprecated (since := "2025-12-14")] alias MulAction.smul_fixedBy := MonoidAction.smul_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_iff := MonoidAction.set_mem_fixedBy_iff
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_mem_of_set_mem_fixedBy := MonoidAction.smul_mem_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_of_subset_fixedBy := MonoidAction.set_mem_fixedBy_of_subset_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_subset_of_set_mem_fixedBy := MonoidAction.smul_subset_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias MulAction.set_mem_fixedBy_of_movedBy_subset := MonoidAction.set_mem_fixedBy_of_movedBy_subset
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_mem_fixedBy_of_commute := MonoidAction.fixedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_zpow_fixedBy_eq_of_commute := MonoidAction.smul_zpow_fixedBy_eq_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.movedBy_mem_fixedBy_of_commute := MonoidAction.movedBy_mem_fixedBy_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.smul_zpow_movedBy_eq_of_commute := MonoidAction.smul_zpow_movedBy_eq_of_commute
+@[deprecated (since := "2025-12-14")]
+alias MulAction.fixedBy_eq_univ_iff_eq_one := MonoidAction.fixedBy_eq_univ_iff_eq_one
+@[deprecated (since := "2025-12-14")]
+alias MulAction.not_commute_of_disjoint_movedBy_preimage :=
+  MonoidAction.not_commute_of_disjoint_movedBy_preimage
+
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy_neg := AddMonoidAction.fixedBy_neg
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_fixedBy_iff_mem_fixedBy := AddMonoidAction.vadd_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy :=
+  AddMonoidAction.vadd_neg_mem_fixedBy_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.minimalPeriod_eq_one_iff_fixedBy := AddMonoidAction.minimalPeriod_eq_one_iff_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedBy_zsmul := AddMonoidAction.mem_fixedBy_zsmul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.mem_fixedBy_zmultiples_iff_mem_fixedBy :=
+  AddMonoidAction.mem_fixedBy_zmultiples_iff_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_subset_fixedBy_zsmul := AddMonoidAction.fixedBy_subset_fixedBy_zsmul
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_zero_eq_univ := AddMonoidAction.fixedBy_zero_eq_univ
+@[deprecated (since := "2025-12-14")] alias AddAction.fixedBy_add := AddMonoidAction.fixedBy_add
+@[deprecated (since := "2025-12-14")] alias AddAction.vadd_fixedBy := AddMonoidAction.vadd_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_iff := AddMonoidAction.set_mem_fixedBy_iff
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_mem_of_set_mem_fixedBy := AddMonoidAction.vadd_mem_of_set_mem_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_of_subset_fixedBy :=
+  AddMonoidAction.set_mem_fixedBy_of_subset_fixedBy
+@[deprecated (since := "2025-12-14")]
+alias AddAction.set_mem_fixedBy_of_movedBy_subset :=
+  AddMonoidAction.set_mem_fixedBy_of_movedBy_subset
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_mem_fixedBy_of_addCommute :=
+  AddMonoidAction.fixedBy_mem_fixedBy_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_zsmul_fixedBy_eq_of_addCommute :=
+  AddMonoidAction.vadd_zsmul_fixedBy_eq_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.movedBy_mem_fixedBy_of_addCommute :=
+  AddMonoidAction.movedBy_mem_fixedBy_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.vadd_zsmul_movedBy_eq_of_addCommute :=
+  AddMonoidAction.vadd_zsmul_movedBy_eq_of_addCommute
+@[deprecated (since := "2025-12-14")]
+alias AddAction.fixedBy_eq_univ_iff_eq_zero := AddMonoidAction.fixedBy_eq_univ_iff_eq_zero
+@[deprecated (since := "2025-12-14")]
+alias AddAction.not_addCommute_of_disjoint_movedBy_preimage :=
+  AddMonoidAction.not_addCommute_of_disjoint_movedBy_preimage
