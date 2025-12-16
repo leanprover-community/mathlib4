@@ -386,7 +386,7 @@ variable (D : J ⥤ Coalgebra T) (c : Cocone (D ⋙ T.forget)) (t : IsColimit c)
 
 /-- (Impl) The natural transformation used to define the new cocone -/
 @[simps]
-def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T  where app j := (D.obj j).a
+def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T where app j := (D.obj j).a
 
 /-- (Impl) This new cocone is used to construct the coalgebra structure -/
 @[simps! ι_app]
