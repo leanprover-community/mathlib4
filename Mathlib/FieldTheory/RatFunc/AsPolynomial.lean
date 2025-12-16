@@ -321,7 +321,7 @@ theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[
 `1 / (monomial n a)` (as an element of the field of rational functions) is equal
 to `(v RatFunc.X) ^ (- n)`. -/
 lemma valuation_inv_monomial_eq_valuation_X_zpow (n : ℕ) {a : K} (ha : a ≠ 0) :
-    v (1 / monomial n a) = v RatFunc.X ^ (- (n : ℤ)) := by
+    v (1 / monomial n a) = v RatFunc.X ^ (-(n : ℤ)) := by
   simpa using valuation_monomial_eq_valuation_X_pow _ hv n ha
 
 end TrivialOnConstants

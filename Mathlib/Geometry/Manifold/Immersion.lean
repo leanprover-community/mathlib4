@@ -699,7 +699,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
-  (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
+  (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement).isImmersion
 
 lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
