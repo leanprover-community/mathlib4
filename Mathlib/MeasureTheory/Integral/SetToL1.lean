@@ -212,16 +212,17 @@ theorem norm_setToL1S_le (T : Set α → E →L[ℝ] F) {C : ℝ}
 theorem setToL1S_indicatorConst {T : Set α → E →L[ℝ] F} {s : Set α}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T)
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
-    setToL1S T (simpleFunc.indicatorConst 1 hs hμs.ne x) = T s x := by
+    setToL1S T (simpleFunc.indicatorConst 1 hs (.inr hμs.ne) x) = T s x := by
   have h_empty : T ∅ = 0 := h_zero _ MeasurableSet.empty measure_empty
   rw [setToL1S_eq_setToSimpleFunc]
   refine Eq.trans ?_ (SimpleFunc.setToSimpleFunc_indicator T h_empty hs x)
   refine SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable _) ?_
-  exact toSimpleFunc_indicatorConst hs hμs.ne x
+  exact toSimpleFunc_indicatorConst hs (.inr hμs.ne) x
 
 theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) (x : E) :
-    setToL1S T (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) = T univ x :=
+    setToL1S T (simpleFunc.indicatorConst 1 MeasurableSet.univ (.inr (measure_ne_top μ _)) x) =
+    T univ x :=
   setToL1S_indicatorConst h_zero h_add MeasurableSet.univ (measure_lt_top _ _) x
 
 section Order
@@ -341,8 +342,8 @@ theorem norm_setToL1SCLM_le' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : Domi
 
 theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (x : E) :
-    setToL1SCLM α E μ hT (simpleFunc.indicatorConst 1 MeasurableSet.univ (measure_ne_top μ _) x) =
-      T univ x :=
+    setToL1SCLM α E μ hT
+      (simpleFunc.indicatorConst 1 MeasurableSet.univ (.inr (measure_ne_top μ _)) x) =  T univ x :=
   setToL1S_const (fun _ => hT.eq_zero_of_measure_zero) hT.1 x
 
 section Order
@@ -504,18 +505,18 @@ theorem setToL1_smul (hT : DominatedFinMeasAdditive μ T C)
 
 theorem setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
-    setToL1 hT (simpleFunc.indicatorConst 1 hs hμs.ne x) = T s x := by
+    setToL1 hT (simpleFunc.indicatorConst 1 hs (.inr hμs.ne) x) = T s x := by
   rw [setToL1_eq_setToL1SCLM]
   exact setToL1S_indicatorConst (fun s => hT.eq_zero_of_measure_zero) hT.1 hs hμs x
 
 theorem setToL1_indicatorConstLp (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
-    setToL1 hT (indicatorConstLp 1 hs hμs x) = T s x := by
-  rw [← Lp.simpleFunc.coe_indicatorConst hs hμs x]
+    setToL1 hT (indicatorConstLp 1 hs (.inr hμs) x) = T s x := by
+  rw [← Lp.simpleFunc.coe_indicatorConst hs (.inr hμs) x]
   exact setToL1_simpleFunc_indicatorConst hT hs hμs.lt_top x
 
 theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C) (x : E) :
-    setToL1 hT (indicatorConstLp 1 MeasurableSet.univ (measure_ne_top _ _) x) = T univ x :=
+    setToL1 hT (indicatorConstLp 1 MeasurableSet.univ (.inr <| measure_ne_top _ _) x) = T univ x :=
   setToL1_indicatorConstLp hT MeasurableSet.univ (measure_ne_top _ _) x
 
 section Order
@@ -531,7 +532,8 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     setToL1 hT f ≤ setToL1 hT' f := by
   induction f using Lp.induction (hp_ne_top := one_ne_top) with
   | @indicatorConst c s hs hμs =>
-    rw [setToL1_simpleFunc_indicatorConst hT hs hμs, setToL1_simpleFunc_indicatorConst hT' hs hμs]
+    rw [setToL1_simpleFunc_indicatorConst hT hs hμs,
+      setToL1_simpleFunc_indicatorConst hT' hs hμs]
     exact hTT' s hs hμs c
   | @add f g hf hg _ hf_le hg_le =>
     rw [(setToL1 hT).map_add, (setToL1 hT').map_add]
@@ -778,7 +780,7 @@ theorem setToFun_toL1 (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f 
 theorem setToFun_indicator_const (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
     setToFun μ T hT (s.indicator fun _ => x) = T s x := by
-  rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ hs hμs x).symm]
+  rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ hs (.inr hμs) x).symm]
   rw [L1.setToFun_eq_setToL1 hT]
   exact L1.setToL1_indicatorConstLp hT hs hμs x
 

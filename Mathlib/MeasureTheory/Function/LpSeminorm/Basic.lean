@@ -17,6 +17,8 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 noncomputable section
 
@@ -176,6 +178,12 @@ end Neg
 
 section Const
 
+/-- A class which encodes that constant functions are members of `Lp`.
+This has instances when `p := ∞` or `μ.IsFiniteMeasure`. -/
+class MemLp.Const {α : Type u_1} {m0 : MeasurableSpace α} (p : ℝ≥0∞)
+  (μ : Measure α) where
+  eLpNorm_const_lt_top' (c : ℝ≥0∞) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
+
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
 
@@ -213,6 +221,20 @@ theorem eLpNorm_const (c : ε) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
   · simp [h_top, eLpNormEssSup_const c hμ]
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
+instance [IsFiniteMeasure μ] : MemLp.Const p μ where
+  eLpNorm_const_lt_top' c hc := by
+    by_cases h0 : p = 0 ∨ μ = 0
+    · aesop
+    · push_neg at h0
+      rw [eLpNorm_const c h0.1 h0.2]
+      finiteness
+
+export MeasureTheory.MemLp.Const (eLpNorm_const_lt_top')
+
+theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const p μ] {c : ε}
+    (hc : ‖c‖ₑ ≠ ∞) : MemLp (fun _ ↦ c) p μ :=
+  ⟨aestronglyMeasurable_const, eLpNorm_const_lt_top' _ hc⟩
+
 theorem eLpNorm_const' (c : ε) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
@@ -239,25 +261,11 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [eLpNorm_const_lt_top_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
-theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) [IsFiniteMeasure μ] :
-    MemLp (fun _ : α ↦ c) p μ := by
-  refine ⟨aestronglyMeasurable_const, ?_⟩
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  rw [eLpNorm_const c h0 hμ]
-  finiteness
+theorem eLpNorm_const_lt_top [MemLp.Const p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
+  MemLp.Const.eLpNorm_const_lt_top' (p := p) ‖c‖ₑ (by simp)
 
-theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ :=
-  memLp_const_enorm enorm_ne_top
-
-theorem memLp_top_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) :
-    MemLp (fun _ : α ↦ c) ∞ μ :=
-  ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h, hc.lt_top]⟩
-
-theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
-  memLp_top_const_enorm enorm_ne_top
+theorem memLp_const (c : E) [MemLp.Const p μ] : MemLp (fun _ ↦ c) p μ :=
+  memLp_const_of_enorm (by simp)
 
 theorem memLp_const_iff_enorm
     {p : ℝ≥0∞} {c : ε''} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
@@ -266,8 +274,17 @@ theorem memLp_const_iff_enorm
     eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
 
 theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
-  rw [memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
+    MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ :=
+  (memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top).trans (or_congr_left enorm_eq_zero)
+
+@[deprecated (since := "2025-09-30")]
+alias memLp_const_enorm := memLp_const_of_enorm
+
+@[deprecated (since := "2025-09-30")]
+alias memLp_top_const_enorm := memLp_const_of_enorm
+
+@[deprecated (since := "2025-09-30")]
+alias memLp_top_const := memLp_const
 
 end Const
 
@@ -370,6 +387,48 @@ theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ 
 theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le C hfC
+
+instance : MemLp.Const ∞ μ where
+  eLpNorm_const_lt_top' c hc := eLpNormEssSup_le_of_ae_enorm_bound (by simp) |>.trans_lt hc.lt_top
+
+/-- Check naming convention for this. Golf. -/
+theorem memLpConst_iff_zero_or_top_or_isFiniteMeasure {α : Type u_1} {m0 : MeasurableSpace α}
+    (p : ℝ≥0∞) (μ : Measure α) : MemLp.Const p μ ↔ p = 0 ∨ p = ∞ ∨ IsFiniteMeasure μ := by
+  constructor
+  · contrapose
+    push_neg
+    rintro ⟨h1, h2, h3⟩
+    by_contra h4
+    have H := eLpNorm_const' (μ := μ) (1 : ℝ≥0∞) h1 h2
+    have K := h4.1 (1 : ℝ≥0∞)
+    simp at *
+    rw [isFiniteMeasure_iff] at h3
+    simp at h3
+    rw [h3] at H
+    rw [H] at K
+    have LLL : ⊤ ^ p.toReal⁻¹ = (⊤ : ℝ≥0∞) := by simp only [ENNReal.rpow_eq_top_iff,
+      ENNReal.top_ne_zero, inv_neg'', false_and, inv_pos, true_and, false_or,
+      ENNReal.toReal_pos h1 h2]
+    rw [LLL] at K
+    contradiction
+  · rintro (rfl | rfl | _ )
+    · refine { eLpNorm_const_lt_top' := ?_ }; simp
+    · infer_instance
+    · infer_instance
+
+@[simp]
+theorem memLpConst_of_eq_zero_or_top_or_isFiniteMeasure [h : MemLp.Const p μ] :
+    p = 0 ∨ p = ∞ ∨ IsFiniteMeasure μ := memLpConst_iff_zero_or_top_or_isFiniteMeasure p μ |>.mp h
+
+/-- Check naming convention for this. Golf. -/
+theorem memLpConst_iff_top_or_isFiniteMeasure_of_ne_zero {α : Type u_1} {m0 : MeasurableSpace α}
+    (p : ℝ≥0∞) (μ : Measure α) : p ≠ 0 → (MemLp.Const p μ ↔ p = ∞ ∨ IsFiniteMeasure μ) := by
+  intro h
+  have := memLpConst_iff_zero_or_top_or_isFiniteMeasure p μ
+  rw [this]
+  simp only [or_iff_right_iff_imp]
+  intro h1
+  contradiction
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
@@ -562,7 +621,7 @@ theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : 
 
 theorem MemLp.of_enorm_bound [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ)
     {C : ℝ≥0∞} (hC : C ≠ ∞) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
-  apply (memLp_const_enorm hC).of_le_enorm (ε' := ℝ≥0∞) hf <| hfC.mono fun _x hx ↦ ?_
+  apply (memLp_const_of_enorm hC).of_le_enorm (ε' := ℝ≥0∞) hf <| hfC.mono fun _x hx ↦ ?_
   rw [enorm_eq_self]; exact hx
 
 theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
@@ -711,13 +770,13 @@ lemma memLp_indicator_iff_restrict {f : α → ε} (hs : MeasurableSet s) :
     MemLp (s.indicator f) p μ ↔ MemLp f p (μ.restrict s) := by
   simp [MemLp, aestronglyMeasurable_indicator_iff hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
-lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E) (hμsc : c = 0 ∨ μ s ≠ ∞) :
-    MemLp (s.indicator fun _ => c) p μ := by
+lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E)
+    (hμsc : p = ∞ ∨ μ s ≠ ∞) : MemLp (s.indicator fun _ => c) p μ := by
   rw [memLp_indicator_iff_restrict hs]
-  obtain rfl | hμ := hμsc
-  · exact MemLp.zero
-  · have := Fact.mk hμ.lt_top
-    apply memLp_const
+  obtain rfl | hμs := hμsc
+  · exact memLp_const _
+  · have := Fact.mk hμs.lt_top
+    exact memLp_const _
 
 lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNormEssSup (Set.piecewise s f g) μ
