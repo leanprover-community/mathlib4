@@ -694,18 +694,10 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
-lemma pow_eq_pow_of_modEq {M : Type*} [Monoid M] {x : M} {n a b : ℕ}
-    (h : a ≡ b [MOD n]) (hx : x ^ n = 1) : x ^ a = x ^ b := by
-  obtain hle | hle := le_total a b
-  all_goals
-    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle
-    obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h
-    simp [pow_add, pow_mul, hx]
-
 /-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
     x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
 @[simps]
-def equivPrimitiveRootsModEqOne {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
+def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where
   toFun x := ⟨x.1 ^ a,
     have hr : 0 < n := by by_contra! h; cases x; simp_all
@@ -724,11 +716,11 @@ def equivPrimitiveRootsModEqOne {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
 
 /-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
     `a`-th power given that `n` and `a` are coprime. -/
-def equivPrimitiveRootsOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
     primitiveRoots n R ≃ primitiveRoots n R :=
   have h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
   have h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
-  equivPrimitiveRootsModEqOne h3
+  primitiveRootsPowEquiv h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
