@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Group.Extension
 # Haar measures on group extensions
 
 In this file, if `1 → A → B → C → 1` is a short exact sequence of topological groups,
-we construct a Haar measure on `B` from Haar measures on `A` and `B`.
+we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 
 ## Main definitions
 
