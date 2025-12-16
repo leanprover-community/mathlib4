@@ -3,12 +3,14 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields
@@ -22,6 +24,8 @@ This file contains results related to classifying algebraically closed fields.
 * `IsAlgClosed.ringEquivOfCardinalEqOfCharEq` Two uncountable algebraically closed fields
   are isomorphic if they have the same characteristic and the same cardinality.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -80,7 +84,7 @@ variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
@@ -101,7 +105,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     _ = _ := by simp
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
@@ -118,7 +122,7 @@ For a simpler, but less universe-polymorphic statement, see
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
-  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_lt fun h => not_le_of_gt
+  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_gt fun h => not_le_of_gt
     (show ℵ₀ < Cardinal.lift.{max u w} #K by simpa) <|
     calc
       Cardinal.lift.{max u w, v} #K ≤ max (max (Cardinal.lift.{max v w, u} #R)
@@ -154,10 +158,8 @@ variable {K : Type u} {L : Type v} [Field K] [Field L] [IsAlgClosed K] [IsAlgClo
 if they have the same cardinality. -/
 theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ K) from Int.cast_injective)
-  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ
-    (show Function.Injective (algebraMap ℤ L) from Int.cast_injective)
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ K
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ L
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
@@ -173,10 +175,8 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
-  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) K) from RingHom.injective _)
-  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p)
-    (show Function.Injective (algebraMap (ZMod p) L) from RingHom.injective _)
+  obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
+  obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
     rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by

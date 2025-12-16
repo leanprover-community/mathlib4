@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Expr
-import Mathlib.Data.Matrix.Reflection
+module
+
+public import Mathlib.Algebra.Expr
+public import Mathlib.Data.Matrix.Reflection
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -20,6 +22,8 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
 ```
 
 TODO: These magic lemmas have been skipped for now, though the plumbing lemmas in
-`Mathlib.Data.Matrix.Reflection` are still available.
+`Mathlib/Data/Matrix/Reflection.lean` are still available.
 They should probably be implemented as simprocs.
 -/
+
+@[expose] public section

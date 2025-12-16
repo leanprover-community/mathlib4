@@ -3,7 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Base change along flat modules preserves equalizers
@@ -12,6 +14,8 @@ We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
 
 -/
+
+@[expose] public section
 
 universe t u
 
@@ -194,10 +198,10 @@ private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
 private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x := by
-  induction' x with x y x y hx hy
-  · rfl
-  · rfl
-  · simp [hx, hy]
+  induction x with
+  | zero => rfl
+  | tmul => rfl
+  | add x y hx hy => simp [hx, hy]
 
 private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerAux S T f g (x * y) =

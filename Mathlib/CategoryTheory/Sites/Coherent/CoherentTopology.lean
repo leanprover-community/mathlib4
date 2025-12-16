@@ -3,9 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Nikolas Kuhn
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-/-!
+module
 
+public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+public import Mathlib.Data.Finite.Sigma
+
+/-!
 # Description of the covering sieves of the coherent topology
 
 This file characterises the covering sieves of the coherent topology.
@@ -17,9 +20,11 @@ This file characterises the covering sieves of the coherent topology.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C] {X : C}
+variable {C : Type*} [Category* C] [Precoherent C] {X : C}
 
 /--
 For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the

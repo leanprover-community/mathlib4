@@ -3,8 +3,10 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Algebra.Field.Subfield.Defs
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.Algebra.Field.Subfield.Defs
 
 /-!
 # Matrices and base change
@@ -12,12 +14,14 @@ import Mathlib.Algebra.Field.Subfield.Defs
 This file is a home for results about base change for matrices.
 
 ## Main results:
- * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_right`: if an invertible matrix over `L` takes
-   values in subfield `K ⊆ L`, then so does its (right) inverse.
- * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
-   values in subfield `K ⊆ L`, then so does its (left) inverse.
+* `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_right`: if an invertible matrix over `L` takes
+  values in subfield `K ⊆ L`, then so does its (right) inverse.
+* `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
+  values in subfield `K ⊆ L`, then so does its (left) inverse.
 
 -/
+
+@[expose] public section
 
 namespace Matrix
 

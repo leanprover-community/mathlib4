@@ -3,11 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set
@@ -44,6 +46,8 @@ performance-wise.
 These considerations more generally apply to `Finset.card` and `Finset.sum` and demonstrate that
 overengineering basic definitions is likely to hinder user experience.
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists Ring
@@ -83,14 +87,16 @@ lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonem
 protected alias ⟨_, Nonempty.dens_pos⟩ := dens_pos
 protected alias ⟨_, Nonempty.dens_ne_zero⟩ := dens_ne_zero
 
+@[gcongr]
 lemma dens_le_dens (h : s ⊆ t) : dens s ≤ dens t :=
   div_le_div_of_nonneg_right (mod_cast card_mono h) <| by positivity
 
+@[gcongr]
 lemma dens_lt_dens (h : s ⊂ t) : dens s < dens t :=
-  div_lt_div_of_pos_right (mod_cast card_strictMono h) <| by
-    cases isEmpty_or_nonempty α
-    · simp [Subsingleton.elim s t, ssubset_irrfl] at h
-    · exact mod_cast Fintype.card_pos
+  div_lt_div_of_pos_right (by gcongr) <| mod_cast calc
+    0 ≤ #s := Nat.zero_le _
+    _ < #t := by gcongr
+    _ ≤ Fintype.card α := card_le_univ t
 
 @[mono] lemma dens_mono : Monotone (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_le_dens
 @[mono] lemma dens_strictMono : StrictMono (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_lt_dens
@@ -100,7 +106,6 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · simp [Subsingleton.elim s ∅]
   simp_rw [dens, card_map]
   gcongr
-  · positivity
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
@@ -186,7 +191,7 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
-  rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
+  rw [← dens_union_of_disjoint (disjoint_filter_filter_not ..), filter_union_filter_not_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
   dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'

@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Tactic.Common
 
 /-!
 # Algebraic quotients
@@ -12,11 +14,11 @@ This file defines notation for algebraic quotients, e.g. quotient groups `G ⧸ 
 quotient modules `M ⧸ N` and ideal quotients `R ⧸ I`.
 
 The actual quotient structures are defined in the following files:
- * quotient group: `Mathlib/GroupTheory/QuotientGroup.lean`
- * quotient module: `Mathlib/LinearAlgebra/Quotient.lean`
- * quotient ring: `Mathlib/RingTheory/Ideal/Quotient.lean`
+* Quotient Group: `Mathlib/GroupTheory/Cosets/Defs.lean`
+* Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
+* Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
 
-## Notations
+## Notation
 
 The following notation is introduced:
 
@@ -32,6 +34,8 @@ quotient, group quotient, quotient group, module quotient, quotient module, ring
 ideal quotient, quotient ring
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -46,12 +50,11 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   quotient' : B → Type max u v
 
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
-/-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient
- of the type `A` by `b`.
+/--
+`HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
 
-This differs from `HasQuotient.quotient'` in that the `A` argument is
- explicit, which is necessary to make Lean show the notation in the
- goal state.
+This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
+which is necessary to make Lean show the notation in the goal state.
 -/
 abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=

@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -18,6 +20,8 @@ and show that they satisfy the same kind of laws (`Monoid` etc) as the original 
 Finally, we construct a section of the quotient map
 which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
+
+@[expose] public section
 
 assert_not_exists LinearIndependent
 
@@ -59,7 +63,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
     SMulCommClass M N (SeparationQuotient X) :=
   surjective_mk.smulCommClass mk_smul mk_smul
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
@@ -115,7 +119,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul
@@ -210,11 +214,6 @@ instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGro
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
-
-@[deprecated (since := "2025-03-31")] alias
-  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-31")] alias
-  instUniformGroup := SeparationQuotient.instIsUniformGroup
 
 end IsUniformGroup
 

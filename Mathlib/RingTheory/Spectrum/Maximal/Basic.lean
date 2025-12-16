@@ -3,14 +3,18 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+module
+
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
 
 Basic properties the maximal spectrum of a ring.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -23,8 +27,6 @@ namespace MaximalSpectrum
 def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
   toFun I := ⟨I.asIdeal, I.2⟩
   invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem range_asIdeal : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
   Set.ext fun J ↦

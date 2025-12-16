@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Unbounded lattice homomorphisms
 
 This file defines unbounded lattice homomorphisms. _Bounded_ lattice homomorphisms are defined in
-`Mathlib.Order.Hom.BoundedLattice`.
+`Mathlib/Order/Hom/BoundedLattice.lean`.
 
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
@@ -26,6 +28,8 @@ be satisfied by itself and all stricter types.
 * `InfHomClass`
 * `LatticeHomClass`
 -/
+
+@[expose] public section
 
 
 open Function
@@ -330,6 +334,12 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
+@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+    mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.SupHom.mk_le_mk⟩ := mk_le_mk
+
 /-- `Subtype.val` as a `SupHom`. -/
 def subtypeVal {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
@@ -505,6 +515,12 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
 @[simp]
 theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
   rfl
+
+@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
+    mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.InfHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as an `InfHom`. -/
 def subtypeVal {P : β → Prop}
@@ -706,8 +722,6 @@ variable [Max α] [Max β] [Max γ]
 protected def dual : SupHom α β ≃ InfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_sup'⟩
   invFun f := ⟨f, f.map_inf'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ :=
@@ -739,8 +753,6 @@ variable [Min α] [Min β] [Min γ]
 protected def dual : InfHom α β ≃ SupHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_inf'⟩
   invFun f := ⟨f, f.map_sup'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfHom.dual (InfHom.id α) = SupHom.id _ :=
@@ -772,8 +784,6 @@ variable [Lattice α] [Lattice β] [Lattice γ]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : LatticeHom.dual (LatticeHom.id α) = LatticeHom.id _ := rfl
 

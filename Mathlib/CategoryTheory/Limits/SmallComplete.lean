@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder
@@ -23,6 +25,8 @@ we instead show that the homsets are subsingleton.
 
 small complete, preorder, Freyd
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -48,9 +52,9 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       have z : (2 : Cardinal) ≤ #(X ⟶ Y) := by
         rw [Cardinal.two_le_iff]
         exact ⟨_, _, r_ne_s⟩
-      let md := ΣZ W : C, Z ⟶ W
+      let md := Σ Z W : C, Z ⟶ W
       let α := #md
-      apply not_le_of_lt (Cardinal.cantor α)
+      apply not_le_of_gt (Cardinal.cantor α)
       let yp : C := ∏ᶜ fun _ : md => Y
       apply _root_.trans _ _
       · exact #(X ⟶ yp)

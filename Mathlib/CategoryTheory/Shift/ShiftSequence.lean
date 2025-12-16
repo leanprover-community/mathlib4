@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equipped with a shift
 
@@ -14,7 +16,7 @@ shift by an additive monoid `M`. In this file, we define a typeclass
 `F.shift a : C ⥤ A` for all `a : A`. For each `a : A`, we have
 an isomorphism `F.isoShift a : shiftFunctor C a ⋙ F ≅ F.shift a` which
 satisfies some coherence relations. This allows to state results
-(e.g. the long exact sequence of an homology functor (TODO)) using
+(e.g. the long exact sequence of a homology functor (TODO)) using
 functors `F.shift a` rather than `shiftFunctor C a ⋙ F`. The reason
 for this design is that we can often choose functors `F.shift a` that
 have better definitional properties than `shiftFunctor C a ⋙ F`.
@@ -25,9 +27,11 @@ in degree `n`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type*} [Category C] [Category A] (F : C ⥤ A)
+variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
   (M : Type*) [AddMonoid M] [HasShift C M]
   {G : Type*} [AddGroup G] [HasShift C G]
 
@@ -60,7 +64,7 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
     rw [shiftFunctorAdd'_zero_add]
-    aesop_cat
+    cat_disch
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     dsimp
@@ -235,7 +239,6 @@ lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
       (by rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero])).hom.app Y) := by
   have hnm' : m + n = 0 := by
     rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
-  dsimp
   simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
     shiftFunctorCompIsoId]
 

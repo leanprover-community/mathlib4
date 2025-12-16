@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 # Openness and closedness of a set
@@ -28,6 +30,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 topological space
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -185,6 +189,10 @@ theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed
 theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
   isOpen_compl_iff.mpr
 
+theorem IsClosed.and :
+    IsClosed { x | p₁ x } → IsClosed { x | p₂ x } → IsClosed { x | p₁ x ∧ p₂ x } :=
+  IsClosed.inter
+
 /-!
 ### Limits of filters in topological spaces
 
@@ -201,7 +209,7 @@ section lim
 formulate this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it useful for
 types without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify
 this instance with any other instance. -/
-theorem le_nhds_lim {f : Filter X} (h : ∃ x, f ≤ 𝓝 x) : f ≤ 𝓝 (@lim _ _ (nonempty_of_exists h) f) :=
+theorem le_nhds_lim {f : Filter X} (h : ∃ x, f ≤ 𝓝 x) : f ≤ 𝓝 (@lim _ _ h.nonempty f) :=
   Classical.epsilon_spec h
 
 /-- If `g` tends to some `𝓝 x` along `f`, then it tends to `𝓝 (Filter.limUnder f g)`. We formulate
@@ -209,7 +217,7 @@ this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it u
 without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify this
 instance with any other instance. -/
 theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto g f (𝓝 x)) :
-    Tendsto g f (𝓝 (@limUnder _ _ _ (nonempty_of_exists h) f g)) :=
+    Tendsto g f (𝓝 (@limUnder _ _ _ h.nonempty f g)) :=
   le_nhds_lim h
 
 theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}

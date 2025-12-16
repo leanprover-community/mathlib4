@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.UniformConvergence
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.UniformConvergence
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -23,7 +25,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
@@ -37,6 +39,8 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 uniform convergence, strong dual
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 open scoped Pointwise UniformConvergence Uniformity

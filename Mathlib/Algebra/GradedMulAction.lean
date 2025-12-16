@@ -3,7 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.Algebra.GradedMonoid
+module
+
+public import Mathlib.Algebra.GradedMonoid
 
 /-!
 # Additively-graded multiplicative action structures
@@ -15,7 +17,7 @@ has an additively-graded multiplicative action on `M`. The typeclasses are:
 * `GradedMonoid.GSMul A M`
 * `GradedMonoid.GMulAction A M`
 
-With the `SigmaGraded` locale open, these respectively imbue:
+With the `SigmaGraded` scope open, these respectively imbue:
 
 * `SMul (GradedMonoid A) (GradedMonoid M)`
 * `MulAction (GradedMonoid A) (GradedMonoid M)`
@@ -43,6 +45,8 @@ a `MulAction` instance.
 
 graded action
 -/
+
+@[expose] public section
 
 
 variable {ιA ιB ιM : Type*}
@@ -134,8 +138,5 @@ theorem SetLike.IsHomogeneousElem.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA
     SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem B b →
     SetLike.IsHomogeneousElem B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩
-
-@[deprecated (since := "2025-01-31")] alias SetLike.Homogeneous.graded_smul :=
-  SetLike.IsHomogeneousElem.graded_smul
 
 end HomogeneousElements

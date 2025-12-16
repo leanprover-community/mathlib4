@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # `ZMod p` is a field
 -/
+
+@[expose] public section
 
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -29,10 +33,6 @@ instance : Field (ZMod p) where
   qsmul_def := fun _ _ => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
-instance : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
-  cases p
-  · exact (Nat.not_prime_zero hp.out).elim
-  exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
+instance : IsDomain (ZMod p) := by constructor
 
 end ZMod

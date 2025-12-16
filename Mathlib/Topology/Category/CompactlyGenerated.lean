@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -16,9 +18,11 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 ## TODO
 
 * `CompactlyGenerated` is a reflective subcategory of `TopCat`.
-* `CompactlyGenerated` is cartesian closed.
+* `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
+
+@[expose] public section
 
 universe u w
 
@@ -105,11 +109,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompactlyGenerated.{u, w}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end CompactlyGenerated

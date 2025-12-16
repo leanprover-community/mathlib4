@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Algebra.Equiv.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Equiv.TransferInstance
 We prove basic properties of local rings homomorphisms.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*}
 section
@@ -49,8 +53,6 @@ theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
   exact IsLocalRing.nonunits_add
 
-@[deprecated (since := "2024-11-12")] alias RingHom.domain_localRing := RingHom.domain_isLocalRing
-
 end
 
 section
@@ -78,7 +80,7 @@ i.e. any preimage of a unit is still a unit. -/
 @[stacks 07BJ]
 theorem local_hom_TFAE (f : R →+* S) :
     List.TFAE
-      [IsLocalHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
+      [IsLocalHom f, f '' maximalIdeal R ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
@@ -133,12 +135,6 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
 
 end IsLocalRing
 
-@[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE
-@[deprecated (since := "2024-11-11")] alias LocalRing.of_surjective := IsLocalRing.of_surjective
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.surjective_units_map_of_local_ringHom :=
-  IsLocalRing.surjective_units_map_of_local_ringHom
-
 namespace RingEquiv
 
 protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Semiring B]
@@ -146,6 +142,8 @@ protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Se
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
 
-@[deprecated (since := "2024-11-09")] alias localRing := RingEquiv.isLocalRing
-
 end RingEquiv
+
+instance {R : Type*} [CommRing R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
+    IsLocalHom f :=
+  (ZMod.ringHom_surjective f).isLocalHom

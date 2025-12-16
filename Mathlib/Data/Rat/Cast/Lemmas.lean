@@ -3,19 +3,23 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Some exiled lemmas about casting
 
-These lemmas have been removed from `Mathlib.Data.Rat.Cast.Defs`
-to avoiding needing to import `Mathlib.Algebra.Field.Basic` there.
+These lemmas have been removed from `Mathlib/Data/Rat/Cast/Defs.lean`
+to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
+
+@[expose] public section
 
 namespace Rat
 
@@ -37,8 +41,8 @@ theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   rcases n with n | n
-  · simp [ofInt_eq_cast, cast_inv_nat]
-  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+  · simp [cast_inv_nat]
+  · simp only [Int.cast_negSucc, cast_neg, inv_neg, cast_inv_nat]
 
 @[simp, norm_cast]
 theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
@@ -46,7 +50,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  case hdp => simpa only [Int.ofNat_pos] using q.den_pos
+  case hdp => simpa only [Int.natCast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
@@ -73,6 +77,12 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
   · simp_rw [zpow_neg, zpow_natCast, ← inv_pow, NNRat.cast_pow]
     congr
     rw [cast_inv_of_ne_zero hq]
+
+@[simp]
+theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
+    (NNRat.cast ⟨q, h⟩ : K) = (q : K) := by
+  simp only [NNRat.cast_def, NNRat.num_mk, Nat.cast_natAbs, NNRat.den_mk, Rat.cast_def]
+  rw [abs_of_nonneg (by simpa)]
 
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]

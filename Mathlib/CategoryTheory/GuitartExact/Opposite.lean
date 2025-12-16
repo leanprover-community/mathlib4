@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
 /-!
 # The opposite of a Guitart exact square
@@ -12,6 +14,8 @@ A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -93,11 +97,16 @@ lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   · intro
     let w₁ : TwoSquare T (opOp C₁) (opOp C₂) T.op.op := 𝟙 _
     let w₂ : TwoSquare B.op.op (unopUnop C₃) (unopUnop C₄) B := 𝟙 _
-    have : w = (w₁ ≫ᵥ w.op.op) ≫ᵥ w₂ := by aesop_cat
+    have : w = (w₁ ≫ᵥ w.op.op) ≫ᵥ w₂ := by cat_disch
     rw [this]
     infer_instance
   · intro
     infer_instance
+
+instance guitartExact_id' (F : C₁ ⥤ C₂) :
+    GuitartExact (TwoSquare.mk F (𝟭 C₁) (𝟭 C₂) F (𝟙 F)) := by
+  rw [← guitartExact_op_iff]
+  apply guitartExact_id
 
 end TwoSquare
 

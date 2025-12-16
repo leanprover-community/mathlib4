@@ -64,7 +64,7 @@ h : x = true
 -/
 #guard_msgs in
 example (x : Bool) (h : x = true) : x = true := by
-  fail_if_no_progress simp (config := {failIfUnchanged := false})
+  fail_if_no_progress simp -failIfUnchanged
 
 /--
 error: no progress made on
@@ -74,7 +74,7 @@ h : x = true
 -/
 #guard_msgs in
 example (x : Bool) (h : x = true) : True := by
-  fail_if_no_progress simp (config := {failIfUnchanged := false}) at h
+  fail_if_no_progress simp -failIfUnchanged at h
 
 /--
 error: no progress made on

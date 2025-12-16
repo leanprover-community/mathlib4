@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`
@@ -23,10 +25,33 @@ In this file we prove
 For the latter lemma, we also prove various order dual versions.
 -/
 
+@[expose] public section
+
 
 open Set Order
 
 variable {α β : Type*} [LinearOrder α]
+
+theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ico (f i) (f (succ i)) = Ici (f a) := by
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ico_subset_Ico_left (hf i hi) |>.trans Ico_subset_Ici_self
+  intro b hb
+  contrapose! h2f
+  use b
+  simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  exact Succ.rec (P := fun i _ ↦ f i ≤ b) hb (by aesop)
+
+theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ioc (f i) (f (succ i)) = Ioi (f a) := by
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ioc_subset_Ioc_left (hf i hi) |>.trans Ioc_subset_Ioi_self
+  intro b hb
+  contrapose! h2f
+  suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
+  exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
 
 namespace Monotone
 
@@ -53,7 +78,7 @@ theorem pairwise_disjoint_on_Ioc_succ [SuccOrder α] [Preorder β] {f : α → �
     Pairwise (Disjoint on fun n => Ioc (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
-      h₂.not_le <| h₁.trans <| hf <| succ_le_of_lt hmn
+      h₂.not_ge <| h₁.trans <| hf <| succ_le_of_lt hmn
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ico (f n) (f (Order.succ n))` are pairwise disjoint. -/
@@ -61,7 +86,7 @@ theorem pairwise_disjoint_on_Ico_succ [SuccOrder α] [Preorder β] {f : α → �
     Pairwise (Disjoint on fun n => Ico (f n) (f (succ n))) :=
   (pairwise_disjoint_on _).2 fun _ _ hmn =>
     disjoint_iff_inf_le.mpr fun _ ⟨⟨_, h₁⟩, ⟨h₂, _⟩⟩ =>
-      h₁.not_le <| (hf <| succ_le_of_lt hmn).trans h₂
+      h₁.not_ge <| (hf <| succ_le_of_lt hmn).trans h₂
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioo (f n) (f (Order.succ n))` are pairwise disjoint. -/

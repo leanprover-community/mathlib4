@@ -3,8 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 
 /-!
 # Coherence tactic for bicategories
@@ -15,6 +17,8 @@ in a bicategory which are built out of associators and unitors
 are equal.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike Bicategory
@@ -262,7 +266,7 @@ instance : MkEqOfNaturality BicategoryM where
 
 open Elab.Tactic
 
-/-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
+/-- Close the goal of the form `η.hom = θ.hom`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
 example {B : Type} [Bicategory B] {a : B} :
