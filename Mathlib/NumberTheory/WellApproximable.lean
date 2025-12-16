@@ -17,7 +17,7 @@ respect to the Lebesgue measure.
 
 Gallagher's theorem concerns the approximation of real numbers by rational numbers. The input is a
 sequence of distances `δ₁, δ₂, ...`, and the theorem concerns the set of real numbers `x` for which
-there is an infinity of solutions to:
+there are infinitely many solutions to:
 $$
   |x - m/n| < δₙ,
 $$
@@ -107,7 +107,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
+  simp only [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :
@@ -197,7 +197,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       `A p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∤ n))`
       `B p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∣∣ n))`
       `C p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p*p ∣ n))`.
-    In other words, `A p` is the set of points `x` for which there exist infinitely-many `n` such
+    In other words, `A p` is the set of points `x` for which there exist infinitely many `n` such
     that `x` is within a distance `δ n` of a point of order `n` and `p ∤ n`. Similarly for `B`, `C`.
 
     These sets have the following key properties:
@@ -296,8 +296,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  set_option push_neg.use_distrib true in
-  by_cases! h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
+  by_cases! +distrib h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
