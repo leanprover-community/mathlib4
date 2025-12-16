@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Kim Morrison
 -/
 module
 
@@ -12,7 +12,23 @@ public import Mathlib.Tactic.Positivity.Core
 /-!
 # Ordered algebras
 
-This file proves properties of algebras where both rings are ordered compatibly.
+An ordered algebra is an ordered semiring, which is an algebra over an ordered commutative semiring,
+for which scalar multiplication is "compatible" with the two orders.
+
+The prototypical example is 2x2 matrices over the reals or complexes (or indeed any C^* algebra)
+where the ordering the one determined by the positive cone of positive operators,
+i.e. `A ≤ B` iff `B - A = star R * R` for some `R`.
+(We don't yet have this example in mathlib.)
+
+## Implementation
+
+Because the axioms for an ordered algebra are exactly the same as those for the underlying
+module being ordered, we don't actually introduce a new class, but just use the `IsOrderedModule`
+and `IsStrictOrderedModule` mixins.
+
+## Tags
+
+ordered algebra
 
 ## TODO
 
