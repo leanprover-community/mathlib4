@@ -116,9 +116,7 @@ variable (n) in
 /-- The function sending generator i to the adjacent transposition (i, i+1).
 Note: We require `2 ≤ n` to ensure `Fin (n-1)` maps properly into `Fin n`. -/
 def swapFun (hn : 2 ≤ n) : Fin (n - 1) → Perm (Fin n) := fun i =>
-  have h1 : i.val < n := Nat.lt_of_lt_of_le i.isLt (by omega)
-  have h2 : i.val + 1 < n := by omega
-  swap ⟨i.val, h1⟩ ⟨i.val + 1, h2⟩
+  swap ⟨i.val, by omega⟩ ⟨i.val + 1, by omega⟩
 
 /-- Far transpositions commute: if the ranges {i, i+1} and {j, j+1} are disjoint,
 then swap i (i+1) and swap j (j+1) commute. -/
