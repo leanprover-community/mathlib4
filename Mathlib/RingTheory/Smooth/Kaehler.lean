@@ -332,7 +332,7 @@ def retractionKerCotangentToTensorEquivSection :
   let e₂ : S ⊗[P'] Ω[P'⁄R] ≃ₗ[P] S ⊗[P] Ω[P⁄R] :=
     (tensorKaehlerQuotKerSqEquiv R P S).restrictScalars P
   have H : kerCotangentToTensor R P S =
-      e₂.toLinearMap ∘ₗ (kerToTensor R P' S ).restrictScalars P ∘ₗ e₁.toLinearMap := by
+      e₂.toLinearMap ∘ₗ (kerToTensor R P' S).restrictScalars P ∘ₗ e₁.toLinearMap := by
     ext x
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
     exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.1).symm
@@ -373,7 +373,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
   suffices CotangentSpace.map P.toInfinitesimal =
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
-    rw [this]; exact(tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
+    rw [this]; exact (tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
   letI : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
   have : IsScalarTower P.Ring P.infinitesimal.Ring S := .of_algebraMap_eq' rfl
   apply LinearMap.restrictScalars_injective P.Ring

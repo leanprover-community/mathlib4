@@ -79,7 +79,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R
   refine exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral ?_
   induction hx using Submodule.span_induction with
   | zero => simp [isIntegral_zero]
-  | add x y _ _ hx hy  => simpa [add_mul] using hx.add hy
+  | add x y _ _ hx hy => simpa [add_mul] using hx.add hy
   | mem x h =>
     obtain ⟨x, hx, rfl⟩ := h
     simpa using isIntegral_algebraMap (R := A) (A := S[X])

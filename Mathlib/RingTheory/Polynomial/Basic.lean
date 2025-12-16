@@ -236,7 +236,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
   intro s hs contra
-  rcases span_le_degreeLE_of_finite hs with ⟨n,hn⟩
+  rcases span_le_degreeLE_of_finite hs with ⟨n, hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
     rw [contra] at hn
     exact hn Submodule.mem_top
@@ -665,7 +665,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine ⟨m + n, ?_⟩
-        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]

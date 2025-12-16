@@ -280,7 +280,7 @@ private lemma span_range_relation_eq_ker_baseChange :
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
 @[simps relation]
 noncomputable
-def baseChange : Presentation T (T ⊗[R] S) ι σ  where
+def baseChange : Presentation T (T ⊗[R] S) ι σ where
   __ := P.toGenerators.baseChange T
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
   span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T

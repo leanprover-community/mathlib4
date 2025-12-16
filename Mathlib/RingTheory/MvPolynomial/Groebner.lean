@@ -187,10 +187,10 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     · exact H'.2.2
   · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
-        (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
+        (∀ i, m.degree ((b i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
       obtain ⟨g', r', H'⟩ := this
-      use g', r' +  monomial (m.degree f) (m.leadingCoeff f)
+      use g', r' + monomial (m.degree f) (m.leadingCoeff f)
       constructor
       · simp [← add_assoc, ← H'.1, subLTerm]
       constructor

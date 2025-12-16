@@ -523,7 +523,7 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x
     simp [hx]
   · use x⁻¹
-    simp [- map_inv₀, ← one_lt_val_iff, hx]
+    simp [-map_inv₀, ← one_lt_val_iff, hx]
 
 theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
@@ -991,7 +991,7 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -(v x) :=
   map_inv₀ (toValuation v) x
 
 @[simp]

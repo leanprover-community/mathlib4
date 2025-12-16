@@ -417,7 +417,7 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   simp only [ne_eq, le_iInf_iff]
   intro i hi
   trans (⨅ (i : σ), (order ∘ a) i) * ↑i.degree
-  · refine mul_le_mul_right (order_le hi ) _
+  · refine mul_le_mul_right (order_le hi) _
   · simp only [Function.comp_apply, order, Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
       Nat.cast_sum, Finset.mul_sum, Finsupp.weight_apply, nsmul_eq_mul]
     exact Finset.sum_le_sum fun j hj => by

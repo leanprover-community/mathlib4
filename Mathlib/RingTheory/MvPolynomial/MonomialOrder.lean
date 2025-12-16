@@ -403,7 +403,7 @@ theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀
     (ha : m.degree f ≼[m] a) (hb : m.degree g ≼[m] b) :
     (f * g).coeff (a + b) = f.coeff a * g.coeff b := by
   classical
-  rw [coeff_mul, Finset.sum_eq_single (a,b)]
+  rw [coeff_mul, Finset.sum_eq_single (a, b)]
   · rintro ⟨c, d⟩ hcd h
     simp only [Finset.mem_antidiagonal] at hcd
     by_cases hf : m.degree f ≺[m] c

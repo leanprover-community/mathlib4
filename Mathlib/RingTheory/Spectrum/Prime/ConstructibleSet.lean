@@ -129,7 +129,7 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
         compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
     congr! 2
     ext
-    simp [← (Finite.equivFin s).exists_congr_right, - Nat.card_coe_set_eq]
+    simp [← (Finite.equivFin s).exists_congr_right, -Nat.card_coe_set_eq]
   | union s hs t ht Hs Ht =>
     obtain ⟨S, rfl⟩ := Hs
     obtain ⟨T, rfl⟩ := Ht
