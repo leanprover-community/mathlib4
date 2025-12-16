@@ -121,9 +121,20 @@ universe v u
 
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [CommRing R]
 
 open Pointwise ModuleCat IsSMulRegular
+
+lemma Ideal.quotient_smul_top_lt_of_le_smul_top (I : Ideal R) {M : Type*} [AddCommGroup M]
+    [Module R M] {p : Submodule R M} (h : I • (⊤ : Submodule R M) < ⊤)
+    (le : p ≤ I • (⊤ : Submodule R M)) : I • (⊤ : Submodule R (M ⧸ p)) < ⊤ := by
+  rw [lt_top_iff_ne_top]
+  by_contra eq
+  absurd lt_top_iff_ne_top.mp h
+  have := Submodule.smul_top_eq_comap_smul_top_of_surjective I p.mkQ p.mkQ_surjective
+  simpa [eq, le] using this
+
+variable [Small.{v} R]
 
 lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, [Module.Finite R M] →
@@ -154,13 +165,7 @@ lemma exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R] (I : Idea
     have le_smul : x ^ k • (⊤ : Submodule R M) ≤ I • ⊤ := by
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
-    have smul_lt' : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) < ⊤ := by
-      rw [lt_top_iff_ne_top]
-      by_contra eq
-      absurd lt_top_iff_ne_top.mp smul_lt
-      have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
-        (Submodule.mkQ ((x ^ k) • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
-      simpa [eq, le_smul] using this
+    have smul_lt' := I.quotient_smul_top_lt_of_le_smul_top smul_lt le_smul
     -- verify that `N` indeed make `M ⧸ xᵏM` satisfy the induction hypothesis
     have exists_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
         Module.support R N = PrimeSpectrum.zeroLocus I ∧
@@ -201,13 +206,13 @@ lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleC
 lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (N : ModuleCat.{v} R) [Nntr : Nontrivial N] [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
-    ∀ M : ModuleCat.{v} R, [Nontrivial M] → [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
+    ∀ M : ModuleCat.{v} R, [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
     (∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) →
     ∀ i < n, Subsingleton (Ext N M i) := by
   induction n with
   | zero => simp
   | succ n ih =>
-    rintro M Mntr Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
+    rintro M Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
     match rs with
@@ -221,25 +226,16 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
         simp only [Nat.eq_zero_of_not_pos h, pow_zero, Module.mem_annihilator, one_smul] at hk
         exact (not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 hk)) Nntr
       simp only [isRegular_cons_iff] at reg
+      simp only [List.mem_cons, forall_eq_or_imp] at mem
       let M' := (QuotSMulTop a M)
       have le_smul : a • ⊤ ≤ I • (⊤ : Submodule R M) := by
         rw [← Submodule.ideal_span_singleton_smul]
-        exact Submodule.smul_mono_left
-          ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
-      have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
-      have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
-        rw [lt_top_iff_ne_top]
-        by_contra eq
-        absurd lt_top_iff_ne_top.mp smul_lt
-        have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
-          (Submodule.mkQ (a • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
-        simpa [eq, le_smul] using this
+        exact Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr mem.1)
+      have smul_lt' := I.quotient_smul_top_lt_of_le_smul_top smul_lt le_smul
       have exists_reg' : ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧
         IsRegular (ModuleCat.of R M') rs := by
         use rs'
         simp only [List.length_cons, Nat.add_left_inj] at len
-        simp only [List.mem_cons, forall_eq_or_imp] at mem
         exact ⟨len, mem.2, reg.2⟩
       by_cases eq0 : i = 0
       · rw [eq0]
