@@ -27,7 +27,7 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
   if `S` is free as `R`-module.
 
 * `Algebra.discr_localizationLocalization`: let `S` be an extension of `R` and `Rₘ Sₘ` be
-  localizations at `M` of `R S` respectively. Let `b` be a `R`-basis of `S`. Then discriminant of
+  localizations at `M` of `R S` respectively. Let `b` be an `R`-basis of `S`. Then discriminant of
   the `Rₘ`-basis of `Sₘ` induced by `b` is the discriminant of `b`.
 
 ## Tags
@@ -110,7 +110,7 @@ theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
   exact Algebra.trace_localization R M _
 
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively. Let
-`b` be a `R`-basis of `S`. Then discriminant of the `Rₘ`-basis of `Sₘ` induced by `b` is the
+`b` be an `R`-basis of `S`. Then discriminant of the `Rₘ`-basis of `Sₘ` induced by `b` is the
 discriminant of `b`.
 -/
 theorem Algebra.discr_localizationLocalization (b : Basis ι R S) :
