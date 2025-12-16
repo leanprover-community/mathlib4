@@ -36,8 +36,7 @@ lemma isomorphisms_eq_stalkwise :
     (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
-instance : IsZariskiLocalAtTarget (isomorphisms Scheme) :=
-  isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
+example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
   convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY

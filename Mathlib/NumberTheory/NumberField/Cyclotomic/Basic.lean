@@ -806,7 +806,7 @@ variable (n)
 theorem cyclotomicRing_isIntegralClosure :
     IsIntegralClosure (CyclotomicRing n ℤ ℚ) ℤ (CyclotomicField n ℚ) := by
   have hζ := zeta_spec n ℚ (CyclotomicField n ℚ)
-  refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
+  refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
     simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
@@ -832,7 +832,7 @@ noncomputable def adjoinEquivRingOfIntegers [IsCyclotomicExtension {n} ℚ K]
 /-- The ring of integers of a `n`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
 instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} ℚ K] :
     IsCyclotomicExtension {n} ℤ (𝓞 K) :=
-  let _ := (zeta_spec (n) ℚ K).adjoin_isCyclotomicExtension ℤ
+  let _ := (zeta_spec n ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec n ℚ K).adjoinEquivRingOfIntegers
 
 @[deprecated (since := "2025-11-26")] alias _root_.IsCyclotomicExtension.ring_of_integers' :=
@@ -849,8 +849,7 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {n} ℚ K] (hζ : 
     hζ.integralPowerBasis.gen = hζ.toInteger :=
   Subtype.ext <| show algebraMap _ K hζ.integralPowerBasis.gen = _ by
     rw [integralPowerBasis, PowerBasis.map_gen, adjoin.powerBasis'_gen]
-    simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
-    rfl
+    simp
 
 @[simp]
 theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimitiveRoot ζ n) :
@@ -890,3 +889,60 @@ end IsPrimitiveRoot
 end discr
 
 end PowerBasis
+
+section NumberField
+
+open Units
+
+theorem NumberField.Units.dvd_torsionOrder_of_isPrimitiveRoot [NeZero n] [NumberField K] {ζ : K}
+    (hζ : IsPrimitiveRoot ζ n) : n ∣ torsionOrder K := by
+  rw [torsionOrder, Fintype.card_eq_nat_card]
+  replace hζ := (hζ.toInteger_isPrimitiveRoot).isUnit_unit (NeZero.ne n)
+  convert orderOf_dvd_natCard (⟨(hζ.isUnit (NeZero.ne n)).unit, ?_⟩ : torsion K)
+  · rw [Subgroup.orderOf_mk]
+    exact hζ.eq_orderOf
+  · refine (CommGroup.mem_torsion _ _).mpr ⟨n, NeZero.pos n, ?_⟩
+    rw [isPeriodicPt_mul_iff_pow_eq_one]
+    exact hζ.pow_eq_one
+
+/--
+The order of the torsion group of the `n`-th cyclotomic field is `n` if `n` is even and
+`2n` if `n` is odd.
+-/
+theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
+    [hK : IsCyclotomicExtension {n} ℚ K] :
+    torsionOrder K = if Even n then n else 2 * n := by
+  have hζ := hK.zeta_spec
+  -- We first prove that `K` contains a primitive root of order `torsionOrder K`
+  obtain ⟨μ, hμ⟩ : ∃ μ : torsion K, orderOf μ = torsionOrder K := by
+    rw [torsionOrder, Fintype.card_eq_nat_card]
+    exact IsCyclic.exists_ofOrder_eq_natCard
+  rw [← IsPrimitiveRoot.iff_orderOf, ← IsPrimitiveRoot.coe_submonoidClass_iff,
+    ← IsPrimitiveRoot.coe_units_iff] at hμ
+  replace hμ := hμ.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 K) K)
+  -- Thus, `K` contains a primitive root of order `l = lcm (n, torsionOrder K)`.
+  have h := hζ.pow_mul_pow_lcm hμ (NeZero.ne _) (torsionOrder_ne_zero K)
+  have : NeZero (n.lcm (torsionOrder K)) :=
+    NeZero.of_pos <| Nat.lcm_pos_iff.mpr ⟨NeZero.pos n, torsionOrder_pos K⟩
+  -- and therefore `K` is the `l`-th cyclotomic field
+  have : IsCyclotomicExtension {n.lcm (torsionOrder K)} ℚ K := by
+    have := hK.union_of_isPrimitiveRoot _ _ _ h
+    rwa [Set.union_comm, ← IsCyclotomicExtension.iff_union_of_dvd] at this
+    exact ⟨n.lcm (torsionOrder K), by simp, NeZero.ne _, Nat.dvd_lcm_left _ _⟩
+  -- We deduce the identity `φ(n) = φ(lcm (n, torsionOrder K))`.
+  have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans <|
+    (IsCyclotomicExtension.Rat.finrank (n.lcm (torsionOrder K)) K)
+  obtain hn | hn := Nat.even_or_odd n
+  · rw [if_pos hn]
+    apply dvd_antisymm
+    · have := hn.eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main
+      rwa [eq_comm, Nat.lcm_eq_left_iff_dvd] at this
+    · exact dvd_torsionOrder_of_isPrimitiveRoot hζ
+  · rw [if_neg (Nat.not_even_iff_odd.mpr hn)]
+    have := (Nat.eq_or_eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main).resolve_left ?_
+    · rw [this, eq_comm, Nat.lcm_eq_right_iff_dvd]
+      exact dvd_torsionOrder_of_isPrimitiveRoot hζ
+    · rw [eq_comm, Nat.lcm_eq_left_iff_dvd]
+      exact fun h ↦ Nat.not_even_iff_odd.mpr (Odd.of_dvd_nat hn h) (even_torsionOrder K)
+
+end NumberField

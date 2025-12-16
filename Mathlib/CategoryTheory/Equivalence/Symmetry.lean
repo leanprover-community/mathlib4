@@ -33,7 +33,7 @@ open CategoryTheory.Functor NatIso Category
 
 namespace Equivalence
 
-variable (C : Type*) [Category C] (D : Type*) [Category D]
+variable (C : Type*) [Category* C] (D : Type*) [Category* D]
 
 /-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
@@ -96,7 +96,7 @@ def inverseFunctorObj' (e : C ≌ D) :
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]
-def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
+def congrLeftFunctor (E : Type*) [Category* E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
   Functor.rightOp
     { obj f := f.unop.congrLeft
       map {e f} α := mkHom <| (whiskeringLeft _ _ _).map <|
