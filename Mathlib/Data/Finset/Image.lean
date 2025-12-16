@@ -386,7 +386,6 @@ theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
   mod_cast Set.image_subset_image_iff hf (s := s) (t := t)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
-  simp_rw [← lt_iff_ssubset]
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
 
 theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=

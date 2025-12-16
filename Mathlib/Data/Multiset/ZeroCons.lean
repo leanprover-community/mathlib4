@@ -314,7 +314,8 @@ theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
 @[simp] lemma subset_zero : s ⊆ 0 ↔ s = 0 :=
   ⟨eq_zero_of_subset_zero, fun xeq => xeq.symm ▸ Subset.refl 0⟩
 
-@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by simp [ssubset_iff_subset_not_subset]
+@[simp] lemma zero_ssubset : 0 ⊂ s ↔ s ≠ 0 := by
+  simp [(right_iff_left_not_left : 0 ⊂ s ↔ 0 ⊆ s ∧ ¬s ⊆ 0)]
 
 @[simp] lemma singleton_subset : {a} ⊆ s ↔ a ∈ s := by simp [subset_iff]
 

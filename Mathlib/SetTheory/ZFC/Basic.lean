@@ -218,12 +218,7 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[deprecated (since := "2025-11-05")] alias nonempty_toSet_iff := nonempty_coe
 
-/-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
-protected def Subset (x y : ZFSet.{u}) :=
-  ∀ ⦃z⦄, z ∈ x → z ∈ y
-
-instance : HasSubset ZFSet := ⟨ZFSet.Subset⟩
-instance : HasSSubset ZFSet := ⟨(· < ·)⟩
+instance : Preorder ZFSet := inferInstance
 
 @[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
 @[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl

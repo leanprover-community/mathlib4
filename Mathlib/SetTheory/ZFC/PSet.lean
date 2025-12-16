@@ -35,7 +35,7 @@ universe u v
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
@@ -117,7 +117,7 @@ equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 
-instance : HasSubset PSet :=
+instance : LE PSet :=
   ⟨PSet.Subset⟩
 
 instance : IsRefl PSet (· ⊆ ·) :=
@@ -163,11 +163,8 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
 instance : Preorder PSet where
-  le := (· ⊆ ·)
-  le_refl := refl_of (· ⊆ ·)
-  le_trans _ _ _ := trans_of (· ⊆ ·)
-
-instance : HasSSubset PSet := ⟨(· < ·)⟩
+  le_refl := refl_of (· ≤ ·)
+  le_trans _ _ _ := trans_of (· ≤ ·)
 
 @[simp]
 theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=

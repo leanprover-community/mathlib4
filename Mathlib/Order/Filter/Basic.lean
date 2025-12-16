@@ -1285,9 +1285,6 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
     (hl : s ∈ l) : f =ᶠ[l] g :=
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 
-theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
-  Filter.Eventually.of_forall h
-
 variable {α β : Type*} {F : Filter α} {G : Filter β}
 
 namespace Filter
