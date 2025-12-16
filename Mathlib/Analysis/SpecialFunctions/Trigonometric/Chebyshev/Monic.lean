@@ -68,40 +68,22 @@ lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree 
     linear_combination (norm := field) (n / π) * hij
   have deg {Q : ℝ[X]} (hQ : Q.degree = n) : (Finset.range (n + 1)).card = Q.degree + 1 := by
     simp [Finset.card_range, hQ]
-  set c := fun i =>
+  use fun i =>
     ((-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (cos (i * π / n) - cos (j * π / n)))⁻¹
-    with hc
-  use c
   refine ⟨?_, ⟨?_, ?_⟩⟩
-  show ∀ i ∈ Finset.range (n + 1), 0 < c i
-  exact fun i hi => prod_pos hi |> inv_pos.mpr
-  show ∑ i ∈ Finset.range (n + 1), c i = 2 ^ (n - 1)
-  have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T_real n))
-  rw [leadingCoeff_T_real, Int.natAbs_natCast] at this
-  rw [this]
-  congr! 1 with i hi
-  rw [hc, T_real_eval_at_extremum hn]
-  sorry
-  show ∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * P.eval (cos (i * π / n))) = P.leadingCoeff
-  rw [Lagrange.leadingCoeff_eq_sum cos_inj (deg hP)]
-  congr! 1 with i hi
-  rw [hc]
-  field
-  constructor
-  · trans ∑ i ∈ Finset.Icc 0 n, (T ℝ n).eval (cos (i * π / n)) /
-      ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n))
-    · congr with i
-      have : (T ℝ n).eval (cos (i * π / n)) = (-1)^i := by
-        convert T_node_eval (show (n : ℤ) ≠ 0 by omega) i
-      rw [this, mul_inv, ← inv_pow, ← div_eq_mul_inv]
-      congr
-      norm_num
-    · rw [← Lagrange.leadingCoeff_interpolate hinj] <;> simp
-  · rw [Lagrange.leadingCoeff_interpolate hinj]
-    · congr with i
-      rw [mul_comm, ← div_eq_mul_inv, mul_div_mul_left]
-      simp
-    · simp [hP]
+  · exact fun i hi => prod_pos hi |> inv_pos.mpr
+  · have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T_real n))
+    rw [leadingCoeff_T_real, Int.natAbs_natCast] at this
+    rw [this]
+    congr! 1 with i hi
+    dsimp
+    have : (T ℝ n).eval (cos (i * π / n)) = (-1) ^ i := by
+      have := T_real_eval_at_extremum (Int.ofNat_ne_zero.mpr hn) i
+      aesop
+    rw [this, mul_inv, ← div_eq_mul_inv, ← inv_pow, inv_neg_one]
+  · rw [Lagrange.leadingCoeff_eq_sum cos_inj (deg hP)]
+    congr! 1 with i hi
+    field
 
 theorem bddAbove_poly_interval (P : ℝ[X]) : BddAbove { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   have hK : IsCompact (Set.Icc (-1 : ℝ) 1) := isCompact_Icc
