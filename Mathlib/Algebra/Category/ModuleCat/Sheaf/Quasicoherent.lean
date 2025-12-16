@@ -70,16 +70,16 @@ generators of `Presentation M`. -/
 @[simps! I s]
 def generatorsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
-    (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections :=
-  { I := σ
-    s := M.freeHomEquiv g
-    epi := by simpa using epi_of_isColimit_cofork H' }
+    (H' : IsColimit (CokernelCofork.ofπ g H)) : M.GeneratingSections where
+  I := σ
+  s := M.freeHomEquiv g
+  epi := by simpa using epi_of_isColimit_cofork H'
 
 @[simp]
 theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
-    (generatorsOfIsCokernelFree f g H H').π = g := Equiv.symm_apply_apply M.freeHomEquiv g
+    (generatorsOfIsCokernelFree f g H H').π = g := M.freeHomEquiv.symm_apply_apply g
 
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
@@ -88,20 +88,20 @@ relations of `Presentation M`. -/
 def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
-    (kernel (generatorsOfIsCokernelFree f g H H').π).GeneratingSections :=
-  { I := ι
-    s := (kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv <| kernel.lift
-      (generatorsOfIsCokernelFree f g H H').π f (by simp [H])
-    epi := by
-      let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
-      let h' : Abelian.image f ≅ kernel (generatorsOfIsCokernelFree f g H H').π :=
-        kernel.mapIso (cokernel.π f) (generatorsOfIsCokernelFree f g H H').π
-          (Iso.refl _) h (by simp [h])
-      have comp_aux : Abelian.factorThruImage f ≫ h'.hom =
-        (kernel.lift (generatorsOfIsCokernelFree f g H H').π f (by simp [H])) :=
-          equalizer.hom_ext <| by simp [h']
-      rw [← comp_aux, Equiv.symm_apply_apply]
-      infer_instance }
+    (kernel (generatorsOfIsCokernelFree f g H H').π).GeneratingSections where
+  I := ι
+  s := (kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv <| kernel.lift
+    (generatorsOfIsCokernelFree f g H H').π f (by simp [H])
+  epi := by
+    let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
+    let h' : Abelian.image f ≅ kernel (generatorsOfIsCokernelFree f g H H').π :=
+      kernel.mapIso (cokernel.π f) (generatorsOfIsCokernelFree f g H H').π
+        (Iso.refl _) h (by simp [h])
+    have comp_aux : Abelian.factorThruImage f ≫ h'.hom =
+      (kernel.lift (generatorsOfIsCokernelFree f g H H').π f (by simp [H])) :=
+        equalizer.hom_ext <| by simp [h']
+    rw [← comp_aux, Equiv.symm_apply_apply]
+    infer_instance
 
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain a
@@ -109,9 +109,9 @@ satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtai
 @[simps]
 def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
-    (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M :=
-  { generators := generatorsOfIsCokernelFree f g H H'
-    relations := relationsOfIsCokernelFree f g H H' }
+    (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M where
+  generators := generatorsOfIsCokernelFree f g H H'
+  relations := relationsOfIsCokernelFree f g H H'
 
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, there is two morphism of
 sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M` satisfying `H : f ≫ g = 0`
