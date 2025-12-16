@@ -250,7 +250,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       induction hm using LieSubmodule.iSup_induction' with
       | mem α m_α hm_α => exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.1 α.2.1 α.2.2 hm_α
       | zero =>
-        simp only [ Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
+        simp only [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
       | add m₁ m₂ _ _ ih₁ ih₂ =>
         simp only [lie_add, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
         exact add_mem ih₁ ih₂
@@ -278,8 +278,8 @@ lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
   simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
     using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
 
-private lemma eq_top_of_sl2Submodule_iSup_eq_top (q : Submodule K (Dual K H))
-    (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
+private theorem eq_top_of_sl2Submodule_iSup_eq_top (q : Submodule K (Dual K H))
+    (h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤) :
     q = ⊤ := by
   by_contra hq_ne_top
   have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
@@ -305,7 +305,7 @@ private lemma eq_top_of_sl2Submodule_iSup_eq_top (q : Submodule K (Dual K H))
     have hz : z ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero},
         (sl2SubmoduleOfRoot α.2.2).toSubmodule := by
       convert Submodule.mem_top using 1
-      rw [← LieSubmodule.iSup_toSubmodule, h₂]; rfl
+      rw [← LieSubmodule.iSup_toSubmodule, h]; rfl
     rw [Submodule.mem_iSup] at hz
     exact hz (LinearMap.ker (ad K L y)) fun α z hz => by simpa using h_comm α z hz
   have h_y_center : (y : L) ∈ LieAlgebra.center K L := fun z => by
