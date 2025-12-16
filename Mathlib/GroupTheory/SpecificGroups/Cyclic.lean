@@ -451,8 +451,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.ext (Subtype.mk.inj h))
-      _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _
-      )
+      _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _)
 
 -- Use φ for `Nat.totient`
 open Nat
