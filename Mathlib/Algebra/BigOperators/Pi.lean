@@ -11,7 +11,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
 
 /-!

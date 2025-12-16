@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Lemmas about `Nat.nthRoot`

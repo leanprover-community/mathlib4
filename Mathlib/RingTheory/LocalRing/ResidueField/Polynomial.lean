@@ -7,7 +7,6 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Residue field of primes in polynomial algebras

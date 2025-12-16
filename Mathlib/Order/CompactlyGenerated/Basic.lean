@@ -15,6 +15,7 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Data.Finite.Set
 public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Compactness properties for complete lattices

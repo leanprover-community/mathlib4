@@ -7,8 +7,10 @@ module
 
 public meta import Mathlib.Tactic.Basic
 public meta import Mathlib.Tactic.Attr.Register
-public meta import Mathlib.Data.Int.Cast.Basic
-public meta import Mathlib.Order.Basic
+public meta import Aesop
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `zify` tactic

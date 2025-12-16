@@ -5,9 +5,11 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 module
 
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Data.String.Defs
-public meta import Batteries.Tactic.Lint
+public import Lean.Server.Rpc.RequestHandling
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.OfRpcMethod
 
 /-! # Conv widget
 

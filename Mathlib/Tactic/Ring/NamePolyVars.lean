@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 module
 
-public meta import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (tactic dependency)
 
 /-!
 The command `name_poly_vars` names variables in

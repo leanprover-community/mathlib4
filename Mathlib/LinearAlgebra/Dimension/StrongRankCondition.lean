@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.

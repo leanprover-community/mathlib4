@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
+public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -226,6 +227,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Util.MemoFix),
 
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Util.ExtendedBinder),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),

@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Adjunctions as Kan extensions

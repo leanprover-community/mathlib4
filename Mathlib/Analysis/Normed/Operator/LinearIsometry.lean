@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` only)
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Group.Uniform

@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Data.Finsupp.SMul
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Monoid algebras

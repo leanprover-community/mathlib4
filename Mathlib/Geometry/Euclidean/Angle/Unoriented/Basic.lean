@@ -6,8 +6,8 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.Analysis.NormedSpace.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Angles between vectors

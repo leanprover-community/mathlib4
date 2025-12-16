@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.FourierSchwartz
-public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 
 /-!
 # TemperedDistribution

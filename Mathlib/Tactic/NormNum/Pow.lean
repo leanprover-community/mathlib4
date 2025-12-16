@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Data.Int.Cast.Lemmas
-public meta import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 ## `norm_num` plugin for `^`.
@@ -208,7 +208,6 @@ def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» �
     let qc := mkRat zc dc.natLit!
     return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]

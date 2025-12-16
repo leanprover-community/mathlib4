@@ -7,9 +7,10 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Mathlib.Tactic.Simps.NotationClass
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Simps attribute

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Mathlib.Algebra.Ring.Int.Parity
-public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`
@@ -46,6 +46,7 @@ def evalOdd : NormNumExt where eval {u αP} e := do
   | 0, ~q(Prop), ~q(@Odd ℕ $inst $a) =>
     assertInstancesCommute
     let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 1) q(Odd $a) q((@Nat.odd_iff $a).symm)
+    dbg_trace 1
     return .ofBoolResult r
   | 0, ~q(Prop), ~q(@Odd ℤ $inst $a) =>
     assertInstancesCommute

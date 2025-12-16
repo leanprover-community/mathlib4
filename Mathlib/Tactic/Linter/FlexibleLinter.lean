@@ -6,7 +6,8 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Term
 
 /-!
 # The "flexible" linter

@@ -10,7 +10,9 @@ public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
 public meta import Lean.Elab.DeclarationRange
-public meta import Mathlib.Tactic.Attr.Register
+public meta import Lean.Meta.Tactic.Simp.Attr
+public import Lean.Meta.Tactic.Simp.SimpTheorems
+public import Mathlib.Init
 
 /-!
 # HigherOrder attribute

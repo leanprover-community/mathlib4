@@ -5,7 +5,9 @@ Authors: Lucas Allen, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Tactic.Conv
+public meta import Lean.Elab.Tactic.Conv.Basic
+public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
+public import Mathlib.Init
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -18,7 +20,7 @@ rewriting inside the operand of a `Finset.sum`.
 
 public meta section
 
-open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
+open Lean Expr Parser.Tactic Elab Elab.Tactic Meta Conv
 
 /--
 Apply a congruence lemma inside `conv` mode.

@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Semirings and rings
