@@ -376,6 +376,11 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
+theorem pow_two_sub_one {x : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) {n : ℕ}
+    (hn : n ≠ 0) (hneven : Even n) : padicValNat 2 (x ^ n - 1) + 1 = padicValNat 2 (x + 1) +
+    padicValNat 2 (x - 1) + padicValNat 2 n := by
+  simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
+
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
