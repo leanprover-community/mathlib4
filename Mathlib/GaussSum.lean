@@ -15,7 +15,7 @@ noncomputable section
 
 section GaussSums
 
-open Ideal NumberField Units
+open Ideal NumberField Units Pointwise
 
 attribute [local instance] Ideal.Quotient.field
 
@@ -270,6 +270,14 @@ theorem GaussSum_ne_zero [CharZero L] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p
   refine gaussSum_ne_zero_of_nontrivial (by simp) ?_ (isPrimitive_addCharTrace P hζ)
   exact Omega_pow_neg_ne_one p f P L ha
 
+theorem GaussSum_dvd_absNorm [P.LiesOver 𝒑] {a : ℤ} (ha : ¬ ↑(p ^ f - 1) ∣ a) :
+    GaussSum p f P L hζ a ∣ Ideal.absNorm P := by
+  refine ⟨gaussSum (Omega p f P L ^ a) (addCharTrace P hζ)⁻¹, ?_⟩
+  convert (gaussSum_mul_gaussSum_eq_card (Omega_pow_neg_ne_one p f P L ha)
+    (isPrimitive_addCharTrace P hζ)).symm
+  · rw [absNorm_apply, Submodule.cardQuot_apply, Fintype.card_eq_nat_card]
+  · simp
+
 theorem GaussSum_p_mul [P.LiesOver 𝒑] (a : ℤ) :
     GaussSum p f P L hζ (p * a) = GaussSum p f P L hζ a := by
   unfold GaussSum gaussSum
@@ -413,6 +421,15 @@ open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 abbrev Val [NeZero 𝓟] : Valuation (𝓞 L) (WithZero (Multiplicative ℤ)) :=
   intValuation ⟨𝓟, IsMaximal.isPrime inferInstance, NeZero.ne _⟩
 
+theorem Val_GaussSum_eq_one_of_not_liesOver [NeZero 𝓟] [P.LiesOver 𝒑] (h : ¬ 𝓟.LiesOver 𝒑) {a : ℤ}
+    (ha : ¬ ↑(p ^ f - 1) ∣ a) :
+    Val L 𝓟 (GaussSum p f P L hζ a) = 1 := by
+  rw [Val, intValuation_eq_one_iff]
+  contrapose! h
+  apply Int.liesOver_of_prime_pow_mem _ hp.out (a := 𝒑.inertiaDeg P)
+  convert Ideal.mem_of_dvd 𝓟 (GaussSum_dvd_absNorm p f P L hζ ha) h using 1
+  rw [Ideal.absNorm_eq_pow_inertiaDeg' P hp.out, Nat.cast_pow]
+
 abbrev Val₀ [NeZero P] : Valuation (𝓞 K) (WithZero (Multiplicative ℤ)) :=
   intValuation ⟨P, IsMaximal.isPrime inferInstance, NeZero.ne _⟩
 
@@ -461,6 +478,9 @@ theorem GSV_nonneg [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
 
 theorem GSV_pos [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1 : ℕ) ∣ a) :
     0 < GSV f P 𝓟 hζ a := intValuation_pos _ <| GaussSum_ne_zero p f P L hζ a ha
+
+theorem GSV_ne_zero [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1 : ℕ) ∣ a) :
+    GSV f P 𝓟 hζ a ≠ 0 := (GSV_pos p f P L 𝓟 hζ a ha).ne'
 
 variable {p L} in
 abbrev GSV₀ [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : Multiplicative ℤ :=
@@ -521,12 +541,35 @@ theorem n𝓢_ne_zero (σ : Gal(L/ℚ)) :
   simp
 
 omit [NeZero f] in
+theorem n𝓢_coprime (σ : Gal(L/ℚ)) : (n𝓢 p f L σ).Coprime (p * (p ^ f - 1)) :=
+  (ZMod.unitsEquivCoprime (𝓢 p f L σ)).prop
+
+omit [NeZero f] in
+theorem not_pow_sub_one_dvd_n𝓢 (σ : Gal(L/ℚ)) (h : p ^ f ≠ 2) :
+    ¬ p ^ f - 1 ∣ n𝓢 p f L σ := by
+  have : (n𝓢 p f L σ).Coprime (p ^ f - 1) :=
+    Nat.Coprime.coprime_mul_left_right (n𝓢_coprime p f L σ)
+  intro h'
+  exact h <| Nat.pred_eq_succ_iff.mp <| Nat.Coprime.eq_one_of_dvd this.symm h'
+
+theorem GSV_n𝓢_ne_zero [𝓟.LiesOver P] [P.LiesOver 𝒑] (σ : Gal(L/ℚ)) (h : p ^ f ≠ 2) :
+    GSV f P 𝓟 hζ (n𝓢 p f L σ) ≠ 0 :=
+  GSV_ne_zero p f P L 𝓟 hζ _ <|
+    Int.natCast_dvd_natCast.not.mpr <| not_pow_sub_one_dvd_n𝓢 p f L σ h
+
+omit [NeZero f] in
 theorem aut_apply_eq_pow_n𝓢 (σ : Gal(L/ℚ)) {x : L} (hx : x ^ (p * (p ^ f - 1)) = 1) :
     σ x = x ^ n𝓢 p f L σ := by
   have hμ := IsCyclotomicExtension.zeta_spec (p * (p ^ f - 1)) ℚ L
   obtain ⟨a, -, rfl⟩ := hμ.eq_pow_of_pow_eq_one hx
   rw [n𝓢, 𝓢, map_pow, pow_right_comm, IsCyclotomicExtension.autEquivPow_apply, OneHom.toFun_eq_coe,
     MonoidHom.toOneHom_coe, IsPrimitiveRoot.autToPow_spec]
+
+omit [NeZero f] in
+theorem aut_smul_eq_pow_n𝓢 (σ : Gal(L/ℚ)) {x : 𝓞 L} (hx : x ^ (p * (p ^ f - 1)) = 1) :
+    σ • x = x ^ n𝓢 p f L σ := by
+  apply FaithfulSMul.algebraMap_injective (𝓞 L) L
+  exact aut_apply_eq_pow_n𝓢 p f L σ (x := algebraMap (𝓞 L) L x) <| by rw [← map_pow, hx, map_one]
 
 omit [NeZero f] in
 theorem aut_apply_eq_pow_n𝓢' (σ : Gal(L/ℚ)) {x : K} (hx : x ^ (p * (p ^ f - 1)) = 1) :
@@ -536,40 +579,87 @@ theorem aut_apply_eq_pow_n𝓢' (σ : Gal(L/ℚ)) {x : K} (hx : x ^ (p * (p ^ f 
   rw [AlgEquiv.restrictNormal_commutes, aut_apply_eq_pow_n𝓢 p f, map_pow]
   rw [← map_pow, hx, map_one]
 
-theorem map_GaussSum [P.LiesOver 𝒑] (σ : Gal(L/ℚ)) (hσ : n𝓢 p f L σ % p = 1) :
-    σ (GaussSum p f P L hζ 1) = GaussSum p f P L hζ (n𝓢 p f L σ) := by
-  rw [RingOfIntegers.coe_eq_algebraMap, ← algebraMap_galRestrict_apply ℤ]
-  simp_rw [RingOfIntegers.coe_eq_algebraMap, GaussSum, gaussSum, map_sum,
-    map_mul]
-  refine Finset.sum_congr rfl fun x _ ↦ ?_
-  congr 1
-  · unfold Omega
-    rw [zpow_neg_one, MulChar.ringHomComp_inv, MulChar.ringHomComp_zpow, MulChar.ringHomComp_apply,
-      MulChar.ringHomComp_apply, algebraMap_galRestrict_apply, ← IsScalarTower.algebraMap_apply,
-      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply (𝓞 K) K L,
-      IsScalarTower.algebraMap_apply (𝓞 K) K L]
-    have := IsCyclotomicExtension.isGalois {p ^ f - 1} ℚ K
-    rw [← AlgEquiv.restrictNormal_commutes, ← algebraMap_galRestrict_apply ℤ, MulChar.inv_apply]
-    erw [map_teichmuller_eq_pow (σ := (galRestrict ℤ ℚ K (𝓞 K) (σ.restrictNormal K)).toRingHom)]
-    · rw [← MulChar.inv_apply, zpow_neg, zpow_natCast, ← inv_pow, MulChar.pow_apply']
-      exact n𝓢_ne_zero p f L σ
-    · exact n𝓢_ne_zero p f L σ
-    · exact (IsCyclotomicExtension.zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
-    · dsimp
-      rw [RingOfIntegers.ext_iff]
-      rw [RingOfIntegers.coe_eq_algebraMap]
-      rw [algebraMap_galRestrict_apply]
-      apply aut_apply_eq_pow_n𝓢'
-      rw [← map_pow, FaithfulSMul.algebraMap_eq_one_iff, ← orderOf_dvd_iff_pow_eq_one]
-      rw [← (IsCyclotomicExtension.zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot.eq_orderOf]
-      exact Nat.dvd_mul_left (p ^ f - 1) p
-  · erw [map_addCharTrace_eq_pow P hζ (σ := ↑(galRestrict ℤ ℚ L (𝓞 L) σ)), pow_one]
-    rw [RingHom.coe_coe, pow_one, RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap,
-      algebraMap_galRestrict_apply, aut_apply_eq_pow_n𝓢 p f, ← map_pow, ← pow_mod_orderOf,
-      ← hζ.eq_orderOf, hσ, pow_one]
-    rw [← map_pow, FaithfulSMul.algebraMap_eq_one_iff, ← orderOf_dvd_iff_pow_eq_one,
-      ← hζ.eq_orderOf]
+omit [NeZero f] in
+theorem aut_smul_eq_pow_n𝓢' (σ : Gal(L/ℚ)) {x : 𝓞 K} (hx : x ^ (p * (p ^ f - 1)) = 1) :
+    haveI := IsCyclotomicExtension.isGalois {p ^ f - 1} ℚ K
+    σ.restrictNormal K • x = x ^ n𝓢 p f L σ := by
+  apply FaithfulSMul.algebraMap_injective (𝓞 K) K
+  exact aut_apply_eq_pow_n𝓢' p f L σ (x := algebraMap (𝓞 K) K x) <| by rw [← map_pow, hx, map_one]
+
+omit [NeZero f] in
+include hζ in
+theorem n𝓢_mod_eq_one_iff (σ : Gal(L/ℚ)) :
+    n𝓢 p f L σ % p = 1 ↔ σ • ζ = ζ := by
+  nth_rewrite 2 [← pow_one ζ]
+  rw [aut_smul_eq_pow_n𝓢 p f, ← pow_mod_orderOf, IsOfFinOrder.pow_inj_mod, Nat.mod_mod,
+    ← hζ.eq_orderOf, Nat.one_mod_eq_one.mpr hp.out.ne_one]
+  · exact hζ.isOfFinOrder
+  · rw [← orderOf_dvd_iff_pow_eq_one, ← hζ.eq_orderOf]
     exact Nat.dvd_mul_right p (p ^ f - 1)
+
+example (σ : Gal(L/ℚ)) :
+    σ • 𝓟 = 𝓟 ↔ n𝓢 p f L σ % (p ^ f - 1) = 1 := by
+
+  sorry
+
+theorem map_GaussSum [P.LiesOver 𝒑] (σ : Gal(L/ℚ)) (hσ : σ • ζ = ζ) :
+    σ • (GaussSum p f P L hζ 1) = GaussSum p f P L hζ (n𝓢 p f L σ) := by
+  simp_rw [GaussSum, gaussSum, Finset.smul_sum, smul_mul']
+  refine Finset.sum_congr rfl fun x _ ↦ ?_
+  congr
+  · apply FaithfulSMul.algebraMap_injective (𝓞 L) L
+    rw [zpow_neg_one, MulChar.ringHomComp_inv, MulChar.ringHomComp_zpow, MulChar.ringHomComp_apply,
+      MulChar.ringHomComp_apply]
+    have := IsCyclotomicExtension.isGalois {p ^ f - 1} ℚ K
+    have hμ := (IsCyclotomicExtension.zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
+    rw [MulChar.inv_apply]
+    have {x : 𝓞 L} : algebraMap (𝓞 L) L (σ • x) = σ (algebraMap (𝓞 L) L x) := rfl
+    rw [this, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply (𝓞 K) K L,
+      ← AlgEquiv.restrictNormal_commutes]
+    have {x : 𝓞 K} : algebraMap (𝓞 K) K ((σ.restrictNormal K) • x) =
+      (σ.restrictNormal K) (algebraMap (𝓞 K) K x) := rfl
+    rw [← this, ← MulSemiringAction.toRingHom_apply, map_teichmuller_eq_pow _ _ hμ]
+    · rw [← MulChar.inv_apply, zpow_neg, zpow_natCast, ← inv_pow, MulChar.pow_apply',
+        ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+      exact n𝓢_ne_zero p f L σ
+    · apply aut_smul_eq_pow_n𝓢'
+      rw [← orderOf_dvd_iff_pow_eq_one, ← hμ.eq_orderOf]
+      exact Nat.dvd_mul_left (p ^ f - 1) p
+    · exact n𝓢_ne_zero p f L σ
+  · rw [← MulSemiringAction.toRingEquiv_apply, map_addCharTrace_eq_pow P hζ, pow_one]
+    rw [MulSemiringAction.toRingEquiv_apply, pow_one, hσ]
+
+open UniqueFactorizationMonoid in
+theorem Val_smul_GaussSum [𝓟.LiesOver P] [P.LiesOver 𝒑] [NeZero 𝓟] (σ : Gal(L/ℚ))
+    (hσ : σ • ζ = ζ) (h : p ^ f ≠ 2) :
+    haveI : NeZero (σ • 𝓟) := ⟨(smul_ne_zero_iff_ne _).mpr <| NeZero.ne 𝓟⟩
+    Val L (σ • 𝓟) (GaussSum p f P L hζ 1) = GSV f P 𝓟 hζ (n𝓢 p f L σ⁻¹) := by
+  classical
+  have : NeZero (σ • 𝓟) := ⟨(smul_ne_zero_iff_ne _).mpr <| NeZero.ne 𝓟⟩
+  rw [GSV, intValuation_apply, intValuation_apply, intValuationDef_if_neg, intValuationDef_if_neg,
+    WithZero.exp_inj, neg_inj, Nat.cast_inj, count_associates_factors_eq,
+    count_associates_factors_eq]
+  · convert Multiset.count_map_eq_count' (MulDistribMulAction.toMulEquiv (Ideal (𝓞 L)) σ)
+      (normalizedFactors (span {GaussSum p f P L hζ (n𝓢 p f L σ⁻¹)})) (MulAction.injective σ) 𝓟
+    rw [map_normalizedFactors (fun _ ↦ by simp), MulDistribMulAction.toMulEquiv_apply,
+      Ideal.smul_span, ← map_GaussSum p f P L hζ σ⁻¹ (by rwa [inv_smul_eq_iff, eq_comm])]
+    simp
+  · rw [ne_eq, zero_eq_bot, Ideal.span_singleton_eq_bot]
+    refine GaussSum_ne_zero p f P L hζ _ ?_
+    rw [Int.natCast_dvd_natCast]
+    exact not_pow_sub_one_dvd_n𝓢 p f L _ h
+  · infer_instance
+  · exact NeZero.ne _
+  · rw [ne_eq, zero_eq_bot, Ideal.span_singleton_eq_bot]
+    refine GaussSum_ne_zero p f P L hζ _ ?_
+    rwa [Int.natCast_dvd_ofNat, Nat.dvd_one, Nat.pred_eq_succ_iff]
+  · infer_instance
+  · exact NeZero.ne _
+  · refine GaussSum_ne_zero p f P L hζ _ ?_
+    rw [Int.natCast_dvd_natCast]
+    exact not_pow_sub_one_dvd_n𝓢 p f L _ h
+  · refine GaussSum_ne_zero p f P L hζ _ ?_
+    rwa [Int.natCast_dvd_ofNat, Nat.dvd_one, Nat.pred_eq_succ_iff]
 
 omit [NeZero (p ^ f - 1)] in
 include hL in
@@ -923,5 +1013,69 @@ theorem log_GSV_eq [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : �
         -((p - 1 : ℚ) * ∑ i ∈ Finset.range f, Int.fract ((p ^ i * a : ℚ) / (p ^ f - 1))) := by
   rw [GSV_eq p f P L 𝓟 hζ h _ ha, WithZero.log_exp, Int.cast_neg_natCast,
     Nat.sum_digits_eq_mul_sum hp.out.one_lt (NeZero.ne f) ha]
+
+abbrev GSVN [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : ℕ := (GSV₀ f P 𝓟 hζ a).toAdd.natAbs
+
+omit hL in
+theorem GSV_eq_exp_neg_GSVN [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : GSV f P 𝓟 hζ a =
+    WithZero.exp (- GSVN p f P L 𝓟 hζ a : ℤ) := by
+  unfold GSVN
+  rw [← Int.natAbs_neg, ← Int.eq_natAbs_of_nonneg, GSV_eq_GSV₀, WithZero.exp, Int.neg_neg,
+    ofAdd_toAdd]
+  rw [Int.zero_le_neg_iff, ← toAdd_one, Multiplicative.toAdd_le, ← WithZero.coe_le_one,
+    ← GSV_eq_GSV₀]
+  exact GSV_le_one p f P L 𝓟 hζ a
+
+open UniqueFactorizationMonoid in
+example [𝓟.LiesOver P] [P.LiesOver 𝒑] :
+    ∏ σ : Gal(L/ℚ), (σ • 𝓟) ^ GSVN p f P L 𝓟 hζ (n𝓢 p f L σ⁻¹) =
+      Ideal.span {GaussSum p f P L hζ 1} := by
+  classical
+  have : 𝓟.LiesOver 𝒑 := LiesOver.trans 𝓟 P 𝒑
+  have hp' : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
+  have hP : 𝓟 ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp' _
+  have : NeZero 𝓟 := ⟨hP⟩
+  have h₀ : GaussSum p f P L hζ 1 ≠ 0 := sorry
+  have h₁ : span {GaussSum p f P L hζ 1} ≠ 0 := sorry
+  rw [IsDedekindDomain.ideal_eq_ideal_iff_count_eq_count]
+  · intro v
+    have : NeZero v.asIdeal := ⟨v.ne_bot⟩
+    simp_rw [Finset.prod_eq_multiset_prod, normalizedFactors_multiset_prod _ sorry,
+      Multiset.map_map, Function.comp_apply, normalizedFactors_pow, Finset.sum_map_val]
+    simp_rw [Multiset.count_sum', Multiset.count_nsmul]
+    have h₂ {σ : Gal(L/ℚ)}: Irreducible (σ • 𝓟) :=
+      irreducible_iff_prime.mpr <| prime_of_isPrime ((smul_ne_zero_iff_ne _).mpr hP) inferInstance
+    have h₃ : (∃ σ : Gal(L/ℚ), v.asIdeal = σ • 𝓟) ↔ v.asIdeal.LiesOver 𝒑 := sorry
+    conv_lhs =>
+      enter [2, σ]
+      rw [normalizedFactors_irreducible h₂, normalize_eq, Multiset.count_singleton]
+    by_cases hv : v.asIdeal.LiesOver 𝒑
+    · obtain ⟨σ, hσ⟩  := h₃.mpr hv
+      simp_rw [hσ]
+      rw [← Finset.univ.sum_erase_add _ (Finset.mem_univ σ), if_pos rfl, mul_one]
+      have := Val_smul_GaussSum p f P L 𝓟 hζ σ ?_ ?_
+      rw [intValuation_if_neg _ h₀] at this
+      rw [GSV_eq_exp_neg_GSVN, WithZero.exp_inj, neg_inj] at this
+      rw [count_associates_factors_eq] at this
+      rw [Nat.cast_inj] at this
+      rw [this]
+
+
+      sorry
+    · simp_rw [if_neg ((not_exists.mp <| h₃.not.mpr hv) _ ), mul_zero]
+      rw [Finset.sum_const_zero]
+      have := Val_GaussSum_eq_one_of_not_liesOver p f P L v.asIdeal hζ hv (a := 1) sorry
+      rw [intValuation_if_neg _ h₀] at this
+      rw [WithZero.exp_eq_one] at this
+      rw [count_associates_factors_eq, neg_eq_zero, Int.natCast_eq_zero] at this
+      · rw [this]
+      · exact h₁
+      · exact v.isPrime
+      · exact v.ne_bot
+  · refine Finset.prod_ne_zero_iff.mpr fun σ _ ↦ ?_
+    apply pow_ne_zero
+    rw [smul_ne_zero_iff_ne]
+    exact hP
+  · exact h₁
 
 end GaussSums

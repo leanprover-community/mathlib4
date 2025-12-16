@@ -170,7 +170,8 @@ theorem addCharTrace_mk_sq [P.LiesOver 𝒑] {𝓟 : Ideal R} (h : ζ - 1 ∈ �
       rw [Ideal.Quotient.eq_zero_iff_mem, add_assoc, pow_add]
       exact Ideal.mul_mem_left _ _ <| Submodule.pow_mem_pow 𝓟 h 2
 
-theorem map_addCharTrace_eq_pow [P.LiesOver 𝒑] {σ : R →+* R} {n : ℕ} (hσ : σ ζ = ζ ^ n)
+theorem map_addCharTrace_eq_pow [P.LiesOver 𝒑] {F : Type*} [FunLike F R R] [MonoidHomClass F R R]
+    {σ : F} {n : ℕ} (hσ : σ ζ = ζ ^ n)
     (x : A ⧸ P) :
     σ (addCharTrace P hζ x) = (addCharTrace P hζ x) ^ n  := by
   obtain ⟨a, -, ha⟩ := exists_nat_addCharTrace_eq_pow P hζ x

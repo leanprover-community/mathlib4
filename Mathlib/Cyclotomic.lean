@@ -4,8 +4,97 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 public import Mathlib.Misc
+public import Mathlib.NumberTheory.Cyclotomic.Gal
 
 @[expose] public section
+
+noncomputable section
+
+variable (n : ℕ) [NeZero n] (K : Type*) [Field K] [NumberField K]
+  [hK : IsCyclotomicExtension {n} ℚ K]
+
+-- abbrev galChar := MulChar Gal(K/ℚ) ℂ
+
+-- def galPairing : Gal(K/ℚ) → galChar K → ℂ := fun σ χ ↦ χ σ
+
+-- def galPairing_left_perp (L : IntermediateField ℚ K) : Subgroup (galChar K) := by
+
+--   let G := L.fixingSubgroup
+
+
+
+
+namespace IsCyclotomicExtension.Rat
+
+open NumberField Ideal Pointwise RingOfIntegers
+
+include hK in
+def galEquiv : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
+  IsCyclotomicExtension.autEquivPow K <|
+      Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
+
+theorem galEquiv_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
+    σ x = x ^ (galEquiv n K σ).val.val := by
+  have hζ := IsCyclotomicExtension.zeta_spec n ℚ K
+  obtain ⟨a, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
+  rw [map_pow, pow_right_comm, galEquiv, IsCyclotomicExtension.autEquivPow_apply,
+    OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, IsPrimitiveRoot.autToPow_spec]
+
+theorem galEquiv_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) :
+    σ • x = x ^ (galEquiv n K σ).val.val := by
+  apply FaithfulSMul.algebraMap_injective (𝓞 K) K
+  apply galEquiv_apply_of_pow_eq n K σ <| by rw [← Subalgebra.coe_pow, hx, OneMemClass.coe_one]
+
+example (p : ℕ) [hp : Fact (Nat.Prime p)] (hp' : p.Coprime n) (P : Ideal (𝓞 K)) [P.IsPrime]
+    [P.LiesOver (span {(p : ℤ)})] (σ : Gal(K/ℚ)) :
+    σ • P = P ↔ galEquiv n K σ ∈ Subgroup.zpowers (ZMod.unitOfCoprime p hp') := by
+  let ζ := (zeta_spec n ℚ K).toInteger
+  have h₁ : ¬ p ∣ exponent ζ := by
+    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec n ℚ K)]
+    exact hp.out.not_dvd_one
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
+  
+  have h₃ := primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span h₁ h₂
+  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
+
+  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
+    (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
+  rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
+  · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
+  · refine dvd_trans h₂.2.2 ?_
+    rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
+      ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
+    rfl
+  sorry
+
+variable {m : ℕ} [NeZero m] (F : Type*) [Field F] [NumberField F]
+  [hF : IsCyclotomicExtension {m} ℚ F] [Algebra F K]
+
+theorem galEquiv_restrictNormal_apply [IsGalois ℚ F] (h : m ∣ n) (σ : Gal(K/ℚ)) :
+    galEquiv m F (σ.restrictNormal F) = ZMod.unitsMap h (galEquiv n K σ) := by
+  let ζ := IsCyclotomicExtension.zeta m ℚ F
+  have hζ := IsCyclotomicExtension.zeta_spec m ℚ F
+  have : ζ ^ (galEquiv m F (σ.restrictNormal F)).val.val = ζ ^ (galEquiv n K σ).val.val := by
+    apply FaithfulSMul.algebraMap_injective F K
+    rw [map_pow, map_pow, ← galEquiv_apply_of_pow_eq, ← AlgEquiv.restrictNormal_commutes,
+      galEquiv_apply_of_pow_eq m, map_pow]
+    · exact hζ.pow_eq_one
+    · rw [← map_pow, orderOf_dvd_iff_pow_eq_one.mp, map_one]
+      rwa [← hζ.eq_orderOf]
+  rw [hζ.isOfFinOrder.pow_inj_mod, ← hζ.eq_orderOf, ← ZMod.natCast_eq_natCast_iff'] at this
+  simp only [ZMod.natCast_val, ZMod.cast_id', id_eq] at this
+  rwa [Units.ext_iff]
+
+theorem galEquiv_restrictNormal [IsGalois ℚ F] (h : m ∣ n) :
+    (galEquiv m F).toMonoidHom.comp (AlgEquiv.restrictNormalHom F) =
+      (ZMod.unitsMap h).comp (galEquiv n K).toMonoidHom :=
+  MonoidHom.ext fun σ ↦ galEquiv_restrictNormal_apply n K F h σ
+
+
+
+end IsCyclotomicExtension.Rat
+
+#exit
 
 theorem IsCyclotomicExtension_single_iff_single_two_mul_of_odd (n : ℕ) (hn : Odd n)
     (A B : Type*) [CommRing A] [CommRing B] [Nontrivial B] [NoZeroDivisors B] [Algebra A B]

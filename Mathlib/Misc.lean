@@ -17,6 +17,104 @@ public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 section IsPrimitiveRoot
 
+theorem IsPrimitiveRoot.isOfFinOrder {M : Type*} [CommMonoid M] {ζ : M} {k : ℕ} [NeZero k]
+    (hζ : IsPrimitiveRoot ζ k) : IsOfFinOrder ζ :=
+  ⟨k, NeZero.pos k, (isPeriodicPt_mul_iff_pow_eq_one _).mpr hζ.pow_eq_one⟩
+
+end IsPrimitiveRoot
+
+section Ideal
+
+open Pointwise Ideal in
+theorem Ideal.smul_span {R M : Type*} [Semiring R] [Monoid M] [MulSemiringAction M R] (m : M)
+    (s : Set R) : m • Ideal.span s = Ideal.span (m • s) := by
+  simp [pointwise_smul_def, map_span]
+
+theorem Ideal.map_comap_of_bijective {R S : Type*} {F : Type*} [Semiring R] [Semiring S]
+    [FunLike F R S] (f : F) [RingHomClass F R S] (hf : Function.Bijective f) {I : Ideal S} :
+    map f (comap f I) = I :=
+  le_antisymm map_comap_le <| (comap_le_iff_le_map f hf).mp fun _ ↦ id
+
+def Ideal.mapEquiv {R S : Type*} {F : Type*} [CommSemiring R] [CommSemiring S] [EquivLike F R S]
+    [RingEquivClass F R S] (f : F) : Ideal R ≃+* Ideal S where
+  __ := Ideal.mapHom f
+  invFun := Ideal.mapHom (RingEquivClass.toRingEquiv f).symm
+  left_inv _ := by
+    simpa using Ideal.comap_map_of_bijective _ <| RingEquiv.bijective _
+  right_inv _ := by
+    simpa using Ideal.map_comap_of_bijective _ <| RingEquiv.bijective _
+
+@[simp]
+theorem Ideal.mapEquiv_apply {R S : Type*} {F : Type*} [CommSemiring R] [CommSemiring S]
+    [EquivLike F R S] [RingEquivClass F R S] (f : F) (I : Ideal R) :
+    Ideal.mapEquiv f I = Ideal.mapHom f I := rfl
+
+end Ideal
+
+section Int
+
+open Ideal
+
+theorem Int.liesOver_of_prime_pow_mem {R : Type*} [CommRing R] [IsDomain R] [Algebra.IsIntegral ℤ R]
+    (I : Ideal R) [I.IsPrime] [NeZero I] {p a : ℕ} (hp : p.Prime) (hI : (p : R) ^ a ∈ I) :
+    I.LiesOver (span {(p : ℤ)}) := by
+  suffices p = absNorm (under ℤ I) by
+    rw [this]
+    exact Int.liesOver_span_absNorm I
+  have h : (absNorm (under ℤ I)).Prime := Nat.absNorm_under_prime I
+  rw [eq_comm, ← Nat.prime_dvd_prime_iff_eq h hp, ]
+  apply h.dvd_of_dvd_pow
+  rwa [← Int.natCast_dvd_natCast, ← Int.cast_mem_ideal_iff, Nat.cast_pow, Int.cast_pow,
+    Int.cast_natCast]
+
+end Int
+
+section UniqueFactorizationMonoid
+
+namespace UniqueFactorizationMonoid
+
+open Classical in
+theorem associated_iff_count_normalizedFactors_eq_count_normalizedFactors
+    {α : Type*} [CancelCommMonoidWithZero α] [NormalizationMonoid α] [UniqueFactorizationMonoid α]
+    {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Associated x y ↔
+      ∀ p, Prime p →
+        Multiset.count p (normalizedFactors x) = Multiset.count p (normalizedFactors y) := by
+  rw [associated_iff_normalizedFactors_eq_normalizedFactors hx hy, Multiset.ext]
+  refine forall_congr' fun p ↦ ?_
+  by_cases hp : Prime p
+  · simp [hp]
+  · simp only [hp, IsEmpty.forall_iff, iff_true]
+    rw [Multiset.count_eq_zero.mpr, Multiset.count_eq_zero.mpr]
+    <;> exact (prime_of_normalized_factor _).mt hp
+
+theorem map_normalizedFactors {α : Type*} [CancelCommMonoidWithZero α] [NormalizationMonoid α]
+    [UniqueFactorizationMonoid α] {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
+    [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
+    (he : ∀ (x : α), normalize (f x) = f (normalize x)) (a : α) :
+    Multiset.map f (normalizedFactors a) = normalizedFactors (f a) := by
+  classical
+  by_cases ha : a = 0
+  · simp [ha]
+  refine Multiset.ext'_iff.mpr fun p ↦ ?_
+  have h : p ∈ normalizedFactors (f a) ↔ p ∈ Multiset.map f (normalizedFactors a) := by
+    rw [Multiset.mem_map]
+    refine ⟨fun hp ↦ ⟨(normalizedFactorsEquiv he a).symm ⟨p, hp⟩, Subtype.prop _, by simp⟩, ?_⟩
+    rintro ⟨q, hq, rfl⟩
+    exact ((normalizedFactorsEquiv he a) ⟨q, hq⟩).prop
+  by_cases hp : p ∈ normalizedFactors (f a)
+  · rw [← ENat.coe_inj, ← normalize_normalized_factor p hp,
+      ← emultiplicity_eq_count_normalizedFactors (irreducible_of_normalized_factor p hp)
+      (by rwa [AddEquivClass.map_ne_zero_iff]), (EquivLike.inv_apply_eq (b := p) (e := f)).mp rfl,
+      emultiplicity_map_eq, emultiplicity_eq_count_normalizedFactors _ ha, he,
+      Multiset.count_map_eq_count' _ _ (EmbeddingLike.injective' f)]
+    exact (irreducible_of_normalized_factor p hp).map (MulEquivClass.toMulEquiv f).symm
+  · rw [Multiset.count_eq_zero.mpr hp, Multiset.count_eq_zero.mpr (h.not.mp hp)]
+
+end UniqueFactorizationMonoid
+
+section IsPrimitiveRoot
+
 theorem IsPrimitiveRoot.autToPow_eq_iff (R : Type*) {S : Type*} [CommRing S] [IsDomain S] {μ : S}
     {n : ℕ} (hμ : IsPrimitiveRoot μ n) [CommRing R] [Algebra R S] [NeZero n] (f : S ≃ₐ[R] S)
     (m : ZMod n) :
@@ -263,6 +361,20 @@ end Associates
 section IsDedekindDomain.HeightOneSpectrum
 
 namespace IsDedekindDomain.HeightOneSpectrum
+
+/--
+The image of an element of `HeightOneSpectrum R` by a ring equivalence `R ≃+* S` as an
+element of `HeightOneSpectrum S`.
+-/
+@[simps]
+def mapEquiv {R S : Type*} [CommRing R] [CommRing S]
+    {F : Type*} [EquivLike F R S] [RingEquivClass F R S] (e : F)
+    (v : IsDedekindDomain.HeightOneSpectrum R) :
+    IsDedekindDomain.HeightOneSpectrum S where
+  asIdeal := v.asIdeal.map e
+  isPrime := Ideal.map_isPrime_of_equiv e
+  ne_bot := (Ideal.map_eq_bot_iff_of_injective (EmbeddingLike.injective' e)).not.mpr v.ne_bot
+
 open Associates UniqueFactorizationMonoid Classical in
 theorem aux {R S : Type*} [CommRing R] [CommRing S] [IsDedekindDomain R] [IsDedekindDomain S]
     [Algebra R S] [NoZeroSMulDivisors R S] [Algebra.IsIntegral R S] (v : HeightOneSpectrum R)
@@ -372,11 +484,29 @@ theorem intValuation_pow_le_iff_not_mem {R : Type*} [CommRing R] [IsDedekindDoma
     WithZero.exp (-↑n) ≤ v.intValuation r ↔ ¬ r ∈ v.asIdeal ^ (n + 1) := by
    rw [intValuation_pow_le_iff_not_dvd _ hr, Ideal.dvd_span_singleton]
 
+theorem intValuation_eq_iff {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (v : HeightOneSpectrum R) {r : R} (hr : r ≠ 0) (n : ℕ) :
+    v.intValuation r = WithZero.exp (-↑n) ↔ r ∈ v.asIdeal ^ n ∧ ¬ r ∈ v.asIdeal ^ (n + 1) := by
+  rw [le_antisymm_iff, intValuation_le_pow_iff_mem, intValuation_pow_le_iff_not_mem _ hr]
+
 theorem intValuation_pos {R : Type*} [CommRing R] [IsDedekindDomain R]
     (v : HeightOneSpectrum R) {r : R} (hr : r ≠ 0) :
     0 < v.intValuation r := by
   rw [intValuation_def, if_neg hr]
   exact WithZero.exp_pos
+
+open Classical Associates UniqueFactorizationMonoid in
+theorem IsDedekindDomain.ideal_eq_ideal_iff_count_eq_count {R : Type*} [CommRing R]
+    [IsDedekindDomain R] {I J : Ideal R} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I = J ↔ ∀ v : IsDedekindDomain.HeightOneSpectrum R,
+      Multiset.count v.asIdeal (normalizedFactors I) =
+        Multiset.count v.asIdeal (normalizedFactors J) := by
+  rw [← associated_iff_eq, associated_iff_count_normalizedFactors_eq_count_normalizedFactors hI hJ]
+  refine ⟨?_, ?_⟩
+  · intro h v
+    refine h v.asIdeal v.prime
+  · intro h p hp
+    exact h (IsDedekindDomain.HeightOneSpectrum.ofPrime hp)
 
 end IsDedekindDomain.HeightOneSpectrum
 
