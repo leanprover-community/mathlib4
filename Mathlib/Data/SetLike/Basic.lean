@@ -190,6 +190,18 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
+@[nontriviality]
+lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by
+  obtain ⟨s, hs⟩ := nonempty_subtype.mp h
+  simpa [Subsingleton.elim b s]
+
+/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
+coerces to the universal set, then there exists an element not in `s`. -/
+lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
+    ∃ b : B, b ∉ s := by
+  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
+
 end SetLike
 
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving. -/
@@ -197,7 +209,7 @@ class IsConcreteLE (A B : Type*) [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
   protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
 
-namespace IsConcreteLE
+namespace SetLike
 
 variable {A B : Type*} [SetLike A B]
 
@@ -208,12 +220,10 @@ variable (A B) in
 variable (A B) in
 @[reducible] def toPartialOrder : PartialOrder A where
   __ := toLE A B
-  __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
+  __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
-attribute [local instance] toLE toPartialOrder
-
-instance : IsConcreteLE A B where
-  coe_subset_coe' := Iff.rfl
+instance : letI := toLE A B; IsConcreteLE A B :=
+  letI := toLE A B; { coe_subset_coe' := Iff.rfl }
 
 section LE
 
@@ -257,8 +267,8 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
-theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
-  Set.exists_of_ssubset
+theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
+  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -285,19 +295,6 @@ attribute [local instance] instSubtypeSet instSubtype
 
 end
 
-@[nontriviality]
-lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : Nonempty S] {a : A} :
-    a ∈ S := by
-  obtain ⟨s, hs⟩ := nonempty_subtype.mp h
-  simpa [Subsingleton.elim a s]
-
-/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
-coerces to the universal set, then there exists an element not in `s`. -/
-lemma exists_not_mem_of_ne_top [PartialOrder A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
-    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
-    ∃ b : B, b ∉ s := by
-  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
-
 end PartialOrder
 
-end IsConcreteLE
+end SetLike
