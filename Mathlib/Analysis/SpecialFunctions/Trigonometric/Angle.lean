@@ -823,7 +823,7 @@ theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : (2 : �
   have h1:= Real.Angle.two_zsmul_eq_iff.mp h
   rcases h1 with h2 | h3
   · rw [h2] at h_sign
-    simp at h_sign
+    simp only [SignType.self_eq_neg_iff] at h_sign
     rw [h_sign] at h_ne
     contradiction
   · rw [h3]
