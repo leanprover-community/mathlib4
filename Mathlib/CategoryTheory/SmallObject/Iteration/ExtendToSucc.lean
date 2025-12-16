@@ -114,7 +114,7 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
       rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc,comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc
