@@ -189,6 +189,13 @@ variable [Preorder β] {f g : α → β} {x : α} {s t : Set α} {y z : β}
 
 section Definitions
 
+/- In https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Semicontinuity.20definition.20for.20non-linear.20orders/with/436241797
+it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
+The following example shows that this redefinition can still take place even in light of the
+refactor in terms of `Semicontinuous`. -/
+example : Semicontinuous (¬ f · ≤ ·) ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp_rw [Semicontinuous, SemicontinuousAt, ← not_frequently, not_imp_not]
+
 /-- A real function `f` is lower semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
 `x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
 preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
