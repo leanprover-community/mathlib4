@@ -88,17 +88,13 @@ variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemper
 
 /-- Define a tempered distribution from a L^p function.
 
-This is a helper definition with unnecessary parameters. -/
-def toTemperedDistributionAux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fact (1 ≤ q))
-    (hpq : ENNReal.HolderConjugate p q) (f : Lp F p μ) :
-    𝓢'(E, F) :=
-  toPointwiseConvergenceCLM _ _ _ _ <| (lsmul ℂ ℂ).flip.lpPairing μ p q f ∘L toLpCLM ℂ ℂ q μ
-
 /-- Define a tempered distribution from a L^p function. -/
 def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
-  toTemperedDistributionAux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff])
-  (ENNReal.HolderConjugate.inv_one_sub_inv' hp.out) f
+  haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
+  haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
 
 @[simp]
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
