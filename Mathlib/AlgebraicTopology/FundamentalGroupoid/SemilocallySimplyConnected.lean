@@ -28,6 +28,8 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
   simply connected.
 -/
 
+public section
+
 noncomputable section
 
 open CategoryTheory FundamentalGroupoid
