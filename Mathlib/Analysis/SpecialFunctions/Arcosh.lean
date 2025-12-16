@@ -17,8 +17,9 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.arcosh`: An inverse function of `Real.cosh` as a function from [0, ∞) to [1, ∞).
 
-- `Real.coshPartialEquiv`, `Real.coshOpenPartialHomeomorph`: `Real.cosh` as a `PartialEquiv` and
-  an `OpenPartialHomeomorph`.
+- `Real.coshPartialEquiv` as a `PartialEquiv` from [0, ∞) to [1, ∞).
+
+- `Real.coshOpenPartialHomeomorph`: `Real.cosh` as an `OpenPartialHomeomorph` from (0, ∞) to (1, ∞).
 
 ## Main Results
 
@@ -116,7 +117,7 @@ theorem arcosh_le_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x ≤ ar
 theorem arcosh_lt_arcosh {x y : ℝ} (hx : 0 < x) (hy : 0 < y) : arcosh x < arcosh y ↔ x < y :=
   strictMonoOn_arcosh.lt_iff_lt hx hy
 
-/-- `Real.cosh` as a `PartialEquiv`. -/
+/-- `Real.cosh` as a `PartialEquiv` from [0, ∞) to [1, ∞). -/
 def coshPartialEquiv : PartialEquiv ℝ ℝ where
   toFun := cosh
   invFun := arcosh
@@ -132,7 +133,7 @@ theorem continuousOn_arcosh : ContinuousOn arcosh (Ici 1) :=
     add_pos_of_pos_of_nonneg (show 0 < x by grind) (sqrt_nonneg _)
   continuousOn_log.comp (Continuous.continuousOn (by continuity)) (by grind [MapsTo])
 
-/-- `Real.cosh` as an `OpenPartialHomemorph`. -/
+/-- `Real.cosh` as an `OpenPartialHomemorph` from (0, ∞) to (1, ∞). -/
 def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := cosh
   invFun := arcosh
