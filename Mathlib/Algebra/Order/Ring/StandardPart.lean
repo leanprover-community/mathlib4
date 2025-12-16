@@ -265,7 +265,7 @@ theorem stdPart_one : stdPart (1 : K) = 1 := by
 
 @[simp]
 theorem stdPart_neg (x : K) : stdPart (-x) = -stdPart x := by
-  simp_rw [stdPart, ArchimedeanClass.mk_neg,]
+  simp_rw [stdPart, ArchimedeanClass.mk_neg]
   split_ifs
   · rw [← FiniteElement.mk_neg, map_neg]
   · simp
