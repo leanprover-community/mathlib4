@@ -380,12 +380,10 @@ lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N 
 
 lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext N M i) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_contra! exist
-    rw [moduleDepth_eq_find N M exist] at h
-    simp at h
-  · simp [moduleDepth]
-    exact csSup_eq_top_of_top_mem (fun i _ ↦ h i)
+  refine ⟨fun h ↦ ?_, fun h ↦ csSup_eq_top_of_top_mem (fun i _ ↦ h i)⟩
+  by_contra! exist
+  rw [moduleDepth_eq_find N M exist] at h
+  simp at h
 
 lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
@@ -442,7 +440,7 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
     · have rees := ((exists_isRegular_tfae I n M smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
-  simp [Ideal.depth, moduleDepth_eq_sup_nat]
+  simp only [moduleDepth_eq_sup_nat, Ideal.depth]
   congr
   ext n
   simp only [and_congr_right_iff]
@@ -478,7 +476,7 @@ lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : 
 lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp [moduleDepth] at h
+  · simp only [moduleDepth] at h
     have : 1 ∉ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext N M i)} := by
       by_contra mem
       absurd le_sSup mem
