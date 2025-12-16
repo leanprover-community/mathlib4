@@ -196,8 +196,7 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     have : 0 < c i * f (v i) := mul_pos hi' (hp i)
     grind
   replace hy : ∑ i ∈ s with c i < 0, c i * f (v i) = 0 := by
-    rw [hx₀] at hc
-    rw [← hc] at hy
+    rw [← hc, hx₀] at hy
     simpa using (congr(f $hy)).symm
   replace hy (i : ι) (hi : i ∈ s) : 0 ≤ c i := by
     have aux (j : ι) (hj : j ∈ {i ∈ s | c i < 0}) : c j * f (v j) ≤ 0 := by
