@@ -51,8 +51,7 @@ lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : Measur
     ∫⁻ b in s, Kernel.condKernel κ (a, b) t ∂(Kernel.fst κ a) = κ a (s ×ˢ t) := by
   have : κ a (s ×ˢ t) = (Kernel.fst κ ⊗ₖ Kernel.condKernel κ) a (s ×ˢ t) := by
     congr; exact (κ.disintegrate _).symm
-  simp only [this]
-  exact (Kernel.compProd_apply_prod hs ht).symm
+  simpa [this] using (Kernel.compProd_apply_prod hs ht).symm
 
 lemma lintegral_condKernel (hf : Measurable f) (a : α) :
     ∫⁻ b, ∫⁻ ω, f (b, ω) ∂(Kernel.condKernel κ (a, b)) ∂(Kernel.fst κ a) = ∫⁻ x, f x ∂(κ a) := by
@@ -143,8 +142,7 @@ lemma setLIntegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s
     ∫⁻ b in s, ρ.condKernel b t ∂ρ.fst = ρ (s ×ˢ t) := by
   have : ρ (s ×ˢ t) = (ρ.fst ⊗ₘ ρ.condKernel) (s ×ˢ t) := by
     congr; exact (ρ.disintegrate _).symm
-  simp only [this]
-  exact (compProd_apply_prod hs ht).symm
+  simpa [this] using (compProd_apply_prod hs ht).symm
 
 lemma lintegral_condKernel (hf : Measurable f) :
     ∫⁻ b, ∫⁻ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫⁻ x, f x ∂ρ := by

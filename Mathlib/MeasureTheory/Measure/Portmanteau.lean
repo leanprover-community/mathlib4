@@ -645,9 +645,7 @@ theorem tendsto_of_forall_isClosed_limsup_le
 lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
-    Tendsto μs L (𝓝 μ) := by
-  simp only [ProbabilityMeasure.measureReal_eq_coe_coeFn, NNReal.toReal_limsup] at h
-  exact tendsto_of_forall_isClosed_limsup_le h
+    Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 end Closed
 
