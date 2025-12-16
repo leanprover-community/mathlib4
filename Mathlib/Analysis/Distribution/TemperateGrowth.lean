@@ -290,24 +290,27 @@ theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateG
     exact le_add_of_nonneg_left (by positivity)
 
 variable (H) in
+/-- The Bessel potential `x ↦ (1 + ‖x‖ ^ 2) ^ r` has temperate growth. -/
 @[fun_prop]
 theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
     (fun (x : H) ↦ (1 + ‖x‖ ^ 2) ^ r).HasTemperateGrowth := by
+  /- We prove this using that the composition of temperate functions is temperate.
+  Since `x ^ r` is not smooth at the origin, we have to use `HasTemperateGrowth.comp'`, with any
+  open set `t` that is contains the complement of the unit ball and does not contain the origin. -/
   set t := {y : ℝ | 1 / 2 < y}
   have ht : Set.range (fun (x : H) ↦ (1 + ‖x‖ ^ 2)) ⊆ t := by
-    intro x ⟨y, hy⟩
-    rw [← hy]
-    simp only [Set.mem_setOf_eq, gt_iff_lt, t]
+    rintro - ⟨y, rfl⟩
+    simp only [Set.mem_setOf_eq, t]
     exact lt_add_of_lt_add_left (c := 0) (by norm_num) (by positivity)
-  have hdiff : ContDiffOn ℝ ∞ (fun x ↦ x ^ r) t := by
-    rw [contDiffOn_infty]
-    intro n
-    exact contDiffOn_fun_id.rpow_const_of_ne fun x hx ↦ (lt_trans (by norm_num) hx).ne'
+  have hdiff : ContDiffOn ℝ ∞ (fun x ↦ x ^ r) t :=
+    contDiffOn_fun_id.rpow_const_of_ne fun x hx ↦ (lt_trans (by norm_num) hx).ne'
   have hunique : UniqueDiffOn ℝ t := (isOpen_lt' (1 / 2)).uniqueDiffOn
   apply HasTemperateGrowth.comp' ht hunique hdiff _ (by fun_prop)
+  -- The remaining part of the proof is proving that `x ↦ x ^ r` has temperate growth on `t`.
+  -- This could be generalized to `t := {y : ℝ | ε < y}` for any `0 < ε < 1` if necessary.
   intro N
   obtain ⟨k, hk⟩ := exists_nat_ge (max r <| (N - r) * Real.log 2 / (Real.log (3 / 2)))
-  have hk₁ : r ≤ k := le_trans le_sup_left hk
+  have hk₁ : r ≤ k := le_sup_left.trans hk
   have hk₂ : Real.log 2 * (N - r) ≤ (Real.log (3 / 2)) * k := by
     have := le_sup_right.trans hk
     field_simp at this
