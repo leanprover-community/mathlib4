@@ -727,12 +727,12 @@ lemma toContinuousLinearMap_linearIsometryEquiv_apply (u : unitary (H →L[𝕜]
   toContinuousLinearMap_linearIsometryEquiv_apply
 
 @[simp]
-lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
+lemma coe_linearIsometryEquiv_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = e.toContinuousLinearMap :=
   rfl
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
-  coe_symm_linearIsometryEquiv_apply
+  coe_linearIsometryEquiv_symm_apply
 
 end Unitary
 
