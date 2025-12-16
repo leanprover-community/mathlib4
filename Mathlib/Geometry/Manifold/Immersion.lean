@@ -49,6 +49,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
+* `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
 
@@ -656,6 +657,18 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
+open IsManifold in
+/-- The identity map is an immersion with complement `PUnit`. -/
+lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
+    (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
+    (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
@@ -707,6 +720,11 @@ theorem prodMap {f : M → N} {g : M' → N'}
     (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
+
+open IsManifold in
+/-- The identity map is an immersion. -/
+lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
+  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :

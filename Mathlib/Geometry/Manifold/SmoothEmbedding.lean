@@ -19,6 +19,7 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding I J n f` means `f : M → N` is a `C^n` embedding:
   it is both a `C^n` immersion and a topological embedding
 * `IsSmoothEmbedding.prodMap`: the product of two smooth embeddings is a smooth embedding
+* `IsSmoothEmbedding.id`: the identity map is a smooth embedding
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
 
@@ -77,6 +78,8 @@ variable {f g : M → N}
 
 -- combine isImmersion with `hf.isImmersion.contMDiff` (once proven)
 proof_wanted contMDiff (hf : IsSmoothEmbedding I J n f) : ContMDiff I J n f
+
+lemma id [IsManifold I n M] : IsSmoothEmbedding I I n (@id M) := ⟨.id, .id⟩
 
 /-- If `f: M → N` and `g: M' × N'` are smooth embeddings, respectively,
 then so is `f × g: M × M' → N × N'`. -/
