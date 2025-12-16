@@ -211,6 +211,7 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
+set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
@@ -971,7 +972,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
-  induction q <;> · first |apply Finset.mem_singleton_self|apply Finset.mem_insert_self
+  induction q <;> · first | apply Finset.mem_singleton_self|apply Finset.mem_insert_self
 
 /-- The (finite!) set of machine states visited during the course of evaluation of `c`,
 including the state `ret k` but not any states after that (that is, the states visited while
