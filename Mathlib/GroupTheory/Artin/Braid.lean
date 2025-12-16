@@ -157,8 +157,6 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     push_neg at hadj
     apply Equiv.swap_mul_swap_comm_of_disjoint <;>
       simp only [ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
-    · omega
-    · omega
     · intro h; exact hij (Fin.ext h.symm)
     · omega
     · omega

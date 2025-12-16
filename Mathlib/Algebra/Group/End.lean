@@ -584,7 +584,6 @@ theorem swap_mul_swap_mul_swap_braid {a b c : α} (hab : a ≠ b) (hbc : b ≠ c
 /-- Disjoint transpositions commute: if `{a, b}` and `{c, d}` are disjoint,
 then `swap a b` and `swap c d` commute. -/
 theorem swap_mul_swap_comm_of_disjoint {a b c d : α}
-    (hab : a ≠ b) (hcd : c ≠ d)
     (hac : a ≠ c) (had : a ≠ d) (hbc : b ≠ c) (hbd : b ≠ d) :
     swap a b * swap c d = swap c d * swap a b := by
   ext
