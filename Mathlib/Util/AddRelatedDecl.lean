@@ -44,8 +44,8 @@ Arguments:
   We apply it to both declarations, to have the same behavior as `to_additive`, and to shorten some
   attribute commands. Note that `@[elementwise (attr := simp), reassoc (attr := simp)]` will try
   to apply `simp` twice to the current declaration, but that causes no issues.
-* `docstringPrefix` will be prepended to the doc-string of `src` to form the doc-stringg of `tgt`.
-  If it is `none`, only the doc-string of `src` will be used.
+* `docstringPrefix` is prepended to the doc-string of `src` to form the doc-string of `tgt`.
+  If it is `none`, only the doc-string of `src` is used.
 -/
 def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
     (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
