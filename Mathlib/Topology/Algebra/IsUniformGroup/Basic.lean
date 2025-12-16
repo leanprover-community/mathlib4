@@ -188,11 +188,11 @@ variable {G}
 
 open Set in
 open scoped RightActions in
-/-- A locally compact topological group is complete for its right uniformity. -/
+/-- A (weakly) locally compact topological group is complete for its right uniformity. -/
 @[to_additive
-/-- A locally compact topological additive group is complete for its right uniformity. -/]
-theorem IsTopologicalGroup.completeSpace_of_locallyCompactSpace [LocallyCompactSpace G] :
-    CompleteSpace G where
+/-- A (weakly) locally compact topological additive group is complete for its right uniformity. -/]
+theorem IsTopologicalGroup.completeSpace_of_weaklyLocallyCompactSpace
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
     rcases hf with ⟨hfn, hfG⟩
     obtain ⟨K, hK, hKf⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ f := by
