@@ -209,21 +209,25 @@ class IsConcreteLE (A B : Type*) [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
   protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
 
+section default
+
+variable (A B : Type*) [SetLike A B]
+
+@[reducible] def LE.ofSetLike : LE A where
+  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+@[reducible] def PartialOrder.ofSetLike : PartialOrder A where
+  __ := LE.ofSetLike A B
+  __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
+
+instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
+  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
+
+end default
+
 namespace SetLike
 
 variable {A B : Type*} [SetLike A B]
-
-variable (A B) in
-@[reducible] def toLE : LE A where
-  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
-
-variable (A B) in
-@[reducible] def toPartialOrder : PartialOrder A where
-  __ := toLE A B
-  __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
-
-instance : letI := toLE A B; IsConcreteLE A B :=
-  letI := toLE A B; { coe_subset_coe' := Iff.rfl }
 
 section LE
 

@@ -101,6 +101,9 @@ instance : SetLike (Subsemigroup M) M :=
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
+@[to_additive]
+instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M) M
+
 /-- The actual `Subsemigroup` obtained from an element of a `MulMemClass`. -/
 @[to_additive (attr := simps) /-- The actual `AddSubsemigroup` obtained from an element of a
 `AddMemClass` -/]
