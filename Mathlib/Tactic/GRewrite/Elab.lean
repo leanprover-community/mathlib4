@@ -100,6 +100,9 @@ example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
   grw [← h₂, ← h₁]
 ```
 
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `grw` may get special support for making better use of strict inequalities.
+
 To rewrite only in the `n`-th position, use `nth_grw n`.
 This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
 
