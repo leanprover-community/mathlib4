@@ -40,20 +40,20 @@ variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 
 /-- A function `f` has subpolynomial growth with respect to `g` along filter `l`
 if `f = O(1 + ‖g‖^k)` for some natural `k`. -/
-def IsSubpolynomial (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+public def IsSubpolynomial (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∃ k : ℕ, IsBigO l f (fun x => 1 + ‖g x‖ ^ k)
 
 /-! ### Basic instances -/
 
 /-- A constant function has subpolynomial growth. -/
-theorem IsSubpolynomial.const (l : Filter α) (c : E) (g : α → F) :
+public theorem IsSubpolynomial.const (l : Filter α) (c : E) (g : α → F) :
     IsSubpolynomial l (fun _ => c) g := by
   use 0
   simp only [pow_zero]
   exact isBigO_const_const c (by norm_num : (1 : ℝ) + 1 ≠ 0) l
 
 /-- The function `g` has subpolynomial growth with respect to itself. -/
-theorem IsSubpolynomial.id (l : Filter α) (g : α → F) :
+public theorem IsSubpolynomial.id (l : Filter α) (g : α → F) :
     IsSubpolynomial l (fun x => ‖g x‖) g := by
   use 1
   simp only [pow_one]
@@ -78,7 +78,7 @@ private lemma one_add_pow_le_two_mul {x : ℝ} (hx : 0 ≤ x) {k m : ℕ} (hkm :
     linarith [pow_nonneg hx m]
 
 /-- Subpolynomial growth is preserved under addition. -/
-theorem IsSubpolynomial.add {l : Filter α} {f₁ f₂ : α → E} {g : α → F}
+public theorem IsSubpolynomial.add {l : Filter α} {f₁ f₂ : α → E} {g : α → F}
     (hf₁ : IsSubpolynomial l f₁ g) (hf₂ : IsSubpolynomial l f₂ g) :
     IsSubpolynomial l (f₁ + f₂) g := by
   obtain ⟨k₁, hk₁⟩ := hf₁
@@ -105,7 +105,7 @@ theorem IsSubpolynomial.add {l : Filter α} {f₁ f₂ : α → E} {g : α → F
   exact (hk₁.trans h1).add (hk₂.trans h2)
 
 /-- Subpolynomial growth is preserved under negation. -/
-theorem IsSubpolynomial.neg {l : Filter α} {f : α → E} {g : α → F}
+public theorem IsSubpolynomial.neg {l : Filter α} {f : α → E} {g : α → F}
     (hf : IsSubpolynomial l f g) :
     IsSubpolynomial l (-f) g := by
   obtain ⟨k, hk⟩ := hf
@@ -113,7 +113,7 @@ theorem IsSubpolynomial.neg {l : Filter α} {f : α → E} {g : α → F}
   exact hk.neg_left
 
 /-- Subpolynomial growth is preserved under subtraction. -/
-theorem IsSubpolynomial.sub {l : Filter α} {f₁ f₂ : α → E} {g : α → F}
+public theorem IsSubpolynomial.sub {l : Filter α} {f₁ f₂ : α → E} {g : α → F}
     (hf₁ : IsSubpolynomial l f₁ g) (hf₂ : IsSubpolynomial l f₂ g) :
     IsSubpolynomial l (f₁ - f₂) g := by
   simpa only [sub_eq_add_neg] using hf₁.add hf₂.neg
@@ -149,7 +149,7 @@ private lemma one_add_pow_mul_le {x : ℝ} (hx : 0 ≤ x) (k₁ k₂ : ℕ) :
       _ ≤ 4 * (1 + x ^ (k₁ + k₂)) := by linarith [pow_nonneg hx (k₁ + k₂)]
 
 /-- Subpolynomial growth is preserved under multiplication. -/
-theorem IsSubpolynomial.mul {l : Filter α} {f₁ f₂ : α → R} {g : α → F}
+public theorem IsSubpolynomial.mul {l : Filter α} {f₁ f₂ : α → R} {g : α → F}
     (hf₁ : IsSubpolynomial l f₁ g) (hf₂ : IsSubpolynomial l f₂ g) :
     IsSubpolynomial l (f₁ * f₂) g := by
   obtain ⟨k₁, hk₁⟩ := hf₁
@@ -171,7 +171,7 @@ theorem IsSubpolynomial.mul {l : Filter α} {f₁ f₂ : α → R} {g : α → F
   exact hmul.trans hbound
 
 /-- Subpolynomial growth is preserved under natural powers. -/
-theorem IsSubpolynomial.pow {l : Filter α} {f : α → R} {g : α → F}
+public theorem IsSubpolynomial.pow {l : Filter α} {f : α → R} {g : α → F}
     (hf : IsSubpolynomial l f g) (n : ℕ) :
     IsSubpolynomial l (f ^ n) g := by
   induction n with
@@ -217,7 +217,7 @@ private lemma add_one_pow_le_two_pow_mul {x : ℝ} (hx : 0 ≤ x) (k : ℕ) :
           linarith [pow_nonneg hx k]
 
 /-- Equivalent characterization: using `(1 + ‖g‖)^k` instead of `1 + ‖g‖^k`. -/
-theorem isSubpolynomial_iff_one_add {l : Filter α} {f : α → E} {g : α → F} :
+public theorem isSubpolynomial_iff_one_add {l : Filter α} {f : α → E} {g : α → F} :
     IsSubpolynomial l f g ↔ ∃ k : ℕ, IsBigO l f (fun x => (1 + ‖g x‖) ^ k) := by
   constructor
   · intro ⟨k, hk⟩
@@ -246,7 +246,7 @@ theorem isSubpolynomial_iff_one_add {l : Filter α} {f : α → E} {g : α → F
 /-! ### Uniformity -/
 
 /-- For a finite set of subpolynomial functions, the constants can be chosen uniformly. -/
-theorem IsSubpolynomial.uniform {ι : Type*} {s : Finset ι} {l : Filter α}
+public theorem IsSubpolynomial.uniform {ι : Type*} {s : Finset ι} {l : Filter α}
     {f : ι → α → E} {g : α → F}
     (hf : ∀ i ∈ s, IsSubpolynomial l (f i) g) :
     ∃ k : ℕ, ∃ C : ℝ, ∀ i ∈ s, IsBigOWith C l (f i) (fun x => 1 + ‖g x‖ ^ k) := by
