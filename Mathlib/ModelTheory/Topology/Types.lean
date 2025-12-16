@@ -77,7 +77,7 @@ instance {n : ℕ} : CompactSpace (T.CompleteType (Fin n)) := by
     refine ⟨?_, ?_⟩
     · rw[Theory.IsFinitelySatisfiable]
       intro x hx
-      have : ∀ φ ∈ x, typesWith φ ∈ F.toFilter := by intro φ hφ ; exact hx hφ
+      have : ∀ φ ∈ x, typesWith φ ∈ F.toFilter := by intro φ hφ; exact hx hφ
       rw[←Filter.biInter_finset_mem x] at this
       obtain ⟨T, T_inter⟩ := F.neBot.nonempty_of_mem this
       have subset : SetLike.coe x ⊆ T.toTheory := by rwa[Set.mem_iInter₂] at T_inter
