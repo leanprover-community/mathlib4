@@ -175,11 +175,9 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg, ← hc]
     simp [← s.sum_filter_add_sum_filter_not (p := fun i ↦ 0 ≤ c i) (f := fun i ↦ c i • v i)]
   have hx₀ : x = 0 := by
-    rw [← hB.le_zero_iff, B.toQuadraticMap_apply]
-    nth_rw 1 [hx]
-    rw [hc, hy]
-    simp only [map_sum, map_smul, neg_smul, Finset.sum_neg_distrib, map_neg, LinearMap.coe_sum,
-      Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul, Finset.mul_sum, Left.neg_nonpos_iff]
+    suffices B x y ≤ 0 by simpa [hc, ← hB.le_zero_iff, B.toQuadraticMap_apply]
+    suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 ≤ c i, c x * (c i * (B (v i)) (v x)) by
+      simpa [hx, hy, map_neg, Finset.mul_sum]
     refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
     rcases eq_or_ne i j with rfl | hij
     · rw [← mul_assoc]
