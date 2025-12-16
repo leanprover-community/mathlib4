@@ -353,13 +353,13 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
           compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
         simp only [conj_eqToHom_iff_heq']
         rw [G.map_id]
-        simp )
+        simp)
 
 end
 
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
-def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
+def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v, u}) ⥤ Over (T := Cat.{v, u}) E where
   obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
   map {_ _} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
@@ -454,10 +454,10 @@ lemma pre_comp_map (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
     pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
 
 variable {F} in
-lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
-    (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K= map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
+lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category* E]
+    (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K = map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
 
-variable {E : Type*} [Category E] in
+variable {E : Type*} [Category* E] in
 @[simp]
 lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H ⋙ pre F G := rfl
 
@@ -518,7 +518,7 @@ end Pre
 
 section FunctorFrom
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck

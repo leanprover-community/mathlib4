@@ -91,7 +91,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     have : ⟨x, mem⟩ ∈ (⊥ : IntermediateField L (adjoin L {x})) := by
       rw [← this, IntermediateField.mem_fixedField_iff]
       intro f _
-      rcases restrictNormalHom_surjective K f with ⟨σ,hσ⟩
+      rcases restrictNormalHom_surjective K f with ⟨σ, hσ⟩
       apply Subtype.val_injective
       rw [← hσ, restrictNormalHom_apply (adjoin L {x}).1 σ ⟨x, mem⟩]
       have := hx ((IntermediateField.fixingSubgroupEquiv L).symm σ)
@@ -251,7 +251,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     isGalois := IsGalois.normalClosure k M K }
   have : L ≤ L'.1 := by
     apply le_trans _ (IntermediateField.le_normalClosure M)
-    rw [←  fixedField_fixingSubgroup M, IntermediateField.le_iff_le]
+    rw [← fixedField_fixingSubgroup M, IntermediateField.le_iff_le]
     exact sub
   let _ : Algebra L L'.1 := RingHom.toAlgebra (IntermediateField.inclusion this)
   exact FiniteDimensional.left k L L'.1

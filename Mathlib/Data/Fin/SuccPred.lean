@@ -112,7 +112,7 @@ theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fi
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
     ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castLE h]
+  rw [← val_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
@@ -261,7 +261,7 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castSucc]
+  rw [← val_castSucc]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
@@ -284,7 +284,7 @@ section Pred
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
-  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
+  simp_rw [Fin.ext_iff, val_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := Fin.ext_iff.not.2 last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
@@ -911,10 +911,9 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   by saying that both functions are strictly monotone and have the same range `{i, i.succAbove j}ᶜ`,
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
-  simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
-    simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
-      coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
-  split_ifs <;> omega
+  simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, val_pred, coe_castPred,
+    dite_eq_ite, apply_ite Fin.val, val_succ]
+  split_ifs <;> lia
 
 end PredAbove
 

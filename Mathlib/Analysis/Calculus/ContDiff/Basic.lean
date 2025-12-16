@@ -559,6 +559,22 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
 
+theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
+    (hg : ContDiffWithinAt 𝕜 n g s x) (hs : UniqueDiffOn 𝕜 s) (ha : x ∈ s) {i : ℕ} (hi : i ≤ n) :
+    iteratedFDerivWithin 𝕜 i (fun x ↦ (f x, g x)) s x =
+      (iteratedFDerivWithin 𝕜 i f s x).prod (iteratedFDerivWithin 𝕜 i g s x) := by
+  ext <;>
+  · rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
+    simp [Function.comp_def]
+
+theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
+    (hg : ContDiffAt 𝕜 n g x) {i : ℕ} (hi : i ≤ n) :
+    iteratedFDeriv 𝕜 i (fun x ↦ (f x, g x)) x =
+      (iteratedFDeriv 𝕜 i f x).prod (iteratedFDeriv 𝕜 i g x) := by
+  simp only [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_prodMk hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ
+    (Set.mem_univ _) hi
+
 end prod
 
 /-! ### Being `C^k` on a union of open sets can be tested on each set -/
