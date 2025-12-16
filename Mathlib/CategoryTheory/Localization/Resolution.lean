@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Resolutions for a morphism of localizers
@@ -33,13 +35,15 @@ Similar definitions are done for left resolutions.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D₂ H : Type*} [Category C₁] [Category C₂] [Category D₂] [Category H]
+variable {C₁ C₂ D₂ H : Type*} [Category* C₁] [Category* C₂] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # Ends and coends
@@ -13,12 +15,14 @@ which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all
 For this shape of limits, cones are named wedges: the corresponding type is `Wedge F`.
 
 We also introduce `coend F` as multicoequalizers of
-`(F.obj (op j)).obj j` for all `j : J`. In this cases, cocones are named cowedges.
+`(F.obj (op j)).obj j` for all `j : J`. In these cases, cocones are named cowedges.
 
 ## References
 * https://ncatlab.org/nlab/show/end
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

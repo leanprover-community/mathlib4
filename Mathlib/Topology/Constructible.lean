@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanSubalgebra
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.Topology.Spectral.Prespectral
+module
+
+public import Mathlib.Order.BooleanSubalgebra
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.QuasiSeparated
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Constructible sets
@@ -34,6 +36,8 @@ morphism of schemes is a constructible set (and this is *not* true at the level 
   partitionable along an open cover such that each of its parts is constructible in the
   respective open subspace.
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace Topology
 open scoped Set.Notation

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Shrink
-import Mathlib.Algebra.Module.Submodule.Bilinear
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Algebra.Module.Submodule.Bilinear
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Tactic.Abel
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -35,6 +37,8 @@ bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is sh
 
 bilinear, tensor, tensor product
 -/
+
+@[expose] public section
 
 section Semiring
 
@@ -299,10 +303,10 @@ instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
-  AddMonoidHom.map_zero _
+  map_zero _
 
 protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y :=
-  AddMonoidHom.map_add _ _ _
+  map_add _ _ _
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
   have : ∀ (r : R'') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
@@ -559,7 +563,7 @@ theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
-    TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
+    TensorProduct.induction_on z (by simp_rw [map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=

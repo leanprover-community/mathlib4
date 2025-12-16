@@ -3,7 +3,9 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy via nets
@@ -48,6 +50,8 @@ net, entropy
 ## TODO
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
+
+@[expose] public section
 
 open Set Uniformity UniformSpace
 open scoped SetRel

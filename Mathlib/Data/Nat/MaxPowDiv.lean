@@ -3,9 +3,11 @@ Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
-import Mathlib.Algebra.Divisibility.Units
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Divisibility.Units
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Tactic.Common
 
 /-!
 # The maximal power of one natural number dividing another
@@ -18,6 +20,8 @@ We prove enough about `maxPowDiv` in this file to show equality with `Nat.padicV
 
 The implementation of `maxPowDiv` improves on the speed of `padicValNat`.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -102,7 +106,7 @@ theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : p ^ pow ∣ n
     apply Nat.pos_of_ne_zero
     intro h'
     rw [h',mul_zero] at hc
-    omega
+    lia
   simp [hc, base_pow_mul hp this]
 
 end maxPowDiv

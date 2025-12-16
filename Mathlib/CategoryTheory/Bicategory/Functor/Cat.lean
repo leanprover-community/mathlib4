@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctors to Cat
@@ -12,6 +14,8 @@ In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -54,7 +58,7 @@ lemma mapComp'_hom_naturality :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
   (F.mapComp' f g fg hfg).hom.naturality a
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma mapComp'_inv_naturality :
     (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
     (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=

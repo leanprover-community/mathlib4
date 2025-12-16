@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits of eventually constant functors
@@ -20,11 +22,13 @@ the dual results for filtered categories and colimits are also obtained.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {J C : Type*} [Category J] [Category C] (F : J ⥤ C)
+variable {J C : Type*} [Category* J] [Category* C] (F : J ⥤ C)
 
 namespace Functor
 

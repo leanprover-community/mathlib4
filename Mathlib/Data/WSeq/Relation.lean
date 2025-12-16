@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Basic
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.WSeq.Basic
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences
@@ -19,6 +21,8 @@ ignoring computation time (`none` elements). Equivalence is then defined in the 
   elements are `R`-related.
 * `Stream'.WSeq.Equiv`: Two sequences are equivalent if they are `LiftRel (· = ·)`-related.
 -/
+
+@[expose] public section
 
 universe u v w
 

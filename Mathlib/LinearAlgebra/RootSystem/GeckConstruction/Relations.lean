@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
-import Mathlib.Algebra.Lie.Sl2
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
+public import Mathlib.Algebra.Lie.Sl2
 
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
@@ -23,6 +25,8 @@ satisfying relations associated to the Cartan matrix of the input root system.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace RootPairing.GeckConstruction
@@ -32,7 +36,7 @@ open Set hiding diagonal
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [IsDomain R] [CharZero R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootSystem ι R M N} [P.IsCrystallographic] {b : P.Base} [Fintype ι]
+  {P : RootPairing ι R M N} [P.IsCrystallographic] {b : P.Base} [Fintype ι]
   (i j : b.support)
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply

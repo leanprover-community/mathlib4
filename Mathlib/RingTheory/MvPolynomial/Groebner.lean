@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-! # Division algorithm with respect to monomial orders
 
@@ -17,7 +19,7 @@ Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOr
 a monomial ordering on `σ →₀ ℕ`.
 
 Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible leading coefficients
-(with respect to `m`) : we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`).
+(with respect to `m`): we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`.
 
 * `MonomialOrder.div hb f` furnishes
   - a finitely supported family `g : ι →₀ MvPolynomial σ R`
@@ -43,6 +45,8 @@ The proof is done by induction, using two standard constructions
 ## Reference : [Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 namespace MonomialOrder
 

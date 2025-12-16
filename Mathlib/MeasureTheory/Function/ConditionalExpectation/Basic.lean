@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
 /-! # Conditional expectation
 
@@ -68,6 +70,8 @@ conditional expectation, conditional expected value
 
 -/
 
+@[expose] public section
+
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
 
@@ -102,7 +106,7 @@ scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
 
 /-- Unexpander for `μ[f|m]` notation. -/
 @[app_unexpander MeasureTheory.condExp]
-def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $m $μ $f) => `($μ[$f|$m])
   | _ => throw ()
 
@@ -269,7 +273,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
-  rw [measureReal_univ_eq_one, inv_one, one_smul]
+  rw [probReal_univ, inv_one, one_smul]
 
 theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : MeasurableSpace α) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
@@ -335,43 +339,35 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
-/-- Conditional expectation commutes with continuous linear functionals. -/
-theorem condExp_comm_continuousLinearMap (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)]
-    {F : Type*} [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
-    (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
-    T ∘ μ[f | m] =ᵐ[μ] μ[T ∘ f | m] := by
-  apply ae_eq_condExp_of_forall_setIntegral_eq
-  · exact ContinuousLinearMap.integrable_comp T hf_int
-  · intro s ms hs
-    apply Integrable.integrableOn
-    exact ContinuousLinearMap.integrable_comp T integrable_condExp
-  · intro s ms hs
-    apply Eq.trans
-    · exact ContinuousLinearMap.integral_comp_comm T (Integrable.restrict integrable_condExp)
-    · apply Eq.trans
-      · apply congrArg T; apply setIntegral_condExp hm hf_int ms
-      · exact (ContinuousLinearMap.integral_comp_comm T (Integrable.restrict hf_int)).symm
-  · apply Continuous.comp_aestronglyMeasurable T.cont
-    apply AEStronglyMeasurable.congr
-    · exact aestronglyMeasurable_condExpL1 (f := f)
-    · exact (condExp_ae_eq_condExpL1 hm f).symm
+/-- Conditional expectation commutes with continuous linear maps. -/
+theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+    T ∘ μ[f|m] =ᵐ[μ] μ[T ∘ f|m] := by
+  by_cases hm : m ≤ m₀
+  · by_cases hμ : SigmaFinite (μ.trim hm)
+    · refine ae_eq_condExp_of_forall_setIntegral_eq hm ?_ (fun s ms hs => ?_) (fun s ms hs => ?_) ?_
+      · exact T.integrable_comp hf_int
+      · exact (T.integrable_comp integrable_condExp).integrableOn
+      · calc
+          ∫ x in s, (T ∘ μ[f|m]) x ∂μ = T (∫ x in s, μ[f|m] x ∂μ) :=
+            T.integral_comp_comm integrable_condExp.restrict
+          _ = T (∫ x in s, f x ∂μ) := congrArg T (setIntegral_condExp hm hf_int ms)
+          _ = ∫ x in s, (T ∘ f) x ∂μ := (T.integral_comp_comm hf_int.restrict).symm
+      · exact T.cont.comp_aestronglyMeasurable stronglyMeasurable_condExp.aestronglyMeasurable
+    · simp [condExp_of_not_sigmaFinite hm hμ]
+  · simp [condExp_of_not_le hm]
+
+/-- Conditional expectation commutes with affine functions. Note that `IsFiniteMeasure μ` is a
+necessary assumption because we want constant functions to be integrable. -/
+theorem _root_.ContinuousLinearMap.comp_condExp_add_const_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] [IsFiniteMeasure μ] (hm : m ≤ m₀) (hf_int : Integrable f μ)
+    (T : E →L[ℝ] F) (a : F) : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[fun y ↦ T (f y) + a|m] := by
+  have hp : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[T ∘ f|m] + μ[(fun y ↦ a)|m] := by
+    filter_upwards [T.comp_condExp_comm hf_int] with b hb
+    simpa [condExp_const hm a]
+  exact hp.trans (condExp_add (T.integrable_comp hf_int) (integrable_const a) m).symm
 
 section RCLike
-
-/-- Conditional expectation commutes with affine functions. -/
-theorem condExp_comm_affine [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsFiniteMeasure μ] (hm : m ≤ m₀)
-    (hf_int : Integrable f μ) (T : E →L[𝕜] 𝕜) (a : ℝ) :
-    (fun x ↦ RCLike.re (T (μ[f | m] x)) + a) =ᵐ[μ] μ[fun y ↦ RCLike.re (T (f y)) + a | m] := by
-  let g := @RCLike.reCLM 𝕜 (by infer_instance)
-  let h := ContinuousLinearMap.restrictScalars ℝ T
-  have reTf_int : Integrable ((RCLike.re ∘ T) ∘ f) μ :=
-    ContinuousLinearMap.integrable_comp (ContinuousLinearMap.comp g h) hf_int
-  have hp : (fun x ↦ RCLike.re (T (μ[f | m] x)) + a)
-    =ᵐ[μ] (μ[(RCLike.re ∘ T) ∘ f | m] + μ[(fun y ↦ a) | m]) := by
-      filter_upwards [condExp_comm_continuousLinearMap hm hf_int
-        (ContinuousLinearMap.comp g h)] with b hb
-      simpa [condExp_const hm a] using hb
-  exact hp.trans (condExp_add reTf_int (integrable_const a) m).symm
 
 variable [InnerProductSpace 𝕜 E]
 

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Data.ULift
-import Mathlib.Order.CompleteLattice.Defs
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Data.ULift
+public import Mathlib.Order.CompleteLattice.Defs
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Theory of complete lattices
@@ -32,6 +34,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -129,7 +133,7 @@ theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ 
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
 theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _)).symm
+  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _))
 
 @[simp]
 theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
@@ -1375,7 +1379,5 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α
   sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
   sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
   le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
   bot_le _ := map_bot.le.trans bot_le

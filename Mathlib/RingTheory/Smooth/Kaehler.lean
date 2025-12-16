@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Cotangent.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
 # Relation of smoothness and `Ω[S⁄R]`
@@ -31,6 +33,8 @@ import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 
 -/
+
+@[expose] public section
 
 universe u
 

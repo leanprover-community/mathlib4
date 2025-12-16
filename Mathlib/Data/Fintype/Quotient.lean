@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yuyang Zhao
 -/
-import Mathlib.Data.List.Pi
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.List.Pi
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # Quotients of families indexed by a finite type
@@ -25,6 +27,10 @@ by a finite type.
 
 -/
 
+@[expose] public section
+
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 namespace Quotient
 

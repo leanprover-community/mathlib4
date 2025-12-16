@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.SpreadingOut
-import Mathlib.AlgebraicGeometry.FunctionField
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
+module
+
+public import Mathlib.AlgebraicGeometry.SpreadingOut
+public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 /-!
 
 # Rational maps between schemes
@@ -25,6 +27,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Separated
   If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
   map on `f.domain`, the domain of definition of `f`.
 -/
+
+@[expose] public section
 
 universe u
 

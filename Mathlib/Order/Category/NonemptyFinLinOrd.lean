@@ -3,13 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.Category.FinPartOrd
-import Mathlib.Order.Category.LinOrd
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Category.FinPartOrd
+public import Mathlib.Order.Category.LinOrd
 
 /-!
 # Nonempty finite linear orders
@@ -20,6 +22,8 @@ orders with monotone maps. This is the index category for simplicial objects.
 Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
 preserve `⊥` and `⊤`.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -136,8 +140,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
   constructor
   · intro
     dsimp only [Function.Surjective]
-    by_contra! hf'
-    rcases hf' with ⟨m, hm⟩
+    by_contra! ⟨m, hm⟩
     let Y := of (ULift (Fin 2))
     let p₁ : B ⟶ Y := ofHom
       ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by

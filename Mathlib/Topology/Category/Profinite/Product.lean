@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.Basic
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 # Compact subsets of products as limits in `Profinite`
@@ -26,6 +28,8 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 - `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 
 -/
+
+@[expose] public section
 
 universe u
 

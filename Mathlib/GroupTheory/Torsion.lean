@@ -3,8 +3,10 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
-import Mathlib.GroupTheory.PGroup
-import Mathlib.LinearAlgebra.Quotient.Defs
+module
+
+public import Mathlib.GroupTheory.PGroup
+public import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
 # Torsion groups
@@ -37,6 +39,8 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 * complete direct and free products of torsion free groups are torsion free
 * groups which are residually finite p-groups with respect to 2 distinct primes are torsion free
 -/
+
+@[expose] public section
 
 
 variable {G H : Type*}

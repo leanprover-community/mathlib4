@@ -3,11 +3,13 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.FreeAlgebra
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.DirectedInverseSystem
+module
+
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
@@ -64,6 +66,8 @@ between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] �
 
 -/
 
+@[expose] public section
+
 open Cardinal Module Free Set Order IntermediateField InverseSystem
 
 universe u v
@@ -79,7 +83,7 @@ noncomputable section
 set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => (Module.rank F E).ord.toType
+local notation "ι" => (Module.rank F E).ord.ToType
 
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
@@ -130,7 +134,7 @@ def leastExt : ι → ι :=
         have : FiniteDimensional F (adjoin F s) :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
-      · exact (Subalgebra.equivOfEq _ _ <| adjoin_algebraic_toSubalgebra
+      · exact (Subalgebra.equivOfEq _ _ <| adjoin_toSubalgebra_of_isAlgebraic
           fun x _ ↦ IsAlgebraic.isAlgebraic x)|>.toLinearEquiv.rank_eq.trans_lt <|
           (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
 
@@ -212,7 +216,8 @@ instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
 open Field in
 theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
   rw [← Nat.cast_ofNat, ← toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 _) (deg_lt_aleph0 i),
-    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable, Nat.succ_le]
+    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable,
+    Nat.succ_le_iff]
   by_contra!
   obtain ⟨x, hx⟩ := finrank_adjoin_simple_eq_one_iff.mp (this.antisymm Module.finrank_pos)
   refine (isLeast_leastExt i).1 (hx ▸ ?_)
@@ -243,7 +248,7 @@ theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ 
 
 section Lim
 
-variable {i : WithTop (Module.rank F E).ord.toType} -- WithTop ι doesn't work
+variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le

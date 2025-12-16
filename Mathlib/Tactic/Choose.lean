@@ -3,9 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan Commelin
 -/
+module
 
-import Mathlib.Util.Tactic
-import Mathlib.Logic.Function.Basic
+public meta import Mathlib.Util.Tactic
+public meta import Mathlib.Logic.Function.Basic
 
 /-!
 # `choose` tactic
@@ -14,6 +15,8 @@ Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` prod
 
 TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 

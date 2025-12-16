@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Exact sequences with free modules
@@ -25,6 +27,8 @@ This file proves results about linear independence and span in exact sequences o
 linear algebra, module, free
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Module
 
