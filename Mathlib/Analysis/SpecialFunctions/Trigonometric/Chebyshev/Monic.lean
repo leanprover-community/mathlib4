@@ -23,86 +23,70 @@ namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) : j * π / n ∈ Set.Icc 0 π := by
-  constructor
-  · positivity
-  · calc j * π / n ≤ n * π / n := by gcongr
-    _ = π := by rw [mul_div_assoc, mul_div_cancel₀]; convert hn; exact Nat.cast_eq_zero
+lemma mem_Icc {n j : ℕ} (hn : n ≠ 0) (hj : j ∈ Finset.range (n + 1)) : j * π / n ∈ Set.Icc 0 π := by
+  refine ⟨by positivity, ?_⟩
+  · replace hj : (j : ℝ) ≤ n := Finset.mem_range.mp hj |> Nat.le_of_lt_succ |> Nat.cast_le.mpr
+    linear_combination (norm := (field_simp; ring_nf; rfl)) (π / n) * hj
 
-lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
-    (-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)) > 0 := by
+lemma prod_pos {n : ℕ} {i : ℕ} (hi : i ∈ Finset.range (n + 1)) :
+    0 < (-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (cos (i * π / n) - cos (j * π / n)) := by
   by_cases n = 0
-  case pos hn =>
-    subst hn
-    have : i = 0 := by simp at hi; exact hi
-    subst i
-    simp
+  case pos hn => aesop
   case neg hn =>
-  replace hi := Finset.mem_Icc.mp hi
-  have : (∏ j ∈ Finset.Ico 0 i, ((-1) * (cos (i * π / n) - cos (j * π / n)))) *
-    ∏ j ∈ Finset.Ioc i n, (cos (i * π / n) - cos (j * π / n)) > 0 := by
-    apply mul_pos
-    case ha =>
-      apply Finset.prod_pos
-      intro j hj
-      replace hj := Finset.mem_Ico.mp hj
-      rw [neg_one_mul, neg_sub]
-      apply sub_pos_of_lt
-      apply Real.strictAntiOn_cos
-      · apply node_in_range <;> omega
-      · apply node_in_range <;> omega
-      gcongr
-      exact hj.2
-    case hb =>
-      apply Finset.prod_pos
-      intro j hj
-      replace hj := Finset.mem_Ioc.mp hj
-      apply sub_pos_of_lt
-      apply Real.strictAntiOn_cos
-      · apply node_in_range <;> omega
-      · apply node_in_range <;> omega
-      gcongr
-      exact hj.1
-  convert this using 1
-  rw [Finset.prod_mul_distrib, Finset.prod_const, Nat.Ico_zero_eq_range, Finset.card_range,
-    mul_assoc, ← Nat.Ico_zero_eq_range]
-  congr
-  have : (Finset.Icc 0 n).erase i = (Finset.Ico 0 i) ∪ Finset.Ioc i n := by
-    ext j
-    rw [Finset.mem_erase, Finset.mem_Icc, Finset.mem_union, Finset.mem_Ico, Finset.mem_Ioc]
-    constructor
-    case mp =>
-      intro hj
-      by_cases j < i
-      case pos => left; omega
-      case neg => right; omega
-    case mpr => intro hj; cases hj <;> omega
-  rw [this, Finset.prod_union]
-  apply Finset.disjoint_left.mpr
-  intro j hj₁
-  by_contra! hj₂
-  replace hj₁ := Finset.mem_Ico.mp hj₁
-  replace hj₂ := Finset.mem_Ioc.mp hj₂
-  linarith
+  have h₁ : 0 < ∏ j ∈ Finset.range i, ((-1) * (cos (i * π / n) - cos (j * π / n))) := by
+    apply Finset.prod_pos
+    intro j hj
+    have : cos (i * π / n) < cos (j * π / n) := by
+      apply Real.strictAntiOn_cos (mem_Icc hn (by grind)) (mem_Icc hn hi)
+      have : (j : ℝ) < i := by aesop
+      linear_combination (π / n) * this
+    linarith
+  rw [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range] at h₁
+  have h₂ : 0 < ∏ j ∈ Finset.Ioc i n, (cos (i * π / n) - cos (j * π / n)) := by
+    apply Finset.prod_pos
+    intro j hj
+    have : cos (j * π / n) < cos (i * π / n) := by
+      apply Real.strictAntiOn_cos (mem_Icc hn hi) (mem_Icc hn (by grind))
+      have : (i : ℝ) < j := by aesop
+      linear_combination (π / n) * this
+    linarith
+  have union : (Finset.range (n + 1)).erase i = (Finset.range i) ∪ Finset.Ioc i n := by grind
+  have disjoint : Disjoint (Finset.range i) (Finset.Ioc i n) := by grind [Finset.disjoint_iff_ne]
+  rw [union, Finset.prod_union disjoint, ← mul_assoc]
+  exact mul_pos h₁ h₂
 
-lemma convex_combination {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree = n) :
+lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree = n) :
     ∃ (c : ℕ → ℝ),
-      (∀ i ∈ Finset.Icc 0 n, 0 < c i) ∧
-      (∑ i ∈ Finset.Icc 0 n, c i = 2^(n - 1)) ∧
-      (∑ i ∈ Finset.Icc 0 n, (c i) * ((-1)^i * P.eval (cos (i * π / n))) = P.leadingCoeff) := by
-  use fun i => ((-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)))⁻¹
-  constructor
-  · intro i hi
-    apply inv_pos.mpr
-    exact node_product_positive hi
-  have hinj : Set.InjOn (fun (i : ℕ) => cos (i * π / n)) (Finset.Icc 0 n) := by
-    intro i hi j hj h
-    dsimp at h
-    suffices i * π / n = j * π / n by field_simp at this; norm_cast at this
-    apply injOn_cos
-    · apply node_in_range hn; simp at hi; exact hi
-    · apply node_in_range hn; simp at hj; exact hj
-    exact h
+    (∀ i ∈ Finset.range (n + 1), 0 < c i) ∧
+    (∑ i ∈ Finset.range (n + 1), c i = 2 ^ (n - 1)) ∧
+    (∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * P.eval (cos (i * π / n))) = P.leadingCoeff) :=
+    by
+  have cos_inj : Set.InjOn (fun (i : ℕ) => cos (i * π / n)) (Finset.range (n + 1)) := by
+    refine injOn_cos.comp ?_ (fun i hi => mem_Icc hn hi)
+    intro i hi j hj hij
+    suffices (i : ℝ) = j by norm_cast at this
+    linear_combination (norm := field) (n / π) * hij
+  have deg {Q : ℝ[X]} (hQ : Q.degree = n) : (Finset.range (n + 1)).card = Q.degree + 1 := by
+    simp [Finset.card_range, hQ]
+  set c := fun i =>
+    ((-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (cos (i * π / n) - cos (j * π / n)))⁻¹
+    with hc
+  use c
+  refine ⟨?_, ⟨?_, ?_⟩⟩
+  show ∀ i ∈ Finset.range (n + 1), 0 < c i
+  exact fun i hi => prod_pos hi |> inv_pos.mpr
+  show ∑ i ∈ Finset.range (n + 1), c i = 2 ^ (n - 1)
+  have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T_real n))
+  rw [leadingCoeff_T_real, Int.natAbs_natCast] at this
+  rw [this]
+  congr! 1 with i hi
+  rw [hc, T_real_eval_at_extremum hn]
+  sorry
+  show ∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * P.eval (cos (i * π / n))) = P.leadingCoeff
+  rw [Lagrange.leadingCoeff_eq_sum cos_inj (deg hP)]
+  congr! 1 with i hi
+  rw [hc]
+  field
   constructor
   · trans ∑ i ∈ Finset.Icc 0 n, (T ℝ n).eval (cos (i * π / n)) /
       ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n))
