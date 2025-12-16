@@ -82,13 +82,13 @@ namespace IsRightUniformGroup
 
 variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
 
-open scoped RightActions in
 /-- A locally compact right-uniform group is complete. -/
 @[to_additive
 /-- A locally compact right-uniform additive group is complete. -/]
 theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
+    open scoped RightActions in
     have : f.NeBot := hf.1
     obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
     obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, y / x ∈ K := by
