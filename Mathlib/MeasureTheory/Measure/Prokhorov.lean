@@ -43,8 +43,11 @@ we rely on the compactness of the space of measures inside each compact set to g
 of the restriction there, and argue that the full measure converges to the sum of the individual
 limits of the disjointed components. There is a subtlety that the space of finite measures
 giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed in our general setting, but we only need to
-find *a* limit satisfying this condition. To ensure this, we modify the individual limits
-(again using Riesz-Markov-Kakutani) to make sure that they are inner-regular.
+find *a* limit satisfying this condition. To ensure this, we need a technical condition
+(monotonicity of `K` or normality of the space). In the first case, the bound follows readily
+from the construction. In the second case, we modify the individual limits
+(again using Riesz-Markov-Kakutani) to make sure that they are inner-regular, and then one can
+check the condition.
 -/
 
 @[expose] public section
@@ -199,17 +202,13 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
 
-/- In the rest of the file, we require the space to be normal to make sure that the measure of an
-open set can be approximated from inside using continuous functions. This is for instance
-satisfied in metrizable spaces. -/
-variable [NormalSpace E]
-
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
-form a compact set. -/
+form a compact set.
+-/
 lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     {u : ℕ → ℝ≥0} {K : ℕ → Set E} (C : ℝ≥0)
-    (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+    (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   /- Consider a sequence of measures with mass at most `C` and giving mass at most `uₙ` to `Kₙᶜ`,
   for which we want to find a converging subsequence.
@@ -221,8 +220,11 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   countable.
   Second, it is not obvious that the limit will satisfy the inequality `μ (Kₙᶜ) ≤ uₙ`, as this is
   not a closed condition in the space of measures in general (note that we are not assuming that
-  our space is metrizable). However, this works fine if we can ensure additionally that `μ` is
-  inner regular. We will guarantee this by making sure each `νₙ` is inner regular.
+  our space is metrizable). To check this inequality, we need the technical condition that the
+  space is normal or the sequence `K` is monotone. When the space is normal, the inequality can be
+  proved from the weak convergence if we can ensure additionally that `μ` is
+  inner regular. We will guarantee this by making sure each `νₙ` is inner regular. When the
+  sequence `K` is monotone, on the other hand, the bound readily follows from the construction.
   -/
   -- We can decompose a measure as a sum of restrictions to `disjointed K n`, finite version.
   have I (μ : FiniteMeasure E) (n : ℕ) :
@@ -236,6 +238,17 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       · rw [← Order.succ_eq_add_one, disjointed_succ _ (not_isMax n)]
         exact disjoint_sdiff_right
       · apply MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
+  have J {μ : FiniteMeasure E} {n m : ℕ} (hm : n ≤ m) (h'K : Monotone K)  :
+      ∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i) = μ.restrict (K m \ K n) := by
+    induction m, hm using Nat.le_induction with
+    | base => ext; simp
+    | succ m hnm ih =>
+      rw [← Finset.insert_Ioc_right_eq_Ioc_add_one hnm, Finset.sum_insert (by simp), ih,
+        ← restrict_union _ ((hK m).measurableSet.diff (hK n).measurableSet)]; swap
+      · rw [Monotone.disjointed_add_one h'K]; grind
+      rw [Monotone.disjointed_add_one h'K, diff_union_diff_cancel]
+      · exact h'K (Nat.le_add_right m 1)
+      · exact h'K hnm
   have A n : IsCompact (partialSups K n) := by
     simpa [partialSups_eq_accumulate] using isCompact_accumulate hK _
   -- start with a ultrafilter `f`, for which we want to prove convergence.
@@ -243,6 +256,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   -- the restrictions to `disjointed K n` converge along the ultrafilter, and moreover we can
   -- choose the limit to be inner regular.
   have M n : ∃ (ν : FiniteMeasure E), Measure.InnerRegular (ν : Measure E) ∧
+      ν (partialSups K n)ᶜ = 0 ∧
       Tendsto (fun (ρ : FiniteMeasure E) ↦ ρ.restrict (disjointed K n)) f (𝓝 ν) := by
     -- the existence of a limit follows from the fact that these measures are supported in
     -- the compact set `partialSups K n`.
@@ -263,19 +277,19 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       exact le_trans sdiff_le (le_partialSups _ _)
     -- We can find an inner regular measure which coincides with the above limit wrt
     -- integration of bounded continuous functions.
-    obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ ν', ν'.InnerRegular ∧ IsFiniteMeasure ν' ∧
-        ∀ (g : E →ᵇ ℝ), ∫ x, g x ∂ν = ∫ x, g x ∂ν' := by
+    obtain ⟨ν', ν'_reg, ν'_fin, ν'K, hν'⟩ : ∃ ν', ν'.InnerRegular ∧ IsFiniteMeasure ν' ∧
+        ν' (partialSups K n)ᶜ = 0 ∧ ∀ (g : E →ᵇ ℝ), ∫ x, g x ∂ν = ∫ x, g x ∂ν' := by
       apply Measure.exists_innerRegular_eq_of_isCompact _ (A n)
       rw [← MeasureTheory.FiniteMeasure.null_iff_toMeasure_null]
       exact hν.2
     -- This inner regular measure is also a limit for our ultrafilter
     let μ : FiniteMeasure E := ⟨ν', ν'_fin⟩
-    refine ⟨μ, ν'_reg, ?_⟩
+    refine ⟨μ, ν'_reg, by simp [μ, ν'K], ?_⟩
     apply tendsto_of_forall_integral_tendsto (fun g ↦ ?_)
     convert tendsto_iff_forall_integral_tendsto.1 ν_lim g using 2
     exact (hν' g).symm
   -- let `νₙ` be such nice limits on `disjointed K n`.
-  choose! ν ν_reg hν using M
+  choose! ν ν_reg νK hν using M
   -- their sum is a finite measure, of mass at most `C`.
   have B : (Measure.sum (fun n ↦ (ν n : Measure E))) univ ≤ C := by
     -- this follows from the corresponding result for finite sums, where we can use the
@@ -381,62 +395,116 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   · simp only [mass, mk_apply, μ]
     rw [show C = (C : ℝ≥0∞).toNNReal by simp]
     exact ENNReal.toNNReal_mono (by simp) B
-  -- to show that `μ (Kₙᶜ) ≤ uₙ`, we argue that `μ (Kₙᶜ)` is the supremum of the integrals of
-  -- continuous functions supported in `Kₙᶜ` and bounded by `1`, as the measure is inner regular.
-  -- therefore, we are reduced to a question about integrals of continuous functions, for which
-  -- we can take advantage of the weak convergence.
-  have : Measure.InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
-  rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
-    (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
-  simp only [compl_compl, iSup_le_iff, ENNReal.ofReal_le_coe]
-  intro g g_cont gK g_nonneg g_le
-  have : Tendsto (fun (ρ : FiniteMeasure E) ↦ ∫ x, g x ∂ρ) f (𝓝 (∫ x, g x ∂μ)) := by
-    let g' : E →ᵇ ℝ :=
-    { toFun := g
-      map_bounded' := by
-        refine ⟨1, fun x y ↦ ?_⟩
-        simp only [dist, abs_le, neg_le_sub_iff_le_add, tsub_le_iff_right]
-        exact ⟨(g_le y).trans (by simpa using g_nonneg x),
-          (g_le x).trans (by simpa using g_nonneg y)⟩ }
-    exact tendsto_iff_forall_integral_tendsto.1 L g'
-  apply le_of_tendsto this
-  filter_upwards [hf] with ρ hρ
-  calc ∫ x, g x ∂ρ
-  _ ≤ ∫ x, indicator (K n)ᶜ 1 x ∂ρ := by
-    apply integral_mono_of_nonneg
-    · filter_upwards [] with x using g_nonneg x
-    · apply Integrable.indicator (integrable_const _) (hK n).measurableSet.compl
-    · filter_upwards [] with x
-      by_cases hx : x ∈ (K n)ᶜ
-      · simpa [hx] using g_le x
-      · simp only [hx, not_false_eq_true, indicator_of_notMem]
-        apply le_of_eq
-        apply gK
-        simpa using hx
-  _ = ρ (K n)ᶜ := by
-    rw [integral_indicator (hK n).measurableSet.compl]
-    simp
-  _ ≤ u n := by
-    norm_cast
-    exact hρ.2 n
+  -- Let us now prove that `μ (Kₙᶜ) ≤ uₙ`. We argue differently depending on whether the space is
+  -- normal or if the sequence `K` is monotone.
+  rcases h with h | h
+  · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the space is normal, we argue that `μ (Kₙᶜ)` is the
+    -- supremum of the integrals of continuous functions supported in `Kₙᶜ` and bounded by `1`,
+    -- as the measure is inner regular. Therefore, we are reduced to a question about integrals of
+    -- continuous functions, for which we can take advantage of the weak convergence.
+    have : Measure.InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
+    rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
+      (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
+    simp only [compl_compl, iSup_le_iff, ENNReal.ofReal_le_coe]
+    intro g g_cont gK g_nonneg g_le
+    have : Tendsto (fun (ρ : FiniteMeasure E) ↦ ∫ x, g x ∂ρ) f (𝓝 (∫ x, g x ∂μ)) := by
+      let g' : E →ᵇ ℝ :=
+      { toFun := g
+        map_bounded' := by
+          refine ⟨1, fun x y ↦ ?_⟩
+          simp only [dist, abs_le, neg_le_sub_iff_le_add, tsub_le_iff_right]
+          exact ⟨(g_le y).trans (by simpa using g_nonneg x),
+            (g_le x).trans (by simpa using g_nonneg y)⟩ }
+      exact tendsto_iff_forall_integral_tendsto.1 L g'
+    apply le_of_tendsto this
+    filter_upwards [hf] with ρ hρ
+    calc ∫ x, g x ∂ρ
+    _ ≤ ∫ x, indicator (K n)ᶜ 1 x ∂ρ := by
+      apply integral_mono_of_nonneg
+      · filter_upwards [] with x using g_nonneg x
+      · apply Integrable.indicator (integrable_const _) (hK n).measurableSet.compl
+      · filter_upwards [] with x
+        by_cases hx : x ∈ (K n)ᶜ
+        · simpa [hx] using g_le x
+        · simp only [hx, not_false_eq_true, indicator_of_notMem]
+          apply le_of_eq
+          apply gK
+          simpa using hx
+    _ = ρ (K n)ᶜ := by
+      rw [integral_indicator (hK n).measurableSet.compl]
+      simp
+    _ ≤ u n := by
+      norm_cast
+      exact hρ.2 n
+  · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the sequence is monotone, we argue that the only
+    -- contribution to `μ (Kₙᶜ)` comes from the measures `νᵢ` with `i > n`.
+    have A (i : ℕ) (hi : i ≤ n) : ν i (K n)ᶜ = 0 := by
+      apply le_antisymm ?_ bot_le
+      apply le_trans ?_ (νK i).le
+      gcongr
+      rw [Monotone.partialSups_eq h]
+      exact h hi
+    suffices (μ : Measure E) (K n)ᶜ ≤ u n by
+      apply ENNReal.coe_le_coe.1
+      convert this
+      simp
+    simp only [toMeasure_mk, (hK n).measurableSet.compl, Measure.sum_apply, μ]
+    have : Tendsto (fun m ↦ ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ) atTop
+        (𝓝 (∑' i, (ν i : Measure E) (K n)ᶜ)) :=
+      (ENNReal.tendsto_nat_tsum _).comp (tendsto_add_atTop_nat 1)
+    apply le_of_tendsto this
+    filter_upwards [Ici_mem_atTop n] with m (hm : n ≤ m)
+    have : ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ
+        = ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) (K n)ᶜ := by
+      apply (Finset.sum_subset _ _).symm
+      · intro i hi
+        simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
+        grind
+      · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
+          not_true_eq_false, imp_false, not_lt]
+        intro i hi h'i
+        exact (null_iff_toMeasure_null (ν i) (K n)ᶜ).mp (A i h'i)
+    rw [this]
+    suffices ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ ≤ u n by
+      apply le_trans _ this
+      gcongr
+      simp
+    have : ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ
+        = (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ := by
+      simp only [toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+    rw [this]
+    suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
+      convert ENNReal.coe_le_coe.2 this
+      simp
+    have : Tendsto (fun (μ : FiniteMeasure E) ↦
+        (∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i)).mass) f
+        (𝓝 ((∑ i ∈ Finset.Ioc n m, ν i).mass)) := by
+      apply Tendsto.mass
+      exact tendsto_finset_sum _ (fun i hi ↦ hν i)
+    apply le_of_tendsto this
+    filter_upwards [hf] with μ hμ
+    rw [J hm h, restrict_mass]
+    apply le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
 lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
-    {K : ℕ → Set E} (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+    {K : ℕ → Set E} (C : ℝ≥0) (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n))
+    (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
     {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩  {μ | μ.mass = C} := by ext; grind
   rw [this]
-  apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK)
+  apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
   exact isClosed_eq (by fun_prop) (by fun_prop)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the probability measures giving mass at most `uₙ` to the complement of `Kₙ` form a
 compact set. -/
 lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ≥0}
-    {K : ℕ → Set E} (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) :
+    {K : ℕ → Set E} (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n))
+    (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} := by
   apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
   have : ProbabilityMeasure.toFiniteMeasure '' {μ | ∀ (n : ℕ), μ (K n)ᶜ ≤ u n}
@@ -451,11 +519,10 @@ lemma isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le {u : ℕ →
       have : ν.toFiniteMeasure = μ := by ext; rfl
       exact ⟨ν, by simpa [← this] using h'μ , this⟩
   rw [this]
-  exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK
+  exact isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le 1 hu hK h
 
 /-- **Prokhorov theorem**: the closure of a tight set of probability measures is compact.
-
-We only require the space to be normal and T2 (which follows for instance from metrizability). -/
+We only require the space to be T2. -/
 lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     (hS : IsTightMeasureSet {((μ : ProbabilityMeasure E) : Measure E) | μ ∈ S}) :
     IsCompact (closure S) := by
@@ -469,6 +536,21 @@ lemma isCompact_closure_of_isTightMeasureSet {S : Set (ProbabilityMeasure E)}
     have : (μ : Measure E) Kᶜ ≤ u n := hK _ ⟨μ, hμ, rfl⟩
     exact ENNReal.coe_le_coe.1 (by simpa using this)
   choose K K_comp hK using A
-  have h'K : IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K n)ᶜ ≤ u n} :=
-    isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim K_comp
-  exact IsCompact.closure_of_subset h'K (by grind)
+  let K' n := ⋃ i ∈ Iic n, K i
+  have h'K : IsCompact {μ : ProbabilityMeasure E | ∀ n, μ (K' n)ᶜ ≤ u n} := by
+    apply isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le u_lim
+    · exact fun n ↦ (finite_Iic n).isCompact_biUnion (fun i hi ↦ K_comp i)
+    · right
+      simp only [Monotone, mem_Iic, le_eq_subset, iUnion_subset_iff, K']
+      intro a b hab i hi
+      apply subset_biUnion_of_mem
+      exact hi.trans hab
+  apply IsCompact.closure_of_subset h'K
+  intro μ hμ n
+  calc μ (K' n)ᶜ
+  _ ≤ μ (K n)ᶜ := by
+    gcongr
+    simp only [mem_Iic, K']
+    apply subset_biUnion_of_mem
+    exact le_rfl (a := n)
+  _ ≤ u n := by grind
