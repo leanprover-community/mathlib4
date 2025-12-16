@@ -80,7 +80,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
     exact hf_lC.1
   have map_dvd_pow_q :
-      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+      g.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
     rw [← IsUnit.dvd_mul_left _, ← hfmodP]
     · exact Polynomial.map_dvd _ hg_div
     · simp_all
