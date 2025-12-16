@@ -44,22 +44,6 @@ noncomputable section
 
 open Equiv Fin
 
-namespace CoxeterMatrix
-
-@[simp]
-theorem Aₙ_M_diag (n : ℕ) (i : Fin n) : (Aₙ n).M i i = 1 := by simp [Aₙ]
-
-theorem Aₙ_M_adjacent (n : ℕ) (i : Fin n) (hi : i.val + 1 < n) :
-    (Aₙ n).M i ⟨i.val + 1, hi⟩ = 3 := by
-  simp [Aₙ, Fin.ext_iff]
-
-theorem Aₙ_M_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
-    (h3 : (j : ℕ) + 1 ≠ i) : (Aₙ n).M i j = 2 := by
-  simp only [Aₙ, Matrix.of_apply]
-  grind
-
-end CoxeterMatrix
-
 /-! ### The braid group -/
 
 /-- The braid group `B_n` on `n` strands. This is the Artin group of type A_{n-1}. -/
@@ -103,7 +87,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
       have hi_cast : i.castSucc = j.succ := by grind
       grind [Equiv.swap_mul_swap_mul_swap_braid]
   · -- Far case: m = 2, commutativity
-    have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_M_far _ i j hij
+    have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_far _ i j hij
         (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
@@ -171,11 +155,11 @@ theorem artinRelationsSet_Aₙ_one_eq_one :
     -- i, j : Fin 1, so i = j = 0
     fin_cases i; fin_cases j
     -- artinRelation 0 0 with M 0 0 = 1
-    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.Aₙ_M_diag,
+    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.diagonal,
       CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel]
   · intro hr
     use 0, 0
-    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.Aₙ_M_diag,
+    simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.diagonal,
       CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel, hr]
 
 /-- The braid group B_2 is isomorphic to ℤ (one generator, no non-trivial relations).
