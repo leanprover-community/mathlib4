@@ -122,10 +122,11 @@ def C (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
 def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   Matrix.of fun i j =>
     if i = j then 2
-    else if i.val + 1 = j.val ∧ j.val < n - 2 then -1
-    else if j.val + 1 = i.val ∧ i.val < n - 2 then -1
-    else if i.val = n - 3 ∧ (j.val = n - 2 ∨ j.val = n - 1) then -1
-    else if j.val = n - 3 ∧ (i.val = n - 2 ∨ i.val = n - 1) then -1
+    else if n ≤ 2 then 0
+    else if i.val + 1 = j.val ∧ j.val + 2 < n then -1
+    else if j.val + 1 = i.val ∧ i.val + 2 < n then -1
+    else if i.val + 3 = n ∧ (j.val + 2 = n ∨ j.val + 1 = n) then -1
+    else if j.val + 3 = n ∧ (i.val + 2 = n ∨ i.val + 1 = n) then -1
     else 0
 
 /-! ### Properties -/
@@ -179,6 +180,11 @@ theorem A_three : A 3 = !![ 2, -1,  0;
 theorem B_one : B 1 = A 1 := by decide
 
 theorem C_one : C 1 = A 1 := by decide
+
+theorem D_one : D 1 = A 1 := by decide
+
+theorem D_two : D 2 = !![2, 0;
+                         0, 2] := by decide
 
 theorem B_two : B 2 = !![ 2, -2;
                          -1,  2] := by decide
