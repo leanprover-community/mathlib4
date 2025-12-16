@@ -31,7 +31,7 @@ of `HasForget₂` instances.
 
 open CategoryTheory Limits
 
-variable (V : Type*) [Category V] [HasForget V] [HasForget₂ V TopCat]
+variable (V : Type*) [Category* V] [HasForget V] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
@@ -184,8 +184,8 @@ end DiscreteContAction
 
 namespace CategoryTheory
 
-variable {V W : Type*} [Category V] [HasForget V] [HasForget₂ V TopCat]
-  [Category W] [HasForget W] [HasForget₂ W TopCat]
+variable {V W : Type*} [Category* V] [HasForget V] [HasForget₂ V TopCat]
+  [Category* W] [HasForget W] [HasForget₂ W TopCat]
   (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Functor
@@ -198,7 +198,7 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
 
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
-def mapContActionComp {T : Type*} [Category T] [HasForget T] [HasForget₂ T TopCat]
+def mapContActionComp {T : Type*} [Category* T] [HasForget T] [HasForget₂ T TopCat]
     (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (F' : W ⥤ T) (H' : ∀ X : ContAction W G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G (F ⋙ F') (fun X ↦ H' ((F.mapContAction G H).obj X)) ≅
