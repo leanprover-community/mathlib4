@@ -6,7 +6,6 @@ Authors: Nailin Guan, Yi Song
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
@@ -251,7 +250,7 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
           ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp N (add_zero i)))
         have mono_gk := pow_mono_of_mono a kpos i mono_g
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
-        have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
+        have zero_gk : gk = 0 := smul_id_postcomp_eq_zero_of_mem_ann hk i
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
@@ -266,8 +265,7 @@ For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and finitely generated an
 · there exist a `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
-    (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
-    (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
      Module.support R N ⊆ PrimeSpectrum.zeroLocus I) → ∀ i < n, Subsingleton (Ext N M i),
      ∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i),
