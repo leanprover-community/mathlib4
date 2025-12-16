@@ -4,7 +4,7 @@ structure Foo where
   x : Nat
   w : x = 37 := by cat_disch
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example : Foo where
   x := sorry
