@@ -306,7 +306,7 @@ lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
   induction hf with
   | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
   | id x => simpa using .id (F.obj x)
-  | comp_of _ _  hf hg h =>
+  | comp_of _ _ hf hg h =>
     simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
 
 /-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever

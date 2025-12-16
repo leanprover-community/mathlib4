@@ -108,7 +108,7 @@ def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A wher
   counitIso := natIso
 
 /-- `Codiscrete.functorToCat` turns a type into a codiscrete category. -/
-def functorToCat : Type u ⥤ Cat.{0,u} where
+def functorToCat : Type u ⥤ Cat.{0, u} where
   obj A := Cat.of (Codiscrete A)
   map := functorOfFun
 

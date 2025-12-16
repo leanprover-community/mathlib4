@@ -79,7 +79,7 @@ namespace ihom
 def adjunction : tensorLeft A ⊣ ihom A :=
   Closed.adj
 
-instance : (tensorLeft A).IsLeftAdjoint  :=
+instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
 
 /-- The evaluation natural transformation. -/
@@ -389,7 +389,7 @@ The proofs of associativity and unitality use the following outline:
 /-- Left unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma id_comp (x y : C) [Closed x] :
-    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
+    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _ := by
   apply uncurry_injective
   rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
       associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq,
@@ -493,7 +493,7 @@ lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
   dsimp
   rw [whiskerLeft_curry'_ihom_ev_app, whiskerLeft_rightUnitor_inv,
     MonoidalCategory.whiskerRight_id_assoc, Category.assoc,
-    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc,]
+    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
 
 lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
     curry' f ≫ (ihom X).map g = curry' (f ≫ g) := by

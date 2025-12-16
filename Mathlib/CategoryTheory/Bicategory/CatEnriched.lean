@@ -303,8 +303,8 @@ theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b
   simp only [hComp, base_mk, Hom.base_comp, Hom.base_eqToHom,
     ← heq_eq_eq, heq_eqToHom_comp_iff, heq_comp_eqToHom_iff,
     eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
-  conv => enter [1,2]; exact ((id_comp _).trans (comp_id _)).symm
-  conv => enter [2,1]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [1, 2]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [2, 1]; exact ((id_comp _).trans (comp_id _)).symm
   iterate 4 rw [← CatEnriched.hComp_comp, id_eq_eqToHom, CatEnriched.eqToHom_hComp_eqToHom]
   simp [CatEnriched.hComp_assoc_heq]
 

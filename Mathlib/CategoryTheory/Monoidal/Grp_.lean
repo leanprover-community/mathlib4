@@ -451,7 +451,7 @@ abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
 
 scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
 
-@[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] =  F.map ι := rfl
+@[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] = F.map ι := rfl
 
 open Monoidal
 

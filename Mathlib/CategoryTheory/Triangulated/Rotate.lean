@@ -71,7 +71,7 @@ not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shift
 @[simps!]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
   Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
-    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )
+    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _)
 
 end
 

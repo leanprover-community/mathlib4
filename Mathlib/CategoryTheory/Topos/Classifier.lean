@@ -363,7 +363,7 @@ lemma iso_inv_left_π :
   dsimp only [π]
   rw [← Over.comp_left_assoc]
   convert Category.id_comp _ using 2
-  exact (MonoOver.forget _ ⋙ Over.forget _ ).congr_map (h.iso m).inv_hom_id
+  exact (MonoOver.forget _ ⋙ Over.forget _).congr_map (h.iso m).inv_hom_id
 
 @[reassoc (attr := simp)]
 lemma iso_inv_left_comp :
