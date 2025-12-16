@@ -278,7 +278,7 @@ lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
   simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
     using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
 
-lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
+lemma ad_mem_sl2_eq_zero_of_root_eval_eq_zero
     {y : H} {α : Weight K H L} (hα : α.IsNonZero) (hy : (α : H → K) y = 0)
     (z : L) (hz : z ∈ sl2SubmoduleOfRoot hα) : ⁅(y : L), z⁆ = 0 := by
   rw [sl2SubmoduleOfRoot_eq_sup] at hz
@@ -291,7 +291,7 @@ lemma LieAlgebra.IsKilling.ad_mem_sl2_eq_zero_of_root_eval_eq_zero
     rw [rootSpace_zero_eq]; exact h_cor.property
   convert lie_eq_smul_of_mem_rootSpace h_cor_in_zero y using 1; simp
 
-lemma LieAlgebra.IsKilling.l2 (q : Submodule K (Dual K H))
+lemma l2 (q : Submodule K (Dual K H))
     (h₂ : ((⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2)) = ⊤) :
     q = ⊤ := by
   by_contra hq_ne_top
