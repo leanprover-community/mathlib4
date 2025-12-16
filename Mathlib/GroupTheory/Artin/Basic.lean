@@ -100,7 +100,8 @@ theorem freeGroupProd_append (l₁ l₂ : List B) :
 /-! ### Artin relations -/
 
 /-- The Artin relation for indices `i` and `j`: the two alternating words of length `M i j`
-are equal. This is encoded as `freeGroupProd(alt i j m) * freeGroupProd(alt j i m)⁻¹ = 1`. -/
+are equal. This is encoded as
+`freeGroupProd (alternatingWord i j m) * freeGroupProd (alternatingWord j i m)⁻¹ = 1`. -/
 def artinRelation (i j : B) : FreeGroup B :=
   freeGroupProd (alternatingWord i j (M i j)) * (freeGroupProd (alternatingWord j i (M i j)))⁻¹
 
