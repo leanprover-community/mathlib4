@@ -85,6 +85,7 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 @[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
+set_option backward.proofsInPublic true in
 @[to_additive (attr := simp)]
 lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
     map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
