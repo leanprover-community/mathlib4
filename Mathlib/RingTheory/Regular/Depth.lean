@@ -431,7 +431,7 @@ lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
 
 lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
-    [Nontrivial M] [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = I.depth M := by
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext N M i)) ↔
@@ -598,7 +598,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_snd
 
 lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
-    [Nontrivial M] [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = sSup {(List.length rs : ℕ∞) | (rs : List R)
     (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
@@ -663,7 +663,7 @@ universe w
 /-- Universe invariant of `moduleDepth`, would be repalced by a more general version when universe
 invariant of `Ext` is provided. -/
 lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
-    (N M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
+    (N M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
     [AddCommGroup N] [Module R N] [Nfin : Module.Finite R N] [Nntr : Nontrivial N]
     (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) [Small.{w} M] [Small.{w} N] :
