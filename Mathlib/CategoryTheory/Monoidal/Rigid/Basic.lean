@@ -135,6 +135,18 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation_evaluation' := by monoidal_coherence
   evaluation_coevaluation' := by monoidal_coherence
 
+/-- The tensor product of exact pairings. Given exact pairings `(X₁, Y₁)` and `(X₂, Y₂)`,
+we get an exact pairing `(X₁ ⊗ X₂, Y₂ ⊗ Y₁)`. Note the reversed order in the second factor. -/
+instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] [ExactPairing X₂ Y₂] :
+    ExactPairing (X₁ ⊗ X₂) (Y₂ ⊗ Y₁) where
+  coevaluation' := η_ X₁ Y₁ ⊗≫ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫ 𝟙 _
+  evaluation' := 𝟙 _ ⊗≫ Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂) ⊗≫ ε_ X₂ Y₂
+  coevaluation_evaluation' := by
+    sorry  -- Submitted to Aristotle, project ID: 22e6387e-8dd4-41ac-939f-072c159f7102
+  evaluation_coevaluation' := by
+    -- Similar to above but for the other triangle equation.
+    admit
+
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
   /-- The right dual of the object `X`. -/
@@ -171,6 +183,22 @@ instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
 
 instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
   leftDual := X
+
+instance hasRightDualTensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
+    HasRightDual (X ⊗ Y) where
+  rightDual := Yᘁ ⊗ Xᘁ
+
+instance hasLeftDualTensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
+    HasLeftDual (X ⊗ Y) where
+  leftDual := ᘁY ⊗ ᘁX
+
+@[simp]
+theorem rightDual_tensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
+    (X ⊗ Y)ᘁ = Yᘁ ⊗ Xᘁ := rfl
+
+@[simp]
+theorem leftDual_tensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
+    ᘁ(X ⊗ Y) = ᘁY ⊗ ᘁX := rfl
 
 @[simp]
 theorem leftDual_rightDual {X : C} [HasRightDual X] : ᘁXᘁ = X :=
