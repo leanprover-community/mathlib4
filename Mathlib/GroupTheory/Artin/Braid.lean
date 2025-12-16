@@ -116,56 +116,6 @@ def σ (i : Fin (n - 1)) : BraidGroup n :=
 def swapFun (n : ℕ) : Fin n → Perm (Fin (n + 1)) := fun i =>
   swap i.castSucc i.succ
 
-/-- Far transpositions commute: if the ranges {i, i+1} and {j, j+1} are disjoint,
-then swap i (i+1) and swap j (j+1) commute. -/
-theorem swap_comm_of_disjoint {a b c d : Fin n}
-    (hab : a ≠ b) (hcd : c ≠ d)
-    (hac : a ≠ c) (had : a ≠ d) (hbc : b ≠ c) (hbd : b ≠ d) :
-    swap a b * swap c d = swap c d * swap a b := by
-  -- swap_apply_of_ne_of_ne {a b x} : x ≠ a → x ≠ b → swap a b x = x
-  ext x
-  simp only [Perm.mul_apply]
-  by_cases hxa : x = a
-  · subst hxa
-    -- Goal: swap a b (swap c d a) = swap c d (swap a b a)
-    -- LHS: swap a b a = b (by swap_apply_left), and swap c d a = a (since a ≠ c, a ≠ d)
-    -- RHS: swap a b a = b, then swap c d b = b (since b ≠ c, b ≠ d)
-    rw [swap_apply_of_ne_of_ne hac had, swap_apply_left, swap_apply_of_ne_of_ne hbc hbd]
-  by_cases hxb : x = b
-  · subst hxb
-    -- swap a b (swap c d b) = swap c d (swap a b b)
-    rw [swap_apply_of_ne_of_ne hbc hbd, swap_apply_right, swap_apply_of_ne_of_ne hac had]
-  by_cases hxc : x = c
-  · subst hxc
-    -- After subst: goal is swap a b (swap x d x) = swap x d (swap a b x)
-    -- Note: hac becomes a ≠ x, hbc becomes b ≠ x, hcd becomes x ≠ d
-    rw [swap_apply_left, swap_apply_of_ne_of_ne hac.symm hbc.symm,
-        swap_apply_of_ne_of_ne had.symm hbd.symm, swap_apply_left]
-  by_cases hxd : x = d
-  · subst hxd
-    -- After subst: goal is swap a b (swap c x x) = swap c x (swap a b x)
-    -- Note: had becomes a ≠ x, hbd becomes b ≠ x, hcd becomes c ≠ x
-    rw [swap_apply_right, swap_apply_of_ne_of_ne had.symm hbd.symm,
-        swap_apply_of_ne_of_ne hac.symm hbc.symm, swap_apply_right]
-  · -- Neither a, b, c, nor d: both swaps leave x unchanged
-    simp only [swap_apply_of_ne_of_ne hxc hxd, swap_apply_of_ne_of_ne hxa hxb]
-
-/-- The braid relation for adjacent transpositions:
-swap a b * swap b c * swap a b = swap b c * swap a b * swap b c -/
-theorem swap_braid {a b c : Fin n} (hab : a ≠ b) (hbc : b ≠ c) (hac : a ≠ c) :
-    swap a b * swap b c * swap a b = swap b c * swap a b * swap b c := by
-  -- Both sides equal swap a c
-  -- swap_mul_swap_mul_swap hxy hxz : swap y z * swap x y * swap y z = swap z x
-  have rhs : swap b c * swap a b * swap b c = swap a c := by
-    -- Need y=b, z=c, x=a, so hxy = hab, hxz = hac, result = swap c a
-    rw [Equiv.swap_mul_swap_mul_swap hab hac, swap_comm]
-  have lhs : swap a b * swap b c * swap a b = swap a c := by
-    calc swap a b * swap b c * swap a b
-        = swap b a * swap c b * swap b a := by simp only [swap_comm]
-      -- Need y=b, z=a, x=c, so hxy = hbc.symm, hxz = hac.symm, result = swap a c
-      _ = swap a c := Equiv.swap_mul_swap_mul_swap hbc.symm hac.symm
-  rw [lhs, rhs]
-
 /-- Adjacent transpositions satisfy the Artin relations (braid relations). -/
 theorem swapFun_isArtinLiftable (n : ℕ) :
     (CoxeterMatrix.typeA n).IsArtinLiftable (swapFun n) := by
@@ -185,7 +135,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
       have hj_eq : (j : ℕ) = i.val + 1 := hadj.symm
       have hj_cast : j.castSucc = i.succ := by simp [Fin.ext_iff, hj_eq]
       rw [hj_cast]
-      refine swap_braid ?_ ?_ ?_
+      refine Equiv.swap_mul_swap_mul_swap_braid ?_ ?_ ?_
       · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
       · simp [Fin.ext_iff, Fin.val_succ]; omega
       · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
@@ -193,7 +143,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
       have hi_eq : (i : ℕ) = j.val + 1 := hadj.symm
       have hi_cast : i.castSucc = j.succ := by simp [Fin.ext_iff, hi_eq]
       rw [hi_cast]
-      refine (swap_braid ?_ ?_ ?_).symm
+      refine (Equiv.swap_mul_swap_mul_swap_braid ?_ ?_ ?_).symm
       · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
       · simp [Fin.ext_iff, Fin.val_succ]; omega
       · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
@@ -205,7 +155,8 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     -- Need: swapFun j * swapFun i = swapFun i * swapFun j
     simp only [swapFun]
     push_neg at hadj
-    apply swap_comm_of_disjoint <;> simp only [ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
+    apply Equiv.swap_mul_swap_comm_of_disjoint <;>
+      simp only [ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
     · omega
     · omega
     · intro h; exact hij (Fin.ext h.symm)

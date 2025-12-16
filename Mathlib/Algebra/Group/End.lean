@@ -574,6 +574,42 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
   nth_rewrite 3 [← swap_inv]
   rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 
+/-- The braid relation for adjacent transpositions:
+`swap a b * swap b c * swap a b = swap b c * swap a b * swap b c` -/
+theorem swap_mul_swap_mul_swap_braid {a b c : α} (hab : a ≠ b) (hbc : b ≠ c) (hac : a ≠ c) :
+    swap a b * swap b c * swap a b = swap b c * swap a b * swap b c := by
+  have rhs : swap b c * swap a b * swap b c = swap a c :=
+    (swap_mul_swap_mul_swap hab hac).trans (swap_comm _ _)
+  have lhs : swap a b * swap b c * swap a b = swap a c := by
+    calc swap a b * swap b c * swap a b
+        = swap b a * swap c b * swap b a := by simp only [swap_comm]
+      _ = swap a c := swap_mul_swap_mul_swap hbc.symm hac.symm
+  rw [lhs, rhs]
+
+/-- Disjoint transpositions commute: if `{a, b}` and `{c, d}` are disjoint,
+then `swap a b` and `swap c d` commute. -/
+theorem swap_mul_swap_comm_of_disjoint {a b c d : α}
+    (hab : a ≠ b) (hcd : c ≠ d)
+    (hac : a ≠ c) (had : a ≠ d) (hbc : b ≠ c) (hbd : b ≠ d) :
+    swap a b * swap c d = swap c d * swap a b := by
+  ext x
+  simp only [Perm.mul_apply]
+  by_cases hxa : x = a
+  · subst hxa
+    rw [swap_apply_of_ne_of_ne hac had, swap_apply_left, swap_apply_of_ne_of_ne hbc hbd]
+  by_cases hxb : x = b
+  · subst hxb
+    rw [swap_apply_of_ne_of_ne hbc hbd, swap_apply_right, swap_apply_of_ne_of_ne hac had]
+  by_cases hxc : x = c
+  · subst hxc
+    rw [swap_apply_left, swap_apply_of_ne_of_ne hac.symm hbc.symm,
+        swap_apply_of_ne_of_ne had.symm hbd.symm, swap_apply_left]
+  by_cases hxd : x = d
+  · subst hxd
+    rw [swap_apply_right, swap_apply_of_ne_of_ne had.symm hbd.symm,
+        swap_apply_of_ne_of_ne hac.symm hbc.symm, swap_apply_right]
+  · simp only [swap_apply_of_ne_of_ne hxc hxd, swap_apply_of_ne_of_ne hxa hxb]
+
 end Swap
 
 section AddGroup
