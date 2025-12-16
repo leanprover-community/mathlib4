@@ -133,7 +133,7 @@ def tanhPartialEquiv : PartialEquiv ℝ ℝ where
 
 theorem tanh_bijOn : BijOn tanh univ (Ioo (-1) 1) := tanhPartialEquiv.bijOn
 
-theorem tanh_injective : Injective tanh := fun _ _ ↦ tanh_injOn trivial trivial
+theorem tanh_injective : Injective tanh := fun _ _ ↦ tanhPartialEquiv.injOn trivial trivial
 
 theorem tanh_surjOn : SurjOn tanh univ (Ioo (-1) 1) := tanhPartialEquiv.surjOn
 
