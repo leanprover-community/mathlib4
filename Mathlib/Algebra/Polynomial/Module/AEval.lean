@@ -93,7 +93,7 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Module.Finite R M] : Module.Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
-/-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear map out of `AEval R M a` from an `R`-linear map out of `M`. -/
 def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a →ₗ[R[X]] N where
@@ -104,7 +104,8 @@ def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
         LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
       simp_rw [pow_succ, ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
 
-/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from a `R`-linear map out of `M`. -/
+/-- Construct an `R[X]`-linear equivalence out of `AEval R M a` from an `R`-linear map out of `M`.
+-/
 def _root_.LinearEquiv.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
     [IsScalarTower R R[X] N] (f : M ≃ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
     AEval R M a ≃ₗ[R[X]] N where

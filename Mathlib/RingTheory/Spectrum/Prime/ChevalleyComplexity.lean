@@ -507,7 +507,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             · subst hkj; gcongr; exact (degree_modByMonic_le _ hi).trans hle
             · rfl
           · gcongr; simpa using (degree_modByMonic_lt _ hi).trans_le hle
-        calc  (c.val j).degree.succ * c'.degBound ^ c'.degBound
+        calc (c.val j).degree.succ * c'.degBound ^ c'.degBound
           _ ≤ c.degBound * c.degBound ^ c'.degBound := by
             gcongr
             delta InductionObj.degBound
