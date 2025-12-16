@@ -90,6 +90,7 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
 prove that it is arithmetically definable. -/
 def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
+set_option backward.proofsInPublic true in
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
 def unbeta (l : List ℕ) : ℕ :=

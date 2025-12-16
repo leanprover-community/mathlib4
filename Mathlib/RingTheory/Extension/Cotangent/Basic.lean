@@ -397,6 +397,7 @@ lemma H1Cotangent.map_comp
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
 
+set_option backward.proofsInPublic true in
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]

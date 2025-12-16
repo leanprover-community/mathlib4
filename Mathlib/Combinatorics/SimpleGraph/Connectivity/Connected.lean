@@ -677,6 +677,7 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 end ConnectedComponent
 
+set_option backward.proofsInPublic true in
 /-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
 homomorphism from `G` to `H` -/
 @[simps]

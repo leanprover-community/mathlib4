@@ -452,6 +452,7 @@ def ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     M ⟶ of R (N ⟶ P) :=
   ofHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
 
+set_option backward.proofsInPublic true in
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
 def Hom.hom₂ {M N P : SemimoduleCat.{u} R}

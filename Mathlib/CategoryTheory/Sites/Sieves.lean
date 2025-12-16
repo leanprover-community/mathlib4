@@ -408,6 +408,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     rw [heq_iff_eq] at h; subst h
     exact ⟨Y, u, hu⟩
 
+set_option backward.proofsInPublic true in
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
       Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
