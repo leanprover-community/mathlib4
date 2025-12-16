@@ -283,6 +283,15 @@ lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
   ext v
   simp [hφ]
 
+/-- Finite universal quantifiers preserve definablity. -/
+lemma Definable.forall_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
+    (hS : A.Definable L S) :
+    A.Definable L { v : α → M | ∀ u : β → M, Sum.elim v u ∈ S } := by
+  obtain ⟨φ, hφ⟩ := hS
+  exists φ.iAlls β
+  ext v
+  simp [hφ]
+
 variable (L A)
 
 /-- A 1-dimensional version of `Definable`, for `Set M`. -/
@@ -467,7 +476,7 @@ theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
   exists (Term.func f (Term.var ∘ Sum.inl)).equal (Term.var (Sum.inr ()))
 
 /-- A term is a definable function. -/
-theorem _root_.Language.Term.realize_definableFun (t : L.Term α) :
+theorem _root_.Language.Term.definableFun_realize (t : L.Term α) :
     DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
   rw [empty_definableFun_iff]
   exists (t.relabel Sum.inl).equal (Term.var (Sum.inr ()))
@@ -477,7 +486,7 @@ theorem _root_.Language.Term.realize_definableFun (t : L.Term α) :
 variable (L A)
 
 /-- A constant function is a definable function. -/
-theorem _root_.FirstOrder.Language.definableFun_of_const {A : Set M} {a : M}
+theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
     (γ : Type*) (ha : a ∈ A) :
     DefinableFun L A (fun _ : γ → M => a) := by
   simp only [DefinableFun]
@@ -502,7 +511,7 @@ lemma _root_.Set.Definable.preimage_map
   ext v
   simp [← funext_iff]
 
-/-- The equalizer of two definable functions is a definable. -/
+/-- The set where two definable functions agree is definable. -/
 lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
     A.Definable L {v : α → M | f v = g v} := by
@@ -514,16 +523,14 @@ lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     · exact hg
   exact (Definable.diagonal L A).preimage_map hF
 
-/-- The fiber of a definable function is definable. -/
-lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : DefinableFun L A f)
-    {a : M} (ha : a ∈ A) :
+/-- The preimage of a constant under a definable function is definable. -/
+lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : DefinableFun L A f) {a : M} (ha : a ∈ A) :
     A.Definable L {v : α → M | f v = a} :=
-  hf.setOf_eq (L.definableFun_of_const α ha)
+  hf.setOf_eq (L.definableFun_const α ha)
 
-lemma DefinableFun.setOf_const_eq {f : (α → M) → M} (hf : DefinableFun L A f)
-    {a : M} (ha : a ∈ A) :
+lemma DefinableFun.setOf_const_eq {f : (α → M) → M} (hf : DefinableFun L A f) {a : M} (ha : a ∈ A) :
     A.Definable L {v : α → M | a = f v} :=
-  (L.definableFun_of_const α ha).setOf_eq hf
+  (L.definableFun_const α ha).setOf_eq hf
 
 end Function
 
