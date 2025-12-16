@@ -159,7 +159,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
-lemma linear_isTheta_right' (c e : ℤ) (z : ℂ) :
+lemma linear_isTheta_right (c e : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d + e)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO
   · refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
@@ -179,7 +179,7 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
 
 lemma linear_inv_isBigO_right (c e : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d + e)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
-  (linear_isTheta_right' c e z).inv.isBigO
+  (linear_isTheta_right c e z).inv.isBigO
 
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
