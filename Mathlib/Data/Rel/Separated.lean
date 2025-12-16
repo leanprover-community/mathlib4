@@ -13,7 +13,7 @@ public import Mathlib.Data.Rel
 
 This file defines a notion of separation of a set relative to a relation.
 
-For a relation `R`, a `R`-separated set `s` is a set such that every pair of elements of `s` is
+For a relation `R`, an `R`-separated set `s` is a set such that every pair of elements of `s` is
 `R`-unrelated.
 
 The concept of uniformly separated sets is used to define two further notions of separation:
