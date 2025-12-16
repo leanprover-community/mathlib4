@@ -48,14 +48,18 @@ section Seq
 
 open Stream'.Seq
 
+/-- Convert a multiseries in empty basis to a real number. -/
 abbrev toReal (ms : PreMS []) : ℝ := ms
 
+/-- Convert a multiseries in non-empty basis to a sequence of pairs `(exp, coef)`. -/
 abbrev toSeq {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     Stream'.Seq (ℝ × PreMS basis_tl) :=
   ms
 
+/-- The empty multiseries. -/
 def nil {basis_hd basis_tl} : PreMS (basis_hd :: basis_tl) := Seq.nil
 
+/-- Prepend a monomial to a multiseries. -/
 def cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)) :
     PreMS (basis_hd :: basis_tl) :=
   Seq.cons (exp, coef) tl
@@ -73,24 +77,41 @@ def recOn {basis_hd} {basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort*
   | nil => exact nil
   | cons hd tl => exact cons hd.1 hd.2 tl
 
+/-- Destruct a multiseries into a triple `(exp, coef, tl)`, where `exp` is leading exponent,
+`coef` is leading coefficient, and `tl` is tail. -/
 def destruct {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     Option (ℝ × PreMS basis_tl × PreMS (basis_hd :: basis_tl)) :=
   (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
 
+/-- The head of a multiseries, i.e. the first two elements of `destruct`. -/
 def head {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : Option (ℝ × PreMS basis_tl) :=
   Seq.head ms
 
+/-- The tail of a multiseries, i.e. the last element of `destruct`. -/
 def tail {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
   Seq.tail ms
 
+/-- Given two functions `f : ℝ → ℝ` and `g : PreMS basis_tl → PreMS basis_tl'`, apply them to
+exponents and coefficients of a multiseries. -/
+def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
+    (g : PreMS basis_tl → PreMS basis_tl')
+    (ms : PreMS (basis_hd :: basis_tl)) :
+    PreMS (basis_hd' :: basis_tl') :=
+  Seq.map (fun (exp, coef) ↦ (f exp, g coef)) ms
+
+/-- Corecursor for `PreMS (basis_hd :: basis_tl)`. -/
 def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS basis_tl × β)) (b : β) :
     PreMS (basis_hd :: basis_tl) :=
   Stream'.Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
 
+/-- An operation on multiseries called a "friend" if any `n`-prefix of its output depends only on
+the `n`-prefix of the input. Such operations can be used in the tail of (non-primitive) corecursive
+definitions. -/
 def FriendOperation {basis_hd basis_tl}
     (op : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop :=
   Stream'.Seq.FriendOperation op
 
+/-- A family of friendly operations on multiseries indexed by a type `γ`. -/
 class FriendOperationClass {basis_hd basis_tl} {γ : Type*}
     (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)) : Prop
     extends Stream'.Seq.FriendOperationClass op
@@ -148,6 +169,8 @@ theorem FriendOperation.coind_comp_friend_right {basis_hd basis_tl}
   simp [head]
   rfl
 
+/-- Non-primitive corecursor for `PreMS (basis_hd :: basis_tl)` allowing to use a friendly operation
+in the tail of the corecursive definition. -/
 noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
     (F : β → Option (ℝ × PreMS basis_tl × γ × β))
     (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
@@ -156,11 +179,6 @@ noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
     PreMS (basis_hd :: basis_tl) :=
   Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
 
-def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
-    (g : PreMS basis_tl → PreMS basis_tl')
-    (ms : PreMS (basis_hd :: basis_tl)) :
-    PreMS (basis_hd' :: basis_tl') :=
-  Seq.map (fun (exp, coef) ↦ (f exp, g coef)) ms
 
 instance (basis : Basis) : Inhabited (PreMS basis) where
   default := match basis with
@@ -854,6 +872,7 @@ theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
 end Majorated
 
 mutual
+  /-- Auxilliary monotone map, for which `Approximates` is the greatest fixed point. -/
   def Approximates.T (basis : Basis) : (PreMS basis → (ℝ → ℝ) → Prop) →o
       (PreMS basis → (ℝ → ℝ) → Prop) :=
     match (generalizing := true) basis with
@@ -874,6 +893,14 @@ mutual
         grind
     }
 
+  /-- Coinductive predicate stating that `ms` approximates `f` on `basis`. This means that
+  * If `basis = []`, i.e. ms is just a real number, then `f =ᶠ[atTop] ms`.
+  * If `basis ≠ []`, and `ms = nil`, then `f =ᶠ[atTop] 0`.
+  * If `basis = basis_hd :: basis_tl`, and `ms = cons (exp, coef) tl`, then
+    `f` is majorated with exponent `exp` by `basis_hd`,
+    `coef` approximates some function `fC`, and
+    `tl` approximates `f - fC * basis_hd ^ exp`
+  -/
   def Approximates {basis} (ms : PreMS basis) (f : ℝ → ℝ) : Prop :=
     (Approximates.T basis).gfp ms f
 end

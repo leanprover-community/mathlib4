@@ -15,8 +15,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 
 @[expose] public section
 
-set_option linter.flexible false
-
 namespace ComputeAsymptotics
 
 namespace PreMS
@@ -638,7 +636,7 @@ mutual
     | nil =>
       left
       apply Approximates_nil at hB_approx
-      simp
+      simp only [mulMonomial_nil, true_and]
       grw [hf_eq]
       push fun _ ↦ _
       grw [hB_approx]
@@ -646,7 +644,8 @@ mutual
     | cons B_exp B_coef B_tl =>
       obtain ⟨fC, h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons hB_approx
       right
-      simp [motive]
+      simp only [mulMonomial_cons, cons_eq_cons, exists_and_left, ↓existsAndEq, and_true,
+        exists_eq_left', motive]
       refine ⟨_, mul_Approximates (h_basis.tail) h_coef_approx hM_approx, ?_⟩
       constructor
       · apply majorated_of_EventuallyEq hf_eq
@@ -779,24 +778,24 @@ theorem Approximates.mul_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
       B.WellOrdered ∧ motive B fB
   apply Approximates.add_coind motive'
   · use one _, ms, 1, f
-    simp [one_mul', h_wo, h_base]
+    simp only [one_mul', one_mul, EventuallyEq.refl, h_wo, h_base, and_self, and_true, true_and]
     apply one_Approximates h_basis
   rintro ms f ⟨A, B, fA, fB, rfl, hA, hf_eq, hB_wo, hB⟩
   cases A with
   | nil =>
     apply Approximates_nil at hA
-    simp
+    simp only [nil_mul, true_and, ↓existsAndEq, nil_ne_cons, false_and, exists_const, or_false]
     grw [hf_eq, hA]
     simp
   | cons A_exp A_coef A_tl =>
   specialize h_step _ _ hB
   obtain ⟨rfl, hfB⟩ | ⟨B_exp, B_coef, B_tl, fBC, rfl, hB_coef, hB_maj,
     X, Y, fX, fY, rfl, hfB, hX, hY_wo, hY⟩ := h_step
-  · simp
+  · simp only [mul_nil, true_and, ↓existsAndEq, nil_ne_cons, false_and, exists_const, or_false]
     grw [hf_eq, hfB]
     simp
   right
-  simp
+  simp only [↓existsAndEq, mul_cons_cons, cons_eq_cons, true_and, exists_and_left]
   obtain ⟨fAC, hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
   refine ⟨fAC * fBC, _, _, rfl, ?_⟩
   constructorm* _ ∧ _
@@ -804,7 +803,7 @@ theorem Approximates.mul_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · apply majorated_of_EventuallyEq hf_eq
     apply mul_majorated hA_maj hB_maj
     apply basis_head_eventually_pos h_basis
-  simp [motive']
+  simp only [exists_and_left, Pi.mul_apply, motive']
   refine ⟨_, mulMonomial_Approximates h_basis hA_tl hB_coef, ?_⟩
   use (PreMS.cons A_exp A_coef A_tl).mul X, Y
   constructor

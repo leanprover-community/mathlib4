@@ -25,13 +25,15 @@ open scoped UniformConvergence
 variable {α β γ γ' : Type*}
 
 
-noncomputable local instance instMetricSpaceStream' : MetricSpace (Stream' α) :=
+/-- Metric space structure on `Stream' α` considering `α` as a discrete metric space. -/
+noncomputable local instance : MetricSpace (Stream' α) :=
   @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
+/-- Metric space structure on `Seq α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Seq α) :=
   Subtype.metricSpace
 
-local instance instCompleteSpaceStream' : CompleteSpace (Stream' α) :=
+local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 local instance : CompleteSpace (Seq α) := by
@@ -121,8 +123,12 @@ theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
   rw [dist_comm]
   simp
 
+/-- A function on sequences called a "friend" if any `n`-prefix of its output depends only on
+the `n`-prefix of the input. Such functions can be used in the tail of (non-primitive) corecursive
+definitions. -/
 def FriendOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
 
+/-- A family of friend operations on sequences indexed by a type `γ`. -/
 class FriendOperationClass (F : γ → Seq α → Seq α) : Prop where
   friend : ∀ c : γ, FriendOperation (F c)
 
@@ -222,6 +228,8 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
     change f b' = T f b'
     rw [hf]
 
+/-- Non-primitive corecursor for `Seq α` allowing to use a friendly operation in the tail of the
+corecursive definition. -/
 noncomputable def gcorec (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [FriendOperationClass op] :
   β → Seq α := (FriendOperation.exists_fixed_point F op).choose

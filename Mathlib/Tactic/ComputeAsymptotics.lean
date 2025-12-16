@@ -251,7 +251,8 @@ def proveTendstoReal (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
   else
     pure h_tendsto
 
-def proveTendstoRealCodomain {α : Q(Type)} (f : Q($α → ℝ)) (source : Q(Filter $α))
+/-- Proves that `f : α → ℝ` tends to `target` at `source`. -/
+partial def proveTendstoRealCodomain {α : Q(Type)} (f : Q($α → ℝ)) (source : Q(Filter $α))
     (target : Q(Filter ℝ)) :
     TacticM Q(Filter.Tendsto $f $source $target) := do
   match α with
