@@ -81,7 +81,7 @@ def isLimitMapConePullbackConeEquiv :
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
-    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp,comm]
+    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
 
