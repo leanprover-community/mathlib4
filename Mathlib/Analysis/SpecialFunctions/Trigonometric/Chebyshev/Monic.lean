@@ -124,69 +124,58 @@ theorem le_sup_abs_eval_of_monic {n : ℕ} (hn : n ≠ 0)
 
 theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
     (Pdeg : P.degree = n) (Pmonic : P.Monic) :
-     sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } = 1 / 2 ^ (n - 1) ↔ P = (1 / 2 ^ (n - 1)) • (T ℝ n) :=
+     sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } = 1 / 2 ^ (n - 1) ↔
+     P = (1 / 2 ^ (n - 1) : ℝ) • (T ℝ n) :=
     by
+  have hnℤ := (Int.ofNat_ne_zero.mpr hn)
   constructor
   case mp =>
-    intro h
-    obtain ⟨c, hpos, hsum, hform⟩ := convex_combination hn Pdeg
-    have hnonneg : ∀ i ∈ Finset.Icc 0 n,
-      0 ≤ (c i) * (1/2^(n - 1) - (-1)^i * P.eval (cos (i * π / n))) := by
-      intro i hi
-      apply mul_nonneg (le_of_lt (hpos i hi))
-      have := pointwise_bound P n i
-      linarith
-    have hsum : ∑ i ∈ Finset.Icc 0 n,
-      (c i) * (1/2^(n - 1) - (-1)^i * P.eval (cos (i * π / n))) = 0 := by
-      trans ∑ i ∈ Finset.Icc 0 n,
-        ((c i) * (1/2^(n - 1)) - (c i) * ((-1)^i * P.eval (cos (i * π / n))))
-      · congr with i; rw [mul_sub]
-      rw [Finset.sum_sub_distrib, ← Finset.sum_mul, hsum, hform, Pmonic, mul_div_cancel₀]
-      · norm_num
+    intro hsSup
+    apply eq_of_degrees_lt_of_eval_finset_eq (T_real_extrema n)
+    · rw [Pdeg, card_T_real_extrema]; norm_cast; simp
+    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T_real, card_T_real_extrema]
+      norm_cast; simp
+    obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
+    rw [Pmonic] at hform
+    set T' := (1 / 2 ^ (n - 1) : ℝ) • (T ℝ n)
+    have Tform (i : ℕ) :
+        (-1) ^ i * T'.eval (cos (i * π / n)) = 1 / 2 ^ (n - 1) := by
+      have : (T ℝ n).eval (cos (i * π / n)) = (-1) ^ i := T_real_eval_at_extremum hnℤ i
+      rw [eval_smul, this, smul_eq_mul]
+      suffices ((-1) ^ i : ℝ) * (-1) ^ i = 1 by grind
+      simp [← sq, ← pow_mul']
+    replace hform :
+      ∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * P.eval (cos (i * π / n))) =
+      ∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * T'.eval (cos (i * π / n))) := by
+      simp_rw [hform, Tform, ← Finset.sum_mul, hsum]
+      simp
+    replace hform := ge_of_eq hform
+    contrapose! hform
+    obtain ⟨θ, hθ, hPθ⟩ := hform
+    obtain ⟨i₀, hi₀, hi₀θ⟩ := Finset.mem_image.mp hθ
+    have h_le {i : ℕ} (hi : i ∈ Finset.range (n + 1)) :
+      c i * ((-1) ^ i * P.eval (cos (i * π / n))) ≤
+      c i * ((-1) ^ i * T'.eval (cos (i * π / n))) := by
+      rw [Tform i, ← hsSup]
+      exact mul_le_mul_of_nonneg_left (P_eval_bound P n i) (le_of_lt (hpos i hi))
+    have h_lt₀ :
+      c i₀ * ((-1) ^ i₀ * P.eval (cos (i₀ * π / n))) <
+      c i₀ * ((-1) ^ i₀ * T'.eval (cos (i₀ * π / n))) := by
+      apply lt_of_le_of_ne (h_le hi₀)
+      rw [hi₀θ]
+      contrapose! hPθ
+      rw [← mul_assoc, ← mul_assoc] at hPθ
+      refine mul_left_cancel₀ ?_ hPθ
+      have := hpos i₀ hi₀
       positivity
-    have heq := (Finset.sum_eq_zero_iff_of_nonneg hnonneg).mp hsum
-    apply eq_of_degrees_lt_of_eval_finset_eq (T_extrema n)
-    · rw [Pdeg, card_T_extrema]; norm_cast; omega
-    · unfold normalized_T
-      rw [degree_C_mul, degree_T_real, card_T_extrema]
-      · norm_cast; omega
-      positivity
-    intro x hx
-    unfold T_extrema at hx
-    obtain ⟨i, hi, hx⟩ := Finset.mem_image.mp hx
-    norm_cast at hx
-    rw [← hx, normalized_T_eval]
-    have : (T ℝ n).eval (cos (i * π / n)) = (-1)^i := by
-      convert T_node_eval (show (n : ℤ) ≠ 0 by omega) i
-    rw [this]
-    have := eq_of_sub_eq_zero ((mul_eq_zero_iff_left (ne_of_gt (hpos i hi))).mp (heq i hi))
-    rw [div_eq_mul_inv (b := 2^(n-1)), ← one_div, this, ← mul_assoc, ← sq, ← pow_mul]
-    simp
+    exact Finset.sum_lt_sum (fun i hi => h_le hi) ⟨i₀, hi₀, h_lt₀⟩
   case mpr =>
     intro hP
-    subst hP
     apply eq_of_le_of_ge
-    · apply le_csSup (bddAbove _)
-      rw [Set.mem_setOf_eq]
-      use 1
-      constructor
-      · simp
-      rw [normalized_T_eval, T_eval_one]
-      simp
-    · apply csSup_le
-      · use abs ((normalized_T n).eval 1)
-        rw [Set.mem_setOf_eq]
-        use 1
-        simp
-      · intro y
-        rw [Set.mem_setOf_eq]
-        rintro ⟨x, hx, hy⟩
-        rw [← hy, normalized_T_eval, abs_div]
-        have : (0 : ℝ) < 2^(n - 1) := by positivity
-        rw [abs_of_pos this]
-        gcongr
-        apply T_bounded_of_bounded'
-        apply abs_le.mpr
-        exact Set.mem_Icc.mp hx
+    · refine csSup_le (by use |P.eval 1|; grind) (fun x hx => ?_)
+      obtain ⟨θ, hθ, hx⟩ := Set.mem_setOf.mp hx
+      have := (T_real_abs_eval_le_one_iff_abs_le_one hnℤ θ).mp (abs_le.mpr hθ)
+      aesop
+    · refine le_csSup (bddAbove P) ⟨1, ⟨by grind, by aesop⟩⟩
 
 end Polynomial.Chebyshev
