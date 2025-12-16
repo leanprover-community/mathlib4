@@ -41,7 +41,7 @@ variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 variable {p : Ideal R} {P : Ideal S}
 
-/-- If there is an injective map `R/p → S/P` such that following diagram commutes:
+/-- If there is an injective map `R/p → S/P` such that the following diagram commutes:
 ```
 R   → S
 ↓     ↓

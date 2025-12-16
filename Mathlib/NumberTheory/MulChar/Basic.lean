@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.OrderOfElement
 /-!
 # Multiplicative characters of finite rings and fields
 
-Let `R` and `R'` be a commutative rings.
+Let `R` and `R'` be commutative rings.
 A *multiplicative character* of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.

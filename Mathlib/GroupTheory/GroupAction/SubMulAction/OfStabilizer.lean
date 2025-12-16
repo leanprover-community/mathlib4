@@ -99,7 +99,7 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
   simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
   congr
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
@@ -251,7 +251,7 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
-      MulAction.mul_smul]
+      SemigroupAction.mul_smul]
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by

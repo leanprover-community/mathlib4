@@ -248,10 +248,7 @@ lemma scalarRestriction_hom
   letI := scalarRestriction f M
   letI := scalarRestriction f N
   { smul_hom := by
-      dsimp
-      slice_rhs 1 2 => rw [action_exchange]
-      slice_rhs 2 3 => rw [← IsMod_Hom.smul_hom]
-      rw [Category.assoc] }
+      simpa using (action_exchange_assoc f g γ).symm }
 
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
