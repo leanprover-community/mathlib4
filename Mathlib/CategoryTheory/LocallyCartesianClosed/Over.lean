@@ -135,8 +135,8 @@ lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
     (α_ R S T).hom.left ≫ fst R.hom (snd S.hom T.hom ≫ T.hom) =
-      fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst R S T)
+      fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom :=
+  congr_arg CommaMorphism.left (associator_hom_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
