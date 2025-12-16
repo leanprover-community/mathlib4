@@ -19,8 +19,8 @@ universe v' v u
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} [Subcanonical J]
   {K : Type*} [Category K]
 
-instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val]
-    : PreservesColimitsOfShape K J.yoneda where
+instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val] :
+    PreservesColimitsOfShape K J.yoneda where
   preservesColimit {F} := { preserves {c} hc := ⟨by
     suffices IsLimit (coyoneda.mapCone (J.yoneda.mapCocone c).op) from
       isColimitOfOp (isLimitOfReflects _ this)
@@ -30,8 +30,8 @@ instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val]
       (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
 
-instance [∀ X : Sheaf J (Type v), PreservesColimitsOfShape Kᵒᵖ X.val]
-    : PreservesLimitsOfShape K J.yoneda where
+instance [∀ X : Sheaf J (Type v), PreservesColimitsOfShape Kᵒᵖ X.val] :
+    PreservesLimitsOfShape K J.yoneda where
   preservesLimit {F} := { preserves {c} hc := ⟨by
     suffices IsColimit (coyoneda.mapCocone (J.yoneda.mapCone c).op) from
       isLimitOfOp (isColimitOfReflects _ this)
@@ -41,8 +41,8 @@ instance [∀ X : Sheaf J (Type v), PreservesColimitsOfShape Kᵒᵖ X.val]
       (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isColimitOfPreserves _ hc.op⟩ }
 
-instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val]
-    : PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val] :
+    PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
   preservesColimit {F} := { preserves {c} hc := ⟨by
     suffices IsLimit (coyoneda.mapCone (J.uliftYoneda.mapCocone c).op) from
       isColimitOfOp (isLimitOfReflects _ this)
@@ -52,8 +52,8 @@ instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.va
       (isoWhiskerRight (J.largeCurriedUliftYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
 
-instance [∀ X : Sheaf J (Type (max v v')), PreservesColimitsOfShape Kᵒᵖ X.val]
-    : PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+instance [∀ X : Sheaf J (Type (max v v')), PreservesColimitsOfShape Kᵒᵖ X.val] :
+    PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
   preservesLimit {F} := { preserves {c} hc := ⟨by
     suffices IsColimit (coyoneda.mapCocone (J.uliftYoneda.mapCone c).op) from
       isLimitOfOp (isColimitOfReflects _ this)
