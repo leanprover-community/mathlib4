@@ -127,9 +127,9 @@ private def termToGrindParam (t : Syntax) : Syntax :=
   -- With no modifier, the first child is a null node
   -- If t is a simple identifier, wrap as `(id t)` to force term interpretation
   let t' : Syntax := if t.isIdent then
-    -- Create `id t` application - this ensures grind sees it as a term, not an e-match candidate
-    mkNode ``Lean.Parser.Term.app #[mkIdent `id, mkNullNode #[t]]
-  else t
+      -- Create `id t` application - this ensures grind sees it as a term, not an e-match candidate
+      mkNode ``Lean.Parser.Term.app #[mkIdent `id, mkNullNode #[t]]
+    else t
   let grindLemma := mkNode ``Lean.Parser.Tactic.grindLemma #[mkNullNode, t']
   mkNode ``Lean.Parser.Tactic.grindParam #[grindLemma]
 
