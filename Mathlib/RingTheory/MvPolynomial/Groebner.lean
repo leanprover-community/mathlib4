@@ -442,8 +442,11 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
   $P(a) : ∃ finite G' ⊆ G and f, p = ∑ g ∈ G', f(g) * g ∧ ∀ g ∈ G', degree(f(g) * g) ≤ a$,
   and we will prove an assertion that, for each $a > degree(p)$, if $P(a)$, then there exists
   $degree(g) ≤ a' < a$ s.t. $P(a')$ also holds. With this assertion, we can get $P(degree(p))$ by
-  well-founded induction on $a$. -/
-  refine WellFounded.induction_bot (WellFoundedLT.toWellFoundedRelation.wf)
+  well-founded induction on $a$.
+  (Formalization note: here we don't directly prove $degree(p)$ satisfies predicate $P$ by
+   induction. We prove with predicate $a ↦ degree(p) ≤ a ∧ P(a)$ instead.) -/
+  -- todo: lemmas for induction in the above form.
+  refine WellFounded.induction_bot WellFoundedLT.toWellFoundedRelation.wf
     (a := G'₀.sup fun g ↦ (m.toSyn <| m.degree <| g * (f₀ g))) (bot := m.toSyn (m.degree p))
     (C := fun a ↦ m.toSyn (m.degree p) ≤ a ∧
       ∃ (f : MvPolynomial σ k → MvPolynomial σ k) (G' : Finset (MvPolynomial σ k)),
@@ -453,8 +456,8 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
     (fun a ha ⟨ha', ⟨f, G', hG'subsetG, hsumf, h_deg_le⟩⟩ ↦ ?_)
     ⟨le_of_lt h, ⟨f₀, G'₀, hG', hsumf.symm, by apply Finset.le_sup⟩⟩ |>.2
   /- We start to prove the assertion. Assume $a > degree(p)$ (`ha`), $G' ⊆ G$ (`hG'subsetG`),
-  $f$ (`f`) s.t. $p = ∑ g ∈ G', f(g) g$ (`hsumf`), and
-  $∀ g ∈ G', degree(f(g) g) ≤ a$ (`h_deg_le`).
+  $f$ (`f`) s.t. $p = ∑ g ∈ G', f(g) * g$ (`hsumf`), and
+  $∀ g ∈ G', degree(f(g) * g) ≤ a$ (`h_deg_le`).
   Without loss of generality, we can assume $f(g)$ vanishes when $g ∉ G'$.  -/
   clear! f₀ G'₀
   wlog hf₀support : ∀ g, g ∉ G' → f g = 0 generalizing f
@@ -477,20 +480,20 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
       ∑ g ∈ G', (f(g) - lt'(g)) * g )
     = degree(p) < a,$$
   we can obtain $degree( ∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g ) < a$.
-  Obviously, for all $g ∈ G'$ s.t. $degree(f(g) g) = a$, $degree(leadingTerm(f(g)) g))$ is also $a$.
+  Obviously, $degree(leadingTerm(f(g)) g)) = a$, for all $g ∈ G'$ s.t. $degree(f(g) g) = a$.
   So this sum can be decomposed into a sum of S-polynomials: there exists $c(g₁, g₂) ∈ k$ (`c`)
-  for each $g₁, g₂ ∈ {g ∈ G' | degree(f(g) * g) = a}$, s.t.
+  for each $g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\}$, s.t.
   $$∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g
     = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
           c(g₁, g₂) * sPoly(leadingTerm(f(g₁)) g₁, leadingTerm(f(g₂)) g₂)
     = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
-          c(g₁, g₂) * leadingCoeff(g₁ g₂) *
+          c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂) *
             (lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) *
           sPoly(g₁, g₂),$$ (`h_sum_sPoly`)
   where $lm(g)$ is leading monomial of $g$ ($x^degree(g)$ if we ignore edge case that $g = 0$),
   and $lcm(lm(g₁), lm(g₂))$ is least common multiple of $lm(g₁)$ and $lm(g₂)$.
-  Formalization of $lcm$ is mainly based on operations on `Finsupp` instead of `MvPolynomial`.
-  (For more formalization details, see the docstring of `MonomialOrder.sPolynomial`.) -/
+  (Formalization note: formalization of $lcm$ is based on operations on `Finsupp` instead of
+  `MvPolynomial`. For more formalization details, see the doc of `MonomialOrder.sPolynomial`.) -/
   have h_a_gt_zero : 0 < a := bot_lt_of_lt ha
   obtain ⟨c, h_sum_sPoly⟩ := m.sPolynomial_decomposition' (d := a) (B := G'.filter degFgEqA)
     (fun g ↦ m.leadingTerm (f g) * g) (by simp_intro .. [degFgEqA, Finset.mem_filter]) <| by
@@ -512,7 +515,7 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
     rhs
     simp only [m.sPolynomial_leadingTerm_mul', ← G'.filter degFgEqA |>.sum_coe_sort]
   /- For echo $g₁, g₂ ∈ G$, $0$ is a remainder of $sPoly(g₁, g₂)$ on division
-  by G, and thus we obtain its "quotient" in form of a finitely supported function $q_{g₁, g₂}$
+  by G, and thus we obtain its "quotients" in form of a finitely supported function $q_{g₁, g₂}$
   s.t. it satisfies the following conditions (`hq`):
     - $supp(q_{g₁, g₂}) ⊆ G$ (`h_q_support_subset_G`),
     - $sPoly(g₁, g₂) = ∑ g ∈ G, q_{g₁, g₂}(g) * g$,
@@ -555,7 +558,7 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
         c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂) *
           (lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * sPoly(g₁, g₂).$$
 
-  For simplify we denote $c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂)$ as $c'$. Then
+  For simplify we denote $c(g₁, g₂) * leadingCoeff(g₁) * leadingCoeff(g₂)$ as $c'(g₁, g₂)$. Then
   $$∑ g ∈ G' with (degree(f(g) * g) = a), leadingTerm(f(g)) * g
     = ∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
         c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) *
@@ -565,7 +568,7 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
           c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g)) *
         g. $$ (`h_sum_sPoly`)
 
-  Note: degree(s) of $(f(g) - lt'(g)) * g$ and
+  Note: degrees of $(f(g) - lt'(g)) * g$ and
     $c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂} * g$ are
     both less than $a$. It is a key to complete the proof. We will proof it at the end. -/
   simp_rw [(hq _ _).2.1] at h_sum_sPoly
@@ -596,9 +599,10 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
   $$∑ g₁, g₂ ∈ \{g ∈ G' | degree(f(g) * g) = a\},
       c'(g₁, g₂)•(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)) / lcm(lm(g₁), lm(g₂))) * q_{g₁, g₂}(g)
     + (f(g) - lt'(g)),$$
-  and $a'$ be $max(degree(p), max_{g ∈ G''} f'(g) * g$. Than we have $p = ∑ g ∈ G'', f'(g) * g$,
-  and apparently $degree(p) ≤ a'$ and $∀ g ∈ G'', a' ≤ f'(g) * g$.
-  We will show $P(a')$ hold on $a'$ by $f'$, $G''$. -/
+  and $a'$ be $max(degree(p), max_{g ∈ G''} f'(g) * g)$. Then we have $p = ∑ g ∈ G'', f'(g) * g$,
+  and apparently $degree(p) ≤ a'$ and $∀ g ∈ G'', degree(f'(g) * g) ≤ a'$. Now both
+  $degree(p) ≤ a'$ and $P(a')$ are got.
+  To prove the theorem, it remains to prove that $a' < a$. -/
   -- use `by exact hp` to assign a long expression (which we don't want to write) to `?f'`
   refine ⟨m.toSyn (m.degree p) ⊔ G''.sup fun g ↦ m.toSyn <| m.degree <| ?f' g * g, (?_ : _ < _),
     by simp, ?f', G'', by simp [G'', hG'subsetG, h_q_support_subset_G], by exact hp, ?le_max⟩
@@ -606,10 +610,9 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
     intro h g
     rw [mul_comm]
     exact le_trans (Finset.le_sup (f := fun g ↦ m.toSyn <| m.degree <| ?f' g * g) g) le_sup_right
-  /- It remains to be proved that $a' < a$.
-  It suffices that $degree(f'(g) * g) < a$ for all $g ∈ G''$. Then it suffices that, degree(s) of
+  /- It suffices that $degree(f'(g) * g) < a$ for all $g ∈ G''$. Then it suffices that, degrees of
   the left side (too long...) and the right side $f(g) - lt'(g)$ of the outermost $+$ in $f'$
-  multiplied by $g$ respective are both less than $a$ for all $g ∈ G''$.
+  multiplied by $g$ respectively are both less than $a$ for all $g ∈ G''$.
   -/
   clear hp h_sum_sPoly -- remove them since they're long and will not be used anymore
   simp? [ha, Finset.sup_lt_iff h_a_gt_zero, add_mul] says
@@ -653,7 +656,7 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
     /- $$... < degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))) - degree(lcm(lm(g₁), lm(g₂))) +
                 degree(lcm(lm(g₁), lm(g₂)))$$ -/
     apply lt_of_lt_of_le (add_lt_add_right (m.degree_sPolynomial_lt_sup_degree hsPoly_ne_0) _)
-    /- $$... = degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂))).$$ -/
+    /- $$... = degree(lcm(lm(f(g₁) * g₁), lm(f(g₂) * g₂)))$$ -/
     have hfgg₁ := (G'.mem_filter.mp g₁.2).2
     have hfgg₂ := (G'.mem_filter.mp g₂.2).2
     simp [degFgEqA, eq_comm] at hfgg₁ hfgg₂
