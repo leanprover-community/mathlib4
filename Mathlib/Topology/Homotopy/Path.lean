@@ -497,8 +497,10 @@ theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (hab : a ≤
       (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b
       (Set.Icc.convexCombo_le hab _))) =
     (γ.subpathOn a b hab) := by
-  ext t; simp [Path.trans, Path.subpathOn, Path.extend, Set.IccExtend, Set.projIcc]
-  split_ifs with h <;> (congr 1; ext; simp [unitInterval.half]; norm_num)
+  ext t
+  simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_convexCombo, coe_mk',
+    ContinuousMap.coe_mk, Function.comp_apply, Set.projIcc]
+  split_ifs with h <;> (congr 1; ext; simp only [half, one_div, add_right_inj]; norm_num)
   · have := t.2.1; have := t.2.2
     rw [min_eq_right (by linarith : 2 * (t : ℝ) ≤ 1),
         max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]; ring

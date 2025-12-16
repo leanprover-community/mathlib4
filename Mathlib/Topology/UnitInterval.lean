@@ -559,7 +559,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       -- The segment is contained in ball m δ
       have h_subset : Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball m δ := by
         intro x hx
-        simp [Metric.ball]
+        simp only [Metric.ball, mem_setOf_eq]
         -- The segment has length (b-a)/n, so max distance from midpoint is (b-a)/(2n)
         have segment_len : (t i.succ : ℝ) - (t i.castSucc : ℝ) = (b - a) / n := by
           simp [t]
