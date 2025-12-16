@@ -3,11 +3,10 @@ Copyright (c) 2025 Yongxi Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongxi Lin, Thomas Zhu
 -/
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Data.Int.Star
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-import Mathlib.Topology.Compactness.PseudometrizableLindelof
+import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Compactness.Lindelof
+import Mathlib.Tactic.GCongr
 
 /-!
 # Conditional Jensen's Inequality
@@ -165,9 +164,9 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
       calc
         f y i = re (( -(T i 1)⁻¹ • L i) y) + c i / re (T i 1) := by simp [f]
             _ ≤ re (( -(T i 1)⁻¹ • L i) y) + (re (L i y) + re (T i 1) * φ y) / re (T i 1) := by
-              apply add_le_add_left
-              rw [div_eq_mul_inv, div_eq_mul_inv]
-              apply mul_le_mul_of_nonneg_right (this i) (le_of_lt (inv_pos.mpr (lem4 i)))
+              gcongr
+              · exact le_of_lt (lem4 i)
+              · exact this i
             _ = re (( -(T i 1)⁻¹ • L i) y) + re (L i y) / re (T i 1)
                 + re (T i 1) * φ y / re (T i 1) := by rw [add_div, add_assoc]
             _ = re (-(T i 1)⁻¹ * L i y) + re (L i y) / re (T i 1)
@@ -198,8 +197,9 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
               rw (config := {occs := .pos [2]}) [neg_mul]
               rw [neg_neg, mul_comm (re ((T i) 1))⁻¹, inv_mul_cancel_right₀ (ne_of_gt (lem4 i))]
             _ ≤ re (L i x) +  re s * re (T i 1) := by
-              exact add_le_add_left (mul_le_mul_of_nonneg_right (hi i) (le_of_lt (lem4 i)))
-                (re ((L i) x))
+              gcongr
+              · exact le_of_lt (lem4 i)
+              · exact hi i
             _ = re (L i x) + re (T i s) := by
               rw [lem1 i s]
               rw (config := { occs := .neg [1]}) [lem5 i]
@@ -237,7 +237,9 @@ private lemma conditional_jensen_of_separableSpace [SecondCountableTopology E]
   rcases hφ_cvx.iSup_affine_eq_of_separableSpace (K := ℝ) hφ_cont with ⟨L, c, hp⟩
   have py : ∀ᵐ a ∂μ, ∀ i : ℕ, re (L i (μ[f | m] a)) + c i
     = μ[re ∘ (L i) ∘ f + (fun (b : α) ↦ (c i)) | m] a := by
-    rw [ae_all_iff]; intro i; apply condExp_comm_affine hm hf_int (L i) (c i)
+    rw [ae_all_iff]
+    intro i
+    apply ContinuousLinearMap.comp_condExp_add_const_comm hm hf_int (L i) (c i)
   have pz : ∀ᵐ a ∂μ, ∀ i : ℕ, (re ∘ (L i) ∘ f + (fun (b : α) ↦ (c i))) a ≤ (φ ∘ f) a := by
     rw [ae_all_iff]; intro i; filter_upwards with a
     rw [Function.comp_apply, ← (hp (f a)).2, Pi.add_apply, Function.comp_apply, Function.comp_apply]
@@ -303,7 +305,7 @@ theorem conditional_jensen (hm : m ≤ mα)
     calc
       μ[f | m] =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
       _        =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] :=
-        (condExp_comm_continuousLinearMap hm hfY_int Y.subtypeL).symm
+        (ContinuousLinearMap.comp_condExp_comm hfY_int Y.subtypeL).symm
   have lem2 : φ ∘ f =ᵐ[μ] φY ∘ fY := by filter_upwards [lem1] with a ha; simp [φY, ha, fX]
   have hφYfY_int : Integrable (φY ∘ fY) μ := hφ_int.congr lem2
   calc
