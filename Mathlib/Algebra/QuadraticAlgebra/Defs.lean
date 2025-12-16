@@ -23,7 +23,7 @@ and define some algebraic structures on it.
 ## Warning
 If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic
 zero then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where
-`R`is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
+`R` is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
 `QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal. This is a
 known diamond for characteristic zero fields. If you are working in this setting you should start
 your file with
