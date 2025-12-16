@@ -112,11 +112,9 @@ def σ (i : Fin (n - 1)) : BraidGroup n :=
 
 /-! ### The surjection to the symmetric group -/
 
-variable (n) in
-/-- The function sending generator i to the adjacent transposition (i, i+1).
-Note: We require `2 ≤ n` to ensure `Fin (n-1)` maps properly into `Fin n`. -/
-def swapFun (hn : 2 ≤ n) : Fin (n - 1) → Perm (Fin n) := fun i =>
-  swap ⟨i.val, by omega⟩ ⟨i.val + 1, by omega⟩
+/-- The function sending generator i to the adjacent transposition (i, i+1). -/
+def swapFun (n : ℕ) : Fin n → Perm (Fin (n + 1)) := fun i =>
+  swap i.castSucc i.succ
 
 /-- Far transpositions commute: if the ranges {i, i+1} and {j, j+1} are disjoint,
 then swap i (i+1) and swap j (j+1) commute. -/
@@ -169,117 +167,88 @@ theorem swap_braid {a b c : Fin n} (hab : a ≠ b) (hbc : b ≠ c) (hac : a ≠ 
   rw [lhs, rhs]
 
 /-- Adjacent transpositions satisfy the Artin relations (braid relations). -/
-theorem swapFun_isArtinLiftable (hn : 2 ≤ n) :
-    (CoxeterMatrix.typeA (n - 1)).IsArtinLiftable (swapFun n hn) := by
+theorem swapFun_isArtinLiftable (n : ℕ) :
+    (CoxeterMatrix.typeA n).IsArtinLiftable (swapFun n) := by
   intro i j
   by_cases hij : i = j
   · simp [hij]
   by_cases hadj : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i
   · -- Adjacent case: m = 3, braid relation
-    have hM : (CoxeterMatrix.typeA (n - 1)).M i j = 3 := by
+    have hM : (CoxeterMatrix.typeA n).M i j = 3 := by
       simp only [CoxeterMatrix.typeA, hij, ↓reduceIte, hadj]
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
     -- Need: swapFun i * swapFun j * swapFun i = swapFun j * swapFun i * swapFun j
     simp only [swapFun]
     obtain hadj | hadj := hadj
-    · -- i + 1 = j case
-      -- Identify the three Fin n elements involved
+    · -- i + 1 = j case: j.castSucc = i.succ
       have hj_eq : (j : ℕ) = i.val + 1 := hadj.symm
-      have hi_lt : i.val < n - 1 := i.isLt
-      have hj_lt : j.val < n - 1 := j.isLt
-      have hi1 : i.val < n := Nat.lt_of_lt_of_le hi_lt (by omega)
-      have hi2 : i.val + 1 < n := by omega
-      have hi3 : i.val + 2 < n := by omega
-      -- The goal reduces to swap_braid with a=i, b=i+1, c=i+2
-      have key := swap_braid (a := ⟨i.val, hi1⟩) (b := ⟨i.val + 1, hi2⟩)
-          (c := ⟨i.val + 2, hi3⟩) (by simp [Fin.ext_iff]) (by simp [Fin.ext_iff])
-          (by simp [Fin.ext_iff])
-      convert key using 2
-      all_goals simp_all
-    · -- j + 1 = i case
+      have hj_cast : j.castSucc = i.succ := by simp [Fin.ext_iff, hj_eq]
+      rw [hj_cast]
+      refine swap_braid ?_ ?_ ?_
+      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
+      · simp [Fin.ext_iff, Fin.val_succ]; omega
+      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
+    · -- j + 1 = i case: i.castSucc = j.succ
       have hi_eq : (i : ℕ) = j.val + 1 := hadj.symm
-      have hi_lt : i.val < n - 1 := i.isLt
-      have hj_lt : j.val < n - 1 := j.isLt
-      have hj1 : j.val < n := Nat.lt_of_lt_of_le hj_lt (by omega)
-      have hj2 : j.val + 1 < n := by omega
-      have hj3 : j.val + 2 < n := by omega
-      -- swap_braid gives: swap a b * swap b c * swap a b = swap b c * swap a b * swap b c
-      -- We need the .symm because the goal has swapFun i first, but i = j+1 corresponds to b
-      have key := swap_braid (a := ⟨j.val, hj1⟩) (b := ⟨j.val + 1, hj2⟩)
-          (c := ⟨j.val + 2, hj3⟩) (by simp [Fin.ext_iff]) (by simp [Fin.ext_iff])
-          (by simp [Fin.ext_iff])
-      convert key.symm using 2
-      all_goals simp_all
+      have hi_cast : i.castSucc = j.succ := by simp [Fin.ext_iff, hi_eq]
+      rw [hi_cast]
+      refine (swap_braid ?_ ?_ ?_).symm
+      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
+      · simp [Fin.ext_iff, Fin.val_succ]; omega
+      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
   · -- Far case: m = 2, commutativity
-    have hM : (CoxeterMatrix.typeA (n - 1)).M i j = 2 := CoxeterMatrix.typeA_M_far _ i j hij
+    have hM : (CoxeterMatrix.typeA n).M i j = 2 := CoxeterMatrix.typeA_M_far _ i j hij
         (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
     -- Need: swapFun j * swapFun i = swapFun i * swapFun j
     simp only [swapFun]
     push_neg at hadj
-    apply swap_comm_of_disjoint
-    · simp only [ne_eq, Fin.ext_iff]; omega
-    · simp only [ne_eq, Fin.ext_iff]; omega
-    · simp only [ne_eq, Fin.ext_iff]
-      intro h; exact hij (Fin.ext h.symm)
-    · simp only [ne_eq, Fin.ext_iff]; omega
-    · simp only [ne_eq, Fin.ext_iff]; omega
-    · simp only [ne_eq, Fin.ext_iff]; omega
+    apply swap_comm_of_disjoint <;> simp only [ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
+    · omega
+    · omega
+    · intro h; exact hij (Fin.ext h.symm)
+    · omega
+    · omega
+    · omega
 
-/-- The canonical surjection from the braid group B_n to the symmetric group S_n,
+/-- The canonical surjection from the braid group B_{n+1} to the symmetric group S_{n+1},
 sending σ_i to the adjacent transposition (i, i+1). -/
-def toPermHom (hn : 2 ≤ n) : BraidGroup n →* Perm (Fin n) :=
-  (CoxeterMatrix.typeA (n - 1)).artinLift (swapFun n hn) (swapFun_isArtinLiftable hn)
+def toPermHom (n : ℕ) : BraidGroup (n + 1) →* Perm (Fin (n + 1)) :=
+  (CoxeterMatrix.typeA n).artinLift (swapFun n) (swapFun_isArtinLiftable n)
 
 @[simp]
-theorem toPermHom_σ (hn : 2 ≤ n) (i : Fin (n - 1)) :
-    toPermHom hn (σ i) = swapFun n hn i := by
-  simp [toPermHom, σ]
+theorem toPermHom_σ (n : ℕ) (i : Fin n) :
+    toPermHom n (σ i) = swapFun n i := by
+  change ((CoxeterMatrix.typeA n).artinLift (swapFun n) (swapFun_isArtinLiftable n))
+      ((CoxeterMatrix.typeA n).artinGenerator i) = swapFun n i
+  rw [CoxeterMatrix.artinLift_artinGenerator]
 
-/-- The surjection from B_n to S_n is surjective. -/
-theorem toPermHom_surjective (hn : 2 ≤ n) : Function.Surjective (toPermHom hn) := by
-  -- The image of toPermHom contains all adjacent transpositions, which generate Perm (Fin n)
-  -- We use mclosure_swap_castSucc_succ which is stated for Perm (Fin (m + 1)),
-  -- and transport via the equivalence Fin (n - 1 + 1) ≃ Fin n.
+/-- The surjection from B_{n+1} to S_{n+1} is surjective. -/
+theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) := by
+  -- The image of toPermHom contains all adjacent transpositions, which generate Perm (Fin (n + 1))
   intro τ
-  have hn' : n - 1 + 1 = n := by omega
-  have hgen := Equiv.Perm.mclosure_swap_castSucc_succ (n - 1)
-  -- Create the type equivalence
-  let e : Fin (n - 1 + 1) ≃ Fin n := finCongr hn'
-  let E : Perm (Fin (n - 1 + 1)) ≃* Perm (Fin n) := e.permCongrHom
-  -- τ corresponds to E.symm τ in Perm (Fin (n - 1 + 1))
-  have hτ' : E.symm τ ∈ (⊤ : Submonoid (Perm (Fin (n - 1 + 1)))) := Submonoid.mem_top _
-  rw [← hgen] at hτ'
-  -- E.symm τ is in Submonoid.closure of {swap i.castSucc i.succ}
-  -- Prove that all elements of the closure map into the range
-  suffices h : ∀ x, x ∈ Submonoid.closure (Set.range fun i : Fin (n - 1) =>
-      swap (castSucc i) (succ i)) → E x ∈ (toPermHom hn).range by
-    simpa using h (E.symm τ) hτ'
-  intro x hx
-  induction hx using Submonoid.closure_induction with
+  have hgen := Equiv.Perm.mclosure_swap_castSucc_succ n
+  have hτ : τ ∈ (⊤ : Submonoid (Perm (Fin (n + 1)))) := Submonoid.mem_top _
+  rw [← hgen] at hτ
+  -- τ is in Submonoid.closure of {swap i.castSucc i.succ}
+  induction hτ using Submonoid.closure_induction with
   | mem y hy =>
-    -- Generator case: each swap i.castSucc i.succ maps to swapFun n hn i
+    -- Generator case: each swap i.castSucc i.succ is in the range
     obtain ⟨i, rfl⟩ := hy
-    simp only [MonoidHom.mem_range]
     use σ i
-    simp only [toPermHom_σ, swapFun]
-    -- Both are the same swap, just with different Fin types
-    -- swapFun creates swap ⟨i.val, _⟩ ⟨i.val + 1, _⟩ in Perm (Fin n)
-    -- E (swap i.castSucc i.succ) conjugates swap by finCongr, which is identity on values
-    ext j
-    simp only [E, e, Equiv.permCongrHom_coe, Equiv.permCongr_apply, Equiv.swap_apply_def,
-      finCongr_symm, finCongr_apply, Fin.val_castSucc, Fin.val_succ, Fin.ext_iff, Fin.val_cast]
-    -- Now the conditions and values are in terms of i.val, i.val+1, and j.val
-    split_ifs with h1 h2 <;> simp_all
+    rw [toPermHom_σ, swapFun]
   | one =>
     -- Identity case
-    simp only [map_one, Subgroup.one_mem]
+    use 1
+    rw [map_one]
   | mul a b _ _ ha hb =>
     -- Multiplication case
-    simp only [map_mul]
-    exact Subgroup.mul_mem _ ha hb
+    obtain ⟨x, hx⟩ := ha
+    obtain ⟨y, hy⟩ := hb
+    use x * y
+    rw [map_mul, hx, hy]
 
 /-! ### Small braid groups -/
 
