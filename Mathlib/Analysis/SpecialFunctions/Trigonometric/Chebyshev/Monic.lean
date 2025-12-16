@@ -85,29 +85,21 @@ lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree 
     congr! 1 with i hi
     field
 
-theorem bddAbove_poly_interval (P : ℝ[X]) : BddAbove { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
-  have hK : IsCompact (Set.Icc (-1 : ℝ) 1) := isCompact_Icc
-  have hcont : ContinuousOn (fun x => abs (P.eval x)) (Set.Icc (-1) 1) := by
-    apply Continuous.continuousOn
-    have := P.continuous
-    continuity
-  change BddAbove ((fun x => abs (P.eval x)) '' Set.Icc (-1) 1)
-  exact IsCompact.bddAbove_image hK hcont
+theorem bddAbove (P : ℝ[X]) : BddAbove { |P.eval x| | x ∈ Set.Icc (-1) 1 } :=
+  have := P.continuous
+  have hcont : ContinuousOn (fun x => |P.eval x|) (Set.Icc (-1) 1) :=
+    Continuous.continuousOn (by continuity)
+  IsCompact.bddAbove_image isCompact_Icc hcont
 
-lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
-    (-1)^i * P.eval (cos (i * π / n)) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
-  suffices abs (P.eval (cos (i * π / n))) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } by
+lemma P_eval_bound (P : ℝ[X]) (n i : ℕ) :
+    (-1) ^ i * P.eval (cos (i * π / n)) ≤ sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } := by
+  suffices |P.eval (cos (i * π / n))| ≤ sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } by
     cases neg_one_pow_eq_or ℝ i with
     | inl h => rw [h, one_mul]; exact (abs_le'.mp this).1
     | inr h => rw [h, neg_one_mul]; exact (abs_le'.mp this).2
-  apply le_csSup (bddAbove_poly_interval P)
-  rw [Set.mem_setOf_eq]
-  use cos (i * π / n)
-  constructor
-  · apply Set.mem_Icc.mpr
-    apply abs_le.mp
-    exact abs_cos_le_one _
-  rfl
+  refine le_csSup (bddAbove P) (Set.mem_setOf.mpr ⟨cos (i * π / n), ⟨?_, rfl⟩⟩)
+  exact Set.mem_Icc.mpr <| abs_le.mp <| abs_cos_le_one _
+
 end Polynomial.Chebyshev
 
 @[expose] public section
@@ -122,13 +114,13 @@ theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree 
   suffices 1 ≤ M * 2^(n - 1) by calc
     1/2^(n - 1) ≤ (M * 2^(n - 1))/2^(n - 1) := by gcongr
     _ = M := by rw [mul_div_assoc, div_self, mul_one]; simp
-  obtain ⟨c, hpos, hsum, hform⟩ := convex_combination hn Pdeg
+  obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
   calc 1 = P.leadingCoeff := Pmonic.symm
-    _ = ∑ i ∈ Finset.Icc 0 n, (c i) * ((-1)^i * P.eval (cos (i * π / n))) := hform.symm
-    _ ≤ ∑ i ∈ Finset.Icc 0 n, (c i) * M := by
+    _ = ∑ i ∈ Finset.range (n + 1), (c i) * ((-1)^i * P.eval (cos (i * π / n))) := hform.symm
+    _ ≤ ∑ i ∈ Finset.range (n + 1), (c i) * M := by
       gcongr with i hi
       · exact le_of_lt (hpos i hi)
-      exact pointwise_bound P n i
+      exact P_eval_bound P n i
     _ = M * 2^(n - 1) := by
       rw [← Finset.sum_mul, mul_comm, hsum]
 
@@ -185,7 +177,7 @@ theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
     intro hP
     subst hP
     apply eq_of_le_of_ge
-    · apply le_csSup (bddAbove_poly_interval _)
+    · apply le_csSup (bddAbove _)
       rw [Set.mem_setOf_eq]
       use 1
       constructor
