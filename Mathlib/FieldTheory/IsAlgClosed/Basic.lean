@@ -553,7 +553,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   by_cases hdf0 : derivative f = 0
   · rw [eq_C_of_derivative_eq_zero hdf0]
     simp only [derivative_C, zero_mul, dvd_zero, implies_true]
-  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  have hdg : f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
   refine forall_imp fun a => ?_
