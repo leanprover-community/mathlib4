@@ -64,7 +64,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
-  have hGa : IsCoatom (stabilizer G a) :=  by
+  have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
   apply hGa.right
@@ -428,7 +428,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · -- trivial case : Fintype.card α ≤ 3
     rw [Nat.lt_succ_iff] at hα4
     apply alternatingGroup_le_of_index_le_two
-    rw [← Nat.mul_le_mul_right_iff (k:= Nat.card G) (Nat.card_pos),
+    rw [← Nat.mul_le_mul_right_iff (k := Nat.card G) (Nat.card_pos),
       Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
     rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]

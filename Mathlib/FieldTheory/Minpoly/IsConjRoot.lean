@@ -201,7 +201,7 @@ conjugate root of `x` if and only if `x` and `y` falls in the same orbit of the 
 group.
 -/
 theorem isConjRoot_iff_orbitRel [Normal K L] {x y : L} :
-    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y:=
+    IsConjRoot K x y ↔ MulAction.orbitRel Gal(L/K) L x y :=
   (isConjRoot_iff_exists_algEquiv)
 
 variable [IsDomain S]
