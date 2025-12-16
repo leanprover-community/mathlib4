@@ -13,6 +13,7 @@ public import Batteries.Tactic.Trans
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Int.Notation
+public import Batteries.Tactic.Lint
 
 /-!
 # Basic logic properties
