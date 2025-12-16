@@ -433,6 +433,26 @@ structure StainData where
   /-- Goals before the flexible tactic -/
   goals : List MVarId
 
+/-- Generate a "simp only [...]" suggestion for a simp/simpAll tactic.
+Returns `none` if the tactic is not simp/simpAll or if suggestion generation fails. -/
+def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
+    CoreM (Option Syntax) := do
+  match stainStx.getKind with
+  | ``Lean.Parser.Tactic.simp | ``Lean.Parser.Tactic.simpAll => try
+    let some mv := stainData.goals[0]? | return none
+    let some mvDecl := stainData.mctx.decls.find? mv | return none
+    stainData.ci.runMetaM mvDecl.lctx do
+      Lean.Meta.withMCtx stainData.mctx do
+        let ctx ← Lean.Meta.Simp.Context.mkDefault
+        let simprocs ← Lean.Meta.Simp.getSimprocs
+        let (_, stats) ← Lean.Meta.simpGoal mv ctx #[simprocs]
+        if stats.usedTheorems.map.isEmpty then
+          return none
+        let suggStx ← Lean.Elab.Tactic.mkSimpOnly stainStx stats.usedTheorems
+        return some suggStx
+  catch _ => return none
+  | _ => return none
+
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
@@ -494,24 +514,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let stainStx := stainData.stx
     let d := stainData.stained
     let stainStr := (stainStx.reprint.getD s!"{stainStx}").trimAscii
-    -- Try to generate a "simp only [...]" suggestion by re-running simp
-    let suggestion? ← match stainStx.getKind with
-      | ``Lean.Parser.Tactic.simp | ``Lean.Parser.Tactic.simpAll => try
-        let some mv := stainData.goals[0]? | pure none
-        let some mvDecl := stainData.mctx.decls.find? mv | pure none
-        stainData.ci.runMetaM mvDecl.lctx do
-          Lean.Meta.withMCtx stainData.mctx do
-            -- Create simp context and run simp to get the used theorems
-            let ctx ← Lean.Meta.Simp.Context.mkDefault
-            let simprocs ← Lean.Meta.Simp.getSimprocs
-            let (_, stats) ← Lean.Meta.simpGoal mv ctx #[simprocs]
-            if stats.usedTheorems.map.isEmpty then
-              return none
-            -- Generate the "simp only [...]" syntax
-            let suggStx ← Lean.Elab.Tactic.mkSimpOnly stainStx stats.usedTheorems
-            return some suggStx
-      catch _ => pure none
-      | _ => pure none
+    let suggestion? ← liftCoreM <| generateSimpSuggestion stainData stainStx
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp =>
