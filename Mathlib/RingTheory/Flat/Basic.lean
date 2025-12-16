@@ -308,7 +308,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
@@ -325,7 +325,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.rTensor_exact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
@@ -339,7 +339,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
-    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp  hx
+    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor.
   See `Module.Flat.iff_lTensor_exact'` to generalize the universe of
@@ -599,7 +599,7 @@ theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
   obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) :=
+      (Algebra.TensorProduct.map (AlgHom.id C C) D.val) :=
     Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
   obtain ⟨z, rfl⟩ := hD.2
   have h_notReduced : ¬IsReduced (C ⊗[R] D) := by
