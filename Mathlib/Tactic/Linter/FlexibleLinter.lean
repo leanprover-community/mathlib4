@@ -156,17 +156,16 @@ where `stx` is a syntax node such that `take? stx` is `true` and
 
 A typical usage is to find the goals following a `simp` application.
 -/
-partial
 def extractCtxAndGoals : InfoTree →
-    Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId)
-  | .node k args =>
-    let kargs := (args.map extractCtxAndGoals).foldl (· ++ ·) #[]
+    Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId) :=
+  fun t => go t |>.run #[] |>.2
+where go : InfoTree → StateM _ Unit
+  | .node k args => do
     if let .ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
-        #[(i.stx, i.mctxBefore, i.mctxAfter, i.goalsTargetedBy, i.goalsCreatedBy)] ++ kargs
-      else kargs
-    else kargs
-  | .context _ t => extractCtxAndGoals t
+        modify (·.push (i.stx, i.mctxBefore, i.mctxAfter, i.goalsTargetedBy, i.goalsCreatedBy))
+    args.forM go
+  | .context _ t => go t
   | _ => default
 
 /-- `Stained` is the type of the stained locations: it can be
