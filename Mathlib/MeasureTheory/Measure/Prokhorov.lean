@@ -319,8 +319,8 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   let μ : FiniteMeasure E := ⟨Measure.sum (fun n ↦ (ν n : Measure E)), ⟨B.trans_lt (by simp)⟩⟩
   -- first, we show that it is indeed a limit of the ultrafilter
   have L : Tendsto id f (𝓝 μ) := by
-    -- we need to check the convergence of the integral of a bounded continuous function
-    -- finite sums of restrictions to `disjointed K n` converge obviously to finite sums of `νₙ`,
+    -- We need to check the convergence of the integral of a bounded continuous function.
+    -- Finite sums of restrictions to `disjointed K n` converge obviously to finite sums of `νₙ`,
     -- but we need to control the infinite sums. For this, we split `ε` in 3, argue that for `μ`
     -- this is the limit of finite sums, and inside the space we can uniformly truncate the sum
     -- also as the tail is controlled by `uₙ`. Once we have fixed a truncation level satisfying
@@ -398,7 +398,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   -- Let us now prove that `μ (Kₙᶜ) ≤ uₙ`. We argue differently depending on whether the space is
   -- normal or if the sequence `K` is monotone.
   rcases h with h | h
-  · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the space is normal, we argue that `μ (Kₙᶜ)` is the
+  · -- To show that `μ (Kₙᶜ) ≤ uₙ` when the space is normal, we argue that `μ (Kₙᶜ)` is the
     -- supremum of the integrals of continuous functions supported in `Kₙᶜ` and bounded by `1`,
     -- as the measure is inner regular. Therefore, we are reduced to a question about integrals of
     -- continuous functions, for which we can take advantage of the weak convergence.
@@ -436,14 +436,12 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     _ ≤ u n := by
       norm_cast
       exact hρ.2 n
-  · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the sequence is monotone, we argue that the only
-    -- contribution to `μ (Kₙᶜ)` comes from the measures `νᵢ` with `i > n`.
-    have A (i : ℕ) (hi : i ≤ n) : ν i (K n)ᶜ = 0 := by
-      apply le_antisymm ?_ bot_le
-      apply le_trans ?_ (νK i).le
-      gcongr
-      rw [Monotone.partialSups_eq h]
-      exact h hi
+  · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the sequence `K` is monotone, we argue that the only
+    -- contribution to `μ (Kₙᶜ)` comes from the measures `νᵢ` with `i > n`. Then we restrict to
+    -- a finite sum `∑ i ∈ Ioc n m, νᵢ`, and argue that it is the limit of
+    -- `∑ i ∈ Ioc n m, ρ.restricted (K i \ K(i - 1))`, i.e., `ρ.restricted (K m \ K n)`. The total
+    -- mass converges (thanks to the weak convergence of finite sums), and the total mass of
+    -- `ρ.restricted (K m \ K n)` is bounded by `ρ (Kₙᶜ) ≤ uₙ`.
     suffices (μ : Measure E) (K n)ᶜ ≤ u n by
       apply ENNReal.coe_le_coe.1
       convert this
@@ -463,7 +461,13 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
           not_true_eq_false, imp_false, not_lt]
         intro i hi h'i
-        exact (null_iff_toMeasure_null (ν i) (K n)ᶜ).mp (A i h'i)
+        have : ν i (K n)ᶜ = 0 := by
+          apply le_antisymm ?_ bot_le
+          apply le_trans ?_ (νK i).le
+          gcongr
+          rw [Monotone.partialSups_eq h]
+          exact h h'i
+        exact (null_iff_toMeasure_null (ν i) (K n)ᶜ).mp this
     rw [this]
     suffices ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ ≤ u n by
       apply le_trans _ this
