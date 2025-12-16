@@ -339,7 +339,7 @@ open Metric Set
 
 open scoped Topology
 
-lemma paramod_tendto_ndhs_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.cuspFunction h f) 0) :
+lemma periodic_tendto_ndhs_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.cuspFunction h f) 0) :
     Tendsto (fun x ↦ f (Periodic.invQParam h x)) (𝓝[≠] 0) (𝓝 (Periodic.cuspFunction h f 0)) := by
   apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
   rw [@eventuallyEq_nhdsWithin_iff, eventually_iff_exists_mem]
@@ -350,61 +350,53 @@ lemma paramod_tendto_ndhs_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.
     apply Function.Periodic.cuspFunction_eq_of_nonzero
     simpa only [ne_eq, mem_compl_iff, mem_singleton_iff] using hy0
 
-lemma modform_tendto_ndhs_zero {k : ℤ} [ModularFormClass F Γ k] (hh : 0 < h)
+lemma modform_cuspfunction_cts_at_zero {k : ℤ} [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
-    Tendsto (fun x ↦ (⇑f ∘ ↑ofComplex) (Periodic.invQParam h x)) (𝓝[≠] 0)
-    (𝓝 (cuspFunction h f 0)) := by
-  simp only [comp_apply]
-  have h1 := Function.Periodic.boundedAtFilter_cuspFunction hh
-    (bounded_at_infty_comp_ofComplex f hi)
-  have h2 : Tendsto (cuspFunction h f) (𝓝[≠] 0) (𝓝 (cuspFunction h f 0)) := by
-    apply tendsto_nhdsWithin_of_tendsto_nhds
-    apply (Function.Periodic.differentiableAt_cuspFunction_zero hh ?_ ?_ ?_).continuousAt.tendsto
-    · apply SlashInvariantFormClass.periodic_comp_ofComplex _ hΓ
-    · simp only [eventually_comap, eventually_atTop, ge_iff_le]
-      use 1
-      intro b hb a ha
-      apply ModularFormClass.differentiableAt_comp_ofComplex (z := a)
-      rw [ha]
-      linarith
-    · apply ModularFormClass.bounded_at_infty_comp_ofComplex
-      apply hi
-  apply h2.congr'
-  rw [@eventuallyEq_nhdsWithin_iff, eventually_iff_exists_mem]
-  use ball 0 1
-  constructor
-  · apply Metric.ball_mem_nhds
-    exact Real.zero_lt_one
-  intro y hy hy0
-  apply Function.Periodic.cuspFunction_eq_of_nonzero
-  simpa only [ne_eq, mem_compl_iff, mem_singleton_iff] using hy0
+    ContinuousAt (Periodic.cuspFunction h (⇑f ∘ ↑ofComplex)) 0 := by
+  apply (Function.Periodic.differentiableAt_cuspFunction_zero hh ?_ ?_ ?_).continuousAt
+  · apply SlashInvariantFormClass.periodic_comp_ofComplex _ hΓ
+  · simp only [eventually_comap, eventually_atTop, ge_iff_le]
+    use 1
+    intro b hb a ha
+    apply ModularFormClass.differentiableAt_comp_ofComplex (z := a)
+    rw [ha]
+    linarith
+  · apply ModularFormClass.bounded_at_infty_comp_ofComplex
+    apply hi
 
-theorem cuspFunction_mul_zero [Γ.HasDetPlusMinusOne] (a b : ℤ) (f : ModularForm Γ a)
-    (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
-    cuspFunction h (f.mul g) 0 = cuspFunction h f 0 * cuspFunction h g 0 := by
-  rw [cuspFunction, Periodic.cuspFunction, ModularForm.coe_mul, update_self]
+theorem cuspFunction_mul_zero {f g : ℂ → ℂ} (hfcts : ContinuousAt (Periodic.cuspFunction h f) 0)
+    (hgcts : ContinuousAt (Periodic.cuspFunction h g) 0) : Periodic.cuspFunction h (f * g) 0 =
+    Periodic.cuspFunction h f 0 * Periodic.cuspFunction h g 0 := by
+  rw [Periodic.cuspFunction, update_self]
   apply Filter.Tendsto.limUnder_eq
-  have : (⇑f * ⇑g) ∘ ↑ofComplex = (⇑f ∘ ↑ofComplex) * (⇑g ∘ ↑ofComplex) := by
-    ext y
-    simp only [comp_apply, Pi.mul_apply]
-  rw [this]
-  exact Filter.Tendsto.mul (modform_tendto_ndhs_zero f hh hΓ hi)
-    (modform_tendto_ndhs_zero g hh hΓ hi)
+  exact Filter.Tendsto.mul (periodic_tendto_ndhs_zero hfcts)
+    (periodic_tendto_ndhs_zero hgcts)
 
-lemma qExpansion_mul_coeff_zero [Γ.HasDetPlusMinusOne] (a b : ℤ) (f : ModularForm Γ a)
-    (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
-    (qExpansion h (f.mul g)).coeff 0 = ((qExpansion h f).coeff 0) * ((qExpansion h g)).coeff 0 := by
-    simpa [qExpansion_coeff] using cuspFunction_mul_zero a b f g hh hΓ hi
+instance : FunLike (ℍ → ℂ) ℍ ℂ where
+  coe := id
+  coe_injective' := injective_id
 
-lemma cuspFunction_mul [Γ.HasDetPlusMinusOne] (a b : ℤ) (f : ModularForm Γ a)
-    (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
-    cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g := by
+lemma qExpansion_mul_coeff_zero' {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    (qExpansion h (f * g)).coeff 0 = ((qExpansion h f).coeff 0) * ((qExpansion h g)).coeff 0 := by
+    simpa [qExpansion_coeff] using cuspFunction_mul_zero hfcts hgcts
+
+lemma cuspFunction_mul' {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f * g) = cuspFunction h f * cuspFunction h g := by
   ext z
   by_cases H : z = 0
   · rw [H]
     simp only [Pi.mul_apply]
-    apply cuspFunction_mul_zero a b f g hh hΓ hi
+    apply cuspFunction_mul_zero hfcts hgcts
   · simp [cuspFunction, Periodic.cuspFunction, H]
+
+lemma cuspFunction_mul [Γ.HasDetPlusMinusOne] (a b : ℤ) (f : ModularForm Γ a)
+    (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
+    cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g := by
+  exact cuspFunction_mul'
+    (modform_cuspfunction_cts_at_zero f hh hΓ hi)
+    (modform_cuspfunction_cts_at_zero g hh hΓ hi)
 
 theorem derivWithin_mul2 (f g : ℂ → ℂ) (s : Set ℂ) (hf : DifferentiableOn ℂ f s)
     (hd : DifferentiableOn ℂ g s) :
@@ -468,24 +460,28 @@ lemma iteratedDeriv_eq_iteratedDerivWithin (n : ℕ) (f : ℂ → ℂ) (s : Set 
 
 open Nat
 
-lemma qExpansion_mul_coeff [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : ℤ)
-    (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
-    (hi : IsCusp OnePoint.infty Γ) : qExpansion h (f.mul g) = qExpansion h f * qExpansion h g := by
+lemma qExpansion_mul_coeff' {f g : ℍ → ℂ} (s : Set ℂ) (hsO : IsOpen s) (hs : 0 ∈ s)
+    (hf : ContDiffOn ℂ ⊤ (cuspFunction h f) s) (hg : ContDiffOn ℂ ⊤ (cuspFunction h g) s) :
+    qExpansion h (f * g) = qExpansion h f * qExpansion h g := by
   ext m
   induction m with
-  | zero => simpa using qExpansion_mul_coeff_zero a b f g hh hΓ hi
+  | zero =>
+    simpa using qExpansion_mul_coeff_zero'
+      (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
+      (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
   | succ m hm =>
-    simp_rw [PowerSeries.coeff_mul ,qExpansion_coeff, cuspFunction_mul a b f g hh hΓ hi] at *
-    have :=iteratedDerivWithin_mul (f := cuspFunction h f) (g := cuspFunction h g) (Metric.ball 0 1)
-      (isOpen_ball) 0 (by simp) (m+1) ?_ ?_
-    · simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m+1) _ (Metric.ball 0 1) (isOpen_ball) 0
-        (by simp)] at this
+    have H := cuspFunction_mul' (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
+      (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
+    simp only [instFunLikeForallUpperHalfPlaneComplex, qExpansion_coeff, id_eq, H,
+      PowerSeries.coeff_mul] at *
+    have := iteratedDerivWithin_mul (f := cuspFunction h f) (g := cuspFunction h g) s hsO 0
+      hs (m + 1) hf hg
+    · simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m+1) _ s hsO 0 hs] at this
       conv at this =>
         enter [2,2]
         intro n
-        rw [← iteratedDeriv_eq_iteratedDerivWithin n _ (Metric.ball 0 1) (isOpen_ball) 0 (by simp)]
-        rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1 -n) _ (Metric.ball 0 1) (isOpen_ball) 0
-          (by simp)]
+        rw [← iteratedDeriv_eq_iteratedDerivWithin n _ s hsO 0 hs]
+        rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1 - n) _ s hsO 0 hs]
       rw [this]
       simp only [Nat.succ_eq_add_one]
       have h0 : ((m + 1)! : ℂ) ≠ 0 := by
@@ -512,16 +508,29 @@ lemma qExpansion_mul_coeff [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : 
       rw [Nat.cast_choose ℂ (b := m + 1) (a := x)]
       · field_simp
       omega
-    · refine DifferentiableOn.contDiffOn ?_ (isOpen_ball)
-      intro y hy
-      apply DifferentiableAt.differentiableWithinAt
-      apply differentiableAt_cuspFunction f hh hΓ
-      simpa using hy
-    · refine DifferentiableOn.contDiffOn ?_ (isOpen_ball)
-      intro y hy
-      apply DifferentiableAt.differentiableWithinAt
-      apply differentiableAt_cuspFunction g hh hΓ
-      simpa using hy
+
+lemma qExpansion_mul_coefff [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : ℤ)
+    (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    qExpansion h (f.mul g) = qExpansion h f * qExpansion h g := by
+  apply qExpansion_mul_coeff' (Metric.ball 0 1) (isOpen_ball) (by simp)
+  · refine DifferentiableOn.contDiffOn ?_ (isOpen_ball)
+    intro y hy
+    apply DifferentiableAt.differentiableWithinAt
+    apply differentiableAt_cuspFunction f hh hΓ
+    simpa using hy
+  · refine DifferentiableOn.contDiffOn ?_ (isOpen_ball)
+    intro y hy
+    apply DifferentiableAt.differentiableWithinAt
+    apply differentiableAt_cuspFunction g hh hΓ
+    simpa using hy
+
+-- Proving this here spares us from having to assume `Γ` has the discrete topology.
+lemma qExpansion_mul_coeff_zero [Γ.HasDetPlusMinusOne] (a b : ℤ) (f : ModularForm Γ a)
+    (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (hi : IsCusp OnePoint.infty Γ) :
+    (qExpansion h (f.mul g)).coeff 0 = ((qExpansion h f).coeff 0) * ((qExpansion h g)).coeff 0 := by
+  apply qExpansion_mul_coeff_zero'
+    (modform_cuspfunction_cts_at_zero f hh hΓ hi)
+    (modform_cuspfunction_cts_at_zero g hh hΓ hi)
 
 
 end ring
