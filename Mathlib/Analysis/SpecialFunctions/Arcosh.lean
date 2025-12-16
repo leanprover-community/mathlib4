@@ -167,7 +167,7 @@ theorem contDiffAt_arcosh {n : WithTop ℕ∞} {x : ℝ} (hx : x ∈ Ioi 1) : Co
   refine coshOpenPartialHomeomorph.contDiffAt_symm_deriv ?_ hx (hasDerivAt_cosh _)
     contDiff_cosh.contDiffAt
   rw [ne_eq, sinh_eq_zero]
-  exact ne_of_gt (arcosh_pos hx)
+  exact (arcosh_pos hx).ne'
 
 theorem contDiffOn_arcosh {n : WithTop ℕ∞} : ContDiffOn ℝ n arcosh (Ioi 1) := fun _ hx =>
   (contDiffAt_arcosh hx).contDiffWithinAt
