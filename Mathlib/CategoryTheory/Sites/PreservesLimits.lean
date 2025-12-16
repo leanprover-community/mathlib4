@@ -18,9 +18,9 @@ universe v' v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} [Subcanonical J]
   {K : Type*} [Category K]
-  [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val]
 
-instance : PreservesColimitsOfShape K J.yoneda where
+instance [∀ X : Sheaf J (Type v), PreservesLimitsOfShape Kᵒᵖ X.val]
+    : PreservesColimitsOfShape K J.yoneda where
   preservesColimit {F} := { preserves {c} hc := ⟨by
     suffices IsLimit (coyoneda.mapCone (J.yoneda.mapCocone c).op) from
       isColimitOfOp (isLimitOfReflects _ this)
@@ -29,6 +29,17 @@ instance : PreservesColimitsOfShape K J.yoneda where
     suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
       (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
+
+instance [∀ X : Sheaf J (Type v), PreservesColimitsOfShape Kᵒᵖ X.val]
+    : PreservesLimitsOfShape K J.yoneda where
+  preservesLimit {F} := { preserves {c} hc := ⟨by
+    suffices IsColimit (coyoneda.mapCocone (J.yoneda.mapCone c).op) from
+      isLimitOfOp (isColimitOfReflects _ this)
+    apply evaluationJointlyReflectsColimits
+    intro X
+    suffices IsColimit ((X.val ⋙ uliftFunctor).mapCocone c.op) from IsColimit.mapCoconeEquiv
+      (isoWhiskerRight (J.largeCurriedYonedaLemma) ((evaluation _ _ ).obj X)).symm this
+    exact isColimitOfPreserves _ hc.op⟩ }
 
 instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val]
     : PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
@@ -40,6 +51,17 @@ instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.va
     suffices IsLimit ((X.val ⋙ uliftFunctor).mapCone c.op) from IsLimit.mapConeEquiv
       (isoWhiskerRight (J.largeCurriedUliftYonedaLemma) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩ }
+
+instance [∀ X : Sheaf J (Type (max v v')), PreservesColimitsOfShape Kᵒᵖ X.val]
+    : PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+  preservesLimit {F} := { preserves {c} hc := ⟨by
+    suffices IsColimit (coyoneda.mapCocone (J.uliftYoneda.mapCone c).op) from
+      isLimitOfOp (isColimitOfReflects _ this)
+    apply evaluationJointlyReflectsColimits
+    intro X
+    suffices IsColimit ((X.val ⋙ uliftFunctor).mapCocone c.op) from IsColimit.mapCoconeEquiv
+      (isoWhiskerRight (J.largeCurriedUliftYonedaLemma) ((evaluation _ _ ).obj X)).symm this
+    exact isColimitOfPreserves _ hc.op⟩ }
 
 instance Subcanonical.preservesFiniteCoproductsYoneda
     [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.val] :
