@@ -801,7 +801,7 @@ variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [ContinuousIn
 variable [Algebra R A]
 
 @[fun_prop]
-lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (·⁻¹) (spectrum R (a : A)) :=
+lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (· ⁻¹) (spectrum R (a : A)) :=
   continuousOn_inv₀.mono <| by
     simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
@@ -881,7 +881,7 @@ lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
 variable [UniqueHom R A]
 
 lemma cfc_comp_neg (hf : ContinuousOn f ((-·) '' (spectrum R (a : A))) := by cfc_cont_tac)
-    (ha : p a := by cfc_tac) : cfc (f <| -·) a = cfc f (-a) := by
+    (ha : p a := by cfc_tac) : cfc (f <| - ·) a = cfc f (-a) := by
   rw [cfc_comp' .., cfc_neg_id _]
 
 end Neg
