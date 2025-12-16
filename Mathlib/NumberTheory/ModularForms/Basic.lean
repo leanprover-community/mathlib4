@@ -339,18 +339,7 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
-/-- The modular form of weight `n * k` given by the product of `n` modular forms of weight `k`. -/
-def finprod_equal_weights
-    {n : ℕ} {k : ℤ} [Γ.HasDetPlusMinusOne] (γ : Fin n → ModularForm Γ k) :
-  ModularForm Γ (n * k) := by
-  induction n with
-  | zero =>
-    rw [Nat.cast_zero, zero_mul]
-    exact 0
-  | succ n ih =>
-    let γ' : Fin n → ModularForm Γ k := fun i ↦ γ i.castSuccEmb
-    simp only [Nat.cast_add, Nat.cast_one, add_mul, one_mul]
-    exact (ih γ').mul (γ (Fin.last n))
+
 
 /-- The modular form of weight `∑ i, k i` given by the product of `n` modular forms of
 weights `k i`. -/
@@ -365,6 +354,16 @@ def finprod_add_weights {n : ℕ} (k : Fin n → ℤ) [Γ.HasDetPlusMinusOne]
     let γ' : (i : Fin n) → ModularForm Γ (k i.castSuccEmb) := fun i ↦ γ i.castSuccEmb
     simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.sum_singleton]
     exact (ih (fun i ↦ k (Fin.castAdd 1 i)) γ').mul (γ (Fin.natAdd n 0))
+
+/-- The modular form of weight `n * k` given by the product of `n` modular forms of weight `k`. -/
+def finprod_equal_weights
+    {n : ℕ} {k : ℤ} [Γ.HasDetPlusMinusOne] (γ : Fin n → ModularForm Γ k) :
+  ModularForm Γ (n * k) := by
+    have : ↑n * k = ∑ (i : Fin n), k  := by simp only [Finset.sum_const, Finset.card_univ,
+      Fintype.card_fin, Int.nsmul_eq_mul]
+    rw [this]
+    exact finprod_add_weights (fun i ↦ k) γ
+
 
 @[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
 
