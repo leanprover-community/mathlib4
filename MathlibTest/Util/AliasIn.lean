@@ -22,8 +22,13 @@ example : Foo.Baz.baz = 1 := rfl
 #guard_msgs in
 #check Foo.Baz.Qux.baz3
 
+attribute [alias_in Another.Alias] Foo.Bar.baz3
+/-- info: Another.Alias.baz3 : Nat -/
+#guard_msgs in
+#check Another.Alias.baz3
+
 /--
-error: Foo.Bar.baz4 has only 2 namespaces, cannot remove 3. ⏎
+error: Foo.Bar.baz4 has only 2 namespaces, cannot remove 3.
 Use `@[alias_in Baz.Qux 2]` instead.
 -/
 #guard_msgs in
@@ -31,11 +36,19 @@ Use `@[alias_in Baz.Qux 2]` instead.
 
 
 /--
-error: Bar.baz4 has only 1 namespaces, cannot remove 3. ⏎
+error: Bar.baz4 has only 1 namespaces, cannot remove 3.
 Use `@[alias_in Baz.Qux.Foo 1]` instead.
 -/
 #guard_msgs in
 @[alias_in Baz.Qux.Foo] def Bar.baz4 : Nat := 2
+
+/-- error: The `alias_in` attribute cannot be local. -/
+#guard_msgs in
+@[local alias_in Baz] def non.local : Nat := 2
+
+/-- error: The `alias_in` attribute cannot be scoped. -/
+#guard_msgs in
+@[scoped alias_in Baz] def non.scoped : Nat := 2
 
 
 /-- Look at this docstring! -/
