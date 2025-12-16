@@ -14,9 +14,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 # Lagrange interpolation
 
 ## Main definitions
-* In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-  indexing of the field over some type. We call the image of v on s the interpolation nodes,
-  though strictly unique nodes are only defined when v is injective on s.
+* In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
+  indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
+  though strictly unique nodes are only defined when `v` is injective on `s`.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
   the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
   are distinct.

@@ -446,6 +446,9 @@ theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
 @[deprecated noncommProd_mulSingle (since := "2025-11-25")]
 alias noncommProd_mul_single := noncommProd_mulSingle
 
+@[deprecated (since := "2025-12-09")]
+alias noncommSum_add_single := noncommSum_single
+
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by

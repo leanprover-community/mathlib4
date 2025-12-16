@@ -259,8 +259,8 @@ lemma simplicialEvalσ_of_isAdmissible
       simp only [Fin.predAbove, a₀]
       split_ifs with h₁ h₂ h₂
       · rfl
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
       · rfl
     have := h_rec _ _ hL.of_cons (by grind) hj
     have ha₀ : Fin.ofNat (m₂ + 1) a = a₀ := by ext; simpa [a₀] using hL.head.prop

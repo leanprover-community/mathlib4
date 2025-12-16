@@ -454,10 +454,10 @@ lemma pre_comp_map (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
     pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
 
 variable {F} in
-lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
+lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category* E]
     (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K= map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
 
-variable {E : Type*} [Category E] in
+variable {E : Type*} [Category* E] in
 @[simp]
 lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H ⋙ pre F G := rfl
 
@@ -518,7 +518,7 @@ end Pre
 
 section FunctorFrom
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck

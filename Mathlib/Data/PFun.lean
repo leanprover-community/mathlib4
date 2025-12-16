@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Batteries.WF
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
@@ -497,7 +496,6 @@ theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage
 @[simp]
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
-  ext
   grind
 
 @[simp]

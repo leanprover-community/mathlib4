@@ -225,7 +225,7 @@ theorem mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
 theorem map_range : f.range.map g = (g.comp f).range := by
   simpa only [range_eq_map] using (⊤ : NonUnitalSubring R).map_map g f
 
-/-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
+/-- The range of a ring homomorphism is a fintype if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
 instance fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=

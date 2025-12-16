@@ -72,9 +72,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
 
 theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
     cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p := by
-  rw [cardPowDegree]
-  dsimp
-  convert rfl
+  simp [cardPowDegree]
 
 @[simp]
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl

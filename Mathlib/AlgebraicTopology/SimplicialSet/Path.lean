@@ -105,10 +105,10 @@ def mk₂ {n : ℕ} {X : Truncated.{u} (n + 1)} (p q : X.Path 1)
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
 def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
-  vertex i := f.vertex ⟨j + i, by omega⟩
-  arrow i := f.arrow ⟨j + i, by omega⟩
-  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
-  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+  vertex i := f.vertex ⟨j + i, by lia⟩
+  arrow i := f.arrow ⟨j + i, by lia⟩
+  arrow_src i := f.arrow_src ⟨j + i, by lia⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by lia⟩
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
@@ -255,7 +255,7 @@ def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l
   Truncated.Path.interval f j l h
 
 lemma arrow_interval (f : Path X n) (j l : ℕ) (k' : Fin l) (k : Fin n)
-    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by grind) :
+    (h : j + l ≤ n := by lia) (hkk' : j + k' = k := by grind) :
     (f.interval j l h).arrow k' = f.arrow k := by
   dsimp [interval, arrow, Truncated.Path.interval, Truncated.Path.arrow]
   congr

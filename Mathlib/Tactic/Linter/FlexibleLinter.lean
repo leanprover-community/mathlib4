@@ -320,8 +320,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.FieldSimp.field,
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
-    ``Lean.Parser.Tactic.cutsat,
-    `tacticLia,
+    ``Lean.Parser.Tactic.lia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
@@ -457,7 +456,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trim
+    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trimAscii
     let msg := match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp =>
         m!"'{stainStr}' is a flexible tactic modifying '{d}'. \

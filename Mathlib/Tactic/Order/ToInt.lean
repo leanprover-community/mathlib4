@@ -14,13 +14,13 @@ public meta import Mathlib.Util.Qq
 # Translating linear orders to ℤ
 
 In this file we implement the translation of a problem in any linearly ordered type to a problem in
-`ℤ`. This allows us to use the `omega` tactic to solve it.
+`ℤ`. This allows us to use the `lia` tactic to solve it.
 
 While the core algorithm of the `order` tactic is complete for the theory of linear orders in the
 signature (`<`, `≤`),
 it becomes incomplete in the signature with lattice operations `⊓` and `⊔`. With these operations,
 the problem becomes NP-hard, and the idea is to reuse a smart and efficient procedure, such as
-`omega`.
+`lia`.
 
 ## TODO
 
@@ -34,7 +34,7 @@ namespace Mathlib.Tactic.Order.ToInt
 variable {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
 
 /-- The main theorem asserting the existence of a translation.
-We use `Classical.chooose` to turn this into a value for use in the `order` tactic,
+We use `Classical.choose` to turn this into a value for use in the `order` tactic,
 see `toInt`.
 -/
 theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
