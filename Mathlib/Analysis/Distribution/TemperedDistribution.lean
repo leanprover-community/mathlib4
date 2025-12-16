@@ -86,8 +86,6 @@ variable [CompleteSpace F]
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
-/-- Define a tempered distribution from a L^p function.
-
 /-- Define a tempered distribution from a L^p function. -/
 def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
@@ -100,8 +98,8 @@ def toTemperedDistribution {p : ℝ≥0∞}
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, ℂ)) :
     toTemperedDistribution f g = ∫ (x : E), g x • f x ∂μ := by
-  simp only [toTemperedDistribution, toTemperedDistributionAux, toPointwiseConvergenceCLM_apply,
-    comp_apply _, toLpCLM_apply, lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
+  simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply, comp_apply _, toLpCLM_apply,
+    lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
   apply integral_congr_ae
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
@@ -116,12 +114,8 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
     (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     Lp F p μ →L[ℂ] 𝓢'(E, F) where
   toFun := toTemperedDistribution
-  map_add' f g := by
-    ext x
-    simp [Lp.toTemperedDistribution, Lp.toTemperedDistributionAux]
-  map_smul' a f := by
-    ext x
-    simp [Lp.toTemperedDistribution, Lp.toTemperedDistributionAux]
+  map_add' f g := by simp [Lp.toTemperedDistribution]
+  map_smul' a f := by simp [Lp.toTemperedDistribution]
   cont := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
