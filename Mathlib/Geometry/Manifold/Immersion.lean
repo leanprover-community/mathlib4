@@ -81,6 +81,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
 * If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
   implies `f` is an immersion at `x`.
+* `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`:
+  a local diffeomorphism (at `x`) is an immersion (at `x`)
+* `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion
 
 ## References
 

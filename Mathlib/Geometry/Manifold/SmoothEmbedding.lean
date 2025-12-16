@@ -32,6 +32,8 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.contMDiff`: if `f` is a smooth embedding, it is `C^n`.
 * `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
   is a smooth embedding
+* `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
+  a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
 
 -/
 
