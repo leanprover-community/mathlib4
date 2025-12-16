@@ -181,9 +181,9 @@ lemma pow_mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleC
     (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
-  induction k
-  · simp at kpos
-  · rename_i k ih
+  induction k with
+  | zero => simp at kpos
+  | succ k ih =>
     rw [pow_succ]
     by_cases eq0 : k = 0
     · rw [eq0, pow_zero, one_mul]
@@ -200,9 +200,9 @@ lemma ext_subsingleton_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R) (n
     ∀ M : ModuleCat.{v} R, [Nontrivial M] → [Module.Finite R M] → I • (⊤ : Submodule R M) < ⊤ →
     (∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) →
     ∀ i < n, Subsingleton (Ext N M i) := by
-  induction n
-  · simp
-  · rename_i n ih
+  induction n with
+  | zero => simp
+  | succ n ih =>
     rintro M Mntr Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
