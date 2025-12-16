@@ -93,12 +93,19 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
 
 open Matrix
 
-variable {n : Type*} [Fintype n] [DecidableEq n]
+variable {n : Type*} [Fintype n]
+
+public theorem Matrix.AlgEquiv.coe_eq_conjugate {m : Type*} [Fintype m] [DecidableEq m] [DecidableEq n] {K : Type*} [Field K]
+    (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
+    ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V := by
+  let e : m ≃ n :=
+    Fintype.equivOfCardEq <| by simpa [Module.finrank_matrix, ← sq] using f.toLinearEquiv.finrank_eq
+  sorry
 
 -- TODO: change `Matrix` to any central and simple finite algebra
 -- and then also add the `AlgHom` version of this
 -- and then also move this file outside of the `Matrix` folder
-public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct {K : Type*} [Field K]
+public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct [DecidableEq n] {K : Type*} [Field K]
     (f : Matrix n n K ≃ₐ[K] Matrix n n K) :
     ∃ U : GL n K, f = MulSemiringAction.toAlgEquiv K (G := ConjAct (GL n K)) _ U := by
   obtain ⟨U, hU⟩ := ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv').eq_linearEquivConjAlgEquiv
@@ -114,10 +121,12 @@ public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct {K : Type*} [Fiel
   simp [ConjAct.ofConjAct, GeneralLinearGroup.toLin, LinearMap.GeneralLinearGroup.ofLinearEquiv,
     LinearMap.toMatrixAlgEquiv', ← LinearMap.toMatrix'_comp]
 
+open ComplexOrder MatrixOrder
+
 -- TODO: change `Matrix` to any central, simple and star-ordered finite algebra
 -- and then also add the `StarAlgHom` version of this
-open ComplexOrder MatrixOrder in
-public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut [DecidableEq n]
+    (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
     ∃ U : unitaryGroup n 𝕜, f = Unitary.conjStarAlgAut 𝕜 _ U := by
   obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct
   have := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := 𝕜) 1 f (by simp)
