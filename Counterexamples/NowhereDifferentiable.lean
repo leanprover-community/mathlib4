@@ -19,7 +19,7 @@ a positive odd integer $b$ such that
 $$ab > 1 + \frac{3}{2}\pi$
 
 which is the original bound given by Karl Weierstrass. There is a better bound $ab \ge 1$ given by
-[G. H. Hardy][hardyweierstrass], but it is not implemented here.
+[G. H. Hardy][hardyweierstrass] with a less elementary proof, which is not implemented here.
 
 ## References
 
