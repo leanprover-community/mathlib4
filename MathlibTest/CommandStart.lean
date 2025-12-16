@@ -1,6 +1,6 @@
 module
 
-public import Aesop.Frontend.Attribute
+public import Aesop.Frontend.Command
 import all Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Lemma
@@ -78,36 +78,6 @@ example    :   True∧
 warning: add space in the source
 
 This part of the code
-  'first|assumption|'
-should be written as
-  'first |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'first|assumption|'
-should be written as
-  '| assumption'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
-  'first|assumption|'
-should be written as
-  'assumption |'
-
-
-Note: This linter can be disabled with `set_option linter.style.commandStart false`
----
-warning: add space in the source
-
-This part of the code
   '·{exact'
 should be written as
   '· {'
@@ -171,6 +141,36 @@ This part of the code
   '?_    ;'
 should be written as
   '?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'first |'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'assumption |'
 
 
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
