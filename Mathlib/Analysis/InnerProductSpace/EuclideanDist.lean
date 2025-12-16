@@ -126,7 +126,7 @@ lemma image_closedBall_eq_metric_closedBall (x : G) (r : ℝ) :
   refine ⟨toEuclidean.symm y, ?_, ContinuousLinearEquiv.apply_symm_apply _ _⟩
   simpa [Euclidean.closedBall, Euclidean.dist]
 
-lemma diam_closed_ball_eq_two_mul_radius' [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+lemma diam_closedBall_eq_two_mul_radius' [Nontrivial G] (x : G) {r : ℝ} (hr : 0 ≤ r) :
     Metric.diam (Metric.closedBall (toEuclidean x) r) = 2 * r := by
   apply le_antisymm (Metric.diam_closedBall hr)
   let x₁ := (toEuclidean x) + EuclideanSpace.single ⟨0, Module.finrank_pos⟩ r
@@ -136,33 +136,22 @@ lemma diam_closed_ball_eq_two_mul_radius' [Nontrivial G] (x : G) (r : ℝ) (hr :
   · exact Metric.isBounded_closedBall
   · rw [Metric.mem_closedBall, dist_self_add_left,
       EuclideanSpace.norm_single, Real.norm_eq_abs, abs_of_nonneg hr]
-  · simp only [Metric.mem_closedBall, dist_self_sub_left, EuclideanSpace.norm_eq,
-      EuclideanSpace.single_apply, Real.norm_eq_abs, sq_abs, ite_pow, ne_eq, OfNat.ofNat_ne_zero,
-      not_false_eq_true, zero_pow, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, hr,
-      Real.sqrt_sq, le_refl, x₂]
+  · simp [EuclideanSpace.norm_eq, hr, x₂]
   · norm_num [dist_eq_norm, EuclideanSpace.norm_eq]
     rw [Finset.sum_eq_single ⟨0, Module.finrank_pos⟩]
-    · simp_all only [PiLp.add_apply, EuclideanSpace.single_apply, ↓reduceIte, PiLp.sub_apply,
-        add_sub_sub_cancel, nonneg_add_self_iff, Real.sqrt_sq, x₁, x₂]
-      linarith
+    · simp [hr, x₁, x₂, ← two_mul]
     · intro b _ hnb
-      simp only [PiLp.add_apply, EuclideanSpace.single_apply, hnb, ↓reduceIte, add_zero,
-        PiLp.sub_apply, sub_zero, sub_self, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-        zero_pow, x₁, x₂]
-    · simp only [Finset.mem_univ, not_true_eq_false, ne_eq, OfNat.ofNat_ne_zero,
-      not_false_eq_true, pow_eq_zero_iff, IsEmpty.forall_iff]
+      simp [hnb, x₁, x₂]
+    · simp
 
 /-- The diameter of a closed Euclidean ball is twice its radius. -/
-theorem diam_closed_ball_eq_two_mul_radius [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+theorem diam_closedBall_eq_two_mul_radius [Nontrivial G] (x : G) {r : ℝ} (hr : 0 ≤ r) :
     Metric.diam (toEuclidean '' (Euclidean.closedBall x r)) = 2 * r := by
   rw [image_closedBall_eq_metric_closedBall, diam_closed_ball_eq_two_mul_radius' x r hr]
 
 /-- The diameter of an open Euclidean ball is twice its radius. -/
-theorem diam_ball_eq_two_mul_radius [Nontrivial G] (x : G) (r : ℝ) (hr : 0 ≤ r) :
+theorem diam_ball_eq_two_mul_radius [Nontrivial G] (x : G) {r : ℝ} (hr : 0 ≤ r) :
     Metric.diam (toEuclidean '' (Euclidean.ball x r)) = 2 * r := by
   simp only [Euclidean.ball_eq_preimage, image_preimage_eq_inter_range, EquivLike.range_eq_univ,
     inter_univ, ← diam_closed_ball_eq_two_mul_radius x r hr, Euclidean.closedBall_eq_preimage]
-  by_cases hr : r = 0
-  · simp only [hr, Metric.ball_zero, Metric.diam_empty, Metric.closedBall_zero,
-    Metric.diam_singleton]
-  · rw [Metric.diam, Metric.diam, ←_root_.closure_ball _ hr, EMetric.diam_closure]
+  by_cases hr : r = 0 <;> simp [← _root_.closure_ball, hr]
