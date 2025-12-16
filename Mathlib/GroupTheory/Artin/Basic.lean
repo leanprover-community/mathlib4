@@ -3,8 +3,10 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.GroupTheory.PresentedGroup
+module
+
+public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.PresentedGroup
 
 /-!
 # Artin groups
@@ -32,6 +34,8 @@ The braid group `B_n` is the Artin group of type `A_{n-1}`.
 
 * [Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*]
 -/
+
+@[expose] public section
 
 noncomputable section
 

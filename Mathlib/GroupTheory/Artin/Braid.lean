@@ -3,9 +3,11 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.GroupTheory.Artin.Basic
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.GroupTheory.QuotientGroup.Basic
+module
+
+public import Mathlib.GroupTheory.Artin.Basic
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Braid groups
@@ -36,6 +38,8 @@ the adjacent transposition (i, i+1).
 
 * [Artin, *Theorie der Zöpfe*](artin1925)
 -/
+
+@[expose] public section
 
 noncomputable section
 
