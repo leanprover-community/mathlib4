@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-! # Smooth embeddings
 
@@ -26,7 +27,9 @@ This will be useful to define embedded submanifolds.
 * Unlike immersions, being an embedding is a global notion: this is why we have no definition
   `IsSmoothEmbeddingAt`. (Besides, it would be equivalent to being an immersion at `x`.)
 * Note that being a smooth embedding is a stronger condition than being a smooth map
-  which is a topological embedding.
+  which is a topological embedding. Even being a homeomorphism and a smooth map is not sufficient.
+  See e.g. https://math.stackexchange.com/a/2583667 and
+  https://math.stackexchange.com/a/3769328 for counterexamples.
 
 ## TODO
 * `IsSmoothEmbedding.contMDiff`: if `f` is a smooth embedding, it is `C^n`.
@@ -96,5 +99,8 @@ proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [Com
     IsSmoothEmbedding I J' n (g ∘ f)
 
 end IsSmoothEmbedding
+
+-- TODO: prove the same result for local diffeomorphisms and deduce it as a corollary
+proof_wanted Diffeomorph.isSmoothEmbedding (φ : Diffeomorph I I M M n) : IsSmoothEmbedding I I n φ
 
 end Manifold
