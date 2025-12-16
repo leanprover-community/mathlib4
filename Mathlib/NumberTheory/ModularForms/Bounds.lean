@@ -11,13 +11,17 @@ public import Mathlib.NumberTheory.ModularForms.Petersson
 /-!
 # Bounds for the norm of a modular form
 
-We prove bounds for the norm of a modular form `f τ` in terms of `im τ`. The main results are
+We prove bounds for the norm of a modular form `f τ` in terms of `im τ`, and deduce polynomial
+bounds for its q-expansion coefficients. The main results are
 
-* `ModularFormClass.exists_bound`: a modular form of weight `k` (for a finite-index subgroup `Γ`)
+* `ModularFormClass.exists_bound`: a modular form of weight `k` (for an arithmetic subgroup `Γ`)
   is bounded by a constant multiple of `max 1 (1 / (im τ) ^ k))`.
-* `CuspFormClass.exists_bound`: a cusp form of weight `k` (for a finite-index subgroup `Γ`)
+* `CuspFormClass.exists_bound`: a cusp form of weight `k` (for an arithmetic subgroup `Γ`)
   is bounded by a constant multiple of `1 / (im τ) ^ (k / 2)`.
-
+* `ModularFormClass.qExpansion_isBigO`: for a a modular form of weight `k` (for an arithmetic
+  subgroup `Γ`), the `n`-th q-expansion coefficient is `O(n ^ k)`.
+* `CuspFormClass.qExpansion_isBigO`: for a a cusp form of weight `k` (for an arithmetic
+  subgroup `Γ`), the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
 @[expose] public section
 
@@ -32,47 +36,6 @@ open scoped Modular MatrixGroups ComplexConjugate ModularForm
 variable {E : Type*} [SeminormedAddCommGroup E]
 
 namespace ModularGroup
-
-/-- The standard fundamental domain truncated at height `y`. -/
-def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.im ≤ y }
-
-/-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
-obviously closed conditions. -/
-lemma coe_truncatedFundamentalDomain (y : ℝ) :
-    Subtype.val '' truncatedFundamentalDomain y =
-    {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
-  ext z
-  constructor
-  · rintro ⟨⟨z, hz⟩, h, rfl⟩
-    exact ⟨hz.le, h.2, h.1.2, by simpa [Complex.normSq_eq_norm_sq] using h.1.1⟩
-  · rintro ⟨hz, h1, h2, h3⟩
-    have hz' : 0 < z.im := by
-      apply hz.lt_of_ne
-      contrapose! h3
-      simpa [← sq_lt_one_iff₀ (norm_nonneg _), ← Complex.normSq_eq_norm_sq, Complex.normSq,
-        ← h3, ← sq] using h2.trans_lt (by norm_num)
-    exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
-
-/-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
-lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
-    IsCompact (truncatedFundamentalDomain y) := by
-  rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
-  constructor
-  · -- show closed
-    apply (isClosed_le continuous_const Complex.continuous_im).inter
-    apply (isClosed_le Complex.continuous_im continuous_const).inter
-    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
-    exact isClosed_le continuous_const continuous_norm
-  · -- show bounded
-    refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
-    simp only [mem_closedBall_zero_iff]
-    refine le_of_sq_le_sq ?_ (by positivity)
-    rw [Real.sq_sqrt (by positivity), Complex.norm_eq_sqrt_sq_add_sq, Real.sq_sqrt (by positivity)]
-    apply add_le_add
-    · rw [sq_le_sq, abs_of_pos <| one_half_pos (α := ℝ)]
-      exact hz.2.2.1
-    · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
-      exact hz.2.1
 
 lemma exists_bound_fundamental_domain_of_isBigO
     {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (hf_infinity : f =O[atImInfty] fun z ↦ z.im ^ t) :
@@ -102,7 +65,7 @@ lemma exists_bound_fundamental_domain_of_isBigO
 some `0 ≤ t`, is bounded on `ℍ` by a constant multiple of `(max (im τ) (1 / im τ)) ^ t`.
 
 This will be applied to `f τ * (im τ) ^ (k / 2)` for `f` a modular form of weight `k`, taking
-`t = 0` if `f` is cuspidal, and `t = k/2` otherwise. -/
+`t = 0` if `f` is cuspidal, and `t = k / 2` otherwise. -/
 lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
     (hf_infinity : f =O[atImInfty] fun z ↦ (im z) ^ t)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
@@ -156,18 +119,18 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
     {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * max τ.im (1 / τ.im) ^ t := by
   -- marshall the info we have in terms of a function on the quotient
-  let f' (τ) : SL(2, ℤ) ⧸ Γ → E := Quotient.lift (fun g ↦ f (g⁻¹ • τ)) fun g h hgh ↦ by
+  let f' τ : SL(2, ℤ) ⧸ Γ → E := Quotient.lift (fun g ↦ f (g⁻¹ • τ)) fun g h hgh ↦ by
     obtain ⟨j, hj, hj'⟩ : ∃ j ∈ Γ, h = g * j := by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hgh
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
-  have hf'_cont (γ) : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
+  have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
     simp only [sl_moeb, Quotient.lift_mk, f']
     fun_prop
-  have hf'_inv (τ) (g : SL(2, ℤ)) (γ) : f' (g • τ) (g • γ) = f' τ γ := by
+  have hf'_inv τ (g : SL(2, ℤ)) (γ) : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
     simp [-sl_moeb, f', mul_smul]
-  have hf'_infty (γ) : (f' · γ) =O[_] _ := γ.induction_on fun h ↦ hf_infinity h⁻¹
+  have hf'_infty γ : (f' · γ) =O[_] _ := γ.induction_on fun h ↦ hf_infinity h⁻¹
   -- now take the sum over the quotient
   have : Fintype (SL(2, ℤ) ⧸ Γ) := Subgroup.fintypeQuotientOfFiniteIndex
   -- Now the conclusion is very simple.
@@ -243,8 +206,8 @@ lemma CuspFormClass.petersson_bounded_left
   have : ((toConjAct (g : GL (Fin 2) ℝ)⁻¹) • Γ).IsArithmetic := by
     simpa [(show Rat.castHom ℝ = algebraMap ℚ ℝ by rfl), map_inv, map_mapGL]
       using Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
-  apply (CuspFormClass.zero_at_infty <| CuspForm.translate f g).petersson_isZeroAtImInfty_left k _
-    (ModularForm.translate f' g) -- "exact" fails here -- why?
+  exact (zero_at_infty <| CuspForm.translate f g).petersson_isZeroAtImInfty_left k _
+    (ModularForm.translate f' g)
 
 /-- If `f` is a modular form and `f'` a cusp form, then `petersson k f f'` is bounded. -/
 lemma CuspFormClass.petersson_bounded_right
@@ -300,7 +263,7 @@ local notation "𝕢" => Function.Periodic.qParam
 open Complex ModularFormClass
 
 /-- General result on bounding q-expansion coefficients using a bound on the norm of the function.
-This will get used twice over, once for cusp forms (with `e = k/2`) and once for modular forms
+This will get used twice over, once for cusp forms (with `e = k / 2`) and once for modular forms
 (with `e = k`). -/
 lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) (e : ℝ)
@@ -314,7 +277,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   rw [isBigO_iff]
   rw [IsBigOWith, eventually_comap] at hC
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
-  have := (Tendsto.eventually (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop) hC)
+  have := Tendsto.eventually (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop) hC
   filter_upwards [eventually_gt_atTop 0, this] with n hn hn'
   rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
@@ -323,8 +286,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
       * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
   have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ e) := by
-    simp only [F]
-    rw [norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
+    simp only [F, norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
       mul_assoc, Real.norm_of_nonneg hh.le]
     refine mul_le_mul_of_nonneg_left (mul_le_mul ?_ ?_ ?_ ?_) ?_
     · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add, mul_I_im, ← ofReal_one,
@@ -340,8 +302,8 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
     · simp_rw [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
-    · refine (ModularFormClass.continuous f).comp (by fun_prop)
-  · apply continuous_const.intervalIntegrable
+    · exact (continuous f).comp (by fun_prop)
+  · exact continuous_const.intervalIntegrable ..
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
     simp [← mul_assoc, mul_inv_cancel₀ (NeZero.ne (h : ℝ)),
       Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
