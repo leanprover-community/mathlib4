@@ -4244,6 +4244,8 @@ public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.GroupTheory.Artin.Basic
+public import Mathlib.GroupTheory.Artin.Braid
 public import Mathlib.GroupTheory.ClassEquation
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.GroupTheory.Commutator.Basic
