@@ -266,7 +266,7 @@ lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
   obtain ⟨β, hβ_mem, hβ_ne⟩ := q.exists_mem_ne_zero_of_ne_bot h
   obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
     by_contra h_contra; push_neg at h_contra
-    exact hβ_ne (LinearMap.ext_on_range (rootSystem H).span_coroot_eq_top fun i ↦
+    exact hβ_ne (LinearMap.ext_on_range RootPairing.IsRootSystem.span_coroot_eq_top fun i ↦
       h_contra i ▸ (LinearMap.zero_apply _).symm)
   have h_smul : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
       (rootSystem H).root i ∈ q := by
