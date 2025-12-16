@@ -113,6 +113,8 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
+initialize_simps_projections Finsupp (toFun → apply)
+
 @[ext, grind ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
@@ -138,6 +140,8 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
 
 instance instInhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
+
+@[simp] lemma default_eq_zero : (default : α →₀ M) = 0 := rfl
 
 @[simp, grind =]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
@@ -168,8 +172,9 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
 theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
   mod_cast @Function.support_eq_empty_iff _ _ _ f
 
+@[simp]
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
-  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
+  contrapose!; exact support_eq_empty
 
 theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
@@ -310,6 +315,11 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
   ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
+
+@[simp]
+theorem mapRange_eq_zero {a : α →₀ M} {f : M → N} (hf : f.Injective) (h) :
+    mapRange f h a = 0 ↔ a = 0 := by
+  simp [Finsupp.ext_iff, ← h, hf.eq_iff]
 
 @[simp]
 theorem mapRange_id (g : α →₀ M) : mapRange id rfl g = g :=

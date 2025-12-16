@@ -516,12 +516,32 @@ instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
 
 end Coproduct
 
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
+  rw [mono_iff_injective]
+  cases i
+  · simpa using f.isOpenEmbedding.injective
+  · simpa using g.isOpenEmbedding.injective
+
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
+  obtain (a | (a | a)) := t
+  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
+    infer_instance
+  · simpa
+  · simpa
+
+-- Test that instances on locally directed colimits fire correctly.
+example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
+    [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
+  inferInstance
+
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 section IsAffine
 
-lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}}
     (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
     IsAffine c.pt := by
   let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit

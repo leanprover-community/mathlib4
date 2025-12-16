@@ -43,7 +43,7 @@ open Limits
 
 section Comma
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] {T : Type*} [Category T]
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] {T : Type*} [Category* T]
   (L : A ⥤ T) (R : B ⥤ T)
 
 lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
@@ -336,7 +336,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
 @[simps obj_toComma map_hom]
-def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
+def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
     (hW : ∀ {X Y} (f : X ⟶ Y), W (F.map f).right) :
@@ -373,7 +373,7 @@ end Comma
 
 section Over
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
@@ -386,6 +386,10 @@ protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
 
 instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
+    (MorphismProperty.Over.forget P Q X ⋙ CategoryTheory.Over.forget X).map f = f.left := rfl
 
 variable {P Q X}
 
@@ -434,7 +438,7 @@ end Over
 
 section Under
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
@@ -447,6 +451,10 @@ protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
 
 instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :
+    (MorphismProperty.Under.forget P Q X ⋙ CategoryTheory.Under.forget X).map f = f.right := rfl
 
 variable {P Q X}
 
@@ -494,7 +502,7 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
 end Under
 
 instance HasFactorization.over
-    {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+    {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :
     (W₁.over (X := S)).HasFactorization W₂.over where
   nonempty_mapFactorizationData {X Y} f := by

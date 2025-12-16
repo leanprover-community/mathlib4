@@ -110,7 +110,7 @@ vector space. With the drawback that the whole vector space itself (which is the
 example) is not directly a subtype of itself: the inclusion of `univ : Set E` in `Set E` would
 show up in the definition, instead of `id`.
 
-A good abstraction covering both cases it to have a vector
+A good abstraction covering both cases is to have a vector
 space `E` (with basic example the Euclidean space), a model space `H` (with basic example the upper
 half space), and an embedding of `H` into `E` (which can be the identity for `H = E`, or
 `Subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
@@ -154,7 +154,7 @@ open scoped Manifold Topology ContDiff
 
 open scoped Classical in
 /-- A structure containing information on the way a space `H` embeds in a
-model vector space `E` over the field `𝕜`. This is all what is needed to
+model vector space `E` over the field `𝕜`. This is all that is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
@@ -867,6 +867,10 @@ model with corners `I`. -/
 def maximalAtlas :=
   (contDiffGroupoid n I).maximalAtlas M
 
+lemma mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
+    e ∈ maximalAtlas I n M ↔ e ∈ (contDiffGroupoid n I).maximalAtlas M := by
+  rfl
+
 theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
 
@@ -927,13 +931,32 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [OpenPartialHomeomorph.prod_symm_trans_prod,
+    OpenPartialHomeomorph.prod_symm_trans_prod]
+  constructor <;>
+    apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
+
+end
+
 section DisjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
-is a `C^n` manifold modeled on `(E, H)`. -/
+is a `C^n` manifold modelled on `(E, H)`. -/
 instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
     obtain (h | h) := isEmpty_or_nonempty H

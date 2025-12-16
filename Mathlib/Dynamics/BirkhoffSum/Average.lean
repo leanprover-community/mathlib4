@@ -90,7 +90,7 @@ section AddCommGroup
 variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
   funext _ x
   simp [birkhoffAverage, birkhoffSum]
 

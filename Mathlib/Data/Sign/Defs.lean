@@ -202,6 +202,12 @@ theorem neg_eq_zero_iff {a : SignType} : -a = 0 ↔ a = 0 := by decide +revert
 theorem neg_one_lt_one : (-1 : SignType) < 1 :=
   bot_lt_top
 
+@[simp]
+protected theorem neg_le_neg_iff {a b : SignType} : -a ≤ -b ↔ b ≤ a := by decide +revert
+
+@[simp]
+protected theorem neg_lt_neg_iff {a b : SignType} : -a < -b ↔ b < a := by decide +revert
+
 end CaseBashing
 
 section cast

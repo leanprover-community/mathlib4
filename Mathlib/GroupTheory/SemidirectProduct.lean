@@ -40,7 +40,7 @@ variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
-  group of `N`. It the product of sets with the group operation
+  group of `N`. It is the product of sets with the group operation
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
@@ -299,7 +299,7 @@ def congr : N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[φ₂] G₂ where
     replace h := DFunLike.ext_iff.1 (h x.right) y.left
     ext <;> simp_all
 
-/-- Define a isomorphism from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` without specifying `φ₂`. -/
+/-- Define an isomorphism from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` without specifying `φ₂`. -/
 @[simps!]
 def congr' :
     N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[MonoidHom.comp (MulAut.congr fn) (φ₁.comp fg.symm)] G₂ :=

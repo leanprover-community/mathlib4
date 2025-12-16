@@ -23,7 +23,7 @@ The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
-* The so called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
+* The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
@@ -291,7 +291,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
   norm_cast at this
-  cutsat
+  lia
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
@@ -342,7 +342,7 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
     emultiplicity_mul hζ.zeta_sub_one_prime', emultiplicity_mul hζ.zeta_sub_one_prime',
       h1'.emultiplicity_eq_multiplicity, h2'.emultiplicity_eq_multiplicity,
       h3'.emultiplicity_eq_multiplicity, ← Nat.cast_add, ← Nat.cast_add, Nat.cast_le] at this
-  cutsat
+  lia
 
 open Units in
 /-- Given `S' : Solution'`, we may assume that `λ ^ 2` divides `S'.a + S'.b ∨ λ ^ 2` (see also the
@@ -494,7 +494,7 @@ private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_z
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_y
   have := S.two_le_multiplicity
-  rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by cutsat, pow_succ, pow_succ,
+  rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by lia, pow_succ, pow_succ,
     show (S.a + S.b) * (λ * y S) * (λ * z S) = (S.a + S.b) * y S * z S * λ * λ by ring] at h
   simp only [mul_dvd_mul_iff_right hζ.zeta_sub_one_prime'.ne_zero] at h
   rwa [show (S.a + S.b) * y S * z S = y S * (z S * (S.a + S.b)) by ring] at h
@@ -527,7 +527,7 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   simp only [← a_cube_add_b_cube_eq_mul, S.H, w_spec, Units.isUnit, IsUnit.dvd_mul_left] at h
   rw [← pow_succ', mul_comm, ← mul_assoc, ← pow_succ'] at h
   have := S.two_le_multiplicity
-  rw [show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by cutsat, mul_pow, ← pow_mul,
+  rw [show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by lia, mul_pow, ← pow_mul,
     mul_comm _ 3, mul_dvd_mul_iff_left _] at h
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
@@ -563,7 +563,7 @@ private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 :=
       λ ^ (3 * multiplicity S - 2) * λ * λ * x S * y S * z S by ring] at hh
     have := S.two_le_multiplicity
     rw [mul_comm _ (λ ^ (3 * multiplicity S)), ← pow_succ, ← pow_succ,
-      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by cutsat, mul_assoc, mul_assoc,
+      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by lia, mul_assoc, mul_assoc,
       mul_assoc] at hh
     simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', hζ.zeta_sub_one_prime'.ne_zero, ne_eq,
       mul_eq_zero, OfNat.ofNat_ne_zero, false_or, false_and, or_false] at hh
@@ -652,7 +652,7 @@ private lemma formula2 :
   simp only [zero_mul, add_mul]
   rw [← formula1 S]
   congrm ?_ + ?_ + ?_
-  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; omega
+  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; lia
     calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ) := by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
@@ -664,7 +664,7 @@ private lemma formula2 :
 set_option linter.style.commandStart false in
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   use λ^(3*S.multiplicity-5)*S.u₅*(S.X^3)
-  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; omega
+  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; lia
   calc _ = λ^(3*(S.multiplicity-1))*S.u₅*S.X^3 := by ring
   _ = λ^2*λ^(3*S.multiplicity-5)*S.u₅*S.X^3 := by rw [this, pow_add]
   _ = λ^2*(λ^(3*S.multiplicity-5)*S.u₅*S.X^3) := by ring
@@ -737,7 +737,7 @@ lemma Solution'_descent_multiplicity : S.Solution'_descent.multiplicity = S.mult
 lemma Solution'_descent_multiplicity_lt :
     (Solution'_descent S).multiplicity < S.multiplicity := by
   rw [Solution'_descent_multiplicity S, Nat.sub_one]
-  exact Nat.pred_lt <| by have := S.two_le_multiplicity; cutsat
+  exact Nat.pred_lt <| by have := S.two_le_multiplicity; lia
 
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
