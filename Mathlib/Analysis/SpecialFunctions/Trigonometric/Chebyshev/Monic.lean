@@ -72,8 +72,8 @@ lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree 
     ((-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (cos (i * π / n) - cos (j * π / n)))⁻¹
   refine ⟨?_, ⟨?_, ?_⟩⟩
   · exact fun i hi => prod_pos hi |> inv_pos.mpr
-  · have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T_real n))
-    rw [leadingCoeff_T_real, Int.natAbs_natCast] at this
+  · have := Lagrange.leadingCoeff_eq_sum cos_inj (deg (degree_T ℝ n))
+    rw [leadingCoeff_T, Int.natAbs_natCast] at this
     rw [this]
     congr! 1 with i hi
     dsimp
@@ -133,7 +133,7 @@ theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
     intro hsSup
     apply eq_of_degrees_lt_of_eval_finset_eq (T_real_extrema n)
     · rw [Pdeg, card_T_real_extrema]; norm_cast; simp
-    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T_real, card_T_real_extrema]
+    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T, card_T_real_extrema]
       norm_cast; simp
     obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
     rw [Pmonic] at hform
