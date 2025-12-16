@@ -31,7 +31,7 @@ measures in the set, the complement of `K` has measure at most `ε`.
 
 @[expose] public section
 
-open Filter Set
+open Filter Set TopologicalSpace
 
 open scoped ENNReal NNReal Topology
 
@@ -92,8 +92,8 @@ lemma isTightMeasureSet_singleton_of_innerRegular [T2Space 𝓧] [OpensMeasurabl
   exact ⟨K, hKs, ⟨hK_compact, hK_compact.isClosed⟩, hμK⟩
 
 /-- In a complete second-countable pseudo-metric space, finite measures are tight. -/
-theorem isTightMeasureSet_singleton {α : Type*} {mα : MeasurableSpace α}
-    [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
+theorem isTightMeasureSet_singleton {α : Type*} [MeasurableSpace α] [TopologicalSpace α]
+    [IsCompletelyPseudoMetrizableSpace α] [SecondCountableTopology α] [BorelSpace α]
     {μ : Measure α} [IsFiniteMeasure μ] :
     IsTightMeasureSet {μ} :=
   isTightMeasureSet_singleton_of_innerRegularWRT
