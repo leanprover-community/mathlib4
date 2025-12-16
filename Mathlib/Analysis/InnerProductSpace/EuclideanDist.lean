@@ -147,11 +147,11 @@ lemma diam_closedBall_eq_two_mul_radius' [Nontrivial G] (x : G) {r : ℝ} (hr : 
 /-- The diameter of a closed Euclidean ball is twice its radius. -/
 theorem diam_closedBall_eq_two_mul_radius [Nontrivial G] (x : G) {r : ℝ} (hr : 0 ≤ r) :
     Metric.diam (toEuclidean '' (Euclidean.closedBall x r)) = 2 * r := by
-  rw [image_closedBall_eq_metric_closedBall, diam_closed_ball_eq_two_mul_radius' x r hr]
+  rw [image_closedBall_eq_metric_closedBall, diam_closedBall_eq_two_mul_radius' x hr]
 
 /-- The diameter of an open Euclidean ball is twice its radius. -/
 theorem diam_ball_eq_two_mul_radius [Nontrivial G] (x : G) {r : ℝ} (hr : 0 ≤ r) :
     Metric.diam (toEuclidean '' (Euclidean.ball x r)) = 2 * r := by
   simp only [Euclidean.ball_eq_preimage, image_preimage_eq_inter_range, EquivLike.range_eq_univ,
-    inter_univ, ← diam_closed_ball_eq_two_mul_radius x r hr, Euclidean.closedBall_eq_preimage]
+    inter_univ, ← diam_closedBall_eq_two_mul_radius x hr, Euclidean.closedBall_eq_preimage]
   by_cases hr : r = 0 <;> simp [← _root_.closure_ball, hr]
