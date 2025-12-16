@@ -159,7 +159,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
-lemma linear_isTheta_right (c e : ℤ) (z : ℂ) :
+lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d + e)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO
   · refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
@@ -177,9 +177,9 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
   · simp only [isLittleO_const_left, Int.cast_eq_zero,
       tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
 
-lemma linear_inv_isBigO_right (c e : ℤ) (z : ℂ) :
+lemma linear_inv_isBigO_right_add (c e : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d + e)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
-  (linear_isTheta_right c e z).inv.isBigO
+  (linear_isTheta_right_add c e z).inv.isBigO
 
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
@@ -188,7 +188,7 @@ lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
 lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
     Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z + d)) atTop (𝓝 0) := by
   apply Asymptotics.IsBigO.trans_tendsto ?_ tendsto_inv_atTop_nhds_zero_nat (F'' := ℝ)
-  have := (Asymptotics.isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b 0 z)).2
+  have := (Asymptotics.isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right_add b 0 z)).2
   simpa [← Nat.map_cast_int_atTop, Asymptotics.isBigO_map] using this
 
 lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
@@ -233,7 +233,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using (by lia)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
-  have := (linear_inv_isBigO_right c 0 z).abs_right.pow
+  have := (linear_inv_isBigO_right_add c 0 z).abs_right.pow
   aesop
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
@@ -248,16 +248,16 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
-  simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ 0 z).mul
-    (linear_inv_isBigO_right c₁ 0 z).comp_neg_int
+  simpa [sub_eq_add_neg] using (linear_inv_isBigO_right_add c₂ 0 z).mul
+    (linear_inv_isBigO_right_add c₁ 0 z).comp_neg_int
 
-lemma summable_linear_add_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
+lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simpa [Real.rpow_two, abs_mul_abs_self, pow_two] using
-    (linear_inv_isBigO_right c₂ 0 z).mul (linear_inv_isBigO_right c₁ 1 z)
+    (linear_inv_isBigO_right_add c₂ 0 z).mul (linear_inv_isBigO_right_add c₁ 1 z)
 
-lemma summable_linear_mul_linear {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
+lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
