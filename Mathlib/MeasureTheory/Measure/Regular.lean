@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 
+import Mathlib.Topology.MetricSpace.HausdorffDistance
+
 /-!
 # Regular measures
 
