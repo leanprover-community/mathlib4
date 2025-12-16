@@ -172,7 +172,7 @@ def sheafComposeNatTrans :
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
-        whiskerRight (adj₁.unit.app P) F  := by
+        whiskerRight (adj₁.unit.app P) F := by
   simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map,
     Adjunction.homEquiv_counit]
 

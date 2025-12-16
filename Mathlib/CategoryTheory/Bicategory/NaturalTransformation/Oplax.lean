@@ -97,7 +97,7 @@ def id : LaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (λ_ (F.map f)).hom ≫ (ρ_ (F.map f)).inv
 
-instance : Inhabited (LaxTrans F F ) :=
+instance : Inhabited (LaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/

@@ -165,7 +165,7 @@ lemma mul_assoc_hom (f : X ⟶ M) :
 
 @[reassoc (attr := mon_tauto)]
 lemma mul_assoc_inv (f : X ⟶ M) :
-    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ  := by simp [tensorHom_def']
+    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ := by simp [tensorHom_def']
 
 end Mathlib.Tactic.MonTauto
 

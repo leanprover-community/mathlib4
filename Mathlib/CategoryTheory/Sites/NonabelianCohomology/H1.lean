@@ -204,7 +204,7 @@ instance : One (H1 G U) where
 
 lemma OneCocycle.class_eq_iff (γ₁ γ₂ : OneCocycle G U) :
     γ₁.class = γ₂.class ↔ γ₁.IsCohomologous γ₂ :=
-  (equivalence_isCohomologous _ _ ).quot_mk_eq_iff _ _
+  (equivalence_isCohomologous _ _).quot_mk_eq_iff _ _
 
 lemma OneCocycle.IsCohomologous.class_eq {γ₁ γ₂ : OneCocycle G U} (h : γ₁.IsCohomologous γ₂) :
     γ₁.class = γ₂.class :=

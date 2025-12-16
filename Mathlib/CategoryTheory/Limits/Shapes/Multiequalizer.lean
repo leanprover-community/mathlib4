@@ -634,7 +634,7 @@ theorem toPiFork_π_app_zero :
 @[simp]
 theorem toPiFork_π_app_one :
     (K.toPiFork hc hd).π.app WalkingParallelPair.one =
-      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd  :=
+      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
 variable {hd} in

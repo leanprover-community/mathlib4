@@ -150,7 +150,7 @@ lemma ge_antitone : Antitone t.ge := by
     exact t.ge_one_le _ hX
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
-    rw [← h, Nat.cast_add, ← add_assoc ]
+    rw [← h, Nat.cast_add, ← add_assoc]
     exact (hb (n + a)).trans (ha n)
   intro a
   induction a with

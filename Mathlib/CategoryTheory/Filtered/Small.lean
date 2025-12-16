@@ -98,7 +98,7 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
-    Small.{max v w} (filteredClosure f).FullSubcategory  := by
+    Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩

@@ -205,7 +205,7 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Comon D) :=
   NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end ComonFunctorCategoryEquivalence
 
@@ -263,7 +263,7 @@ def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon D) :=
   NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end CommMonFunctorCategoryEquivalence
 

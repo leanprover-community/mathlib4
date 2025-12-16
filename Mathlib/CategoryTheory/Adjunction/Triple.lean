@@ -156,7 +156,7 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
 `F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
 transformation `H ⟶ F`. -/
 @[simp]
-lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
+lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft := by
   ext
   rw [rightToLeft_eq_units, rightToLeft_eq_counits]
   simp
