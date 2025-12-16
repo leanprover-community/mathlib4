@@ -251,36 +251,35 @@ def proveTendstoReal (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
   else
     pure h_tendsto
 
+def proveTendstoRealCodomain {α : Q(Type)} (f : Q($α → ℝ)) (source : Q(Filter $α))
+    (target : Q(Filter ℝ)) :
+    TacticM Q(Filter.Tendsto $f $source $target) := do
+  match α with
+  | ~q(ℝ) => proveTendstoReal q($f) q($source) q($target)
+  | _ =>
+    let ⟨cast, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let pf ← proveTendstoRealCodomain q($f') q($source') q($target)
+    return q(ConvertDomain.tendsto_cast_domain $f' $source $source' $target $cast $h_source $pf)
+
 /-- Proves that `f : α → β` tends to `target` at `source`. -/
 partial def proveTendsto {α β : Q(Type)} (f : Q($α → $β)) (source : Q(Filter $α))
     (target : Q(Filter $β)) :
     TacticM Q(Filter.Tendsto $f $source $target) := do
-  match β with
-  | ~q(ℝ) =>
-    match α with
-    | ~q(ℝ) => proveTendstoReal q($f) q($source) q($target)
-    | _ =>
-      let ⟨cast, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
-      let pf ← proveTendsto q($f') q($source') q($target)
-      return q(ConvertDomain.tendsto_cast_domain $f' $source $source' $target $cast $h_source $pf)
-  | _ =>
-    throwError "not implemented (TODO)"
-    -- let ⟨cast, target', h_convert⟩ ← ConvertDomain.convertTendstoTarget q($f) q($source)
-    --   q($target)
-    -- let f' : Q($α → ℝ) := q(fun x ↦ $cast ($f x))
-    -- -- sorry
-    -- let h_goal ← mkFreshExprMVarQ q(Filter.Tendsto $f' $source $target')
-    -- let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
-    --   | panic! "proveTendsto: Unexpected number of goals after push_cast"
-    -- -- sorry
-    -- let t : Q(Prop) ← inferType (.mvar newGoal)
-    -- let ~q(@Filter.Tendsto.{0, 0} $α'' $β'' $f'' $source'' $target'') := t
-    --   | panic! "proveTendsto: Unexpected newGoal type"
-    -- -- sorry
-    -- let pf ← proveTendsto q($f'') q($source'') q($target'')
-    -- newGoal.assign pf
-    -- -- sorry
-    -- return q($h_convert $h_goal)
+  -- TODO: Qq match against `β` doesn't work
+  if ← isDefEq β q(ℝ) then
+    haveI : $β =Q ℝ := ⟨⟩
+    proveTendstoRealCodomain q($f) q($source) q($target)
+  else
+    let ⟨cast, target', h_convert⟩ ← ConvertDomain.convertTendstoTarget q($f) q($source) q($target)
+    let f' : Q($α → ℝ) := q(fun x ↦ $cast ($f x))
+    let h_goal ← mkFreshExprMVarQ q(Filter.Tendsto $f' $source $target')
+    let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+      | panic! "proveTendsto: Unexpected number of goals after push_cast"
+    let t : Q(Prop) ← inferType (.mvar newGoal)
+    let ~q(@Filter.Tendsto.{0, 0} $α'' ℝ $f'' $source'' $target'') := t
+      | panic! "proveTendsto: Unexpected newGoal type"
+    newGoal.assign (← proveTendstoRealCodomain q($f'') q($source'') q($target''))
+    return q($h_convert $h_goal)
 
 /-- Result type of `proveTendstoInf`. -/
 inductive ProveTendstoInfResult (source : Q(Filter ℝ)) (f : Q(ℝ → ℝ))
