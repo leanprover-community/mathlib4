@@ -370,6 +370,7 @@ instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
 
 variable [FaithfulSMul R A] [Free A (A ⊗[R] M)]
 
+set_option backward.proofsInPublic true in
 /-- An invertible `R`-module embeds into an `R`-algebra that `R` injects into,
 provided `A ⊗[R] M` is a free `A`-module. -/
 noncomputable def embAlgebra : M →ₗ[R] A :=
