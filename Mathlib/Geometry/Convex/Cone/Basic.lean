@@ -140,7 +140,7 @@ lemma gc_hull_coe : GaloisConnection (hull R : Set M → ConvexCone R M) (↑) :
   fun _C _s ↦ hull_le_iff
 
 /-- Galois insertion between `ConvexCone` and `SetLike.coe`. -/
-protected def gi : GaloisInsertion (hull R : Set M → ConvexCone R M) (↑)  where
+protected def gi : GaloisInsertion (hull R : Set M → ConvexCone R M) (↑) where
   gc := gc_hull_coe
   le_l_u _ := subset_hull
   choice s hs := (hull R s).copy s <| subset_hull.antisymm hs

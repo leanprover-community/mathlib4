@@ -27,7 +27,7 @@ namespace CategoryTheory.MorphismProperty
 
 open Limits
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) [Q.IsMultiplicative]
 variable {X Y Z : T}
 
 section Map
