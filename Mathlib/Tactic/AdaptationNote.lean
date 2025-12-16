@@ -6,6 +6,7 @@ Authors: Kyle Miller
 module
 
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Command
 
 /-!
 # Adaptation notes
