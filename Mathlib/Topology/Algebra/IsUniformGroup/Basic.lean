@@ -78,6 +78,31 @@ end IsUniformGroup
 
 end Cauchy
 
+namespace IsRightUniformGroup
+
+variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
+
+open Set in
+open scoped RightActions in
+/-- A (weakly) locally compact right-uniform group is complete. -/
+@[to_additive
+/-- A (weakly) locally compact right-uniform additive group is complete. -/]
+theorem completeSpace_of_weaklyLocallyCompactSpace
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
+  complete {f} hf := by
+    have : f.NeBot := hf.1
+    obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
+    obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, y / x ∈ K := by
+      rw [cauchy_iff_le, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap] at hf
+      exact hf.eventually_mem K_mem |>.curry.exists
+    simp_rw [div_eq_mul_inv, ← op_smul_eq_mul, MulOpposite.op_inv,
+      ← mem_smul_set_iff_inv_smul_mem] at hx
+    have Kx_complete : IsComplete (K <• x) := K_compact.smul _ |>.isComplete
+    obtain ⟨l, -, hl⟩ := Kx_complete f hf (by simpa using hx)
+    exact ⟨l, hl⟩
+
+end IsRightUniformGroup
+
 namespace Subgroup
 
 @[to_additive]
@@ -185,30 +210,6 @@ theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniform
   inferInstance
 
 variable {G}
-
-open Set in
-open scoped RightActions in
-/-- A (weakly) locally compact topological group is complete for its right uniformity. -/
-@[to_additive
-/-- A (weakly) locally compact topological additive group is complete for its right uniformity. -/]
-theorem IsTopologicalGroup.completeSpace_of_weaklyLocallyCompactSpace
-    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
-  complete {f} hf := by
-    rcases hf with ⟨hfn, hfG⟩
-    obtain ⟨K, hK, hKf⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ f := by
-      obtain ⟨K', hK', hK'₁⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
-      let U : Set (G × G) := {p : G × G | p.2 / p.1 ∈ K'}
-      have hU : U ∈ uniformity G := by
-        rw [uniformity_eq_comap_nhds_one']; exact preimage_mem_comap hK'₁
-      obtain ⟨S, hSf, hSU⟩ : ∃ S ∈ f, S ×ˢ S ⊆ U := by
-        rcases mem_prod_iff.1 (hfG hU) with ⟨A, hA, B, hB, hAB⟩
-        exact ⟨A ∩ B,
-          ⟨inter_mem_iff.mpr ⟨hA, hB⟩, (prod_mono inter_subset_left inter_subset_right).trans hAB⟩⟩
-      obtain ⟨x, hx⟩ := f.nonempty_of_mem hSf
-      exact ⟨K' <• x, hK'.smul (MulOpposite.op x),
-        mem_of_superset hSf (fun y hy ↦ ⟨y / x, hSU <| mk_mem_prod hx hy, by simp⟩)⟩
-    obtain ⟨x, hx, h⟩ := hK.isComplete f ⟨hfn, hfG⟩ <| le_principal_iff.mpr hKf
-    exact ⟨x, h⟩
 
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
