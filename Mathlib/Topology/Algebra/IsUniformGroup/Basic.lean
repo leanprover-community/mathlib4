@@ -82,7 +82,6 @@ namespace IsRightUniformGroup
 
 variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
 
-open Set in
 open scoped RightActions in
 /-- A (weakly) locally compact right-uniform group is complete. -/
 @[to_additive
