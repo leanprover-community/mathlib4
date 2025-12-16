@@ -83,9 +83,9 @@ namespace IsRightUniformGroup
 variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
 
 open scoped RightActions in
-/-- A (weakly) locally compact right-uniform group is complete. -/
+/-- A locally compact right-uniform group is complete. -/
 @[to_additive
-/-- A (weakly) locally compact right-uniform additive group is complete. -/]
+/-- A locally compact right-uniform additive group is complete. -/]
 theorem completeSpace_of_weaklyLocallyCompactSpace
     [WeaklyLocallyCompactSpace G] : CompleteSpace G where
   complete {f} hf := by
