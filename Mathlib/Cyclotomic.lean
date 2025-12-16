@@ -53,7 +53,7 @@ example (p : ℕ) [hp : Fact (Nat.Prime p)] (hp' : p.Coprime n) (P : Ideal (𝓞
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec n ℚ K)]
     exact hp.out.not_dvd_one
   have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
-  
+
   have h₃ := primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span h₁ h₂
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
 
