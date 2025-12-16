@@ -386,7 +386,7 @@ variable (𝕜)
 derivative of `f` is the derivative of the `n`-th derivative of `f` along this set, together with
 an uncurrying step to see it as a multilinear map in `n+1` variables..
 -/
-noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E [×n]→L[𝕜] F :=
+noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E[×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderivWithin 𝕜 rec s x)
 
@@ -417,7 +417,7 @@ theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖
 
 theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =
-      (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
+      (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
@@ -474,7 +474,7 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
       simp [IH hy m, I]
     calc
       (iteratedFDerivWithin 𝕜 (n + 2) f s x : (Fin (n + 2) → E) → F) m =
-          (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E [×n + 1]→L[𝕜] F) (m 0)
+          (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E[×n + 1]→L[𝕜] F) (m 0)
             (tail m) := by
         simp [iteratedFDerivWithin_succ_eq_comp_left]
       _ = (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :

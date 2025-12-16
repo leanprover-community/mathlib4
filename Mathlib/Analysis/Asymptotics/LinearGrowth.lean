@@ -249,12 +249,12 @@ lemma linearGrowthSup_add_le (h : linearGrowthSup u ≠ ⊥ ∨ linearGrowthSup 
   refine (limsup_add_le h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.add_apply, add_div_of_nonneg_right n.cast_nonneg']
 
-lemma linearGrowthInf_neg : linearGrowthInf (-u) = -linearGrowthSup u := by
+lemma linearGrowthInf_neg : linearGrowthInf (-u) = - linearGrowthSup u := by
   rw [linearGrowthSup, ← liminf_neg]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]
 
-lemma linearGrowthSup_inv : linearGrowthSup (-u) = -linearGrowthInf u := by
+lemma linearGrowthSup_inv : linearGrowthSup (-u) = - linearGrowthInf u := by
   rw [linearGrowthInf, ← limsup_neg]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]

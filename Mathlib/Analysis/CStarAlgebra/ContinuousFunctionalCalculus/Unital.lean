@@ -875,7 +875,7 @@ lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
     · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
 
-lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (-· : R → R) a = -a := by
+lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
   rw [cfc_neg _ a, cfc_id' R a]
 
 variable [UniqueHom R A]

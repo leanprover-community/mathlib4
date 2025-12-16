@@ -101,7 +101,7 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     calc
       (fun z : ℂ ↦ (z.im ^ n) ^ 2) = (fun z ↦ z.im ^ (2 * n)) := by simp only [pow_mul']
       _ =O[l] fun z ↦ Real.exp z.re := hl.isBigO_im_pow_re _
-      _ = fun z ↦ (Real.exp z.re) ^ 1 := by simp only [pow_one]
+      _     = fun z ↦ (Real.exp z.re) ^ 1 := by simp only [pow_one]
       _ =o[l] fun z ↦ (Real.exp z.re) ^ 2 :=
         (isLittleO_pow_pow_atTop_of_lt one_lt_two).comp_tendsto <|
           Real.tendsto_exp_atTop.comp hl.tendsto_re

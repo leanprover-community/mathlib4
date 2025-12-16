@@ -579,14 +579,14 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
       exact (h0 <| neg_eq_zero.mp ·)
 
 lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
-    cfcₙ (-· : R → R) a = -a := by
+    cfcₙ (- · : R → R) a = -a := by
   rw [cfcₙ_neg .., cfcₙ_id' R a]
 
 variable [UniqueHom R A]
 
 lemma cfcₙ_comp_neg (hf : ContinuousOn f ((-·) '' (σₙ R a)) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
-    cfcₙ (f <| -·) a = cfcₙ f (-a) := by
+    cfcₙ (f <| - ·) a = cfcₙ f (-a) := by
   rw [cfcₙ_comp' .., cfcₙ_neg_id _]
 
 end Neg
