@@ -56,7 +56,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 
 /-- Local trivialization for trivial bundle. -/
 @[simps!]
-def trivialization : Trivialization F (π F(Bundle.Trivial B F)) where
+def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   toOpenPartialHomeomorph := (homeomorphProd B F).toOpenPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
@@ -81,7 +81,7 @@ def trivialization : Trivialization F (π F(Bundle.Trivial B F)) where
   totalSpaceMk_isInducing' _ := (homeomorphProd B F).symm.isInducing.comp
     (isInducing_const_prod.2 .id)
 
-theorem eq_trivialization (e : Trivialization F (π F(Bundle.Trivial B F)))
+theorem eq_trivialization (e : Trivialization F (π F (Bundle.Trivial B F)))
     [i : MemTrivializationAtlas e] : e = trivialization B F := i.out
 
 end Trivial
@@ -271,7 +271,7 @@ the projections to the base and the map to the original bundle are continuous. -
 instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   pullbackTopology F E f
 
-theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F(f *ᵖ E)) := by
+theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
   rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   exact inf_le_left
 
@@ -302,7 +302,7 @@ variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
 noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
-    Trivialization F (π F((f : B' → B) *ᵖ E)) where
+    Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
   invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)
   source := Pullback.lift f ⁻¹' e.source
