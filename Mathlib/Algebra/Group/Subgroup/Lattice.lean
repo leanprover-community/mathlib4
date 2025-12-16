@@ -248,8 +248,8 @@ theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ 
 theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]

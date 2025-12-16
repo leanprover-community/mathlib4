@@ -813,6 +813,7 @@ theorem inf_toNonUnitalSubalgebra (S T : NonUnitalStarSubalgebra R A) :
 theorem coe_sInf (S : Set (NonUnitalStarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (NonUnitalStarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -825,8 +826,9 @@ theorem sInf_toNonUnitalSubalgebra (S : Set (NonUnitalStarSubalgebra R A)) :
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι]
     [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
