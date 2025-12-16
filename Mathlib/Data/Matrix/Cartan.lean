@@ -196,7 +196,7 @@ theorem D_three : D 3 = !![ 2, -1, -1;
                            -1,  2,  0;
                            -1,  0,  2] := by decide
 
-example : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
+theorem D_three' : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
 
 theorem D_four : D 4 = !![ 2, -1,  0,  0;
                           -1,  2, -1, -1;
