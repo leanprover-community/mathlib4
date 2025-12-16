@@ -924,7 +924,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
   inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final

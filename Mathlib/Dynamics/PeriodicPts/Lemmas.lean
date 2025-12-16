@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.Set.Lattice.Image
@@ -43,6 +46,11 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     iff_self_and]
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
 
+theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
+    minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
+  dsimp [minimalPeriod, periodicPts, sInf]
+  grind
+
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
     (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
@@ -55,7 +63,7 @@ theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPer
 
 theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
-  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
+  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (Nat.lcm_dvd_mul _ _)
 
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
@@ -99,7 +107,7 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq)
 
 @[deprecated (since := "2025-04-27")]
-alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
+alias mem_periodicPts_of_injective := Injective.mem_periodicPts
 
 theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
   refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
@@ -120,6 +128,8 @@ end Function
 
 namespace Function
 
+section Prod
+
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
@@ -131,5 +141,31 @@ theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map 
 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
+
+end Prod
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
+
+/-- This `sInf` can be regarded as a generalized version of LCM
+for possibly infinite sets and types. -/
+theorem minimalPeriod_piMap :
+    minimalPeriod (Pi.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
+  conv_lhs => simp [minimalPeriod_eq_sInf_n_pos_IsPeriodicPt]
+  simp [← isPeriodicPt_iff_minimalPeriod_dvd]
+
+theorem minimalPeriod_piMap_fintype [Fintype ι] :
+    minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
+
+theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
+    minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+  simp only [minimalPeriod_piMap]
+  by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
+  · exact (Nat.sInf_mem h).2 i
+  · simp [not_nonempty_iff_eq_empty.mp h]
+
+end Pi
 
 end Function

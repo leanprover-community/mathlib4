@@ -24,7 +24,7 @@ structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
--- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not tranlatable
+-- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not translatable
 /--
 error: @[to_dual] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
 instSemilatticeSupOfForallLeForallMax:
@@ -98,7 +98,7 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 /-
 TODO: If we tag something with `@[to_dual self]` and if there is no reorder, then this is useless.
 So, we should have a linter warning about this.
-The only exception is if we want to influence the tranlsation heuristic.
+The only exception is if we want to influence the translation heuristic.
 For example we tag `PUnit` with `@[to_dual self]`.
 Maybe we should have a new command `@[to_dual_translate]`, analogous to `@[to_dual_dont_translate]`,
 instead of using `@[to_dual self]` for those cases.

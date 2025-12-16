@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Category.Quiv
 /-!
 # The category of refl quivers
 
-The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
+The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
 `Cat` and `ReflQuiv`.
 -/
 
@@ -236,7 +236,7 @@ lemma morphismProperty_eq_top {W : MorphismProperty (FreeRefl V)}
 
 section
 
-variable {D : Type*} [Category D] (F : V ⥤rq D)
+variable {D : Type*} [Category* D] (F : V ⥤rq D)
 
 /-- Constructor for functors from `FreeRefl`.
 (See also `lift'` for which the data is unbundled.) -/
@@ -256,7 +256,7 @@ end
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
   (obj : V → D) (map : ∀ {v w : V}, (v ⟶ w) → (obj v ⟶ obj w))
   (map_id : ∀ (v : V), map (𝟙rq v) = 𝟙 _)
 
@@ -278,12 +278,12 @@ end
 
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
 the prime in the name. -/
-theorem lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeRefl V ⥤ D)
+theorem lift_unique' {V} [ReflQuiver V] {D} [Category* D] (F₁ F₂ : FreeRefl V ⥤ D)
     (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
-lemma functor_ext {D : Type*} [Category D]
+lemma functor_ext {D : Type*} [Category* D]
     {F G : FreeRefl V ⥤ D} (h₁ : ∀ v, F.obj (mk v) = G.obj (mk v))
     (h₂ : ∀ {v w : V} (f : v ⟶ w), F.map (homMk f) =
       eqToHom (h₁ v) ≫ G.map (homMk f) ≫ eqToHom (h₁ w).symm) : F = G :=
@@ -321,7 +321,7 @@ def toFreeRefl : V ⥤rq FreeRefl V where
 attribute [local simp] Functor.toReflPrefunctor in
 variable {V} in
 /-- Constructor for functors from `FreeRefl`. -/
-lemma FreeRefl.lift_spec {D : Type*} [Category D] (F : V ⥤rq D) :
+lemma FreeRefl.lift_spec {D : Type*} [Category* D] (F : V ⥤rq D) :
     Cat.toFreeRefl V ⋙rq (Cat.FreeRefl.lift F).toReflPrefunctor = F :=
   ReflPrefunctor.ext (fun v ↦ by simp) (by simp)
 
@@ -368,7 +368,7 @@ open Category Functor
 namespace adj
 
 variable {V W : Type*} [ReflQuiver W] [ReflQuiver V]
-  {C D : Type*} [Category C] [Category D]
+  {C D : Type*} [Category* C] [Category* D]
 
 /-- Given a reflexive quiver `V` and a category `C`, this is the bijection
 between functors `Cat.FreeRefl V ⥤ C` and refl functors `V ⥤rq C`. -/
@@ -402,11 +402,11 @@ def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
 lemma adj_unit_app (V) [ReflQuiver V] :
     adj.unit.app (ReflQuiv.of V) = Cat.toFreeRefl V := rfl
 
-lemma adj_counit_app (D : Type*) [Category D] :
+lemma adj_counit_app (D : Type u) [Category.{max u v} D] :
     adj.counit.app (Cat.of D) = Cat.FreeRefl.lift (𝟭rq D) := rfl
 
 variable {V : Type*} [ReflQuiver V]
-  {C : Type*} [Category C]
+  {C : Type*} [Category* C]
 
 lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v + 1} V] (C : Type u) [Category.{max u v} C] :
     (adj).homEquiv (.of V) (.of C) = adj.homEquiv := by
@@ -417,7 +417,7 @@ lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v + 1} V] :
     (adj.unit.app (.of V)).toPrefunctor = Quiv.adj.unit.app (.of V) ⋙q
       (Cat.FreeRefl.quotientFunctor V).toPrefunctor := rfl
 
-lemma adj.counit.comp_app_eq (C : Type u) [Category C] :
+lemma adj.counit.comp_app_eq (C : Type u) [Category.{max u v} C] :
     Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app (.of C) =
       pathComposition _ :=
   Paths.ext_functor rfl (fun _ _ f ↦ by
