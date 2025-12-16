@@ -723,6 +723,7 @@ def toPerm : MulAut M →* Equiv.Perm M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+set_option backward.proofsInPublic true in
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance

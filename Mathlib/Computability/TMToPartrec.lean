@@ -211,6 +211,7 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
+set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done

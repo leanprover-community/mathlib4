@@ -215,6 +215,7 @@ lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Pr
   suffices iSup S ≤ T from this mem
   rwa [iSup_le_iff]
 
+set_option backward.proofsInPublic true in
 /-- A dependent version of `Subalgebra.iSup_induction`. -/
 @[elab_as_elim]
 theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}

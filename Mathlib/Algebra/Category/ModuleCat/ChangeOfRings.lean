@@ -748,6 +748,7 @@ restriction of scalars.
 def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂, u₁, u₂} f where
   app _ := Unit.map.{u₁,u₂,v} f
 
+set_option backward.proofsInPublic true in
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y` -/
 @[simps! hom_apply]
