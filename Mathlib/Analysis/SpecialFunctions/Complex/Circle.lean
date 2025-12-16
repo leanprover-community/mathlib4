@@ -194,6 +194,13 @@ end AddCircle
 
 open AddCircle
 
--- todo: upgrade this to `IsCoveringMap Circle.exp`.
+theorem Circle.isAddQuotientCoveringMap_exp :
+    IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * Real.pi)) := by
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  on_goal 2 => simp
+  ext; simp [homeomorphCircle_apply, toCircle]
+
+theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
+
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))

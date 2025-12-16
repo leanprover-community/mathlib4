@@ -50,6 +50,20 @@ namespace IsQuotientCoveringMap
     simpa [inv_mul_eq_one, eq_comm] using hU (g'⁻¹ * g)
       ⟨e, ⟨e, mem_of_mem_nhds heU, by simpa [mul_smul, inv_smul_eq_iff]⟩, mem_of_mem_nhds heU⟩
 
+variable {f G}
+
+@[to_additive] theorem homeomorph_comp (h : IsQuotientCoveringMap f G) {Y} [TopologicalSpace Y]
+    (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G where
+  __ := φ.isQuotientMap.comp h.toIsQuotientMap
+  continuous_const_smul := h.continuous_const_smul
+  apply_eq_iff_mem_orbit := by simpa using @h.apply_eq_iff_mem_orbit
+  disjoint := h.disjoint
+
+@[to_additive (attr := simp)] theorem homeomorph_comp_iff {Y} [TopologicalSpace Y]
+    (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G ↔ IsQuotientCoveringMap f G where
+  mp h := by convert h.homeomorph_comp φ.symm; ext; simp
+  mpr h := h.homeomorph_comp φ
+
 end IsQuotientCoveringMap
 
 namespace Topology.IsQuotientMap
