@@ -55,17 +55,15 @@ theorem Aₙ_M_adjacent (n : ℕ) (i : Fin n) (hi : i.val + 1 < n) :
 
 theorem Aₙ_M_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
     (h3 : (j : ℕ) + 1 ≠ i) : (Aₙ n).M i j = 2 := by
-  simp only [Aₙ, Matrix.of_apply, h1, ↓reduceIte]
-  split_ifs with h4
-  · obtain h4 | h4 := h4 <;> omega
-  · rfl
+  simp only [Aₙ, Matrix.of_apply]
+  grind
 
 end CoxeterMatrix
 
 /-! ### The braid group -/
 
 /-- The braid group `B_n` on `n` strands. This is the Artin group of type A_{n-1}. -/
-abbrev BraidGroup (n : ℕ) : Type _ := (CoxeterMatrix.Aₙ (n - 1)).ArtinGroup
+abbrev BraidGroup (n : ℕ) : Type := (CoxeterMatrix.Aₙ (n - 1)).ArtinGroup
 
 namespace BraidGroup
 
@@ -99,21 +97,11 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     simp only [swapFun]
     obtain hadj | hadj := hadj
     · -- i + 1 = j case: j.castSucc = i.succ
-      have hj_eq : (j : ℕ) = i.val + 1 := hadj.symm
-      have hj_cast : j.castSucc = i.succ := by simp [Fin.ext_iff, hj_eq]
-      rw [hj_cast]
-      refine Equiv.swap_mul_swap_mul_swap_braid ?_ ?_ ?_
-      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
-      · simp [Fin.ext_iff, Fin.val_succ]; omega
-      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
+      have hj_cast : j.castSucc = i.succ := by grind
+      grind [Equiv.swap_mul_swap_mul_swap_braid]
     · -- j + 1 = i case: i.castSucc = j.succ
-      have hi_eq : (i : ℕ) = j.val + 1 := hadj.symm
-      have hi_cast : i.castSucc = j.succ := by simp [Fin.ext_iff, hi_eq]
-      rw [hi_cast]
-      refine (Equiv.swap_mul_swap_mul_swap_braid ?_ ?_ ?_).symm
-      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
-      · simp [Fin.ext_iff, Fin.val_succ]; omega
-      · simp [Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]; omega
+      have hi_cast : i.castSucc = j.succ := by grind
+      grind [Equiv.swap_mul_swap_mul_swap_braid]
   · -- Far case: m = 2, commutativity
     have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_M_far _ i j hij
         (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))
@@ -123,11 +111,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     simp only [swapFun]
     push_neg at hadj
     apply Equiv.swap_mul_swap_comm_of_disjoint <;>
-      simp only [ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_succ]
-    · intro h; exact hij (Fin.ext h.symm)
-    · omega
-    · omega
-    · omega
+      simp only [ne_eq, Fin.ext_iff] <;> grind
 
 /-- The canonical surjection from the braid group B_{n+1} to the symmetric group S_{n+1},
 sending σ_i to the adjacent transposition (i, i+1). -/
@@ -154,17 +138,17 @@ theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) := by
     -- Generator case: each swap i.castSucc i.succ is in the range
     obtain ⟨i, rfl⟩ := hy
     use σ i
-    rw [toPermHom_σ, swapFun]
+    grind [toPermHom_σ, swapFun]
   | one =>
     -- Identity case
     use 1
-    rw [map_one]
+    grind
   | mul a b _ _ ha hb =>
     -- Multiplication case
     obtain ⟨x, hx⟩ := ha
     obtain ⟨y, hy⟩ := hb
     use x * y
-    rw [map_mul, hx, hy]
+    grind
 
 /-! ### Small braid groups -/
 
