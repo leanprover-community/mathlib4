@@ -231,12 +231,11 @@ lemma isUnit_dblZ_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
   (dblZ_ne_zero_of_Y_ne' hP hQ hPz hx hy).isUnit
 
 private lemma toAffine_slope_of_eq [DecidableEq F]
-    {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    {P Q : Fin 3 → F} (_hP : W.Equation P) (_hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
     (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
       -W.dblU P / W.dblZ P := by
-  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy
   simp only [X_eq_iff hPz hQz, ne_eq, Y_eq_iff' hPz hQz] at hx hy
   rw [Affine.slope_of_Y_ne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz, dblU_eq, dblZ]
   simp [field]
