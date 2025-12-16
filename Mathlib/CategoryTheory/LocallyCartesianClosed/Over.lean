@@ -198,8 +198,8 @@ lemma rightUnitor_inv_left_snd (Y : Over X) :
   simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
 
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) := by
-  cat_disch
+    (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) :=
+  rfl
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
