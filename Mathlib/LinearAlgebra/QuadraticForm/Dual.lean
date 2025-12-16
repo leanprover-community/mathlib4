@@ -182,8 +182,8 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     rcases eq_or_ne i j with rfl | hij
     · rw [← mul_assoc]
       exact mul_nonneg (mul_self_nonneg _) (hB.nonneg _)
-    · exact mul_nonneg_iff.mpr <|
-        Or.inr ⟨by grind, mul_nonpos_iff.mpr <| Or.inl ⟨by grind, hn hij.symm⟩⟩
+    · specialize hn hij.symm
+      grind [mul_nonneg_iff, mul_nonpos_iff]
   replace hx : ∑ i ∈ s with 0 ≤ c i, c i * f (v i) = 0 := by
     rw [hx₀] at hx
     simpa using (congr(f $hx)).symm
