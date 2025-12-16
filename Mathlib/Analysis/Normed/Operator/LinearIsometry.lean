@@ -853,7 +853,9 @@ abbrev toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] E₂) : E →SL[σ₁
   e.toContinuousLinearEquiv.toContinuousLinearMap
 
 @[simp] theorem coe_eq_toContinuousLinearMap : (e : E →SL[σ₁₂] E₂) = e.toContinuousLinearMap := rfl
+
 @[simp] theorem coe_toContinuousLinearMap : ⇑e.toContinuousLinearMap = e := rfl
+
 theorem toContinuousLinearMap_toContinuousLinearEquiv :
     e.toContinuousLinearEquiv.toContinuousLinearMap = e.toContinuousLinearMap := rfl
 
