@@ -221,4 +221,18 @@ lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRe
     b * a = a ↔ b = 1 :=
   ⟨fun h ↦ by rwa [← ha.eq_iff, one_mul], fun h ↦ by rw [h, one_mul]⟩
 
+namespace IsDedekindFiniteMonoid
+
+@[to_additive] lemma iff_isLeftRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsLeftRegular x where
+  mp _ x y eq := isLeftRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [← mul_assoc, eq]⟩
+
+@[to_additive] lemma iff_isRightRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsRightRegular y where
+  mp _ x y eq := isRightRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [mul_assoc, eq]⟩
+
+end IsDedekindFiniteMonoid
+
 end Monoid
