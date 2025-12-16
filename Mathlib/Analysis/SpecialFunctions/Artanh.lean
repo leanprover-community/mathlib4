@@ -106,20 +106,28 @@ theorem strictMonoOn_artanh : StrictMonoOn artanh (Ioo (-1) 1) := by
   apply strictMonoOn_sqrt.comp strictMonoOn_one_add_div_one_sub
     fun x hx ↦ show 0 ≤ (1 + x) / (1 - x) by exact div_nonneg (by grind) (by grind)
 
-theorem artanh_le_artanh {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
+theorem artanh_le_artanh_iff {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
     artanh x ≤ artanh y ↔ x ≤ y :=
   strictMonoOn_artanh.le_iff_le hx hy
 
-theorem artanh_lt_artanh {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
+theorem artanh_lt_artanh_iff {x y : ℝ} (hx : x ∈ Ioo (-1) 1) (hy : y ∈ Ioo (-1) 1) :
     artanh x < artanh y ↔ x < y :=
   strictMonoOn_artanh.lt_iff_lt hx hy
 
+theorem artanh_le_artanh {x y : ℝ} (hx : -1 < x) (hy : y < 1) (hxy : x ≤ y) :
+    artanh x ≤ artanh y :=
+  (artanh_le_artanh_iff (by grind) (by grind)).mpr hxy
+
+theorem artanh_lt_artanh {x y : ℝ} (hx : -1 < x) (hy : y < 1) (hxy : x < y) :
+    artanh x < artanh y :=
+  (artanh_lt_artanh_iff (by grind) (by grind)).mpr hxy
+
 theorem artanh_pos {x : ℝ} (hx : x ∈ Ioo 0 1) : 0 < artanh x := by
-  rw [← artanh_zero, artanh_lt_artanh (by grind) (by grind)]
+  rw [← artanh_zero, artanh_lt_artanh_iff (by grind) (by grind)]
   exact hx.1
 
 theorem artanh_nonneg {x : ℝ} (hx : x ∈ Ico 0 1) : 0 ≤ artanh x := by
-  rw [← artanh_zero, artanh_le_artanh (by grind) (by grind)]
+  rw [← artanh_zero, artanh_le_artanh_iff (by grind) (by grind)]
   exact hx.1
 
 /-- `Real.tanh` as a `PartialEquiv`. -/
