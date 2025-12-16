@@ -432,11 +432,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.val_mul, Fin.val_mul, Fin.coe_cast, Fin.coe_cast, ← h]
+          rw [Fin.val_cast, Fin.val_mul, Fin.val_mul, Fin.val_cast, Fin.val_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
+          rw [Fin.val_cast, Fin.val_add, Fin.val_add, Fin.val_cast, Fin.val_cast, ← h] }
 
 @[simp] lemma ringEquivCongr_refl (a : ℕ) : ringEquivCongr (rfl : a = a) = .refl _ := by
   cases a <;> rfl
@@ -529,7 +529,7 @@ lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
 
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
-  dsimp [val, Fin.coe_neg]
+  dsimp [val, Fin.val_neg']
   cases n
   · simp
   · dsimp [ZMod, ZMod.cast]
@@ -1228,7 +1228,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  cutsat
+  lia
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by

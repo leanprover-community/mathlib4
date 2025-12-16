@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
-public import Mathlib.CategoryTheory.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory

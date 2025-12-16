@@ -283,7 +283,7 @@ end CompleteLattice
 theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
   classical
-    refine Set.not_infinite.mp fun contra => ?_
+    by_contra! contra
     obtain ⟨t, ht₁, ht₂⟩ := CompleteLattice.WellFoundedGT.isSupFiniteCompact α s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
       have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)

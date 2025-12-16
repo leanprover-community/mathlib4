@@ -200,6 +200,8 @@ def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ)
 
 variable [HasZeroMorphisms V]
 
+-- TODO: fix non-terminal simp (acting on six goals, with different simp sets)
+set_option linter.flexible false in
 /-- We can "augment" a cochain complex by inserting an arbitrary object in degree zero
 (shifting everything else up), along with a suitable differential.
 -/

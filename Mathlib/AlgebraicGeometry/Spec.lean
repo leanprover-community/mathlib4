@@ -64,7 +64,7 @@ def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
 def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
-  TopCat.ofHom (PrimeSpectrum.comap f.hom)
+  TopCat.ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩
 
 @[simp]
 theorem Spec.topMap_id (R : CommRingCat.{u}) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
