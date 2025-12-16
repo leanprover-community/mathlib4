@@ -341,7 +341,7 @@ theorem stdPart_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
 
 theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
-    FiniteResidueField.ofArchimedean f (stdPart x) = FiniteResidueField.mk (.mk x hx) := by
+    FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
   rw [stdPart, dif_pos hx, ← OrderRingHom.comp_apply, ← OrderRingHom.comp_assoc,
     OrderRingHom.comp_apply, OrderRingHom.apply_eq_self]
 
@@ -349,7 +349,7 @@ theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
 theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
     0 < mk (x - f r) ↔ stdPart x = r := by
   refine (FiniteResidueField.mk_eq_zero
-    (x := FiniteElement.mk x hx - .mk _ (mk_map_nonneg_of_archimedean f r))).symm.trans ?_
+    (x := .mk x hx - .mk _ (mk_map_nonneg_of_archimedean f r))).symm.trans ?_
   rw [map_sub, ← FiniteResidueField.ofArchimedean_apply, ← ofArchimedean_stdPart f hx,
     sub_eq_zero, FiniteResidueField.ofArchimedean_inj f]
 
