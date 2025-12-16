@@ -160,7 +160,7 @@ theorem finitePresentation_isStableUnderBaseChange :
   apply IsStableUnderBaseChange.mk
   · exact finitePresentation_respectsIso
   · simp only [finitePresentation_algebraMap]
-    exact fun _ S _ _ _ _ _ _ _ ↦ Algebra.FinitePresentation.baseChange S
+    exact fun _ _ _ _ _ _ _ _ _ ↦ inferInstance
 
 /-- Being finitely-presented is preserved by localizations. -/
 theorem finitePresentation_localizationPreserves : LocalizationPreserves @FinitePresentation :=
