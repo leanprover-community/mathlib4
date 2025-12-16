@@ -186,6 +186,30 @@ theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniform
 
 variable {G}
 
+open Set in
+open scoped RightActions in
+/-- A locally compact topological group is complete for its right uniformity. -/
+@[to_additive
+/-- A locally compact topological additive group is complete for its right uniformity. -/]
+theorem IsTopologicalGroup.completeSpace_of_locallyCompactSpace [LocallyCompactSpace G] :
+    CompleteSpace G where
+  complete {f} hf := by
+    rcases hf with ⟨hfn, hfG⟩
+    obtain ⟨K, hK, hKf⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ f := by
+      obtain ⟨K', hK', hK'₁⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
+      let U : Set (G × G) := {p : G × G | p.2 / p.1 ∈ K'}
+      have hU : U ∈ uniformity G := by
+        rw [uniformity_eq_comap_nhds_one']; exact preimage_mem_comap hK'₁
+      obtain ⟨S, hSf, hSU⟩ : ∃ S ∈ f, S ×ˢ S ⊆ U := by
+        rcases mem_prod_iff.1 (hfG hU) with ⟨A, hA, B, hB, hAB⟩
+        exact ⟨A ∩ B,
+          ⟨inter_mem_iff.mpr ⟨hA, hB⟩, (prod_mono inter_subset_left inter_subset_right).trans hAB⟩⟩
+      obtain ⟨x, hx⟩ := f.nonempty_of_mem hSf
+      exact ⟨K' <• x, hK'.smul (MulOpposite.op x),
+        mem_of_superset hSf (fun y hy ↦ ⟨y / x, hSU <| mk_mem_prod hx hy, by simp⟩)⟩
+    obtain ⟨x, hx, h⟩ := hK.isComplete f ⟨hfn, hfG⟩ <| le_principal_iff.mpr hKf
+    exact ⟨x, h⟩
+
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
