@@ -374,7 +374,7 @@ theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) :=
   (mem_one_iff S).mpr ⟨x, rfl⟩
 
 theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
-  (mem_one_iff S).mpr ⟨1, RingHom.map_one _⟩
+  (mem_one_iff S).mpr ⟨1, map_one _⟩
 
 variable {S}
 
@@ -656,12 +656,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, RingHom.map_add]
+      rw [mem_setOf, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, RingHom.map_zero]
+    · rw [mem_setOf, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, RingHom.map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor

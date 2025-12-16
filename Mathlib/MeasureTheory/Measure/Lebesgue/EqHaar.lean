@@ -343,7 +343,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
-    simp only [f, mul_one, LinearMap.det_smul, Ne, MonoidHom.map_one]
+    simp only [f, mul_one, LinearMap.det_smul, Ne, map_one]
     exact pow_ne_zero _ hr
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 
@@ -591,7 +591,7 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[�
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
-    AlternatingMap.smul_apply, Algebra.id.smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
+    AlternatingMap.smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
     ← Real.enorm_eq_ofReal_abs, enorm]
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by

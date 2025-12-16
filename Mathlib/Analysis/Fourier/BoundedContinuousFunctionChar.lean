@@ -92,8 +92,8 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
   _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
     congr
-    · rw [neg_smul, ← LinearMap.map_smul (L v')]
-    · rw [← LinearMap.map_smul (L v)]
+    · rw [neg_smul, ← map_smul (L v')]
+    · rw [← map_smul (L v)]
   _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
     simp only [map_sub, LinearMap.sub_apply]
     congr
@@ -140,7 +140,7 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   refine ⟨z.embDomain f, ?_⟩
   ext1 u
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
-    Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
+    Finsupp.embDomain_apply_self, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
   simp [z, f]
 

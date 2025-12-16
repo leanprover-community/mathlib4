@@ -212,7 +212,7 @@ theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
-  apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
+  apply ((le_csSup_iff' (bddAbove_image.{_, u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
     obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
@@ -292,14 +292,19 @@ theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 -- This works generally to prove inequalities between numeric cardinals.
 theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
 
-theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
+theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
+    ∃ s : Finset α, n = s.card := by
   obtain hα|hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [mk_fintype, Nat.cast_le] using h
+    obtain ⟨t, -, rfl⟩ := @Finset.exists_subset_card_eq α .univ n <| by simpa using h
+    exact ⟨t, rfl⟩
   · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
+    exact ⟨s, hs.symm⟩
+
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card :=
+  have ⟨s, eq⟩ := exists_finset_eq_card h
+  ⟨s, eq.le⟩
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
@@ -746,7 +751,7 @@ theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #�
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
-  rw [← lift_sum, lift_id'.{_,u}]
+  rw [← lift_sum, lift_id'.{_, u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
@@ -822,9 +827,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   classical
   let u : Finset α := s.image Subtype.val
   have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
-  rw [← this]
-  apply H
-  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  grind
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=

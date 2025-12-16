@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.CategoryTheory.LocallyDirected
+public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 
 /-!
@@ -444,7 +445,7 @@ theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h _
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.X x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.f x) (𝒰.f y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.I₀) : 𝒰.f x ≫ 𝒰.glueMorphisms f hf = f x := by
@@ -453,7 +454,7 @@ theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.
     PreZeroHypercover.pullback₁_X, ulift_X, ulift_f, PreZeroHypercover.pullback₁_f]
   simp_rw [pullback.condition_assoc, ← ulift_f, ← ι_fromGlued, Category.assoc, glueMorphisms,
     IsIso.hom_inv_id_assoc, ulift_f, hf]
-  erw [Multicoequalizer.π_desc]
+  simp [CategoryTheory.GlueData.ι]
 
 end Cover
 
@@ -466,6 +467,16 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
       rw [presieve₀_mem_precoverage_iff]
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
+
+-- TODO: generalize to covers in subcanonical topologies
+open pullback in
+attribute [local simp] condition condition_assoc in
+instance : (MorphismProperty.isomorphisms Scheme).IsLocalAtTarget zariskiPrecoverage :=
+  .mk_of_isStableUnderBaseChange fun {X Y} f (𝒰 : Y.OpenCover) (H : ∀ i, IsIso _) ↦
+    ⟨𝒰.glueMorphisms (fun i ↦ inv (snd f (𝒰.f i)) ≫ fst _ _) fun i j ↦ by
+    rw [← cancel_epi ((pullbackRightPullbackFstIso _ _ _).hom ≫ map (fst f (𝒰.f i) ≫ f)
+      (𝒰.f j) (𝒰.f i) (𝒰.f j) (snd _ _) (𝟙 _) (𝟙 _) (by simp) (by simp))]
+    simp, Cover.hom_ext (𝒰.pullback₁ f) _ _ fun i ↦ by simp, Cover.hom_ext 𝒰 _ _ fun i ↦ by simp⟩
 
 /-!
 

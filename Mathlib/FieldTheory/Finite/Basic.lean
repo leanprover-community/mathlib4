@@ -334,7 +334,7 @@ variable (R) [CommRing R] [Algebra K R]
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..
-  commutes' _ := by simp [← RingHom.map_pow, pow_card]
+  commutes' _ := by simp [← map_pow, pow_card]
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
@@ -743,7 +743,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).map_roots (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

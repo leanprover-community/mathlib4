@@ -231,9 +231,13 @@ protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ �
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   cases b
-  case top => grind [mul_top, mul_zero, inv_top, ENNReal.inv_eq_zero]
+  case top =>
+    simp_all only [Ne, not_true_eq_false, or_false, top_ne_zero, not_false_eq_true, or_true,
+      mul_top, inv_top, mul_zero]
   cases a
-  case top => grind [top_mul, zero_mul, inv_top, ENNReal.inv_eq_zero]
+  case top =>
+    simp_all only [Ne, top_ne_zero, not_false_eq_true, coe_ne_top, or_self, not_true_eq_false,
+      coe_eq_zero, false_or, top_mul, inv_top, zero_mul]
   grind [_=_ coe_mul, coe_zero, inv_zero, = mul_inv, coe_ne_top, ENNReal.inv_eq_zero,
     =_ coe_inv, zero_mul, = mul_eq_zero, mul_top, mul_zero, top_mul]
 
@@ -828,7 +832,7 @@ lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ :
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ | hf := em (∃ i, f i = 0)
     · rw [(iInf_eq_bot _).2, (iInf_eq_bot _).2, bot_eq_zero, mul_zero] <;>
-        exact fun _ _↦ ⟨i, by simpa [hi]⟩
+        exact fun _ _ ↦ ⟨i, by simpa [hi]⟩
     · rw [top_mul (mt (hinfty rfl) hf), eq_comm, iInf_eq_top]
       exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iInf _

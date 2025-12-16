@@ -339,8 +339,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : SetRel X X} 
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
   -- Otherwise, there is a ball which does not intersect `F`. Removing it yields a smaller cover.
   classical
-  by_contra! hypo
-  obtain ⟨x, x_s, ball_empt⟩ := hypo
+  by_contra! ⟨x, x_s, ball_empt⟩
   have smaller_cover : IsDynCoverOf T F U n (s.erase x) := by
     intro y y_F
     specialize h y_F
@@ -526,7 +525,7 @@ lemma coverEntropyInf_empty {T : X → X} : coverEntropyInf T ∅ = ⊥ := by
 lemma coverEntropyInf_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropyInf T F :=
   (coverEntropyInfEntourage_le_coverEntropyInf T F univ_mem).trans_eq'
-    (coverEntropyInfEntourage_univ T h).symm
+    (coverEntropyInfEntourage_univ T h)
 
 lemma coverEntropy_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropy T F :=

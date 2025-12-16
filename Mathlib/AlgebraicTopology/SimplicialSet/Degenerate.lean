@@ -68,7 +68,7 @@ alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonD
 
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
-  ⟨n, by cutsat, SimplexCategory.σ i, Set.mem_range_self x⟩
+  ⟨n, by lia, SimplexCategory.σ i, Set.mem_range_self x⟩
 
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
@@ -77,7 +77,7 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
   · rintro ⟨m, hm, f, y, hy⟩
     rw [← image.fac f, op_comp] at hy
     have : _ ≤ m := SimplexCategory.len_le_of_mono (image.ι f)
-    exact ⟨(image f).len, by cutsat, factorThruImage f, inferInstance, by aesop⟩
+    exact ⟨(image f).len, by lia, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
 
@@ -91,7 +91,7 @@ lemma degenerate_eq_iUnion_range_σ :
     obtain ⟨i, θ, rfl⟩ := SimplexCategory.eq_σ_comp_of_not_injective f (fun hf ↦ by
       rw [← SimplexCategory.mono_iff_injective] at hf
       have := SimplexCategory.le_of_mono f
-      cutsat)
+      lia)
     aesop
   · intro hx
     simp only [Set.mem_iUnion, Set.mem_range] at hx
@@ -238,7 +238,7 @@ lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
   have hα₂ : Monotone α := by
     rintro y₁ y₂ h
     by_contra! h'
-    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by cutsat] at h'
+    suffices y₂ ≤ y₁ by simp [show y₁ = y₂ by lia] at h'
     simpa only [hα₁] using f₁.toOrderHom.monotone h'.le
   exact ⟨{ section_ := SimplexCategory.Hom.mk ⟨α, hα₂⟩, id := by ext : 3; apply hα₁ },
     by simp [α]⟩
@@ -318,11 +318,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
   exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
-    X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
+    X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
   fun _ hx ↦ degenerate_app_apply hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
-    (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
+    (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
