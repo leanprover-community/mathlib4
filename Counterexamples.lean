@@ -15,6 +15,7 @@ import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
+import Counterexamples.NowhereDifferentiable
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 import Counterexamples.PeanoCurve
 import Counterexamples.Phillips
@@ -25,5 +26,4 @@ import Counterexamples.SeminormLatticeNotDistrib
 import Counterexamples.SeparableNotSecondCountable
 import Counterexamples.SorgenfreyLine
 import Counterexamples.TopologistsSineCurve
-import Counterexamples.Weierstrass
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
