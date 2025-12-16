@@ -76,16 +76,6 @@ theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : tanh (artanh x) = x := b
   have := sq_sub_sq 1 x
   grind [tanh_eq_sinh_div_cosh, sinh_artanh, cosh_artanh, sqrt_ne_zero', mul_pos]
 
-theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
-  rw [tanh_eq]
-  field_simp
-  grind [exp_pos]
-
-theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
-  rw [tanh_eq]
-  field_simp
-  grind [exp_pos]
-
 /-- `artanh` is the left inverse of `tanh`. -/
 theorem artanh_tanh (x : ℝ) : artanh (tanh x) = x := by
   have h : 0 < (1 + tanh x) / (1 - tanh x) :=
