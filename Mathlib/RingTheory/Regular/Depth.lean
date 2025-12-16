@@ -273,20 +273,17 @@ lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
      Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i),
      ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
      ].TFAE := by
+  -- two main implications `3 → 4` and `4 → 1` are separated out, the rest are trivial
   have ntrQ : Nontrivial (R ⧸ I) := by
-    apply Submodule.Quotient.nontrivial_iff.mpr (lt_top_iff_ne_top.mpr _).ne
+    apply Submodule.Quotient.nontrivial_iff.mpr
     by_contra eq
     simp [eq] at smul_lt
   have suppQ : Module.support R (Shrink.{v} (R ⧸ I)) = PrimeSpectrum.zeroLocus I := by
     rw [(Shrink.linearEquiv R _).support_eq, Module.support_eq_zeroLocus, annihilator_quotient]
-  tfae_have 1 → 2 := by
-    intro h1 i hi
-    apply h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I))) _ i hi
-    exact ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ.subset⟩
-  tfae_have 2 → 3 := by
-    intro h2
-    use (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
-    exact ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
+  tfae_have 1 → 2 := fun h1 i hi ↦ h1 (ModuleCat.of R (Shrink.{v} (R ⧸ I)))
+    ⟨inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ.subset⟩ i hi
+  tfae_have 2 → 3 := fun h2 ↦ ⟨(ModuleCat.of R (Shrink.{v} (R ⧸ I))),
+    inferInstance, Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm, suppQ, h2⟩
   tfae_have 3 → 4 := exists_isRegular_of_exists_subsingleton_ext I n M smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
     ext_subsingleton_of_exists_isRegular I n N Nsupp M smul_lt h4 i hi
