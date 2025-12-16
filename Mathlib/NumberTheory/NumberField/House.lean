@@ -81,17 +81,16 @@ lemma exists_conjugate_one_le_norm {α : 𝓞 K} (hα0 : α ≠ 0) :
   use w.embedding
   rwa [InfinitePlace.norm_embedding_eq]
 
-lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
-    1 ≤ house α := by
-  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖₊ := by
-    apply exists_conjugate_one_le_norm (K := K) (α := ⟨α, hα⟩)
-    simpa [RingOfIntegers.ext_iff]
-  rw [house_eq_sup']
-  apply hσ.trans (Finset.le_sup' (fun φ : K →+* ℂ ↦ ‖φ α‖₊) (Finset.mem_univ σ))
-
 lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house α := by
   rw [house_eq_sup']
   exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
+
+lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
+    1 ≤ house α := by
+  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+    apply exists_conjugate_one_le_norm (K := K) (α := ⟨α, hα⟩)
+    simpa [RingOfIntegers.ext_iff]
+  apply hσ.trans (norm_embedding_le_house α σ)
 
 lemma norm_norm_le_norm_mul_house_pow (α : K) (σ : K →+* ℂ) :
     ‖Algebra.norm ℚ α‖ ≤ ‖σ α‖ * house α ^ (Module.finrank ℚ K - 1) := by
