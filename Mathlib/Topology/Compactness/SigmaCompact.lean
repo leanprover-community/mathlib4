@@ -200,7 +200,7 @@ open SigmaCompactSpace
 
 /-- A choice of compact covering for a `σ`-compact space, chosen to be monotone. -/
 def compactCovering : ℕ → Set X :=
-  Accumulate exists_compact_covering.choose
+  accumulate exists_compact_covering.choose
 
 theorem isCompact_compactCovering (n : ℕ) : IsCompact (compactCovering X n) :=
   isCompact_accumulate (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).1 n

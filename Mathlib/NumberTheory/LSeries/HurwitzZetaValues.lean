@@ -101,7 +101,7 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   rw [cosZeta_two_mul_nat hk hx]
   congr 1
   have : (2 * k)! = (2 * k) * Complex.Gamma (2 * k) := by
-    rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
+    rw [(by { norm_cast; lia } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by lia)]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div,
     mul_right_comm (2 : ℂ) (k : ℂ)]

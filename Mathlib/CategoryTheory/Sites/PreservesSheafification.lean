@@ -50,7 +50,7 @@ namespace CategoryTheory
 open Category Limits Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
+  {A B : Type*} [Category* A] [Category* B] (F : A ⥤ B)
 
 namespace GrothendieckTopology
 

@@ -68,7 +68,7 @@ end
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [Preadditive E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]

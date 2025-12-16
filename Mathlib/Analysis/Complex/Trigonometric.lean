@@ -732,6 +732,10 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
 nonrec theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
   ofReal_inj.1 <| by simp [tanh_eq_sinh_div_cosh]
 
+/-- The definition of `tanh` in terms of `exp`. -/
+theorem tanh_eq (x : ℝ) : tanh x = (exp x - exp (-x)) / (exp x + exp (-x)) := by
+  rw [tanh_eq_sinh_div_cosh, sinh_eq, cosh_eq, div_div_div_cancel_right₀ two_ne_zero]
+
 @[simp]
 theorem tanh_zero : tanh 0 = 0 := by simp [tanh]
 

@@ -113,7 +113,7 @@ lemma exists_one_add_mul_pow_prime_eq
   congr 1
   · congr! 1 with i hi
     simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-    have hi' : 2 ≤ i := by omega
+    have hi' : 2 ≤ i := by lia
     calc
       (u * x) ^ i * p.choose i =
         (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']

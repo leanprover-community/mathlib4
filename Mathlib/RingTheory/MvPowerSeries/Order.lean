@@ -131,9 +131,7 @@ variable (w : σ → ℕ) {f g : MvPowerSeries σ R}
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
-  refine not_iff_not.mp ?_
-  simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact MvPowerSeries.ext_iff
+  simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by

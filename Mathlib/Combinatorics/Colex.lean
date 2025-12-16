@@ -480,7 +480,7 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
   classical
-  simp_rw [← sdiff_eq_empty_iff_subset, ← not_nonempty_iff_eq_empty]
+  simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht

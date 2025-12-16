@@ -26,7 +26,7 @@ namespace CategoryTheory.Over
 
 open Functor Limits CartesianMonoidalCategory
 
-variable {C : Type*} [Category C] [HasPullbacks C]
+variable {C : Type*} [Category* C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=

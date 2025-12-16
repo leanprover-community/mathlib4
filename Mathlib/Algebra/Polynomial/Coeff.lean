@@ -225,7 +225,10 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  all_goals grind [mem_antidiagonal, mul_zero]
+  · rintro ⟨i, j⟩ h1 h2
+    rw [coeff_X_pow, if_neg, mul_zero]
+    grind [mem_antidiagonal]
+  · grind [mem_antidiagonal]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
@@ -298,6 +301,12 @@ theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
 
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
+
+theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
+    (1 + X : S[X]) ^ d - X ^ d = ∑ i ∈ range d, d.choose i • X ^ i := by
+  ext i
+  simp [Polynomial.coeff_one_add_X_pow]
+  split_ifs <;> simp_all [Nat.choose_eq_zero_of_lt, lt_iff_le_and_ne]
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor

@@ -67,7 +67,7 @@ on the set of all solutions to the Pell equation `x^2 - d*y^2 = 1`.
 The type of such solutions is `Pell.Solution₁ d`. It corresponds to a pair of integers `x` and `y`
 and a proof that `(x, y)` is indeed a solution.
 
-The multiplication is given by `(x, y) * (x', y') = (x*y' + d*y*y', x*y' + y*x')`.
+The multiplication is given by `(x, y) * (x', y') = (x*x' + d*y*y', x*y' + y*x')`.
 This is obtained by mapping `(x, y)` to `x + y*√d` and multiplying the results.
 In fact, we define `Pell.Solution₁ d` to be `↥(unitary (ℤ√d))` and transport
 the "commutative group with distributive negation" structure from `↥(unitary (ℤ√d))`.

@@ -69,7 +69,7 @@ the model fiber `F`.
   Use `e.localFrame b i` to access the i-th section in that frame.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
 
-# TODO
+## TODO
 
 Strengthen the proof of smoothness in terms of the local frame coefficients.
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
@@ -198,14 +198,14 @@ lemma coeff_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π 
 
 -- TODO: add uniqueness of the decomposition; follows from the IsBasis property in the definition
 
-lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hx : x ∈ u) :
+lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hx : x ∈ u) :
     t x = ∑ i, (hs.coeff i t x) • (s i x) := by
   simpa [coeff, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
 set `u` around `x`, we have `t = ∑ i, (hs.coeff i t) • (s i x)` near `x`. -/
 lemma eventually_eq_sum_coeff_smul [Fintype ι]
-    (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hu'' : u ∈ 𝓝 x) :
+    (hs : IsLocalFrameOn I F n s u) (t : Π x : M, V x) (hu'' : u ∈ 𝓝 x) :
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, (hs.coeff i t x') • (s i x') :=
   eventually_of_mem hu'' fun _ hx ↦ hs.coeff_sum_eq _ hx
 
@@ -222,7 +222,7 @@ lemma coeff_congr (hs : IsLocalFrameOn I F n s u) (htt' : t x = t' x) (i : ι) :
 /-- If `s` and `s'` are local frames which are equal at `x`,
 a section `t` has equal frame coefficients in them. -/
 lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u)
-    (hss' : ∀ i, s i x = s' i x) {t : Π x : M,  V x} (i : ι) :
+    (hss' : ∀ i, s i x = s' i x) {t : Π x : M, V x} (i : ι) :
     hs.coeff i t x = hs'.coeff i t x := by
   by_cases hxe : x ∈ u
   · simp [coeff, hxe]

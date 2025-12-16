@@ -28,7 +28,7 @@ namespace SmallObject
 
 namespace SuccStruct
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J]
   {j : J} {F : Set.Iio j ⥤ C} (c : Cocone F)
 

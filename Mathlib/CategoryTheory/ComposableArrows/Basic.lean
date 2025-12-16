@@ -60,7 +60,7 @@ namespace CategoryTheory
 
 open Category
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
@@ -70,6 +70,7 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- A wrapper for `omega` which prefaces it with some quick and useful attempts -/
 macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
@@ -917,7 +918,7 @@ section
 
 open ComposableArrows
 
-variable {C} {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+variable {C} {D : Type*} [Category* D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/

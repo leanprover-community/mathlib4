@@ -15,3 +15,4 @@ Mathlib/Tactic/Linter/TextBased.lean : line 84 : ERR_ADN : Found the string "Ada
 Mathlib/Tactic/Linter/TextBased.lean : line 274 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 279 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 280 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/Linter/TextBased.lean : line 266 : ERR_NSP : This line contains a non-breaking space character

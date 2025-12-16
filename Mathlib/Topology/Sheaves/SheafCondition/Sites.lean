@@ -123,7 +123,7 @@ namespace TopCat.Opens
 
 variable {X : TopCat} {ι : Type*}
 
-theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
+theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor

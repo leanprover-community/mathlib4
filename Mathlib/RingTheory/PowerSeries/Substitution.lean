@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.Data.Finsupp.Weight
 
 /-! # Substitutions in power series
 
@@ -255,6 +256,24 @@ theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
+
+section
+
+theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeries R) :
+    f.order * a.weightedOrder w ≤ (f.subst a).weightedOrder w := by
+  refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
+  simp only [ne_eq, Function.comp_const, le_iInf_iff]
+  intro i hi
+  trans i () * MvPowerSeries.weightedOrder w a
+  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert hi; aesop)) _
+  · simp [Finsupp.weight_apply, Finsupp.sum_fintype]
+
+theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
+    a.order * f.order ≤ (f.subst a).order := by
+  refine .trans ?_ (MvPowerSeries.le_order_subst (PowerSeries.hasSubst_iff.mp ha) _)
+  simp [order_eq_order]
+
+end
 
 theorem HasSubst.comp
     {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :

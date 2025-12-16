@@ -90,7 +90,7 @@ noncomputable instance : (skeletonEquivalence C).functor.Monoidal :=
 noncomputable instance : (skeletonEquivalence C).inverse.Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).functor.Monoidal
 
-variable {D : Type*} [Category D] [MonoidalCategory D] (F : C ⥤ D) (e : C ≌ D)
+variable {D : Type*} [Category* D] [MonoidalCategory D] (F : C ⥤ D) (e : C ≌ D)
 
 noncomputable instance [F.LaxMonoidal] : F.mapSkeleton.LaxMonoidal := .comp ..
 noncomputable instance [F.OplaxMonoidal] : F.mapSkeleton.OplaxMonoidal := .comp ..

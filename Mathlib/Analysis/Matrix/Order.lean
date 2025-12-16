@@ -32,7 +32,7 @@ Please `open scoped MatrixOrder` to use this.
 
 @[expose] public section
 
-variable {𝕜 n : Type*} [RCLike 𝕜] [Fintype n]
+variable {𝕜 n : Type*} [RCLike 𝕜]
 
 open scoped ComplexOrder
 open Matrix
@@ -59,12 +59,23 @@ protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff_posSemid
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 
+private lemma le_antisymm_aux {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ : (-A).PosSemidef) :
+    A = 0 := by
+  classical
+  ext i j
+  have hdiag i : A i i = 0 :=
+    le_antisymm (by simpa using h₂.diag_nonneg) (by simpa using h₁.diag_nonneg)
+  have h1 := h₁.2 (.single i 1 + .single j (A j i))
+  have h2 := h₂.2 (.single i 1 + .single j (A j i))
+  simp [Finsupp.sum_add_index, mul_add, add_mul,
+      -neg_add_rev, hdiag, ← h₁.1.apply j i, -RCLike.star_def] at *
+  simpa using le_antisymm h2 h1
+
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
-    rw [← sub_eq_zero, ← h₂.trace_eq_zero_iff]
-    have := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
-    exact le_antisymm this h₂.trace_nonneg
+    simpa [sub_eq_zero, eq_comm] using le_antisymm_aux h₁
+     (by simpa only [← neg_sub B, le_iff] using h₂)
 
 scoped[MatrixOrder] attribute [instance] Matrix.instPartialOrder
 
@@ -72,6 +83,8 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
   add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_right_eq_sub]
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
+
+variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
   quasispectrum_nonneg_of_nonneg A hA := by
@@ -100,6 +113,8 @@ scoped[MatrixOrder] attribute [instance] instStarOrderedRing
 end PartialOrder
 
 open scoped MatrixOrder
+
+variable [Fintype n]
 
 namespace PosSemidef
 
@@ -205,7 +220,7 @@ theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB :
 @[grind =]
 theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
     (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
-  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  refine ⟨fun h => h.isUnit, fun h => .of_dotProduct_mulVec_pos hx.1 fun v hv => ?_⟩
   obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec, dotProduct_star_self_pos_iff]

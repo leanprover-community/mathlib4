@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Infinitely smooth transition function
@@ -65,6 +66,15 @@ protected theorem monotone : Monotone expNegInvGlue := by
   · simp [zero_of_nonpos hx, nonneg]
   simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
     inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
+
+/-- The function `expNegInvGlue` is not analytic at `0`. -/
+theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
+  intro h
+  obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
+  suffices expNegInvGlue (r / 2) = 0 by simpa [hr, not_le_of_gt]
+  exact h.eqOn_zero_of_preconnected_of_mem_closure (z₀ := 0)
+    (Real.ball_eq_Ioo 0 r ▸ isPreconnected_Ioo)
+    (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
 
 /-!
 ### Smoothness of `expNegInvGlue`

@@ -14,9 +14,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 # Lagrange interpolation
 
 ## Main definitions
-* In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-  indexing of the field over some type. We call the image of v on s the interpolation nodes,
-  though strictly unique nodes are only defined when v is injective on s.
+* In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
+  indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
+  though strictly unique nodes are only defined when `v` is injective on `s`.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
   the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
   are distinct.
@@ -276,6 +276,13 @@ theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     sum_insert (notMem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 
+theorem leadingCoeff_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
+    (Lagrange.basis s v i).leadingCoeff = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
+  have : (∏ j ∈ s.erase i, (X - C (v j))).coeff (#s - 1) = 1 := by
+    simpa [hi] using (monic_prod_X_sub_C v (s.erase i)).coeff_natDegree
+  simp_rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
+  simp [basisDivisor, Finset.prod_mul_distrib, ← map_prod, this]
+
 end Basis
 
 section Interpolate
@@ -441,6 +448,32 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_insert_insert_of_mem_of_notMem hj (notMem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+
+open scoped Classical in
+theorem interpolate_poly_eq_self
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
+    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+
+theorem leadingCoeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+  have P_degree : P.degree = ↑(s.card - 1) := by
+    cases h : P.degree
+    case bot => simp_all
+    case coe d =>
+      rw [Nat.cast_withBot] at hP ⊢
+      suffices #s = d + 1 by grind
+      rw [h] at hP
+      simp [← WithBot.coe_inj, hP]
+  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
+  rw [leadingCoeff, P_natDegree]
+  rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
 
 end Interpolate
 

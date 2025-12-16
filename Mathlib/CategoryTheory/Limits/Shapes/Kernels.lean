@@ -770,7 +770,7 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 
 @[reassoc (attr := simp)]
-lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
+lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category* C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
@@ -978,10 +978,7 @@ def cokernel.zeroCokernelCofork : CokernelCofork f where
 /-- The morphism to the zero object is a cokernel of an epimorphism -/
 def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokernelCofork f) :=
   Cofork.IsColimit.mk _ (fun _ => 0)
-    (fun s => by
-      erw [zero_comp]
-      refine (zero_of_epi_comp f ?_).symm
-      exact CokernelCofork.condition _)
+    fun _ => by simp [zero_of_epi_comp f _]
     fun _ _ _ => zero_of_from_zero _
 
 /-- The cokernel of an epimorphism is isomorphic to the zero object -/

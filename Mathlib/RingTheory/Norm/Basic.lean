@@ -76,7 +76,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
     ← coeff_map,
-    coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) hf,
+    hf.coeff_zero_eq_prod_roots_of_monic (this.map _),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 

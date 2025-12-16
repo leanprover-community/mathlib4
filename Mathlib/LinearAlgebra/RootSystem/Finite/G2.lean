@@ -185,7 +185,7 @@ lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P
   rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
   simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
     sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
-  omega
+  lia
 
 lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
@@ -608,7 +608,7 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
   have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
+    Module.finrank_eq_card_basis b.toWeightBasis, Fintype.card_coe]
 
 variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :

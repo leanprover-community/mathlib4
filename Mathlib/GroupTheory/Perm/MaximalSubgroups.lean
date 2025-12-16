@@ -342,7 +342,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
        In the equality case, `Nat.card s` = Nat.card sᶜ`,
        it would be possible that `sᶜ` is a block,
        and then `G` would be a wreath product,
-       — this is case (b) of the O'Nan-Scott classification
+       — this is case (b) of the O'Nan-Scott classification
        of maximal subgroups of the symmetric group -/
   have not_isBlock_sc : ¬ IsBlock G sᶜ := fun hsc ↦ by
     rcases lt_or_ge (Nat.card α) (sᶜ.ncard * 2) with hB' | hB'

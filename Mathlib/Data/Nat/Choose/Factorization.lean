@@ -70,7 +70,7 @@ theorem factorization_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have h4 m (hm : m ∈ Ico (p * n + 1) (p * (n + 1))) : m.factorization p = 0 := by
     apply factorization_eq_zero_of_not_dvd
     exact not_dvd_of_lt_of_lt_mul_succ (mem_Ico.mp hm).left (mem_Ico.mp hm).right
@@ -149,7 +149,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
       (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}

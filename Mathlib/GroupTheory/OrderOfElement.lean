@@ -302,7 +302,7 @@ theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ,
     exact ⟨1, by rw [h, pow_one, pow_one]⟩
   by_cases h1 : orderOf x = 1
   · exact ⟨0, by rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]⟩
-  obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by omega)
+  obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by lia)
   exact ⟨m, by rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]⟩
 
 /-- If `x^n = 1`, but `x^(n/p) ≠ 1` for all prime factors `p` of `n`,
@@ -381,7 +381,7 @@ lemma IsOfFinOrder.isUnit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : IsUnit 
 variable (x)
 
 @[to_additive]
-theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n := by
+theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n := by
   unfold orderOf
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
@@ -399,7 +399,7 @@ variable (n)
 
 @[to_additive]
 protected lemma IsOfFinOrder.orderOf_pow (h : IsOfFinOrder x) :
-    orderOf (x ^ n) = orderOf x / gcd (orderOf x) n := by
+    orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n := by
   unfold orderOf
   rw [← minimalPeriod_iterate_eq_div_gcd' h, mul_left_iterate]
 
@@ -441,12 +441,12 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y) :
       _root_.pow_succ, mul_assoc]
   exact
     (((Commute.refl x).mul_right h).pow_left _).orderOf_mul_dvd_lcm.trans
-      (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
+      (Nat.lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (Nat.dvd_lcm_left _ _), Nat.dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
 theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
-  dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
+  dvd_trans h.orderOf_mul_dvd_lcm (Nat.lcm_dvd_mul _ _)
 
 @[to_additive addOrderOf_add_eq_mul_addOrderOf_of_coprime]
 theorem orderOf_mul_eq_mul_orderOf_of_coprime (h : Commute x y)
@@ -473,10 +473,10 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsO
   have hoy := hy.orderOf_pos
   have hxy := dvd_of_forall_prime_mul_dvd hdvd
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
-  · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
+  · exact h.orderOf_mul_dvd_lcm.trans (Nat.lcm_dvd hxy dvd_rfl)
   refine fun p hp hpy hd => hp.ne_one ?_
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]
-  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
+  refine (orderOf_dvd_lcm_mul h).trans (Nat.lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 
@@ -822,7 +822,7 @@ automatic in the case of a finite cancellative monoid. -/
 @[to_additive /-- This is the same as `addOrderOf_nsmul'` and
 `addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid. -/]
-theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
+theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n :=
   (isOfFinOrder_of_finite _).orderOf_pow ..
 
 @[to_additive]
@@ -1003,9 +1003,13 @@ lemma Submonoid.orderOf_le_card {G : Type*} [Group G] (s : Submonoid G) (hs : (s
 theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
   orderOf_dvd_iff_pow_eq_one.mp <| orderOf_dvd_natCard _
 
+/- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive (attr := simp) card_nsmul_eq_zero]
 theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
   rw [← Nat.card_eq_fintype_card, pow_card_eq_one']
+
+@[deprecated "Use simp" (since := "2025-12-05")]
+theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 := by simp
 
 @[to_additive]
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
@@ -1068,13 +1072,6 @@ theorem image_range_orderOf [DecidableEq G] :
   letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
-
-/- TODO: Generalise to `Finite` + `CancelMonoid`. -/
-@[to_additive gcd_nsmul_card_eq_zero_iff]
-theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
-  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
-    let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
-    rw [hm, pow_mul, h, one_pow]⟩
 
 lemma smul_eq_of_le_smul
     {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
@@ -1191,11 +1188,11 @@ theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 
 @[to_additive]
-theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
+theorem IsOfFinOrder.fst (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
   hx.mono orderOf_fst_dvd_orderOf
 
 @[to_additive]
-theorem IsOfFinOrder.snd {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
+theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
   hx.mono orderOf_snd_dvd_orderOf
 
 @[to_additive IsOfFinAddOrder.prod_mk]
@@ -1208,7 +1205,29 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
 
 end Prod
 
--- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
+
+@[to_additive]
+lemma Pi.orderOf_eq_sInf (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
+  minimalPeriod_piMap
+
+@[to_additive]
+protected lemma Pi.orderOf [Fintype ι] (x : ∀ i, α i) :
+    orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
+  minimalPeriod_piMap_fintype
+
+@[to_additive]
+theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
+  minimalPeriod_single_dvd_minimalPeriod_piMap
+
+@[to_additive]
+protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+  simp only [← orderOf_ne_zero_iff, Pi.orderOf]
+  simp [Finset.lcm_eq_zero_iff]
+
+end Pi
 
 @[simp]
 lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by

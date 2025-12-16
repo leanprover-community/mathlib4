@@ -50,7 +50,7 @@ function from local functions.
 
 ## TODO
 
-* Build a framework for to transfer local definitions to global using partition of unity and use it
+* Build a framework to transfer local definitions to global using partition of unity and use it
   to define, e.g., the integral of a differential form over a manifold. Lemma
   `exists_smooth_forall_mem_convex_of_local` is a first step in this direction.
 
@@ -77,7 +77,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 ### Covering by supports of smooth bump functions
 
 In this section we define `SmoothBumpCovering ι I M s` to be a collection of
-`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each
+`SmoothBumpFunction`s such that their supports are a locally finite family of sets and for each
 `x ∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering
 of this type is useful to construct a smooth partition of unity and can be used instead of a
 partition of unity in some proofs.

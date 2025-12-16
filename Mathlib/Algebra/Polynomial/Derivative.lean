@@ -394,7 +394,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
 /--
 Iterated derivatives as a finite support function.
 -/
-@[simps! apply_toFun]
+@[simps! apply_apply]
 noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
     contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le_iff]

@@ -27,7 +27,7 @@ lemma prod_Icc_of_even_eq_range {α : Type*} [CommGroup α] {f : ℤ → α} (hf
   induction N with
   | zero => simp [sq]
   | succ N ih =>
-    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by omega), ih,
+    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by lia), ih,
       prod_range_succ _ (N + 1), hf, ← pow_two, div_mul_eq_mul_div, ← mul_pow, Nat.cast_succ]
 
 @[to_additive]
@@ -41,9 +41,6 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
     f (N + 1) * f (-(N + 1) : ℤ) * ∏ m ∈ Icc (-N : ℤ) N, f m := by
   induction N
   · rw [Icc_succ_succ]
-    simp only [CharP.cast_eq_zero, neg_zero, Icc_self, zero_add, Int.reduceNeg, union_insert,
-      union_singleton, mem_insert, reduceCtorEq, mem_singleton, neg_eq_zero, one_ne_zero, or_self,
-      not_false_eq_true, prod_insert, prod_singleton]
     grind
   · rw [Icc_succ_succ, prod_union (by simp)]
     grind

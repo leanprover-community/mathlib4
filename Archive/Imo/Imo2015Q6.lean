@@ -73,9 +73,9 @@ lemma exists_add_eq_of_mem_pool {z : ℤ} (hz : z ∈ pool a t) : ∃ u < t, u +
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hz
     obtain ⟨y, my, ey⟩ := hz
     rw [mem_insert, mem_erase] at my; rcases my with h | h
-    · use t; omega
+    · use t; lia
     · obtain ⟨u, lu, hu⟩ := ih h.2
-      use u; omega
+      use u; lia
 
 include ha
 
@@ -85,11 +85,11 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
   | t + 1 => by
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
-    obtain ⟨y, my, ey⟩ := hx
-    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; omega
+    obtain ⟨y, my, rfl⟩ := hx
+    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; lia
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
-    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; omega
+    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; lia
 
 lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
@@ -105,12 +105,12 @@ lemma card_pool_succ : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 
     rw [mem_erase, not_and_or]; exact .inr (notMem_pool_self ha)
   rw [pool, card_map, card_insert_of_notMem nms, card_erase_eq_ite]
   split_ifs with h
-  · have := card_pos.mpr ⟨0, h⟩; omega
+  · have := card_pos.mpr ⟨0, h⟩; lia
   · rfl
 
 lemma monotone_card_pool : Monotone fun t ↦ #(pool a t) := by
   refine monotone_nat_of_le_succ fun t ↦ ?_
-  have := card_pool_succ (t := t) ha; omega
+  have := card_pool_succ (t := t) ha; lia
 
 /-- There exists a point where the number of balls reaches a maximum (which follows from its
 monotonicity and boundedness). We take its coordinates for the problem's `b` and `N`. -/
@@ -135,12 +135,12 @@ lemma b_pos : 0 < b := by
     · exact hbN _ h.le
   have cp1 : #(pool a 1) = 1 := by
     simp_rw [card_pool_succ ha, pool, card_empty, notMem_empty, ite_false]
-  apply absurd (hbN 1); omega
+  apply absurd (hbN 1); lia
 
 include ht in
 lemma zero_mem_pool : 0 ∈ pool a t := by
   have := card_pool_succ (t := t) ha
-  have := hbN (t + 1) (by omega)
+  have := hbN (t + 1) (by lia)
   simp_all
 
 include ht in
@@ -151,14 +151,14 @@ lemma sum_sub_sum_eq_sub : ∑ x ∈ pool a (t + 1), x - ∑ x ∈ pool a t, x =
     rw [mem_erase, not_and_or]; exact .inr (notMem_pool_self ha)
   rw [sum_insert nms, sum_erase_eq_sub (h := zero_mem_pool ha hbN ht), sum_sub_distrib, sum_const,
     nsmul_one, hbN _ ht]
-  omega
+  lia
 
 /-- The telescoping sum giving the part of the problem's expression within the modulus signs. -/
 lemma sum_telescope {m n : ℕ} (hm : N ≤ m) (hn : m < n) :
     ∑ j ∈ Ico m n, (a j - b) = ∑ x ∈ pool a n, x - ∑ x ∈ pool a m, x :=
   calc
     _ = ∑ j ∈ Ico m n, (∑ x ∈ pool a (j + 1), x - ∑ x ∈ pool a j, x) := by
-      congr! 1 with j hj; rw [sum_sub_sum_eq_sub ha hbN]; simp at hj; omega
+      congr! 1 with j hj; rw [sum_sub_sum_eq_sub ha hbN]; simp at hj; lia
     _ = _ := sum_Ico_sub (∑ x ∈ pool a ·, x) hn.le
 
 include ht in
@@ -190,7 +190,7 @@ theorem result (ha : Condition a) :
       nth_rw 2 [← Nat.sub_one_add_one_eq_of_pos bp]
       rw [← sum_flip, sum_range_succ, tsub_self, Nat.cast_zero, add_zero, ← sum_sub_distrib]
       have sc : ∀ x ∈ range (b - 1), (2014 - x - (b - 1 - x : ℕ)) = (2015 - b : ℤ) := fun x mx ↦ by
-        rw [mem_range] at mx; omega
+        rw [mem_range] at mx; lia
       rw [sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
     _ ≤ _ := by
       rw [← mul_le_mul_iff_right₀ zero_lt_four, ← mul_assoc,

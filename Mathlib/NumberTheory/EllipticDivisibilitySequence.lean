@@ -53,7 +53,7 @@ when `n` is even. This coincides with the definition in the references since bot
 `normEDS b c d (2 * (m + 2) + 1)` and in `normEDS b c d (2 * (m + 3))`.
 
 One reason is to avoid the necessity for ring division by `b` in the inductive definition of
-`normEDS b c d (2 * (m + 3))`. The idea is that, it can be shown that `normEDS b c d (2 * (m + 3))`
+`normEDS b c d (2 * (m + 3))`. The idea is that it can be shown that `normEDS b c d (2 * (m + 3))`
 always contains a factor of `b`, so it is possible to remove a factor of `b` *a posteriori*, but
 stating this lemma requires first defining `normEDS b c d (2 * (m + 3))`, which requires having this
 factor of `b` *a priori*. Another reason is to allow the definition of univariate `n`-division

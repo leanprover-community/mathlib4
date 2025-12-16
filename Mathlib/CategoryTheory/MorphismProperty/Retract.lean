@@ -36,7 +36,7 @@ lemma of_retract {P : MorphismProperty C} [P.IsStableUnderRetracts]
     {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) (hg : P g) : P f :=
   IsStableUnderRetracts.of_retract h hg
 
-instance {D : Type*} [Category D] (F : C ⥤ D) (P : MorphismProperty D)
+instance {D : Type*} [Category* D] (F : C ⥤ D) (P : MorphismProperty D)
     [P.IsStableUnderRetracts] :
     (P.inverseImage F).IsStableUnderRetracts where
   of_retract h₁ h₂ := of_retract (P := P) (h₁.map F) h₂

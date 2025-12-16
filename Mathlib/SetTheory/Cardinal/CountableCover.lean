@@ -59,11 +59,11 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
       obtain ⟨i, hi⟩ : ∃ i, x ∈ f i := (ht x hx).exists
       exact mem_iUnion_of_mem i hi
     calc #t ≤ #(⋃ i, f i) := mk_le_mk_of_subset this
-      _     ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
-      _     ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
-      _     = #ι * a := by simp
-      _     ≤ ℵ₀ * a := by grw [mk_le_aleph0]
-      _     = a := aleph0_mul_eq ha
+      _ ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
+      _ ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
+      _ = #ι * a := by simp
+      _ ≤ ℵ₀ * a := by grw [mk_le_aleph0]
+      _ = a := aleph0_mul_eq ha
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`. -/

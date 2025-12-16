@@ -462,7 +462,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -489,7 +489,8 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
   have h_ne_zero : h ≠ 0 := by
     rintro rfl
     exact not_separable_zero h_sep
-  apply Polynomial.eq_X_sub_C_of_splits_of_single_root i h_splits
+  suffices (map i h).roots = {i x} from
+    map_injective i i.injective (by simpa using h_splits.eq_X_sub_C_of_single_root this)
   apply Finset.mk.inj
   · change _ = {i x}
     rw [Finset.eq_singleton_iff_unique_mem]
@@ -599,8 +600,7 @@ lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : F
 lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
     Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
   simp_rw [Algebra.isSeparable_def, Subtype.forall,
-    ← isSeparable_map_iff S.val Subtype.val_injective]
-  rfl
+    ← isSeparable_map_iff S.val Subtype.val_injective, coe_val]
 
 variable (L) {E : Type*}
 

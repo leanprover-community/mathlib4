@@ -659,11 +659,25 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
     shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃
       (m₁ + m₂) (m₂ + m₃) (m₁ + (m₂ + m₃)) rfl rfl (add_assoc _ _ _) X]
 
+@[reassoc]
+lemma shiftFunctorComm_hom_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).hom.app X =
+      (shiftFunctorCompIsoId C m n hmn).hom.app X ≫
+        (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
+
+@[reassoc]
+lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).inv.app X =
+      (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).hom.app X ≫
+        (shiftFunctorCompIsoId C m n hmn).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
+
 end AddCommMonoid
 
 namespace Functor.FullyFaithful
 
-variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
+variable {D : Type*} [Category* D] [AddMonoid A] [HasShift D A]
 variable {F : C ⥤ D} (hF : F.FullyFaithful)
 variable (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 

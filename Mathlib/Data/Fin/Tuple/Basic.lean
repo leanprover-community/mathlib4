@@ -210,6 +210,10 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
+theorem exists_cons {α : Fin (n + 1) → Type*} (q : ∀ i, α i) :
+    ∃ (x₀ : α 0) (x : ∀ i : Fin n, α i.succ), q = cons x₀ x :=
+  ⟨q 0, tail q, (cons_self_tail q).symm⟩
+
 @[simp]
 theorem forall_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
     (∀ x, P x) ↔ P finZeroElim :=
@@ -504,12 +508,12 @@ def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) 
 @[simp]
 theorem init_snoc : init (snoc p x) = p := by
   ext i
-  simp only [init, snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [init, snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_castSucc : snoc p x i.castSucc = p i := by
-  simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
+  simp only [snoc, val_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
 @[simp]
@@ -959,6 +963,16 @@ theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
   funext x
   apply insertNth_rev
 
+@[simp]
+theorem insertNth_succ_cons {α} (i : Fin (n + 1)) (x a : α) (p : Fin n → α) :
+    (insertNth i.succ x (cons a p) : Fin (n + 2) → α) = cons a (insertNth i x p) := by
+  ext j
+  cases j using Fin.succAboveCases i.succ with
+  | x => simp
+  | p j =>
+    simp only [insertNth_apply_succAbove]
+    cases j using Fin.cases <;> simp
+
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
     cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
   simpa using insertNth_rev 0 a f i
@@ -1096,7 +1110,7 @@ grind_pattern Fin.find_spec => Fin.find p h
 protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
   @(Fin.findX p h).2.2
 
-/-- For `m : Fin n`, if `m` satsifies `p`, then `Fin.find p h ≤ m`. -/
+/-- For `m : Fin n`, if `m` satisfies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
 
@@ -1194,10 +1208,7 @@ lemma find_of_find_le {p : Fin (m + n) → Prop} [DecidablePred p]
 
 theorem find?_eq_dite {p : Fin n → Bool} :
     find? p = if h : ∃ i, p i then some (Fin.find (p ·) h) else none := by
-  split_ifs with h
-  · simp_rw [find?_eq_some_iff, Fin.find_spec h, lt_find_iff]
-    grind
-  · simpa [find?_eq_none_iff] using h
+  split_ifs <;> grind
 
 theorem find?_decide_eq_dite :
     find? (p ·) = if h : ∃ i, p i then some (Fin.find p h) else none := by

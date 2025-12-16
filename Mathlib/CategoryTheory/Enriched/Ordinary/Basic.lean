@@ -231,8 +231,8 @@ open EnrichedCategory
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
 def TransportEnrichment.enrichedOrdinaryCategory
-  (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
-  (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
+    (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
+    (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
   homEquiv_id {X} := by simpa using h _ (eId V _)

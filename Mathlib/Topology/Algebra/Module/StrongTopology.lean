@@ -560,8 +560,7 @@ def postcomp_uniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGr
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-variable (E)
-
+variable (E) in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
 
 Note that in non-normed space it is not always true that composition is continuous
@@ -572,7 +571,7 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
   toFun f := L.comp f
   __ := postcomp_uniformConvergenceCLM { S | IsVonNBounded 𝕜₁ S } L
 
-variable (σ F) {E} in
+variable (σ F) in
 lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜₂ F]
     (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
@@ -719,6 +718,28 @@ def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G)
 
 end Prod
 
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+
+/-- `ContinuousLinearMap.toSpanSingleton` as a continuous linear equivalence. -/
+@[simps!]
+def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE ..
+  continuous_toFun := by
+    apply continuous_of_continuousAt_zero (toSpanSingletonLE _ _ _)
+    suffices ∀ s : Set 𝕜, IsVonNBounded 𝕜 s → ∀ U ∈ 𝓝 0, ∀ᶠ (a : E) in 𝓝 0, ∀ x ∈ s, x • a ∈ U by
+      simpa [ContinuousAt, ContinuousLinearMap.nhds_zero_eq, MapsTo]
+    intro s hsb U hU
+    rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
+      with ⟨V, hV, W, hW, hVW⟩
+    rcases (eventually_cobounded_mapsTo <|hsb hV).and (eventually_ne_cobounded 0) |>.exists
+      with ⟨c, hc, hc₀⟩
+    filter_upwards [(set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hW]
+    rintro _ ⟨a, ha, rfl⟩ x hx
+    rw [smul_comm x c⁻¹, ← smul_assoc]
+    exact @hVW (_, _) ⟨hc hx, ha⟩
+  continuous_invFun := continuous_eval_const 1
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap
@@ -788,8 +809,11 @@ section CompactSets
 
 /-! ### Topology of compact convergence for continuous linear maps -/
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
-  {E F : Type*} [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜₁ E]
+  [AddCommGroup F] [Module 𝕜₂ F]
+  [AddCommGroup G] [Module 𝕜₃ G]
 
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
@@ -838,5 +862,30 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace E] [TopologicalSpace F]
   CompactConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
 end CompactConvergenceCLM
+
+section comp
+
+variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
+
+open scoped CompactConvergenceCLM
+
+variable (G) in
+/-- Specialization of `ContinuousLinearMap.precomp_uniformConvergenceCLM` to compact
+convergence. -/
+@[simps! apply]
+def ContinuousLinearMap.precomp_compactConvergenceCLM [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
+  L.precomp_uniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
+
+variable (E) in
+/-- Specialization of `ContinuousLinearMap.postcomp_uniformConvergenceCLM` to compact
+convergence. -/
+@[simps! apply]
+def ContinuousLinearMap.postcomp_compactConvergenceCLM [IsTopologicalAddGroup F]
+    [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₂ F]
+    (L : F →SL[τ] G) : (E →SL_c[σ] F) →SL[τ] E →SL_c[ρ] G :=
+  L.postcomp_uniformConvergenceCLM _
+
+end comp
 
 end CompactSets

@@ -69,7 +69,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
   ring
 
 open BoundedContinuousFunction in
-/-- The infinte sum of `k`-th iterated derivative of the complex exponential multiplied by a
+/-- The infinite sum of `k`-th iterated derivative of the complex exponential multiplied by a
 function that grows polynomially is absolutely and uniformly convergent. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :

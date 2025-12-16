@@ -117,7 +117,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
 def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
-  Accumulate μ.toFiniteSpanningSetsIn.set i
+  accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate

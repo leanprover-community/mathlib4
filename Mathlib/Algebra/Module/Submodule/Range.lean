@@ -301,6 +301,9 @@ theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 theorem comap_subtype_eq_top {p p' : Submodule R M} : comap p.subtype p' = ⊤ ↔ p ≤ p' :=
   eq_top_iff.trans <| map_le_iff_le_comap.symm.trans <| by rw [map_subtype_top]
 
+@[simp] lemma submoduleOf_eq_top {p q : Submodule R M} :
+    p.submoduleOf q = ⊤ ↔ q ≤ p := by simp [submoduleOf]
+
 @[simp]
 theorem comap_subtype_self : comap p.subtype p = ⊤ :=
   comap_subtype_eq_top.2 le_rfl

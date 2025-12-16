@@ -27,7 +27,7 @@ This triggers the `deprecated.module` linter to notify every file with `import A
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -39,7 +39,7 @@ is imported.
 The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
 of refactors and deprecations in `Mathlib` itself.
 -/
-register_option linter.deprecated.module : Bool := {
+public register_option linter.deprecated.module : Bool := {
   defValue := true
   descr := "enable the `deprecated.module` linter"
 }
@@ -52,7 +52,7 @@ Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
 
 to the environment.
 -/
-initialize deprecatedModuleExt :
+public initialize deprecatedModuleExt :
     SimplePersistentEnvExtension
       (Name × Array Name × Option String) (Std.HashSet (Name × Array Name × Option String)) ←
   registerSimplePersistentEnvExtension {

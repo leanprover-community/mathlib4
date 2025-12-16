@@ -513,11 +513,9 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [h]
+      rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=

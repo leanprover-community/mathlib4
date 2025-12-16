@@ -108,8 +108,7 @@ alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
 
--- TODO: non-terminal simp_all with no obvious fix
-set_option linter.flexible false in
+set_option linter.flexible false in -- TODO: non-terminal simp_all with no obvious fix
 theorem isEquiv_iff_lt_one_iff :
     v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
   refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
@@ -307,14 +306,14 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :
     (v b).log / (w b).log = (v a).log / (w a).log := by
   by_contra! h_ne
-  wlog ha : 1 < v a generalizing a b
+  wlog! ha : 1 < v a generalizing a b
   · apply this (inv_ne_zero ha₀) (by simpa) hb₀ hb₁ (by simpa)
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le (not_lt.1 ha)⟩
-  wlog hb : 1 < v b generalizing a b
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le ha⟩
+  wlog! hb : 1 < v b generalizing a b
   · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le (not_lt.1 hb)⟩
-  wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le hb⟩
+  wlog! h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
+  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne h_lt h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
@@ -344,8 +343,10 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     rcases eq_or_ne (w b) 1 with hb₁ | hb₁; · simp [hb₁, h.eq_one_iff.2 hb₁]
     rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
-  · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
-      aesop (add simp [h.isNontrivial_congr])⟩
+  · exact ⟨1, zero_lt_one,
+      funext fun x ↦ by
+        rcases eq_or_ne x 0 with rfl | h₀ <;>
+        aesop (add simp [h.isNontrivial_congr])⟩
 
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by

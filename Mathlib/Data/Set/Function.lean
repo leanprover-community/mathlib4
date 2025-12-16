@@ -159,11 +159,8 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
-  funext x
-  rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction n generalizing x with
-  | zero => rfl
-  | succ n ihn => simp [Nat.iterate, ihn]
+  ext
+  simpa using coe_iterate_restrict _ _ _
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
@@ -541,6 +538,9 @@ lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Su
 
 protected lemma _root_.Function.Surjective.surjOn (hf : Surjective f) : SurjOn f univ t :=
   (surjOn_univ.2 hf).mono .rfl (subset_univ _)
+
+lemma SurjOn.surjective (hf : SurjOn f s .univ) : f.Surjective :=
+  surjOn_univ.1 <| hf.mono s.subset_univ .rfl
 
 @[deprecated surjOn_univ (since := "2025-10-31")]
 theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := surjOn_univ.symm

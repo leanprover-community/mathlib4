@@ -166,6 +166,30 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
   hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
+/-- A closed interval in a conditionally complete linear order is compact.
+Also see general API on `CompactIccSpace`. -/
+protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] (a b : α) :
+    IsCompact (Icc a b) := by
+  simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff]
+  refine (le_or_gt a b).elim (fun _ f hfab ↦ ?_) (by simp [·])
+  by_contra! hf
+  have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx _ ↦ hf x hx (le_trans (by simpa) (pure_le_nhds x))
+  set s := { x ∈ Icc a b | Icc a x ∉ f }
+  have hsb : b ∈ upperBounds s := fun x hx ↦ hx.1.2
+  have ha : a ∈ s := by simp [s, *]
+  let c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
+  have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
+  have (i : _) (hic : i < c) : Ioi i ∈ f := by
+    have ⟨j, hj, hij, hjc⟩ := hsc.exists_between hic
+    filter_upwards [f.compl_mem_iff_notMem.mpr hj.2, hfab]; grind
+  have ⟨x, hx, hxf⟩ : ∃ x, c < x ∧ Iio x ∉ f := by simpa [nhds_eq_order, eq_true this] using hf c hc
+  have : Icc a c ∉ f := mt (mem_of_superset · (by grind)) hxf
+  have : x ∈ Icc a b := ⟨by grind, le_of_not_gt fun h ↦ hxf (mem_of_superset hfab (by grind))⟩
+  have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
+  exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/

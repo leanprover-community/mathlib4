@@ -385,7 +385,7 @@ theorem card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : S
 
 theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + #{i ∈ s | f i = ∅} := by
-  rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
+  rw [← Finset.card_filter_add_card_filter_not fun i ↦ f i = ∅, add_comm]
   grw [card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
     nonempty_of_ne_empty (mem_filter.1 hi).2, filter_subset]
 
@@ -433,7 +433,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   classical calc
     ∏ x ∈ s, f x = (∏ x ∈ s with f x = 1, f x) * ∏ x ∈ s with f x ≠ 1, f x := by
-      rw [← prod_union, filter_union_filter_neg_eq]
+      rw [← prod_union, filter_union_filter_not_eq]
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x ∈ t, f x :=
       mul_le_of_le_one_of_le

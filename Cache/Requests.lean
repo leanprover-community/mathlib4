@@ -28,10 +28,10 @@ structure RepoInfo where
 Helper function to extract repository name from a git remote URL
 -/
 def extractRepoFromUrl (url : String) : Option String := do
-  let url := url.stripSuffix ".git"
-  let pos ← url.revFind (· == '/')
-  let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
-  return (String.Pos.Raw.extract url) (String.Pos.Raw.next url pos) url.rawEndPos
+  let url := url.dropSuffix ".git"
+  let pos ← url.revFind? (· == '/')
+  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
+  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
 
 /-- Spot check if a URL is valid for a git remote -/
 def isRemoteURL (url : String) : Bool :=
@@ -50,14 +50,14 @@ def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorCo
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
   -- If `git remote get-url` fails then bail out with an error to help debug
-  let output := out.stdout.trim
+  let output := out.stdout.trimAscii
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
       Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
       {errorContext}\n\
-      Stdout:\n{output}\nStderr:\n{out.stderr.trim}\n"
+      Stdout:\n{output}\nStderr:\n{out.stderr.trimAscii}\n"
   -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
-  repoFromURL output
+  repoFromURL output.copy
 where repoFromURL (url : String) : IO String := do
     if let some repo := extractRepoFromUrl url then
       return repo
@@ -79,17 +79,17 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
     throw <| IO.userError s!"\
       Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
       Ensure Git is installed.\n\
-      Stdout:\n{remotesInfo.stdout.trim}\nStderr:\n{remotesInfo.stderr.trim}\n"
+      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
 
   let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
   let mut mathlibRemote : Option String := none
   let mut originPointsToMathlib : Bool := false
 
   for line in remoteLines do
-    let parts := line.trim.splitToList (· == '\t')
+    let parts := line.trimAscii.copy.splitToList (· == '\t')
     if parts.length >= 2 then
       let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.takeWhile (· != ' ') -- Remove (fetch) or (push) suffix
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
       let isMathlibRepo := remoteUrl.containsSubstr "leanprover-community/mathlib4"
@@ -128,11 +128,11 @@ def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
   let currentCommit ← IO.Process.output
     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
   if currentCommit.exitCode == 0 then
-    let commitHash := currentCommit.stdout.trim
+    let commitHash := currentCommit.stdout.trimAscii.copy
     let tagInfo ← IO.Process.output
       {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
     if tagInfo.exitCode == 0 then
-      let parts := tagInfo.stdout.trim.splitOn " "
+      let parts := tagInfo.stdout.trimAscii.copy.splitOn " "
       -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
       if parts.length >= 2 && parts[1]!.startsWith "tags/" then
         let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
@@ -159,17 +159,17 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
     {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
-    let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
+    let branchName := currentBranch.stdout.trimAscii.dropPrefix "heads/"
     IO.println s!"Current branch: {branchName}"
 
     -- Check if we're in a detached HEAD state at a nightly-testing tag
-    let isDetachedAtNightlyTesting ← if branchName == "HEAD" then
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD".toSlice then
       isDetachedAtNightlyTesting mathlibDepPath
     else
       pure false
 
     -- Check if we're on a branch that should use nightly-testing remote
-    let shouldUseNightlyTesting := branchName == "nightly-testing" ||
+    let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
                                   branchName.startsWith "lean-pr-testing-" ||
                                   branchName.startsWith "batteries-pr-testing-" ||
                                   branchName.startsWith "bump/" ||
@@ -229,10 +229,10 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
 
   -- Fall back to using the remote that the current branch is tracking
   let trackingRemote ← IO.Process.output
-    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trim}.remote"], cwd := mathlibDepPath}
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trimAscii}.remote"], cwd := mathlibDepPath}
 
   let remoteName := if trackingRemote.exitCode == 0 then
-    trackingRemote.stdout.trim
+    trackingRemote.stdout.trimAscii.copy
   else
     -- If no tracking remote is configured, fall back to origin
     "origin"
@@ -329,15 +329,15 @@ def monitorCurl (args : Array String) (size : Nat)
   let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
     let mut {last, success, failed, done, speed} := a
     -- output errors other than 404 and remove corresponding partial downloads
-    let line := line.trim
+    let line := line.trimAscii
     if !line.isEmpty then
-      match Lean.Json.parse line with
+      match Lean.Json.parse line.copy with
       | .ok result =>
         match result.getObjValAs? Nat "http_code" with
         | .ok 200 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              IO.FS.rename fn (fn.dropRight 5)
+              IO.FS.rename fn (fn.dropEnd 5).copy
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
@@ -415,10 +415,10 @@ def checkForToolchainMismatch : IO.CacheM Unit := do
   let mathlibToolchainFile := (← read).mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
-  if !(mathlibToolchain.trim = downstreamToolchain.trim) then
+  if !(mathlibToolchain.trimAscii == downstreamToolchain.trimAscii) then
     IO.println "Dependency Mathlib uses a different lean-toolchain"
-    IO.println s!"  Project uses {downstreamToolchain.trim}"
-    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
+    IO.println s!"  Project uses {downstreamToolchain.trimAscii}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trimAscii}"
     IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
     IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
 into the `lean-toolchain` file at the root directory of your project"
@@ -554,7 +554,8 @@ section Commit
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
+def getGitCommitHash : IO String :=
+  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.

@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
 @[stacks 00ZY]
-class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+class Functor.Additive {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
   map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by cat_disch
@@ -50,7 +50,7 @@ namespace Functor
 
 section
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
@@ -70,10 +70,10 @@ instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMor
 
 instance : Additive (𝟭 C) where
 
-instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
+instance {E : Type*} [Category* E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
 
-instance {J : Type*} [Category J] (j : J) : ((evaluation J C).obj j).Additive where
+instance {J : Type*} [Category* J] (j : J) : ((evaluation J C).obj j).Additive where
 
 @[simp]
 theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
@@ -135,13 +135,13 @@ end
 
 section InducedCategory
 
-variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
+variable {C : Type*} {D : Type*} [Category* D] [Preadditive D] (F : C → D)
 
 instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 
 end InducedCategory
 
-instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
+instance fullSubcategoryInclusion_additive {C : Type*} [Category* C] [Preadditive C]
     (Z : ObjectProperty C) : Z.ι.Additive where
 
 section
@@ -196,7 +196,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
@@ -205,7 +205,7 @@ end Equivalence
 
 section
 
-variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable (C D : Type*) [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=

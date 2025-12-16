@@ -39,7 +39,7 @@ universe v u
 
 open Limits Opposite Presieve CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] (G : C ⥤ D)
 variable {J : GrothendieckTopology C} (K : GrothendieckTopology D)
 variable (A : Type v) [Category.{u} A]
 

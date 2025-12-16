@@ -34,7 +34,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-variable {J C : Type*} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
+variable {J C : Type*} [Category* J] [Category* C] (P Q : Karoubi (J ⥤ C)) (f : P ⟶ Q) (X : J)
 
 @[reassoc (attr := simp)]
 theorem app_idem : P.p.app X ≫ P.p.app X = P.p.app X :=

@@ -36,7 +36,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type*} [Group G]
 
 variable (R A G) in
-instance instHopfAlgebraStruct : HopfAlgebraStruct R (MonoidAlgebra A G) where
+instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
   antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode R
 
 @[simp]
@@ -45,7 +45,7 @@ lemma antipode_single (g : G) (a : A) :
   simp [MonoidAlgebra, antipode]
 
 open Coalgebra in
-instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
+instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
     simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)

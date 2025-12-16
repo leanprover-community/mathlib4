@@ -26,7 +26,7 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 open CategoryTheory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.Adjunction
 

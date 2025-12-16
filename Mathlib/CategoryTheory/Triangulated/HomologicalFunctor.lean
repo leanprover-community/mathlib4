@@ -52,10 +52,10 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasShift C ℤ]
-  [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+variable {C D A : Type*} [Category* C] [HasShift C ℤ]
+  [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A]
+  [Category* A]
 
 namespace Functor
 

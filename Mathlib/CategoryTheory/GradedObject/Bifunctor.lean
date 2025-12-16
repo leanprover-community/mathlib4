@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject

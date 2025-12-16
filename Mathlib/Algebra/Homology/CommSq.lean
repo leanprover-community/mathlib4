@@ -37,7 +37,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {X₁ X₂ X₃ X₄ : C} [HasBinaryBiproduct X₂ X₃]
 
 section Pushout

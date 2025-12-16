@@ -37,7 +37,7 @@ namespace CategoryTheory
 
 open Limits Functor regularTopology
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 namespace coherentTopology
 

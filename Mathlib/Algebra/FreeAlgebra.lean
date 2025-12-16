@@ -32,7 +32,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
+5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X]`
 6. An inductive principle `induction`.
 
 ## Implementation details
@@ -52,9 +52,9 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 @[expose] public section
 
+open scoped MonoidAlgebra
 
-variable (R : Type*) [CommSemiring R]
-variable (X : Type*)
+variable (R X : Type*) [CommSemiring R]
 
 namespace FreeAlgebra
 
@@ -444,21 +444,10 @@ theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
 This would be useful when constructing linear maps out of a free algebra,
 for example.
 -/
-noncomputable def equivMonoidAlgebraFreeMonoid :
-    FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X) :=
-  AlgEquiv.ofAlgHom (lift R fun x ↦ (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
-    ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
-    (by
-      apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
-      · simp
-        rfl
-      · intro x y ih
-        simp at ih
-        simp [ih])
-    (by
-      ext
-      simp)
+noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
+  .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
+    (MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X) (FreeMonoid.lift (ι R)))
+    (by ext; simp) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=

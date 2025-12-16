@@ -21,7 +21,7 @@ a pushout when `ι` has exactly two elements.
 
 namespace CategoryTheory.Limits.Multicofork.IsColimit
 
-variable {C : Type*} [Category C] {J : MultispanShape} [Unique J.L]
+variable {C : Type*} [Category* C] {J : MultispanShape} [Unique J.L]
   {I : MultispanIndex J C} (c : Multicofork I)
   (h : {J.fst default, J.snd default} = Set.univ) (h' : J.fst default ≠ J.snd default)
 

@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sheaves.Functors
 # Sheafed spaces
 
 Introduces the category of topological spaces equipped with a sheaf (taking values in an
-arbitrary target category `C`.)
+arbitrary target category `C`).
 
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.

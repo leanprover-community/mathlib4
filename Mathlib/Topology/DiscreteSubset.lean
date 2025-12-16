@@ -44,7 +44,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
     DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
@@ -62,6 +62,78 @@ lemma discreteTopology_subtype_iff' {S : Set Y} :
 theorem isDiscrete_iff_forall_exists_isOpen {S : Set Y} :
     IsDiscrete S ↔ ∀ y ∈ S, ∃ U, IsOpen U ∧ U ∩ S = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
+
+lemma Set.Subsingleton.isDiscrete (hs : s.Subsingleton) : IsDiscrete s :=
+  have : Subsingleton s := (Set.subsingleton_coe s).mpr hs
+  ⟨inferInstance⟩
+
+lemma isDiscrete_iff_nhdsWithin : IsDiscrete s ↔ ∀ x ∈ s, 𝓝[s] x = pure x := by
+  simp [isDiscrete_iff_discreteTopology, discreteTopology_iff_isOpen_singleton,
+    isOpen_singleton_iff_nhds_eq_pure, nhds_induced,
+    ← (Filter.map_injective Subtype.val_injective).eq_iff,
+    Filter.map_comap, nhdsWithin]
+
+protected alias ⟨IsDiscrete.nhdsWithin, _⟩ := isDiscrete_iff_nhdsWithin
+
+lemma IsDiscrete.of_nhdsWithin (H : ∀ x ∈ s, 𝓝[s] x ≤ pure x) : IsDiscrete s :=
+  isDiscrete_iff_nhdsWithin.mpr fun x hx ↦ (H x hx).antisymm (pure_le_nhdsWithin hx)
+
+lemma isDiscrete_univ_iff : IsDiscrete (Set.univ : Set X) ↔ DiscreteTopology X := by
+  simp [isDiscrete_iff_nhdsWithin, discreteTopology_iff_isOpen_singleton,
+    isOpen_singleton_iff_nhds_eq_pure]
+
+lemma IsDiscrete.univ [DiscreteTopology X] : IsDiscrete (Set.univ : Set X) := by
+  rwa [isDiscrete_univ_iff]
+
+lemma IsDiscrete.image_of_isOpenMap (hs : IsDiscrete s) (hf : IsOpenMap f)
+    (hf' : Function.Injective f) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [← map_pure, ← hs.nhdsWithin x hx, nhdsWithin, nhdsWithin, map_inf hf', map_principal]
+  grw [hf.nhds_le x]
+
+lemma IsDiscrete.image_of_isOpenMap_of_isOpen (hs : IsDiscrete s) (hf : IsOpenMap f)
+    (hs' : IsOpen s) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [(hf _ hs').nhdsWithin_eq ⟨x, hx, rfl⟩, ← map_pure, ← hs.nhdsWithin x hx, hs'.nhdsWithin_eq hx]
+  exact hf.nhds_le x
+
+lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
+    IsDiscrete (Set.range f) := by
+  simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
+
+lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsEmbedding f) : IsDiscrete (f '' s) := by
+  refine .of_nhdsWithin ?_
+  rintro _ ⟨x, hx, rfl⟩
+  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+
+lemma IsEmbedding.isDiscrete_range [DiscreteTopology X] (hf : IsEmbedding f) :
+    IsDiscrete (Set.range f) := by
+  simpa using IsDiscrete.univ.image hf
+
+lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
+    (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :
+    IsDiscrete (f ⁻¹' s) := by
+  refine .of_nhdsWithin fun x hx ↦ ?_
+  rw [← map_le_map_iff hf', map_pure, ← hs.nhdsWithin _ hx, ← Tendsto]
+  exact (hf.continuousWithinAt hx).tendsto_nhdsWithin (Set.mapsTo_preimage _ _)
+
+/-- If `f` is continuous with discrete fibers, then the preimage of discrete sets are discrete. -/
+lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
+    (hf : ContinuousOn f (f ⁻¹' s))
+    (H : ∀ x, IsDiscrete (f ⁻¹' {x})) : IsDiscrete (f ⁻¹' s) := by
+  refine .of_nhdsWithin fun x hx ↦ ?_
+  have h := ((H (f x)).nhdsWithin _ rfl).le
+  grw [nhdsWithin, ← comap_pure, ← hs.nhdsWithin _ hx, ← (hf.continuousWithinAt hx
+    |>.tendsto_nhdsWithin fun _ ↦ by exact id).le_comap, inf_eq_right.mpr nhdsWithin_le_nhds] at h
+  exact h
+
+lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
+    {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
+  letI := hs.1
+  simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
+    true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 
 section cofinite_cocompact
 

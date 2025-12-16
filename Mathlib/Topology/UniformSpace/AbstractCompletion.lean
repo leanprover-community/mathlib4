@@ -12,13 +12,13 @@ public import Mathlib.Topology.UniformSpace.Equiv
 # Abstract theory of Hausdorff completions of uniform spaces
 
 This file characterizes Hausdorff completions of a uniform space α as complete Hausdorff spaces
-equipped with a map from α which has dense image and induce the original uniform structure on α.
+equipped with a map from α which has dense image and induces the original uniform structure on α.
 Assuming these properties we "extend" uniformly continuous maps from α to complete Hausdorff spaces
 to the completions of α. This is the universal property expected from a completion.
 It is then used to extend uniformly continuous maps from α to α' to maps between
 completions of α and α'.
 
-This file does not construct any such completion, it only study consequences of their existence.
+This file does not construct any such completion; it only studies consequences of their existence.
 The first advantage is that formal properties are clearly highlighted without interference from
 construction details. The second advantage is that this framework can then be used to compare
 different completion constructions. See `Topology/UniformSpace/CompareReals` for an example.

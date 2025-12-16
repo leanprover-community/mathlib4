@@ -477,7 +477,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : 
 the measure of the union of a monotone family of sets is equal to the supremum of their measures.
 The theorem assumes that the `atTop` filter on the index set is countably generated,
 so it works for a family indexed by a countable type, as well as `ℝ`. -/
-theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
+theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
   cases isEmpty_or_nonempty ι with
@@ -487,16 +487,16 @@ theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
     rw [← hs.iUnion_comp_tendsto_atTop hx, ← Monotone.iSup_comp_tendsto_atTop _ hx]
     exacts [(hs.comp hxm).directed_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
 
-theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsDirected ι (· ≥ ·)]
+theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsCodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) :=
   hs.dual_left.measure_iUnion
 
 /-- Continuity from below: the measure of the union of a sequence of
 (not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
-theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirected ι (· ≤ ·)]
+theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {f : ι → Set α} :
-    μ (⋃ i, f i) = ⨆ i, μ (Accumulate f i) := by
+    μ (⋃ i, f i) = ⨆ i, μ (accumulate f i) := by
   rw [← iUnion_accumulate]
   exact monotone_accumulate.measure_iUnion
 
@@ -529,7 +529,7 @@ theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
 the measure of the intersection of a monotone family of measurable sets
 indexed by a type with countably generated `atBot` filter
 is equal to the infimum of the measures. -/
-theorem _root_.Monotone.measure_iInter [Preorder ι] [IsDirected ι (· ≥ ·)]
+theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s)
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
@@ -552,7 +552,7 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsDirected ι (· ≥ ·)]
 the measure of the intersection of an antitone family of measurable sets
 indexed by a type with countably generated `atTop` filter
 is equal to the infimum of the measures. -/
-theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirected ι (· ≤ ·)]
+theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s)
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
@@ -561,7 +561,7 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirected ι (· ≤ ·)]
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
 theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α}
-    {μ : Measure α} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {μ : Measure α} [Countable ι] [Preorder ι] [IsDirectedOrder ι]
     {f : ι → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (hfin : ∃ i, μ (f i) ≠ ∞) :
     μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
   rw [← Antitone.measure_iInter]
@@ -590,7 +590,7 @@ sets is the limit of the measures of the partial unions. -/
 theorem tendsto_measure_iUnion_accumulate {α ι : Type*}
     [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
     {_ : MeasurableSpace α} {μ : Measure α} {f : ι → Set α} :
-    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   refine .of_neBot_imp fun h ↦ ?_
   have := (atTop_neBot_iff.1 h).2
   rw [measure_iUnion_eq_iSup_accumulate]

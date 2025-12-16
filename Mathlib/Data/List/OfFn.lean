@@ -135,6 +135,9 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
+@[deprecated (since := "2025-10-11")]
+alias sorted_ofFn_iff := pairwise_ofFn
+
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _

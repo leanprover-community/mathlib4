@@ -91,6 +91,9 @@ instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition
 instance [P.ContainsIdentities] [P.RespectsIso] : (precoverage P).HasIsos := by
   dsimp only [precoverage]; infer_instance
 
+instance [P.HasPullbacks] : (precoverage P).HasPullbacks where
+  hasPullbacks_of_mem _ hR := ⟨fun hg ↦ P.hasPullback _ (hR.2 hg)⟩
+
 instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
     (precoverage P).IsStableUnderBaseChange where
   mem_coverings_of_isPullback {ι} S X f hf Y g T p₁ p₂ H := by

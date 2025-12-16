@@ -24,7 +24,7 @@ This file characterises the covering sieves of the extensive topology.
 
 open CategoryTheory Limits
 
-variable {C : Type*} [Category C] [FinitaryPreExtensive C]
+variable {C : Type*} [Category* C] [FinitaryPreExtensive C]
 
 namespace CategoryTheory
 

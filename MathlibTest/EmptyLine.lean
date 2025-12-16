@@ -114,7 +114,7 @@ D
 
 section TrailingComments
 
--- A comment here: the empy line before this should be ignored.
+-- A comment here: the empty line before this should be ignored.
 
 -- As well as mutual blocks
 

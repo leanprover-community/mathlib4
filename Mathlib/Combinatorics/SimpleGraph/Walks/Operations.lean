@@ -350,6 +350,12 @@ theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dro
     obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
     simp [hq]
 
+lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
+  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
+  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+  grind [map_fst_darts, map_snd_darts]
+
 @[simp]
 theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support.tail ↔ t ∈ p.support.tail ∨ t ∈ p'.support.tail := by
@@ -546,6 +552,16 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
+@[simp]
+theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
+  apply ext_support
+  rw [support_append, take_support_eq_support_take_succ, drop_support_eq_support_drop_min,
+    List.tail_drop]
+  by_cases! h : n < p.length
+  · simp [min_eq_left_of_lt h]
+  · rw [Nat.min_eq_right h, ← length_support, List.drop_length]
+    simp [h]
+
 /-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
 def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 
@@ -636,12 +652,6 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
   | i + 1, _ => by
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
-
-lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
-  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
-  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
-  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
-  grind [map_fst_darts, map_snd_darts]
 
 lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
   fun _ _ ↦ ext_support

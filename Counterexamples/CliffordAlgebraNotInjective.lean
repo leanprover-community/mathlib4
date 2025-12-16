@@ -74,7 +74,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
       Function.Embedding.trans_apply, addLeftEmbedding_apply, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
       Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_symm_eq_sum,
-      Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
+      Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_apply] at h
     refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, ?_⟩
     rintro hmi
     rw [hmi] at hi

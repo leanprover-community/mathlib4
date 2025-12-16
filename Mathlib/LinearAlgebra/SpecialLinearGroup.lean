@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 If `R` is a commutative ring and `V` is an `R`-module,
 we define `SpecialLinearGroup R V` as the subtype of
 linear equivalences `V ≃ₗ[R] V` with determinant 1.
-When `V` doesn't have a finite basis, the determinant is defined by 1
+When `V` doesn't have a finite basis, the determinant is defined to be 1
 and the definition gives `V ≃ₗ[R] V`.
 The interest of this definition is that `SpecialLinearGroup R V`
 has a group structure. (Starting from linear maps wouldn't have worked.)
@@ -31,7 +31,7 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the mul equivalence
+We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the multiplicative equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
@@ -373,7 +373,7 @@ theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
 /- TODO : delete this auxiliary definition
 and put it in the definition of `centerEquivRootsOfUnity.
 How can one access to the definition of one already defined term in a structure
-while one is still definining it? -/
+while one is still defining it? -/
 /-- The inverse map for the equivalence `SpecialLinearGroup.centerEquivRootsOfUnity`. -/
 noncomputable def centerEquivRootsOfUnity_invFun
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :

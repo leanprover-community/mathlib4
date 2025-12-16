@@ -6,6 +6,7 @@ Authors: David Loeffler, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
 
 /-!
 # Meromorphic functions
@@ -369,6 +370,49 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} : MeromorphicAt f x
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
 
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop]
+protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+    MeromorphicAt (deriv f) x := by
+  rw [MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt] at h
+  obtain ⟨n, g, h₁g, h₂g⟩ := h
+  have : _root_.deriv (fun z ↦ (z - x) ^ n • g z)
+      =ᶠ[𝓝[≠] x] fun z ↦ (n * (z - x) ^ (n - 1)) • g z + (z - x) ^ n • _root_.deriv g z := by
+    filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁g.eventually_analyticAt,
+      eventually_nhdsWithin_of_forall fun _ a ↦ a] with z₀ h₁ h₂
+    rw [deriv_fun_smul (DifferentiableAt.zpow (by fun_prop) (by simp_all [sub_ne_zero_of_ne h₂]))
+      (by fun_prop), add_comm, deriv_comp_sub_const (f := (· ^ n))]
+    aesop
+  rw [MeromorphicAt.meromorphicAt_congr (Filter.EventuallyEq.nhdsNE_deriv h₂g),
+    MeromorphicAt.meromorphicAt_congr this]
+  fun_prop
+
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop]
+theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv f z) x := h.deriv
+
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop] theorem iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) :
+    MeromorphicAt (_root_.deriv^[n] f) x := by
+  induction n with
+  | zero => exact h
+  | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
+
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+@[fun_prop] theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x := h.iterated_deriv
+
 end MeromorphicAt
 
 /-- Meromorphy of a function on a set. -/
@@ -509,6 +553,32 @@ lemma zpow (n : ℤ) : MeromorphicOn (s ^ n) U := fun x hx ↦ (hs x hx).zpow _
 
 include hs in
 lemma fun_zpow (n : ℤ) : MeromorphicOn (fun z ↦ s z ^ n) U := fun x hx ↦ (hs x hx).zpow _
+
+include hf in
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
+
+include hf in
+/--
+Derivatives of meromorphic functions are meromorphic.
+-/
+theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
+
+include hf in
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
+  fun z hz ↦ (hf z hz).iterated_deriv
+
+include hf in
+/--
+Iterated derivatives of meromorphic functions are meromorphic.
+-/
+theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
+  MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
 
 end arithmetic
 

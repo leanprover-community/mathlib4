@@ -6,6 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Cover.Directed
+public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!
@@ -32,7 +34,7 @@ Zariski site are arbitrary inclusions.
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 noncomputable section
 
@@ -72,7 +74,7 @@ instance : PartialOrder X.AffineZariskiSite where
   le_antisymm _ _ hUV hVU := Subtype.ext ((toOpens_mono hUV).antisymm (toOpens_mono hVU))
 
 /-- The basic open set of a section, as an element of `AffineZariskiSite`. -/
-def basicOpen (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : X.AffineZariskiSite :=
+@[simps] def basicOpen (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : X.AffineZariskiSite :=
   ⟨X.basicOpen f, U.2.basicOpen f⟩
 
 lemma basicOpen_le (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : U.basicOpen f ≤ U :=
@@ -80,9 +82,12 @@ lemma basicOpen_le (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : U.basicOpe
 
 variable (X) in
 /-- The inclusion functor from `X.AffineZariskiSite` to `X.Opens`. -/
+@[simps! obj]
 def toOpensFunctor : X.AffineZariskiSite ⥤ X.Opens := toOpens_mono.functor
 
 instance : (toOpensFunctor X).Faithful where
+
+section GrothendieckTopology
 
 instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
   functorPushforward_imageSieve_mem := by
@@ -183,13 +188,198 @@ lemma mem_grothendieckTopology_iff_sectionsOfPresieve
   rw [← generate_presieveOfSections_mem_grothendieckTopology, presieveOfSections_sectionsOfPresieve,
     Sieve.generate_sieve]
 
-variable {A} [Category A]
+variable {A} [Category* A]
 variable [∀ (U : X.Opensᵒᵖ), Limits.HasLimitsOfShape (StructuredArrow U (toOpensFunctor X).op) A]
 
 /-- The category of sheaves on `X.AffineZariskiSite` is equivalent to the categories of sheaves
 over `X`. -/
 abbrev sheafEquiv : Sheaf (grothendieckTopology X) A ≌ TopCat.Sheaf A X :=
     (toOpensFunctor X).sheafInducedTopologyEquivOfIsCoverDense _ _
+
+end GrothendieckTopology
+
+variable (X) in
+/-- The directed cover of a scheme indexed by `X.AffineZariskiSite`.
+Note the related `Scheme.directedAffineCover`, which has the same (defeq) cover but a different
+category instance on the indices. -/
+@[simps] abbrev directedCover : X.OpenCover where
+  I₀ := X.AffineZariskiSite
+  X U := U.1
+  f U := U.1.ι
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    obtain ⟨U, hxU⟩ := TopologicalSpace.Opens.mem_iSup.mp
+      ((iSup_affineOpens_eq_top X).ge (Set.mem_univ x))
+    exact ⟨U, ⟨x, hxU⟩, rfl⟩
+
+noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
+  trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
+  directed {U V} x := by
+    let a := (pullback.fst _ _ ≫ U.1.ι) x
+    have haU : a ∈ U.1 := (pullback.fst U.1.ι V.1.ι x).2
+    have haV : a ∈ V.1 := by unfold a; rw [pullback.condition]; exact (pullback.snd U.1.ι V.1.ι x).2
+    obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 _ ⟨haU, haV⟩
+    refine ⟨U.basicOpen f, homOfLE (U.basicOpen_le f), eqToHom (Subtype.ext (by exact e)) ≫
+      homOfLE (V.basicOpen_le g), ⟨a, hxf⟩, ?_⟩
+    apply (pullback.fst _ _ ≫ U.1.ι).isOpenEmbedding.injective
+    dsimp
+    change (pullback.lift _ _ _ ≫ pullback.fst _ _ ≫ U.1.ι) _ = _
+    simp only [pullback.lift_fst_assoc, homOfLE_ι, Opens.ι_apply]
+    rfl
+
+section PreservesLocalization
+
+variable (X) in
+/-- `X` is the colimit of its affine opens. See `isColimit_cocone` below. -/
+@[simps] noncomputable def cocone :
+    Limits.Cocone (toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec) where
+  pt := X
+  ι.app U := U.2.fromSpec
+  ι.naturality {U V} f := by dsimp; rw [V.2.map_fromSpec U.2]; simp
+
+/--
+A presheaf `F` of rings on `X.AffineZariskiSite` with a structural morphism `α : 𝒪ₓ ⟶ F`
+is said to `PreservesLocalization` if `F(D(f)) = F(U)[1/f]`
+for every open `U` and any section `f : Γ(X, U)`.
+
+Under this condition we can glue `F` into a scheme over `X` via `colimit F.rightOp ⋙ Scheme.Spec`,
+if one first `have := H.isLocallyDirected; have := H.isOpenImmersion`.
+Also see the locally directed gluing API in `Mathlib/AlgebraicGeometry/Gluing.lean`.
+
+This is closely related to the notion of quasi-coherent `𝒪ₓ`-algebras, and we shall link them
+together once the theory of quasi-coherent `𝒪ₓ`-algebras are developed.
+-/
+def PreservesLocalization (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F) : Prop :=
+  ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.1)),
+    letI := (F.map (homOfLE (U.basicOpen_le f)).op).hom.toAlgebra
+    IsLocalization.Away (α.app (.op U) f) (F.obj (.op (U.basicOpen f)))
+
+lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
+    (H : PreservesLocalization F α) :
+    ((F.rightOp ⋙ Scheme.Spec) ⋙ Scheme.forget).IsLocallyDirected := by
+  constructor
+  rintro ⟨U, hU⟩ ⟨V, hV⟩ W ⟨⟨a, (rfl : _ = U)⟩⟩ ⟨⟨b, (rfl : _ = V)⟩⟩ (xi xj : PrimeSpectrum _)
+    (e : xi.comap (F.map (homOfLE (W.basicOpen_le a)).op).hom =
+      xj.comap (F.map (homOfLE (W.basicOpen_le b)).op).hom)
+  let x := xi.comap (F.map (homOfLE (W.basicOpen_le a)).op).hom
+  have := H W
+  let (c : _) := (F.map (homOfLE (W.basicOpen_le c)).op).hom.toAlgebra
+  have hx : x ∈ PrimeSpectrum.basicOpen (α.app (.op W) (a * b)) := by
+    rw [map_mul, PrimeSpectrum.basicOpen_mul]
+    exact ⟨(PrimeSpectrum.localization_away_comap_range _ (α.app (.op W) a)).le ⟨_, rfl⟩,
+      (PrimeSpectrum.localization_away_comap_range _ (α.app (.op W) b)).le ⟨_, e.symm⟩⟩
+  obtain ⟨y, hy⟩ :=
+    (PrimeSpectrum.localization_away_comap_range (F.obj (.op (W.basicOpen (a * b)))) _).ge hx
+  refine ⟨W.basicOpen (a * b), ⟨(X.presheaf.map (homOfLE (X.basicOpen_le a)).op).hom b, ?_⟩,
+    ⟨(X.presheaf.map (homOfLE (X.basicOpen_le b)).op).hom a, ?_⟩, y, ?_, ?_⟩
+  · simp [AffineZariskiSite.toOpens, AffineZariskiSite.basicOpen, basicOpen_mul]
+  · simp [AffineZariskiSite.toOpens, AffineZariskiSite.basicOpen, basicOpen_mul, inf_comm]
+  · refine PrimeSpectrum.localization_comap_injective (F.obj (.op (W.basicOpen a)))
+      (.powers <| α.app (.op W) a) ?_
+    change (Spec.map (F.map _) ≫ Spec.map (F.map _)) _ = _
+    rw [← Spec.map_comp, ← F.map_comp]
+    exact hy
+  · refine PrimeSpectrum.localization_comap_injective (F.obj (.op (W.basicOpen b)))
+      (.powers <| α.app (.op W) b) ?_
+    change (Spec.map (F.map _) ≫ Spec.map (F.map _)) _ = _
+    rw [← Spec.map_comp, ← F.map_comp]
+    exact hy.trans e
+
+lemma PreservesLocalization.isOpenImmersion (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
+    (H : PreservesLocalization F α) :
+    ∀ ⦃U V⦄ (f : U ⟶ V), IsOpenImmersion ((F.rightOp ⋙ Scheme.Spec).map f) := by
+  rintro ⟨U, _⟩ V ⟨⟨a, (rfl : _ = U)⟩⟩
+  have := H V a
+  let := (F.map (homOfLE (V.basicOpen_le a)).op).hom.toAlgebra
+  exact IsOpenImmersion.of_isLocalization (α.app (.op V) a) (S := F.obj (.op (V.basicOpen a)))
+
+lemma PreservesLocalization.opensRange_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
+    (H : PreservesLocalization F α) {U : X.AffineZariskiSite} (r : Γ(X, U.1)) :
+    letI := H.isOpenImmersion _ _ (homOfLE (U.basicOpen_le r))
+    ((F.rightOp ⋙ Scheme.Spec).map (homOfLE (U.basicOpen_le r))).opensRange =
+      PrimeSpectrum.basicOpen (α.app (.op U) r) := by
+  have := H U r
+  let := (F.map (homOfLE (U.basicOpen_le r)).op).hom.toAlgebra
+  apply TopologicalSpace.Opens.coe_inj.mp ?_
+  refine PrimeSpectrum.localization_away_comap_range (F.obj (.op <| U.basicOpen r))
+    (α.app (.op U) r)
+
+attribute [local simp] IsAffineOpen.isoSpec_hom IsAffineOpen.basicOpen in
+attribute [local simp← ] Hom.comp_apply in
+attribute [-simp] Hom.comp_base in
+lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+    (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
+    (H : PreservesLocalization F α) (U : X.AffineZariskiSite) :
+    haveI := H.isLocallyDirected
+    haveI := H.isOpenImmersion
+    (colimit.desc (F.rightOp ⋙ Scheme.Spec) ⟨X, Functor.whiskerRight α.rightOp _ ≫
+      (Scheme.AffineZariskiSite.cocone X).ι⟩) ⁻¹ᵁ U.1 =
+    (colimit.ι (F.rightOp ⋙ Scheme.Spec) U).opensRange := by
+  haveI := H.isLocallyDirected
+  haveI := H.isOpenImmersion
+  let G := F.rightOp ⋙ Scheme.Spec
+  let β : G ⟶ (Functor.const X.AffineZariskiSite).obj X :=
+    Functor.whiskerRight α.rightOp _ ≫ (Scheme.AffineZariskiSite.cocone X).ι
+  change (colimit.desc G ⟨X, β⟩) ⁻¹ᵁ U.1 = (colimit.ι G U).opensRange
+  apply le_antisymm
+  · rintro x hx
+    obtain ⟨V, x, rfl⟩ := (IsLocallyDirected.openCover G).exists_eq x
+    dsimp at V x hx
+    replace hx : β.app V x ∈ U.1 := by simpa using hx
+    have hx' : β.app V x ∈ V.1 :=
+      V.2.opensRange_fromSpec.le ⟨Spec.map (α.app (.op V)) x, by simp [β, G]⟩
+    obtain ⟨f, g, e, hxf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 _ ⟨hx, hx'⟩
+    obtain ⟨y, hy⟩ : x ∈ (G.map (homOfLE (V.basicOpen_le g))).opensRange := by
+      suffices (G.obj V).basicOpen ((β.app V).app V.1 g) ≤
+          (G.obj V).basicOpen ((ΓSpecIso (F.obj (.op V))).inv (α.app (.op V) g)) by
+        rw [H.opensRange_map, ← basicOpen_eq_of_affine]
+        rw [← preimage_basicOpen] at this
+        exact this (show x ∈ (β.app V) ⁻¹ᵁ X.basicOpen g by rwa [← e])
+      refine Eq.trans_le ?_ (((G.obj V).basicOpen_res (V := β.app V ⁻¹ᵁ V.1) _
+        (homOfLE le_top).op).trans_le inf_le_right)
+      congr 1
+      change _ = (α.app (.op V) ≫ (ΓSpecIso (F.obj (.op V))).inv ≫
+        (G.obj V).presheaf.map (homOfLE le_top).op) g
+      congr 2
+      simp [β, G, homOfLE_leOfHom, ΓSpecIso_inv_naturality_assoc,
+        IsAffineOpen.fromSpec_app_of_le V.2 V.1 le_rfl]
+    refine ⟨_, (Scheme.IsLocallyDirected.ι_eq_ι_iff _).mpr
+      ⟨.basicOpen V g, ⟨f, e⟩, ⟨g, rfl⟩, y, rfl, hy⟩⟩
+  · rintro _ ⟨x, rfl⟩
+    simpa using U.2.opensRange_fromSpec.le ⟨Spec.map (α.app (.op U)) x, by simp [β, G]⟩
+
+lemma _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :
+    PreservesLocalization ((AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf) (𝟙 _) :=
+  fun U f ↦ U.2.isLocalization_basicOpen f
+
+variable (X) in
+/-- `X` is the colimit of its affine opens. -/
+noncomputable def isColimitCocone : IsColimit (cocone X) :=
+  letI := X.preservesLocalization_toOpensFunctor.isLocallyDirected
+  letI {U V : X.AffineZariskiSite} (i : U ⟶ V) :=
+    X.preservesLocalization_toOpensFunctor.isOpenImmersion _ _ i
+  let F := ((AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf).rightOp ⋙ Scheme.Spec
+  haveI : IsIso ((colimit.isColimit F).desc (cocone X)) := by
+    refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _)
+      (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X))).mpr fun U ↦ ?_
+    change IsIso (pullback.snd (colimit.desc F (cocone X)) U.1.ι)
+    let e := IsOpenImmersion.isoOfRangeEq (pullback.fst (colimit.desc F (cocone X)) U.1.ι)
+      (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
+      rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
+        ← Scheme.Hom.coe_preimage]
+      have := X.preservesLocalization_toOpensFunctor.colimitDesc_preimage
+      convert congr($(this U).1) <;> simp
+    convert inferInstanceAs (IsIso e.hom)
+    rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
+    simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
+  .ofPointIso (colimit.isColimit F)
+
+end PreservesLocalization
 
 end Scheme.AffineZariskiSite
 

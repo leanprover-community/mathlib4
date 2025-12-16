@@ -47,7 +47,7 @@ lemma isConstructible_comap_image
     rw [range_comap_of_surjective _ f hf]
     exact isRetrocompact_zeroLocus_compl_of_fg hf'
   · intro R _ S _ T _ f g H₁ H₂ s hs
-    simp only [comap_comp, ContinuousMap.coe_comp, Set.image_comp]
+    simp only [comap_comp, Set.image_comp]
     exact H₁ _ (H₂ _ hs)
 
 lemma isConstructible_range_comap {f : R →+* S} (hf : f.FinitePresentation) :

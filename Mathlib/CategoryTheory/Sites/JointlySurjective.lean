@@ -79,7 +79,7 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
 
 end Types
 
-variable {C : Type*} [Category C] (F : C ⥤ Type u)
+variable {C : Type*} [Category* C] (F : C ⥤ Type u)
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔

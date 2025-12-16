@@ -125,9 +125,9 @@ on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`
 -/
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
     [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
-    MulSemiringAction.compHom (FractionRing B)
-      ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
-        (MulSemiringAction.toAlgAut G A B))
+  MulSemiringAction.compHom (FractionRing B)
+    ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
+      (MulSemiringAction.toAlgAut G A B))
 
 attribute [local instance] FractionRing.liftAlgebra in
 /--

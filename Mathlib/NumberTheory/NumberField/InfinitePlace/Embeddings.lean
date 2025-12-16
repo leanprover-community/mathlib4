@@ -43,8 +43,8 @@ variable (A : Type*) [Field A] [CharZero A]
 
 instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
   obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
-      apply IntermediateField.nonempty_algHom_of_splits
-      exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits_codomain _⟩
+    apply IntermediateField.nonempty_algHom_of_splits
+    exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
   exact ⟨f.toRingHom⟩
 
 variable [NumberField K]
@@ -94,7 +94,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := Algebra.IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
+      (IsAlgClosed.splits _) (minpoly.natDegree_le x) (fun z hz => ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz

@@ -29,7 +29,7 @@ open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Monoidal]
   (F : D ⥤ E) (G : C ⥤ E) [G.Monoidal] [W.ContainsIdentities] [Lifting L W G F]

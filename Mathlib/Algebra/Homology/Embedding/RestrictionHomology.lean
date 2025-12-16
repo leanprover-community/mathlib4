@@ -26,7 +26,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff]
 
 namespace restriction

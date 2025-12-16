@@ -145,7 +145,8 @@ open Lean Qq
 
 `let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
 `vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
-meta def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
+meta partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) :
+    MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
   | Matrix.vecCons _ n x xs => do
     let (elems, n', tail) ← matchVecConsPrefix n xs

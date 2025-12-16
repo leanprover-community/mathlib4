@@ -24,7 +24,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] {J : Type w} [Category J]
+variable {C : Type u} [Category.{v} C] {J : Type w} [Category* J]
 
 namespace TopCat
 

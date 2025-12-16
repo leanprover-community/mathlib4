@@ -278,12 +278,8 @@ theorem ciSup_mem_iInter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → �
 
 lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
     Iic (⨅ i, f i) = ⋂ i, Iic (f i) := by
-  apply Subset.antisymm
-  · rintro x hx - ⟨i, rfl⟩
-    exact hx.trans (ciInf_le hf _)
-  · rintro x hx
-    apply le_ciInf
-    simpa using hx
+  ext
+  simpa using le_ciInf_iff hf
 
 lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=

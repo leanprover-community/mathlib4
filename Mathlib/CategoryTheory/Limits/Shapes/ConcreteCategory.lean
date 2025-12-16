@@ -360,7 +360,7 @@ end WidePushout
 
 attribute [local ext] ConcreteCategory.hom_ext in
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] {FC : C → C → Type*}
+theorem cokernel_funext {C : Type*} [Category* C] [HasZeroMorphisms C] {FC : C → C → Type*}
     {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : ToType N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by

@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
@@ -28,6 +29,7 @@ directory.
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
+* `ofMultiset s` is the monic polynomial `p` which has roots `s`.
 
 There are often two natural variants of lemmas involving sums, depending on whether one acts on the
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
@@ -388,17 +390,16 @@ theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
-  toFun t := ⟨Finsupp.single n t⟩
+  toFun t := ⟨.single n t⟩
   map_add' x y := by simp [← ofFinsupp_add]
   map_smul' r x := by simp [← ofFinsupp_smul]
 
 @[simp]
-theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsupp.single n r := by
+theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = .single n r := by
   simp [monomial]
 
 @[simp]
-theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) = monomial n r := by
-  simp [monomial]
+theorem ofFinsupp_single (n : ℕ) (r : R) : ⟨.single n r⟩ = monomial n r := by simp [monomial]
 
 @[simp]
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
@@ -503,7 +504,7 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   | succ n ih => rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, mul_one]
 
 @[simp]
-theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
+theorem toFinsupp_X : X.toFinsupp = .single 1 (1 : R) :=
   rfl
 
 theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
@@ -675,14 +676,13 @@ theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
     rw [pow_succ, ← mul_assoc, C_mul_X_pow_eq_monomial, X, monomial_mul_monomial, mul_one]
 
 @[simp high]
-theorem toFinsupp_C_mul_X_pow (a : R) (n : ℕ) :
-    Polynomial.toFinsupp (C a * X ^ n) = Finsupp.single n a := by
+lemma toFinsupp_C_mul_X_pow (a : R) (n : ℕ) : (C a * X ^ n).toFinsupp = .single n a := by
   rw [C_mul_X_pow_eq_monomial, toFinsupp_monomial]
 
 theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_eq_monomial, pow_one]
 
 @[simp high]
-theorem toFinsupp_C_mul_X (a : R) : Polynomial.toFinsupp (C a * X) = Finsupp.single 1 a := by
+theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
 theorem C_injective : Injective (C : R → R[X]) :=
@@ -805,7 +805,7 @@ theorem X_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) :=
   (monomial_one_right_eq_X_pow n).symm
 
 @[simp high]
-theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
+theorem toFinsupp_X_pow (n : ℕ) : (X ^ n).toFinsupp = .single n (1 : R) := by
   rw [X_pow_eq_monomial, toFinsupp_monomial]
 
 theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
@@ -1053,7 +1053,6 @@ theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
   rw [← support_nonempty] at h
   obtain ⟨n, hn⟩ := h
   rw [mem_support_iff] at hn
-  rw [← nonempty_iff_ne_empty]
   exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
 
 @[simp]
@@ -1204,6 +1203,12 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
     fun h => @Polynomial.nontrivial _ _ h⟩
+
+/-- The map sending a collection of roots into a polynomial, as a morphism. -/
+@[simps] def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
+  toFun s := (s.map (fun a ↦ X - C a)).prod
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' := by simp
 
 section repr
 

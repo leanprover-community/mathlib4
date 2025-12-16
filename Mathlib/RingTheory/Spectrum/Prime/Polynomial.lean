@@ -83,7 +83,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
         q.asIdeal.ResidueField :=
       Algebra.TensorProduct.lift
         (Ideal.Quotient.liftₐ (Ideal.span s) (Algebra.ofId A _) hs)
-        (Ideal.ResidueField.mapₐ _ _ rfl)
+        (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         fun _ _ ↦ .all _ _
     have := H.map F
     rw [AlgHom.commutes, isNilpotent_iff_eq_zero, ← RingHom.mem_ker,
@@ -169,7 +169,7 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
   intro x
   refine ⟨comap (evalRingHom 0) x, ?_⟩
   rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
@@ -232,6 +232,6 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) :
   intro x
   refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
   rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 end MvPolynomial

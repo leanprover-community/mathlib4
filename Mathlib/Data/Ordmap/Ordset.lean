@@ -188,8 +188,8 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
     by_cases mm : size ml + size mr ≤ 1
     · dsimp [delta, ratio] at lr₁ mr₁
-      have r1 : r.size = 1 := by omega
-      have l1 : l.size = 1 := by omega
+      have r1 : r.size = 1 := by lia
+      have l1 : l.size = 1 := by lia
       rw [r1, add_assoc] at lr₁
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
@@ -239,10 +239,10 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   rw [hr.2.size_eq] at H3
   replace H3 : 2 * (size rl + size rr) ≤ 9 * size l + 3 ∨ size rl + size rr ≤ 2 :=
     H3.imp (@Nat.le_of_add_le_add_right _ 2 _) Nat.le_of_succ_le_succ
-  have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by omega
+  have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by lia
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by lia).1 H3
-  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
+  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by lia
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h

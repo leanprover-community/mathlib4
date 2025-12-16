@@ -13,9 +13,8 @@ public import Mathlib.RepresentationTheory.FDRep
 
 This file introduces the subspace of invariants of a group representation
 and proves basic results about it.
-The main tool used is the average of all elements of the group, seen as an element of
-`MonoidAlgebra k G`. The action of this special element gives a projection onto the
-subspace of invariants.
+The main tool used is the average of all elements of the group, seen as an element of `k[G]`.
+The action of this special element gives a projection onto the subspace of invariants.
 In order for the definition of the average element to make sense, we need to assume for most of the
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
@@ -35,18 +34,15 @@ namespace GroupAlgebra
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
-/-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
--/
-noncomputable def average : MonoidAlgebra k G :=
-  ⅟(Fintype.card G : k) • ∑ g : G, of k G g
+/-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
+noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
-/-- `average k G` is invariant under left multiplication by elements of `G`.
--/
+/-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
 theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => Finsupp.single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
@@ -56,7 +52,7 @@ theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = avera
 theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => Finsupp.single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
