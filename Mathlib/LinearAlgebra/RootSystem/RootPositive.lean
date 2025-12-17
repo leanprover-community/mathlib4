@@ -199,7 +199,7 @@ lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
   have : 2 * B.posForm ri rj = P.pairingIn S i j * B.posForm rj rj := by
     apply FaithfulSMul.algebraMap_injective S R
     simpa [map_ofNat] using B.toInvariantForm.two_mul_apply_root_root i j
-  calc 0 < B.posForm ri rj
+  calc  0 < B.posForm ri rj
       ↔ 0 < 2 * B.posForm ri rj := by rw [mul_pos_iff_of_pos_left zero_lt_two]
     _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
