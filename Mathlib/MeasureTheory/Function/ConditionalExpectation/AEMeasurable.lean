@@ -380,8 +380,9 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
       (fun g => P ((lpMeasToLpTrimLie F ℝ p μ hm).symm g)) ?_ ?_ ?_ g
   · intro b t ht hμt
     have H : (μ.trim hm) t ≠ ⊤ := by simp only [hp_ne_top, false_or] at hμt; exact hμt
+    have H1 : (μ.trim hm) t < ⊤ := Ne.lt_top' (id (Ne.symm H))
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator ht H b]
-    have hμt' : μ t < ∞ := (le_trim hm).trans_lt H
+    have hμt' : μ t < ∞ := (le_trim hm).trans_lt H1
     specialize h_ind b ht hμt'
     rwa [Lp.simpleFunc.coe_indicatorConst] at h_ind
   · intro f g hf hg h_disj hfP hgP
