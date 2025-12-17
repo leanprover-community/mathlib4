@@ -310,7 +310,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
                iSup_eq_bot, not_forall]
     have hq' : ⟨q, (RootPairing.mem_invtRootSubmodule_iff _).mpr h₀⟩ ≠
-        (⊥ : (rootSystem H).invtRootSubmodule) := by simpa [Subtype.ext_iff]
+        (⊥ : (rootSystem H).invtRootSubmodule) := Subtype.coe_ne_coe.mp h₁
     simp only [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall, not_not] at hq'
     obtain ⟨i, hi⟩ := hq'
     refine ⟨⟨i.val, hi, by grind⟩, fun h_eq_bot => ?_⟩
