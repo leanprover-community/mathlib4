@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Const
 # Additive operations on derivatives
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 

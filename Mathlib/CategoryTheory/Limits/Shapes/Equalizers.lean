@@ -1149,7 +1149,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 
 /-- The comparison morphism for the equalizer of `f,g`.
 This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
-`CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
+`Mathlib/CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
 -/
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=

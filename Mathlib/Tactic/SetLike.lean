@@ -52,5 +52,5 @@ are given the `aesop` attribute according to the following principles:
   For example, `Subgroup.mem_closure_of_mem` covers a common use case of `SetLike.mem_of_subset`.
 
 Some examples of membership-related goals which Aesop with this ruleset is designed to close
-can be found in the file MathlibTest/set_like.lean.
+can be found in the file `MathlibTest/set_like.lean`.
 -/

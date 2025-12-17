@@ -16,7 +16,7 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 `Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
-In `FieldTheory/Tower.lean` we use this to prove the tower law for finite extensions,
+In `Mathlib/FieldTheory/Tower.lean` we use this to prove the tower law for finite extensions,
 that if `R` and `S` are both fields, then `[A:R] = [A:S] [S:A]`.
 
 In this file we prepare the main lemma:

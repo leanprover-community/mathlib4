@@ -444,7 +444,7 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
--- are proved in `CategoryTheory/Adjunction/Limits.lean`.
+-- are proved in `Mathlib/CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
 
 variable [HasLimitsOfShape J C]
