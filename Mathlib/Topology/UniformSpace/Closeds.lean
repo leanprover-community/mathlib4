@@ -102,7 +102,7 @@ protected abbrev UniformSpace.hausdorff : UniformSpace (Set α) := .ofCore
     refl := by
       simp_rw [Filter.principal_le_lift', SetRel.id_subset_iff]
       intro (U : SetRel α α) hU
-      have : U.IsRefl := ⟨fun _ => refl_mem_uniformity hU⟩
+      have := isRefl_of_mem_uniformity hU
       exact isRefl_hausdorffEntourage U
     symm :=
       Filter.tendsto_lift'.mpr fun U hU => Filter.mem_of_superset
