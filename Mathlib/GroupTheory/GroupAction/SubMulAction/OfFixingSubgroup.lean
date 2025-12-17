@@ -314,7 +314,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
       simp only [← SetLike.coe_eq_coe, SubMulAction.val_smul_of_tower]
       exact (mem_fixingSubgroup_union_iff.mp m.prop).2 ⟨x, hx'⟩⟩
   map_one' := by simp
-  map_mul' _ _ := by simp [← Subtype.coe_inj]
+  map_mul' _ _ := by simp
 
 set_option backward.proofsInPublic true in
 variable (M s t) in
