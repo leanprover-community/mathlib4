@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.GroupTheory.Artin.Basic
-public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.GroupTheory.Coxeter.Perm
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
@@ -68,10 +68,6 @@ def σ (i : Fin (n - 1)) : BraidGroup n :=
   (CoxeterMatrix.Aₙ (n - 1)).artinGenerator i
 
 /-! ### The surjection to the symmetric group -/
-
-/-- The function sending generator i to the adjacent transposition (i, i+1). -/
-def swapFun (n : ℕ) : Fin n → Perm (Fin (n + 1)) := fun i =>
-  swap i.castSucc i.succ
 
 /-- Adjacent transpositions satisfy the Artin relations (braid relations). -/
 theorem swapFun_isArtinLiftable (n : ℕ) :

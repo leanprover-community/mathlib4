@@ -4267,6 +4267,7 @@ public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.Coxeter.Perm
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.GroupTheory.DivisibleHull

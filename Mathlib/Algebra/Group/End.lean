@@ -96,10 +96,17 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
+@[grind =]
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
   rfl
 
+@[grind =]
 theorem one_apply (x) : (1 : Perm α) x = x :=
+  rfl
+
+@[grind =]
+theorem pow_add_one_apply (f : Perm α) (n : ℕ) (x : α) :
+    (f ^ (n + 1)) x = (f^n) (f x) := by
   rfl
 
 @[deprecated symm_apply_apply (since := "2025-08-16")]
@@ -578,16 +585,14 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
 This is also known as the braid relation for adjacent transpositions. -/
 theorem swap_conjugate {a b c : α} (hab : a ≠ b) (hbc : b ≠ c) :
     swap a b * swap b c * swap a b = swap b c * swap a b * swap b c := by
-  ext
-  grind [Perm.mul_apply]
+  grind
 
 /-- Disjoint transpositions commute: if `{a, b}` and `{c, d}` are disjoint,
 then `swap a b` and `swap c d` commute. -/
 theorem swap_mul_swap_comm_of_disjoint {a b c d : α}
     (hac : a ≠ c) (had : a ≠ d) (hbc : b ≠ c) (hbd : b ≠ d) :
     swap a b * swap c d = swap c d * swap a b := by
-  ext
-  grind [Perm.mul_apply]
+  grind
 
 end Swap
 
