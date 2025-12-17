@@ -55,6 +55,8 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'

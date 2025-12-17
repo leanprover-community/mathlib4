@@ -37,6 +37,8 @@ instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (UpperSet α) := .ofSetLike (UpperSet α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
@@ -62,6 +64,8 @@ namespace LowerSet
 instance : SetLike (LowerSet α) α where
   coe := LowerSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
+
+instance : PartialOrder (LowerSet α) := .ofSetLike (LowerSet α) α
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : LowerSet α) : Set α := s

@@ -107,6 +107,8 @@ instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
+
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
   SetLike.ext'
