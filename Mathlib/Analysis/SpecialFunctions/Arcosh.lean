@@ -17,7 +17,7 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 
 - `Real.arcosh`: An inverse function of `Real.cosh` as a function from [0, ∞) to [1, ∞).
 
-- `Real.coshPartialEquiv` as a `PartialEquiv` from [0, ∞) to [1, ∞).
+- `Real.coshPartialEquiv`: `Real.cosh` and `Real.arcosh` bundled as a `PartialEquiv` from [0, ∞) to [1, ∞).
 
 - `Real.coshOpenPartialHomeomorph`: `Real.cosh` as an `OpenPartialHomeomorph` from (0, ∞) to (1, ∞).
 
