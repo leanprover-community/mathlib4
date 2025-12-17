@@ -99,9 +99,7 @@ theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
   classical
   simp only [expand, substAlgHom_apply, coeff_subst (HasSubst.X_pow hp), smul_eq_mul]
   have {d : σ →₀ ℕ} : (d.prod fun s e ↦ (X s (R := R) ^ p) ^ e) = monomial (p • d) 1 := by
-    rw [monomial_eq', map_one, one_mul, Finsupp.prod_of_support_subset _ Finsupp.support_smul _
-      (by simp), Finsupp.prod]
-    simp [pow_mul]
+    simp [monomial_smul_eq]
   rw [finsum_eq_single _ m]
   · rw [this, coeff_monomial, if_pos rfl, mul_one]
   · intro d hd
