@@ -33,7 +33,7 @@ We prove inequalities between these covering and packing numbers.
 
 * `externalCoveringNumber_le_coveringNumber`: the external covering number is less than or equal to
   the covering number.
-* `packingNumber_two_le_externalCoveringNumber`: the packing number with radius `2 * ε` is
+* `packingNumber_two_mul_le_externalCoveringNumber`: the packing number with radius `2 * ε` is
   less than or equal to the external covering number for `ε`.
 
 ## References
