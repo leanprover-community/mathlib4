@@ -848,27 +848,17 @@ instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) 
 instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
-/-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearMap`. -/
-abbrev toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] E₂) : E →SL[σ₁₂] E₂ :=
-  e.toContinuousLinearEquiv.toContinuousLinearMap
+@[simp] theorem coe_eq_toContinuousLinearMap :
+    (e : E →SL[σ₁₂] E₂) = e.toContinuousLinearEquiv := rfl
 
-@[simp] theorem coe_eq_toContinuousLinearMap : (e : E →SL[σ₁₂] E₂) = e.toContinuousLinearMap := rfl
-
-@[simp] theorem coe_toContinuousLinearMap : ⇑e.toContinuousLinearMap = e := rfl
-
-theorem toContinuousLinearMap_toContinuousLinearEquiv :
-    e.toContinuousLinearEquiv.toContinuousLinearMap = e.toContinuousLinearMap := rfl
-
-theorem toContinuousLinearMap_toLinearIsometry :
-    e.toLinearIsometry.toContinuousLinearMap = e.toContinuousLinearMap := rfl
-
-@[simp] theorem toContinuousLinearMap_refl : (refl R E).toContinuousLinearMap = .id R E := rfl
+theorem toContinuousLinearMap_toLinearIsometry_eq_toContinuousLinearMap_toContinuousLinearEquiv :
+    e.toLinearIsometry.toContinuousLinearMap = e.toContinuousLinearEquiv := rfl
 
 @[simp]
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
   rfl
 
-@[deprecated (since := "2025-12-16")] alias coe_coe'' := coe_toContinuousLinearMap
+theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e := rfl
 
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
