@@ -138,11 +138,6 @@ theorem strongRankCondition_iff_succ :
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 
-variable {R} in
-theorem not_strongRankCondition_iff_succ :
-    ¬ StrongRankCondition R ↔ ∃ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), Injective f := by
-  simp [strongRankCondition_iff_succ]
-
 /-- Any nontrivial ring satisfying Orzech property also satisfies strong rank condition. -/
 instance (priority := 100) strongRankCondition_of_orzechProperty
     [Nontrivial R] [OrzechProperty R] : StrongRankCondition R := by
@@ -215,10 +210,10 @@ instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition 
   eq_of_fin_equiv e := le_antisymm (le_of_fin_surjective R e.symm.toLinearMap e.symm.surjective)
     (le_of_fin_surjective R e.toLinearMap e.surjective)
 
-/-- If `R` fails the strong rank condition, there is a copy of `R^(ℕ)` in some `Rⁿ`. -/
-theorem not_strongRankCondition_iff_exists_finsupp_nat_linearMap :
-    ¬ StrongRankCondition R ↔ ∃ (n : ℕ) (f : (ℕ →₀ R) →ₗ[R] Fin n → R), Injective f := by
-  rw [not_strongRankCondition_iff_succ]
+/-- A semiring `R` satisfies the strong rank condition, iff we cannot embed `R^(ℕ)` in some `Rⁿ`. -/
+theorem strongRankCondition_iff_forall_not_injective :
+    StrongRankCondition R ↔ ∀ n (f : (ℕ →₀ R) →ₗ[R] Fin n → R), ¬ Injective f := by
+  rw [strongRankCondition_iff_succ, ← not_iff_not]; push_neg
   constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
   · exact f.exists_finsupp_nat_of_fin_fun_injective inj
   · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,

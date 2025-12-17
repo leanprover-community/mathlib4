@@ -213,12 +213,12 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
 
 end IsArtinian
 
-theorem not_isArtinian_of_linearMap_prod_injective [Nontrivial P] {f : P × N →ₗ[R] N}
-    (inj : Function.Injective f) : ¬ IsArtinian R N := fun _ ↦
-  have ⟨p, ne⟩ := exists_ne (0 : P)
-  have ⟨_, eq⟩ := IsArtinian.surjective_of_injective_endomorphism (f ∘ₗ .inr ..)
-    (inj.comp (Prod.mk_right_injective _)) (f (p, 0))
-  ne congr($(inj eq).1).symm
+lemma IsArtinian.subsingleton_of_injective [IsArtinian R N] {f : P × N →ₗ[R] N}
+    (inj : Function.Injective f) : Subsingleton P :=
+  subsingleton_of_forall_eq 0 fun p ↦
+    have ⟨_, eq⟩ := IsArtinian.surjective_of_injective_endomorphism (f ∘ₗ .inr ..)
+      (inj.comp (Prod.mk_right_injective _)) (f (p, 0))
+    congr($(inj eq).1).symm
 
 namespace LinearMap
 

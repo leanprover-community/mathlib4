@@ -260,14 +260,14 @@ theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι →
 variable [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [Nontrivial P]
 
 /-- If `P × N` embeds into `N` for some nontrivial module `P`, then `N` cannot be a Noetherian
-module. Lemma 1.1.36 of [lam_1999]. -/
-theorem not_isNoetherian_of_linearMap_prod_injective {f : P × N →ₗ[R] N}
-    (inj : Injective f) : ¬ IsNoetherian R N := fun _ ↦
-  have ⟨g, inj⟩ := LinearMap.exists_finsupp_nat_of_prod_injective inj
-  have ⟨p, ne⟩ := exists_ne (0 : P)
-  Infinite.not_finite <| WellFoundedGT.finite_of_iSupIndep
-    (g.iSupIndep_map inj (iSupIndep_range_lsingle ℕ R P))
-    fun i ↦ (Submodule.ne_bot_iff _).mpr ⟨_, ⟨_, ⟨p, rfl⟩, rfl⟩, by simpa [inj]⟩
+module. Lemma 1.36 of Chapter 1 in [lam_1999]. -/
+theorem IsNoetherian.subsingleton_of_injective {P : Type*} [AddCommMonoid P] [Module R P]
+    {f : P × M →ₗ[R] M} (inj : Injective f) : Subsingleton P :=
+  subsingleton_of_forall_eq 0 fun p ↦ by_contra fun _ ↦
+    have ⟨g, inj⟩ := LinearMap.exists_finsupp_nat_of_prod_injective inj
+    Infinite.not_finite <| WellFoundedGT.finite_of_iSupIndep
+      (g.iSupIndep_map inj (iSupIndep_range_lsingle ℕ R P))
+      fun i ↦ (Submodule.ne_bot_iff _).mpr ⟨_, ⟨_, ⟨p, rfl⟩, rfl⟩, by simpa [inj]⟩
 
 theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
