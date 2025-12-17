@@ -73,9 +73,10 @@ lemma Metric.diam_closedBall_eq (x : F) {r : ℝ} (hr : 0 ≤ r) :
   le_antisymm (diam_closedBall hr) <|
     diam_sphere_eq x hr |>.symm.le.trans <| diam_mono sphere_subset_closedBall isBounded_closedBall
 
-lemma Metric.diam_ball_eq (x : F) {r : ℝ} (hr : 0 < r) :
+lemma Metric.diam_ball_eq (x : F) {r : ℝ} (hr : 0 ≤ r) :
     diam (ball x r) = 2 * r := by
-  rw [← diam_closure, closure_ball _ hr.ne', diam_closedBall_eq _ hr.le]
+  if hr' : r = 0 then simp [hr'] else
+  rw [← diam_closure, closure_ball _ hr', diam_closedBall_eq _ hr]
 
 open Pointwise in
 theorem convexHull_sphere_eq_closedBall (x : F) {r : ℝ} (hr : 0 ≤ r) :
