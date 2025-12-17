@@ -137,6 +137,47 @@ theorem restrict_Ico_eq_restrict_Icc : μ.restrict (Ico a b) = μ.restrict (Icc 
 theorem restrict_Ico_eq_restrict_Ioc : μ.restrict (Ico a b) = μ.restrict (Ioc a b) :=
   restrict_congr_set Ico_ae_eq_Ioc
 
+open Filter TopologicalSpace
+
+variable {X : Type*} [EMetricSpace X] [MeasurableSpace X]
+
+/-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
+theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
+    [EMetricSpace X] [MeasurableSpace X]
+    (μ : Measure X) [NoAtoms μ] (h_sep : TopologicalSpace.IsSeparable E) (hE : 0 < μ E) :
+    ∃ x, AccPt x (𝓟 E) := by
+  by_contra! h
+  have h_discrete : DiscreteTopology E := by
+    have h_isolated : ∀ x ∈ E, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ∩ E = {x} := by
+      intro x hx
+      specialize h x
+      rw [accPt_iff_frequently] at h
+      simp only [ne_eq, not_frequently, not_and] at h
+      obtain ⟨w, hw, hsep⟩ := EMetric.mem_nhds_iff.mp h
+      use EMetric.ball x w, EMetric.isOpen_ball, EMetric.mem_ball_self hw
+      ext y; simp only [mem_inter_iff, mem_singleton_iff]
+      refine ⟨fun ⟨hy, hyE⟩ => by_contra fun hne => hsep (EMetric.mem_ball.mp hy) hne hyE,
+              fun hy => by rw [hy]; exact ⟨EMetric.mem_ball_self hw, hx⟩⟩
+    refine discreteTopology_iff_isOpen_singleton.mpr fun x => ?_
+    obtain ⟨U, hU_open, hxU, hU_eq⟩ := h_isolated x x.2
+    refine ⟨U, hU_open, ?_⟩
+    ext y
+    simp only [mem_preimage, mem_singleton_iff, Subtype.ext_iff]
+    constructor
+    · intro hy
+      have : (y : X) ∈ U ∩ E := ⟨hy, y.2⟩
+      rw [hU_eq] at this
+      exact this
+    · intro hy
+      rw [hy]
+      exact hxU
+  have h_countable : Countable E := by
+    classical
+    have hsepE : SeparableSpace E := h_sep.separableSpace
+    simpa using (TopologicalSpace.separableSpace_iff_countable (α := E)).1 hsepE
+  have : μ E = 0 := E.countable_coe_iff.mp h_countable |>.measure_zero μ
+  exact hE.ne' this
+
 end
 
 open Interval
