@@ -23,7 +23,7 @@ of the family).
 We have defined the notion of effective epi for morphisms and families of morphisms in such a
 way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
 then these definitions are equivalent, see the file
-`CategoryTheory/EffectiveEpi/RegularEpi.lean`
+`Mathlib/CategoryTheory/EffectiveEpi/RegularEpi.lean`
 See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions. Note that
 our notion of `EffectiveEpi` is often called "strict epi" in the literature.
