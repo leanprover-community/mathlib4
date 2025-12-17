@@ -453,7 +453,7 @@ theorem comap_toSubsemiring (S : Subalgebra R B) (f : A →ₐ[R] B) :
 @[simp]
 theorem comap_toSubmodule (S : Subalgebra R B) (f : A →ₐ[R] B) :
     (S.comap f).toSubmodule = S.toSubmodule.comap f.toLinearMap :=
-  SetLike.coe_injective rfl
+  rfl
 
 instance noZeroDivisors {R A : Type*} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
     [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=
