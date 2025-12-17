@@ -138,7 +138,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
 
 /-- Construct a hyperreal number from a sequence of real numbers. -/
-noncomputable def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
@@ -150,7 +150,7 @@ noncomputable def epsilon : ℝ* :=
   ofSeq fun n => n⁻¹
 
 /-- A sample infinite hyperreal -/
-noncomputable def omega : ℝ* := ofSeq Nat.cast
+def omega : ℝ* := ofSeq Nat.cast
 
 @[inherit_doc] scoped notation "ε" => Hyperreal.epsilon
 @[inherit_doc] scoped notation "ω" => Hyperreal.omega
