@@ -15,7 +15,7 @@ category `W.Localization` is in `Type u` (the objects are
 essentially the same as those of `C`), but the morphisms
 are in `Type (max u v)`. In particular situations, it
 may happen that there is a localized category for `W`
-whose morphisms are in a lower universe like `v`: it should
+whose morphisms are in a lower universe like `v`: it shall
 be so for the homotopy categories of model categories (TODO),
 and it should also be so for the derived categories of
 Grothendieck abelian categories (TODO: but this will be
