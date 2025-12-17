@@ -851,7 +851,7 @@ instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E
 @[simp] theorem coe_eq_toContinuousLinearEquiv :
     (e : E ≃SL[σ₁₂] E₂) = e.toContinuousLinearEquiv := rfl
 
-theorem toContinuousLinearMap_toLinearIsometry_eq_toContinuousLinearMap_toContinuousLinearEquiv :
+theorem toContinuousLinearMap_toLinearIsometry_eq_coe_toContinuousLinearEquiv :
     e.toLinearIsometry.toContinuousLinearMap = e.toContinuousLinearEquiv := rfl
 
 @[simp]
