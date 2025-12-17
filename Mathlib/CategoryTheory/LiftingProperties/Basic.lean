@@ -20,7 +20,7 @@ shows basic properties of this notion.
 ## Tags
 lifting property
 
-@TODO :
+## TODO
 1) direct/inverse images, adjunctions
 
 -/

@@ -27,7 +27,7 @@ This makes for longer signatures than would be ideal.
 
 ## Future work
 
-It would be nice to have a usable framework of enriched categories in which this just became
+It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
 
 -/

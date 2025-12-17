@@ -40,7 +40,7 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
 variable (C) in
-/-- The equivalence between the fullsubcategory `⊤` of a category `C` and `C` itself. -/
+/-- The equivalence between the full subcategory `⊤` of a category `C` and `C` itself. -/
 @[simps]
 def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   functor := ObjectProperty.ι _

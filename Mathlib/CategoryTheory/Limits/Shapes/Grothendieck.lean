@@ -157,7 +157,7 @@ def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G 
           rw [← colimit.w _ g, ← Category.assoc, Functor.comp_map, ← G.map_comp]
           congr <;> simp }
 
-/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, than the induced cocone
+/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, then the induced cocone
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where

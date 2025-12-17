@@ -19,7 +19,7 @@ category induced from `D` along `F`.
 ## Implementation notes
 
 It looks odd to make `D` an explicit argument of `InducedCategory`,
-when it is determined by the argument `F` anyways. The reason to make `D`
+when it is determined by the argument `F` anyway. The reason to make `D`
 explicit is in order to control its syntactic form, so that instances
 like `InducedCategory.has_forget₂` (elsewhere) refer to the correct
 form of `D`. This is used to set up several algebraic categories like

@@ -202,7 +202,7 @@ end AlgCat
 variable {R}
 variable {X₁ X₂ : Type u}
 
-/-- Build an isomorphism in the category `AlgCat R` from a `AlgEquiv` between `Algebra`s. -/
+/-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgCat.of R X₁ ≅ AlgCat.of R X₂ where
@@ -211,7 +211,7 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
 
 namespace CategoryTheory.Iso
 
-/-- Build a `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
+/-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with
