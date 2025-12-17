@@ -52,8 +52,60 @@ theorem house_nonneg (α : K) : 0 ≤ house α := norm_nonneg _
 theorem house_mul_le (α β : K) : house (α * β) ≤ house α * house β := by
   simp only [house, map_mul]; apply norm_mul_le
 
+lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, house x := by
+  simpa [house, map_prod] using Finset.norm_prod_le _ _
+
+theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
+  simp only [house, map_add]; apply norm_add_le
+
+theorem house_pow_le (α : K) (i : ℕ) : house (α^i) ≤ house α ^ i := by
+  simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
+
+theorem house_nat_mul (α : K) (c : ℕ) :
+    house (c * α) = c * house α := by
+  rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
+  norm_cast
+  simp [NNReal.mul_finset_sup]
+
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
+
+/-- Let `α` be a non-zero algebraic integer. Then `α` has a conjugate `σ α` with `‖σ α‖ ≥ 1`. -/
+lemma exists_conjugate_one_le_norm {α : 𝓞 K} (hα0 : α ≠ 0) :
+    ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+  obtain ⟨w, hw⟩ : ∃ w : InfinitePlace K, 1 ≤ w α := by
+    by_contra! h_neg
+    let w₀ := Classical.arbitrary (InfinitePlace K)
+    have h_ge_one : 1 ≤ w₀ α := InfinitePlace.one_le_of_lt_one hα0 (fun z _ ↦ h_neg z)
+    exact (h_neg w₀).not_ge h_ge_one
+  use w.embedding
+  rwa [InfinitePlace.norm_embedding_eq]
+
+lemma norm_embedding_le_house (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house α := by
+  rw [house_eq_sup']
+  exact Finset.le_sup' (f := (‖· α‖₊)) (Finset.mem_univ σ)
+
+lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
+    1 ≤ house α := by
+  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+    apply exists_conjugate_one_le_norm (K := K) (α := ⟨α, hα⟩)
+    simpa [RingOfIntegers.ext_iff]
+  apply hσ.trans (norm_embedding_le_house α σ)
+
+lemma norm_norm_le_norm_mul_house_pow (α : K) (σ : K →+* ℂ) :
+    ‖Algebra.norm ℚ α‖ ≤ ‖σ α‖ * house α ^ (Module.finrank ℚ K - 1) := by
+  classical
+  set σ' := σ.toRatAlgHom
+  calc _ = ‖∏ τ : K →ₐ[ℚ] ℂ, τ α‖ := ?_
+       _ = ‖(σ' α) * ∏ τ ∈ univ.erase σ', τ α‖ := by rw [mul_prod_erase univ (· α) (mem_univ σ')]
+       _ ≤ ‖σ' α‖ * ∏ τ ∈ univ.erase σ', ‖τ α‖ := ?_
+       _ ≤ ‖σ' α‖ * ∏ τ ∈ univ.erase σ', house α := by gcongr; apply norm_embedding_le_house
+       _ = ‖σ' α‖ * house α ^ (Module.finrank ℚ K - 1) := by simp
+  · rw [← Algebra.norm_eq_prod_embeddings, ← Rat.norm_cast_real,
+      Real.norm_eq_abs, eq_ratCast, Complex.norm_ratCast]
+  · rw [Complex.norm_mul]
+    gcongr
+    exact norm_prod_le (univ.erase σ') (· α)
 
 end
 
