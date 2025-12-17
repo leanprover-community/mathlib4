@@ -14481,7 +14481,9 @@ public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.PreorderRestrict
 public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
 public import Mathlib.Topology.Separation.Basic
