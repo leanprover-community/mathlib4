@@ -21,43 +21,43 @@ adjoin, algebra, ringhom
 @[expose] public section
 
 variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C]
-variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C] (a : B)
+variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
 
 namespace Algebra
 
 open Polynomial
 
-/-- Ring homomorphism between `A[a]` and `A[↑a]`. -/
+/-- Ring homomorphism between `A[b]` and `A[↑b]`. -/
 def RingHom.adjoinAlgebraMap :
-    Algebra.adjoin A {a} →+* Algebra.adjoin A {(algebraMap B C) a} :=
+    Algebra.adjoin A {b} →+* Algebra.adjoin A {(algebraMap B C) b} :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp
-    (Subalgebra.val (Algebra.adjoin A {a}))) _
+    (Subalgebra.val (Algebra.adjoin A {b}))) _
     (fun x ↦ by induction x using adjoin_singleton_induction with
       | f p => aesop (add norm [adjoin_singleton_eq_range_aeval, aeval_algebraMap_apply]))
 
 @[simp]
-theorem RingHom.adjoin_algebraMap_apply (x : Algebra.adjoin A {a}) :
-    (RingHom.adjoinAlgebraMap a x (C := C) : C) = algebraMap B C x := rfl
+theorem RingHom.adjoin_algebraMap_apply (x : Algebra.adjoin A {b}) :
+    (RingHom.adjoinAlgebraMap b x (C := C) : C) = algebraMap B C x := rfl
 
 theorem RingHom.adjoin_algebraMap_surjective :
-    Function.Surjective (RingHom.adjoinAlgebraMap (A := A) a (C := C)) := by
-  intro b
-  obtain ⟨p, hp⟩ := adjoin_eq_exists_aeval A (algebraMap B C a) b
-  aesop (add safe ((aeval_algebraMap_apply C a p).symm))
+    Function.Surjective (RingHom.adjoinAlgebraMap (A := A) b (C := C)) := by
+  intro c
+  obtain ⟨p, hp⟩ := adjoin_eq_exists_aeval A (algebraMap B C b) c
+  aesop (add safe ((aeval_algebraMap_apply C b p).symm))
 
-instance : Algebra (Algebra.adjoin A {a}) (Algebra.adjoin A {(algebraMap B C) a}) :=
-  RingHom.toAlgebra (RingHom.adjoinAlgebraMap a)
+instance : Algebra (Algebra.adjoin A {b}) (Algebra.adjoin A {(algebraMap B C) b}) :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMap b)
 
-instance : IsScalarTower (Algebra.adjoin A {a}) (Algebra.adjoin A {(algebraMap B C) a}) C :=
+instance : IsScalarTower (Algebra.adjoin A {b}) (Algebra.adjoin A {(algebraMap B C) b}) C :=
   IsScalarTower.of_algebraMap_eq' (by rfl)
 
-/-- If the `algebraMap` injective then we have a Ring isomorphism between A[a] and A[↑a]. -/
+/-- If the `algebraMap` injective then we have a Ring isomorphism between A[b] and A[↑b]. -/
 noncomputable def RingHom.adjoinAlgebraMapEquiv [FaithfulSMul B C] :
-    Algebra.adjoin A {a} ≃+* Algebra.adjoin A {(algebraMap B C) a} := by
-  apply RingEquiv.ofBijective (RingHom.adjoinAlgebraMap a)
-     ((Function.bijective_iff_existsUnique (adjoinAlgebraMap a)).mpr (fun y ↦ ?_))
+    Algebra.adjoin A {b} ≃+* Algebra.adjoin A {(algebraMap B C) b} := by
+  apply RingEquiv.ofBijective (RingHom.adjoinAlgebraMap b)
+     ((Function.bijective_iff_existsUnique (adjoinAlgebraMap b)).mpr (fun y ↦ ?_))
   induction y using Algebra.adjoin_singleton_induction with | f p =>
-  use ⟨p.aeval a, by simp⟩
+  use ⟨p.aeval b, by simp⟩
   aesop (add norm [Polynomial.aeval_algebraMap_apply, Subtype.ext_iff])
 
 end Algebra
