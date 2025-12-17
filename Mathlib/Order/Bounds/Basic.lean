@@ -960,7 +960,7 @@ theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
 
 theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
-  simp [IsLeast, mem_lowerBounds]
+  simp [IsLeast, mem_lowerBounds, sdiff_le_iff]
 
 theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
     IsGreatest {w | Disjoint w a} (aᶜ) := by

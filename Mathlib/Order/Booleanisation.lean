@@ -235,9 +235,9 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_inf _ _ _ := le_inf
   le_sup_inf
     | lift _, lift _, lift _ => LE.lift le_sup_inf
-    | lift a, lift b, comp c => LE.lift <| by simp [sup_comm, sup_assoc]
+    | lift a, lift b, comp c => LE.lift <| by simp [sup_comm, sup_assoc, sdiff_le_iff]
     | lift a, comp b, lift c => LE.lift <| by
-      simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
+      simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a), sdiff_le_iff]
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]
     | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
     | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']
