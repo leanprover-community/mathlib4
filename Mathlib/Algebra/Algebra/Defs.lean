@@ -111,16 +111,16 @@ theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semirin
     [Subsingleton R] : Subsingleton A :=
   (algebraMap R A).codomain_trivial
 
-attribute [coe] Algebra.algebraMap
+attribute [coe] algebraMap
 
-@[deprecated (since := "2025-12-17")] alias Algebra.cast := Algebra.algebraMap
+@[deprecated (since := "2025-12-17")] alias Algebra.cast := algebraMap
 
 namespace algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
     CoeHTCT R A :=
-  ⟨Algebra.cast⟩
+  ⟨algebraMap R A⟩
 
 section CommSemiringSemiring
 
