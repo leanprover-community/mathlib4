@@ -724,14 +724,12 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
     (Subsingleton (Ext N M i) ∧ Subsingleton (Ext N M (i + 1))) := by
     refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
     · constructor
-      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp
-          (ShortComplex.Exact.mono_g
-          (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i)
-          (ext_hom_eq_zero_of_mem_ann mem i))) h
-      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp
-          (ShortComplex.Exact.epi_f
-          (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl)
-          (ext_hom_eq_zero_of_mem_ann mem (i + 1))))
+      · exact @Function.Injective.subsingleton _ _ _ ((AddCommGrpCat.mono_iff_injective _).mp <|
+          (Ext.covariant_sequence_exact₂' N reg.smulShortComplex_shortExact i).mono_g
+          (smul_id_postcomp_eq_zero_of_mem_ann mem i)) h
+      · exact @Function.Surjective.subsingleton _ _ _ h ((AddCommGrpCat.epi_iff_surjective _).mp <|
+          (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact i (i + 1) rfl).epi_f
+          (smul_id_postcomp_eq_zero_of_mem_ann mem (i + 1)))
     · exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
         ((@AddCommGrpCat.isZero_of_subsingleton _ h1).eq_zero_of_src _)
@@ -836,9 +834,9 @@ lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R'
   congr!
   rename_i n
   refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
-  · use List.map e.toRingHom rs, (LinearEquiv.isRegular_congr' e' rs).mp reg
+  · use rs.map e.toRingHom, (e'.isRegular_congr' rs).mp reg
     simpa [len]
-  · use List.map e.symm.toRingHom rs, (LinearEquiv.isRegular_congr' e'.symm rs).mp reg
+  · use rs.map e.symm.toRingHom, (e'.symm.isRegular_congr' rs).mp reg
     simpa [len]
 
 lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetherianRing R]
@@ -846,9 +844,8 @@ lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetheria
     (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Module S M]
     [IsScalarTower R S M] [Nontrivial M] (surj : Function.Surjective (algebraMap R S)) :
     IsLocalRing.depth (ModuleCat.of R M) = IsLocalRing.depth (ModuleCat.of S M) := by
-  have : Module.Finite S M := Finite.of_restrictScalars_finite R S M
-  have loc_hom : IsLocalHom (algebraMap R S) :=
-    Function.Surjective.isLocalHom (algebraMap R S) surj
+  have : Module.Finite S M := Module.Finite.of_restrictScalars_finite R S M
+  have loc_hom : IsLocalHom (algebraMap R S) := surj.isLocalHom _
   simp only [depth_eq_sSup_length_regular]
   congr!
   rename_i n
@@ -873,9 +870,8 @@ lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetheria
         simp only [← hrs', List.mem_map]
         use r
       simpa using this
-    have reg' : RingTheory.Sequence.IsRegular M rs' := by
-      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff S M rs').mp
-        (by simpa [hrs'] using reg.1), ?_⟩
+    have reg' : IsRegular M rs' := by
+      refine ⟨(isWeaklyRegular_map_algebraMap_iff S M rs').mp (by simpa [hrs'] using reg.1), ?_⟩
       apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
       apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       exact IsLocalRing.maximalIdeal_le_jacobson _
