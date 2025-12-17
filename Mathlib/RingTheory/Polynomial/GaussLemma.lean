@@ -191,7 +191,7 @@ theorem isIntegrallyClosed_iff' [IsDomain R] :
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
       degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))
-    rw [IsRoot, eval_map, ← aeval_def, minpoly.aeval R x]
+    rw [IsRoot, eval_map_algebraMap, minpoly.aeval R x]
 
 theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
     (hp : p.Monic) (hq : q.Monic)
