@@ -221,14 +221,6 @@ theorem StarAlgEquiv.eq_unitaryConjStarAlgAut_symm_unitaryLinearIsometryEquiv
     1 f (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
   exact ⟨Unitary.linearIsometryEquiv U, StarAlgEquiv.ext <| congrFun hU⟩
 
-theorem ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm
-    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
-    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W] (e : V ≃L[𝕜] W) :
-    Isometry e ↔ adjoint e.toContinuousLinearMap = e.symm.toContinuousLinearMap := by
-  simp_rw [AddMonoidHomClass.isometry_iff_norm, ← coe_coe, norm_map_iff_adjoint_comp_self]
-  refine ⟨fun h ↦ ContinuousLinearMap.ext fun x ↦ by simpa using congr($h (e.symm x)), fun h ↦ ?_⟩
-  simp [h, one_def]
-
 /-- can't do this inline, it times out -/
 noncomputable abbrev aux_isometry
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
@@ -254,6 +246,15 @@ noncomputable abbrev aux_isometry
   continuous_toFun := (α' • e.toContinuousLinearMap).continuous
   continuous_invFun := (α' • e.toContinuousLinearMap.adjoint).continuous
 
+theorem coe_aux_isometry
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
+    (aux_isometry e hα hα2 he he').toContinuousLinearMap =
+      α' • e.toContinuousLinearMap := rfl
+
 theorem adjoint_aux_isometry
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
@@ -277,11 +278,11 @@ noncomputable abbrev aux_isometry'
     (hαa : starRingEnd 𝕜 α' = α') :
     V ≃ₗᵢ[𝕜] W where
   __ := aux_isometry e hα hα2 he he' |>.toLinearEquiv
-  norm_map' _ := by
-    have heI : Isometry (aux_isometry e hα hα2 he he') := by
-      rw [ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm]
-      exact adjoint_aux_isometry e hα hα2 he he' hαa
-    simpa using heI.norm_map_of_map_zero (by simp) _
+  norm_map' := by
+    rw [ContinuousLinearEquiv.coe_toLinearEquiv, ← ContinuousLinearEquiv.coe_coe,
+      norm_map_iff_adjoint_comp_self, adjoint_aux_isometry _ _ _ _ _ hαa, coe_aux_isometry]
+    simp only [comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
+    simp [he, smul_smul, hα, one_def]
 
 theorem coe_aux_isometry' {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
     [CompleteSpace V]
