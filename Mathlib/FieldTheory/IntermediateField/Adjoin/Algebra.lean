@@ -139,9 +139,8 @@ lemma finite_of_fg_of_isAlgebraic
 
 section RingHom
 
-variable {A B C : Type*} [Field A] [CommRing B] [Field C] [Algebra A B] [Algebra B C] [Algebra A C]
-
-variable [IsScalarTower A B C] (a : B)
+variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
+  [Algebra B C] [Algebra A C] [IsScalarTower A B C] (a : B)
 
 /-- Ring homomorphism between `A[a]` and `A⟮↑a⟯`. -/
 noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
