@@ -314,9 +314,9 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     simp only [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall, not_not] at hq'
     obtain ⟨i, hi⟩ := hq'
     refine ⟨⟨i.val, hi, by grind⟩, fun h_eq_bot => ?_⟩
-    obtain ⟨e, he_mem, he_ne⟩ := i.val.exists_ne_zero
+    obtain ⟨x, hx, hx₀⟩ := i.val.exists_ne_zero
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
-    exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
+    exact hx₀ (h_eq_bot x (Submodule.mem_sup_left (Submodule.mem_sup_left hx)))
   have c₃ : J = ⊤ := by grind
   apply eq_top_of_iSup_sl2Submodule_eq_top_aux q
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
