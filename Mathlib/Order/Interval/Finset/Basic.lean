@@ -1087,7 +1087,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
       (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_ge hxy'
     have z_card := calc
       #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right hz.1.2
-      _ < #(Icc x y) := this
+      _          < #(Icc x y) := this
     have h₁ := transGen_wcovBy_of_le hz.1.1
     have h₂ : z ⩿ y :=
       ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_ge <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
