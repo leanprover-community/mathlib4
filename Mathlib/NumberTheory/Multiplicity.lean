@@ -384,7 +384,7 @@ lemma pow_two_sub_one_ge {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
   have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
     refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-    simpa [← pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+    simpa [← Nat.pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := padicValNat.pow_two_sub_pow h1b (by grind) hb ha Evena
   grind [← padicValNat.mul]
 
