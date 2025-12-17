@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Nilpotent.Lemmas

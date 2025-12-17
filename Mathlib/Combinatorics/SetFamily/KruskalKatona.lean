@@ -209,9 +209,9 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
     filter_union_filter_neg_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
-    refine nonempty_iff_ne_empty.2 fun z ↦ a ?_
-    rw [filter_image, z, image_empty, union_empty]
-    rwa [z, union_empty] at uA
+    contrapose! a
+    rw [filter_image, a, image_empty, union_empty]
+    rwa [a, union_empty] at uA
   rw [familyMeasure, familyMeasure, sum_union compress_disjoint]
   conv_rhs => rw [← uA]
   rw [sum_union (disjoint_filter_filter_neg _ _ _), add_lt_add_iff_left, filter_image,
