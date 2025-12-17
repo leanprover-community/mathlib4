@@ -77,7 +77,8 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 /--
 `grw [e]` works just like `rw [e]`, but `e` can be a relation other than `=` or `↔`.
 
-For example,
+For example:
+
 ```lean
 variable {a b c d n : ℤ}
 
@@ -91,6 +92,17 @@ example (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
   grw [h₁] at *
   exact h₂
 ```
+
+To replace the RHS with the LHS of the given relation, use the `←` notation (just like in `rw`):
+
+```
+example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
+  grw [← h₂, ← h₁]
+```
+
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `grw` may get special support for making better use of strict inequalities.
+
 To rewrite only in the `n`-th position, use `nth_grw n`.
 This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
 
