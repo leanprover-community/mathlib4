@@ -367,7 +367,6 @@ lemma polarizationEquiv_toLinearMap :
   change e.symm (e _) = _
   simp
 
-@[simp]
 lemma polarizationEquiv_apply (m : M) :
     P.PolarizationEquiv m = P.Polarization m :=
   congr($P.polarizationEquiv_toLinearMap m)
@@ -386,7 +385,7 @@ private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.r
       mul_div_cancel₀ _ h₀]
     norm_cast
   have : (s.restrict P.coroot) = P.PolarizationEquiv.toLinearMap ∘ (f • (s.restrict P.root)) := by
-    ext; simp [hf]
+    ext; simp [hf, polarizationEquiv_apply]
   rw [← linearIndependent_restrict_iff, this,
     LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
   simpa
