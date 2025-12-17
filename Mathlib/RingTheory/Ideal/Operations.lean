@@ -774,19 +774,8 @@ theorem isCoprime_span_singleton_iff (x y : R) :
 
 theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
     (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
-  classical
-  simp_rw [isCoprime_iff_add] at *
-  induction s using Finset.induction with
-  | empty =>
-      simp
-  | insert i s _ hs =>
-      rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
-      set K := ⨅ j ∈ s, J j
-      calc
-        1 = I + K           := (hs fun j hj ↦ hf j (Finset.mem_insert_of_mem hj)).symm
-        _ = I + K*(I + J i) := by rw [hf i (Finset.mem_insert_self i s), mul_one]
-        _ = (1+K)*I + K*J i := by ring
-        _ ≤ I + K ⊓ J i     := add_le_add mul_le_left mul_le_inf
+  simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
+  exact sup_iInf_eq_top hf
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where

@@ -47,9 +47,6 @@ lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 
-@[deprecated (since := "2025-04-27")]
-alias _root_.IsDistinguishedAt.map_eq_X_pow := map_eq_X_pow
-
 section degree_eq_order_map
 
 variable {I : Ideal R} (f h : R⟦X⟧) {g : R[X]}

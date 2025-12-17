@@ -599,9 +599,6 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 
-@[deprecated (since := "2025-04-27")]
-alias mk_pNat := mk_pnat
-
 /-! ### Cardinalities of basic sets and types -/
 
 @[simp] theorem mk_additive : #(Additive α) = #α := rfl
