@@ -649,6 +649,9 @@ theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
+theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
+    s.Countable := hs.countable hs'.to_subtype
+
 protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
