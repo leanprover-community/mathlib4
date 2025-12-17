@@ -271,9 +271,8 @@ theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLa
   · have ⟨_, _⟩ := l.dropLast_prefix
     grind
   by_cases hi₁ : i = 1
-  · subst hi₁
-    grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
-  grind [getElem?_idxOf, mem_of_mem_dropLast]
+  · grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+  · grind [getElem?_idxOf, mem_of_mem_dropLast]
 
 theorem nextOr_getLast_of_notMem_dropLast {l : List α} (hl : l ≠ []) (h : l.getLast hl ∉ l.dropLast)
     (d : α) : l.nextOr (l.getLast hl) d = d := by
