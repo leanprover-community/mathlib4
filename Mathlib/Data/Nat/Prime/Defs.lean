@@ -137,9 +137,9 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
   refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩
-  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by cutsat)
-  exact (Nat.mul_eq_right (by cutsat)).mp
-    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by cutsat))))
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by lia)
+  exact (Nat.mul_eq_right (by lia)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by lia))))
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
@@ -390,8 +390,7 @@ theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
       apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ
-      )).one_lt
+      apply Nat.zero_lt_succ)).one_lt
 
 end MinFac
 

@@ -66,7 +66,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
   have := Nat.one_le_pow n 2 two_pos
-  cutsat
+  lia
 
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
 lemma Nat.Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
@@ -106,34 +106,34 @@ theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
 lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; cutsat
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
   obtain ⟨k, rfl⟩ := odd
-  replace h : 1 ≤ k := by omega
+  replace h : 1 ≤ k := by lia
   induction k, h using Nat.le_induction with
   | base => rfl
   | succ j _ _ =>
-    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by cutsat, mersenne_succ]
-    cutsat
+    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by lia, mersenne_succ]
+    lia
 
 lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; cutsat
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 /-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     legendreSym (mersenne p) 2 = 1 := by
   have := mersenne_mod_eight hp
-  rw [legendreSym.at_two (by cutsat), ZMod.χ₈_nat_eq_if_mod_eight]
-  cutsat
+  rw [legendreSym.at_two (by lia), ZMod.χ₈_nat_eq_if_mod_eight]
+  lia
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
   rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
-    (mersenne_mod_four (by cutsat)),
+    (mersenne_mod_four (by lia)),
     legendreSym.mod]
   rw_mod_cast [mersenne_mod_three odd hp]
   simp
@@ -443,7 +443,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
     (ω : X q) ^ ((q + 1) / 2) = -1 := by
   have pow2 : (2 : ZMod q) ^ ((q + 1) / 2) = 2 := by
     obtain ⟨_, _⟩ := odd
-    rw [(by cutsat : (q + 1) / 2 = q / 2 + 1), pow_succ]
+    rw [(by lia : (q + 1) / 2 = q / 2 + 1), pow_succ]
     have leg := legendreSym.eq_pow q 2
     have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by norm_cast
     rw [this, ← leg, leg2]
@@ -466,7 +466,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
   have : (ω : X q) ^ ((q + 1) / 2) * ωb ^ ((q + 1) / 4) = -ωb ^ ((q + 1) / 4) := by
     rw [pow_ω odd leg3 leg2]
     ring
-  have div4 : (q + 1) / 2 = (q + 1) / 4 + (q + 1) / 4 := by rcases hq4 with ⟨k, hk⟩; omega
+  have div4 : (q + 1) / 2 = (q + 1) / 4 + (q + 1) / 4 := by rcases hq4 with ⟨k, hk⟩; lia
   rw [div4, pow_add, mul_assoc, ← mul_pow, ω_mul_ωb, one_pow, mul_one] at this
   rw [this]
   ring
@@ -591,7 +591,7 @@ open LucasLehmer
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by cutsat
+  obtain rfl : p = p' + 2 := by lia
   have w : 1 < p' + 2 := Nat.lt_of_sub_eq_succ rfl
   contrapose
   intro a t
@@ -606,11 +606,11 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime)
   have : Fact (mersenne p).Prime := ⟨‹_›⟩
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by cutsat
+  obtain rfl : p = p' + 2 := by lia
   dsimp [LucasLehmerTest, lucasLehmerResidue]
   rw [sZMod_eq_s p', ← X.fst_intCast, X.closed_form, add_tsub_cancel_right]
   have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
-    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by cutsat))
+    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by lia))
     (legendreSym_mersenne_two w) (by simp [pow_add])
   rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
     at this
@@ -644,7 +644,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   have h1 := calc
     4 = 2 ^ 2 := by simp
     _ ≤ 2 ^ p := Nat.pow_le_pow_right (by simp) hp
-  have h2 : 1 ≤ 2 ^ p := by omega
+  have h2 : 1 ≤ 2 ^ p := by lia
   induction k with
   | zero =>
     rw [sModNat, sMod, Int.natCast_emod]
@@ -754,7 +754,7 @@ recursion.
 (Note by kmill: the following notes were for the Lean 3 version. They seem like they could still
 be useful, so I'm leaving them here.)
 
-There's still low hanging fruit available to do faster computations
+There's still low-hanging fruit available to do faster computations
 based on the formula
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]

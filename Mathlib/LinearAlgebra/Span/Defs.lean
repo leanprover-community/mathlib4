@@ -404,6 +404,17 @@ theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p'
   rw [mem_sup]
   tauto
 
+variable {P : M → Prop}
+
+@[simp high]
+lemma forall_mem_sup : (∀ x ∈ p ⊔ p', P x) ↔ (∀ x₁ ∈ p, ∀ x₂ ∈ p', P (x₁ + x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[simp high]
+lemma exists_mem_sup : (∃ x ∈ p ⊔ p', P x) ↔ (∃ x₁ ∈ p, ∃ x₂ ∈ p', P (x₁ + x₂)) := by
+  simp [mem_sup]
+
 end
 
 @[simp]

@@ -86,13 +86,13 @@ lemma whiskerLeft_snd (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     (X ◁ f) ⋙ Prod.snd _ _ = Prod.snd _ _ ⋙ f := rfl
 
 lemma whiskerRight {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    f ▷  X  = f.prod (𝟭 X) := rfl
+    f ▷ X = f.prod (𝟭 X) := rfl
 
 lemma whiskerRight_fst {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    (f ▷ X) ⋙ Prod.fst _ _  = Prod.fst _ _ ⋙ f := rfl
+    (f ▷ X) ⋙ Prod.fst _ _ = Prod.fst _ _ ⋙ f := rfl
 
 lemma whiskerRight_snd {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    (f ▷ X) ⋙ Prod.snd _ _  = Prod.snd _ _ := rfl
+    (f ▷ X) ⋙ Prod.snd _ _ = Prod.snd _ _ := rfl
 
 lemma tensorHom {A : Cat} {B : Cat} (f : A ⟶ B) {X : Cat} {Y : Cat} (g : X ⟶ Y) :
     f ⊗ₘ g = f.prod g := rfl

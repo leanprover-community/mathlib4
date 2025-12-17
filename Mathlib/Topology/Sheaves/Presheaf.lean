@@ -99,7 +99,7 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
   restrict_tac
 
-variable {X : TopCat} {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable {X : TopCat} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 /-- The restriction of a section along an inclusion of open sets.

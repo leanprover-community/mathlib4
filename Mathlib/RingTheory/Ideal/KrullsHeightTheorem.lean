@@ -6,6 +6,7 @@ Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, 
 module
 
 public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.Nakayama
@@ -315,7 +316,8 @@ variable {S : Type*} [CommRing S] [Algebra R S]
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
-TODO(@chrisflav): Equality holds if `S` satisfies going-down as an `R`-algebra.
+Equality holds if `S` satisfies going-down as an `R`-algebra
+(see `Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown`).
 -/
 @[stacks 00OM]
 lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) [p.IsPrime]
@@ -348,5 +350,38 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
   convert hP'
   simp [Ideal.map_span, ← himgo]
+
+/--
+If `S` satisfies going-down as an `R`-algebra and `P` lies over `p`, the height of `P` is equal
+to the height of `p` plus the height of the image of `P` in `S ⧸ p S`
+(Matsumura 13.B Th. 19 (2)).
+-/
+@[stacks 00ON]
+lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S]
+    [Algebra.HasGoingDown R S] (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
+    P.height = p.height +
+      (P.map (Ideal.Quotient.mk <| p.map (algebraMap R S))).height := by
+  refine le_antisymm (height_le_height_add_of_liesOver p P) ?_
+  obtain ⟨lp, hlp, hlenp⟩ := p.exists_ltSeries_length_eq_height
+  obtain ⟨lq, hlq, hlenq⟩ :=
+    (P.map (Quotient.mk (p.map (algebraMap R S)))).exists_ltSeries_length_eq_height
+  let l' : LTSeries (PrimeSpectrum S) :=
+    lq.map (PrimeSpectrum.comap (Quotient.mk (p.map (algebraMap R S))))
+      (RingHom.strictMono_comap_of_surjective Quotient.mk_surjective)
+  have : l'.head.asIdeal.LiesOver lp.last.asIdeal := by
+    simp only [LTSeries.head_map, hlp, l']
+    refine ⟨?_⟩
+    refine le_antisymm ?_ ?_
+    · rw [← map_le_iff_le_comap, PrimeSpectrum.comap_asIdeal, ← map_le_iff_le_comap]
+      simp
+    · conv_rhs => rw [LiesOver.over (p := p) (P := P), under_def]
+      refine comap_mono (le_trans (comap_mono (lq.head_le_last)) ?_)
+      simp [hlq, map_le_iff_le_comap, LiesOver.over (p := p) (P := P)]
+  obtain ⟨lp', hlp'len, hlp', _⟩ := exists_ltSeries_of_hasGoingDown lp l'.head.asIdeal
+  have : (lp'.smash l' hlp').length = lp.length + lq.length := by simp [hlp'len, l']
+  rw [← hlenp, ← hlenq, ← Nat.cast_add, ← this, height_eq_primeHeight]
+  apply Order.length_le_height
+  simp [hlq, l', ← PrimeSpectrum.asIdeal_le_asIdeal, map_le_iff_le_comap,
+    LiesOver.over (p := p) (P := P)]
 
 end Algebra

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 
 * Shows that if a functor `G : Grothendieck F ⥤ H`, with `F : C ⥤ Cat`, has a colimit, and every
   fiber of `G` has a colimit, then so does the fiberwise colimit functor `C ⥤ H`.
-* Vice versa, if a each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
+* Vice versa, if each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
   then `G` has a colimit.
 * Shows that colimits of functors on the Grothendieck construction are colimits of
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.

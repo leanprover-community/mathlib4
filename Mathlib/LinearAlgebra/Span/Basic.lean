@@ -7,6 +7,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
@@ -701,8 +702,12 @@ variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x
 
-theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
+lemma smulRight_id : id.smulRight = toSpanSingleton R M := rfl
+
+theorem toSpanSingleton_apply_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
+
+@[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
 
 theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
   fun _ _ eq ↦ by simpa using congr($eq 1)
@@ -732,12 +737,15 @@ theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
     smul_eq_mul, mul_assoc]
   exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
 
-theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
+theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
   rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem,
     LinearMap.ext_iff]
   simp_rw [Module.End.mul_apply]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
+
+@[deprecated (since := "2025-12-05")] alias isIdempotentElem_apply_one_iff :=
+  isIdempotentElem_map_one_iff
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem range_toSpanSingleton (x : M) :
@@ -803,10 +811,14 @@ end AddCommMonoid
 section NoZeroDivisors
 
 variable (R M)
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
 
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
+
+@[simp] theorem ker_toSpanSingleton_eq_bot_iff {x : R} :
+    ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R :=
+  le_bot_iff.symm
 
 end NoZeroDivisors
 
