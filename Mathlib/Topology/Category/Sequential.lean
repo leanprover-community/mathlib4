@@ -63,7 +63,7 @@ def sequentialToTop : Sequential.{u} ⥤ TopCat.{u} :=
 def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : sequentialToTop.{u}.Full  :=
+instance : sequentialToTop.{u}.Full :=
   inferInstanceAs (inducedFunctor _).Full
 
 instance : sequentialToTop.{u}.Faithful :=

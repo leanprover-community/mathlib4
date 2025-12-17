@@ -369,13 +369,13 @@ of direction `v` starting from `p` is contained in `s`. -/
 theorem Convex.smul_vadd_mem_of_mem_nhds_of_mem_asymptoticCone {c : k} {v p : V}
     (hs : Convex k s) (hc : 0 ≤ c) (hp : s ∈ 𝓝 p) (hv : v ∈ asymptoticCone k s) :
     c • v +ᵥ p ∈ s := by
-  rw [mem_asymptoticCone_iff, asymptoticNhds_eq_smul_vadd v (c • v +ᵥ p),  vadd_pure,
+  rw [mem_asymptoticCone_iff, asymptoticNhds_eq_smul_vadd v (c • v +ᵥ p), vadd_pure,
     frequently_map, ← map₂_smul, ← map_prod_eq_map₂, frequently_map] at hv
   refine frequently_const.mp (hv.mp ?_)
-  have : Tendsto (fun u => - (c • u : V) +ᵥ c • v +ᵥ p) (𝓝 v) (𝓝 p) :=
+  have : Tendsto (fun u => -(c • u : V) +ᵥ c • v +ᵥ p) (𝓝 v) (𝓝 p) :=
     Continuous.tendsto' (by fun_prop) _ _ (by simp)
   filter_upwards [tendsto_fst.eventually <| eventually_gt_atTop 0, this.comp tendsto_snd hp]
-    with ⟨t, u⟩ (ht : 0 < t) (hu : - (c • u) +ᵥ c • v +ᵥ p ∈ s) (h : t • u +ᵥ c • v +ᵥ p ∈ s)
+    with ⟨t, u⟩ (ht : 0 < t) (hu : -(c • u) +ᵥ c • v +ᵥ p ∈ s) (h : t • u +ᵥ c • v +ᵥ p ∈ s)
   apply hs.segment_subset hu h
   simp_rw [mem_segment_iff_sameRay, ← vsub_eq_sub]
   rw [vsub_vadd_eq_vsub_sub, vsub_self, zero_sub, neg_neg, vadd_vsub]
