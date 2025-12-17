@@ -6,8 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
