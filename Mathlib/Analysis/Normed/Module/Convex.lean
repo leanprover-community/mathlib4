@@ -204,4 +204,3 @@ theorem convexHull_sphere_eq_closedBall (x : F) {r : ℝ} (hr : 0 ≤ r) :
     inv_mul_cancel₀ hr₀, mul_one, inv_mul_cancel₀ (by simp_all), one_smul] at this
 
 end NormedAddCommGroup
-
