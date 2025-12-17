@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
-public import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
 # Ind and pro-properties
@@ -61,54 +60,5 @@ lemma ind_ind (h : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   have := IsFiltered.of_equivalence (ShrinkHoms.equivalence (ColimitPresentation.Total pres'))
   exact ⟨_, inferInstance, inferInstance,
     (pres.bind pres').reindex (ShrinkHoms.equivalence _).inverse, fun k ↦ by simp [hp]⟩
-
-lemma of_essentiallySmall {X : C} {J : Type*} [Category* J] [EssentiallySmall.{w} J]
-    [IsFiltered J] (pres : ColimitPresentation J X) (h : ∀ i, P (pres.diag.obj i)) :
-    ind.{w} P X :=
-  ⟨SmallModel J, inferInstance, .of_equivalence (equivSmallModel _),
-    pres.reindex (equivSmallModel _).inverse, fun _ ↦ h _⟩
-
-open Cardinal in
-attribute [local instance] fact_isRegular_aleph0 in
-/-- If `C` is finitely accessible and `P` implies finitely presentable, then `X`
-satisfies `ind P` if and only if every morphism `Z ⟶ X` from a finitely presentable object
-factors via an object satisfying `W`. -/
-lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
-    [IsCardinalAccessibleCategory.{w} C ℵ₀] {X : C} :
-    ind.{w} P X ↔ ∀ {Z : C} (g : Z ⟶ X) [IsFinitelyPresentable.{w} Z],
-      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ X), u ≫ v = g ∧ P W := by
-  refine ⟨fun ⟨J, _, _, pres, h⟩ Z g hZ ↦ ?_, fun hfac ↦ ?_⟩
-  · have : IsFinitelyPresentable Z := hZ
-    obtain ⟨j, u, hcomp⟩ := IsFinitelyPresentable.exists_hom_of_isColimit pres.isColimit g
-    exact ⟨_, u, pres.ι.app j, hcomp, h j⟩
-  · let incl : P.FullSubcategory ⥤ (isFinitelyPresentable.{w} C).FullSubcategory :=
-      ObjectProperty.ιOfLE H
-    have : IsFiltered (CostructuredArrow (isFinitelyPresentable C).ι X) := by
-      rw [← CategoryTheory.isCardinalFiltered_aleph0_iff.{w},
-        isFinitelyPresentable_eq_isCardinalPresentable]
-      infer_instance
-    have : (isFinitelyPresentable.{w} C).ι.IsDense := by
-      rw [isFinitelyPresentable_eq_isCardinalPresentable]
-      infer_instance
-    have : ObjectProperty.EssentiallySmall.{w} (isFinitelyPresentable.{w} C) := by
-      rw [isFinitelyPresentable_eq_isCardinalPresentable]
-      infer_instance
-    have H (d : CostructuredArrow (isFinitelyPresentable.{w} C).ι X) : ∃ c,
-        Nonempty (d ⟶ (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).obj c) := by
-      obtain ⟨W, u, v, huv, hW⟩ := hfac d.hom
-      exact ⟨CostructuredArrow.mk (Y := FullSubcategory.mk _ hW) v, ⟨CostructuredArrow.homMk u huv⟩⟩
-    have : (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X).Final :=
-      Functor.final_of_exists_of_isFiltered_of_fullyFaithful (C := CostructuredArrow (incl ⋙ _) X)
-        (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X) H
-    have : IsFiltered (CostructuredArrow P.ι X) :=
-      .of_exists_of_isFiltered_of_fullyFaithful (C := CostructuredArrow (incl ⋙ _) X)
-        (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X) H
-    obtain ⟨hc⟩ : P.ι.isDenseAt X :=
-      Functor.IsDenseAt.of_final (F := (isFinitelyPresentable.{w} C).ι) incl
-        (Functor.IsDense.isDenseAt _ _)
-    have : EssentiallySmall.{w} (CostructuredArrow P.ι X) :=
-      essentiallySmall_of_fully_faithful (C := CostructuredArrow (incl ⋙ _) X)
-        (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X)
-    exact of_essentiallySmall ⟨_, _, hc⟩ fun Y ↦ Y.left.2
 
 end CategoryTheory.ObjectProperty
