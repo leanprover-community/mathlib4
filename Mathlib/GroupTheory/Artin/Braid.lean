@@ -33,6 +33,15 @@ This is the Artin group associated to the Coxeter matrix of type A_{n-1}.
 There is a canonical surjection from `B_n` to the symmetric group `S_n` sending σ_i to
 the adjacent transposition (i, i+1).
 
+## Next steps
+
+There are many things we should do from here, e.g.
+* Prove injectivity of generators.
+* Prove that the braid group is the fundamental group of the configuration space of n points in the
+  plane.
+* Construct the injection of the braid group into automorphisms of the free group.
+* Identify `BraidGroup 3` with PSL(2, ℤ).
+
 ## References
 
 * [Artin, *Theorie der Zöpfe*](artin1925)

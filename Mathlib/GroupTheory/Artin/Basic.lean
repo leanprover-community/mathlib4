@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.PresentedGroup
 
@@ -212,5 +213,52 @@ theorem artinGenerator_generates (S : Subgroup M.ArtinGroup)
   rw [eq_top_iff]
   intro x _
   exact PresentedGroup.generated_by _ S h x
+
+/-! ### Homomorphism to Coxeter group -/
+
+/-- The alternating product of simple reflections equals the word product of the
+alternating word. -/
+theorem alternatingProd_simple_eq_wordProd (i j : B) (m : ℕ) :
+    alternatingProd M.simple i j m = M.toCoxeterSystem.wordProd (alternatingWord i j m) := by
+  induction m generalizing i j with
+  | zero => simp [alternatingProd, CoxeterSystem.wordProd]
+  | succ m ih =>
+    rw [alternatingProd_succ, ih]
+    simp only [alternatingWord_succ, CoxeterSystem.wordProd, List.map_concat, List.prod_concat]
+    rfl
+
+/-- The alternating word defined in `CoxeterMatrix` equals the one in `CoxeterSystem`
+with swapped arguments. -/
+theorem alternatingWord_eq_coxeterSystem_alternatingWord (i j : B) (m : ℕ) :
+    alternatingWord i j m = CoxeterSystem.alternatingWord j i m := by
+  induction m generalizing i j with
+  | zero => rfl
+  | succ m ih =>
+    rw [alternatingWord_succ, CoxeterSystem.alternatingWord_succ, ih]
+
+/-- The simple reflections in the Coxeter group satisfy the Artin relations. -/
+theorem simple_isArtinLiftable : M.IsArtinLiftable M.simple := fun i j => by
+  rw [alternatingProd_simple_eq_wordProd, alternatingProd_simple_eq_wordProd,
+      alternatingWord_eq_coxeterSystem_alternatingWord,
+      alternatingWord_eq_coxeterSystem_alternatingWord]
+  convert M.toCoxeterSystem.wordProd_braidWord_eq j i using 2
+  all_goals (unfold CoxeterSystem.braidWord; congr 1; exact (M.symmetric j i).symm)
+
+/-- The canonical homomorphism from the Artin group to the Coxeter group. -/
+def artinToCoxeter : M.ArtinGroup →* M.Group :=
+  M.artinLift M.simple M.simple_isArtinLiftable
+
+@[simp]
+theorem artinToCoxeter_artinGenerator (i : B) :
+    M.artinToCoxeter (M.artinGenerator i) = M.simple i :=
+  M.artinLift_artinGenerator M.simple M.simple_isArtinLiftable i
+
+/-- The homomorphism from the Artin group to the Coxeter group is surjective. -/
+theorem artinToCoxeter_surjective : Function.Surjective M.artinToCoxeter := by
+  rw [← MonoidHom.range_eq_top]
+  rw [eq_top_iff, ← M.toCoxeterSystem.subgroup_closure_range_simple, Subgroup.closure_le]
+  intro x hx
+  obtain ⟨i, rfl⟩ := hx
+  exact ⟨M.artinGenerator i, M.artinToCoxeter_artinGenerator i⟩
 
 end CoxeterMatrix
