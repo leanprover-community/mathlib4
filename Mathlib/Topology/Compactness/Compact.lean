@@ -458,7 +458,7 @@ theorem Finset.isCompact_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i 
   s.finite_toSet.isCompact_biUnion hf
 
 theorem isCompact_accumulate {K : ℕ → Set X} (hK : ∀ n, IsCompact (K n)) (n : ℕ) :
-    IsCompact (Accumulate K n) :=
+    IsCompact (accumulate K n) :=
   (finite_le_nat n).isCompact_biUnion fun k _ => hK k
 
 theorem Set.Finite.isCompact_sUnion {S : Set (Set X)} (hf : S.Finite) (hc : ∀ s ∈ S, IsCompact s) :
@@ -539,14 +539,10 @@ omit [TopologicalSpace X] in
 theorem isCompact_generateFrom' [T : TopologicalSpace X]
     {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
     (h : ∀ (ι : Type u) (U : ι → S), s ⊆ ⋃ i, U i → ∃ J : Set ι, J.Finite ∧ s ⊆ ⋃ i ∈ J, U i) :
-    IsCompact s := by
-  apply isCompact_generateFrom hTS
-  intro P hP hs
-  rw [Set.sUnion_eq_iUnion] at hs
-  obtain ⟨J, hJ, cover⟩ := h P (fun a ↦ ⟨a.1, hP a.2⟩) hs
-  refine ⟨(fun x ↦ x.1) '' J, ⟨by simp, Set.Finite.image _ hJ, ?_⟩⟩
-  simpa only [Set.sUnion_eq_iUnion, Set.iUnion_coe_set, Set.mem_image, Subtype.exists,
-    exists_and_right, exists_eq_right, Set.iUnion_exists] using cover
+    IsCompact s :=
+  isCompact_generateFrom hTS fun P hP hs ↦
+    have ⟨J, hJ, cover⟩ := h P (fun a ↦ ⟨a.1, hP a.2⟩) (sUnion_eq_iUnion ▸ hs)
+    ⟨(·.1) '' J, ⟨by simp, hJ.image _, by aesop⟩⟩
 
 namespace Filter
 
@@ -756,14 +752,14 @@ theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot 
     ∃ x, ClusterPt x f := by
   simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 
-nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
-  rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
-  exact le_nhds_lim ⟨x, h⟩
+nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim :=
+  have ⟨x, _, h⟩ := isCompact_univ.ultrafilter_le_nhds F (by simp)
+  le_nhds_lim ⟨x, h⟩
 
 theorem CompactSpace.elim_nhds_subcover [CompactSpace X] (U : X → Set X) (hU : ∀ x, U x ∈ 𝓝 x) :
-    ∃ t : Finset X, ⋃ x ∈ t, U x = ⊤ := by
-  obtain ⟨t, -, s⟩ := IsCompact.elim_nhds_subcover isCompact_univ U fun x _ => hU x
-  exact ⟨t, top_unique s⟩
+    ∃ t : Finset X, ⋃ x ∈ t, U x = ⊤ :=
+  have ⟨t, _, s⟩ := IsCompact.elim_nhds_subcover isCompact_univ U fun x _ => hU x
+  ⟨t, top_unique s⟩
 
 theorem compactSpace_of_finite_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → ⋂ i, t i = ∅ →
@@ -779,7 +775,7 @@ lemma CompactSpace.iInter_nonempty {ι : Type v} [CompactSpace X] {t : ι → Se
     (htc : ∀ i, IsClosed (t i))
     (hst : ∀ s : Finset ι, (⋂ i ∈ s, t i).Nonempty) :
     (⋂ i, t i).Nonempty := by
-  simpa using IsCompact.inter_iInter_nonempty isCompact_univ t htc (by simpa using hst)
+  simpa using isCompact_univ.inter_iInter_nonempty t htc (by simpa using hst)
 
 omit [TopologicalSpace X] in
 /--
@@ -789,18 +785,16 @@ there is a finite subcover.
 -/
 theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
     (hTS : T = generateFrom S) (h : ∀ P ⊆ S, ⋃₀ P = univ → ∃ Q ⊆ P, Q.Finite ∧ ⋃₀ Q = univ) :
-    CompactSpace X := by
-  rw [← isCompact_univ_iff]
-  exact isCompact_generateFrom hTS <| by simpa
+    CompactSpace X :=
+  isCompact_univ_iff.mp <| isCompact_generateFrom hTS <| by simpa
 
 omit [TopologicalSpace X] in
 theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
     (hTS : T = generateFrom S)
     (h : ∀ (ι : Type u) (U : ι → S),
       ⋃ i, U i = (univ (α := X)) → ∃ J : Set ι, J.Finite ∧ ⋃ i ∈ J, U i = (univ (α := X))) :
-    CompactSpace X := by
-  rw [←isCompact_univ_iff]
-  exact isCompact_generateFrom' hTS <| by simpa
+    CompactSpace X :=
+  isCompact_univ_iff.mp <| isCompact_generateFrom' hTS <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
@@ -969,6 +963,22 @@ theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
 
 theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) := by
   rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
+
+open scoped Set.Notation in
+/-- An elimination theorem for empty intersections of a family of sets
+in a compact subset which are closed in the compact subset
+but not necessarily in the ambient space. -/
+theorem IsCompact.elim_finite_subfamily_isClosed_subtype
+    {X : Type*} [TopologicalSpace X] {s : Set X} (ks : IsCompact s)
+    {ι : Type*} (t : ι → Set X) {I : Set ι}
+    (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
+    (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
+    ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅  := by
+  suffices univ ∩ ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
+    simpa [eq_empty_iff_forall_notMem] using
+      (isCompact_iff_isCompact_univ.mp ks).elim_finite_subfamily_closed
+      (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) this
+  simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall] using hst
 
 theorem isCompact_iff_compactSpace : IsCompact s ↔ CompactSpace s :=
   isCompact_iff_isCompact_univ.trans isCompact_univ_iff

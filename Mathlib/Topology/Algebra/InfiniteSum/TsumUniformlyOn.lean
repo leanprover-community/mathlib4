@@ -101,13 +101,13 @@ theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen 
   | zero => simp
   | succ m hm =>
     simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by cutsat) hr)]
-    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by cutsat))
-          (fun k r e hr he ↦ hf2 k r e (by cutsat) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by cutsat))
-          (fun k r e hr he ↦ hf2 k r e (by cutsat) he))
+    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by lia) hr)]
+    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by lia))
+          (fun k r e hr he ↦ hf2 k r e (by lia) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by lia))
+          (fun k r e hr he ↦ hf2 k r e (by lia) he))
     · intro r hr
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
-      · exact ((h m (by cutsat) (by cutsat)).summable hr).congr (fun _ ↦ by simp)
+      · exact ((h m (by lia) (by lia)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by lia) (by lia))

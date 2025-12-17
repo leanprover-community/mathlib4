@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive Pretriangulated Adjunction
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroObject C] [HasZeroObject D]
   [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
@@ -165,7 +165,7 @@ lemma mk'' [G.IsTriangulated] : adj.IsTriangulated where
 -/
 instance id : (Adjunction.id (C := C)).IsTriangulated where
 
-variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
+variable {E : Type*} [Category* E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
   [Preadditive E] [HasShift E ℤ] [∀ (n : ℤ), (shiftFunctor E n).Additive] [Pretriangulated E]
   [F'.CommShift ℤ] [G'.CommShift ℤ] [adj'.CommShift ℤ]
 
@@ -216,7 +216,7 @@ instance refl : (Equivalence.refl (C := C)).IsTriangulated := by
 -/
 instance symm [E.IsTriangulated] : E.symm.IsTriangulated where
 
-variable {D' : Type*} [Category D'] [HasZeroObject D'] [Preadditive D'] [HasShift D' ℤ]
+variable {D' : Type*} [Category* D'] [HasZeroObject D'] [Preadditive D'] [HasShift D' ℤ]
   [∀ (n : ℤ), (shiftFunctor D' n).Additive] [Pretriangulated D'] {E' : D ≌ D'}
   [E'.functor.CommShift ℤ] [E'.inverse.CommShift ℤ] [E'.CommShift ℤ]
 
