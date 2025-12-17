@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.MulAction
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Normed spaces
@@ -120,7 +119,6 @@ lemma Metric.diam_sphere_eq {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ 
   apply le_antisymm
     (diam_mono sphere_subset_closedBall isBounded_closedBall |>.trans <| diam_closedBall hr)
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
-  rw [← norm_ne_zero_iff] at hy
   calc
     2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
       simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, mul_assoc, hy]
