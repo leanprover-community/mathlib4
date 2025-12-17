@@ -322,14 +322,14 @@ def parseHexString (s : String) : Option Nat :=
     some (prev * 16 + digit)
 
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345) -/
-def hashFromFileName (fn : String) : Option UInt64 :=
+def hashFromFileName (fn : String) : Option UInt64 := do
   -- Get the filename without path
-  let name := fn.splitOn "/" |>.getLast!
+  let some name := fn.splitOn "/" |>.getLast? | .none
   -- Remove .ltar extension (or .ltar.part for partial files)
-  let stem := if name.endsWith ".part" then name.dropEnd 5 |>.toString else name
-  let stem := if stem.endsWith ".ltar" then stem.dropEnd 5 |>.toString else stem
+  let stem := name.dropSuffix ".part"
+  let stem := stem.dropSuffix ".ltar"
   -- Parse hex string as UInt64
-  parseHexString stem |>.map UInt64.ofNat
+  parseHexString stem.toString |>.map UInt64.ofNat
 
 /-- State for coordinating downloads and background decompression.
 Uses an append-only log to avoid race conditions between producer (downloads) and consumer (decompression). -/
@@ -373,7 +373,11 @@ def decompressBatch (files : Array (FilePath × Lean.Name))
   -- stdin handle is now dropped, leantar will receive EOF and process the files
   let exitCode ← child.wait
   if exitCode != 0 then
-    throw <| IO.userError s!"leantar failed on batch of {files.size} files"
+    let fileList := files.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+    let firstFew := if files.size ≤ 3 then fileList else
+      let preview := files.extract 0 3 |>.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+      s!"{preview}, ... and {files.size - 3} more"
+    throw <| IO.userError s!"leantar exited with code {exitCode} on batch of {files.size} files: {firstFew}"
 
 /-- Background loop that continuously processes batches as files arrive.
 Uses a read pointer to track position in the append-only log. -/
@@ -392,7 +396,7 @@ def decompressionLoop (state : DecompressionState) : IO Unit := do
         decompressBatch newFiles state.force state.isMathlibRoot state.mathlibDepPath
         state.decompressed.modify (· + newFiles.size)
       catch e =>
-        IO.eprintln s!"Batch decompression failed: {e}"
+        IO.eprintln s!"Batch decompression failed for {newFiles.size} files: {e}"
         state.failed.modify (· + newFiles.size)
 
       -- Advance read pointer
@@ -414,6 +418,7 @@ private structure TransferState where
 
 def monitorCurl (args : Array String) (size : Nat)
     (caption : String) (speedVar : String) (removeOnError := false) (decompState : Option DecompressionState := none) : IO TransferState := do
+  let useAnsi := (← IO.getEnv "TERM").isSome
   let mkStatus (success failed done speed : Nat) : IO String := do
     let speed :=
       if speed != 0 then
@@ -430,7 +435,8 @@ def monitorCurl (args : Array String) (size : Nat)
     if failed != 0 then
       msg := msg ++ s!", {failed} download failed"
     -- Clear to end of line to avoid remnants from longer previous messages
-    msg := msg ++ "\x1b[K"
+    if useAnsi then
+      msg := msg ++ "\x1b[K"
     return msg
   let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
   let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
@@ -448,9 +454,12 @@ def monitorCurl (args : Array String) (size : Nat)
               IO.FS.rename fn finalPath
               -- Append to decompression log if enabled
               if let some (state : DecompressionState) := decompState then
-                if let some hash := hashFromFileName fn then
-                  if let some (mod : Lean.Name) := state.hashToMod[hash]? then
-                    state.allFiles.modify (·.push (finalPath, mod))
+                match hashFromFileName fn with
+                | some hash =>
+                  match state.hashToMod[hash]? with
+                  | some mod => state.allFiles.modify (·.push (finalPath, mod))
+                  | none => IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
+                | none => IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
@@ -567,6 +576,12 @@ def downloadFiles
 
       let decompressed ← state.decompressed.get
       let decompFailed ← state.failed.get
+      let totalQueued := (← state.allFiles.get).size
+
+      -- Verify all queued files were processed
+      if decompressed + decompFailed != totalQueued then
+        IO.eprintln s!"Warning: Queued {totalQueued} files for decompression but only processed {decompressed + decompFailed}"
+
       IO.println s!"Decompressed {decompressed} file(s)"
       if decompFailed > 0 then
         IO.println s!"{decompFailed} decompression(s) failed"
