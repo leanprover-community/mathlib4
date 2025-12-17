@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectiv
 # Ext in Grothendieck abelian categories
 
 Let `C : Type u` be an abelian category (with `Category.{v} C`).
-If `C` is a Grothendieck abelian category relative to a universe `w`,
+If `C` is a Grothendieck abelian category relatively to a universe `w`,
 the morphisms in `C` must be `w`-small, and as `C` has enough injectives,
 the `Ext`-groups are also `w`-small. If `C` is a nonzero category,
 it is possible to show that any `w`-small type `T` injects into a type

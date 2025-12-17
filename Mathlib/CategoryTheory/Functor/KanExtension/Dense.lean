@@ -44,7 +44,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 namespace Functor
 
 /-- A functor `F : C ⥤ D` is dense if any `Y : D` is a canonical colimit
-relative to `F`. -/
+relatively to `F`. -/
 class IsDense (F : C ⥤ D) : Prop where
   isDenseAt (F) (Y : D) : F.isDenseAt Y
 
