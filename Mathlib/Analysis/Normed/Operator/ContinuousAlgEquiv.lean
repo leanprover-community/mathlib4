@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Algebra.Equiv
 # Continuous algebra equivalences between continuous endomorphisms are inner
 
 This file shows that continuous algebra equivalences between continuous endomorphisms are inner.
-See `Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv.lean` for the non-continuous version.
+See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
 The proof is essentially the same as the non-continuous version.
 -/
 
