@@ -124,13 +124,10 @@ lemma HasPeriod.factor {u v w : List α} {p : ℕ} (per : HasPeriod (u ++ v ++ w
   rw [← shift_position', ← shift_position]
   exact this (j + u.length) (by lia)
 
-example (l₁ l₂ : List α) (h : l₁ <:+: l₂) : ∃ s t, s ++ l₁ ++ t = l₂ := by
-  exact h
-
 lemma HasPeriod.infix {u w : List α} {p : ℕ} (per : HasPeriod w p) (h : u <:+: w) :
     HasPeriod u p := by
-  obtain ⟨s, t, eq⟩ := h
-  exact (eq.symm ▸ per).factor
+  obtain ⟨s, t, rfl⟩ := h
+  exact per.factor
 
 lemma HasPeriod.drop_prefix {w : List α} (p : ℕ) (per : HasPeriod w p) :
     drop p w <+: w := by
@@ -145,7 +142,7 @@ lemma HasPeriod.take_append (p n : ℕ) (w : List α) (dvd : p ∣ n)
   · simp_all [HasPeriod]
   rcases Nat.eq_zero_or_pos n with rfl | pos
   · simp_all
-  rw [hasPeriod_iff_forall_getElem?_mod];
+  rw [hasPeriod_iff_forall_getElem?_mod]
   have mod_w : ∀ i < w.length, w[i % p]? = w[i]? := (per.getElem?_mod)
   suffices ∀ i < n + w.length, (take n w ++ w)[i]? = (take n w ++ w)[i % p]? by simp_all
   intro i less_i

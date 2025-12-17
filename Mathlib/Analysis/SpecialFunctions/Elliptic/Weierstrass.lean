@@ -167,14 +167,10 @@ lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
   exact hR _ hs'.le _ hs _ rfl
 
 -- Only the asymptotics matter and `10` is just a convenient constant to pick.
-lemma weierstrassP_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h : 2 * r ≤ ‖l‖) :
+lemma weierstrassP_bound (r : ℝ) (hr : 0 < r) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h : 2 * r ≤ ‖l‖) :
     ‖1 / (s - l) ^ 2 - 1 / l ^ 2‖ ≤ 10 * r * ‖l‖ ^ (-3 : ℝ) := by
-  have : s ≠ ↑l := by rintro rfl; exfalso; linarith
-  have : 0 < ‖l‖ := by
-    suffices l ≠ 0 by simpa
-    rintro rfl
-    simp only [norm_zero] at h
-    linarith
+  have : s ≠ ↑l := by rintro rfl; linarith
+  have : 0 < ‖l‖ := by linarith
   calc
     _ = ‖(↑l ^ 2 - (s - ↑l) ^ 2) / ((s - ↑l) ^ 2 * ↑l ^ 2)‖ := by
       rw [div_sub_div, one_mul, mul_one]
