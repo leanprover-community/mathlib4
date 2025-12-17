@@ -517,7 +517,7 @@ lemma preservesLimit_empty_of_isIso_terminalComparison [IsIso (terminalCompariso
     PreservesLimit (Functor.empty.{0} C) F := by
   apply preservesLimit_of_preserves_limit_cone isTerminalTensorUnit
   apply isLimitChangeEmptyCone D isTerminalTensorUnit
-  exact asIso (terminalComparison F)|>.symm
+  exact asIso (terminalComparison F) |>.symm
 
 /-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
 noncomputable def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] :
