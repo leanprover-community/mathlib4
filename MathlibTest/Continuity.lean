@@ -1,6 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Basic
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Topology.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
+
+@[expose] public section
 
 set_option autoImplicit true
 section basic
