@@ -81,9 +81,7 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
   · simp [hij]
   by_cases hadj : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i
   · -- Adjacent case: m = 3, braid relation
-    have hM : (CoxeterMatrix.Aₙ n).M i j = 3 := by
-      simp only [CoxeterMatrix.Aₙ, Matrix.of_apply, hij, ↓reduceIte]
-      grind
+    have hM : (CoxeterMatrix.Aₙ n).M i j = 3 := CoxeterMatrix.Aₙ_adjacent _ i j hadj
     rw [hM]
     simp only [CoxeterMatrix.alternatingProd, one_mul]
     -- Need: swapFun i * swapFun j * swapFun i = swapFun j * swapFun i * swapFun j
@@ -105,6 +103,12 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     push_neg at hadj
     apply Equiv.swap_mul_swap_comm_of_disjoint <;>
       simp only [ne_eq, Fin.ext_iff] <;> grind
+
+end BraidGroup
+
+/-! ### The surjection to the symmetric group -/
+
+namespace BraidGroup
 
 /-- The canonical surjection from the braid group B_{n+1} to the symmetric group S_{n+1},
 sending σ_i to the adjacent transposition (i, i+1). -/
