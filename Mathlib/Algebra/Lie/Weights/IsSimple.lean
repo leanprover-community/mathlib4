@@ -260,24 +260,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
-lemma exists_root_mem_q_of_ne_bot (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) (h : q ≠ ⊥) :
-    ∃ α ∈ H.root, ↑α ∈ q := by
-  obtain ⟨β, hβ_mem, hβ_ne⟩ := q.exists_mem_ne_zero_of_ne_bot h
-  obtain ⟨i, hi⟩ : ∃ i : H.root, β ((rootSystem H).coroot i) ≠ 0 := by
-    by_contra h_contra; push_neg at h_contra
-    exact hβ_ne (LinearMap.ext_on_range RootPairing.IsRootSystem.span_coroot_eq_top fun i ↦
-      h_contra i ▸ (LinearMap.zero_apply _).symm)
-  have h_smul : (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
-      (rootSystem H).root i ∈ q := by
-    have h_refl : (rootSystem H).reflection i β ∈ q := hq i hβ_mem
-    have h_sub : β - (rootSystem H).toLinearMap β ((rootSystem H).coroot i) •
-        (rootSystem H).root i ∈ q := by convert h_refl using 1
-    simpa using q.sub_mem hβ_mem h_sub
-  refine ⟨i.val, i.prop, ?_⟩
-  simpa only [rootSystem_toLinearMap_apply, rootSystem_root_apply, inv_smul_smul₀ hi]
-    using q.smul_mem (β ((rootSystem H).coroot i))⁻¹ h_smul
-
 private theorem eq_top_of_iSup_sl2Submodule_eq_top_aux (q : Submodule K (Dual K H))
     (h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤) :
     q = ⊤ := by
@@ -327,10 +309,15 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     unfold J invtSubmoduleToLieIdeal
     simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
                iSup_eq_bot, not_forall]
-    obtain ⟨α, hα_root, hα_q⟩ := LieAlgebra.IsKilling.exists_root_mem_q_of_ne_bot q h₀ h₁
-    have hα : α.IsNonZero := by grind
-    refine ⟨⟨α, hα_q, hα⟩, fun h_eq_bot => ?_⟩
-    obtain ⟨e, he_mem, he_ne⟩ := α.exists_ne_zero
+    let q' : (rootSystem H).invtRootSubmodule :=
+      ⟨q, (RootPairing.mem_invtRootSubmodule_iff _).mpr h₀⟩
+    have hq' : q' ≠ ⊥ := by simpa [q', Subtype.ext_iff] using h₁
+    rw [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall] at hq'
+    obtain ⟨i, hi⟩ := hq'
+    rw [not_not] at hi
+    have hα : i.val.IsNonZero := by grind
+    refine ⟨⟨i.val, hi, hα⟩, fun h_eq_bot => ?_⟩
+    obtain ⟨e, he_mem, he_ne⟩ := i.val.exists_ne_zero
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
   have c₃ : J = ⊤ := by grind
