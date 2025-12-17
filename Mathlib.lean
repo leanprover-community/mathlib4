@@ -8220,6 +8220,7 @@ public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
