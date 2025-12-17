@@ -736,7 +736,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
       g.support = (chartAt H c).target ∩ (chartAt H c).symm ⁻¹' s ∧
-      ContMDiff I 𝓘(ℝ) ∞ g ∧ Set.range g ⊆ Set.Icc 0 1 := by
+      ContMDiff I 𝓘(ℝ) n g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
     apply IsOpen.exists_contMDiff_support_eq_aux
     exact OpenPartialHomeomorph.isOpen_inter_preimage_symm _ hs
@@ -772,23 +772,26 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         simp [this]
   · apply SmoothPartitionOfUnity.contMDiff_finsum_smul
     intro c x hx
-    apply ((g_diff c (chartAt H c x)).of_le ?_).comp
+    apply (g_diff c (chartAt H c x)).comp
     exact contMDiffAt_of_mem_maximalAtlas (IsManifold.chart_mem_maximalAtlas _)
       (hf c hx)
   · intro x
     apply finsum_nonneg (fun c ↦ h''g c x)
 
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.exists_msmooth_support_eq := IsOpen.exists_contMDiff_support_eq
+
 /-- Given an open set `s` containing a closed set `t` in a finite-dimensional real manifold, there
 exists a smooth function with support equal to `s`, taking values in `[0,1]`, and equal to `1`
 exactly on `t`. -/
-theorem exists_msmooth_support_eq_eq_one_iff
+theorem exists_contMDiff_support_eq_eq_one_iff
     {s t : Set M} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
-    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) ∞ f ∧ range f ⊆ Icc 0 1 ∧ support f = s
+    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) n f ∧ range f ⊆ Icc 0 1 ∧ support f = s
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by
   /- Take `f` with support equal to `s`, and `g` with support equal to `tᶜ`. Then `f / (f + g)`
   satisfies the conclusion of the theorem. -/
-  rcases hs.exists_msmooth_support_eq I with ⟨f, f_supp, f_diff, f_pos⟩
-  rcases ht.isOpen_compl.exists_msmooth_support_eq I with ⟨g, g_supp, g_diff, g_pos⟩
+  rcases hs.exists_contMDiff_support_eq I with ⟨f, f_supp, f_diff, f_pos⟩
+  rcases ht.isOpen_compl.exists_contMDiff_support_eq I with ⟨g, g_supp, g_diff, g_pos⟩
   have A : ∀ x, 0 < f x + g x := by
     intro x
     by_cases xs : x ∈ support f
@@ -815,14 +818,20 @@ theorem exists_msmooth_support_eq_eq_one_iff
   · intro x
     simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]
 
+@[deprecated (since := "2025-12-17")]
+alias exists_msmooth_support_eq_eq_one_iff := exists_contMDiff_support_eq_eq_one_iff
+
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
 exactly on `t`. See also `exists_smooth_zero_one_of_isClosed` for a slightly weaker version. -/
-theorem exists_msmooth_zero_iff_one_iff_of_isClosed {s t : Set M}
+theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) ∞ f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
+    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) n f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by
-  rcases exists_msmooth_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
+  rcases exists_contMDiff_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
     ⟨f, f_diff, f_range, fs, ft⟩
   refine ⟨f, f_diff, f_range, ?_, ft⟩
   simp [← notMem_support, fs]
+
+@[deprecated (since := "2025-12-17")]
+alias exists_msmooth_zero_iff_one_iff_of_isClosed := exists_contMDiff_zero_iff_one_iff_of_isClosed
