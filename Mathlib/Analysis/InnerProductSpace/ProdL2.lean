@@ -85,13 +85,12 @@ isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 def Submodule.orthogonalDecomposition (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] :
     E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
   __ := LinearEquiv.ofLinear
-    (K.orthogonalProjection.toLinearMap.prod Kᗮ.orthogonalProjection.toLinearMap)
-    (K.subtype.coprod Kᗮ.subtype)
-    (by
-      ext ⟨x, hx⟩ <;> simp only [LinearMap.comp_assoc, LinearMap.coprod_inl, LinearMap.coprod_inr]
-      exacts [K.starProjection_eq_self_iff.mpr hx, K.starProjection_orthogonal_apply_eq_zero hx,
-        K.starProjection_apply_eq_zero_iff.mpr hx, Kᗮ.starProjection_eq_self_iff.mpr hx])
-    (LinearMap.ext K.starProjection_add_starProjection_orthogonal)
+    ((K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm.copy
+      (Pi.prod K.orthogonalProjection Kᗮ.orthogonalProjection)
+      (funext <| by simp [orthogonalProjection_eq_linearProjOfIsCompl]))
+    (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection)
+    (by rw [LinearMap.copy_eq, LinearEquiv.symm_comp])
+    (by rw [LinearMap.copy_eq, LinearEquiv.comp_symm])
     ≪≫ₗ (WithLp.linearEquiv 2 _ _).symm
   norm_map' _ := by
     rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2]

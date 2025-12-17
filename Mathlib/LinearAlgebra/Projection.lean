@@ -270,6 +270,12 @@ lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
 @[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_iff :=
   IsCompl.projection_eq_self_iff
 
+@[simp]
+theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
+    (p.prodEquivOfIsCompl q hpq).symm x =
+      (p.linearProjOfIsCompl q hpq x, q.linearProjOfIsCompl p hpq.symm x) :=
+  Prod.ext rfl congr(($(prodComm_trans_prodEquivOfIsCompl p q hpq).symm x).1)
+
 end Submodule
 
 namespace LinearMap
