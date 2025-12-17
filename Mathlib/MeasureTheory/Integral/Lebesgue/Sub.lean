@@ -178,9 +178,6 @@ theorem exists_setLIntegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
     _ < ε := ENNReal.sub_lt_of_lt_add (lintegral_mono hgf) <|
       ENNReal.lt_add_of_sub_lt_left (.inl hf) hgε
 
-@[deprecated (since := "2025-04-22")]
-alias exists_setLintegral_compl_lt := exists_setLIntegral_compl_lt
-
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral over any measurable set. -/
 theorem exists_measurable_le_setLIntegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
@@ -194,10 +191,6 @@ theorem exists_measurable_le_setLIntegral_eq_of_integrable {f : α → ℝ≥0�
   · rw [hifg] at hf
     exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
   · exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
-
-@[deprecated (since := "2025-04-22")]
-alias exists_measurable_le_setLintegral_eq_of_integrable :=
-  exists_measurable_le_setLIntegral_eq_of_integrable
 
 end UnifTight
 

@@ -54,8 +54,6 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_eq_univ := tangentConeAt_eq_univ
-
 /-- In one dimension, a point is a point of unique differentiability of a set
 iff it is an accumulation point of the set. -/
 theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :

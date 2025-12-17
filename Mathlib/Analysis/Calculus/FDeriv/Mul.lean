@@ -728,8 +728,6 @@ theorem hasFDerivAt_ringInverse (x : Rˣ) :
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
-@[deprecated (since := "2025-04-22")] alias hasFDerivAt_ring_inverse := hasFDerivAt_ringInverse
-
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
@@ -751,9 +749,6 @@ theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
-
-@[deprecated (since := "2025-04-22")]
-alias hasStrictFDerivAt_ring_inverse := hasStrictFDerivAt_ringInverse
 
 variable {h : E → R} {z : E} {S : Set E}
 

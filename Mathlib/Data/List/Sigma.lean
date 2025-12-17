@@ -78,9 +78,6 @@ theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, S
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
   grind
 
-@[deprecated (since := "2025-04-27")]
-alias not_eq_key := ne_key
-
 /-! ### `NodupKeys` -/
 
 

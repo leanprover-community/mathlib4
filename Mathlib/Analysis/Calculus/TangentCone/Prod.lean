@@ -45,9 +45,6 @@ theorem subset_tangentConeAt_prod_left (ht : y ∈ closure t) :
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
-@[deprecated (since := "2025-04-27")]
-alias subset_tangentCone_prod_left := subset_tangentConeAt_prod_left
-
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
 theorem subset_tangentConeAt_prod_right (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
@@ -66,9 +63,6 @@ theorem subset_tangentConeAt_prod_right (hs : x ∈ closure s) :
   · apply Tendsto.prodMk_nhds _ hy
     refine squeeze_zero_norm (fun n => (hd' n).2.le) ?_
     exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
-
-@[deprecated (since := "2025-04-27")]
-alias subset_tangentCone_prod_right := subset_tangentConeAt_prod_right
 
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/

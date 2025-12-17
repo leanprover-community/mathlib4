@@ -461,9 +461,6 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
     (by simp only [Set.mem_setOf_eq]; lia) h'
   lia
 
-@[deprecated (since := "2025-04-27")]
-alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
-
 /-! ### Walk decompositions -/
 
 section WalkDecomp

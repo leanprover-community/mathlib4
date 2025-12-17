@@ -303,8 +303,6 @@ lemma uncurrySum_smul
     uncurrySum (r • g) = r • uncurrySum g :=
   rfl
 
-@[deprecated (since := "2025-04-23")] alias uncurrySum_aux_apply := uncurrySum_apply
-
 @[simp]
 lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :
     uncurrySum (currySum f) = f := by

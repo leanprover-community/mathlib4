@@ -176,8 +176,6 @@ theorem Monotone.compRel [Preorder β] {f g : β → SetRel α α} (hf : Monoton
 @[deprecated (since := "2025-10-17")] alias compRel_left_mono := SetRel.comp_subset_comp_left
 @[deprecated (since := "2025-10-17")] alias compRel_right_mono := SetRel.comp_subset_comp_right
 @[deprecated (since := "2025-10-17")] alias prodMk_mem_compRel := SetRel.prodMk_mem_comp
-@[deprecated (since := "2025-03-10")] alias prod_mk_mem_compRel := SetRel.prodMk_mem_comp
-
 set_option linter.deprecated false in
 @[deprecated SetRel.id_comp (since := "2025-10-17")]
 theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=

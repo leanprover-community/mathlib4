@@ -91,9 +91,6 @@ theorem setLIntegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s
   lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
     mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 
-@[deprecated (since := "2025-04-22")]
-alias setLintegral_eq_top_of_measure_eq_top_ne_zero := setLIntegral_eq_top_of_measure_eq_top_ne_zero
-
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
   of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
@@ -102,9 +99,6 @@ theorem measure_eq_top_of_setLIntegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLIntegral_eq_top_of_measure_eq_top_ne_zero hf h
-
-@[deprecated (since := "2025-04-22")]
-alias measure_eq_top_of_setLintegral_ne_top := measure_eq_top_of_setLIntegral_ne_top
 
 /-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)

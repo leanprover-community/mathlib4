@@ -192,9 +192,6 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
-@[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
-alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
-
 /-! ### $ℤ/nℤ$ -/
 
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in `ℤ/pℤ`, then the size of

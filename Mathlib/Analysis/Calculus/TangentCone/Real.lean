@@ -39,17 +39,11 @@ theorem mem_tangentConeAt_of_openSegment_subset {s : Set E} {x y : E} (h : openS
   · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
-@[deprecated (since := "2025-04-27")]
-alias mem_tangentCone_of_openSegment_subset := mem_tangentConeAt_of_openSegment_subset
-
 /-- If a subset of a real vector space contains a segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentConeAt_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
-
-@[deprecated (since := "2025-04-27")]
-alias mem_tangentCone_of_segment_subset := mem_tangentConeAt_of_segment_subset
 
 theorem Convex.span_tangentConeAt {s : Set E} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
     {x : E} (hx : x ∈ closure s) : Submodule.span ℝ (tangentConeAt ℝ s x) = ⊤ := by
