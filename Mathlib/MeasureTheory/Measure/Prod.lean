@@ -287,9 +287,9 @@ instance {X Y : Type*}
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
 
-protected theorem FiniteAtFilter.prod {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {m : MeasurableSpace X} {μ : Measure X} {m' : MeasurableSpace Y} {ν : Measure Y}
-    {l : Filter X} {l' : Filter Y} (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
+protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ : Measure X}
+    {m' : MeasurableSpace Y} {ν : Measure Y} {l : Filter X} {l' : Filter Y}
+    (hμ : μ.FiniteAtFilter l) (hν : ν.FiniteAtFilter l') :
     (μ.prod ν).FiniteAtFilter (l ×ˢ l') := by
   rcases hμ with ⟨s, hs, hμs⟩
   rcases hν with ⟨t, ht, hνt⟩
