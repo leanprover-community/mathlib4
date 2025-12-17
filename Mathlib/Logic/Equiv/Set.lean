@@ -626,7 +626,7 @@ theorem dite_comp_equiv_update
   ext i
   by_cases h : p i
   · simp only [h, update_apply]
-    aesop 
+    aesop
   · grind
 
 section Swap
