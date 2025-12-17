@@ -1,0 +1,418 @@
+✔ [364/7753] Built Mathlib.Tactic.Linter.DirectoryDependency (870ms)
+✔ [365/7753] Built Mathlib.Tactic.Linter.Header (805ms)
+✔ [366/7753] Built Mathlib.Lean.Environment (367ms)
+✔ [367/7753] Built Mathlib.Tactic.DeclarationNames (421ms)
+✔ [368/7753] Built Mathlib.Tactic.Linter.OldObtain (411ms)
+✔ [369/7753] Built Mathlib.Tactic.Linter.Multigoal (578ms)
+✔ [370/7753] Built Mathlib.Lean.Elab.Tactic.Meta (541ms)
+✔ [371/7753] Built Mathlib.Util.ParseCommand (485ms)
+✔ [372/7753] Built Mathlib.Tactic.Linter.GlobalAttributeIn (643ms)
+✔ [373/7753] Built Mathlib.Tactic.Linter.PrivateModule (580ms)
+✔ [374/7753] Built Mathlib.Tactic.Linter.UnusedTacticExtension (675ms)
+✔ [375/7753] Built Mathlib.Tactic.Linter.DocString (823ms)
+✔ [376/7753] Built Mathlib.Tactic.Linter.EmptyLine (796ms)
+✔ [377/7753] Built Mathlib.Tactic.Linter.HashCommandLinter (769ms)
+✔ [378/7753] Built Mathlib.Lean.Elab.InfoTree (502ms)
+✔ [379/7753] Built Mathlib.Tactic.Linter.DeprecatedSyntaxLinter (930ms)
+✔ [380/7753] Built Mathlib.Tactic.Linter.DocPrime (923ms)
+✔ [381/7753] Built Mathlib.Lean.Expr.Basic (911ms)
+✔ [382/7753] Built Mathlib.Lean.ContextInfo (408ms)
+✔ [383/7753] Built Mathlib.Tactic.Linter.Lint (655ms)
+✔ [384/7753] Built Mathlib.Tactic.MinImports (995ms)
+✔ [385/7753] Built Mathlib.Tactic.Linter.CommandStart (1.2s)
+✔ [386/7753] Built Mathlib.Tactic.Linter.FlexibleLinter (1.3s)
+✔ [387/7753] Built Mathlib.Tactic.Linter.UnusedTactic (763ms)
+✖ [388/7753] Building Mathlib.Tactic.Linter.MinImports (408ms)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Tactic/Linter/MinImports.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/Linter/MinImports.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/Linter/MinImports.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/Linter/MinImports.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/Linter/MinImports.setup.json --json
+error: Mathlib/Tactic/Linter/MinImports.lean:40:2: unexpected token 'set_option'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_dsimproc', 'builtin_dsimproc_decl', 'builtin_grind_propagator', 'builtin_initialize', 'builtin_simproc', 'builtin_simproc_decl', 'class', 'coinductive', 'declare_simp_like_tactic', 'declare_syntax_cat', 'def', 'dsimproc', 'dsimproc_decl', 'elab', 'elab_rules', 'example', 'grind_propagator', 'inductive', 'infix', 'infixl', 'infixr', 'initialize', 'instance', 'macro', 'macro_rules', 'notation', 'opaque', 'postfix', 'prefix', 'recommended_spelling', 'register_builtin_option', 'register_error_explanation', 'register_option', 'register_tactic_tag', 'register_try?_tactic', 'simproc', 'simproc_decl', 'structure', 'syntax', 'tactic_extension', 'theorem' or 'unif_hint'
+error: Mathlib/Tactic/Linter/MinImports.lean:41:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Tactic/Linter/MinImports.lean:55:57: overloaded, errors 
+  failed to synthesize instance of type class
+    EmptyCollection Lean.ImportState
+  
+  Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+  
+  invalid {...} notation, constructor for `Lean.ImportState` is marked as private
+error: Mathlib/Tactic/Linter/MinImports.lean:52:0: initialization function `Mathlib.Linter.initFn._@.Mathlib.Tactic.Linter.MinImports.2382540021._hygCtx._hyg.2` type mismatch
+error: Mathlib/Tactic/Linter/MinImports.lean:55:11: failed to compile definition, consider marking it as 'noncomputable' because it depends on 'Classical.ofNonempty', which is 'noncomputable'
+error: Mathlib/Tactic/Linter/MinImports.lean:57:0: failed to compile definition, compiler IR check failed at `Mathlib.Linter.«_aux_Mathlib_Tactic_Linter_MinImports___elabRules_Mathlib_Linter_command#reset_min_imports_1»._closed_0`. Error: depends on declaration '_private.Mathlib.Tactic.Linter.MinImports.0.Mathlib.Linter.minImportsRef', which has no executable code; consider marking definition as 'noncomputable'
+error: Mathlib/Tactic/Linter/MinImports.lean:172:21: Unknown identifier `minImportsLinter`
+error: Lean exited with code 1
+✔ [389/7753] Built Mathlib.Data.Ineq (478ms)
+✔ [390/7753] Built Mathlib.Tactic.Linter.UnusedInstancesInType (589ms)
+✔ [391/7753] Built Mathlib.Util.PrintSorries (768ms)
+✔ [392/7753] Built Mathlib.Tactic.TacticAnalysis (824ms)
+✔ [393/7753] Built Mathlib.Tactic.ExtractGoal (779ms)
+✔ [394/7753] Built Mathlib.Tactic.Linter.Style (1.7s)
+✔ [395/7753] Built Mathlib.Tactic.TacticAnalysis.Declarations (1.4s)
+✔ [396/7753] Built Mathlib.Init (449ms)
+✔ [397/7753] Built Mathlib.Tactic.Linter.CommandRanges (775ms)
+✔ [398/7753] Built Mathlib.Tactic.ReduceModChar.Ext (784ms)
+✔ [399/7753] Built Mathlib.Util.GetAllModules (849ms)
+✔ [400/7753] Built Mathlib.Util.SleepHeartbeats (723ms)
+✔ [401/7753] Built Mathlib.Deprecated.Aliases (834ms)
+✔ [402/7753] Built Mathlib.Deprecated.Sort (839ms)
+✔ [403/7753] Built Mathlib.Lean.EnvExtension (787ms)
+✔ [404/7753] Built Mathlib.Lean.Exception (838ms)
+✔ [405/7753] Built Mathlib.Lean.Json (807ms)
+✔ [406/7753] Built Mathlib.Lean.LocalContext (809ms)
+✔ [407/7753] Built Mathlib.Tactic.CC.Lemmas (882ms)
+✔ [408/7753] Built Mathlib.Tactic.Polyrith (894ms)
+✔ [409/7753] Built Mathlib.Tactic.RewriteSearch (955ms)
+✔ [410/7753] Built Mathlib.Util.AssertNoSorry (954ms)
+✔ [411/7753] Built Mathlib.Lean.Thunk (912ms)
+✔ [412/7753] Built Mathlib.Lean.CoreM (941ms)
+✔ [413/7753] Built Mathlib.Tactic.Relation.Symm (1.0s)
+✔ [414/7753] Built Mathlib.Tactic.Explode.Datatypes (1.0s)
+✔ [415/7753] Built Mathlib.Lean.Meta.DiscrTree (1.0s)
+✔ [416/7753] Built Mathlib.Tactic.Change (1.1s)
+✔ [417/7753] Built Mathlib.Tactic.Clean (1.1s)
+✔ [418/7753] Built Mathlib.Util.Simp (1.1s)
+✔ [419/7753] Built Mathlib.Tactic.Eval (1.2s)
+✔ [420/7753] Built Mathlib.Tactic.Have (1.4s)
+✔ [421/7753] Built Mathlib.Tactic.Recall (1.4s)
+✔ [422/7753] Built Mathlib.Tactic.FindSyntax (1.5s)
+✔ [423/7753] Built Mathlib.Combinatorics.SimpleGraph.Init (1.4s)
+✔ [424/7753] Built Mathlib.Tactic.Linter.ValidatePRTitle (1.7s)
+✔ [425/7753] Built Mathlib.Data.Nat.NthRoot.Defs (822ms)
+✔ [426/7753] Built Mathlib.Tactic.Generalize (828ms)
+✔ [427/7753] Built Mathlib.Lean.Meta.Tactic.Rewrite (805ms)
+✔ [428/7753] Built Mathlib.Util.ElabWithoutMVars (806ms)
+✔ [429/7753] Built Mathlib.Data.Int.DivMod (868ms)
+✔ [430/7753] Built Mathlib.CategoryTheory.ConcreteCategory.Bundled (955ms)
+✔ [431/7753] Built Mathlib.Combinatorics.Matroid.Init (1.2s)
+✔ [432/7753] Built Mathlib.Tactic.Linter.FindDeprecations (2.0s)
+✔ [433/7753] Built Mathlib.Control.ULift (1.1s)
+✔ [434/7753] Built Mathlib.Algebra.Expr (1.3s)
+✔ [435/7753] Built Mathlib.Topology.Sheaves.Init (1.4s)
+✔ [436/7753] Built Mathlib.Data.Array.Extract (1.0s)
+✔ [437/7753] Built Mathlib.Tactic.FieldSimp.Attr (796ms)
+✔ [438/7753] Built Mathlib.Data.List.Monad (946ms)
+✔ [439/7753] Built Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes (1.1s)
+✔ [440/7753] Built Mathlib.Data.Sym.Sym2.Init (1.3s)
+✔ [441/7753] Built Mathlib.Tactic.Measurability.Init (1.3s)
+✔ [442/7753] Built Mathlib.Tactic.ArithMult.Init (1.4s)
+✔ [443/7753] Built Mathlib.Tactic.Cases (2.1s)
+✔ [444/7753] Built Mathlib.Util.DischargerAsTactic (909ms)
+✔ [445/7753] Built Mathlib.Data.Finset.Attr (1.3s)
+✔ [446/7753] Built Mathlib.Tactic.Continuity.Init (1.3s)
+✔ [447/7753] Built Mathlib.Lean.Expr.Rat (784ms)
+✔ [448/7753] Built Mathlib.Tactic.TryThis (930ms)
+✔ [449/7753] Built Mathlib.Util.SynthesizeUsing (1.3s)
+✔ [450/7753] Built Mathlib.CategoryTheory.Category.Init (1.5s)
+✔ [451/7753] Built Mathlib.Util.AddRelatedDecl (1.5s)
+✔ [452/7753] Built Mathlib.Util.Export (2.5s)
+✔ [453/7753] Built Mathlib.Logic.OpClass (776ms)
+✔ [454/7753] Built Mathlib.Tactic.HaveI (985ms)
+✔ [455/7753] Built Mathlib.Lean.GoalsLocation (878ms)
+✔ [456/7753] Built Mathlib.Util.TransImports (1.1s)
+✔ [457/7753] Built Mathlib.Tactic.Bound.Init (1.2s)
+✔ [458/7753] Built Mathlib.Util.Qq (1.4s)
+✔ [459/7753] Built Mathlib.Tactic.SuppressCompilation (2.0s)
+✔ [460/7753] Built Mathlib.Tactic.Trace (961ms)
+✔ [461/7753] Built Mathlib.Tactic.TypeCheck (995ms)
+✔ [462/7753] Built Mathlib.Tactic.UnsetOption (924ms)
+✔ [463/7753] Built Mathlib.Tactic.Widget.SelectInsertParamsClass (957ms)
+✔ [464/7753] Built Mathlib.Tactic.Relation.Rfl (904ms)
+✔ [465/7753] Built Mathlib.Tactic.SudoSetOption (1.0s)
+✔ [466/7753] Built Mathlib.Lean.Meta.KAbstractPositions (1.1s)
+✔ [467/7753] Built Mathlib.Tactic.SuccessIfFailWithMsg (1.1s)
+✔ [468/7753] Built Mathlib.Util.AtomM (1.5s)
+✔ [469/7753] Built Mathlib.Util.Superscript (2.5s)
+✔ [470/7753] Built Mathlib.Tactic.NthRewrite (1.0s)
+✔ [471/7753] Built Mathlib.Tactic.Rename (1.2s)
+✔ [472/7753] Built Mathlib.Tactic.CategoryTheory.Coherence.Datatypes (2.5s)
+✔ [473/7753] Built Mathlib.Tactic.InferParam (852ms)
+✔ [474/7753] Built Mathlib.Tactic.StacksAttribute (1.6s)
+✔ [475/7753] Built Mathlib.Tactic.Linter.HaveLetLinter (1.2s)
+✔ [476/7753] Built Mathlib.Tactic.Linter.UpstreamableDecl (1.2s)
+✔ [477/7753] Built Mathlib.Tactic.Recover (1.3s)
+✔ [478/7753] Built Mathlib.Tactic.Linter.PPRoundtrip (1.3s)
+✔ [479/7753] Built Mathlib.Tactic.Observe (1.4s)
+✔ [480/7753] Built Mathlib.Tactic.SimpIntro (1.5s)
+✔ [481/7753] Built Mathlib.Tactic.GuardGoalNums (837ms)
+✔ [482/7753] Built Mathlib.Tactic.GuardHypNums (819ms)
+✔ [483/7753] Built Mathlib.Tactic.Constructor (792ms)
+✔ [484/7753] Built Mathlib.Tactic.ExistsI (782ms)
+✔ [485/7753] Built Mathlib.Util.TermReduce (1.5s)
+✔ [486/7753] Built Mathlib.Tactic.FastInstance (2.2s)
+✔ [487/7753] Built Mathlib.Tactic.ClearExclamation (768ms)
+✔ [488/7753] Built Mathlib.Tactic.ClearExcept (812ms)
+✔ [489/7753] Built Mathlib.Tactic.Clear_ (936ms)
+✔ [490/7753] Built Mathlib.Tactic.Linter.DeprecatedModule (1.6s)
+✔ [491/7753] Built Mathlib.Util.PPOptions (694ms)
+✔ [492/7753] Built Mathlib.Tactic.Monotonicity.Attr (761ms)
+✔ [493/7753] Built Mathlib.Tactic.ApplyWith (884ms)
+✔ [494/7753] Built Mathlib.Tactic.FunProp.Mor (1.2s)
+✔ [495/7753] Built Mathlib.Util.Tactic (709ms)
+✔ [496/7753] Built Mathlib.Tactic.Find (1.2s)
+✔ [497/7753] Built Mathlib.Tactic.Check (1.1s)
+✔ [498/7753] Built Mathlib.Util.CountHeartbeats (2.4s)
+✔ [499/7753] Built Mathlib.Lean.Meta.Basic (1.1s)
+✔ [500/7753] Built Mathlib.Tactic.Substs (714ms)
+✔ [501/7753] Built Mathlib.Control.Combinators (798ms)
+✔ [502/7753] Built Mathlib.Tactic.FailIfNoProgress (1.5s)
+✔ [503/7753] Built Mathlib.Tactic.GCongr.ForwardAttr (1.0s)
+✔ [504/7753] Built Mathlib.Util.AtLocation (1.0s)
+✔ [505/7753] Built Mathlib.Tactic.Coe (1.1s)
+✔ [506/7753] Built Mathlib.Tactic.Set (1.3s)
+✔ [507/7753] Built Mathlib.Tactic.FunProp.Decl (1.7s)
+✔ [508/7753] Built Mathlib.Util.WithWeakNamespace (829ms)
+✔ [509/7753] Built Mathlib.Tactic.ErwQuestion (1.7s)
+✔ [510/7753] Built Mathlib.Tactic.OfNat (679ms)
+✔ [511/7753] Built Mathlib.Lean.PrettyPrinter.Delaborator (901ms)
+✔ [512/7753] Built Mathlib.Tactic.Finiteness.Attr (1.2s)
+✔ [513/7753] Built Mathlib.Util.WhatsNew (1.2s)
+✔ [514/7753] Built Mathlib.Tactic.FunProp.ToBatteries (1.0s)
+✔ [516/7753] Built Mathlib.Tactic.WithoutCDot (1.0s)
+✖ [517/7753] Building Mathlib.Lean.Meta.RefinedDiscrTree.Basic (2.1s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.setup.json --json
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:72:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:73:28: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.hash`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:89:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:90:28: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:106:85: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:139:22: Invalid field `format`: The environment does not contain `Lean.Meta.RefinedDiscrTree.Key.format`, so it is not possible to project the field `format` from an expression
+  key
+of type `Key`
+
+Note: A private declaration `Key.format` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:101:61: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:188:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:189:35: Unknown constant `Lean.Meta.RefinedDiscrTree.StackEntry.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:244:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:245:34: Unknown constant `Lean.Meta.RefinedDiscrTree.LazyEntry.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:322:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:323:58: failed to synthesize instance of type class
+  ToFormat (RefinedDiscrTree α)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Lean exited with code 1
+✔ [518/7753] Built Mathlib.Data.Int.Notation (717ms)
+✔ [519/7753] Built Mathlib.Tactic.CasesM (1.7s)
+✔ [520/7753] Built Mathlib.Tactic.AdaptationNote (1.1s)
+✔ [521/7753] Built Mathlib.Tactic.Variable (3.3s)
+✔ [522/7753] Built Mathlib.Data.String.Defs (815ms)
+✔ [523/7753] Built Mathlib.Lean.Meta (1.0s)
+✔ [524/7753] Built Mathlib.Tactic.Attr.Register (1.3s)
+✔ [525/7753] Built Mathlib.Tactic.SimpRw (1.3s)
+✔ [526/7753] Built Mathlib.Tactic.Spread (1.5s)
+✔ [527/7753] Built Mathlib.Tactic.Eqns (811ms)
+✔ [528/7753] Built Mathlib.Tactic.Lemma (712ms)
+✔ [529/7753] Built Mathlib.Lean.Elab.Term (716ms)
+✔ [530/7753] Built Mathlib.Data.Nat.Notation (785ms)
+✔ [531/7753] Built Mathlib.Util.MemoFix (768ms)
+✔ [532/7753] Built Mathlib.Tactic.PPWithUniv (903ms)
+✔ [533/7753] Built Mathlib.Tactic.ExtendDoc (896ms)
+✔ [534/7753] Built Mathlib.Util.AssertExistsExt (1.0s)
+✔ [537/7753] Built Mathlib.Tactic.Explode.Pretty (808ms)
+✔ [538/7753] Built Mathlib.Data.Array.Defs (831ms)
+✔ [539/7753] Built Mathlib.Lean.Name (941ms)
+✔ [540/7753] Built Mathlib.Data.Nat.BinaryRec (1.3s)
+✔ [541/7753] Built Mathlib.Tactic.Push.Attr (1.6s)
+✔ [542/7753] Built Mathlib.Tactic.Conv (1.7s)
+✔ [544/7753] Built Mathlib.Tactic.Core (1.7s)
+✔ [545/7753] Built Mathlib.Tactic.Replace (724ms)
+✔ [546/7753] Built Mathlib.Lean.Meta.Simp (1.2s)
+✔ [547/7753] Built Mathlib.Tactic.DepRewrite (5.3s)
+✔ [548/7753] Built Mathlib.Tactic.Simps.NotationClass (1.4s)
+✔ [549/7753] Built Mathlib.Tactic.GeneralizeProofs (627ms)
+✔ [550/7753] Built Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss (1.0s)
+✔ [551/7753] Built Mathlib.Lean.Message (715ms)
+✔ [552/7753] Built Mathlib.Std.Data.HashMap (790ms)
+✔ [553/7753] Built Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm (1.2s)
+✔ [554/7753] Built Mathlib.Data.Set.Defs (2.3s)
+✔ [555/7753] Built Mathlib.Lean.Elab.Tactic.Basic (792ms)
+✔ [556/7753] Built Mathlib.Tactic.SwapVar (998ms)
+✖ [558/7753] Building Mathlib.Tactic.ToExpr (989ms)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Tactic/ToExpr.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/ToExpr.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/ToExpr.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/ToExpr.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/ToExpr.setup.json --json
+error: Mathlib/Tactic/ToExpr.lean:51:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Tactic/ToExpr.lean:53:12: Unknown identifier `toExprMData`
+
+Note: A private declaration `toExprMData` (from the current module) exists but would need to be public to access here.
+error: Lean exited with code 1
+✔ [559/7753] Built Mathlib.Tactic.Attr.Core (790ms)
+✔ [560/7753] Built Mathlib.Util.FormatTable (1.0s)
+✔ [561/7753] Built Mathlib.Tactic.TypeStar (710ms)
+✔ [562/7753] Built Mathlib.Lean.Expr.ReplaceRec (811ms)
+✖ [563/7753] Building Mathlib.Util.CompileInductive (2.6s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Util/CompileInductive.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Util/CompileInductive.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Util/CompileInductive.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Util/CompileInductive.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Util/CompileInductive.setup.json --json
+error: Mathlib/Util/CompileInductive.lean:130:2: unexpected token 'set_option'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'alias', 'axiom', 'binder_predicate', 'builtin_dsimproc', 'builtin_dsimproc_decl', 'builtin_grind_propagator', 'builtin_initialize', 'builtin_simproc', 'builtin_simproc_decl', 'class', 'coinductive', 'declare_command_config_elab', 'declare_config_elab', 'declare_simp_like_tactic', 'declare_syntax_cat', 'def', 'dsimproc', 'dsimproc_decl', 'elab', 'elab_rules', 'example', 'grind_propagator', 'inductive', 'infix', 'infixl', 'infixr', 'initialize', 'instance', 'macro', 'macro_rules', 'notation', 'opaque', 'postfix', 'prefix', 'recommended_spelling', 'register_builtin_option', 'register_error_explanation', 'register_linter_set', 'register_option', 'register_tactic_tag', 'register_try?_tactic', 'simproc', 'simproc_decl', 'structure', 'syntax', 'tactic_extension', 'theorem' or 'unif_hint'
+error: Mathlib/Util/CompileInductive.lean:131:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+warning: Mathlib/Util/CompileInductive.lean:266:2: Private declaration `_private.Mathlib.Util.CompileInductive.0.Float.val_eq` accessed publicly; this is allowed only because the `backward.privateInPublic` option is enabled. 
+
+Disable `backward.privateInPublic.warn` to silence this warning.
+error: Mathlib/Util/CompileInductive.lean:266:2: Cannot add attribute `[csimp]`: Declaration `_private.Mathlib.Util.CompileInductive.0.Float.val_eq` must be public
+warning: Mathlib/Util/CompileInductive.lean:267:2: Private declaration `_private.Mathlib.Util.CompileInductive.0.Float.mk_eq` accessed publicly; this is allowed only because the `backward.privateInPublic` option is enabled. 
+
+Disable `backward.privateInPublic.warn` to silence this warning.
+error: Mathlib/Util/CompileInductive.lean:267:2: Cannot add attribute `[csimp]`: Declaration `_private.Mathlib.Util.CompileInductive.0.Float.mk_eq` must be public
+error: Mathlib/Util/CompileInductive.lean:272:0: failed to compile definition, compiler IR check failed at `Float.rec._redArg✝`. Error: depends on declaration 'Float.val', which has no executable code; consider marking definition as 'noncomputable'
+error: Mathlib/Util/CompileInductive.lean:272:0: failed to compile definition, compiler IR check failed at `Float.recOn✝`. Error: depends on declaration 'Float.rec._@.Mathlib.Util.CompileInductive.3197476844._hygCtx._hyg.437', which has no executable code; consider marking definition as 'noncomputable'
+error: Mathlib/Util/CompileInductive.lean:272:0: failed to compile definition, compiler IR check failed at `Float._sizeOf_1✝`. Error: depends on declaration 'Float.rec._@.Mathlib.Util.CompileInductive.3197476844._hygCtx._hyg.437', which has no executable code; consider marking definition as 'noncomputable'
+error: Mathlib/Util/CompileInductive.lean:272:0: failed to compile definition, compiler IR check failed at `Float._sizeOf_inst._lam_0✝`. Error: depends on declaration 'Float._sizeOf_1._@.Mathlib.Util.CompileInductive.3197476844._hygCtx._hyg.441', which has no executable code; consider marking definition as 'noncomputable'
+error: Lean exited with code 1
+✔ [566/7753] Built Mathlib.Tactic.ApplyAt (1.1s)
+✔ [567/7753] Built Mathlib.Tactic.ToLevel (758ms)
+✔ [569/7753] Built Mathlib.Tactic.Continuity (1.6s)
+✔ [570/7753] Built Mathlib.Tactic.Monotonicity.Basic (1.2s)
+✔ [571/7753] Built Mathlib.Tactic.RenameBVar (1.2s)
+✔ [572/7753] Built Mathlib.Tactic.Widget.SelectPanelUtils (1.6s)
+✔ [573/7753] Built Mathlib.Util.AtomM.Recurse (1.6s)
+✔ [574/7753] Built Mathlib.Tactic.CategoryTheory.CategoryStar (829ms)
+✔ [576/7753] Built Mathlib.Tactic.HigherOrder (1.4s)
+✔ [577/7753] Built Mathlib.Util.AssertExists (1.3s)
+✔ [578/7753] Built Mathlib.Data.PNat.Notation (804ms)
+✔ [579/7753] Built Mathlib.Tactic.Propose (616ms)
+✔ [580/7753] Built Mathlib.Tactic.ApplyCongr (824ms)
+✔ [581/7753] Built Mathlib.Util.LongNames (944ms)
+✔ [582/7753] Built Mathlib.Tactic.Translate.GuessName (1.7s)
+✔ [583/7753] Built Mathlib.Tactic.Measurability (1.8s)
+✔ [584/7753] Built Mathlib.Lean.Expr (754ms)
+✔ [585/7753] Built Mathlib.Data.Set.CoeSort (817ms)
+✔ [586/7753] Built Mathlib.Order.Bounds.Defs (837ms)
+✔ [587/7753] Built Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence (2.2s)
+✔ [588/7753] Built Mathlib.Tactic.Simproc.ExistsAndEq (3.1s)
+✔ [589/7753] Built Mathlib.Tactic.Use (2.0s)
+✔ [590/7753] Built Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector (1.0s)
+✔ [591/7753] Built Mathlib.Data.Ordering.Basic (799ms)
+✔ [592/7753] Built Mathlib.Data.Rat.Init (926ms)
+✔ [593/7753] Built Mathlib.Tactic.FunProp.FunctionData (2.2s)
+✔ [594/7753] Built Mathlib.Data.Stream.Defs (1.5s)
+✔ [596/7753] Built Mathlib.Data.Option.Defs (810ms)
+✔ [597/7753] Built Mathlib.Tactic.DeprecateTo (1.8s)
+✔ [604/7753] Built Mathlib.Control.Basic (1.3s)
+✔ [605/7753] Built Mathlib.Control.Functor (1.2s)
+✔ [608/7753] Built Mathlib.Logic.Function.CompTypeclasses (650ms)
+✔ [609/7753] Built Mathlib.Data.Bool.AllAny (736ms)
+✔ [610/7753] Built Mathlib.Data.Bracket (721ms)
+✔ [611/7753] Built Mathlib.Tactic.Bound.Attribute (2.9s)
+✔ [612/7753] Built Mathlib.Logic.Function.Coequalizer (779ms)
+✔ [613/7753] Built Mathlib.Tactic.Explode (1.5s)
+✔ [614/7753] Built Mathlib.Logic.Function.Defs (1.1s)
+✔ [615/7753] Built Mathlib.Data.Prod.PProd (788ms)
+✔ [616/7753] Built Mathlib.Data.List.TFAE (838ms)
+✔ [617/7753] Built Mathlib.Data.List.Lookmap (1.0s)
+✔ [618/7753] Built Mathlib.Data.List.ModifyLast (997ms)
+✔ [619/7753] Built Mathlib.Tactic.SplitIfs (1.7s)
+✔ [620/7753] Built Mathlib.Logic.Function.ULift (780ms)
+✔ [621/7753] Built Mathlib.Logic.Nonempty (768ms)
+✔ [622/7753] Built Mathlib.Logic.Nontrivial.Defs (808ms)
+✔ [623/7753] Built Mathlib.Tactic.Inhabit (904ms)
+✔ [624/7753] Built Mathlib.Tactic.ScopedNS (2.9s)
+✔ [625/7753] Built Mathlib.Data.Int.Cast.Pi (616ms)
+✔ [626/7753] Built Mathlib.Data.Num.Basic (1.8s)
+✔ [628/7753] Built Mathlib.Logic.ExistsUnique (1.1s)
+✔ [629/7753] Built Mathlib.Data.Int.Init (1.9s)
+✔ [630/7753] Built Mathlib.Tactic.MkIffOfInductiveProp (2.0s)
+✔ [631/7753] Built Mathlib.Logic.Relator (581ms)
+✔ [632/7753] Built Mathlib.Control.Traversable.Basic (921ms)
+✔ [633/7753] Built Mathlib.Tactic.Linter.TextBased (2.7s)
+✔ [634/7753] Built Mathlib.Tactic.Widget.Conv (1.1s)
+✔ [635/7753] Built Mathlib.Data.Option.NAry (686ms)
+✔ [636/7753] Built Mathlib.Tactic.Widget.InteractiveUnfold (1.4s)
+✔ [638/7753] Built Mathlib.Tactic.Widget.Calc (1.5s)
+✔ [639/7753] Built Mathlib.Tactic.Basic (1.4s)
+✔ [640/7753] Built Mathlib.Tactic.CategoryTheory.Coherence.Normalize (4.0s)
+✔ [641/7753] Built Mathlib.Tactic.Ext (710ms)
+✔ [642/7753] Built Mathlib.Tactic.SetLike (841ms)
+✔ [643/7753] Built Mathlib.Algebra.HierarchyDesign (858ms)
+✖ [644/7753] Building Mathlib.Tactic.TFAE (1.0s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Tactic/TFAE.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/TFAE.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/TFAE.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/TFAE.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/TFAE.setup.json --json
+error: Mathlib/Tactic/TFAE.lean:72:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Tactic/TFAE.lean:80:0: Unknown constant `_private.Mathlib.Tactic.TFAE.0.Mathlib.Tactic.TFAE.Parser.tfaeHaveDecl`
+error: Mathlib/Tactic/TFAE.lean:273:0: invalid syntax node kind `Mathlib.Tactic.TFAE.tfaeHave`
+error: Mathlib/Tactic/TFAE.lean:283:0: invalid syntax node kind `Mathlib.Tactic.TFAE.tfaeHave`
+error: Mathlib/Tactic/TFAE.lean:342:0: Unknown constant `_private.Mathlib.Tactic.TFAE.0.Mathlib.Tactic.TFAE.Parser.tfaeHaveIdLhs`
+error: Mathlib/Tactic/TFAE.lean:350:0: invalid syntax node kind `Mathlib.Tactic.TFAE.tfaeHave'`
+error: Lean exited with code 1
+✔ [645/7753] Built Mathlib.Tactic.LiftLets (953ms)
+✔ [646/7753] Built Mathlib.Tactic.RSuffices (1.1s)
+✔ [647/7753] Built Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Note (984ms)
+✔ [648/7753] Built Mathlib.Data.String.Lemmas (1.0s)
+✔ [649/7753] Built Mathlib.Tactic.ExtractLets (984ms)
+✔ [650/7753] Built Mathlib.Tactic.ArithMult (1.1s)
+✔ [651/7753] Built Mathlib.Data.List.Triplewise (1.6s)
+✔ [652/7753] Built Mathlib.Control.Lawful (1.1s)
+✔ [653/7753] Built Mathlib.Tactic.Hint (1.3s)
+✔ [654/7753] Built Mathlib.Tactic.Says (1.4s)
+✔ [655/7753] Built Mathlib.Logic.Basic (1.6s)
+✖ [656/7753] Building Mathlib.Data.Nat.Init (1.6s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Data/Nat/Init.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Data/Nat/Init.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Data/Nat/Init.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Data/Nat/Init.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Data/Nat/Init.setup.json --json
+error: Mathlib/Data/Nat/Init.lean:250:15: unexpected token 'set_option'; expected 'lemma'
+error: Mathlib/Data/Nat/Init.lean:251:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Data/Nat/Init.lean:253:9: Unknown identifier `strongRecAux`
+
+Note: A private declaration `strongRecAux` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Data/Nat/Init.lean:259:6: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.23 0 ih m
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case zero
+p : ℕ → Sort u_1
+H : (n : ℕ) → ((m : ℕ) → m < n → p m) → p n
+n : ℕ
+ih : (m : ℕ) → m < 0 → ?m.15 m
+m : ?m.22 0 ih
+hmn : ?m.23 0 ih m
+⊢ ?m.24 0 ih m hmn
+error: Mathlib/Data/Nat/Init.lean:257:32: unsolved goals
+case succ
+p : ℕ → Sort u_1
+H : (n : ℕ) → ((m : ℕ) → m < n → p m) → p n
+n✝ n : ℕ
+ih : (m : ℕ) → m < n + 1 → ?m.15 m
+m : ?m.22 (n + 1) ih
+hmn : ?m.23 (n + 1) ih m
+⊢ H ?m.61 ?m.62 = H ?m.61 ?m.63
+error: Mathlib/Data/Nat/Init.lean:257:2: Type mismatch
+  Nat.strongRec' ?m.27 n
+has type
+  ?m.15 n
+but is expected to have type
+  ∀ (m : ℕ) (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m)
+warning: Mathlib/Data/Nat/Init.lean:264:6: declaration uses 'sorry'
+warning: Mathlib/Data/Nat/Init.lean:266:33: 'apply strongRecAux_spec' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+error: Lean exited with code 1
+✔ [657/7753] Built Mathlib.Tactic.Lift (1.7s)
+✔ [658/7753] Built Mathlib.Util.Delaborators (5.7s)
+✔ [659/7753] Built Mathlib.Tactic.DefEqTransformations (1.0s)
+✔ [660/7753] Built Mathlib.Testing.Plausible.Testable (679ms)
+✔ [661/7753] Built Mathlib.Tactic.Subsingleton (1.0s)
+✔ [662/7753] Built Mathlib.Tactic.Tauto (1.7s)
+✔ [663/7753] Built Mathlib.Tactic.Push (1.9s)
+✔ [664/7753] Built Mathlib.Tactic.ITauto (2.4s)
+✔ [665/7753] Built Mathlib.Tactic.ToFun (615ms)
+✖ [666/7753] Building Mathlib.Tactic.Simps.Basic (4.1s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Tactic/Simps/Basic.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/Simps/Basic.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Tactic/Simps/Basic.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/Simps/Basic.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Tactic/Simps/Basic.setup.json --json
+error: Mathlib/Tactic/Simps/Basic.lean:77:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Tactic/Simps/Basic.lean:78:15: Unknown identifier `NameStruct`
+
+Note: A private declaration `NameStruct` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Tactic/Simps/Basic.lean:78:44: Unknown identifier `NameStruct.toName`
+
+Note: A private declaration `NameStruct.toName` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Tactic/Simps/Basic.lean:968:98: unexpected token 'set_option'; expected 'lemma'
+error: Mathlib/Tactic/Simps/Basic.lean:969:35: unexpected token 'in'; expected 'false', 'true', numeral or string literal
+error: Mathlib/Tactic/Simps/Basic.lean:1052:33: Unknown identifier `NameStruct`
+
+Note: A private declaration `NameStruct` (from the current module) exists but would need to be public to access here.
+warning: Mathlib/Tactic/Simps/Basic.lean:1200:4: declaration uses 'sorry'
+error: Lean exited with code 1
+✔ [707/7753] Built Mathlib.Tactic.ByCases (698ms)
+✔ [830/7753] Built Mathlib.Tactic.ByContra (754ms)
+✔ [833/7753] Built Mathlib.Tactic.Contrapose (839ms)
+✔ [838/7753] Built Mathlib.Util.Notation3 (5.3s)
+✔ [885/7753] Built Mathlib.Tactic.WLOG (1000ms)
+Some required targets logged failures:
+- Mathlib.Tactic.Linter.MinImports
+- Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+- Mathlib.Tactic.ToExpr
+- Mathlib.Util.CompileInductive
+- Mathlib.Tactic.TFAE
+- Mathlib.Data.Nat.Init
+- Mathlib.Tactic.Simps.Basic
+error: build failed

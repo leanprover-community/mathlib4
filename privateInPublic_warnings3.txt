@@ -1,0 +1,45 @@
+✖ [773/7753] Building Mathlib.Lean.Meta.RefinedDiscrTree.Basic (806ms)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Lean/Meta/RefinedDiscrTree/Basic.setup.json --json
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:75:28: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.hash`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:91:28: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:107:85: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:140:22: Invalid field `format`: The environment does not contain `Lean.Meta.RefinedDiscrTree.Key.format`, so it is not possible to project the field `format` from an expression
+  key
+of type `Key`
+
+Note: A private declaration `Key.format` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:102:61: Unknown constant `Lean.Meta.RefinedDiscrTree.Key.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:189:35: Unknown constant `Lean.Meta.RefinedDiscrTree.StackEntry.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:244:34: Unknown constant `Lean.Meta.RefinedDiscrTree.LazyEntry.format`
+error: Mathlib/Lean/Meta/RefinedDiscrTree/Basic.lean:321:58: failed to synthesize instance of type class
+  ToFormat (RefinedDiscrTree α)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Lean exited with code 1
+✖ [904/7753] Building Mathlib.Data.Nat.Init (1.1s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Data/Nat/Init.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Data/Nat/Init.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Data/Nat/Init.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Data/Nat/Init.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Data/Nat/Init.setup.json --json
+error: Mathlib/Data/Nat/Init.lean:255:9: Unknown identifier `strongRecAux`
+
+Note: A private declaration `strongRecAux` (from the current module) exists but would need to be public to access here.
+warning: Mathlib/Data/Nat/Init.lean:266:6: declaration uses 'sorry'
+warning: Mathlib/Data/Nat/Init.lean:268:33: 'apply strongRecAux_spec' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+error: Lean exited with code 1
+✖ [1558/7753] Building Mathlib.Algebra.Group.Defs (2.8s)
+trace: .> LEAN_PATH=/home/jmc/repos/mathlib4/pr-review/.lake/packages/Cli/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/batteries/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/Qq/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/aesop/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/importGraph/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/packages/plausible/.lake/build/lib/lean:/home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean /home/jmc/.elan/toolchains/leanprover--lean4---v4.27.0-rc1/bin/lean /home/jmc/repos/mathlib4/pr-review/Mathlib/Algebra/Group/Defs.lean -o /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Algebra/Group/Defs.olean -i /home/jmc/repos/mathlib4/pr-review/.lake/build/lib/lean/Mathlib/Algebra/Group/Defs.ilean -c /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Algebra/Group/Defs.c --setup /home/jmc/repos/mathlib4/pr-review/.lake/build/ir/Mathlib/Algebra/Group/Defs.setup.json --json
+error: Mathlib/Algebra/Group/Defs.lean:1217:23: Unknown identifier `inv_eq_of_mul`
+
+Note: A private declaration `inv_eq_of_mul` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Algebra/Group/Defs.lean:1219:16: Unknown identifier `inv_eq_of_mul`
+
+Note: A private declaration `inv_eq_of_mul` (from the current module) exists but would need to be public to access here.
+error: Mathlib/Algebra/Group/Defs.lean:1220:31: Unknown identifier `inv_eq_of_mul`
+
+Note: A private declaration `inv_eq_of_mul` (from the current module) exists but would need to be public to access here.
+error: Lean exited with code 1
+Some required targets logged failures:
+- Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+- Mathlib.Data.Nat.Init
+- Mathlib.Algebra.Group.Defs
+error: build failed
