@@ -418,6 +418,7 @@ theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
   simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
     ← valuation_lt_one_iff_mem (K := K)]
 
+section Localization
 open Localization
 
 local instance : IsDedekindDomain
@@ -431,7 +432,7 @@ local instance : IsLocalRing (subalgebra.ofField K _ v.asIdeal.primeCompl_le_non
 
 variable (K) in
 /-- Given a Dedekind domain `R` in `K`, its field of fractions, the localization of `R` at
-a prime is a valuation subring of `K`. -/
+a nonzero prime is a valuation subring of `K`. -/
 def IsDedekindDomain.ValuationSubring.ofAtPrime : ValuationSubring K := ValuationSubring.ofSubring
     (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors).toSubring (fun x ↦
       by simpa [IsLocalization.IsInteger] using ValuationRing.isInteger_or_isInteger
@@ -440,7 +441,7 @@ def IsDedekindDomain.ValuationSubring.ofAtPrime : ValuationSubring K := Valuatio
 open IsDedekindDomain ValuationSubring
 
 open scoped algebraMap in
-theorem ofPrime_le_valuationValuationSubring :
+theorem ofAtPrime_le_valuationValuationSubring :
     ofAtPrime K v ≤ (valuation K v).valuationSubring := by
   rintro x ⟨a, s, hs, rfl⟩
   suffices (valuation K v) (a / (s : K)) ≤ 1 by rwa [division_def (a : K) s] at this
@@ -461,16 +462,16 @@ instance : IsDedekindDomain (ofAtPrime K v) :=
   (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
 
 open scoped WithZero algebraMap in
-theorem ofPrimeIdealOfLE_valuationSubring_eq :
+theorem IdealOfLE_ofAtPrime_valuationSubring_eq :
     (ofAtPrime K v).idealOfLE (v.valuation K).valuationSubring
-    (ofPrime_le_valuationValuationSubring ..) = IsLocalRing.maximalIdeal (ofAtPrime K v) := by
+    (ofAtPrime_le_valuationValuationSubring ..) = IsLocalRing.maximalIdeal (ofAtPrime K v) := by
   let π : IsDedekindDomain.HeightOneSpectrum (ofAtPrime K v) := {
     asIdeal := (ofAtPrime K v).idealOfLE (valuation K v).valuationSubring
-      (ofPrime_le_valuationValuationSubring ..)
-    isPrime := ValuationSubring.prime_idealOfLE _ _ (ofPrime_le_valuationValuationSubring ..)
+      (ofAtPrime_le_valuationValuationSubring ..)
+    isPrime := ValuationSubring.prime_idealOfLE _ _ (ofAtPrime_le_valuationValuationSubring ..)
     ne_bot := by
       simp only [ValuationSubring.idealOfLE, Submodule.ne_bot_iff, Ideal.mem_comap]
-      obtain ⟨π, hπ⟩ := IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer' K v
+      obtain ⟨π, hπ⟩ := valuation_exists_uniformizer' K v
       use (algebraMap R (ofAtPrime K v) π)
       constructor
       · rw [Valuation.mem_maximalIdeal_iff K (valuation K v)]
@@ -482,16 +483,19 @@ theorem ofPrimeIdealOfLE_valuationSubring_eq :
   }
   simpa only [IsLocalRing.isMaximal_iff, ValuationSubring.idealOfLE] using π.isMaximal
 
-theorem ofPrime_eq_valuationSubring : ofAtPrime K v = (v.valuation K).valuationSubring := by
+/-- Given `v : HeightOneSpectrum R`, the valuation associated to `v` has the localization of
+  `R` at `v` as valuation subring. -/
+theorem ofAtPrime_eq_valuationSubring : ofAtPrime K v = (v.valuation K).valuationSubring := by
   apply ValuationSubring.toLocalSubring_injective
   apply IsMax.eq_of_le (ValuationSubring.isMax_toLocalSubring (ofAtPrime K v))
-  use (ofPrime_le_valuationValuationSubring ..)
+  use (ofAtPrime_le_valuationValuationSubring ..)
   change IsLocalHom (ValuationSubring.inclusion ..)
   simp only [(IsLocalRing.local_hom_TFAE
-    (ValuationSubring.inclusion _ _ (ofPrime_le_valuationValuationSubring v))).out 0 3]
+    (ValuationSubring.inclusion _ _ (ofAtPrime_le_valuationValuationSubring v))).out 0 3]
   convert le_rfl
-  simpa [ValuationSubring.idealOfLE] using ofPrimeIdealOfLE_valuationSubring_eq v
+  simpa [ValuationSubring.idealOfLE] using IdealOfLE_ofAtPrime_valuationSubring_eq v
 
+end Localization
 
 /-! ### Completions with respect to adic valuations
 
