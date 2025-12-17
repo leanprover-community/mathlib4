@@ -409,4 +409,3 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat
-#min_imports
