@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -382,6 +383,47 @@ theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerSeries σ R) :
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
+
+section
+
+variable (w : τ → ℕ)
+
+theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
+    ⨅ (d : σ →₀ ℕ) (_ : coeff d f ≠ 0), d.weight (weightedOrder w ∘ a) ≤
+      (f.subst a).weightedOrder w := by
+  classical
+  apply MvPowerSeries.le_weightedOrder
+  intro d hd
+  rw [coeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro x
+  by_cases hfx : f.coeff x = 0
+  · simp [hfx]
+  rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
+  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
+  exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
+
+theorem le_weightedOrder_subst_of_forall_ne_zero
+    (ha : HasSubst a) (ha0 : ∀ i, a i ≠ 0) (f : MvPowerSeries σ R) :
+    f.weightedOrder (ENat.toNat ∘ weightedOrder w ∘ a) ≤ (f.subst a).weightedOrder w := by
+  refine .trans ?_ (le_weightedOrder_subst w ha f)
+  simp only [ne_eq, le_iInf_iff]
+  refine fun i hi ↦ (weightedOrder_le _ hi).trans ?_
+  simp [Finsupp.weight_apply, Finsupp.sum, (ne_zero_iff_weightedOrder_finite _).mp (ha0 _)]
+
+theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
+    (⨅ i, (a i).order) * f.order ≤ (f.subst a).order := by
+  refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ ha _)
+  simp only [ne_eq, le_iInf_iff]
+  intro i hi
+  trans (⨅ (i : σ), (order ∘ a) i) * ↑i.degree
+  · refine mul_le_mul_right (order_le hi) _
+  · simp only [Function.comp_apply, order, Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+      Nat.cast_sum, Finset.mul_sum, Finsupp.weight_apply, nsmul_eq_mul]
+    exact Finset.sum_le_sum fun j hj => by
+      simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
+
+end
 
 section rescale
 

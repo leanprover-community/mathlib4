@@ -174,7 +174,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     have i : ∫ x in (0 : ℝ)..m⁻¹, f (k + 1) x = 0 := by
       simp only [f]
       rw [intervalIntegral.integral_sub, intervalIntegral.integral_comp_mul_left _ m0', mul_zero,
-        mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by omega), smul_zero, sub_eq_zero,
+        mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by lia), smul_zero, sub_eq_zero,
         intervalIntegral.integral_const_mul, eq_comm (a := 0), mul_eq_zero]
       · right
         rw [intervalIntegral.integral_finset_sum]
@@ -447,7 +447,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
       · skip
       · rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
-    omega
+    lia
   rw [this, mul_pow]
   ring
 

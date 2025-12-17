@@ -29,7 +29,7 @@ open Bicategory Functor
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
 
 section
-variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
 
 
 variable (A) in
@@ -76,7 +76,7 @@ lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) 
       (mapCompLeft D G H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 variable (A) in
 @[reassoc]
