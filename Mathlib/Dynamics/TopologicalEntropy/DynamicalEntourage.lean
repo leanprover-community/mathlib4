@@ -147,7 +147,7 @@ lemma mem_ball_dynEntourage_comp (T : X → X) (n : ℕ) {U : SetRel X X} [U.IsS
 
 lemma _root_.Function.Semiconj.preimage_dynEntourage {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Function.Semiconj φ S T) (U : Set (Y × Y)) (n : ℕ) :
-    (map φ φ)⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ)⁻¹' U) n := by
+    (map φ φ) ⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ) ⁻¹' U) n := by
   rw [dynEntourage, preimage_iInter₂]
   refine iInter₂_congr fun k _ ↦ ?_
   rw [← preimage_comp, ← preimage_comp, map_iterate S S k, map_iterate T T k, map_comp_map,

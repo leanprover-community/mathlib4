@@ -262,7 +262,7 @@ private lemma sum_degree_le_of_le_not_adj [Fintype α] [DecidableEq α] [Decidab
   _ ≤ _ := by
     simp_rw [← union_compl X, sum_union disjoint_compl_right (s₁ := X), neighborFinset_eq_filter,
              filter_inter, univ_inter, card_eq_sum_ones X, card_eq_sum_ones Xᶜ, sum_mul, one_mul]
-    gcongr <;> grind [filter_card_add_filter_neg_card_eq_card]
+    gcongr <;> grind [card_filter_add_card_filter_not]
 
 end Counting
 

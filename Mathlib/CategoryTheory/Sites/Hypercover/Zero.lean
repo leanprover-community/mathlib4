@@ -340,7 +340,7 @@ end Category
 
 section Functoriality
 
-variable {D : Type*} [Category D] {F : C ⥤ D}
+variable {D : Type*} [Category* D] {F : C ⥤ D}
 
 /-- The image of a pre-`0`-hypercover under a functor. -/
 @[simps]
@@ -701,7 +701,7 @@ def isoMk {E F : ZeroHypercover.{w} J S} (e : E.toPreZeroHypercover ≅ F.toPreZ
 
 section Functoriality
 
-variable {D : Type*} [Category D] {F : C ⥤ D} {K : Precoverage D}
+variable {D : Type*} [Category* D] {F : C ⥤ D} {K : Precoverage D}
 
 /-- The image of a `0`-hypercover under a functor. -/
 @[simps toPreZeroHypercover]
