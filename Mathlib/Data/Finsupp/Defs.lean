@@ -225,7 +225,6 @@ variable [Zero M]
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
-set_option backward.proofsInPublic false in
 /-- `Finsupp.onFinset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
