@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 
 We define `Codiscrete A` as an alias for the type `A`,
 and use this type alias to provide a `Category` instance
-whose Hom type are Unit types.
+whose Hom types are `Unit`.
 
 `Codiscrete.functor` promotes a function `f : C → A` (for any category `C`) to a functor
 `f : C ⥤ Codiscrete A`.
@@ -25,7 +25,7 @@ Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed fam
 or `I`-indexed families of isomorphisms to natural transformations or natural isomorphisms.
 
 We define `functorToCat : Type u ⥤ Cat.{0,u}` which sends a type to the codiscrete category and show
-it is right adjoint to `Cat.objects.`
+it is right adjoint to `Cat.objects`.
 -/
 
 @[expose] public section
