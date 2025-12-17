@@ -165,16 +165,6 @@ section NormedAddCommGroup
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [Nontrivial F]
 
-lemma Metric.diam_closedBall_eq (x : F) {r : ℝ} (hr : 0 ≤ r) :
-    diam (closedBall x r) = 2 * r :=
-  le_antisymm (diam_closedBall hr) <|
-    diam_sphere_eq x hr |>.symm.le.trans <| diam_mono sphere_subset_closedBall isBounded_closedBall
-
-lemma Metric.diam_ball_eq (x : F) {r : ℝ} (hr : 0 ≤ r) :
-    diam (ball x r) = 2 * r := by
-  if hr' : r = 0 then simp [hr'] else
-  rw [← diam_closure, closure_ball _ hr', diam_closedBall_eq _ hr]
-
 open Pointwise in
 theorem convexHull_sphere_eq_closedBall (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
@@ -202,5 +192,12 @@ theorem convexHull_sphere_eq_closedBall (x : F) {r : ℝ} (hr : 0 ≤ r) :
   have := StarConvex.smul_mem (hU.starConvex zero_mem) hz (by positivity) hr₁
   rwa [hz_def, ← smul_assoc, smul_eq_mul, ← mul_assoc, mul_comm, mul_comm r⁻¹, mul_assoc _ r⁻¹,
     inv_mul_cancel₀ hr₀, mul_one, inv_mul_cancel₀ (by simp_all), one_smul] at this
+
+lemma Metric.diam_closedBall_eq (x : F) {r : ℝ} (hr : 0 ≤ r) : diam (closedBall x r) = 2 * r := by
+  simp [← convexHull_sphere_eq_closedBall x hr, convexHull_diam, diam_sphere_eq x hr]
+
+lemma Metric.diam_ball_eq (x : F) {r : ℝ} (hr : 0 ≤ r) : diam (ball x r) = 2 * r := by
+  if hr' : r = 0 then simp [hr'] else
+  rw [← diam_closure, closure_ball _ hr', diam_closedBall_eq _ hr]
 
 end NormedAddCommGroup
