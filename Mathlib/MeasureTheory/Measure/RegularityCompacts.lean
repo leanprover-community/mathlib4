@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.MetricSpace.Polish
 public import Mathlib.Topology.UniformSpace.Cauchy
 
@@ -26,7 +27,7 @@ probability.
 
 @[expose] public section
 
-open Set MeasureTheory
+open Set MeasureTheory TopologicalSpace
 
 open scoped ENNReal Uniformity
 
@@ -91,8 +92,8 @@ theorem innerRegularWRT_isCompact_closure_of_univ [TopologicalSpace α]
   refine (closure_inter_subset_inter_closure _ _).trans_eq ?_
   rw [IsClosed.closure_eq ht]
 
-theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpace α]
-    [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
+theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] (ε : ℝ≥0∞) (hε : 0 < ε) :
     ∃ K, IsCompact (closure K) ∧ P Kᶜ < ε := by
   /-
@@ -102,6 +103,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
   of natural numbers `u n`, such that `interUnionBalls seq u t`, which is the intersection over
   `n` of the `t n`-neighborhood of `seq 1, ..., seq (u n)`, covers the space arbitrarily well.
   -/
+  letI := upgradeIsCompletelyPseudoMetrizable α
   cases isEmpty_or_nonempty α
   case inl =>
     refine ⟨∅, by simp, ?_⟩
@@ -132,49 +134,49 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     simp only [h'', compl_iUnion, ge_iff_le]
     exact (s'bound n (δ n) (hδ1 n)).le
 
-theorem innerRegularWRT_isCompact_closure [UniformSpace α] [CompleteSpace α]
-    [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
+theorem innerRegularWRT_isCompact_closure [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (IsCompact ∘ closure) IsClosed :=
   innerRegularWRT_isCompact_closure_of_univ
     (exists_isCompact_closure_measure_compl_lt P)
 
-theorem innerRegularWRT_isCompact_isClosed [UniformSpace α] [CompleteSpace α]
-    [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
+theorem innerRegularWRT_isCompact_isClosed [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) IsClosed := by
   rw [innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure]
   exact innerRegularWRT_isCompact_closure P
 
-theorem innerRegularWRT_isCompact [UniformSpace α] [CompleteSpace α]
-    [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
+theorem innerRegularWRT_isCompact [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT IsCompact IsClosed := by
   rw [← innerRegularWRT_isCompact_closure_iff]
   exact innerRegularWRT_isCompact_closure P
 
-theorem innerRegularWRT_isCompact_isClosed_isOpen [PseudoEMetricSpace α]
-    [CompleteSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
-    (P : Measure α) [IsFiniteMeasure P] :
+theorem innerRegularWRT_isCompact_isClosed_isOpen [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
+    [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) IsOpen :=
   (innerRegularWRT_isCompact_isClosed P).trans
     (Measure.InnerRegularWRT.of_pseudoMetrizableSpace P)
 
-theorem innerRegularWRT_isCompact_isOpen [PseudoEMetricSpace α]
-    [CompleteSpace α] [SecondCountableTopology α] [OpensMeasurableSpace α]
-    (P : Measure α) [IsFiniteMeasure P] :
+theorem innerRegularWRT_isCompact_isOpen [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
+    [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT IsCompact IsOpen :=
   (innerRegularWRT_isCompact P).trans
     (Measure.InnerRegularWRT.of_pseudoMetrizableSpace P)
 
 /--
-A finite measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
+A finite measure `μ` on a completely pseudo-metrizable space `E` with
 `SecondCountableTopology E` is inner regular. In other words, a finite measure
 on such a space is a tight measure.
 -/
-instance InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [PseudoEMetricSpace α]
-    [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
-    (P : Measure α) [IsFiniteMeasure P] :
+instance instInnerRegularOfIsCompletelyPseudoMetrizableSpace [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
+    [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegular := by
   suffices P.InnerRegularCompactLTTop from inferInstance
   refine ⟨Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_⟩
@@ -182,22 +184,12 @@ instance InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [Pseud
   · exact fun s t hs_compact ht_open ↦ hs_compact.inter_right ht_open.isClosed_compl
 
 /--
-A special case of `innerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable` for Polish
-spaces: A finite measure on a Polish space is a tight measure.
--/
-instance InnerRegular_of_polishSpace [TopologicalSpace α]
-    [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
-    P.InnerRegular := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
-  exact InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable P
-
-/--
 A measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with `SecondCountableTopology E`
 is inner regular for finite measure sets with respect to compact sets.
 -/
-instance InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable
-    [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
-    (μ : Measure α) :
+instance instInnerRegularCompactLTTopOfIsCompletelyPseudoMetrizableSpace
+    [TopologicalSpace α] [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
+    [BorelSpace α] (μ : Measure α) :
     μ.InnerRegularCompactLTTop := by
   constructor
   intro A ⟨hA1, hA2⟩ r hr
@@ -210,19 +202,8 @@ instance InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCoun
   use K, hK1, hK2
   rwa [Measure.restrict_eq_self μ hK1] at hK3
 
-/--
-A special case of `innerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable`
-for Polish spaces: A measure `μ` on a Polish space inner regular for finite measure sets with
-respect to compact sets.
--/
-instance InnerRegularCompactLTTop_of_polishSpace
-    [TopologicalSpace α] [PolishSpace α] [BorelSpace α] (μ : Measure α) :
-    μ.InnerRegularCompactLTTop := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
-  exact InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable μ
-
-theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSpace α]
-    [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
+theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpace α]
+    [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α] [BorelSpace α]
     (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
   suffices P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s)
@@ -237,14 +218,8 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSp
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
 
-/--
-On a Polish space, any finite measure is regular with respect to compact and closed sets. In
-particular, a finite measure on a Polish space is a tight measure.
--/
-theorem PolishSpace.innerRegular_isCompact_isClosed_measurableSet [TopologicalSpace α]
-    [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
-    P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
-  exact innerRegular_isCompact_isClosed_measurableSet_of_finite P
+@[deprecated (since := "2025-12-08")] alias
+PolishSpace.innerRegular_isCompact_isClosed_measurableSet :=
+innerRegular_isCompact_isClosed_measurableSet_of_finite
 
 end MeasureTheory
