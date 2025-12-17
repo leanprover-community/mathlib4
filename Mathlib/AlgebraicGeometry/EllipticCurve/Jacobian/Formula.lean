@@ -230,8 +230,7 @@ lemma isUnit_dblZ_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     IsUnit (W.dblZ P) :=
   (dblZ_ne_zero_of_Y_ne' hP hQ hPz hx hy).isUnit
 
-private lemma toAffine_slope_of_eq [DecidableEq F]
-    {P Q : Fin 3 → F}
+private lemma toAffine_slope_of_eq [DecidableEq F] {P Q : Fin 3 → F}
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
     (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
