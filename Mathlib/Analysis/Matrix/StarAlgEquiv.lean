@@ -221,21 +221,13 @@ theorem StarAlgEquiv.eq_unitaryConjStarAlgAut_symm_unitaryLinearIsometryEquiv
     1 f (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
   exact ⟨Unitary.linearIsometryEquiv U, StarAlgEquiv.ext <| congrFun hU⟩
 
-lemma LinearMapClass.isometry_iff_inner {V W : Type*} [SeminormedAddCommGroup V]
-    [InnerProductSpace 𝕜 V] [SeminormedAddCommGroup W] [InnerProductSpace 𝕜 W]
-    {F : Type*} [FunLike F V W] [LinearMapClass F 𝕜 V W] (f : F) :
-    Isometry f ↔ ∀ x y, inner 𝕜 (f x) (f y) = inner 𝕜 x y := by
-  rw [AddMonoidHomClass.isometry_iff_norm]
-  refine ⟨fun h x y ↦ ?_, fun h x ↦ by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), h]⟩
-  simp_rw [inner_eq_sum_norm_sq_div_four, ← map_smul, ← map_add, ← map_sub, h]
-
 theorem ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W] (e : V ≃L[𝕜] W) :
     Isometry e ↔ adjoint e.toContinuousLinearMap = e.symm.toContinuousLinearMap := by
-  simp_rw [LinearMapClass.isometry_iff_inner, ← coe_coe, ← adjoint_inner_left, ← comp_apply,
-    ← ext_iff_inner_right 𝕜]
-  exact ⟨fun h ↦ ContinuousLinearMap.ext fun x ↦ by simpa using h (e.symm x), fun h ↦ by simp [h]⟩
+  simp_rw [AddMonoidHomClass.isometry_iff_norm, ← coe_coe, norm_map_iff_adjoint_comp_self]
+  refine ⟨fun h ↦ ContinuousLinearMap.ext fun x ↦ by simpa using congr($h (e.symm x)), fun h ↦ ?_⟩
+  simp [h, one_def]
 
 /-- can't do this inline, it times out -/
 noncomputable abbrev aux_isometry
