@@ -441,7 +441,7 @@ variable {V W} (f : V ⟶ W)
 def mapHomotopyCategory :
     V.HomotopyCategory ⥤ W.HomotopyCategory :=
   CategoryTheory.Quotient.lift _
-    ((oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ quotientFunctor W) (by
+    (((oneTruncation₂ ⋙ Cat.freeRefl).map f).toFunctor ⋙ quotientFunctor W) (by
       rintro _ _ _ _ ⟨h⟩
       exact CategoryTheory.Quotient.sound _ ⟨h.map f⟩)
 
@@ -458,12 +458,13 @@ end
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u, u} where
   obj V := Cat.of V.HomotopyCategory
-  map F := mapHomotopyCategory F
-  map_id _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
-  map_comp _ _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
+  map F := (mapHomotopyCategory F).toCatHom
+  map_id _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
+  map_comp _ _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
 
 theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map f).toFunctor ⋙
+      SSet.Truncated.HomotopyCategory.quotientFunctor Y =
       SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an

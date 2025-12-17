@@ -258,22 +258,22 @@ open FreeGroupoid
 /-- The free groupoid construction on a category as a functor. -/
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   obj C := Grpd.of <| FreeGroupoid C
-  map {C D} F := map F
-  map_id C := by simp [Grpd.id_eq_id, map_id, Cat.id_eq_id]
-  map_comp F G := by simp [Grpd.comp_eq_comp, map_comp, Cat.comp_eq_comp]
+  map {C D} F := map F.toFunctor
+  map_id C := by simp [map_id, id_eq_id]
+  map_comp F G := by simp [Grpd.comp_eq_comp, map_comp]
 
 @[simp]
 lemma free_obj (C : Cat.{u, u}) : free.obj C = FreeGroupoid C :=
   rfl
 
 @[simp]
-lemma free_map {C D : Cat.{u, u}} (F : C ⟶ D) : free.map F = map F :=
+lemma free_map {C D : Cat.{u, u}} (F : C ⟶ D) : free.map F = map F.toFunctor :=
   rfl
 
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
   Adjunction.mkOfHomEquiv
-    { homEquiv _ _ := FreeGroupoid.functorEquiv
+    { homEquiv _ _ := FreeGroupoid.functorEquiv.trans (Functor.equivCatHom _ _)
       homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_comp_lift _ _).symm
       homEquiv_naturality_right _ _ := rfl }
 
@@ -281,17 +281,17 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Groupoid.{u} D]
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F = FreeGroupoid.of C ⋙ F :=
+    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F).toFunctor = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F = map F ⋙ lift (𝟭 D) :=
+    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F.toCatHom = map F ⋙ lift (𝟭 D) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_unit_app :
-    freeForgetAdjunction.unit.app (Cat.of C) = FreeGroupoid.of C :=
+    (freeForgetAdjunction.unit.app (Cat.of C)).toFunctor = FreeGroupoid.of C :=
   rfl
 
 @[simp]
