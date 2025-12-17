@@ -301,6 +301,12 @@ theorem derivWithin_mul (hc : DifferentiableWithinAt 𝕜 c s x)
     derivWithin (c * d) s x = derivWithin c s x * d x + c x * derivWithin d s x :=
   derivWithin_fun_mul hc hd
 
+theorem derivWithin_mul_restrict (hc : DifferentiableOn 𝕜 c s)
+    (hd : DifferentiableOn 𝕜 d s) : s.restrict (derivWithin (fun y => c y * d y) s) =
+    s.restrict (derivWithin c s * d + c * derivWithin d s) := by
+  ext y
+  simp [derivWithin_fun_mul (hc y y.2) (hd y y.2)]
+
 @[simp]
 theorem deriv_fun_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     deriv (fun y => c y * d y) x = deriv c x * d x + c x * deriv d x :=
