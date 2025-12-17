@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import all Mathlib.Tactic.Linter.PrivateModule
 import Mathlib.Util.Notation3
 
