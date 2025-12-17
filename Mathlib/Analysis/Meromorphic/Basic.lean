@@ -601,7 +601,7 @@ theorem eventually_codiscreteWithin_analyticAt
 /--
 The singular set of a meromorphic function is countable.
 -/
-theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
+theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [CompleteSpace E]
     (h : MeromorphicOn f U) :
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
   classical
@@ -611,13 +611,21 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
   apply countable_of_Lindelof_of_discrete
 
 /--
+The singular set of a meromorphic function is countable.
+-/
+theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
+    (h : MeromorphicOn f Set.univ) :
+    {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
+  simpa using (countable_compl_analyticAt_inter h)
+
+/--
 Meromorphic functions are measurable.
 -/
 theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelSpace 𝕜]
     [MeasurableSpace E] [CompleteSpace E] [BorelSpace E] (h : MeromorphicOn f Set.univ) :
     Measurable f := by
   set s := {z : 𝕜 | AnalyticAt 𝕜 f z}
-  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt
+  have h₁ : sᶜ.Countable  := by simpa using h.countable_compl_analyticAt_inter
   have h₁' := h₁.to_subtype
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
