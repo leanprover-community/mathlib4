@@ -491,6 +491,13 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
 
+lemma padicValNat_le_self {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
+  rcases dvd with ⟨k, hk⟩
+  have : padicValNat 2 k < k := by calc
+    _ ≤ log 2 k := padicValNat_le_nat_log k
+    _ < _ := log_lt_self 2 (by omega)
+  grind [padicValNat.mul, padicValNat.self]
+
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :

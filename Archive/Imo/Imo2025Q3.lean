@@ -117,13 +117,6 @@ def fExample : ℕ → ℕ := fun x ↦
   else if x = 2 then 4
   else 2 ^ (padicValNat 2 x + 2)
 
-lemma padicValNat_le_self {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2 a + 2 ≤ a := by
-  rcases dvd with ⟨k, hk⟩
-  have : padicValNat 2 k < k := by calc
-    _ ≤ log 2 k := padicValNat_le_nat_log k
-    _ < _ := log_lt_self 2 (by omega)
-  grind [padicValNat.mul, padicValNat.self]
-
 lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
