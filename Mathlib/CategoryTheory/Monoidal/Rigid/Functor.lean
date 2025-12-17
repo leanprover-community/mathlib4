@@ -37,18 +37,12 @@ section LeftRigid
 variable [LeftRigidCategory C]
 
 /-- The left dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
+@[simps obj map]
 def leftDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (ᘁX))
   map f := (ᘁf).op.mop
   map_id X := by simp [leftAdjointMate_id]
   map_comp f g := by simp [comp_leftAdjointMate]
-
-@[simp]
-lemma leftDualFunctor_obj (X : C) : (leftDualFunctor C).obj X = mop (op (ᘁX)) := rfl
-
-@[simp]
-lemma leftDualFunctor_map {X Y : C} (f : X ⟶ Y) :
-    (leftDualFunctor C).map f = (ᘁf).op.mop := rfl
 
 end LeftRigid
 
@@ -57,18 +51,12 @@ section RightRigid
 variable [RightRigidCategory C]
 
 /-- The right dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
+@[simps obj map]
 def rightDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (Xᘁ))
   map f := (fᘁ).op.mop
   map_id X := by simp [rightAdjointMate_id]
   map_comp f g := by simp [comp_rightAdjointMate]
-
-@[simp]
-lemma rightDualFunctor_obj (X : C) : (rightDualFunctor C).obj X = mop (op (Xᘁ)) := rfl
-
-@[simp]
-lemma rightDualFunctor_map {X Y : C} (f : X ⟶ Y) :
-    (rightDualFunctor C).map f = (fᘁ).op.mop := rfl
 
 end RightRigid
 
