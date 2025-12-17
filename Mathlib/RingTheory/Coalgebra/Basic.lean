@@ -451,6 +451,25 @@ abbrev coalgebraStruct [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (e :
     counit := counit ∘ₗ (e.linearEquiv R).toLinearMap }
 
 variable (R) in
+open TensorProduct in
+lemma tensorProductAssoc_def [AddCommMonoid B] [Module R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    TensorProduct.assoc R A A A = .trans
+      (congr (congr (e.linearEquiv R) (e.linearEquiv R)) (e.linearEquiv R)) (.trans
+      (TensorProduct.assoc R B B B) <| congr (e.linearEquiv R).symm <|
+        congr (e.linearEquiv R).symm (e.linearEquiv R).symm) := by
+  ext x
+  induction x with
+  | zero => simp
+  | add => simp [*]
+  | tmul x a =>
+  induction x with
+  | zero => simp
+  | add => simp [*, add_tmul]
+  | tmul a x => simp
+
+variable (R) in
 /-- Transfer `Coalgebra` across an `Equiv`. -/
 abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
     letI := e.addCommMonoid
@@ -459,9 +478,26 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
   letI := e.addCommMonoid
   letI := e.module R
   { __ := e.coalgebraStruct R
-    rTensor_counit_comp_comul := by ext; simp [coalgebraStruct]
-    lTensor_counit_comp_comul := by ext; simp [coalgebraStruct]
-    coassoc := by ext; simp [coalgebraStruct]
+    rTensor_counit_comp_comul := by
+      ext
+      apply (TensorProduct.map_bijective (f := .id) Function.bijective_id
+        (e.linearEquiv R).bijective).injective
+      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.rTensor]
+        using Coalgebra.rTensor_counit_comul _
+    lTensor_counit_comp_comul := by
+      ext
+      apply (TensorProduct.map_bijective (g := .id) (e.linearEquiv R).bijective
+        Function.bijective_id).injective
+      simpa [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map, LinearMap.lTensor]
+        using Coalgebra.lTensor_counit_comul _
+    coassoc := by
+      ext
+      apply (TensorProduct.map_bijective (e.linearEquiv R).bijective <|
+        TensorProduct.map_bijective (e.linearEquiv R).bijective
+        (e.linearEquiv R).bijective).injective
+      simp [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
+        ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
+      simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _
   }
 
 end Equiv
