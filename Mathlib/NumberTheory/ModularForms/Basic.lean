@@ -344,25 +344,25 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
 /-- The modular form of weight `∑ i, k i` given by the product of `n` modular forms of
 weights `k i`. -/
 def finprod_add_weights {n : ℕ} (k : Fin n → ℤ) [Γ.HasDetPlusMinusOne]
-    (γ : (i : Fin n) → ModularForm Γ (k i)) : ModularForm Γ (∑ i, k i) := by
+    (f : (i : Fin n) → ModularForm Γ (k i)) : ModularForm Γ (∑ i, k i) := by
   induction n with
   | zero =>
     rw [Fin.sum_univ_zero]
     exact 0
   | succ n ih =>
     rw [Fin.sum_univ_add]
-    let γ' : (i : Fin n) → ModularForm Γ (k i.castSuccEmb) := fun i ↦ γ i.castSuccEmb
+    let f' : (i : Fin n) → ModularForm Γ (k i.castSuccEmb) := fun i ↦ f i.castSuccEmb
     simp only [Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, Finset.sum_singleton]
-    exact (ih (fun i ↦ k (Fin.castAdd 1 i)) γ').mul (γ (Fin.natAdd n 0))
+    exact (ih (fun i ↦ k (Fin.castAdd 1 i)) f').mul (f (Fin.natAdd n 0))
 
 /-- The modular form of weight `n * k` given by the product of `n` modular forms of weight `k`. -/
 def finprod_equal_weights
-    {n : ℕ} {k : ℤ} [Γ.HasDetPlusMinusOne] (γ : Fin n → ModularForm Γ k) :
+    {n : ℕ} {k : ℤ} [Γ.HasDetPlusMinusOne] (f : Fin n → ModularForm Γ k) :
   ModularForm Γ (n * k) := by
     have : ↑n * k = ∑ (i : Fin n), k  := by simp only [Finset.sum_const, Finset.card_univ,
       Fintype.card_fin, Int.nsmul_eq_mul]
     rw [this]
-    exact finprod_add_weights (fun i ↦ k) γ
+    exact finprod_add_weights (fun i ↦ k) f
 
 
 @[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
