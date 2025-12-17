@@ -152,7 +152,7 @@ lemma bonza_fExample : fExample ∈ bonza := by
         · simp [lt]
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
           rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
-          exact pow_two_sub_one_ge (by omega) (two_dvd_ne_zero.mpr hb1) (by omega)
+          exact padicValNat.pow_two_sub_one_ge (by omega) (two_dvd_ne_zero.mpr hb1) (by omega)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · grind [verify_case_two_dvd]
@@ -178,13 +178,13 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
         _ = 4 * 2 ^ padicValNat 2 n := by
           have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using
-              padicValNat.pow_two_sub_pow (show 1 < 3 by simp) ⟨1, rfl⟩ (by simp) (by omega) ch
+              padicValNat.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by omega) ch
           have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by omega
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
     · have : k = 0 := by
         by_contra! nh
-        have : Odd (f n) := Odd.of_dvd_nat (Odd.pow ch) (bonza_apply_dvd_pow hf hn)
+        have : Odd (f n) := ch.pow.of_dvd_nat (bonza_apply_dvd_pow hf hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
       simpa [hk, this] using by omega
