@@ -82,8 +82,8 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
-  calc ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ := by gcongr; apply nnnorm_coe_le_nnnorm
+  calc  ∫⁻ x, ‖f x‖₊ ∂μ
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnnorm_coe_le_nnnorm
     _ = ‖f‖₊ * (μ Set.univ) := by rw [lintegral_const]
 
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
@@ -91,15 +91,15 @@ variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
-  calc ∫⁻ x, ‖f x‖₊ ∂μ
+  calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnnorm_le μ
-    _ < ∞ := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
+    _ < ∞                   := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
 
 variable [NormedSpace ℝ E]
 
 lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ μ.real Set.univ * ‖f‖ := by
-  calc ‖∫ x, f x ∂μ‖
+  calc  ‖∫ x, f x ∂μ‖
     _ ≤ ∫ x, ‖f x‖ ∂μ := norm_integral_le_integral_norm _
     _ ≤ ∫ _, ‖f‖ ∂μ := ?_
     _ = μ.real Set.univ • ‖f‖ := by rw [integral_const]

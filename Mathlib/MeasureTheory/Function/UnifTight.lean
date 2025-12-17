@@ -278,7 +278,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   have hfngEε := calc
     eLpNorm (E.indicator (f n - g)) p μ
       = eLpNorm (f n - g) p (μ.restrict E) := eLpNorm_indicator_eq_eLpNorm_restrict hmE
-    _ ≤ ε / 3 := hfngε n hn
+    _ ≤ ε / 3                              := hfngε n hn
   -- get exterior estimates
   have hmgEc : AEStronglyMeasurable _ μ := (hg.indicator hmE.compl).aestronglyMeasurable
   have hgEcε := calc
