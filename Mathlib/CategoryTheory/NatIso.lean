@@ -110,7 +110,7 @@ because the `simp` normal form is `α.hom.app X`, rather than `α.app.hom X`.
 (With the latter, the morphism would be visibly part of an isomorphism, so general lemmas about
 isomorphisms would apply.)
 
-In the future, we should consider a redesign that changes this simp norm form,
+In the future, we should consider a redesign that changes this simp normal form,
 but for now it breaks too many proofs.
 -/
 

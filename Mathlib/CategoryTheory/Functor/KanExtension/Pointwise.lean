@@ -14,7 +14,7 @@ In this file, we define the notion of pointwise (left) Kan extension. Given two 
 `L : C ⥤ D` and `F : C ⥤ H`, and `E : LeftExtension L F`, we introduce a cocone
 `E.coconeAt Y` for the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`
 the point of which is `E.right.obj Y`, and the type `E.IsPointwiseLeftKanExtensionAt Y`
-which expresses that `E.coconeAt Y` is colimit. When this holds for all `Y : D`,
+which expresses that `E.coconeAt Y` is a colimit. When this holds for all `Y : D`,
 we may say that `E` is a pointwise left Kan extension (`E.IsPointwiseLeftKanExtension`).
 
 Conversely, when `CostructuredArrow.proj L Y ⋙ F` has a colimit, we say that

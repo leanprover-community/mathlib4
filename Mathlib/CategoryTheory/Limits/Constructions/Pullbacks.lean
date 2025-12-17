@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 /-!
 # Constructing pullbacks from binary products and equalizers
 
-If a category as binary products and equalizers, then it has pullbacks.
-Also, if a category has binary coproducts and coequalizers, then it has pushouts
+If a category has binary products and equalizers, then it has pullbacks.
+Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
 
 @[expose] public section

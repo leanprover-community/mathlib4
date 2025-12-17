@@ -98,7 +98,7 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (HasProductsOfShapeAux.adj L W J).isLeftAdjoint
 
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
-identities and is stable by products indexed by `J`,
+identities and is stable under products indexed by `J`,
 then any localization functor for `W` preserves finite products indexed by `J`. -/
 lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J] :
@@ -114,7 +114,7 @@ lemma hasFiniteProducts : HasFiniteProducts D :=
 
 include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
-identities and is stable by finite products,
+identities and is stable under finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where

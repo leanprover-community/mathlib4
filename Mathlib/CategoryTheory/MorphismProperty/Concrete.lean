@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 In this file, we define the class of morphisms `MorphismProperty.injective`,
 `MorphismProperty.surjective`, `MorphismProperty.bijective` in concrete
-categories, and show that it is stable under composition and respect isomorphisms.
+categories, and show that it is stable under composition and respects isomorphisms.
 
 We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,

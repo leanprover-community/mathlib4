@@ -432,13 +432,13 @@ def curry' {X Y : C} [Closed X] (f : X ⟶ Y) : 𝟙_ C ⟶ (ihom X).obj Y :=
 def uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) : X ⟶ Y :=
   (ρ_ _).inv ≫ uncurry g
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma curry'_uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) :
     curry' (uncurry' g) = g := by
   simp [curry', uncurry']
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma uncurry'_curry' {X Y : C} [Closed X] (f : X ⟶ Y) :
     uncurry' (curry' f) = f := by
