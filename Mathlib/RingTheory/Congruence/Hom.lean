@@ -104,7 +104,7 @@ theorem mapGen_eq_map_of_surjective
     {c : RingCon M} (f : M →+* N) (h : ker f ≤ c) (hf : Surjective f) :
     c.mapGen f = Relation.Map c f f := by
   refine le_antisymm ?_ <| (RingCon.gi N).gc.le_u_l _
-  have := Relation.map_equivalence c.toSetoid.2 _ hf h
+  have := Relation.map_equivalence c.toSetoid.2 _ hf @h
   intro _ _ hg
   induction hg with
   | of _ _ a => exact a
