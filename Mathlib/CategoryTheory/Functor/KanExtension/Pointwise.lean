@@ -37,7 +37,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C D D' H : Type*} [Category C] [Category D] [Category D'] [Category H]
+variable {C D D' H : Type*} [Category* C] [Category* D] [Category* D'] [Category* H]
   (L : C ⥤ D) (L' : C ⥤ D') (F : C ⥤ H)
 
 /-- The condition that a functor `F` has a pointwise left Kan extension along `L` at `Y`.
@@ -480,7 +480,7 @@ def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
         simpa using ((h Y₁).fac (coneAt G Y₁) ((StructuredArrow.map φ).obj X)).symm) }
     (by
       ext X
-      simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)) )
+      simpa using (h (L.obj X)).fac (RightExtension.coneAt G _) (StructuredArrow.mk (𝟙 _)))
 
 lemma IsPointwiseRightKanExtension.hom_ext
     {G : RightExtension L F} {f₁ f₂ : G ⟶ E} : f₁ = f₂ := by

@@ -45,7 +45,7 @@ termination_by o
 decreasing_by exact x.toOrd.prop
 
 @[simp]
-theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.ToType  := by
+theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.ToType := by
   rw [toPGame, LeftMoves]
 
 @[simp]
