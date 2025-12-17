@@ -134,7 +134,7 @@ theorem signVariations_neg : signVariations (-P) = signVariations P := by
   have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
     grind [Left.sign_neg]
   have h_neg_destutter (l : List SignType) :
-      (l.destutter (¬· = ·)).map (-·) = (l.map (-·)).destutter (¬· = ·) := by
+      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by
     grind [List.map_destutter, neg_inj]
   rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
   congr 5
