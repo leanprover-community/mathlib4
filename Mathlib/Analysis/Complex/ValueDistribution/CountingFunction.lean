@@ -8,15 +8,15 @@ module
 public import Mathlib.Analysis.Complex.JensenFormula
 
 /-!
-# The Counting Function of Value Distribution Theory
+# The Logarithmic Counting Function of Value Distribution Theory
 
 For nontrivially normed fields `𝕜`, this file defines the logarithmic counting function of a
 meromorphic function defined on `𝕜`.  Also known as the `Nevanlinna counting function`, this is one
 of the three main functions used in Value Distribution Theory.
 
-The counting function of a meromorphic function `f` is a logarithmically weighted measure of the
-number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`, counting
-multiplicities.
+The logarithmic counting function of a meromorphic function `f` is a logarithmically weighted
+measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
+taking multiplicities into account.
 
 See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
@@ -29,13 +29,13 @@ Approximation*][MR3156076] for a detailed discussion.
   is the pole or zero-divisor of a meromorphic function.
 
 - Even though value distribution theory is best developed for meromorphic functions on the complex
-  plane (and therefore placed in the complex analysis section of Mathlib), we introduce the counting
-  function for arbitrary normed fields.
+  plane (and therefore placed in the complex analysis section of Mathlib), we introduce the
+  logarithmic counting function for arbitrary normed fields.
 
 ## TODO
 
-- Discuss the counting function for rational functions, add a forward reference to the upcoming
-  converse, formulated in terms of the Nevanlinna height.
+- Discuss the logarithmic counting function for rational functions, add a forward reference to the
+  upcoming converse, formulated in terms of the Nevanlinna height.
 -/
 
 @[expose] public section
@@ -120,7 +120,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
   simp [logCounting]
 
 /--
-For `1 ≤ r`, the counting function is non-negative.
+For `1 ≤ r`, the logarithmic counting function is non-negative.
 -/
 theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
@@ -138,7 +138,7 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
   · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
 
 /--
-For `1 ≤ r`, the counting function respects the `≤` relation.
+For `1 ≤ r`, the logarithmic counting function respects the `≤` relation.
 -/
 theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
@@ -147,7 +147,7 @@ theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
   simpa using logCounting_nonneg h hr
 
 /--
-The counting function respects the `≤` relation asymptotically.
+The logarithmic counting function respects the `≤` relation asymptotically.
 -/
 theorem logCounting_eventually_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} (h : f₁ ≤ f₂) :
@@ -174,7 +174,7 @@ The logarithmic counting function of a meromorphic function.
 
 If `f : 𝕜 → E` is meromorphic and `a : WithTop E` is any value, this is a logarithmically weighted
 measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
-counting multiplicities.  In the special case where `a = ⊤`, it counts the poles of `f`.
+taking multiplicities into account.  In the special case where `a = ⊤`, it counts the poles of `f`.
 -/
 noncomputable def logCounting : ℝ → ℝ := by
   by_cases h : a = ⊤
@@ -189,8 +189,8 @@ lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
   simp [logCounting, ← locallyFinsuppWithin.logCounting.map_sub]
 
 /--
-For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the counting
-function associated with the zero-divisor of the meromorphic function `f - a₀`.
+For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the logarithmic
+counting function for the zeros of `f - a₀`.
 -/
 lemma logCounting_coe :
     logCounting f a₀ = (divisor (fun z ↦ f z - a₀) univ)⁺.logCounting := by
@@ -198,23 +198,23 @@ lemma logCounting_coe :
 
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
-counting function for the value zero of the shifted function `f - a₀`.
+counting function for the zeros of `f - a₀`.
 -/
 lemma logCounting_coe_eq_logCounting_sub_const_zero :
     logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
   simp [logCounting]
 
 /--
-The logarithmic counting function `logCounting f 0` is the counting function associated with the
-zero-divisor of `f`.
+The logarithmic counting function `logCounting f 0` is the logarithmic counting function associated
+with the zero-divisor of `f`.
 -/
 lemma logCounting_zero :
     logCounting f 0 = (divisor f univ)⁺.logCounting := by
   simp [logCounting]
 
 /--
-The logarithmic counting function `logCounting f ⊤` is the counting function associated with
-the pole-divisor of `f`.
+The logarithmic counting function `logCounting f ⊤` is the logarithmic counting function associated
+with the pole-divisor of `f`.
 -/
 lemma logCounting_top :
     logCounting f ⊤ = (divisor f univ)⁻.logCounting := by
@@ -228,8 +228,8 @@ Evaluation of the logarithmic counting function at zero yields zero.
   by_cases h : a = ⊤ <;> simp [logCounting, h]
 
 /--
-The counting function associated with the divisor of `f` is the difference between `logCounting f 0`
-and `logCounting f ⊤`.
+The logarithmic counting function associated with the divisor of `f` is the difference between
+`logCounting f 0` and `logCounting f ⊤`.
 -/
 theorem log_counting_zero_sub_logCounting_top {f : 𝕜 → E} :
     (divisor f univ).logCounting = logCounting f 0 - logCounting f ⊤ := by
@@ -250,18 +250,18 @@ The logarithmic counting function of the constant function zero is zero.
 
 
 /-!
-## Elementary Properties of the Counting Function
+## Elementary Properties of the Logarithmic Counting Function
 -/
 
 /--
-Relation between the logarithmic counting function of `f` and of `f⁻¹`.
+Relation between the logarithmic counting functions of `f` and of `f⁻¹`.
 -/
 @[simp] theorem logCounting_inv {f : 𝕜 → 𝕜} :
      logCounting f⁻¹ ⊤ = logCounting f 0 := by
   simp [logCounting_zero, logCounting_top]
 
 /--
-Adding an analytic function does not change the counting function counting poles.
+Adding an analytic function does not change the logarithmic counting function for the poles.
 -/
 theorem logCounting_add_analyticOn (hf : MeromorphicOn f univ) (hg : AnalyticOn 𝕜 g univ) :
     logCounting (f + g) ⊤ = logCounting f ⊤ := by
@@ -269,16 +269,16 @@ theorem logCounting_add_analyticOn (hf : MeromorphicOn f univ) (hg : AnalyticOn 
   rw [hf.negPart_divisor_add_of_analyticNhdOn_right (isOpen_univ.analyticOn_iff_analyticOnNhd.1 hg)]
 
 /--
-Special case of `logCounting_add_analyticOn`: Adding a constant does not change the counting
-function counting poles.
+Special case of `logCounting_add_analyticOn`: Adding a constant does not change the logarithmic
+counting function for the poles.
 -/
 @[simp] theorem logCounting_add_const (hf : MeromorphicOn f univ) :
     logCounting (f + fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   apply logCounting_add_analyticOn hf analyticOn_const
 
 /--
-Special case of `logCounting_add_analyticOn`: Subtracting a constant does not change the counting
-function counting poles.
+Special case of `logCounting_add_analyticOn`: Subtracting a constant does not change the logarithmic
+counting function for the poles.
 -/
 @[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
@@ -289,8 +289,8 @@ function counting poles.
 -/
 
 /--
-For `1 ≤ r`, the logarithmic counting function of `f + g` at `⊤` is less than or equal to
-the sum of the logarithmic counting functions of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmic counting function for the poles of `f + g` is less than or equal to the
+sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
@@ -300,8 +300,8 @@ theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : Me
   exact Function.locallyFinsuppWithin.logCounting_le (negPart_divisor_add_le_add h₁f₁ h₁f₂) hr
 
 /--
-Asymptotically, the logarithmic counting function of `f + g` at `⊤` is less than or equal to the sum
-of the logarithmic counting functions of `f` and `g`, respectively.
+Asymptotically, the logarithmic counting function for the poles of `f + g` is less than or equal to
+the sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
@@ -310,8 +310,8 @@ theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : Me
   exact fun _ hr ↦ logCounting_add_top_le h₁f₁ h₁f₂ hr
 
 /--
-For `1 ≤ r`, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or equal
-to the sum of the logarithmic counting functions of `f ·`.
+For `1 ≤ r`, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than or
+equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
     (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) (hr : 1 ≤ r) :
@@ -329,8 +329,8 @@ theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 →
         add_le_add (by trivial) hs
 
 /--
-Asymptotically, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or
-equal to the sum of the logarithmic counting functions of `f ·`.
+Asymptotically, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than
+or equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
     (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) :
@@ -339,8 +339,8 @@ theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α �
   exact fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
-For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or equal to the sum of the
-counting functions counting zeros of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmis counting function for the zeros of `f * g` is less than or equal to the
+sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 
 Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) where it is written as
@@ -365,8 +365,8 @@ theorem logCounting_zero_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
   apply Function.locallyFinsuppWithin.posPart_add
 
 /--
-Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
-the counting functions counting zeros of `f` and `g`, respectively.
+Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
+the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 -/
 theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -376,8 +376,8 @@ theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
   exact fun _ hr ↦ logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 /--
-For `1 ≤ r`, the counting function counting poles of `f * g` is less than or equal to the sum of the
-counting functions counting poles of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmic counting function for the poles of `f * g` is less than or equal to the
+sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -390,8 +390,8 @@ theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
   apply Function.locallyFinsuppWithin.negPart_add
 
 /--
-Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
-the counting functions counting zeros of `f` and `g`, respectively.
+Asymptotically, the logarithmic counting function for the zeros of `f * g` is less than or equal to
+the sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 -/
 theorem logCounting_top_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -401,16 +401,16 @@ theorem logCounting_top_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
   exact fun _ hr ↦ logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 /--
-For natural numbers `n`, the counting function counting zeros of `f ^ n` equals `n` times the
-counting function counting zeros of `f`.
+For natural numbers `n`, the logarithmic counting function for the zeros of `f ^ n` equals `n`
+times the logarithmic counting function for the zeros of `f`.
 -/
 @[simp] theorem logCounting_pow_zero {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
     logCounting (f ^ n) 0 = n • logCounting f 0 := by
   simp [logCounting, divisor_fun_pow hf n]
 
 /--
-For natural numbers `n`, the counting function counting poles of `f ^ n` equals `n` times the
-counting function counting poles of `f`.
+For natural numbers `n`, the logarithmic counting function for the poles of `f ^ n` equals `n` times
+the logarithmic counting function for the poles of `f`.
 -/
 @[simp] theorem logCounting_pow_top {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
     logCounting (f ^ n) ⊤ = n • logCounting f ⊤ := by
