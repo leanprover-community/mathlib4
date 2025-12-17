@@ -12,15 +12,15 @@ public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 /-!
 # The strict bicategory associated to a Cat-enriched category
 
-If `C` is a type with a `EnrichedCategory Cat C` structure, then it has hom-categories, whose
+If `C` is a type with an `EnrichedCategory Cat C` structure, then it has hom-categories, whose
 objects define 1-dimensional arrows on `C` and whose morphisms define 2-dimensional arrows between
 these. The enriched category axioms equip this data with the structure of a strict bicategory.
 
-We define a type alias `CatEnriched C` for a type `C` with a `EnrichedCategory Cat C` structure. We
+We define a type alias `CatEnriched C` for a type `C` with an `EnrichedCategory Cat C` structure. We
 provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
 
-If `C` is a type with a `EnrichedOrdinaryCategory Cat C` structure, then it has an `Enrichred Cat C`
+If `C` is a type with an `EnrichedOrdinaryCategory Cat C` structure, then it has an `Enriched Cat C`
 structure, so the previous construction would again produce a strict bicategory. However, in this
 setting `C` is also given a `Category C` structure, together with an equivalence between this
 category and the underlying category of the `Enriched Cat C`, and in examples the given category
@@ -51,7 +51,7 @@ namespace CatEnriched
 instance : EnrichedCategory Cat (CatEnriched C) := inferInstanceAs (EnrichedCategory Cat C)
 
 /-- Any enriched category has an underlying category structure defined by `ForgetEnrichment`.
-This is equivalent but not definitionally equal the category structure constructed here, which is
+This is equivalent but not definitionally equal to the category structure constructed here, which is
 more canonically associated to the data of an `EnrichedCategory Cat` structure. -/
 instance : CategoryStruct (CatEnriched C) where
   Hom X Y := X ⟶[Cat] Y
