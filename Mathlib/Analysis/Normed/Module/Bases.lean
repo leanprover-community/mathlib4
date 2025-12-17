@@ -131,6 +131,8 @@ end CanonicalProjections
 
 variable [CompleteSpace X]
 
+
+variable (𝕜 X) in
 /-- A basic sequence is a sequence (e n) such that e is a Schauder basis for
     the closedlinear span of (e n). -/
 def BasicSequence (e : ℕ → X) : Prop :=
@@ -142,6 +144,13 @@ def BasicSequence (e : ℕ → X) : Prop :=
         exact Set.mem_range_self n⟩)
 
 namespace BasicSequence
+
+theorem grunblum_criterion {e : ℕ → X} (K : ℝ) (hC : 1 < K)
+    (h : ∀ n : ℕ, ∀ m : ℕ, m ≤ n → ∀ a : ℕ → 𝕜,
+        ‖∑ i ∈ Finset.range m, a i • e i‖ ≤ K * ‖∑ i ∈ Finset.range n, a i • e i‖) :
+    BasicSequence 𝕜 X e := by
+    sorry
+
 
 end BasicSequence
 
