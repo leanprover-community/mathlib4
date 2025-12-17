@@ -325,7 +325,7 @@ lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
   existsi @Quotient.out _ (addConGen (PiTensorProduct.Eqv R s)).toSetoid x
   simp only [lifts, Set.mem_setOf_eq]
   rw [← AddCon.quot_mk_eq_coe]
-  erw [Quot.out_eq]
+  apply Quot.out_eq
 
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
@@ -407,7 +407,7 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
   -- show _ • _ = _
   -- rw [one_smul]
-  erw [AddCon.lift_coe]
+  conv_lhs => apply AddCon.lift_coe
   simp
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :

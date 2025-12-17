@@ -28,7 +28,7 @@ instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α)
   Countable.of_equiv α discreteEquiv.symm
 
 /-- A category with countably many objects and morphisms. -/
-class CountableCategory (J : Type*) [Category J] : Prop where
+class CountableCategory (J : Type*) [Category* J] : Prop where
   countableObj : Countable J := by infer_instance
   countableHom : ∀ j j' : J, Countable (j ⟶ j') := by infer_instance
 
@@ -81,19 +81,19 @@ noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
 
 end CountableCategory
 
-instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
+instance (α : Type*) [SmallCategory α] [FinCategory α] : CountableCategory α where
 
 open Opposite
 
 /-- The opposite of a countable category is countable. -/
-instance countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J] :
+instance countableCategoryOpposite {J : Type*} [Category* J] [CountableCategory J] :
     CountableCategory Jᵒᵖ where
   countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
 attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves countability. -/
-instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
+instance countableCategoryUlift {J : Type v} [Category.{v} J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   countableObj := instCountableULift
   countableHom := fun i j =>
