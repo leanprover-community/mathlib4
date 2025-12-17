@@ -91,6 +91,16 @@ theorem mk_neg {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
+@[simp]
+theorem mk_le_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
+    FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
+  .rfl
+
+@[simp]
+theorem mk_lt_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
+    FiniteElement.mk x hx < .mk y hy ↔ x < y :=
+  .rfl
+
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
@@ -355,5 +365,58 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
+
+theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
+  intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
+  unfold stdPart
+  rw [dif_pos hx, dif_pos hy]
+  apply OrderRingHom.monotone'
+  rwa [FiniteElement.mk_le_mk_iff]
+
+attribute [local simp] Nat.cast_add_one_pos in
+theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
+  obtain hx | hx := le_or_gt 0 (mk x)
+  · have hn : {r | x < f r}.Nonempty := by
+      obtain ⟨n, hn⟩ := hx
+      refine ⟨n + 1, lt_of_le_of_lt (b := ↑n) (le_of_abs_le ?_) ?_⟩
+      · simpa using hn
+      · simp
+    have hb : BddBelow {r | x < f r} := by
+      obtain ⟨n, hn⟩ := hx
+      refine ⟨-n, fun r hr ↦ ?_⟩
+      by_contra! hr'
+      apply (neg_le_of_abs_le hn).not_gt (hr.trans_le _)
+      simpa using f.monotone' hr'.le
+    rw [← mk_sub_pos_iff f hx, ← mk_one, mk_lt_mk, abs_one]
+    rintro (_ | n); · simp
+    rw [nsmul_eq_mul, Nat.cast_add_one, ← lt_inv_mul_iff₀ n.cast_add_one_pos, mul_one]
+    apply abs_by_cases (· < _)
+    · rw [sub_lt_iff_lt_add]
+      have : sInf {r | x < f r} < (n + 1 : ℝ)⁻¹ + sInf {r | x < f r} := by simp
+      rw [csInf_lt_iff hb hn] at this
+      obtain ⟨r, hr, hr'⟩ := this
+      apply lt_of_lt_of_le hr
+      simpa using f.monotone' hr'.le
+    · rw [neg_sub, sub_lt_comm]
+      have : sInf {r | x < f r} - (n + 1 : ℝ)⁻¹/2 < sInf {r | x < f r} := by simp
+      have := notMem_of_lt_csInf this hb
+      rw [Set.notMem_setOf_iff, not_lt] at this
+      apply this.trans_lt'
+      simp [map_ofNat]
+  · rw [stdPart_of_mk_ne_zero hx.ne]
+    have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
+    obtain h | h := le_or_gt 0 x
+    · convert (Real.sInf_empty).symm
+      rw [Set.eq_empty_iff_forall_notMem]
+      exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
+    · convert (Real.sInf_univ).symm
+      rw [Set.eq_univ_iff_forall]
+      exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
+
+theorem stdPart_eq_sSup (f : ℝ →+*o K) (x : K) : stdPart x = sSup {r | f r < x} := by
+  rw [← neg_inj, ← stdPart_neg, stdPart_eq_sInf f, ← Real.sInf_neg]
+  congr 1
+  ext
+  simp [neg_lt]
 
 end ArchimedeanClass
