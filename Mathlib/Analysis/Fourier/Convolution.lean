@@ -1,0 +1,113 @@
+/-
+Copyright (c) 2025 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll
+-/
+module
+
+public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Convolution
+
+/-! # The Fourier transform of the convolution
+
+In this file we calculate the Fourier transform of a convolution.
+
+## Main statements
+* `Real.fourier_convolution_eq`: the Fourier transform of a convolution is the multiplication of the
+Fourier transform of the functions.
+
+-/
+
+variable {𝕜 E F F₁ F₂ F₃ : Type*}
+
+open MeasureTheory
+
+variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedAddCommGroup F₁] [NormedAddCommGroup F₂] [NormedAddCommGroup F₃]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [NormedSpace ℂ F₁] [NormedSpace ℂ F₂] [NormedSpace ℂ F₃]
+  [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
+  [SMulCommClass ℂ 𝕜 F₁] [SMulCommClass ℂ 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₃]
+
+variable (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃)
+
+private theorem integrable_prod_sub {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
+    (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) :
+    Integrable (fun (p : E × E) ↦ ‖B‖ * (‖f₁ (p.1 - p.2)‖ * ‖f₂ p.2‖)) (volume.prod volume) := by
+  apply Integrable.const_mul
+  rw [integrable_prod_iff' (by measurability)]
+  constructor
+  · filter_upwards with x
+    exact (hf₁.comp_sub_right x).norm.mul_const _
+  have : Integrable (fun x ↦ ((∫ y, ‖f₁ y‖) * ‖f₂ x‖)) := by
+    apply hf₂.norm.bdd_mul (by measurability) (c := ‖(∫ y, ‖f₁ y‖)‖)
+    filter_upwards with; rfl
+  convert this using 1
+  ext x
+  simp_rw [norm_mul, norm_norm]
+  rw [integral_mul_const]
+  congr 1
+  convert integral_sub_right_eq_self _ x (μ := volume)
+  rfl
+
+open FourierTransform
+
+/-- Calculate the Fourier transform of the convolution as a symmetric integral. -/
+theorem fourier_convolution_eq' {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
+    (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) (ξ : E) :
+    𝓕 (convolution f₁ f₂ B) ξ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := calc
+  _ = 𝓕 (MeasureTheory.convolution f₂ f₁ B.flip) ξ := by
+    rw [convolution_flip]
+  _ = ∫ x, 𝐞 (-inner ℝ x ξ) • ∫ y, B (f₁ (x - y)) (f₂ y) := by rfl
+  _ = ∫ x, ∫ y, 𝐞 (-inner ℝ x ξ) • B (f₁ (x - y)) (f₂ y) := by
+    congr
+    ext x
+    simp_rw [Circle.smul_def, integral_smul]
+  _ = ∫ y, ∫ x, 𝐞 (-inner ℝ x ξ) • B (f₁ (x - y)) (f₂ y) := by
+    refine integral_integral_swap ?_
+    apply (integrable_prod_sub B hf₁ hf₂ hf₁' hf₂').mono (by measurability)
+    filter_upwards with ⟨y, x⟩
+    have : ‖(B (f₁ (y - x))) (f₂ x)‖ ≤ ‖B‖ * (‖f₁ (y - x)‖ * ‖f₂ x‖) := by
+      grw [B.le_opNorm₂ (f₁ (y - x)) (f₂ x), mul_assoc]
+    simpa
+  _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) := by
+    congr
+    ext y
+    -- Linear change of variables
+    convert integral_sub_right_eq_self _ y (μ := volume)
+    congr
+    simp
+
+variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
+
+/-- The Fourier transform of the convolution is given by the multiplication of the Fourier transform
+of the individual functions. -/
+theorem fourier_convolution_eq {f₁ : E → F₁} {f₂ : E → F₂} (hf₁ : Integrable f₁)
+    (hf₂ : Integrable f₂) (hf₁' : Continuous f₁) (hf₂' : Continuous f₂) (ξ : E) :
+    𝓕 (convolution f₁ f₂ B) ξ = B (𝓕 f₁ ξ) (𝓕 f₂ ξ) :=
+  calc
+    _ = ∫ y, ∫ x, 𝐞 (-inner ℝ (y + x) ξ) • B (f₁ x) (f₂ y) :=
+      fourier_convolution_eq' B hf₁ hf₂ hf₁' hf₂' _
+    _ = ∫ y, ∫ x, 𝐞 (-inner ℝ y ξ) • 𝐞 (-inner ℝ x ξ) • B (f₁ x) (f₂ y) := by
+      congr
+      ext y
+      congr
+      ext x
+      rw [smul_smul, ← AddChar.map_add_eq_mul, inner_add_left]
+      congr
+      grind
+    _ = ∫ y, (∫ x, B (𝐞 (-inner ℝ x ξ) • f₁ x)) (𝐞 (-inner ℝ y ξ) • f₂ y) := by
+      congr
+      ext y
+      simp_rw [Circle.smul_def, ContinuousLinearMap.map_smul, MeasureTheory.integral_smul]
+      congr
+      rw [ContinuousLinearMap.integral_apply ?_ (f₂ y)]
+      · simp
+      have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
+        hf₁.norm.const_mul _
+      apply this.mono (by measurability)
+      filter_upwards with x
+      simpa [← Circle.smul_def] using ContinuousLinearMap.le_opNorm B (f₁ x)
+    _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
+      rw [← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₂),
+        ← ContinuousLinearMap.integral_comp_comm _ (by simpa using hf₁)]
