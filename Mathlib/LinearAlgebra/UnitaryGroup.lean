@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Matrix.Reflection
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 

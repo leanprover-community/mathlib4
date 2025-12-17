@@ -28,7 +28,7 @@ multiplied by a unit on the right. -/
 def Associated [Monoid M] (x y : M) : Prop :=
   ∃ u : Mˣ, x * u = y
 
-/-- Notation for two elements of a monoid are associated, i.e.
+/-- Notation for two elements of a monoid being associated, i.e.
 if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
@@ -38,6 +38,7 @@ namespace Associated
 protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
   ⟨1, by simp⟩
 
+@[simp]
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
@@ -356,7 +357,7 @@ variable [Monoid M] [Subsingleton Mˣ]
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
   constructor
   · rintro ⟨c, rfl⟩
-    rw [units_eq_one c, Units.val_one, mul_one]
+    rw [c.eq_one, Units.val_one, mul_one]
   · rintro rfl
     rfl
 
@@ -715,7 +716,7 @@ theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m �
     m = 1 ∨ m = p := by
   rcases mk_surjective p with ⟨p, rfl⟩
   rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
+  simpa [mk_eq_mk_iff_associated, Associated.comm]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 
 theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=

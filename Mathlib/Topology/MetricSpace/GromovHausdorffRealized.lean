@@ -122,13 +122,7 @@ private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
-  have : 0 ≤ 2 * f (x, y) :=
-    calc
-      0 = f (x, x) := (candidates_refl fA).symm
-      _ ≤ f (x, y) + f (y, x) := candidates_triangle fA
-      _ = f (x, y) + f (x, y) := by rw [candidates_symm fA]
-      _ = 2 * f (x, y) := by ring
-  linarith
+  grind [candidates_symm, candidates_triangle]
 
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
@@ -175,8 +169,8 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
-    f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
-    _ ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
+    f (x, y) - f (z, t) ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by
+      grind [candidates_triangle]
     _ = f (x, z) + f (t, y) := by simp [sub_eq_add_neg, add_assoc]
     _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y := by
       gcongr <;> apply candidates_dist_bound fA
@@ -203,17 +197,17 @@ private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
 equicontinuous. Equicontinuity follows from the Lipschitz control, we check closedness. -/
 private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   have I1 : ∀ x y, IsClosed { f : Cb X Y | f (inl x, inl y) = dist x y } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I2 : ∀ x y, IsClosed { f : Cb X Y | f (inr x, inr y) = dist x y } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I3 : ∀ x y, IsClosed { f : Cb X Y | f (x, y) = f (y, x) } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_eval_const
+    isClosed_eq (continuous_eval_const _) (continuous_eval_const _)
   have I4 : ∀ x y z, IsClosed { f : Cb X Y | f (x, z) ≤ f (x, y) + f (y, z) } := fun x y z =>
-    isClosed_le continuous_eval_const (continuous_eval_const.add continuous_eval_const)
+    isClosed_le (continuous_eval_const _) ((continuous_eval_const _).add (continuous_eval_const _))
   have I5 : ∀ x, IsClosed { f : Cb X Y | f (x, x) = 0 } := fun x =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I6 : ∀ x y, IsClosed { f : Cb X Y | f (x, y) ≤ maxVar X Y } := fun x y =>
-    isClosed_le continuous_eval_const continuous_const
+    isClosed_le (continuous_eval_const _) continuous_const
   have : candidatesB X Y = (((((⋂ (x) (y), { f : Cb X Y | f (@inl X Y x, @inl X Y y) = dist x y }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (@inr X Y x, @inr X Y y) = dist x y }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (x, y) = f (y, x) }) ∩

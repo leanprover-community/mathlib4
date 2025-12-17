@@ -60,10 +60,10 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
     (fun c v w => by
       simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c),
-        MulAction.mul_smul])
+        SemigroupAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, SemigroupAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
@@ -385,7 +385,7 @@ theorem dotProduct_toMatrix₂_mulVec (B : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[
       B (b₁.equivFun.symm x) (b₂.equivFun.symm y) := by
   simp only [dotProduct, Function.comp_apply, Function.comp_def, mulVec_eq_sum, op_smul_eq_smul,
     Finset.sum_apply, Pi.smul_apply, transpose_apply, toMatrix₂_apply, smul_eq_mul, mul_sum,
-    Basis.equivFun_symm_apply, map_sum, LinearMap.map_smulₛₗ, coeFn_sum, LinearMap.smul_apply]
+    Basis.equivFun_symm_apply, map_sum, map_smulₛₗ, coe_sum, LinearMap.smul_apply]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
   ring

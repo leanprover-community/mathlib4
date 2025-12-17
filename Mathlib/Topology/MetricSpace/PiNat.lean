@@ -810,7 +810,7 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
-/-- Given a countable family of extended pseudo metric spaces,
+/-- Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -915,6 +915,8 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
+-- TODO: fix two non-terminal simps below; second one uses a long lemma list
+set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -977,7 +979,7 @@ def toPiNatEquiv : X ≃ PiNatEmbed X Y f where
   left_inv _ := rfl
   right_inv _ := rfl
 
-@[simp] lemma ofPiNat_inj {x y : PiNatEmbed X Y f} :  x.ofPiNat = y.ofPiNat ↔ x = y :=
+@[simp] lemma ofPiNat_inj {x y : PiNatEmbed X Y f} : x.ofPiNat = y.ofPiNat ↔ x = y :=
   (toPiNatEquiv X Y f).symm.injective.eq_iff
 
 @[simp] lemma «forall» {P : PiNatEmbed X Y f → Prop} : (∀ x, P x) ↔ ∀ x, P (toPiNat x) :=

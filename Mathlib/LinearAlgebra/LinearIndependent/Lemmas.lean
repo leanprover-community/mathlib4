@@ -455,7 +455,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
-  apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
+  apply LinearIndependent.of_comp (LinearMap.ltoFun K M L L)
   exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))

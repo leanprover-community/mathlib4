@@ -47,7 +47,7 @@ This file contains basic results on dual vector spaces.
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
   * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
-    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
+    It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -196,14 +196,28 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
   rw [← eval_apply_eq_zero_iff K v, LinearMap.ext_iff]
   simp only [eval_apply, zero_apply]
 
+/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
+theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
+    [Projective R V] {x : V} (hx : x ≠ 0) : ∃ f : Dual R V, f x ≠ 0 :=
+  have ⟨M, _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R V›
+  let b := Free.chooseBasis R M
+  have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
+  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
+  ⟨b.coord j ∘ₗ i, hj⟩
+
+/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
+theorem Projective.exists_dual_eq_one (K : Type*) [Semifield K] [Module K V] [Projective K V]
+    {x : V} (hx : x ≠ 0) : ∃ f : Dual K V, f x = 1 :=
+  have ⟨f, hf⟩ := exists_dual_ne_zero K hx
+  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
+
 @[simp]
 theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
   ⟨fun _ ↦ ⟨fun _ _ ↦ eval_apply_injective K (Subsingleton.elim ..)⟩, fun _ ↦ inferInstance⟩
 
 @[simp]
 theorem nontrivial_dual_iff : Nontrivial (Dual K V) ↔ Nontrivial V := by
-  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
-    subsingleton_dual_iff]
+  contrapose!; exact subsingleton_dual_iff K
 
 instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
@@ -365,7 +379,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert LinearMap.congr_fun hK' (p.mkQ x)
-  simp only [L',coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
+  simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
 end Submodule
@@ -630,7 +644,7 @@ lemma dualAnnihilator_eq_bot_iff' {W : Submodule R M} :
 
 @[simp] lemma dualAnnihilator_eq_bot_iff {W : Submodule R M} [Projective R (M ⧸ W)] :
     W.dualAnnihilator = ⊥ ↔ W = ⊤ := by
-  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, subsingleton_quotient_iff_eq_top]
+  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, Quotient.subsingleton_iff]
 
 @[simp] lemma dualAnnihilator_eq_top_iff {W : Submodule R M} [Projective R M] :
     W.dualAnnihilator = ⊤ ↔ W = ⊥ := by
@@ -1084,7 +1098,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
     Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
+    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
   · simpa using mul_comm _ _

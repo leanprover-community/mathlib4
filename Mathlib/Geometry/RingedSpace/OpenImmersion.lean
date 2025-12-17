@@ -48,7 +48,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   immersion, then the pullback `(f, g)` exists (and the forgetful functor to `TopCat` preserves it).
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft`: Open immersions
   are stable under pullbacks.
-* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso`: An (topological) open embedding
+* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso`: A (topological) open embedding
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
@@ -249,7 +249,7 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · infer_instance
 
 @[elementwise, simp]
-theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : TopCat}
+theorem ofRestrict_invApp {C : Type*} [Category* C] (X : PresheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ := by
   delta invApp
@@ -303,25 +303,19 @@ def pullbackConeOfLeftFst :
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
-                    -- Porting note: used to be `simpa using h₁`
-                    simp only [restrict_carrier, Opens.coe_mk, Set.mem_preimage, SetLike.mem_coe]
-                    -- The next `rw` can't be done by `simp`, but `restrict_carrier` can't be used
-                    -- by `rw`.
-                    rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply,
-                      TopCat.pullbackIsoProdSubtype_inv_snd_apply]
-                    simpa using h₁
+                    simpa [(TopCat.pullbackIsoProdSubtype_inv_fst_apply),
+                      (TopCat.pullbackIsoProdSubtype_inv_snd_apply)]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
         intro U V i
         induction U
         induction V
-        -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
-        -- before discrimination tree key generation
-        rw [inv_naturality_assoc]
-        dsimp
-        simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map,
-          Quiver.Hom.unop_op, ← Functor.map_comp, Category.assoc]
+        simp only [(inv_naturality_assoc), restrict_carrier, restrict_presheaf,
+          TopCat.Presheaf.pushforward_obj_obj, Functor.comp_obj, Functor.op_obj,
+          TopCat.Presheaf.pushforward_obj_map, Functor.comp_map, Functor.op_map, Quiver.Hom.unop_op,
+          NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op,
+          ← Functor.map_comp, Category.assoc]
         rfl }
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
@@ -329,14 +323,13 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U
-    -- Porting note: `NatTrans.comp_app` is not picked up by `dsimp`
-    -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
-    rw [NatTrans.comp_app]
-    dsimp only [comp_c_app, unop_op, Functor.whiskerRight_app, pullbackConeOfLeftFst]
-    -- simp only [ofRestrict_c_app, NatTrans.comp_app]
-    simp only [app_invApp_assoc,
-      eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
-    erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
+    simp only [(NatTrans.comp_app), comp_c_app, unop_op, Functor.whiskerRight_app,
+      pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
+      NatTrans.naturality_assoc, restrict_carrier, comp_base, ofRestrict_base, restrict_presheaf,
+      Functor.comp_obj, Functor.op_obj, Opens.map_comp_obj, TopCat.Presheaf.pushforward_obj_obj,
+      Opens.carrier_eq_coe, homOfLE_leOfHom, TopCat.Presheaf.pushforward_obj_map, Functor.comp_map,
+      Functor.op_map, eqToHom_unop, ofRestrict_c_app, Functor.id_obj]
+    rw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
@@ -815,7 +808,7 @@ instance ofRestrict {X : TopCat} (Y : SheafedSpace C) {f : X ⟶ Y.carrier}
   PresheafedSpace.IsOpenImmersion.ofRestrict _ hf
 
 @[elementwise, simp]
-theorem ofRestrict_invApp {C : Type*} [Category C] (X : SheafedSpace C) {Y : TopCat}
+theorem ofRestrict_invApp {C : Type*} [Category* C] (X : SheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
@@ -848,10 +841,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   rw [← Iso.eq_comp_inv] at this
   cases i
   rw [this, ← Category.assoc]
-  simp_rw [TopCat.isOpenEmbedding_iff_comp_isIso]
-  -- Porting note: `simp_rw` can't use `TopCat.isOpenEmbedding_iff_isIso_comp`.
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [TopCat.isOpenEmbedding_iff_isIso_comp]
+  simp_rw [TopCat.isOpenEmbedding_iff_comp_isIso, (TopCat.isOpenEmbedding_iff_isIso_comp)]
   exact .sigmaMk
 
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
