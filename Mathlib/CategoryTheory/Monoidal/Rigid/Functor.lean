@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.Opposite
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 # Dual Functors for Rigid Categories
@@ -39,8 +39,8 @@ section LeftRigid
 variable [LeftRigidCategory C]
 
 /-- The left dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
-@[simps obj map]
-def leftDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
+@[simps obj map, expose]
+public def leftDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (ᘁX))
   map f := (ᘁf).op.mop
   map_id X := by simp [leftAdjointMate_id]
@@ -53,8 +53,8 @@ section RightRigid
 variable [RightRigidCategory C]
 
 /-- The right dual functor from `C` to `(Cᵒᵖ)ᴹᵒᵖ`. -/
-@[simps obj map]
-def rightDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
+@[simps obj map, expose]
+public def rightDualFunctor : C ⥤ (Cᵒᵖ)ᴹᵒᵖ where
   obj X := mop (op (Xᘁ))
   map f := (fᘁ).op.mop
   map_id X := by simp [rightAdjointMate_id]
