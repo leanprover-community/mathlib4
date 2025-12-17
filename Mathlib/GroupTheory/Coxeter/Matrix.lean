@@ -112,9 +112,10 @@ def Aₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-theorem Aₙ_adjacent (n : ℕ) (i : Fin n) (hi : i.val + 1 < n) :
-    (Aₙ n) i ⟨i.val + 1, hi⟩ = 3 := by
-  simp [Aₙ, Fin.ext_iff]
+theorem Aₙ_adjacent (n : ℕ) (i j : Fin n) (h : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i) :
+    (Aₙ n) i j = 3 := by
+  simp only [Aₙ, Fin.ext_iff, Matrix.of_apply]
+  grind
 
 theorem Aₙ_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
     (h3 : (j : ℕ) + 1 ≠ i) : (Aₙ n) i j = 2 := by
