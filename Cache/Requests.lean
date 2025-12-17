@@ -505,8 +505,7 @@ def downloadFiles
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
 
     -- Set up decompression state and background task if enabled
-    let decompTaskRef ← IO.mkRef none
-    let decompState ← if decompress then
+    let (decompState, decompTask) ← if decompress then
       -- Build hash → module name mapping
       let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun (acc : Std.HashMap UInt64 Lean.Name) (mod : Lean.Name) (hash : UInt64) =>
         acc.insert hash mod
@@ -532,11 +531,10 @@ def downloadFiles
 
       -- Spawn background decompression task
       let task ← IO.asTask (decompressionLoop state)
-      decompTaskRef.set (some task)
 
-      pure (some state)
+      pure (some state, some task)
     else
-      pure none
+      pure (none, none)
 
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
@@ -562,7 +560,7 @@ def downloadFiles
     -- Wait for decompression task to complete if enabled
     if let some (state : DecompressionState) := decompState then
       -- Downloads are complete, wait for background task to finish
-      if let some task ← decompTaskRef.get then
+      if let some task := decompTask then
         match task.get with
         | .ok _ => pure ()
         | .error e => throw e
@@ -674,8 +672,7 @@ def getFiles
         (decompress := decompress) (forceUnpack := forceUnpack)
         isMathlibRoot mathlibDepPath
 
-  -- Decompression now happens inside downloadFiles when decompress=true
-  -- Keep unpackCache call only for when decompress=false but you want to unpack existing files
+  -- When decompress=true, decompression happens inside downloadFiles
   unless decompress do
     IO.println "Downloaded all files successfully!"
 
