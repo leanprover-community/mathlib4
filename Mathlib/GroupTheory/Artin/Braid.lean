@@ -82,10 +82,10 @@ theorem swapFun_isArtinLiftable (n : ℕ) :
     obtain hadj | hadj := hadj
     · -- i + 1 = j case: j.castSucc = i.succ
       have hj_cast : j.castSucc = i.succ := by grind
-      grind [Equiv.swap_mul_swap_mul_swap_braid]
+      grind [Equiv.swap_conjugate]
     · -- j + 1 = i case: i.castSucc = j.succ
       have hi_cast : i.castSucc = j.succ := by grind
-      grind [Equiv.swap_mul_swap_mul_swap_braid]
+      grind [Equiv.swap_conjugate]
   · -- Far case: m = 2, commutativity
     have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_far _ i j hij
         (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))

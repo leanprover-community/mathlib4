@@ -574,9 +574,9 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
   nth_rewrite 3 [← swap_inv]
   rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 
-/-- The braid relation for adjacent transpositions:
-`swap a b * swap b c * swap a b = swap b c * swap a b * swap b c` -/
-theorem swap_mul_swap_mul_swap_braid {a b c : α} (hab : a ≠ b) (hbc : b ≠ c) (hac : a ≠ c) :
+/-- Conjugating `swap b c` by `swap a b` equals conjugating `swap a b` by `swap b c`.
+This is also known as the braid relation for adjacent transpositions. -/
+theorem swap_conjugate {a b c : α} (hab : a ≠ b) (hbc : b ≠ c) :
     swap a b * swap b c * swap a b = swap b c * swap a b * swap b c := by
   ext
   grind [Perm.mul_apply]
