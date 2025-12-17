@@ -39,7 +39,7 @@ private lemma final_of_final_costructuredArrowToOver_small (L : A ⥤ T) (R : B 
     [∀ b : B, Final (CostructuredArrow.toOver L (R.obj b))] : Final L := by
   rw [final_iff_isIso_colimit_pre]
   intro G
-  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b) := fun b =>
+  have : ∀ (b : B), Final ((whiskerLeft R (preFunctor L (𝟭 T))).app b).toFunctor := fun b =>
     inferInstanceAs (Final (CostructuredArrow.toOver L (R.obj b)))
   let i : colimit (L ⋙ G) ≅ colimit G :=
     calc colimit (L ⋙ G) ≅ colimit <| grothendieckProj L ⋙ L ⋙ G :=

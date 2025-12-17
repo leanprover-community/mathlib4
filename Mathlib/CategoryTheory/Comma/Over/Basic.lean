@@ -259,9 +259,9 @@ variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
-  map := map
-  map_id := mapId_eq
-  map_comp := mapComp_eq
+  map f := (map f).toCatHom
+  map_id X := congr($(mapId_eq X).toCatHom)
+  map_comp f g := congr($(mapComp_eq f g).toCatHom)
 
 end coherences
 
@@ -702,9 +702,9 @@ variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
-  map f := map f.unop
-  map_id X := mapId_eq X.unop
-  map_comp f g := mapComp_eq (g.unop) (f.unop)
+  map f := (map f.unop).toCatHom
+  map_id X := congr($(mapId_eq X.unop).toCatHom)
+  map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
 
 end coherences
 

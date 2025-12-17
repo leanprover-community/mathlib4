@@ -76,7 +76,7 @@ def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
-  map n := NatTrans.mapElements n
+  map n := (NatTrans.mapElements n).toCatHom
 
 namespace CategoryOfElements
 
