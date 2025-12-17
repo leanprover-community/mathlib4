@@ -85,7 +85,7 @@ which means the derivative $f'(x)$ cannot exist.
 noncomputable
 abbrev seq (b x : ℝ) (m : ℕ) := ⌊b ^ m * x + 3 / 2⌋ / b ^ m
 
-theorem seq_mul_b_pow {b : ℝ} (hb : b ≠ 0) (x : ℝ) (m : ℕ) :
+theorem seq_mul_pow {b : ℝ} (hb : b ≠ 0) (x : ℝ) (m : ℕ) :
     seq b x m * b ^ m = ⌊b ^ m * x + 2⁻¹⌋ + 1 := by
   rw [seq, div_mul_cancel₀ _ (pow_ne_zero m hb)]
   norm_cast
@@ -182,7 +182,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
     calc
       _ = cos ((b ^ n * (⌊b ^ m * x + 2⁻¹⌋ + 1) : ℤ) * π) := by
         push_cast
-        rw [← seq_mul_b_pow (by simp [hb0])]
+        rw [← seq_mul_pow (by simp [hb0])]
         ring_nf
       _ = ((-1) ^ b ^ n) ^ (⌊b ^ m * x + 2⁻¹⌋) * (-1) ^ b ^ n := by
         rw [cos_int_mul_pi, mul_add_one, zpow_add₀ (by simp), zpow_mul]
@@ -285,7 +285,7 @@ theorem not_differentiableAt_weierstrass_seven (x : ℝ) :
   grw [pi_lt_d2]
   norm_num
 
-theorem exists_continuous_and_not_differentiableAt :
+theorem exists_uniformContinuous_and_not_differentiableAt :
     ∃ f : ℝ → ℝ, UniformContinuous f ∧ ∀ x, ¬ DifferentiableAt ℝ f x :=
   ⟨weierstrass 0.9 7, uniformContinuous_weierstrass (by norm_num) _,
     not_differentiableAt_weierstrass_seven⟩
