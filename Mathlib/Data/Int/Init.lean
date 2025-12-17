@@ -300,8 +300,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 /-! ### sign -/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> lia
+  lia
 
 /-! ### toNat -/
 
