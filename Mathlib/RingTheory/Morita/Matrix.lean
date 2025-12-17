@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Module
+public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Morita Equivalece between `R` and `Mₙ(R)`
@@ -14,6 +15,8 @@ public import Mathlib.LinearAlgebra.Matrix.Module
 ## Main definitions
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
+- `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
+  the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix.
 
 ## TODO (Edison)
 - Prove `R` and `Mₙ(R)` are morita-equivalent.
@@ -35,3 +38,158 @@ def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
+
+namespace MatrixModCat.toModuleCat
+
+open Matrix
+
+variable [Inhabited ι] {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M]
+
+variable (M) in
+private def α : AddSubgroup M :=
+  DistribMulAction.toAddMonoidHom M (single default default 1 : Matrix ι ι R)|>.range
+
+variable {R ι} in
+@[simp]
+lemma α_mem (x : M) : x ∈ α R ι M ↔ ∃ y : M, (single default default 1 : Matrix ι ι R) • y = x :=
+  Iff.rfl
+
+instance : SMul R (α R ι M) where
+    smul a x := ⟨(single default default a : Matrix ι ι R) • x.1, α_mem _|>.2
+      ⟨(single default default a : Matrix ι ι R) • x.1, by simp [← SemigroupAction.mul_smul]⟩⟩
+
+@[simp]
+lemma smul_α_coe
+    (x : R) (y : α R ι M) : ((x • y : α R ι M) : M) =
+    (single default default x : Matrix ι ι R) • y.1 := rfl
+
+lemma one_smul' (x : α R ι M) : (1 : R) • x = x := by
+  obtain ⟨y, hy⟩ := α_mem x.1|>.1 x.2
+  ext; simp [← hy, ← SemigroupAction.mul_smul]
+
+lemma mul_smul' (a a' : R) (x : α R ι M) : (a * a') • x = a • (a' • x) := by
+  obtain ⟨y, hy⟩ := α_mem x.1|>.1 x.2
+  ext; simp [← hy, ← SemigroupAction.mul_smul]
+
+lemma smul_zero' (a : R) : a • (0 : α R ι M) = 0 := by ext; simp
+
+lemma smul_add' (a : R) (x y : α R ι M) : a • (x + y) = a • x + a • y := by
+  obtain ⟨x', hx'⟩ := α_mem x.1|>.1 x.2
+  obtain ⟨y', hy'⟩ := α_mem y.1|>.1 y.2
+  ext; simp [← hx', ← hy', ← SemigroupAction.mul_smul, ← smul_add]
+
+lemma add_smul' (a b : R) (x : α R ι M) : (a + b) • x = a • x + b • x := by
+  obtain ⟨y, hy⟩ := α_mem x.1|>.1 x.2
+  ext; simpa [← hy, ← SemigroupAction.mul_smul, ← add_smul] using congr_fun
+    (congr(@HSMul.hSMul _ _ _ _ $(single_add default default a b))) _
+
+lemma zero_smul' (x : α R ι M) : (0 : R) • x = 0 := by
+  obtain ⟨y, hy⟩ := α_mem x.1|>.1 x.2
+  ext; simp [← hy, ← SemigroupAction.mul_smul]
+
+instance module_α : Module R <| α R ι M where
+  one_smul := one_smul' _ _
+  mul_smul := mul_smul' _ _
+  smul_zero := smul_zero' _ _
+  smul_add := smul_add' _ _
+  add_smul := add_smul' _ _
+  zero_smul := zero_smul' _ _
+
+variable {R ι} in
+@[simps]
+private def _root_.LinearMap.fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N]
+    (f : M →ₗ[Matrix ι ι R] N) : (α R ι M) →ₗ[R] (α R ι N) where
+  toFun x := ⟨f x.1, by obtain ⟨y, hy⟩ := α_mem x.1|>.1 x.2; simp [← hy]⟩
+  map_add' := by simp
+  map_smul' := by simp [Subtype.ext_iff]
+
+end MatrixModCat.toModuleCat
+
+variable [Inhabited ι]
+
+/-- the functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
+  the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
+@[simp]
+def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R where
+  obj M := ModuleCat.of R (MatrixModCat.toModuleCat.α R ι M)
+  map f := ModuleCat.ofHom <| LinearMap.fromMatrixLinear f.hom
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+open MatrixModCat.toModuleCat Matrix
+
+/-- auxilary isomorphism showing that compose two functors gives `id` on objects. -/
+@[simps]
+def fromModuleCat_toModuleCatLinearEquiv (M) [AddCommGroup M] [Module R M] :
+    MatrixModCat.toModuleCat.α R ι (ι → M) ≃ₗ[R] M where
+  toFun x := ∑ i : ι, x.1 i
+  map_add' := by simp [Finset.sum_add_distrib]
+  map_smul' r := fun ⟨x, hx⟩ ↦ by
+    simp only [smul_α_coe, smul_def, RingHom.id_apply, Finset.smul_sum]
+    refine Finset.sum_congr rfl fun i _ ↦ ?_
+    obtain ⟨y, hy⟩ := α_mem x|>.1 hx
+    simp only [← hy, smul_def, Finset.smul_sum, ← smul_assoc, smul_eq_mul]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_smul, ← Matrix.mul_apply, Matrix.single_mul_single_same, mul_one,
+      ← smul_eq_mul, ← Matrix.smul_apply r (single default default 1 : Matrix ι ι R), smul_single,
+      smul_eq_mul, mul_one]
+  invFun x := ⟨Function.update 0 default x, Function.const ι x, by
+    ext i
+    simp only [DistribMulAction.toAddMonoidHom_apply, smul_def, Function.const_apply,
+      Function.update_apply, Pi.zero_apply]
+    split_ifs with h
+    · simp [h, single]
+    · simp [Ne.symm h]⟩
+  left_inv := fun ⟨x, hx⟩ ↦ by
+    obtain ⟨y, hy⟩ := α_mem x|>.1 hx
+    ext i
+    simp only [Function.update_apply, Pi.zero_apply]
+    split_ifs with h
+    · simp only [← hy, single, smul_def, of_apply, ite_smul, one_smul, zero_smul, h,
+      true_and, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+      rw [Finset.sum_eq_single default (by
+        simpa using fun b hb ↦ Finset.sum_eq_zero (ι := ι) (by grind)) (by simp)]
+      simp
+    · simp [← hy, single, Ne.symm h]
+  right_inv x := by simp [Function.update_apply]
+
+/-- the functor from `toModuleCat` compose `fromModuleCat` to `𝟙 _` induced by previous
+  linear equiv. -/
+@[simps]
+def matrix.unitIsoHom :
+    ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι ⟶
+    𝟭 (ModuleCat R) where
+  app X := ModuleCat.ofHom <| (fromModuleCat_toModuleCatLinearEquiv R ι X).toLinearMap
+  naturality {X Y} f := by ext; simp
+
+/-- the functor from `𝟙 _` to `toModuleCat` compose `fromModuleCat` induced by the inverse of
+  previous linear equiv. -/
+@[simps]
+def matrix.unitIsoInv :
+    𝟭 (ModuleCat R) ⟶
+    ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι  where
+  app X := ModuleCat.ofHom <| (fromModuleCat_toModuleCatLinearEquiv R ι X).symm.toLinearMap
+  naturality {X Y} f := by
+    ext x
+    simp only [MatrixModCat.toModuleCat, Functor.comp_obj, ModuleCat.toMatrixModCat_obj_carrier,
+      ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
+      Functor.id_obj, Functor.id_map, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, Function.comp_apply, Functor.comp_map, ModuleCat.toMatrixModCat_map]
+    ext i
+    simp only [fromModuleCat_toModuleCatLinearEquiv_symm_apply_coe, Function.update_apply,
+      Pi.zero_apply, LinearMap.fromMatrixLinear_apply_coe, LinearMap.mapMatrixModule_apply,
+      LinearMap.compLeft_apply, Function.comp_apply]
+    split_ifs <;> simp
+
+/-- the natural isomorphism showing that `toModuleCat` compose with `fromModuleCat` gives `id` -/
+@[simps]
+def matrix.unitIso :
+    ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R ι ≅ 𝟭 (ModuleCat R) where
+  hom := matrix.unitIsoHom R ι
+  inv := matrix.unitIsoInv R ι
+  hom_inv_id := by
+    ext M : 2
+    simp [← ModuleCat.ofHom_comp]
+  inv_hom_id := by
+    ext M : 2
+    simp [← ModuleCat.ofHom_comp]
