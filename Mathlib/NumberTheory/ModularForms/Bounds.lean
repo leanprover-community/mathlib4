@@ -78,12 +78,10 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
   obtain ⟨g, hg⟩ := exists_smul_mem_fd τ
   specialize hF𝒟 (g • τ) hg
   rw [hf_inv g τ] at hF𝒟
-  refine hF𝒟.trans ?_
-  have hF : 0 ≤ F := by
-    rw [← div_le_iff₀ (by positivity)] at hF𝒟
-    refine le_trans ?_ hF𝒟
-    positivity
-  refine mul_le_mul_of_nonneg_left (Real.rpow_le_rpow (g • τ).im_pos.le ?_ ht) hF
+  grw [hF𝒟]
+  gcongr
+  · rw [← div_le_iff₀ (by positivity)] at hF𝒟
+    exact le_trans (by positivity) hF𝒟
   -- It remains to show `(g • τ).im ≤ max τ.im (1 / τ.im)`.
   -- We split into two cases depending whether `c = g 1 0` is zero.
   rw [im_smul_eq_div_normSq, denom_apply]
@@ -92,23 +90,19 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
     -- (In fact `d = ±1`, but we do not need this stronger statement).
     have : g 1 1 ≠ 0 := fun hg' ↦ zero_ne_one <| by
       simpa only [Matrix.det_fin_two, hg, hg', mul_zero, mul_zero, sub_zero] using g.det_coe
-    have : 1 ≤ g 1 1 ^ 2 := (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs this)
+    have : (1 : ℝ) ≤ g 1 1 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs this)
     refine le_trans ?_ <| le_max_left _ _
-    rw [hg, Int.cast_zero, zero_mul, zero_add, ← Complex.ofReal_intCast, Complex.normSq_ofReal]
-    refine div_le_of_le_mul₀ (mul_self_nonneg _) τ.im_pos.le ?_
-    apply le_mul_of_one_le_right τ.im_pos.le (by
-      rwa [← sq, ← Int.cast_pow, ← Int.cast_one, Int.cast_le])
+    rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) = (g 1 1) ^ 2 by simp [hg, sq]]
+    simpa [field] using inv_le_one_of_one_le₀ this
   · -- If `c ≠ 0`, then `1 ≤ c ^ 2`, so
     -- `(g • τ).im = τ.im / (c ^ 2 * τ.im ^ 2 +  ...) ≤ 1 / τ.im`.
     refine le_trans ?_ <| le_max_right _ _
-    rw [div_le_div_iff₀ (by exact normSq_denom_pos g τ.im_ne_zero) τ.im_pos, one_mul,
-      Complex.normSq_apply]
-    apply le_add_of_nonneg_of_le (mul_self_nonneg _)
-    simp only [← sq, Complex.add_im, ← Complex.ofReal_intCast, Complex.ofReal_im,
-      add_zero, Complex.mul_im, zero_mul, Complex.ofReal_re, mul_pow,
-      UpperHalfPlane.coe_im]
-    apply le_mul_of_one_le_left (sq_nonneg _)
-    simpa [one_le_sq_iff_one_le_abs] using mod_cast Int.one_le_abs hg
+    rw [show 1 / τ.im = τ.im / τ.im ^ 2 by field_simp]
+    gcongr
+    rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) =
+      ((g 1 0) * τ.re + (g 1 1)) ^ 2 + (g 1 0) ^ 2 * τ.im ^ 2 by simp [Complex.normSq_apply]; ring]
+    have : (1 : ℝ) ≤ g 1 0 ^ 2 := mod_cast (one_le_sq_iff_one_le_abs _).mpr (Int.one_le_abs hg)
+    nlinarith
 
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
@@ -127,7 +121,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
     simp only [sl_moeb, Quotient.lift_mk, f']
     fun_prop
-  have hf'_inv τ (g : SL(2, ℤ)) (γ) : f' (g • τ) (g • γ) = f' τ γ := by
+  have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
     simp [-sl_moeb, f', mul_smul]
   have hf'_infty γ : (f' · γ) =O[_] _ := γ.induction_on fun h ↦ hf_infinity h⁻¹
@@ -182,14 +176,14 @@ lemma ModularFormClass.exists_petersson_le {k : ℤ} (hk : 0 ≤ k) (Γ : Subgro
   have := ModularGroup.exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
       (show Continuous (‖petersson k f f' ·‖) by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
       (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.norm_petersson_smul hg)
-  · simpa using this
+  · exact_mod_cast this
   · simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
     have hft := bdd_at_infty_slash f g
     have hf't := bdd_at_infty_slash f' g
     apply IsBigO.of_norm_left
     simpa [petersson, norm_mul, Complex.norm_conj, norm_zpow, Complex.norm_real,
-      Real.norm_of_nonneg (_ : ℍ).im_pos.le] using (hft.norm_left.mul hf't.norm_left).mul
-      (isBigO_refl (fun τ ↦ τ.im ^ k) atImInfty)
+      Real.norm_of_nonneg (_ : ℍ).im_pos.le]
+      using (hft.norm_left.mul hf't.norm_left).mul (isBigO_refl (fun τ ↦ τ.im ^ k) atImInfty)
 
 open ConjAct Pointwise in
 /-- If `f` is a cusp form and `f'` a modular form, then `petersson k f f'` is bounded. -/
@@ -223,13 +217,12 @@ lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.
   obtain ⟨C, hC⟩ := petersson_bounded_left k Γ f f
   refine ⟨C.sqrt, fun τ ↦ ?_⟩
   specialize hC τ
-  rw [← Real.sqrt_le_sqrt_iff ((norm_nonneg _).trans hC)] at hC
-  rw [le_div_iff₀ (by positivity)]
-  refine (le_of_eq ?_).trans hC
-  simp only [petersson, norm_mul, Complex.norm_conj]
-  rw [Real.sqrt_mul (by positivity), Real.sqrt_mul_self (by positivity), norm_zpow,
-    Complex.norm_real, Real.sqrt_eq_rpow, ← Real.rpow_intCast_mul (by positivity), mul_one_div,
-    Real.norm_of_nonneg τ.im_pos.le]
+  rw [← sq_le_sq₀ (by positivity) (by positivity), div_pow, Real.sq_sqrt ((norm_nonneg _).trans hC)]
+  grw [← hC]
+  rw [petersson, norm_mul, norm_mul, Complex.norm_conj, norm_zpow, Complex.norm_real,
+    Real.norm_eq_abs, abs_of_pos τ.im_pos, ← Real.rpow_mul_natCast τ.im_pos.le, Nat.cast_two,
+    div_mul_cancel₀ _ two_ne_zero, Real.rpow_intCast τ.im k]
+  simp [field]
 
 open Real in
 /-- A weight `k` modular form is bounded in norm by a constant multiple of
@@ -271,7 +264,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     (fun n ↦ (qExpansion Γ.strictWidthInfty f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ e := by
   let h := Γ.strictWidthInfty
   have hh : 0 < h := Γ.strictWidthInfty_pos_iff.mpr Fact.out
-  haveI : NeZero h := ⟨hh.ne'⟩
+  have : NeZero h := ⟨hh.ne'⟩
   have hΓ : h ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
   obtain ⟨C, Cpos, hC⟩ := hF.exists_pos
   rw [isBigO_iff]
@@ -305,8 +298,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     · exact (continuous f).comp (by fun_prop)
   · exact continuous_const.intervalIntegrable ..
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
-    simp [← mul_assoc, mul_inv_cancel₀ (NeZero.ne (h : ℝ)),
-      Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
+    simp [field, Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
 
 lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
