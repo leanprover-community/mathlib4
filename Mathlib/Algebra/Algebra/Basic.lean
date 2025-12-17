@@ -77,7 +77,7 @@ end ULift
 section SubsemiringClass
 variable [SetLike S R] [SubsemiringClass S R]
 
-instance ofClass (s : S) : Algebra s A := .compHom _ (SubsemiringClass.subtype s)
+instance (priority := 900) ofClass (s : S) : Algebra s A := .compHom _ (SubsemiringClass.subtype s)
 
 lemma algebraMap_ofClass_def (s : S) :
     algebraMap s A = (algebraMap R A).comp (SubsemiringClass.subtype s) := rfl
