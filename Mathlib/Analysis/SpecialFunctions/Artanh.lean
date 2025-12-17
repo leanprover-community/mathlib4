@@ -16,7 +16,8 @@ In this file we define an inverse of tanh as a function from ℝ to (-1, 1).
 
 - `Real.artanh`: An inverse function of `Real.tanh` as a function from ℝ to (-1, 1).
 
-- `Real.tanhPartialEquiv`: `Real.tanh` as a `PartialEquiv`.
+- `Real.tanhPartialEquiv`: `Real.tanh` and `Real.artanh` bundled as a `PartialEquiv`
+  from ℝ to (-1, 1).
 
 ## Main Results
 
@@ -112,13 +113,30 @@ theorem artanh_lt_artanh {x y : ℝ} (hx : -1 < x) (hy : y < 1) (hxy : x < y) :
     artanh x < artanh y :=
   (artanh_lt_artanh_iff (by grind) (by grind)).mpr hxy
 
+theorem artanh_eq_zero_iff {x : ℝ} : artanh x = 0 ↔ x ≤ -1 ∨ x = 0 ∨ 1 ≤ x := by
+  grind [artanh, log_eq_zero, div_nonpos_iff]
+
 theorem artanh_pos {x : ℝ} (hx : x ∈ Ioo 0 1) : 0 < artanh x := by
   rw [← artanh_zero, artanh_lt_artanh_iff (by grind) (by grind)]
   exact hx.1
 
-theorem artanh_nonneg {x : ℝ} (hx : x ∈ Ico 0 1) : 0 ≤ artanh x := by
-  rw [← artanh_zero, artanh_le_artanh_iff (by grind) (by grind)]
-  exact hx.1
+theorem artanh_neg {x : ℝ} (hx : x ∈ Ioo (-1) 0) : artanh x < 0 := by
+  rw [← artanh_zero, artanh_lt_artanh_iff (by grind) (by grind)]
+  exact hx.2
+
+theorem artanh_nonneg {x : ℝ} (hx : 0 ≤ x) : 0 ≤ artanh x := by
+  by_cases x < 1
+  case pos =>
+    rw [← artanh_zero, artanh_le_artanh_iff (by grind) (by grind)]
+    exact hx
+  case neg => grind [artanh_eq_zero_iff]
+
+theorem artanh_nonpos {x : ℝ} (hx : x ≤ 0) : artanh x ≤ 0 := by
+  by_cases -1 < x
+  case pos =>
+    rw [← artanh_zero, artanh_le_artanh_iff (by grind) (by grind)]
+    exact hx
+  case neg => grind [artanh_eq_zero_iff]
 
 /-- `Real.tanh` as a `PartialEquiv`. -/
 def tanhPartialEquiv : PartialEquiv ℝ ℝ where
