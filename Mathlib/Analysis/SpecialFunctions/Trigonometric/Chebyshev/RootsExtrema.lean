@@ -18,11 +18,15 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
+
 ## Main statements
+
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `T_real_abs_le_one_iff_abs_le_one`
 * Zeroes of T and U: `T_real_roots_eq`, `U_real_roots_eq`
 * Extrema of T: `T_real_eval_at_extremum`, `T_real_extrema_eq`
+
 ## TODO
+
 * Prove orthogonality with respect to appropriate inner product.
 -/
 
