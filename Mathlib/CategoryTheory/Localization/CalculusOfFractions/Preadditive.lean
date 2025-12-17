@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open MorphismProperty Preadditive Limits Category
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] (L : C ⥤ D)
   {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
@@ -321,7 +321,7 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 include W in
-lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by
   constructor

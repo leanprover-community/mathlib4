@@ -125,13 +125,18 @@ theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
 lemma choose_ne_zero {n k : ℕ} (h : k ≤ n) : n.choose k ≠ 0 :=
   (choose_pos h).ne'
 
-theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
+theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (k + 1) * (k + 1)
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]
   | n + 1, 0 => by simp [choose, mul_succ, Nat.add_comm]
   | n + 1, k + 1 => by
-    rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
-      succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
+    rw [choose_succ_succ' (n + 1) (k + 1), Nat.add_mul _ _ (k + 1 + 1), ← add_one_mul_choose_eq n,
+      mul_add_one, ← add_one_mul_choose_eq n, Nat.add_right_comm _ _ (_ * _), ← Nat.mul_add,
+      ← choose_succ_succ', ← add_one_mul]
+
+@[deprecated add_one_mul_choose_eq (since := "2025-12-09")]
+theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k :=
+  add_one_mul_choose_eq
 
 theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
@@ -152,23 +157,17 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
     · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
-theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
-    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
+theorem choose_mul {n k s : ℕ} (hsk : s ≤ k) :
+    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
+  obtain hnk | hkn := lt_or_ge n k
+  · grind [Nat.choose_eq_zero_of_lt]
   have h : 0 < (n - k)! * (k - s)! * s ! := by apply_rules [factorial_pos, Nat.mul_pos]
-  Nat.mul_right_cancel h <|
+  apply Nat.mul_right_cancel h
   calc
-    n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
-        n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! := by
-      rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
-        Nat.mul_comm (n - k)!, Nat.mul_comm s !]
-    _ = n ! := by
-      rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
     _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
-      rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
-        choose_mul_factorial_mul_factorial (hsk.trans hkn)]
+      grind [choose_mul_factorial_mul_factorial]
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) := by
-      rw [Nat.sub_sub_sub_cancel_right hsk, Nat.mul_assoc, Nat.mul_left_comm s !, Nat.mul_assoc,
-        Nat.mul_comm (k - s)!, Nat.mul_comm s !, Nat.mul_right_comm, ← Nat.mul_assoc]
+      grind
 
 theorem choose_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
     choose n k = n ! / (k ! * (n - k)!) := by
@@ -211,7 +210,7 @@ theorem choose_symm_half (m : ℕ) : choose (2 * m + 1) (m + 1) = choose (2 * m 
 
 theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n k * (n - k) := by
   have e : (n + 1) * choose n k = choose n (k + 1) * (k + 1) + choose n k * (k + 1) := by
-    rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, succ_mul_choose_eq]
+    rw [← Nat.add_mul, Nat.add_comm (choose _ _), ← choose_succ_succ, add_one_mul_choose_eq]
   rw [← Nat.sub_eq_of_eq_add e, Nat.mul_comm, ← Nat.mul_sub_left_distrib, Nat.add_sub_add_right]
 
 @[simp]

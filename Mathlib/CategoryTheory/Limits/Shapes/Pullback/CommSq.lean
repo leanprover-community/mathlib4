@@ -1510,7 +1510,7 @@ theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [F.Faithful
     (H : IsPullback (F.map f) (F.map g) (F.map h) (F.map i)) : IsPullback f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 
-theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
+theorem IsPullback.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
     [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPullback f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
@@ -1528,7 +1528,7 @@ theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [F.Faithful]
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 
-theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
+theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColimit (span f g) F]
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
