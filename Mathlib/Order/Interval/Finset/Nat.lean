@@ -90,31 +90,6 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[deprecated Finset.Icc_succ_left_eq_Ioc (since := "2025-04-24")]
-theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
-  ext x
-  rw [mem_Icc, mem_Ioc, succ_le_iff]
-
-@[deprecated Finset.Ico_succ_right_eq_Icc (since := "2025-04-24")]
-theorem Ico_succ_right : Ico a b.succ = Icc a b := by
-  ext x
-  rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
-
-@[deprecated Finset.Ico_succ_left_eq_Ioo (since := "2025-04-24")]
-theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
-  ext x
-  rw [mem_Ico, mem_Ioo, succ_le_iff]
-
-@[deprecated Finset.Icc_pred_right_eq_Ico (since := "2025-04-24")]
-theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
-  ext x
-  rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
-
-@[deprecated Finset.Ico_succ_succ_eq_Ioc (since := "2025-04-24")]
-theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
-  ext x
-  rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
-
 -- TODO: Generalise the following series of lemmas.
 
 @[simp]
@@ -134,28 +109,6 @@ lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
 lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
-
-set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_right_eq_Ico_succ (since := "2025-04-24")]
-theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
-  rw [Ico_succ_right, ← Ico_insert_right h]
-
-set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_succ_left_eq_Ico (since := "2025-04-24")]
-theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
-  rw [Ico_succ_left, ← Ioo_insert_left h]
-
-@[deprecated Finset.insert_Icc_succ_left_eq_Icc (since := "2025-04-24")]
-lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  lia
-
-@[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
-lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  lia
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
