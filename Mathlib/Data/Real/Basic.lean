@@ -33,7 +33,7 @@ assert_not_exists Finset Module Submonoid FloorRing
 numbers. -/
 structure Real where private ofCauchy ::
   /-- The underlying Cauchy completion -/
-  cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
+  private cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 
 @[inherit_doc]
 notation "ℝ" => Real
