@@ -1119,7 +1119,9 @@ theorem subtypeDomain_extendDomain (f : Subtype P →₀ M) :
 
 theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, P a) :
     (subtypeDomain P f).extendDomain = f := by
-  ext a; by_cases P a <;> simp [*]; grind
+  ext
+  simp only [extendDomain_apply, subtypeDomain_apply, dite_eq_ite, ite_eq_left_iff]
+  grind
 
 @[simp]
 theorem extendDomain_single (a : Subtype P) (m : M) :
