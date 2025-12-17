@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Probability.CondVar
-public import Mathlib.Probability.Distributions.Bernoulli
+public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.HasLaw
 
@@ -166,7 +166,7 @@ For convenience, this distribution is defined over any semiring.
 It is meant to be used on `ℕ` and `ℝ` mainly. -/
 @[expose]
 noncomputable def binomial (n : ℕ) (p : I) : Measure R :=
-  Ber(Set.Iio n, p).map (Nat.cast ∘ Set.ncard)
+  setBer(Set.Iio n, p).map (Nat.cast ∘ Set.ncard)
 
 /-- The binomial probability distribution with parameter `p` valued in the semiring `R`. -/
 scoped notation3 "Bin(" R' ", " n ", " p ")" => binomial (R := R') n p
@@ -198,7 +198,7 @@ lemma IsBinomial.ae_mem_image_natCast_Iic [MeasurableSingletonClass R]
   have : MeasurableSet (Nat.cast (R := R) '' Set.Iic n) :=
     ((Set.finite_Iic _).image _).measurableSet
   rw [hX.ae_iff <| by simpa, binomial, ae_map_iff (by fun_prop) <| by exact this]
-  filter_upwards [bernoulliOn_ae_subset] with s hs
+  filter_upwards [setBernoulli_ae_subset] with s hs
   exact Set.mem_image_of_mem _ <| by simpa using Set.ncard_le_ncard hs
 
 lemma IsBinomial.ae_le {X : Ω → ℕ} (hX : IsBinomial X n p P) : ∀ᵐ ω ∂P, X ω ≤ n := by
