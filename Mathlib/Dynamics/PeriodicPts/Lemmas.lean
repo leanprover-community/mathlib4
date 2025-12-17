@@ -107,7 +107,7 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq)
 
 @[deprecated (since := "2025-04-27")]
-alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
+alias mem_periodicPts_of_injective := Injective.mem_periodicPts
 
 theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
   refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
