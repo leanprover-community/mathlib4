@@ -28,7 +28,7 @@ and it may be interesting to try to generalize some of the development there.
 Really we should treat `Cat` as a 2-category, and allow `F` to be a 2-functor.
 
 There is also a closely related construction starting with `G : Cᵒᵖ ⥤ Cat`,
-where morphisms consists again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)).obj f'`.
+where morphisms consist again of `β : b ⟶ b'` and `φ : f ⟶ (F.map (op β)).obj f'`.
 
 ## Notable constructions
 
@@ -42,7 +42,7 @@ category `E ⥤ Cat` to the over category `Over E`.
 
 ## References
 
-See also `CategoryTheory.Functor.Elements` for the category of elements of functor `F : C ⥤ Type`.
+See also `CategoryTheory.Functor.Elements` for the category of elements of a functor `F : C ⥤ Type`.
 
 * https://stacks.math.columbia.edu/tag/02XV
 * https://ncatlab.org/nlab/show/Grothendieck+construction
@@ -353,13 +353,13 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
           compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
         simp only [conj_eqToHom_iff_heq']
         rw [G.map_id]
-        simp )
+        simp)
 
 end
 
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
-def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
+def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v, u}) ⥤ Over (T := Cat.{v, u}) E where
   obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
   map {_ _} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
@@ -455,7 +455,7 @@ lemma pre_comp_map (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
 
 variable {F} in
 lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category* E]
-    (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K= map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
+    (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K = map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
 
 variable {E : Type*} [Category* E] in
 @[simp]
