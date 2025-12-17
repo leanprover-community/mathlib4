@@ -305,7 +305,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
   let J := (invtSubmoduleToLieIdeal q h₀)
   have : IsSimple K L := inferInstance
   have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
-  have c₂ : J ≠ ⊥ := by
+  have c₁ : J ≠ ⊥ := by
     unfold J invtSubmoduleToLieIdeal
     simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
                iSup_eq_bot, not_forall]
@@ -317,11 +317,11 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     obtain ⟨x, hx, hx₀⟩ := i.val.exists_ne_zero
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact hx₀ (h_eq_bot x (Submodule.mem_sup_left (Submodule.mem_sup_left hx)))
-  have c₃ : J = ⊤ := by grind
+  have c₂ : J = ⊤ := by grind
   apply eq_top_of_iSup_sl2Submodule_eq_top_aux q
   show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
-  unfold J invtSubmoduleToLieIdeal at c₃
-  simpa using c₃
+  unfold J invtSubmoduleToLieIdeal at c₂
+  simpa using c₂
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
