@@ -47,17 +47,17 @@ more convenient definitional properties.
 def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
   arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
   downward_closed := by
-    rintro W Z g ⟨e,rfl⟩ q
+    rintro W Z g ⟨e, rfl⟩ q
     exact ⟨q ≫ e, by simp⟩
 
 lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generateSingleton f := by
   ext Z g
   constructor
-  · rintro ⟨W,i,p,⟨⟩,rfl⟩
-    exact ⟨i,rfl⟩
-  · rintro ⟨g,h⟩
-    exact ⟨Y,g,f,⟨⟩,h⟩
+  · rintro ⟨W, i, p, ⟨⟩, rfl⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨g, h⟩
+    exact ⟨Y, g, f, ⟨⟩, h⟩
 
 set_option backward.proofsInPublic true in
 /--
@@ -78,7 +78,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       change F.map g₁' ≫ _ = F.map g₂' ≫ _
       simp only [Y', F, S.w]
     fac := by
-      rintro S ⟨T,g,hT⟩
+      rintro S ⟨T, g, hT⟩
       dsimp
       nth_rewrite 1 [← hT, Category.assoc, Hf.fac]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
@@ -110,7 +110,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       ι := {
         app := fun ⟨_,hT⟩ => hT.choose ≫ e
         naturality := by
-          rintro ⟨A,hA⟩ ⟨B,hB⟩ (q : A ⟶ B)
+          rintro ⟨A, hA⟩ ⟨B, hB⟩ (q : A ⟶ B)
           dsimp; simp only [← Category.assoc, Category.comp_id]
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
@@ -128,7 +128,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       intro W e h m hm
       dsimp
       apply Hf.uniq (aux e h)
-      rintro ⟨A,g,hA⟩
+      rintro ⟨A, g, hA⟩
       dsimp
       nth_rewrite 1 [← hA, Category.assoc, hm]
       apply h
@@ -156,7 +156,7 @@ def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → 
     Sieve B where
   arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
-    rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
+    rintro Y₁ Y₂ g₁ ⟨a, q, rfl⟩ e
     exact ⟨a, e ≫ q, by simp⟩
 
 lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
