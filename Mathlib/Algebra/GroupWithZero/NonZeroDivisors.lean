@@ -175,9 +175,10 @@ lemma mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight (hx : x ∈ nonZe
   exact hx _ <| hy _ <| mul_assoc _ x y ▸ h
 
 lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : y ∈ M₀⁰) :
-    x * y ∈ M₀⁰ := mem_nonZeroDivisors_iff'.mpr
-  ⟨mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft hx.1 hy.1,
-    mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight hx.2 hy.2⟩
+    x * y ∈ M₀⁰ :=
+  mem_nonZeroDivisors_iff'.mpr
+    ⟨mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft hx.1 hy.1,
+      mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight hx.2 hy.2⟩
 
 section Nontrivial
 variable [Nontrivial M₀]
