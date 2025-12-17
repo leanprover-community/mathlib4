@@ -73,7 +73,7 @@ structure LaxTrans (F G : OplaxFunctor B C) where
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
     cat_disch
-  naturality_id (a : B):
+  naturality_id (a : B) :
       naturality (𝟙 a) ≫ F.mapId a ▷ app a =
         app a ◁ G.mapId a ≫ (ρ_ (app a)).hom ≫ (λ_ (app a)).inv := by
     cat_disch
@@ -299,7 +299,7 @@ def vcomp : OplaxTrans F H where
 /-- `CategoryStruct` on `B ⥤ᵒᵖᴸ C` where the (1-)morphisms are given by oplax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (B ⥤ᵒᵖᴸ C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
   Hom := OplaxTrans
   id := OplaxTrans.id
   comp := OplaxTrans.vcomp

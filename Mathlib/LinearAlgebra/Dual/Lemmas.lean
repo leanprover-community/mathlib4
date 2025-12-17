@@ -47,7 +47,7 @@ This file contains basic results on dual vector spaces.
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
   * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
-    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
+    It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -195,6 +195,21 @@ theorem eval_apply_eq_zero_iff (v : V) : (eval K V) v = 0 ↔ v = 0 :=
 theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v = 0) ↔ v = 0 := by
   rw [← eval_apply_eq_zero_iff K v, LinearMap.ext_iff]
   simp only [eval_apply, zero_apply]
+
+/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
+theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
+    [Projective R V] {x : V} (hx : x ≠ 0) : ∃ f : Dual R V, f x ≠ 0 :=
+  have ⟨M, _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R V›
+  let b := Free.chooseBasis R M
+  have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
+  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
+  ⟨b.coord j ∘ₗ i, hj⟩
+
+/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
+theorem Projective.exists_dual_eq_one (K : Type*) [Semifield K] [Module K V] [Projective K V]
+    {x : V} (hx : x ≠ 0) : ∃ f : Dual K V, f x = 1 :=
+  have ⟨f, hf⟩ := exists_dual_ne_zero K hx
+  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
 @[simp]
 theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=

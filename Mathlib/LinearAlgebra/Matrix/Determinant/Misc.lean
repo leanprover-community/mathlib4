@@ -38,7 +38,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       rw [Fin.val_succ, Nat.cast_add, Nat.cast_one, Int.negOnePow_succ, Units.neg_smul,
         ← neg_eq_iff_eq_neg, ← neg_one_smul R,
         ← det_updateRow_sum (M.submatrix i.succ.succAbove id) i (fun _ ↦ -1),
-        ← Fin.coe_castSucc i, ← h_ind]
+        ← Fin.val_castSucc i, ← h_ind]
       congr
       ext a b
       simp_rw [neg_one_smul, updateRow_apply, Finset.sum_neg_distrib, Pi.neg_apply,

@@ -19,7 +19,7 @@ objects in a pretriangulated category `C` indexed by the category `ι`.
 * construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
 of all truncations of an object of a triangulated category equipped with a t-structure
 * define a similar notion of spectral objects in abelian categories, show that
-by applying an homological functor `C ⥤ A` to a spectral object in the
+by applying a homological functor `C ⥤ A` to a spectral object in the
 triangulated category `C`, we obtain a spectral object in the abelian category `A`
 * construct the spectral sequence attached to a spectral object in an abelian category
 
@@ -34,9 +34,9 @@ namespace CategoryTheory
 
 open Limits Pretriangulated ComposableArrows
 
-variable (C ι : Type*) [Category C] [Category ι] [HasZeroObject C]
+variable (C ι : Type*) [Category* C] [Category* ι] [HasZeroObject C]
   [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  {D : Type*} [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+  {D : Type*} [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
 
 namespace Triangulated
@@ -155,7 +155,7 @@ variable {C}
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 noncomputable def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
-    (ι : Type*) [Category ι] :
+    (ι : Type*) [Category* ι] :
     Triangulated.SpectralObject C ι ⥤ Triangulated.SpectralObject D ι where
   obj X := X.mapTriangulatedFunctor F
   map α :=

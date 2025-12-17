@@ -124,7 +124,7 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
     rw [← Order.succ_le_iff, ← nat_succ] at le
     have ⟨t, ht⟩ := exists_finset_eq_card le
     exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
-  mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s.symm
+  mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
 
 theorem le_rank_iff {n : ℕ} : n ≤ Module.rank R M ↔ ∃ v : Fin n → M, LinearIndependent R v := by
   refine le_rank_iff_exists_finset.trans ⟨fun ⟨s, s_card, s_ind⟩ ↦ ?_, fun ⟨v, v_ind⟩ ↦ ?_⟩

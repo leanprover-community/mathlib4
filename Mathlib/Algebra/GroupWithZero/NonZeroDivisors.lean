@@ -10,6 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -177,12 +178,14 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
+set_option backward.proofsInPublic true in
 instance [IsLeftCancelMulZero M₀] :
     LeftCancelMonoid M₀⁰ where
   mul_left_cancel _ _ _ h :=  Subtype.ext <|
     mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
+set_option backward.proofsInPublic true in
 instance [IsRightCancelMulZero M₀] :
     RightCancelMonoid M₀⁰ where
   mul_right_cancel _ _ _ h := Subtype.ext <|
@@ -331,6 +334,11 @@ theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
   ⟨fun ⟨c, hc⟩ ↦ by simp_rw [hc, Submonoid.coe_mul, dvd_mul_right],
   fun ⟨c, hc⟩ ↦ ⟨⟨c, (mul_mem_nonZeroDivisors.mp (hc ▸ b.prop)).2⟩,
     by simp_rw [Subtype.ext_iff, Submonoid.coe_mul, hc]⟩⟩
+
+lemma prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors
+    {ι : Type*} {s : Finset ι} {f : ι → M₀} (h : ∀ i ∈ s, f i ∈ M₀⁰) :
+    ∏ i ∈ s, f i ∈ M₀⁰ :=
+  s.prod_induction _ _ (fun _ _ ↦ and_imp.mp mul_mem_nonZeroDivisors.mpr) (one_mem _) h
 
 end CommMonoidWithZero
 

@@ -142,6 +142,17 @@ protected def rec {motive : Sym2 α → Sort*}
     (z : Sym2 α) : motive z :=
   Quot.rec f h z
 
+/-- A dependent recursion principle for `Sym2` that uses heterogeneous equality. -/
+@[elab_as_elim]
+protected def hrec {motive : Sym2 α → Sort*}
+    (f : (p : α × α) → motive (Sym2.mk p))
+    (h : (a b : α) → f (a, b) ≍ f (b, a))
+    (z : Sym2 α) : motive z :=
+  Quot.hrecOn _ f <| by
+    simp only [rel_iff']
+    rintro _ _ (rfl | rfl)
+    exacts [HEq.rfl, h _ _]
+
 /-- Dependent recursion principal for `Sym2` when the target is a `Subsingleton` type.
 See `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
@@ -534,6 +545,9 @@ theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.un
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
+
+instance diagSet_decidablePred (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
+  diagSet_eq_setOf_isDiag ▸ IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
