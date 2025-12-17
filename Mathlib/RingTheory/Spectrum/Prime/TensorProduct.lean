@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.SurjectiveOnStalks
 
 ## Main result
 - `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
-  If `R →+* T` is surjective on stalks (see Mathlib/RingTheory/SurjectiveOnStalks.lean),
+  If `R →+* T` is surjective on stalks (see `Mathlib/RingTheory/SurjectiveOnStalks.lean`),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the Cartesian product with the product topology).
 -/
