@@ -5,9 +5,6 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -412,3 +409,4 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat
+#min_imports
