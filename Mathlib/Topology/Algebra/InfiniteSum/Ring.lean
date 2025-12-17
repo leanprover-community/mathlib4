@@ -84,7 +84,7 @@ theorem HasSum.div_const (h : HasSum f a L) (b : α) : HasSum (fun i ↦ f i / b
 theorem Summable.div_const (h : Summable f L) (b : α) : Summable (fun i ↦ f i / b) L :=
   (h.hasSum.div_const _).summable
 
-theorem hasSum_mul_left_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L ↔ HasSum f a₁ L:=
+theorem hasSum_mul_left_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L ↔ HasSum f a₁ L :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a₂⁻¹, HasSum.mul_left _⟩
 
 theorem hasSum_mul_right_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L ↔ HasSum f a₁ L :=
@@ -97,7 +97,7 @@ theorem hasSum_div_const_iff (h : a₂ ≠ 0) :
 theorem summable_mul_left_iff (h : a ≠ 0) : (Summable (fun i ↦ a * f i) L) ↔ Summable f L :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a⁻¹, fun H ↦ H.mul_left _⟩
 
-theorem summable_mul_right_iff (h : a ≠ 0) : (Summable (fun i ↦ f i * a) L) ↔ Summable f L:=
+theorem summable_mul_right_iff (h : a ≠ 0) : (Summable (fun i ↦ f i * a) L) ↔ Summable f L :=
   ⟨fun H ↦ by simpa only [mul_inv_cancel_right₀ h] using H.mul_right a⁻¹, fun H ↦ H.mul_right _⟩
 
 theorem summable_div_const_iff (h : a ≠ 0) : (Summable (fun i ↦ f i / a) L) ↔ Summable f L := by
@@ -129,7 +129,7 @@ theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x) L) (b : α) :
   (h.hasSum.const_div b).summable
 
 theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
-    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) L ↔ HasSum (1/ f) a₁ L := by
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) L ↔ HasSum (1 / f) a₁ L := by
   simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
 
 theorem summable_const_div_iff (h : a ≠ 0) :

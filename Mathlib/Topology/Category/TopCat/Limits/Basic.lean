@@ -55,7 +55,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
 (which is in terms of `Types.limitConeIsLimit`).
 -/
-def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
+def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F) where
   lift S := ofHom
     { toFun := fun x =>
         ⟨fun _ => S.π.app _ x, fun f => by
@@ -127,7 +127,7 @@ theorem induced_of_isLimit :
   let c' := coneOfConeForget ((forget).mapCone c)
   let hc' : IsLimit c' := isLimitConeOfForget _ (isLimitOfPreserves forget hc)
   let e := IsLimit.conePointUniqueUpToIso hc' hc
-  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j  :=
+  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j :=
     IsLimit.conePointUniqueUpToIso_inv_comp hc' hc j
   apply (homeoOfIso e.symm).induced_eq.symm.trans
   dsimp [coneOfConeForget_pt, c', topologicalSpaceConePtOfConeForget]

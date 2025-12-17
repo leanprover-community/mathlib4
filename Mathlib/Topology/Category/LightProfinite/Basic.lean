@@ -112,7 +112,7 @@ instance : FintypeCat.toLightProfinite.Full :=
 instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
   inferInstanceAs (Fintype X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -349,7 +349,7 @@ structure LightDiagram' : Type u where
 
 /-- A `LightDiagram'` yields a `Profinite`. -/
 def LightDiagram'.toProfinite (S : LightDiagram') : Profinite :=
-  limit (S.diagram  ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
+  limit (S.diagram ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
 instance : Category LightDiagram' := InducedCategory.category LightDiagram'.toProfinite
 

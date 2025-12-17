@@ -46,7 +46,7 @@ theorem Multipliable.of_inv (hf : Multipliable (fun b ↦ (f b)⁻¹) L) : Multi
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L:=
+theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L :=
   ⟨Multipliable.of_inv, Multipliable.inv⟩
 
 @[to_additive]

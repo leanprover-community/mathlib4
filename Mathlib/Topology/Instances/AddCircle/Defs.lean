@@ -465,7 +465,7 @@ theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
-    mul_div_right_comm, eq_comm, add_eq_right, ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+    mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :

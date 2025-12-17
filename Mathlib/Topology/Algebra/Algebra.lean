@@ -146,7 +146,7 @@ instance : AlgHomClass (A →A[R] B) R A B where
 theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 
 @[simp, norm_cast]
-theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
+theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
 
 @[simp]
@@ -294,14 +294,14 @@ theorem one_def : (1 : A →A[R] A) = ContinuousAlgHom.id R A := rfl
 theorem id_apply (x : A) : ContinuousAlgHom.id R A x = x := rfl
 
 @[simp, norm_cast]
-theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
+theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A := rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(ContinuousAlgHom.id R A ) = _root_.id := rfl
+theorem coe_id' : ⇑(ContinuousAlgHom.id R A) = _root_.id := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : A →A[R] A} :
-    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A:= by
+    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A := by
   rw [← coe_id, coe_inj]
 
 @[simp]
@@ -490,11 +490,11 @@ theorem coe_codRestrict_apply (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x,
 /-- Restrict the codomain of a continuous algebra homomorphism `f` to `f.range`. -/
 @[reducible]
 def rangeRestrict (f : A →A[R] B) :=
-  f.codRestrict (@AlgHom.range R A B  _ _ _ _ _ f) (@AlgHom.mem_range_self R A B  _ _ _ _ _ f)
+  f.codRestrict (@AlgHom.range R A B _ _ _ _ _ f) (@AlgHom.mem_range_self R A B _ _ _ _ _ f)
 
 @[simp]
 theorem coe_rangeRestrict (f : A →A[R] B) :
-    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B  _ _ _ _ _ f)) =
+    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B _ _ _ _ _ f)) =
       (f : A →ₐ[R] B).rangeRestrict :=
   rfl
 

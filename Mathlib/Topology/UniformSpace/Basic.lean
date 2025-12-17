@@ -736,7 +736,7 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
 /-- An entourage of the diagonal in `α` and an entourage in `β` yield an entourage in `α × β`
 once we permute coordinates. -/
 def entourageProd (u : SetRel α α) (v : SetRel β β) : SetRel (α × β) (α × β) :=
-  {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
+  {((a₁, b₁), (a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
 theorem mem_entourageProd {u : SetRel α α} {v : SetRel β β} {p : (α × β) × α × β} :
     p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := Iff.rfl

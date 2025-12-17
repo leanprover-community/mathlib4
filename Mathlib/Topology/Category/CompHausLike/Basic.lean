@@ -187,7 +187,7 @@ example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P'
 def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : (compHausLikeToTop P).Full  :=
+instance : (compHausLikeToTop P).Full :=
   inferInstanceAs (inducedFunctor _).Full
 
 instance : (compHausLikeToTop P).Faithful :=

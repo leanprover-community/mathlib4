@@ -252,7 +252,7 @@ theorem intro' (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
     apply closure_mono (mulSupport_subset_iff'.2 hfK)
-  exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
+  exact IsCompact.of_isClosed_subset hK (isClosed_mulTSupport f) this
 
 @[to_additive]
 theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulSupport f ⊆ K) :
