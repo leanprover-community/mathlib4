@@ -82,9 +82,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
   by_cases ch : k = 0
   · simpa [ch] using ha2
   · have {p : ℕ} (pp : p.Prime) (hp : p > N) : (q : ℤ) ∣ p ^ q - 1 := by calc
-      _ ∣ (f q : ℤ) := by
-        rw [ha2, natCast_pow q k]
-        exact dvd_pow_self (q : ℤ) ch
+      _ ∣ (f q : ℤ) := by simp [ha2, natCast_pow q k, ch]
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
     obtain ⟨p, hp⟩ : ∃ p > N, p.Prime ∧ p ≡ -1 [ZMOD q] :=
       forall_exists_prime_gt_and_zmodEq N (by omega) isCoprime_one_left.neg_left
