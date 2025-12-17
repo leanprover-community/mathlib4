@@ -67,39 +67,6 @@ This corresponds to crossing strand i over strand i+1. -/
 def σ (i : Fin (n - 1)) : BraidGroup n :=
   (CoxeterMatrix.Aₙ (n - 1)).artinGenerator i
 
-/-! ### The surjection to the symmetric group -/
-
-/-- Adjacent transpositions satisfy the Artin relations (braid relations). -/
-theorem swapFun_isArtinLiftable (n : ℕ) :
-    (CoxeterMatrix.Aₙ n).IsArtinLiftable (swapFun n) := by
-  intro i j
-  by_cases hij : i = j
-  · simp [hij]
-  by_cases hadj : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i
-  · -- Adjacent case: m = 3, braid relation
-    have hM : (CoxeterMatrix.Aₙ n).M i j = 3 := CoxeterMatrix.Aₙ_adjacent _ i j hadj
-    rw [hM]
-    simp only [CoxeterMatrix.alternatingProd, one_mul]
-    -- Need: swapFun i * swapFun j * swapFun i = swapFun j * swapFun i * swapFun j
-    simp only [swapFun]
-    obtain hadj | hadj := hadj
-    · -- i + 1 = j case: j.castSucc = i.succ
-      have hj_cast : j.castSucc = i.succ := by grind
-      grind [Equiv.swap_conjugate]
-    · -- j + 1 = i case: i.castSucc = j.succ
-      have hi_cast : i.castSucc = j.succ := by grind
-      grind [Equiv.swap_conjugate]
-  · -- Far case: m = 2, commutativity
-    have hM : (CoxeterMatrix.Aₙ n).M i j = 2 := CoxeterMatrix.Aₙ_far _ i j hij
-        (fun h => hadj (Or.inl h)) (fun h => hadj (Or.inr h))
-    rw [hM]
-    simp only [CoxeterMatrix.alternatingProd, one_mul]
-    -- Need: swapFun j * swapFun i = swapFun i * swapFun j
-    simp only [swapFun]
-    push_neg at hadj
-    apply Equiv.swap_mul_swap_comm_of_disjoint <;>
-      simp only [ne_eq, Fin.ext_iff] <;> grind
-
 end BraidGroup
 
 /-! ### The surjection to the symmetric group -/
@@ -107,41 +74,22 @@ end BraidGroup
 namespace BraidGroup
 
 /-- The canonical surjection from the braid group B_{n+1} to the symmetric group S_{n+1},
-sending σ_i to the adjacent transposition (i, i+1). -/
+sending σ_i to the adjacent transposition (i, i+1).
+
+This is defined as the composition of `artinToCoxeter` and `typeAₙToPermHom`. -/
 def toPermHom (n : ℕ) : BraidGroup (n + 1) →* Perm (Fin (n + 1)) :=
-  (CoxeterMatrix.Aₙ n).artinLift (swapFun n) (swapFun_isArtinLiftable n)
+  (CoxeterMatrix.typeAₙToPermHom n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter
 
 @[simp]
 theorem toPermHom_σ (n : ℕ) (i : Fin n) :
     toPermHom n (σ i) = swapFun n i := by
-  change ((CoxeterMatrix.Aₙ n).artinLift (swapFun n) (swapFun_isArtinLiftable n))
-      ((CoxeterMatrix.Aₙ n).artinGenerator i) = swapFun n i
-  rw [CoxeterMatrix.artinLift_artinGenerator]
+  show (CoxeterMatrix.typeAₙToPermHom n)
+      ((CoxeterMatrix.Aₙ n).artinToCoxeter ((CoxeterMatrix.Aₙ n).artinGenerator i)) = _
+  simp
 
 /-- The surjection from B_{n+1} to S_{n+1} is surjective. -/
-theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) := by
-  -- The image of toPermHom contains all adjacent transpositions, which generate Perm (Fin (n + 1))
-  intro τ
-  have hgen := Equiv.Perm.mclosure_swap_castSucc_succ n
-  have hτ : τ ∈ (⊤ : Submonoid (Perm (Fin (n + 1)))) := Submonoid.mem_top _
-  rw [← hgen] at hτ
-  -- τ is in Submonoid.closure of {swap i.castSucc i.succ}
-  induction hτ using Submonoid.closure_induction with
-  | mem y hy =>
-    -- Generator case: each swap i.castSucc i.succ is in the range
-    obtain ⟨i, rfl⟩ := hy
-    use σ i
-    grind [toPermHom_σ, swapFun]
-  | one =>
-    -- Identity case
-    use 1
-    grind
-  | mul a b _ _ ha hb =>
-    -- Multiplication case
-    obtain ⟨x, hx⟩ := ha
-    obtain ⟨y, hy⟩ := hb
-    use x * y
-    grind
+theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) :=
+  (CoxeterMatrix.typeAₙToPermHom_surjective n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter_surjective
 
 /-! ### Small braid groups -/
 
