@@ -113,21 +113,36 @@ theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : �
     sorry
 
 theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e)
-    {P : ℕ → X →L[𝕜] X} (hp : CanonicalProjections h P) (x : X):
+    {P : ℕ → X →L[𝕜] X} (hp : CanonicalProjections h P) (x : X) :
     Tendsto (fun n => P n x) atTop (𝓝 x) := by
     sorry
 
-theorem basis_of_canonical_projections (P : ℕ → X →L[𝕜] X)
-    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
+theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
+    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n)
     (hcomp : ∀ m n : ℕ, P n ∘ P m = P (min n m))
     (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x))
-    (e : ℕ → X)
-    (he1: e 1 ∈ range (P 1)) (hek : ∀ k : ℕ , e k ∈ range ( P k) ⊓ (ker (P (k - 1))))
-    :
+    {e : ℕ → X}(he1: e 1 ∈ range (P 1)) (hek : ∀ k : ℕ , e k ∈ range ( P k) ⊓ (ker (P (k - 1)))) :
     SchauderBasis 𝕜 X e := by
     sorry
 
 
 end CanonicalProjections
+
+
+variable [CompleteSpace X]
+
+/-- A basic sequence is a sequence (e n) such that e is a Schauder basis for
+    the closedlinear span of (e n). -/
+def BasicSequence (e : ℕ → X) : Prop :=
+    SchauderBasis 𝕜
+    (Submodule.topologicalClosure (Submodule.span 𝕜 (Set.range e)))
+    (fun n => ⟨e n, by
+        apply Submodule.closure_subset_topologicalClosure_span
+        apply subset_closure
+        exact Set.mem_range_self n⟩)
+
+namespace BasicSequence
+
+end BasicSequence
 
 end SchauderBasis
