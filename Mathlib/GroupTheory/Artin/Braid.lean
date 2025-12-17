@@ -180,7 +180,7 @@ def braidGroupTwoEquivInt : BraidGroup 2 ≃* Multiplicative ℤ := by
 /-- The generator σ_0 of B_2 maps to 1 under the isomorphism with ℤ. -/
 @[simp]
 theorem braidGroupTwoEquivInt_σ :
-    braidGroupTwoEquivInt (σ ⟨0, by omega⟩) = Multiplicative.ofAdd 1 := by
+    braidGroupTwoEquivInt (σ 0) = Multiplicative.ofAdd 1 := by
   simp only [braidGroupTwoEquivInt, MulEquiv.trans_apply, QuotientGroup.quotientBot_apply,
     FreeGroup.freeGroupCongr_apply, FreeGroup.freeGroupUnitEquivMulInt]
   rfl
