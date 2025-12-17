@@ -924,7 +924,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
   inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final
@@ -1058,7 +1058,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   constructor
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
-  letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+  letI : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
     ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
@@ -1085,7 +1085,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
   NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
-        isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
+        isoWhiskerRight (ιCompMap α X) H ≪≫ Functor.associator _ _ _) ≪≫
       Final.colimitIso (α.app X) (ι G X ⋙ H))
     (fun f => colimit.hom_ext <| fun d => by
       simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,

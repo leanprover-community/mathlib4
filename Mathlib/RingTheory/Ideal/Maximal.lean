@@ -88,7 +88,7 @@ theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal �
   exact IsMaximal.ne_top hMmax
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
+  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained

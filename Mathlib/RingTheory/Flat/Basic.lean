@@ -39,7 +39,7 @@ the current `Module.Flat` to `Module.MonoFlat`.
 ## Main theorems
 
 * `Module.Flat.of_retract`: retracts of flat modules are flat
-* `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
+* `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat module are flat
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
@@ -47,7 +47,7 @@ the current `Module.Flat` to `Module.MonoFlat`.
   preserves injectivity of linear maps. This lemma is fully universally polymorphic in all
   arguments, i.e. `R`, `M` and linear maps `N → N'` can all have different universe levels.
 * `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring modules
-  in the higher universe preserves injectivity .
+  in the higher universe preserves injectivity.
 * `Module.Flat.lTensor_exact`: If `M` is a flat module then tensoring with `M` is an exact
   functor. This lemma is fully universally polymorphic in all arguments, i.e.
   `R`, `M` and linear maps `N → N' → N''` can all have different universe levels.
@@ -176,7 +176,7 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
   refine (f Q).comp (Function.RightInverse.injective (g := lTensor Q r) fun x ↦ ?_)
   simp [← comp_apply, ← lTensor_comp, h]
 
-/-- A `R`-module linearly equivalent to a flat `R`-module is flat. -/
+/-- An `R`-module linearly equivalent to a flat `R`-module is flat. -/
 lemma of_linearEquiv [Flat R M] (e : N ≃ₗ[R] M) : Flat R N :=
   of_retract e.toLinearMap e.symm (by simp)
 
@@ -308,7 +308,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
@@ -325,7 +325,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.rTensor_exact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
@@ -339,7 +339,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
-    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp  hx
+    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor.
   See `Module.Flat.iff_lTensor_exact'` to generalize the universe of
@@ -599,7 +599,7 @@ theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
   obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) :=
+      (Algebra.TensorProduct.map (AlgHom.id C C) D.val) :=
     Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
   obtain ⟨z, rfl⟩ := hD.2
   have h_notReduced : ¬IsReduced (C ⊗[R] D) := by

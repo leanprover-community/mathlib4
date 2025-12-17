@@ -91,7 +91,7 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]
-def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category J'] (G : J' ⥤ J) :
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category* J'] (G : J' ⥤ J) :
     CoconeTypes.{w₁} (G ⋙ F) where
   pt := c.pt
   ι _ := c.ι _
