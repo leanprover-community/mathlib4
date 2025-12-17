@@ -25,12 +25,6 @@ We define supports and prove how they interact with operations.
 
 @[expose] public section
 
-namespace AddSubmonoid
-
-variable {G : Type*} [AddGroup G] (M : AddSubmonoid G)
-
-end AddSubmonoid
-
 namespace Submonoid
 
 variable {G : Type*} [Group G] (M : Submonoid G)
