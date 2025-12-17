@@ -237,6 +237,7 @@ theorem ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm
     ← ext_iff_inner_right 𝕜]
   exact ⟨fun h ↦ ContinuousLinearMap.ext fun x ↦ by simpa using h (e.symm x), fun h ↦ by simp [h]⟩
 
+/-- can't do this inline, it times out -/
 noncomputable abbrev aux_isometry
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
@@ -274,6 +275,7 @@ theorem adjoint_aux_isometry
   apply ext_inner_left 𝕜 fun y ↦ ?_
   simp [aux_isometry, adjoint_inner_right, inner_smul_left, inner_smul_right, hαa]
 
+/-- can't do this inline either, it times out -/
 noncomputable abbrev aux_isometry'
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
