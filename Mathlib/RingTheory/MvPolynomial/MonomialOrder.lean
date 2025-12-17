@@ -656,9 +656,7 @@ theorem degree_prod [NoZeroDivisors R] {ι : Type*} {P : ι → MvPolynomial σ 
   | inr _ =>
     apply m.toSyn.injective
     refine le_antisymm degree_prod_le (m.le_degree ?_)
-    rw [mem_support_iff, m.coeff_prod_sum_degree]
-    simp only [ne_eq, Finset.prod_eq_zero_iff, leadingCoeff_eq_zero_iff, not_exists, not_and]
-    exact H
+    simpa [m.coeff_prod_sum_degree, Finset.prod_eq_zero_iff]
 
 lemma degree_mul' [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
