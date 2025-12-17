@@ -8,6 +8,7 @@ module
 public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Topology.Category.LightProfinite.Extend
+
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
@@ -190,6 +191,7 @@ def fintypeCatAsCofan (X : Profinite) :
     Cofan (fun (_ : X) ↦ (Profinite.of (PUnit.{u + 1}))) :=
   Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
 
+set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `Profinite`. -/
 def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by
@@ -456,6 +458,7 @@ def fintypeCatAsCofan (X : LightProfinite) :
     Cofan (fun (_ : X) ↦ (LightProfinite.of (PUnit.{u + 1}))) :=
   Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
 
+set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
 def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by
