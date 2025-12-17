@@ -66,7 +66,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     refine (Finset.sum_congr rfl fun i hi ↦ ?_).trans e
     simp only [Finset.mem_range, Nat.lt_succ_iff] at hi
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', if_pos hi, mul_comm]
-    simp [Subalgebra.algebraMap_def]
+    simp
   · rw [hq]
     simp [q, Nat.lt_succ_iff, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
