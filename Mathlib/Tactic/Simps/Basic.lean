@@ -901,6 +901,9 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
+  /-- The name of the source declaration being processed by @[simps]. Used internally to check
+  whether the definition body is exposed, to avoid @[defeq] validation errors. -/
+  srcDeclName : Name := Name.anonymous
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -999,7 +1002,11 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       levelParams := univs
       type := declType
       value := declValue }
-  inferDefEqAttr declName
+  -- Only infer @[defeq] if the source definition body is exposed, to avoid validation errors.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.40.5Bsimps.5D.20respects.20non-exposed.20body.3F
+  let bodyExposed := (← getEnv).setExporting true |>.find? cfg.srcDeclName |>.any (·.hasValue)
+  if bodyExposed then
+    inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
   addConstInfo ref declName
@@ -1204,6 +1211,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
+  cfg := { cfg with srcDeclName := d.name }
   let nm : NameStruct :=
     { parent := nm.getPrefix
       components :=
