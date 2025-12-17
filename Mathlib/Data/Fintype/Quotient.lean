@@ -78,7 +78,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} {S : ∀
 set_option linter.unusedSectionVars false in
 /-- Choice-free induction principle for quotients indexed by a finite type.
   See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
-@[elab_as_elim]
+@[elab_as_elim, nolint unusedArguments]
 lemma ind_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) (q : ∀ i, Quotient (S i)) : C q := induction_on_pi q f
 
