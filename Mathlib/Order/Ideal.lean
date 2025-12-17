@@ -172,7 +172,7 @@ class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
-theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
+theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -182,7 +182,7 @@ end
 
 section Directed
 
-variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
+variable [IsDirectedOrder P] [Nonempty P] {I : Ideal P}
 
 /-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
@@ -331,7 +331,7 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsCodirectedOrder P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Tactic.MoveAdd
 
 
 /-! # Functions and measures of temperate growth -/
@@ -114,6 +115,60 @@ lemma HasTemperateGrowth.zero :
 lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+/-- Composition of two temperate growth functions is of temperate growth.
+
+Version where the outer function `g` is only of temperate growth on the image of inner function
+`f`. -/
+theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+    {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
+    (hg₂ : ∀ N, ∃ k C, ∃ (_hC : 0 ≤ C), ∀ n ≤ N, ∀ x ∈ t,
+    ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
+    (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
+  refine ⟨hg₁.comp_contDiff hf.1 (ht ⟨·, rfl⟩), fun n ↦ ?_⟩
+  obtain ⟨k₁, C₁, hC₁, h₁⟩ := hf.norm_iteratedFDeriv_le_uniform n
+  obtain ⟨k₂, C₂, hC₂, h₂⟩ := hg₂ n
+  have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0 (zero_le _)
+  set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
+  use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
+  intro x
+  have hg' : ∀ i, i ≤ n → ‖iteratedFDerivWithin ℝ i g t (f x)‖ ≤ C₃ * (1 + ‖x‖) ^ (k₁ * k₂):= by
+    intro i hi
+    calc _ ≤ C₂ * (1 + ‖f x‖) ^ k₂ := h₂ i hi (f x) (ht ⟨x, rfl⟩)
+      _ = ∑ i ∈ Finset.range (k₂ + 1), C₂ * (‖f x‖ ^ i * (k₂.choose i)) := by
+        rw [add_comm, add_pow, Finset.mul_sum]
+        simp
+      _ ≤ ∑ i ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose i) * C₁ ^ i * (1 + ‖x‖) ^ (k₁ * k₂) := by
+        apply Finset.sum_le_sum
+        intro i hi
+        grw [h₁']
+        simp_rw [mul_pow, ← pow_mul]
+        move_mul [← (k₂.choose _ : ℝ), C₂]
+        gcongr
+        · simp
+        · grind
+      _ = _ := by simp [C₃, Finset.sum_mul]
+  have hf' : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv ℝ i f x‖ ≤ ((1 + C₁) * (1 + ‖x‖) ^ k₁) ^ i := by
+    intro i hi hi'
+    calc _ ≤ C₁ * (1 + ‖x‖) ^ k₁ := h₁ i hi' x
+      _ ≤ (1 + C₁) * (1 + ‖x‖) ^ k₁ := by gcongr; simp
+      _ ≤ _ := by
+        apply le_self_pow₀ (one_le_mul_of_one_le_of_one_le (by simp [hC₁]) (by simp [one_le_pow₀]))
+        grind
+  calc _ ≤ n ! * (C₃ * (1 + ‖x‖) ^ (k₁ * k₂)) * ((1 + C₁) * (1 + ‖x‖) ^ k₁) ^ n :=
+      norm_iteratedFDeriv_comp_le' ht ht' hg₁ hf.1 (mod_cast le_top) x hg' hf'
+    _ = _ := by rw [mul_pow, ← pow_mul, pow_add]; ring
+
+/-- Composition of two temperate growth functions is of temperate growth. -/
+@[fun_prop]
+theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+    (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
+  apply hf.comp' (t := Set.univ)
+  · simp
+  · simp
+  · rw [contDiffOn_univ]
+    exact hg.1
+  · simpa [iteratedFDerivWithin_univ] using hg.norm_iteratedFDeriv_le_uniform
 
 section Addition
 

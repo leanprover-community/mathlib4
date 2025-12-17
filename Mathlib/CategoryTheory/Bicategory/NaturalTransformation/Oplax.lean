@@ -73,7 +73,7 @@ structure LaxTrans (F G : OplaxFunctor B C) where
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
     cat_disch
-  naturality_id (a : B):
+  naturality_id (a : B) :
       naturality (𝟙 a) ≫ F.mapId a ▷ app a =
         app a ◁ G.mapId a ≫ (ρ_ (app a)).hom ≫ (λ_ (app a)).inv := by
     cat_disch
@@ -97,7 +97,7 @@ def id : LaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (λ_ (F.map f)).hom ≫ (ρ_ (F.map f)).inv
 
-instance : Inhabited (LaxTrans F F ) :=
+instance : Inhabited (LaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/

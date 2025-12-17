@@ -38,7 +38,7 @@ open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and

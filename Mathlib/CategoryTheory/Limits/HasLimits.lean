@@ -891,8 +891,7 @@ def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.pre]
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
