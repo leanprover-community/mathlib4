@@ -455,8 +455,7 @@ theorem imageSubobjectIso_comp_image_map {W X Y Z : C} {f : W ⟶ X} [HasImage f
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobjectIso _).hom ≫ image.map sq =
       imageSubobjectMap sq ≫ (imageSubobjectIso _).hom := by
-  erw [← Iso.comp_inv_eq, Category.assoc, ← (imageSubobjectIso f).eq_inv_comp,
-    image_map_comp_imageSubobjectIso_inv sq]
+  simp [imageSubobjectMap]
 
 end Image
 

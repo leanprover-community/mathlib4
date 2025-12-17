@@ -286,7 +286,7 @@ end ToNonPreadditiveAbelian
 
 section
 
-/-! We now promote some instances that were constructed using `non_preadditive_abelian`. -/
+/-! We now promote some instances that were constructed using `nonPreadditiveAbelian`. -/
 
 
 attribute [local instance] nonPreadditiveAbelian
@@ -796,7 +796,7 @@ namespace CategoryTheory.NonPreadditiveAbelian
 
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
-/-- Every NonPreadditiveAbelian category can be promoted to an abelian category. -/
+/-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩

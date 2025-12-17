@@ -63,9 +63,9 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
     δ n n' (fromSingleMk f h) = fromSingleMk (f ≫ K.d q q') h' := by
   by_cases hq : q + 1 = q'
   · dsimp only [fromSingleMk]
-    rw [δ_single _ n n' (by cutsat) (p - 1) q' (by cutsat) hq]
+    rw [δ_single _ n n' (by lia) (p - 1) q' (by lia) hq]
     simp
-  · simp [δ_shape n n' (by cutsat), HomologicalComplex.shape K q q' (by simp; cutsat),
+  · simp [δ_shape n n' (by lia), HomologicalComplex.shape K q q' (by simp; lia),
       fromSingleMk]
 
 /-- Constructor for cochains to a single complex. -/
@@ -96,9 +96,9 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
     δ n n' (toSingleMk f h) = n'.negOnePow • toSingleMk (K.d p' p ≫ f) h' := by
   by_cases hp : p' + 1 = p
   · dsimp only [toSingleMk]
-    rw [δ_single _ n n' (by cutsat) p' (q + 1) (by cutsat) rfl]
+    rw [δ_single _ n n' (by lia) p' (q + 1) (by lia) rfl]
     simp
-  · simp [δ_shape n n' (by cutsat), HomologicalComplex.shape K p' p (by simp; cutsat)]
+  · simp [δ_shape n n' (by lia), HomologicalComplex.shape K p' p (by simp; lia)]
 
 end Cochain
 
@@ -110,7 +110,7 @@ noncomputable def fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + 
     (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) :
     Cocycle ((singleFunctor C p).obj X) K n :=
   Cocycle.mk (Cochain.fromSingleMk f h) _ rfl (by
-    rw [Cochain.δ_fromSingleMk _ _ _ q' (by cutsat), hf]
+    rw [Cochain.δ_fromSingleMk _ _ _ q' (by lia), hf]
     simp)
 
 /-- Constructor for cocycles to a single complex. -/
@@ -119,7 +119,7 @@ noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n 
     (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0) :
     Cocycle K ((singleFunctor C q).obj X) n :=
   Cocycle.mk (Cochain.toSingleMk f h) _ rfl (by
-    rw [Cochain.δ_toSingleMk _ _ _ p' (by cutsat), hf]
+    rw [Cochain.δ_toSingleMk _ _ _ p' (by lia), hf]
     simp)
 
 end Cocycle

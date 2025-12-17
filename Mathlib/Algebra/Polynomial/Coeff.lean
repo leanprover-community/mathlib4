@@ -299,6 +299,12 @@ theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
     ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 
+theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
+    (1 + X : S[X]) ^ d - X ^ d = ∑ i ∈ range d, d.choose i • X ^ i := by
+  ext i
+  simp [Polynomial.coeff_one_add_X_pow]
+  split_ifs <;> simp_all [Nat.choose_eq_zero_of_lt, lt_iff_le_and_ne]
+
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
