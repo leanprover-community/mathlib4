@@ -384,7 +384,7 @@ done
 
 echo "All conflicts resolved and committed."
 echo "Proceeding with git push..."
-git push $NIGHTLY_REMOTE nightly-testing
+git push $NIGHTLY_REMOTE nightly-testing:nightly-testing
 
 echo
 echo "### [auto] finished: checkout the original branch"

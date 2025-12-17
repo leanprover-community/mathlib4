@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lookmap
-import Mathlib.Data.Sigma.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lookmap
+public import Mathlib.Data.Sigma.Basic
 
 /-!
 # Utilities for lists of sigmas
@@ -28,6 +30,8 @@ If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having
 - `List.kunion` computes the union of two stores.
 - `List.kextract` returns a value with a given key and the rest of the values.
 -/
+
+@[expose] public section
 
 universe u u' v v'
 
@@ -231,8 +235,10 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
+omit [DecidableEq α] [DecidableEq α'] in
 theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
     (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  classical
   induction l with
   | nil => grind [nodupKeys_nil]
   | cons hd tl =>

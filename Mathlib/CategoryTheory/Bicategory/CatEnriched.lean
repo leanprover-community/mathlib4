@@ -3,9 +3,11 @@ Copyright (c) 2025 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # The strict bicategory associated to a Cat-enriched category
@@ -30,6 +32,8 @@ structure extending the category structure provided by the given instance `Categ
 `Bicategory.Strict (CatEnrichedOrdinary C)`.
 
 -/
+
+@[expose] public section
 
 universe u v u' v'
 namespace CategoryTheory
@@ -289,7 +293,7 @@ theorem hComp_id {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') 
 theorem hComp_id_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by simp [hComp_id]
 
-theorem id_eq_eqToHom {C} [Category C] (X : C) : 𝟙 X = eqToHom rfl := rfl
+theorem id_eq_eqToHom {C} [Category* C] (X : C) : 𝟙 X = eqToHom rfl := rfl
 
 theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
     (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
@@ -299,8 +303,8 @@ theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b
   simp only [hComp, base_mk, Hom.base_comp, Hom.base_eqToHom,
     ← heq_eq_eq, heq_eqToHom_comp_iff, heq_comp_eqToHom_iff,
     eqToHom_comp_heq_iff, comp_eqToHom_heq_iff]
-  conv => enter [1,2]; exact ((id_comp _).trans (comp_id _)).symm
-  conv => enter [2,1]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [1, 2]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [2, 1]; exact ((id_comp _).trans (comp_id _)).symm
   iterate 4 rw [← CatEnriched.hComp_comp, id_eq_eqToHom, CatEnriched.eqToHom_hComp_eqToHom]
   simp [CatEnriched.hComp_assoc_heq]
 

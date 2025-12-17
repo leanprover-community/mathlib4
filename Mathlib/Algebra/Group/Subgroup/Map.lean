@@ -3,8 +3,10 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.TypeTags.Hom
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # `map` and `comap` for subgroups
@@ -44,6 +46,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -166,7 +170,7 @@ theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup
 @[to_additive]
 theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
     K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :
@@ -254,11 +258,21 @@ theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[to_additive]
+lemma disjoint_map {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} (h : Disjoint H K) :
+    Disjoint (H.map f) (K.map f) := by
+  rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
+
+@[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
   intro x _
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
+
+@[to_additive]
+lemma codisjoint_map {f : G →* N} (hf : Function.Surjective f)
+    {H K : Subgroup G} (h : Codisjoint H K) : Codisjoint (H.map f) (K.map f) := by
+  rw [codisjoint_iff, ← map_sup, codisjoint_iff.mp h, map_top_of_surjective _ hf]
 
 @[to_additive (attr := simp)]
 lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
@@ -274,6 +288,7 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
 
+set_option backward.proofsInPublic true in
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
 @[to_additive (attr := simps)
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]
@@ -559,6 +574,11 @@ theorem map_closure (f : G →* N) (s : Set G) : (closure s).map f = closure (f 
 end MonoidHom
 
 namespace Subgroup
+
+@[to_additive]
+lemma surjOn_iff_le_map {f : G →* N} {H : Subgroup G} {K : Subgroup N} :
+    Set.SurjOn f H K ↔ K ≤ H.map f :=
+  Iff.rfl
 
 @[to_additive (attr := simp)]
 theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :

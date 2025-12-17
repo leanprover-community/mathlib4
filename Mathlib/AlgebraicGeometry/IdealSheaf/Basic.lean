@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Ideal sheaves on schemes
@@ -39,6 +41,8 @@ ideal sheaf. This should be refactored as a constructor for ideal sheaves once t
 into mathlib.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory TopologicalSpace
 
@@ -393,7 +397,7 @@ open _root_.PrimeSpectrum TopologicalSpace
 @[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
   AlgebraicGeometry.Scheme.zeroLocus_radical
 
-/-- The radical of a ideal sheaf. -/
+/-- The radical of an ideal sheaf. -/
 @[simps! ideal]
 def radical (I : IdealSheafData X) : IdealSheafData X :=
   mkOfMemSupportIff
@@ -753,7 +757,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
     rw [ker_of_isAffine, coe_support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
       RingHom.comap_ker, ← PrimeSpectrum.closure_range_comap, ← CommRingCat.hom_comp,
       ← Scheme.ΓSpecIso_inv_naturality]
-    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
+    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ))
   · rw [(support _).isClosed.closure_subset_iff]
     exact f.range_subset_ker_support

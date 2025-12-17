@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Pointed
+module
+
+public import Mathlib.CategoryTheory.Category.Pointed
 
 /-!
 # The category of bipointed types
@@ -14,6 +16,8 @@ This defines `Bipointed`, the category of bipointed types.
 
 Monoidal structure
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

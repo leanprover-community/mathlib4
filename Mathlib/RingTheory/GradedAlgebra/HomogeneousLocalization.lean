@@ -3,12 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finsupp
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Homogeneous Localization
@@ -68,6 +70,8 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -576,7 +580,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   have : f.num.1 ∉ 𝔭 := by
     exact fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
-  refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
+  refine .of_mul_eq_one (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
   simp [mul_comm f.den.1]
 
@@ -685,7 +689,7 @@ lemma awayMapAux_mk (n a i hi) :
     (Localization.mk g ⟨f * g, (Submonoid.mem_powers_iff _ _).mpr ⟨1, by simp [hx]⟩⟩) = 1 := by
     rw [← Algebra.smul_def, Localization.smul_mk]
     exact Localization.mk_self ⟨f*g, _⟩
-  simp [awayMapAux]
+  simp only [awayMapAux, RingHom.coe_comp, Function.comp_apply, algebraMap_apply, val_mk]
   rw [Localization.awayLift_mk (hv := this), ← Algebra.smul_def,
     Localization.mk_pow, Localization.smul_mk]
   subst hx
@@ -791,7 +795,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     letI := (awayMap 𝒜 hg hx).toAlgebra
     IsLocalization.Away (isLocalizationElem hf hg) (Away 𝒜 x) := by
   letI := (awayMap 𝒜 hg hx).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨r, n, rfl⟩
     rw [map_pow, RingHom.algebraMap_toAlgebra]
     let z : Away 𝒜 x := Away.mk 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) (d + e)
@@ -1020,7 +1024,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   apply (Set.finite_range F).subset
   rintro _ ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩
-  rw [Nat.lt_succ, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
+  rw [Nat.lt_succ_iff, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
   simp_rw [smul_eq_mul, mul_comm _ d]
   gcongr
   exact hai' _

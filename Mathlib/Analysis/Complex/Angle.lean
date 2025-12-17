@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Angle between complex numbers
@@ -23,6 +25,8 @@ Prove the corresponding results for oriented angles.
 
 arc-length, arc-distance
 -/
+
+@[expose] public section
 
 open InnerProductGeometry Set
 open scoped Real

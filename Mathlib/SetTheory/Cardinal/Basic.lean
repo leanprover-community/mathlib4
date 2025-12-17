@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Logic.Small.Set
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basic results on cardinal numbers
@@ -31,6 +33,8 @@ finite/countable/small types and sets.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -208,7 +212,7 @@ theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
-  apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
+  apply ((le_csSup_iff' (bddAbove_image.{_, u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
     obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
@@ -288,14 +292,19 @@ theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 -- This works generally to prove inequalities between numeric cardinals.
 theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
 
-theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
+theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
+    ∃ s : Finset α, n = s.card := by
   obtain hα|hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [mk_fintype, Nat.cast_le] using h
+    obtain ⟨t, -, rfl⟩ := @Finset.exists_subset_card_eq α .univ n <| by simpa using h
+    exact ⟨t, rfl⟩
   · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
+    exact ⟨s, hs.symm⟩
+
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card :=
+  have ⟨s, eq⟩ := exists_finset_eq_card h
+  ⟨s, eq.le⟩
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
@@ -624,6 +633,9 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
+theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
+  ⟨Set.embeddingOfSubset s t h⟩
+
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
@@ -703,6 +715,10 @@ theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
 theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
   simpa using mk_image_embedding_lift f s
 
+theorem iSup_mk_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} :
+    ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
+  ciSup_le' fun _ => mk_le_mk_of_subset (subset_iUnion _ _)
+
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) ≤ #(Σ i, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
@@ -735,7 +751,7 @@ theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #�
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
-  rw [← lift_sum, lift_id'.{_,u}]
+  rw [← lift_sum, lift_id'.{_, u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]
@@ -804,9 +820,6 @@ theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
   classical
   exact mk_congr (Equiv.Set.sumCompl s)
 
-theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
-  ⟨Set.embeddingOfSubset s t h⟩
-
 theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set α} :
     #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
@@ -814,9 +827,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   classical
   let u : Finset α := s.image Subtype.val
   have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
-  rw [← this]
-  apply H
-  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  grind
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.Topology.Sheaves.Init
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Presheaves on a topological space
@@ -28,6 +30,8 @@ We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
 `TopCat.Presheaf.pushforwardPullbackAdjunction`.
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -95,7 +99,7 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
   restrict_tac
 
-variable {X : TopCat} {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable {X : TopCat} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 /-- The restriction of a section along an inclusion of open sets.

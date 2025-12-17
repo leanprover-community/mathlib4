@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Changing origin in a power series
@@ -32,6 +34,8 @@ point `y` of this ball, and the power series there can be expressed in terms of 
 series `p` as `p.changeOrigin y`. See `HasFPowerSeriesOnBall.changeOrigin`. It follows in particular
 that the set of points at which a given function is analytic is open, see `isOpen_analyticAt`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

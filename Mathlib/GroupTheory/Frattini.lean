@@ -3,8 +3,10 @@ Copyright (c) 2024 Colva Roney-Dougal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colva Roney-Dougal, Inna Capdeboscq, Susanna Fishel, Kim Morrison
 -/
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.Order.Radical
+module
+
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.Order.Radical
 
 /-!
 # The Frattini subgroup
@@ -15,6 +17,8 @@ We give the definition of the Frattini subgroup of a group, and three elementary
   the Frattini subgroup consists of the non-generating elements of the group.
 * The Frattini subgroup of a finite group is nilpotent.
 -/
+
+@[expose] public section
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=

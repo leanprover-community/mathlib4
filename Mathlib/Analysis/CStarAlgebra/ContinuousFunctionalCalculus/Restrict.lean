@@ -3,15 +3,17 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
 /-! # Restriction of the continuous functional calculus to a scalar subring
 
 The main declaration in this file is:
 
 + `SpectrumRestricts.cfc`: builds a continuous functional calculus over a subring of scalars.
-  This is use for automatically deriving the continuous functional calculi on selfadjoint or
+  This is used for automatically deriving the continuous functional calculi on selfadjoint or
   positive elements from the one for normal elements.
 
 This will allow us to take an instance of the
@@ -22,6 +24,8 @@ simply by proving:
 1. `IsSelfAdjoint x ↔ IsStarNormal x ∧ SpectrumRestricts Complex.re x`,
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
+
+@[expose] public section
 
 open Set Topology
 

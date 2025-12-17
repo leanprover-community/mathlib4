@@ -3,7 +3,9 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+module
+
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Row and column matrices
@@ -18,6 +20,8 @@ This file provides results about row and column matrices.
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
 
 -/
+
+@[expose] public section
 
 variable {l m n o : Type*}
 

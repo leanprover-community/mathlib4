@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # SeminormFromConst
@@ -35,6 +37,8 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 SeminormFromConst, Seminorm, Nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -147,7 +151,7 @@ def seminormFromConst : RingSeminorm R where
       apply (seminormFromConst_isLimit hf1 hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
           simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
-      · rintro n; use n; omega
+      · rintro n; use n; lia
     refine le_of_tendsto_of_tendsto' hlim ((seminormFromConst_isLimit hf1 hc hpm x).mul
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
@@ -182,7 +186,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) :=
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x ^ m) (m * n)) atTop
       (𝓝 (seminormFromConst' hf1 hc hpm (x ^ m))) := by
     apply (seminormFromConst_isLimit hf1 hc hpm (x ^ m)).comp
-      (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_left' hnk m) _)
+      (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
   apply tendsto_nhds_unique hlim
   convert (seminormFromConst_isLimit hf1 hc hpm x).pow m using 1
@@ -248,7 +252,7 @@ theorem seminormFromConst_const_mul (x : R) :
       (𝓝 (seminormFromConst' hf1 hc hpm x)) := by
     apply (seminormFromConst_isLimit hf1 hc hpm x).comp
       (tendsto_atTop_atTop_of_monotone add_left_mono _)
-    rintro n; use n; omega
+    rintro n; use n; lia
   rw [seminormFromConst_apply_c hf1 hc hpm]
   apply tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (c * x))
   have hterm : seminormFromConst_seq c f (c * x) =

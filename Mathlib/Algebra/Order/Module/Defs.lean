@@ -3,13 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -79,7 +81,7 @@ used implications are:
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an linear ordered semifield, `β` is an `α`-module:
+* When `α` is a linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
 * When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
@@ -120,6 +122,8 @@ because:
 In the future, it would be good to make the corresponding typeclasses in
 `Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset
 

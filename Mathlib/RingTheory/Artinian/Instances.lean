@@ -3,9 +3,11 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Instances related to Artinian rings
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Artinian.Module
 We show that every reduced Artinian ring and the polynomial ring over it
 are decomposition monoids, and every reduced Artinian ring is semisimple.
 -/
+
+@[expose] public section
 
 namespace IsArtinianRing
 

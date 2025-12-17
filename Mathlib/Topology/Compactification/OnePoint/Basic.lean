@@ -3,19 +3,21 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
-# The OnePoint Compactification
+# The one-point compactification
 
-We construct the OnePoint compactification (the one-point compactification) of an arbitrary
-topological space `X` and prove some properties inherited from `X`.
+We construct the one-point compactification of an arbitrary topological space `X` and prove some
+properties inherited from `X`.
 
 ## Main definitions
 
-* `OnePoint`: the OnePoint compactification, we use coercion for the canonical embedding
+* `OnePoint`: the one-point compactification, we use coercion for the canonical embedding
   `X → OnePoint X`; when `X` is already compact, the compactification adds an isolated point
   to the space.
 * `OnePoint.infty`: the extra point
@@ -30,8 +32,10 @@ topological space `X` and prove some properties inherited from `X`.
 
 ## Tags
 
-one-point compactification, Alexandroff compactification, compactness
+one point compactification, Alexandroff compactification, compactness
 -/
+
+@[expose] public section
 
 
 open Set Filter Topology
@@ -46,7 +50,7 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 
 variable {X Y : Type*}
 
-/-- The OnePoint extension of an arbitrary topological space `X` -/
+/-- The one-point extension of an arbitrary topological space `X` -/
 def OnePoint (X : Type*) :=
   Option X
 
@@ -130,9 +134,8 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
 
-@[simp]
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ :=
-  range_some_inter_none X
+@[deprecated "Use simp" (since := "2025-11-22")]
+theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
 
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=

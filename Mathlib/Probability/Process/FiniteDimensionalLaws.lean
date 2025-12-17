@@ -3,9 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Jonas Bayer
 -/
+module
 
-import Mathlib.MeasureTheory.Constructions.Projective
-import Mathlib.Probability.IdentDistrib
+public import Mathlib.MeasureTheory.Constructions.Projective
+public import Mathlib.Probability.IdentDistrib
 
 /-!
 # Finite-dimensional distributions of a stochastic process
@@ -29,6 +30,8 @@ finite-dimensional distributions.
   same law.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 
