@@ -719,7 +719,7 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
 
 @[simp]
 lemma toContinuousLinearMap_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
-    (linearIsometryEquiv u).toContinuousLinearEquiv.toContinuousLinearMap = (u : H →L[𝕜] H) :=
+    (linearIsometryEquiv u).toContinuousLinearEquiv = (u : H →L[𝕜] H) :=
   rfl
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
