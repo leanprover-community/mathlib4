@@ -161,7 +161,7 @@ end Filter
 
 end SeminormedAddCommGroup
 
-namespace NormedAddCommGroup
+section NormedAddCommGroup
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [Nontrivial F]
 
