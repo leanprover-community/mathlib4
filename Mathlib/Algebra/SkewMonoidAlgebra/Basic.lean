@@ -1190,7 +1190,7 @@ theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAl
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]
 open NonUnitalAlgHom
 
-/-- A non_unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
+/-- A non-unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ := by

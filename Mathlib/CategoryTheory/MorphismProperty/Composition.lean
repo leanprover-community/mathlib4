@@ -299,6 +299,16 @@ lemma multiplicativeClosure_eq_multiplicativeClosure' :
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
 
+lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
+    W.multiplicativeClosure.strictMap F ≤ (W.strictMap F).multiplicativeClosure := by
+  intro _ _ f hf
+  induction hf with | map hf
+  induction hf with
+  | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
+  | id x => simpa using .id (F.obj x)
+  | comp_of _ _  hf hg h =>
+    simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
+
 /-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
 class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
