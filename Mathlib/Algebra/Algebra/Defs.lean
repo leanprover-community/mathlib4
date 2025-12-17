@@ -111,8 +111,6 @@ theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semirin
     [Subsingleton R] : Subsingleton A :=
   (algebraMap R A).codomain_trivial
 
-attribute [coe] algebraMap
-
 @[deprecated (since := "2025-12-17")] alias Algebra.cast := algebraMap
 
 namespace algebraMap
