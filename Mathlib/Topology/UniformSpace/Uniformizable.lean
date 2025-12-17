@@ -42,14 +42,14 @@ variable [UniformSpace X]
 
 /-- To construct a real-valued function separating a point `x` from a closed set in a uniform
 space, we recursively construct pairs of a closed set `c` contained in an open set `u`
-satisfying the following predicate: the closed set is the closure of the ball centered
-at `x` associated to some open entourage `uc`, the open set is the ball centered at `x`
-associated to some entourage `uu`, such that `uu` is a thickening of `uc` by some entourage `s`
-in the sense that the composition `s ○ uc ○ s` is contained in `uu`. -/
+satisfying the following predicate: `u` is a thickening of `c` by some entourage `s`,
+in the sense that `c` is the closure of the ball centered at `x`
+associated to some open entourage `uc`, and `u` contains the ball centered at `x`
+associated to the composition `s ○ uc ○ s`. -/
 def P (c u : Set X) :=
-  ∃ (x : X) (uc uu s : SetRel X X),
+  ∃ (x : X) (uc s : SetRel X X),
     IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (ball x uc) ∧
-    u = ball x uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 X
+    ball x (s ○ uc ○ s) ⊆ u ∧ s ∈ 𝓤 X
 
 /-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
 predicate `P`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
@@ -57,17 +57,18 @@ satisfying `P`. We can then use the general `Urysohns.CU` construction to obtain
 desired real-valued function. -/
 theorem urysohns_main {c u : Set X} (Pcu : P c u) :
     ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
-  obtain ⟨x, uc, uu, s, huc, ucu, rfl, rfl, hn, hs⟩ := Pcu
+  obtain ⟨x, uc, s, huc, ucu, rfl, hn, hs⟩ := Pcu
   obtain ⟨(ds : SetRel X X), hdsu, hdso, -, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
   have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
   have hsub := calc ds ○ (ds ○ uc ○ ds) ○ ds
     _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by simp [comp_assoc]
     _ ⊆ s ○ uc ○ s := comp_subset_comp (comp_subset_comp_left hdsd) hdsd
-    _ ⊆ uu := hn
+  replace hsub := (ball_mono hsub x).trans hn
   have : ds.IsRefl := id_subset_iff.1 (refl_le_uniformity hdsu)
-  refine ⟨ball x (ds ○ uc ○ ds), isOpen_ball x ho, ?_, subset_trans ?_ (ball_mono hsub x),
-      ⟨x, uc, ds ○ uc ○ ds, ds, huc, ucu, rfl, rfl, le_rfl, hdsu⟩, x, ds ○ uc ○ ds, uu, ds, ho,
-      mem_of_superset ucu (right_subset_comp.trans left_subset_comp), rfl, rfl, hsub, hdsu⟩ <;>
+  refine ⟨ball x (ds ○ uc ○ ds), isOpen_ball x ho, ?_, subset_trans ?_ hsub,
+      ⟨x, uc, ds, huc, ucu, rfl, subset_rfl, hdsu⟩,
+      ⟨x, ds ○ uc ○ ds, ds, ho, mem_of_superset ucu (right_subset_comp.trans left_subset_comp),
+        rfl, hsub, hdsu⟩⟩ <;>
   · refine closure_ball_subset.trans (ball_mono ?_ x)
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
@@ -86,8 +87,8 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
         simp_rw [closure_eq_inter_uniformity, ← comp_assoc]
         exact (iInter₂_subset u3 hu3u).trans hu3O
       hP _ Pcu _ _ := urysohns_main Pcu
-      P_C_U := ⟨x, interior u3, O, u3,
-        isOpen_interior, interior_mem_uniformity hu3u, rfl, rfl, hu3O, hu3u⟩
+      P_C_U := ⟨x, interior u3, u3,
+        isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩
     }
     ⟨fun x ↦ ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
       Subtype.ext (c.lim_of_mem_C x <| subset_closure (refl_mem_uniformity <|
