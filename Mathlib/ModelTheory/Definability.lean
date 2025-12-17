@@ -458,44 +458,49 @@ def DefinableFun (f : (α → M) → M) : Prop :=
 def DefinableMap (F : (α → M) → (β → M)) : Prop :=
   ∀ i : β, DefinableFun L A fun x => F x i
 
-variable {L A}
+variable {L A} {f : (α → M) → M}
 
-theorem DefinableFun.mono {f : (α → M) → M} {B : Set M} (hAs : DefinableFun L A f) (hAB : A ⊆ B) :
+theorem DefinableFun.mono {B : Set M} (hAs : DefinableFun L A f) (hAB : A ⊆ B) :
     DefinableFun L B f :=
   Set.Definable.mono hAs hAB
 
-theorem empty_definableFun_iff {f : (α → M) → M} :
+theorem empty_definableFun_iff :
     DefinableFun L (∅ : Set M) f ↔
     ∃ φ : L.Formula (α ⊕ Unit), tupleGraph f = setOf φ.Realize := by
   simp [DefinableFun, Set.empty_definable_iff]
 
-/-- A function symbol is a definable function. -/
-theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
-    DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) := by
-  rw [empty_definableFun_iff]
-  exists (Term.func f (Term.var ∘ Sum.inl)).equal (Term.var (Sum.inr ()))
+theorem definableFun_iff_empty_definableFun_with_params :
+    DefinableFun L A f ↔ DefinableFun (L[[A]]) (∅ : Set M) f :=
+  empty_definable_iff.symm
 
 /-- A term is a definable function. -/
-theorem _root_.Language.Term.definableFun_realize (t : L.Term α) :
+theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
     DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
   rw [empty_definableFun_iff]
   exists (t.relabel Sum.inl).equal (Term.var (Sum.inr ()))
   ext v
   simp
 
-variable (L A)
+/-- A function symbol is a definable function. -/
+theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
+    DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) :=
+  (Term.func f Term.var).definableFun_realize
+
+variable (L)
+
+/-- A coordinate projection is a definable function. -/
+theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
+    DefinableFun L (∅ : Set M) (fun v => v i) :=
+  (Term.var i).definableFun_realize
 
 /-- A constant function is a definable function. -/
 theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
     (γ : Type*) (ha : a ∈ A) :
     DefinableFun L A (fun _ : γ → M => a) := by
-  simp only [DefinableFun]
-  convert (Definable.singleton_of_mem L ha).preimage_comp (fun _ : Fin 1 => Sum.inr ())  using 1
-  simp only [tupleGraph, Fin.isValue, mem_singleton_iff, preimage_setOf_eq, comp_apply]
-  ext v
-  exact comm
+  rw [definableFun_iff_empty_definableFun_with_params]
+  exact ((L.con (⟨a,ha⟩ : ↑A)).term).definableFun_realize
 
-variable {L A}
+variable {L}
 
 /-- The preimage of a definable set under a definable map is definable. -/
 lemma _root_.Set.Definable.preimage_map
