@@ -75,7 +75,7 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
   refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
   · calc
       exp (arg z * I) = ‖z‖ * exp (arg z * I) := by rw [hz, ofReal_one, one_mul]
-      _ = z :=norm_mul_exp_arg_mul_I z
+      _ = z := norm_mul_exp_arg_mul_I z
   · rintro ⟨θ, rfl⟩
     exact Complex.norm_exp_ofReal_mul_I θ
 
@@ -592,8 +592,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
     rw [arg, if_neg hre.not_ge, if_neg him.not_ge]
   convert (Real.continuousAt_arcsin.comp_continuousWithinAt
     ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
-      continuous_norm.continuousWithinAt _)
-    ).sub_const π using 1
+      continuous_norm.continuousWithinAt _)).sub_const π using 1
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne

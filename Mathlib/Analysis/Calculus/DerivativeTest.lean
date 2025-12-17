@@ -81,8 +81,8 @@ lemma isLocalMin_of_deriv_Ioo {f : ℝ → ℝ} {a b c : ℝ}
     (h₁ : ∀ x ∈ Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
   have := isLocalMax_of_deriv_Ioo (f := -f) g₀ g₁
     (by simp_all) hd₀.neg hd₁.neg
-    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <|h₀ x hx)
-    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <|h₁ x hx)
+    (fun x hx => deriv.neg (f := f) ▸ Left.nonneg_neg_iff.mpr <| h₀ x hx)
+    (fun x hx => deriv.neg (f := f) ▸ Left.neg_nonpos_iff.mpr <| h₁ x hx)
   exact (neg_neg f) ▸ IsLocalMax.neg this
 
 /-- The First-Derivative Test from calculus, maxima version,

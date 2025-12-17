@@ -137,7 +137,7 @@ lemma HasFTaylorSeriesUpToOn.analyticOn
     (hf : HasFTaylorSeriesUpToOn ω f p s) (h : AnalyticOn 𝕜 (fun x ↦ p x 0) s) :
     AnalyticOn 𝕜 f s := by
   have : AnalyticOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) s :=
-    (LinearIsometryEquiv.analyticOnNhd _ _ ).comp_analyticOn
+    (LinearIsometryEquiv.analyticOnNhd _ _).comp_analyticOn
       h (Set.mapsTo_univ _ _)
   exact this.congr (fun y hy ↦ (hf.zero_eq _ hy).symm)
 

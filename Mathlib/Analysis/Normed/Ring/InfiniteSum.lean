@@ -122,7 +122,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm' {f g : ℕ → 
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
-  h'f.tsum_mul_tsum_eq_tsum_sum_antidiagonal  h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
+  h'f.tsum_mul_tsum_eq_tsum_sum_antidiagonal h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k ∈ range (n + 1), f k * g (n - k)‖ := by
