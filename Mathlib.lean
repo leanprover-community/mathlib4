@@ -2304,7 +2304,6 @@ public import Mathlib.CategoryTheory.Category.Cat.Op
 public import Mathlib.CategoryTheory.Category.Cat.Terminal
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Category.GaloisConnection
-public import Mathlib.CategoryTheory.Category.Grpd
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Category.Pairwise
@@ -2487,6 +2486,10 @@ public import Mathlib.CategoryTheory.Groupoid.Basic
 public import Mathlib.CategoryTheory.Groupoid.Discrete
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
+public import Mathlib.CategoryTheory.Groupoid.Grpd
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Core
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Free
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Limit
 public import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.CategoryTheory.GuitartExact.Basic
