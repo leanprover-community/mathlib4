@@ -664,7 +664,7 @@ lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     adjoint e.toContinuousLinearEquiv.toContinuousLinearMap = e.symm.toContinuousLinearEquiv :=
   calc
     _ = adjoint e.toContinuousLinearEquiv.toContinuousLinearMap ∘L
-        (e.toContinuousLinearEquiv ∘L e.symm.toContinuousLinearEquiv) := by simp
+        e.toContinuousLinearEquiv ∘L e.symm.toContinuousLinearEquiv.toContinuousLinearMap := by simp
     _ = e.symm.toContinuousLinearEquiv := by
       rw [← comp_assoc, norm_map_iff_adjoint_comp_self _ |>.mp e.norm_map, one_def, id_comp]
 
@@ -727,7 +727,7 @@ lemma toContinuousLinearMap_linearIsometryEquiv_apply (u : unitary (H →L[𝕜]
 
 @[simp]
 lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
-    linearIsometryEquiv.symm e = e.toContinuousLinearEquiv :=
+    linearIsometryEquiv.symm e = e.toContinuousLinearEquiv.toContinuousLinearMap :=
   rfl
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
