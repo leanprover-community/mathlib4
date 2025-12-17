@@ -167,8 +167,8 @@ lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m :=
   simp_rw [← finSumFinEquiv.prod_comp, ← Finset.prod_map_equiv finSumFinEquiv.symm]
   simp only [Equiv.symm_apply_apply, ← Fin.val_fin_lt, Equiv.symm_symm, Function.comp_apply,
     ← Finset.prod_ite_mem_eq (Finset.map _ _), Finset.mem_map_equiv, Finset.mem_Ioi,
-    Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.coe_castAdd, Sum.swap_inl,
-    finSumFinEquiv_apply_right, Fin.coe_natAdd, Sum.swap_inr, add_lt_add_iff_left,
+    Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.val_castAdd, Sum.swap_inl,
+    finSumFinEquiv_apply_right, Fin.val_natAdd, Sum.swap_inr, add_lt_add_iff_left,
     ← ite_not (α := R) (p := _ < _) (y := 1), ← ite_and, and_not_self]
   simp [(Fin.isLt _).trans_le, (Fin.isLt _).le.trans, pow_mul]
 
@@ -220,7 +220,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           dsimp at hi
           have : Fin.mk (n := m + n) (↑j₂ + (k + m)) (by lia) = .natAdd m ⟨j₂ + k, by lia⟩ :=
             Fin.ext (by simp; lia)
-          simp only [Fin.addCases_left, Fin.coe_castAdd, this, Fin.addCases_right, mul_ite,
+          simp only [Fin.addCases_left, Fin.val_castAdd, this, Fin.addCases_right, mul_ite,
             mul_zero, ← C_mul_X_pow_eq_monomial, ← mul_assoc, coeff_mul_X_pow', ite_add_zero,
             coeff_mul_C, add_assoc, add_eq_left, ← ite_and, ← mul_comm r, tsub_add_eq_tsub_tsub,
             add_sub_assoc, sub_eq_zero]
@@ -229,10 +229,10 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
             exact hf.trans_lt (by lia)
           · lia
         | right i =>
-          simp only [Fin.coe_natAdd] at hi
+          simp only [Fin.val_natAdd] at hi
           have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
               Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
-          simp only [Fin.addCases_right, Fin.coe_natAdd, sub_eq_self, this]
+          simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
           rw [if_neg, mul_zero]
           lia
       lia
@@ -307,7 +307,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
   rw [resultant, Matrix.det_succ_row (i := .last _),
       Finset.sum_eq_single (by exact ((Fin.last m).castAdd (n + 1))) _ (by simp)]
   · rw [resultant, ← Matrix.det_reindex_self (finCongr (show (m + 1).add n = m + (n + 1) by grind))]
-    simp only [Nat.add_eq, Nat.succ_eq_add_one, Fin.val_last, Fin.coe_castAdd, Fin.succAbove_last,
+    simp only [Nat.add_eq, Nat.succ_eq_add_one, Fin.val_last, Fin.val_castAdd, Fin.succAbove_last,
       Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_submatrix]
     congr 2
     · trans (-1) ^ (2 * m + (n + 1))
@@ -318,7 +318,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
-        finCongr_apply, Matrix.of_apply, Fin.coe_castSucc, Fin.coe_cast]
+        finCongr_apply, Matrix.of_apply, Fin.val_castSucc, Fin.val_cast]
       induction j using Fin.addCases with
       | left j =>
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.castAdd (n + 1)).cast (by grind)) =
@@ -334,7 +334,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
     suffices f.sylvester g (m + 1) (n + 1) (.last (m + 1 + n)) b = 0 by simp [this]
     induction b using Fin.addCases with
     | left b =>
-      simp only [Nat.add_eq, Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.coe_castAdd,
+      simp only [Nat.add_eq, Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.val_castAdd,
         Fin.val_last] at hb
       simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left,
         ite_eq_right_iff, and_imp]
@@ -1003,7 +1003,7 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
   -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed;
   -- but the proof runs much faster this way.
   simp only [sylvesterDeriv, hf, OfNat.ofNat_ne_zero, ↓reduceDIte, sylvester, Fin.addCases,
-    Nat.add_one_sub_one, Fin.coe_castLT, mem_Icc, Fin.val_fin_le, Fin.coe_subNat, Fin.coe_cast,
+    Nat.add_one_sub_one, Fin.val_castLT, mem_Icc, Fin.val_fin_le, Fin.val_subNat, Fin.val_cast,
     tsub_le_iff_right, coeff_derivative, eq_rec_constant, dite_eq_ite, Nat.reduceMul, Nat.reduceSub,
     Nat.cast_ofNat, Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_apply, finCongr_apply,
     Fin.cast_mk, Matrix.updateRow_apply, Fin.mk.injEq, Matrix.of_apply, Fin.mk_le_mk, one_mul,

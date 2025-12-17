@@ -41,7 +41,7 @@ def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
 
 attribute [simp] nerve_obj
 
-instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
+instance {C : Type*} [Category* C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
 
 section
@@ -135,7 +135,7 @@ lemma left_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
 
 @[simp]
 lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
-    ComposableArrows.right  (n := 1) e.edge = nerveEquiv y := by
+    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
   simp only [← e.tgt_eq]
   rfl
 
