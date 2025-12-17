@@ -249,7 +249,7 @@ lemma singleton_lt_singleton : (toColex ({a} : Finset α)) < toColex {b} ↔ a <
 lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
     s ≤ t ↔ (↑(ofColex s) : Set α) \ ↑(ofColex t) ⊆
       lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by
-  rw [Set.subset_def]; simp [le_def, and_assoc]
+  simp [le_def, Set.subset_def, and_assoc]
 
 section DecidableEq
 variable [DecidableEq α]

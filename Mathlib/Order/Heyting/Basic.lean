@@ -385,7 +385,7 @@ section GeneralizedCoheytingAlgebra
 
 variable [GeneralizedCoheytingAlgebra α] {a b c d : α}
 
-@[simp]
+@[local simp]
 theorem sdiff_le_iff : a \ b ≤ c ↔ a ≤ b ⊔ c :=
   GeneralizedCoheytingAlgebra.sdiff_le_iff _ _ _
 

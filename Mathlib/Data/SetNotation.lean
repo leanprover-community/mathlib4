@@ -54,10 +54,12 @@ elaborating `stx₂`.
 
 Note that we call `elabTermAndSynthesize` on `stx₁`, so if there are any stuck type class
 constraints due to not (yet) filled in metavariables, we will discard the `stx₁` option. -/
-private def elabTermOrTerm (stx₁ stx₂ : Term) (expectedType? : Option Expr) : TermElabM Expr :=
+private def elabTermOrTerm (stx₁ stx₂ : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+  let s ← saveState
   try
     withoutErrToSorry do elabTermAndSynthesize stx₁ expectedType?
   catch _ =>
+    s.restore
     elabTerm stx₂ expectedType?
 
 /-- Elaborator for `x ⊆ y` notation. -/

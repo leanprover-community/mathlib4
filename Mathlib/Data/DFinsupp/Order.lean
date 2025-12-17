@@ -273,7 +273,7 @@ theorem support_tsub : (f - g).support ⊆ f.support := by
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 
 theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
-    rw [subset_iff]; simp +contextual
+  simp +contextual [subset_iff]
 
 end PartialOrder
 

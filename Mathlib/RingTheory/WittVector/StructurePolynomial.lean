@@ -377,6 +377,7 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
   obtain ⟨j, hj, rfl⟩ := mem_vars_rename _ _ hx''
   rw [wittPolynomial_vars, Finset.mem_range] at hj
   replace hk := xInTermsOfW_vars_subset p _ hk
+  rw [Finset.mem_range] at hk -- TODO: why can't `grind` use this?
   grind
 
 -- we could relax the fintype on `idx`, but then we need to cast from finset to set.
