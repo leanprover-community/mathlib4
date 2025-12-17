@@ -4304,6 +4304,7 @@ public import Mathlib.GroupTheory.GroupAction.Jordan
 public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.GroupTheory.GroupAction.Period
+public import Mathlib.GroupTheory.GroupAction.PermIwasawa
 public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.GroupAction.Quotient
