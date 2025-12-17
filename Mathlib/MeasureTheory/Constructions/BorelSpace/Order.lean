@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
 module
 
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
