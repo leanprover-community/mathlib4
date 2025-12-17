@@ -21,12 +21,11 @@ This file defines Følner filters for measurable spaces acted on by a group.
     1. Each `s` in `l` is eventually measurable with finite non-zero measure,
     2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
 
-* `IsFoelner.mean μ l F s` : Given a Følner sequence `F` with respect to some group `G`
-  acting on a measure space `X`, the mean of a set `s` is the limit of the sequence
-  `μ (s ∩ F i) / μ (F i)` along the filter `l`.
+* `IsFoelner.mean μ u F s` : The limit along an ultrafilter `u` of the density of a set `s`
+  with respect to a Følner sequence `F` in the measure space `X`.
 
 * `maxFoelner G μ` : The maximal Følner filter with respect to some group `G` acting on a
-  measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s` on measurable
+  measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s` over measurable
   sets of finite non-zero measure.
 
 ## Main results
@@ -61,14 +60,14 @@ namespace Filter
 
 variable (G μ l F) in
 /-- A Følner sequence with respect to some group `G` acting on a measure space `X`
-is a sequence of sets `F` such that:
-    1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-    2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+    is a sequence of sets `F` such that:
+      1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+      2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
   eventually_meas_ne_zero : ∀ᶠ i in l, μ (F i) ≠ 0
   eventually_meas_ne_top : ∀ᶠ i in l, μ (F i) ≠ ∞
-  tendsto_meas_symmDiff (g : G) : Tendsto (fun i ↦ μ ((g • (F i)) ∆ (F i)) / μ (F i)) l (𝓝 0)
+  tendsto_meas_symmDiff (g : G) : Tendsto (fun i ↦ μ ((g • F i) ∆ F i) / μ (F i)) l (𝓝 0)
 
 /-- The constant sequence `X` is Følner if `X` has finite measure. -/
 theorem IsFoelner.univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :
@@ -86,8 +85,8 @@ theorem IsFoelner.mono {l' : Filter ι} (hfoel : IsFoelner G μ l F) (hle : l' �
   tendsto_meas_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_symmDiff g) hle
 
 variable (μ u F) in
-/-- The limit along an ultrafilter of the density of a set
-with respect to a Følner sequence in `X`. -/
+/-- The limit along an ultrafilter of the density of a set with respect to a
+    Følner sequence in `X`. -/
 noncomputable def IsFoelner.mean (s : Set X) :=
   limUnder u (fun i ↦ μ (s ∩ F i) / μ (F i))
 
@@ -124,8 +123,9 @@ theorem IsFoelner.mean_union_eq_add_of_disjoint (hfoel : IsFoelner G μ u F)
   rw [← measure_union
     (Disjoint.mono inter_subset_left inter_subset_left hdisj) (MeasurableSet.inter ht hi)]
 
-theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ] (hfoel : IsFoelner G μ u F)
-    (g : G) (s : Set X) : IsFoelner.mean μ u F (g • s) = IsFoelner.mean μ u F s := by
+theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ]
+    (hfoel : IsFoelner G μ u F) (g : G) (s : Set X) :
+    IsFoelner.mean μ u F (g • s) = IsFoelner.mean μ u F s := by
   suffices h_le : ∀ h h', IsFoelner.mean μ u F (h • s) ≤ IsFoelner.mean μ u F (h' • s) by
     simpa [one_smul] using le_antisymm (h_le g 1) (h_le 1 g)
   intro h h'
@@ -154,7 +154,7 @@ theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ] (hfoel : IsFoe
     (by simp only [← ENNReal.add_div]; exact fun i ↦ by gcongr; exact h_le_add i)
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
-space `X`, then it exists a `G`-invariant finitely additive probability measure on `X`. -/
+    space `X`, then it exists a `G`-invariant finitely additive probability measure on `X`. -/
 theorem IsFoelner.amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFoelner G μ l F) :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
@@ -167,8 +167,8 @@ theorem IsFoelner.amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFo
 
 variable (G μ) in
 /-- The maximal Følner filter with respect to some group `G` acting on a
-measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s`
-on measurable sets of finite non-zero measure. -/
+    measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s`
+    on measurable sets of finite non-zero measure. -/
 def maxFoelner : Filter (Set X) :=
   𝓟 {s : Set X | MeasurableSet s ∧ μ s ≠ 0 ∧ μ s ≠ ∞} ⊓
   ⨅ (g : G), (comap (fun s ↦ μ ((g • s) ∆ s) / μ s) (𝓝 0))
@@ -176,14 +176,8 @@ def maxFoelner : Filter (Set X) :=
 variable (l F) in
 theorem isFoelner_iff_tendsto : IsFoelner G μ l F ↔ Tendsto F l (maxFoelner G μ) := by
   dsimp [maxFoelner]
-  simp_rw [tendsto_inf, tendsto_iInf, tendsto_principal, tendsto_comap_iff]
--- linters do not allow me to simp anymore, don't know why
-  have : (∀ᶠ (i : ι) in l, F i ∈ {s | MeasurableSet s ∧ ¬μ s = 0 ∧ ¬μ s = ⊤}) ↔
-    (∀ᶠ (i : ι) in l, MeasurableSet (F i)) ∧
-    (∀ᶠ (i : ι) in l, μ (F i) ≠ 0) ∧
-    (∀ᶠ (i : ι) in l, μ (F i) ≠ ∞) := by simp
-  rw [this]
---
+  simp only [tendsto_inf, tendsto_iInf, tendsto_principal, tendsto_comap_iff]
+  simp only [mem_setOf_eq, eventually_and]
   constructor
   all_goals intro h
   · refine ⟨⟨h.eventually_measurableSet, h.eventually_meas_ne_zero, h.eventually_meas_ne_top⟩, ?_⟩
@@ -194,8 +188,7 @@ theorem isFoelner_iff_tendsto : IsFoelner G μ l F ↔ Tendsto F l (maxFoelner G
       eventually_meas_ne_top := h.1.2.2
       tendsto_meas_symmDiff := h.2 }
 
-theorem amenable_of_maxFoelner_ne_bot
-    [SMulInvariantMeasure G X μ] (h : NeBot (maxFoelner G μ)) :
+theorem amenable_of_maxFoelner_ne_bot [SMulInvariantMeasure G X μ] (h : NeBot (maxFoelner G μ)) :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
         ∀ (g : G) (s : Set X), m (g • s) = m s :=
