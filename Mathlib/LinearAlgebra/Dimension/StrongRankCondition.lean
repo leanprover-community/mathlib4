@@ -598,8 +598,8 @@ theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian 
     StrongRankCondition R :=
   (strongRankCondition_iff_succ R).2 fun n f hf ↦
     have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
-    not_isNoetherian_of_linearMap_prod_injective
-      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective) inferInstance
+    not_subsingleton R <| IsNoetherian.subsingleton_of_injective
+      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective)
 
 end StrongRankCondition
 

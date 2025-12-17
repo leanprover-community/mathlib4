@@ -25,8 +25,8 @@ theorem StrongRankCondition.of_isArtinian (R) [Semiring R] [Nontrivial R]
     [∀ n, IsArtinian R (Fin n → R)] : StrongRankCondition R :=
   (strongRankCondition_iff_succ R).2 fun n f hf ↦
     have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
-    not_isArtinian_of_linearMap_prod_injective
-      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective) inferInstance
+    not_subsingleton R <| IsArtinian.subsingleton_of_injective
+      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective)
 
 namespace IsArtinianRing
 
