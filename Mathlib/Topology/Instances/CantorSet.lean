@@ -220,10 +220,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
     rw [cantorSet_eq_union_halves] at hx
     grind
   all_goals
-    have := cantorSet_subset_unitInterval hy
-    simp only [Set.mem_Icc] at this ⊢
-    field_simp
-    grind
+    grind [cantorSet_subset_unitInterval]
 
 /-- The infinite sequence obtained by repeatedly applying `cantorStep` to `x`. -/
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
