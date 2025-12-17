@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Mathlib.Tactic.ExtractGoal
 public meta import Mathlib.Tactic.MinImports
+public meta import Mathlib.Util.ParseCommand
 public meta import Lean.Elab.Command
 
 /-!
@@ -298,20 +299,134 @@ register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
   defValue := 1
 }
 
-/-- Run a tactic at each proof step. -/
-def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+/--
+Whether to show timing information in "tryAtEachStep" tactic analysis output.
+
+When true (default), messages include elapsed time like `(23ms)`.
+Set to false in tests to avoid non-deterministic output.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.showTiming : Bool := {
+  defValue := true
+}
+
+/--
+Whether to report when a tactic can be replaced with itself.
+
+When true (default), all successful replacements are reported, including when
+the suggested tactic matches the existing proof.
+When false, self-replacements are suppressed.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.selfReplacements : Bool := {
+  defValue := true
+}
+
+/-- Run a tactic at each proof step, with optional timing.
+
+`label` is an optional human-readable name for output. If `none`, the tactic syntax is used.
+
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepCore
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic))
+    (label : Option String := none) : TacticAnalysis.Config where
   run seq := do
-    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
-    for i in seq do
+    let opts ← getOptions
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
+    let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
+    let selfReplacements := linter.tacticAnalysis.tryAtEachStep.selfReplacements.get opts
+    for h : idx in [:seq.size] do
+      let i := seq[idx]
       if let [goal] := i.tacI.goalsBefore then
-        if (hash goal) % fraction = 0 then
+        -- Hash the pretty-printed goal for stability across runs
+        let goalDecl := i.tacI.mctxBefore.decls.find! goal
+        let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
+          withOptions (·.setBool `pp.mvars false) do
+            return toString (← Meta.ppGoal goal)
+        if (hash goalPP) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
+          let startTime ← IO.monoMsNow
           let goalsAfter ← try
             i.runTacticCode goal tac
           catch _e =>
             pure [goal]
+          let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
-            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}`"
+            -- Extract just the tactic name, ignoring trailing comments/whitespace
+            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
+            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            -- Check if this is a self-replacement (tactic replacing itself)
+            if !selfReplacements && oldTacticPP == newTacticPP then
+              continue
+            let laterSteps := seq.size - 1 - idx
+            let laterMsg := if laterSteps > 0 then s!" (+{laterSteps} later steps)" else ""
+            if showTiming then
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}` ({elapsedMs}ms)"
+            else
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}`"
+
+/-- Run a tactic at each proof step. See `tryAtEachStepCore` for details. -/
+def Mathlib.TacticAnalysis.tryAtEachStep
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config :=
+  tryAtEachStepCore tac
+
+/-- Run a tactic (given as a string) at each proof step, with optional timing.
+
+`label` is the human-readable name shown in output (e.g., "grind").
+`tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
+Tactic sequences like "simp; grind" are also supported.
+
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
+To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
+    (label : String) (tacticStr : String) : TacticAnalysis.Config where
+  run seq := do
+    -- Parse using `tacticSeq.fn` directly since `tacticSeq` is not a parser category.
+    -- See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/piggy.20back.20off.20of.20the.20lean4.20parser
+    let tacSeq ← try
+      ofExcept <|
+        Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
+    catch _ =>
+      -- Tactic not available (e.g., `aesop` before Aesop is imported) - skip silently
+      return
+    let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
+    (tryAtEachStepCore (fun _ _ => pure tac) label).run seq
+
+/-- Run a custom tactic at each proof step, configured via environment variables.
+
+Reads from environment variables:
+- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind +suggestions") - required
+- `TRY_AT_EACH_STEP_LABEL`: Human-readable label for output (optional, defaults to tactic)
+
+If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
+
+To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
+```lean
+⟨`linter.tacticAnalysis.tryAtEachStepFromEnv, true⟩,
+```
+
+Then run with the environment variable:
+```bash
+TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
+```
+
+This generic entry point is used by the hammer-bench benchmarking tool
+(https://github.com/leanprover-community/hammer-bench) to test arbitrary tactics
+without requiring Mathlib code changes for each new tactic variant.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepFromEnvImpl : TacticAnalysis.Config where
+  run seq := do
+    let some tacticStr := (← IO.getEnv "TRY_AT_EACH_STEP_TACTIC") | return
+    let label := (← IO.getEnv "TRY_AT_EACH_STEP_LABEL").getD tacticStr
+    (tryAtEachStepFromStrings label tacticStr).run seq
 
 /-- Run `grind` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
@@ -360,6 +475,19 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
 def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+
+/-- Run a custom tactic at every step in proofs, configured via environment variables.
+
+Set `TRY_AT_EACH_STEP_TACTIC` to the tactic syntax to try (required).
+Set `TRY_AT_EACH_STEP_LABEL` to the label for output messages (optional, defaults to tactic).
+-/
+register_option linter.tacticAnalysis.tryAtEachStepFromEnv : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepFromEnv,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepFromEnv]
+def tryAtEachStepFromEnv := tryAtEachStepFromEnvImpl
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/

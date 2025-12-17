@@ -210,6 +210,10 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
     simp [hi] at h
   · simpa [Function.comp] using h.comp (Fin.succ_injective _)
 
+theorem exists_cons {α : Fin (n + 1) → Type*} (q : ∀ i, α i) :
+    ∃ (x₀ : α 0) (x : ∀ i : Fin n, α i.succ), q = cons x₀ x :=
+  ⟨q 0, tail q, (cons_self_tail q).symm⟩
+
 @[simp]
 theorem forall_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
     (∀ x, P x) ↔ P finZeroElim :=
@@ -958,6 +962,16 @@ theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
     (Fin.insertNth i x p) ∘ Fin.rev = Fin.insertNth (Fin.rev i) x (p ∘ Fin.rev) := by
   funext x
   apply insertNth_rev
+
+@[simp]
+theorem insertNth_succ_cons {α} (i : Fin (n + 1)) (x a : α) (p : Fin n → α) :
+    (insertNth i.succ x (cons a p) : Fin (n + 2) → α) = cons a (insertNth i x p) := by
+  ext j
+  cases j using Fin.succAboveCases i.succ with
+  | x => simp
+  | p j =>
+    simp only [insertNth_apply_succAbove]
+    cases j using Fin.cases <;> simp
 
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
     cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by

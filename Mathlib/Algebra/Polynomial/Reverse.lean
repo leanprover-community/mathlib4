@@ -100,7 +100,7 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
   calc
     Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
       rw [revAt_invol]
-    _ = f (revAt N i) := Finsupp.embDomain_apply _ _ _
+    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
 
 @[simp]
 theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
