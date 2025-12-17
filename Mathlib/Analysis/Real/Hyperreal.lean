@@ -21,15 +21,22 @@ open Filter Germ Topology
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
 
-#adaptation_note
-/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
-as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
-for adding this! -/
 namespace Hyperreal
 
-
-
 @[inherit_doc] notation "ℝ*" => Hyperreal
+
+/-- Natural embedding `ℝ → ℝ*`. -/
+@[coe] def ofReal (r : ℝ) : ℝ* :=
+  ofFun <| Function.const _ r
+
+instance : Zero ℝ* where
+  zero := ofReal 0
+
+instance : One ℝ* where
+  one := ofReal 1
+
+instance : Inhabited ℝ* where
+  default := 0
 
 noncomputable instance : Field ℝ* :=
   inferInstanceAs (Field (Germ _ _))
@@ -39,9 +46,6 @@ noncomputable instance : LinearOrder ℝ* :=
 
 instance : IsStrictOrderedRing ℝ* :=
   inferInstanceAs (IsStrictOrderedRing (Germ _ _))
-
-/-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] noncomputable def ofReal : ℝ → ℝ* := const
 
 noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
