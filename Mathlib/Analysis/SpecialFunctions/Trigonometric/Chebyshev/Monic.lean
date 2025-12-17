@@ -12,9 +12,12 @@ public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: leading coefficient
+
 * Chebyshev polynomials minimize deviation from zero,
   following proof in https://math.stackexchange.com/a/978145/1277
+
 ## Main statements
+
 * `le_sup_abs_eval_of_monic` provides a lower bound on the maximum of |P(x)| on [-1, 1] for monic P
 * `sup_abs_eval_eq_iff_of_monic` characterizes the equality case
 -/
