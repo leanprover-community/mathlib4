@@ -687,7 +687,7 @@ theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
 theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
   inductionOn₂ a b fun α r _ β s _ => by
     rw [← lift_umax]
-    exact lift_type_le.{_,_,u}
+    exact lift_type_le.{_, _, u}
 
 @[simp]
 theorem lift_inj {a b : Ordinal} : lift.{u, v} a = lift.{u, v} b ↔ a = b := by
@@ -1231,7 +1231,7 @@ theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
     le_of_lt (liftPrincipalSeg.{u, u + 1}.lt_top (succ c).ord)
 
 theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
-  have := lift_lt.{_, max (u+1) v}.2 (lift_lt_univ c)
+  have := lift_lt.{_, max (u + 1) v}.2 (lift_lt_univ c)
   rw [lift_lift, lift_univ, univ_umax.{u, v}] at this
   exact this
 
@@ -1275,7 +1275,7 @@ theorem IsStrongLimit.univ : IsStrongLimit univ.{u, v} :=
   ⟨univ_ne_zero, fun c h ↦ let ⟨w, h⟩ := lt_univ'.1 h; lt_univ'.2 ⟨2 ^ w, by simp [h]⟩⟩
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ Cardinal.lift.{v + 1, _} #α < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩

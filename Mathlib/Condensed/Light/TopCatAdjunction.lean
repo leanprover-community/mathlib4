@@ -34,7 +34,7 @@ variable (X : LightCondSet.{u})
 private def coinducingCoprod :
     (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
       X.val.obj ⟨LightProfinite.of PUnit⟩ :=
-  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u+1}).const s).op i
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
 
 /-- Let `X` be a light condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from light profinite sets `S` to `X(*)`, corresponding to elements of `X(S)`.
@@ -66,8 +66,9 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
       apply continuous_sigma
       intro ⟨S, x⟩
       simp only [Function.comp_apply, coinducingCoprod]
-      rw [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u+1}).const a).op x)) = _
-        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u+1}).const a).op x]
+      rw
+        [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u + 1}).const a).op x)) = _
+        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u + 1}).const a).op x]
       exact continuous_coinducingCoprod _ _ }
 
 /-- The functor `LightCondSet ⥤ TopCat` -/
@@ -100,7 +101,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   val := {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
+      toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
