@@ -160,9 +160,7 @@ lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
 theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
-  subst h
-  ext
-  rfl
+  grind
 
 theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
 
@@ -239,10 +237,7 @@ theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ l
   not_iff_not.mpr <| succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
-  cases n
-  · exact i.elim0
-  · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
-    exact ((le_last _).trans_lt' h).ne
+  grind
 
 open Fin.NatCast in
 @[norm_cast, simp]
