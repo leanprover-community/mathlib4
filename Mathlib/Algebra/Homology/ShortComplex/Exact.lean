@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ShortComplex
 
@@ -576,11 +576,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
     (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
   let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
-  have hg' : g' = 𝟙 _ := by
-    apply Cofork.IsColimit.hom_ext hp
-    dsimp
-    erw [Cofork.IsColimit.π_desc hp]
-    simp only [Cofork.π_ofπ, comp_id]
+  have hg' : g' = 𝟙 _ := by simp [g']
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
   have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
       (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
