@@ -124,7 +124,7 @@ def Regular (s : Simplex R P n) : Prop :=
 
 lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral := by
   refine ⟨dist (s.points 0) (s.points 1), fun i j hij ↦ ?_⟩
-  have hn : n ≠ 0 := by omega
+  have hn : n ≠ 0 := by lia
   by_cases hi : i = 1
   · rw [hi, dist_comm]
     rcases hr (Equiv.swap 0 j) with ⟨x, hx⟩
@@ -173,10 +173,6 @@ lemma equilateral_iff_dist_eq_and_dist_eq {t : Triangle R P} {i₁ i₂ i₃ : F
     have hi : (i = i₁ ∧ j = i₂) ∨ (i = i₂ ∧ j = i₁) ∨ (i = i₁ ∧ j = i₃) ∨
       (i = i₃ ∧ j = i₁) ∨ (i = i₂ ∧ j = i₃) ∨ (i = i₃ ∧ j = i₂) := by
       clear h
-      #adaptation_note /--
-      https://github.com/leanprover/lean4/issues/11009
-      -/
-      set_option synthInstance.maxSize 1000 in
       decide +revert
     rcases h with ⟨h₁, h₂⟩
     rcases hi with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩| ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩

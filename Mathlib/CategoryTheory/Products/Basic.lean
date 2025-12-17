@@ -95,8 +95,6 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[stacks 001K]
 instance prod' : Category.{max v₁ v₂} (C × D) where
 
--- TODO: is there a nice way to fix the non-terminal simp?
-set_option linter.flexible false in
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
