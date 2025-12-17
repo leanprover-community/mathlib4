@@ -95,7 +95,7 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [aeval_def, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [← eval_map_algebraMap, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by

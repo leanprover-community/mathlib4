@@ -50,7 +50,7 @@ coding theory, and representations of uniform matroids over finite fields.
 ## Implementation notes
 
 We derive the `det_vandermonde` formula from `det_projVandermonde`,
-which is proved using an induction argument involving row operations and division.
+which is proved using an induction argument involving row operations and division.
 To circumvent issues with non-invertible elements while still maintaining the generality of rings,
 we first prove it for fields using the private lemma `det_projVandermonde_of_field`,
 and then use an algebraic workaround to generalize to the ring case,
