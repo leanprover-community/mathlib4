@@ -107,36 +107,23 @@ they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 
 section AddMonoidAlgebra
 
-private irreducible_def add : R[X] → R[X] → R[X]
-  | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
-
-private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
-  | ⟨a⟩ => ⟨-a⟩
-
-private irreducible_def mul : R[X] → R[X] → R[X]
-  | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
-
-instance zero : Zero R[X] :=
+instance : Zero R[X] :=
   ⟨⟨0⟩⟩
 
-instance one : One R[X] :=
+instance : One R[X] :=
   ⟨⟨1⟩⟩
 
-instance add' : Add R[X] :=
-  ⟨add⟩
+@[no_expose] instance : Add R[X] :=
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a + b⟩⟩
 
-instance neg' {R : Type u} [Ring R] : Neg R[X] :=
-  ⟨neg⟩
+@[no_expose] instance {R : Type u} [Ring R] : Neg R[X] :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
-instance sub {R : Type u} [Ring R] : Sub R[X] :=
+instance {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
 
-instance mul' : Mul R[X] :=
-  ⟨mul⟩
-
--- If the private definitions are accidentally exposed, simplify them away.
-@[simp] theorem add_eq_add : add p q = p + q := rfl
-@[simp] theorem mul_eq_mul : mul p q = p * q := rfl
+@[no_expose] instance : Mul R[X] :=
+  ⟨fun ⟨a⟩ ⟨b⟩ ↦ ⟨a * b⟩⟩
 
 instance instNSMul : SMul ℕ R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
@@ -163,24 +150,23 @@ theorem ofFinsupp_one : (⟨1⟩ : R[X]) = 1 :=
 
 @[simp]
 theorem ofFinsupp_add {a b} : (⟨a + b⟩ : R[X]) = ⟨a⟩ + ⟨b⟩ :=
-  show _ = add _ _ by rw [add_def]
+  (rfl)
 
 @[simp]
 theorem ofFinsupp_neg {R : Type u} [Ring R] {a} : (⟨-a⟩ : R[X]) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+  (rfl)
 
 @[simp]
 theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a⟩ - ⟨b⟩ := by
-  rw [sub_eq_add_neg, ofFinsupp_add, ofFinsupp_neg]
+  rw [sub_eq_add_neg]
   rfl
 
 @[simp]
 theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
-  show _ = mul _ _ by rw [mul_def]
+  (rfl)
 
 @[simp]
-theorem ofFinsupp_nsmul (a : ℕ) (b) :
-    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+theorem ofFinsupp_nsmul (a : ℕ) (b) : (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 
 @[simp]
@@ -204,26 +190,25 @@ theorem toFinsupp_one : (1 : R[X]).toFinsupp = 1 :=
   rfl
 
 @[simp]
-theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp := by
-  rw [← ofFinsupp_add]
+theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp :=
+  (rfl)
 
 @[simp]
-theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
-  rw [← ofFinsupp_neg]
+theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp :=
+  (rfl)
 
 @[simp]
 theorem toFinsupp_sub {R : Type u} [Ring R] (a b : R[X]) :
     (a - b).toFinsupp = a.toFinsupp - b.toFinsupp := by
-  rw [sub_eq_add_neg, ← toFinsupp_neg, ← toFinsupp_add]
+  rw [sub_eq_add_neg]
   rfl
 
 @[simp]
-theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp := by
-  rw [← ofFinsupp_mul]
+theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp :=
+  (rfl)
 
 @[simp]
-theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) :
-    (a • b).toFinsupp = a • b.toFinsupp :=
+theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) : (a • b).toFinsupp = a • b.toFinsupp :=
   rfl
 
 @[simp]
@@ -877,7 +862,7 @@ theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f := by
-  rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from add_def p q]
+  rw [show p + q = ⟨p.toFinsupp + q.toFinsupp⟩ from rfl]
   exact Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
