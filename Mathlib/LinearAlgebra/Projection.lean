@@ -109,24 +109,20 @@ theorem coe_prodEquivOfIsCompl (h : IsCompl p q) :
 theorem coe_prodEquivOfIsCompl' (h : IsCompl p q) (x : p × q) :
     prodEquivOfIsCompl p q h x = x.1 + x.2 := rfl
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_left (h : IsCompl p q) (x : p) :
     (prodEquivOfIsCompl p q h).symm x = (x, 0) :=
   (prodEquivOfIsCompl p q h).symm_apply_eq.2 <| by simp
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_right (h : IsCompl p q) (x : q) :
     (prodEquivOfIsCompl p q h).symm x = (0, x) :=
   (prodEquivOfIsCompl p q h).symm_apply_eq.2 <| by simp
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_fst_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).1 = 0 ↔ x ∈ q := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
   rw [coe_prodEquivOfIsCompl', Submodule.add_mem_iff_left _ (Submodule.coe_mem _),
     mem_right_iff_eq_zero_of_disjoint h.disjoint]
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).2 = 0 ↔ x ∈ p := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
@@ -172,7 +168,8 @@ theorem IsCompl.projection_apply_mem (hpq : IsCompl p q) (x : E) :
 
 @[simp]
 theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
-    linearProjOfIsCompl p q h x = x := by simp [linearProjOfIsCompl]
+    linearProjOfIsCompl p q h x = x := by
+  simp [linearProjOfIsCompl, prodEquivOfIsCompl_symm_apply_left]
 
 @[simp]
 theorem IsCompl.projection_apply_left (hpq : IsCompl p q) (x : p) :
@@ -192,7 +189,8 @@ theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
 
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
-    linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by simp [linearProjOfIsCompl]
+    linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by
+  simp [linearProjOfIsCompl, prodEquivOfIsCompl_symm_apply_fst_eq_zero]
 
 @[simp]
 theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
