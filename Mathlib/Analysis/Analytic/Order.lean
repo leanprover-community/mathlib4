@@ -20,7 +20,7 @@ Uniformize API between analytic and meromorphic functions
 
 @[expose] public section
 
-open Filter  Set
+open Filter Set
 open scoped Topology
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -197,7 +197,7 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
 @[simp] lemma analyticOrderAt_neg : analyticOrderAt (-f) z₀ = analyticOrderAt f z₀ := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
-    simp only [ natCast_le_analyticOrderAt, hf, hf.neg]
+    simp only [natCast_le_analyticOrderAt, hf, hf.neg]
     exact (Equiv.neg _).exists_congr <| by simp [neg_eq_iff_eq_neg]
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt <| analyticAt_neg.not.2 hf]

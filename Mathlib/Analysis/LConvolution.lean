@@ -117,9 +117,9 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     f ⋆ₘₗ[μ] g ⋆ₘₗ[μ] k = (f ⋆ₘₗ[μ] g) ⋆ₘₗ[μ] k := by
   ext x
   simp only [mlconvolution_def]
-  conv in f _ * (∫⁻ _ , _ ∂μ) =>
+  conv in f _ * (∫⁻ _, _ ∂μ) =>
     rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
-  conv in (∫⁻ _ , _ ∂μ) * k _ =>
+  conv in (∫⁻ _, _ ∂μ) * k _ =>
     rw [← lintegral_mul_const'' _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · simp [mul_assoc]

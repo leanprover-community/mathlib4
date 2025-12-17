@@ -140,7 +140,7 @@ alias ⟨_, HasDerivAtFilter.const_add⟩ := hasDerivAtFilter_const_add_iff
 
 @[simp]
 theorem hasStrictDerivAt_const_add_iff (c : F) :
-    HasStrictDerivAt (c + f ·) f' x ↔  HasStrictDerivAt f f' x :=
+    HasStrictDerivAt (c + f ·) f' x ↔ HasStrictDerivAt f f' x :=
   hasStrictFDerivAt_const_add_iff c
 
 alias ⟨_, HasStrictDerivAt.const_add⟩ := hasStrictDerivAt_const_add_iff

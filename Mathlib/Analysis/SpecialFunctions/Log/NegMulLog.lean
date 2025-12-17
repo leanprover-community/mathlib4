@@ -143,7 +143,7 @@ noncomputable def negMulLog (x : ℝ) : ℝ := - x * log x
 
 lemma negMulLog_def : negMulLog = fun x ↦ - x * log x := rfl
 
-lemma negMulLog_eq_neg : negMulLog = fun x ↦ - (x * log x) := by simp [negMulLog_def]
+lemma negMulLog_eq_neg : negMulLog = fun x ↦ -(x * log x) := by simp [negMulLog_def]
 
 @[simp] lemma negMulLog_zero : negMulLog (0 : ℝ) = 0 := by simp [negMulLog]
 
@@ -192,7 +192,7 @@ lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- lo
   refine DifferentiableOn.differentiableAt differentiableOn_negMulLog ?_
   simp [hx]
 
-lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
+lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = -x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, deriv.fun_neg',

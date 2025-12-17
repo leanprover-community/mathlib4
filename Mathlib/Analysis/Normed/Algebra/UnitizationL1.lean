@@ -66,7 +66,7 @@ lemma unitization_norm_def (x : WithLp 1 (Unitization 𝕜 A)) :
   ‖x‖ = (‖(ofLp x).fst‖ ^ (1 : ℝ≥0∞).toReal +
       ‖(ofLp x).snd‖ ^ (1 : ℝ≥0∞).toReal) ^ (1 / (1 : ℝ≥0∞).toReal) :=
     prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
-  _   = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
+  _ = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
 
 lemma unitization_nnnorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=

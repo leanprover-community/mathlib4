@@ -87,7 +87,7 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by simp]
+  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (-x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 

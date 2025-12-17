@@ -623,7 +623,7 @@ variable {ι' : Type*} [Fintype ι']
 to `ContinuousAlternatingMap`s. -/
 def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G))
     (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
-    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
+    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G) :=
   mkContinuous
     { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
       map_update_add' m i x y := by ext1; simp

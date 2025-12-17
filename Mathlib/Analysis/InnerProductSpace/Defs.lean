@@ -319,8 +319,8 @@ lemma cauchy_schwarz_aux' (x y : F) (t : ℝ) : 0 ≤ normSqF x * t * t + 2 * re
       simp only [map_add]
   _ = normSq x * t * t + re (⟪x, y⟫ * t) + re (⟪y, x⟫ * t) + re ⟪y, y⟫ := by rw
     [re_inner_smul_ofReal_smul_self, inner_smul_ofReal_left, inner_smul_ofReal_right]
-  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x,y⟫ _,
-    RCLike.re_ofReal_mul, mul_comm t _, mul_comm ⟪y,x⟫ _, RCLike.re_ofReal_mul, mul_comm t _]
+  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x, y⟫ _,
+    RCLike.re_ofReal_mul, mul_comm t _, mul_comm ⟪y, x⟫ _, RCLike.re_ofReal_mul, mul_comm t _]
   _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + normSq y := by rw [← normSq]
   _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪x, y⟫ * t + normSq y := by rw [inner_re_symm]
   _ = normSq x * t * t + 2 * re ⟪x, y⟫ * t + normSq y := by ring
@@ -509,7 +509,7 @@ lemma topology_eq
     ext v
     simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
     change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
-    conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
+    conv_lhs => rw [show (1 : ℝ) = √1 by simp]
     rw [sqrt_lt_sqrt_iff]
     exact InnerProductSpace.Core.inner_self_nonneg
   rw [withSeminorms_iff_mem_nhds_isVonNBounded, this]

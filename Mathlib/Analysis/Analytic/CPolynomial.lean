@@ -158,7 +158,7 @@ noncomputable def toFormalMultilinearSeriesOfMultilinear :
 protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
     HasFiniteFPowerSeriesOnBall (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2)
       f.toFormalMultilinearSeriesOfMultilinear 0 (Fintype.card (Option ι) + 1) ⊤ := by
-  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top  ?_
+  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top ?_
   · intro m hm
     apply dif_neg
     exact Nat.ne_of_lt hm
