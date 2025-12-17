@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Probability.Distributions.Bernoulli
+public import Mathlib.Probability.Distributions.SetBernoulli
 
 /-!
 # Binomial random graphs
@@ -91,7 +91,8 @@ vertices `V`. This is the law `G(V, p)` of binomial random graphs with probabili
 variable (V p) in
 /-- The binomial distribution with parameter `p` on simple graphs with vertices `V`. -/
 @[expose]
-noncomputable def binomialRandom : Measure (SimpleGraph V) := Ber({e | ¬ e.IsDiag}, p).comap edgeSet
+noncomputable def binomialRandom : Measure (SimpleGraph V) :=
+  setBer(Sym2.diagSetᶜ, p).comap edgeSet
 
 @[inherit_doc] scoped notation "G(" V ", " p ")" => binomialRandom V p
 
@@ -99,15 +100,15 @@ section Countable
 variable [Countable V]
 
 variable (V p) in
-lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet Ber({e | ¬ e.IsDiag}, p) := by
+lemma binomialRandom_eq_map : G(V, p) = map fromEdgeSet setBer(Sym2.diagSetᶜ, p) := by
   refine (map_eq_comap measurable_fromEdgeSet measurableEmbedding_edgeSet ?_
     fromEdgeSet_edgeSet).symm
-  filter_upwards [bernoulliOn_ae_subset] with S hS
+  filter_upwards [setBernoulli_ae_subset] with S hS
   exact ⟨fromEdgeSet S, by simpa [← Set.compl_setOf, Set.subset_compl_iff_disjoint_right] using hS⟩
 
 variable (p) in
 lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
-    G(V, p) S = Ber({e : Sym2 V | ¬ e.IsDiag}, p) (edgeSet '' S) := by
+    G(V, p) S = setBer(Sym2.diagSetᶜ, p) (edgeSet '' S) := by
   rw [binomialRandom, measurableEmbedding_edgeSet.comap_apply]
 
 variable (p) in
@@ -115,11 +116,11 @@ lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
     G(V, p) S = (infinitePi fun e : Sym2 V ↦
           toNNReal p • .dirac (¬ e.IsDiag) + toNNReal (σ p) • .dirac False)
         ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
-  simp [binomialRandom_apply', bernoulliOn_apply, ← Set.image_comp]
+  simp [binomialRandom_apply', setBernoulli_apply, ← Set.image_comp]
 
 instance : IsProbabilityMeasure G(V, p) := by
   refine measurableEmbedding_edgeSet.isProbabilityMeasure_comap ?_
-  filter_upwards [bernoulliOn_ae_subset] with s hs
+  filter_upwards [setBernoulli_ae_subset] with s hs
   refine ⟨.fromEdgeSet s, ?_⟩
   simpa [← Set.disjoint_compl_right_iff_subset, ← Set.compl_setOf] using hs
 
@@ -138,11 +139,10 @@ variable (p) in
   classical
   cases nonempty_fintype V
   simp only [binomialRandom, measurableEmbedding_edgeSet.comap_apply, Set.image_singleton,
-    edgeSet_subset_setOf_not_isDiag, bernoulliOn_singleton]
-  rw [Set.ncard_diff (by exact fun _ ↦ not_isDiag_of_mem_edgeSet _)]
+    edgeSet_subset_setOf_not_isDiag, setBernoulli_singleton, Set.toFinite]
+  rw [Set.ncard_diff (by simp)]
   congr!
-  rw [Nat.card_eq_fintype_card, ← Sym2.card_subtype_not_diag, Fintype.card_eq_nat_card,
+  rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
-  rfl
 
 end SimpleGraph
