@@ -20,9 +20,9 @@ Main statements:
   and `g` analytic at `z₀`.
 -/
 
-open Filter Set
-
 @[expose] public section
+
+open Filter Set
 
 open scoped Topology
 
