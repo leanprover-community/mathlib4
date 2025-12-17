@@ -381,6 +381,14 @@ theorem pow_two_sub_one {x : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) {n : ℕ}
     padicValNat 2 (x - 1) + padicValNat 2 n := by
   simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
 
+lemma pow_two_sub_one_ge {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
+    (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
+  have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
+    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
+    simpa [← pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+  have := padicValNat.pow_two_sub_pow h1b (by grind) hb ha Evena
+  grind [← padicValNat.mul]
+
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
