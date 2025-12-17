@@ -199,27 +199,226 @@ theorem ContinuousAlgEquiv.coe_eq_conjugate {𝕜 V W : Type*} [NontriviallyNorm
   exact ⟨.ofBijective T ((LinearMapClass.ker_eq_bot _).mpr inj)
     (LinearMap.range_eq_top_of_surjective T surj), fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
 
-/-- A continuous ⋆-algebra equivalence. -/
-structure ContinuousStarAlgEquiv (R A B : Type*) [CommSemiring R] [Semiring A]
+/-- Interpret a ⋆-algebra equivalence as a continuous algebra equivalence when it is continuous. -/
+abbrev StarAlgEquiv.toContinuousAlgEquiv {R A B : Type*} [CommSemiring R] [Semiring A]
     [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
-    [Star R] [Star A] [Star B] extends A ≃A[R] B, A ≃⋆ₐ[R] B
+    [Star R] [Star A] [Star B] (e : A ≃⋆ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm) :
+    A ≃A[R] B :=
+  { e.toAlgEquiv with continuous_toFun := he, continuous_invFun := he' }
 
-@[inherit_doc] notation:50 A " ≃⋆A[" R "] " B => ContinuousStarAlgEquiv R A B
+@[simp] theorem StarAlgEquiv.coe_toContinuousAlgEquiv {R A B : Type*} [CommSemiring R] [Semiring A]
+    [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
+    [Star R] [Star A] [Star B] (e : A ≃⋆ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm) :
+    ⇑(e.toContinuousAlgEquiv he he') = e := rfl
 
-theorem ContinuousStarAlgEquiv.coe_eq_conjugate
+theorem StarAlgEquiv.eq_unitaryConjStarAlgAut_symm_unitaryLinearIsometryEquiv
     {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V] [CompleteSpace V]
-    (f : (V →L[ℂ] V) ≃⋆A[ℂ] (V →L[ℂ] V)) :
-    ∃ U : unitary (V →L[ℂ] V), f.toStarAlgEquiv = Unitary.conjStarAlgAut ℂ _ U := by
-  obtain ⟨g, hg⟩ := f.toContinuousAlgEquiv.coe_eq_conjugate
+    (f : (V →L[ℂ] V) ≃⋆ₐ[ℂ] (V →L[ℂ] V)) (hf : Continuous f) (hf' : Continuous f.symm) :
+    ∃ U : V ≃ₗᵢ[ℂ] V, f = Unitary.conjStarAlgAut ℂ _
+      ((Unitary.linearIsometryEquiv (𝕜 := ℂ)).symm U) := by
+  obtain ⟨g, hg⟩ := f.toContinuousAlgEquiv hf hf' |>.coe_eq_conjugate
   obtain ⟨U, hU⟩ := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := ℂ)
-    1 f.toStarAlgEquiv (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
-  exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
+    1 f (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
+  exact ⟨Unitary.linearIsometryEquiv U, StarAlgEquiv.ext <| congrFun hU⟩
 
-/- TODO: probably just a copy of the above proof
-`StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate` -/
-proof_wanted ContinuousStarAlgEquiv.coe_eq_conjugate'
+lemma LinearMapClass.isometry_iff_inner {V W : Type*} [SeminormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V] [SeminormedAddCommGroup W] [InnerProductSpace 𝕜 W]
+    {F : Type*} [FunLike F V W] [LinearMapClass F 𝕜 V W] (f : F) :
+    Isometry f ↔ ∀ x y, inner 𝕜 (f x) (f y) = inner 𝕜 x y := by
+  rw [AddMonoidHomClass.isometry_iff_norm]
+  refine ⟨fun h x y ↦ ?_, fun h x ↦ by simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), h]⟩
+  simp_rw [inner_eq_sum_norm_sq_div_four, ← map_smul, ← map_add, ← map_sub, h]
+
+theorem ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W] (e : V ≃L[𝕜] W) :
+    Isometry e ↔ adjoint e.toContinuousLinearMap = e.symm.toContinuousLinearMap := by
+  simp_rw [LinearMapClass.isometry_iff_inner, ← coe_coe, ← adjoint_inner_left, ← comp_apply,
+    ← ext_iff_inner_right 𝕜]
+  exact ⟨fun h ↦ ContinuousLinearMap.ext fun x ↦ by simpa using h (e.symm x), fun h ↦ by simp [h]⟩
+
+noncomputable abbrev aux_isometry
     {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
     [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
-    (f : (V →L[𝕜] V) ≃⋆A[𝕜] (W →L[𝕜] W)) :
-    ∃ U : V ≃ₗᵢ[𝕜] W, f.toFun =
-      fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
+    V ≃L[𝕜] W where
+  toFun := (α' • e.toContinuousLinearMap).toLinearMap
+  invFun := (α' • e.toContinuousLinearMap.adjoint).toLinearMap
+  left_inv := by
+    simp only [coe_smul, Function.leftInverse_iff_comp, funext_iff, Function.comp_apply,
+      LinearMap.smul_apply, coe_coe, ContinuousLinearEquiv.coe_coe, map_smul, smul_smul, hα2, id_eq]
+    simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he]
+    simp [smul_smul, hα]
+  right_inv := by
+    simp only [coe_smul, Function.rightInverse_iff_comp, funext_iff, Function.comp_apply,
+      LinearMap.smul_apply, coe_coe, map_smul, ContinuousLinearEquiv.coe_coe, smul_smul, hα2, id_eq]
+    simp_rw [← ContinuousLinearEquiv.coe_coe, ← comp_apply, he']
+    simp [smul_smul, hα]
+  map_add' := by simp
+  map_smul' := by simp
+  continuous_toFun := (α' • e.toContinuousLinearMap).continuous
+  continuous_invFun := (α' • e.toContinuousLinearMap.adjoint).continuous
+
+theorem adjoint_aux_isometry
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+    (hαa : starRingEnd 𝕜 α' = α') :
+    adjoint (aux_isometry e hα hα2 he he').toContinuousLinearMap =
+      α' • e.toContinuousLinearMap.adjoint := by
+  ext x
+  apply ext_inner_left 𝕜 fun y ↦ ?_
+  simp [aux_isometry, adjoint_inner_right, inner_smul_left, inner_smul_right, hαa]
+
+noncomputable abbrev aux_isometry'
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+    (hαa : starRingEnd 𝕜 α' = α') :
+    V ≃ₗᵢ[𝕜] W where
+  __ := aux_isometry e hα hα2 he he' |>.toLinearEquiv
+  norm_map' _ := by
+    have heI : Isometry (aux_isometry e hα hα2 he he') := by
+      rw [ContinuousLinearEquiv.isometry_iff_adjoint_eq_symm]
+      exact adjoint_aux_isometry e hα hα2 he he' hαa
+    simpa using heI.norm_map_of_map_zero (by simp) _
+
+theorem coe_aux_isometry' {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+    (hαa : starRingEnd 𝕜 α' = α') :
+    (aux_isometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.toContinuousLinearMap =
+      α' • e.toContinuousLinearMap := rfl
+
+theorem coe_symm_aux_isometry' {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+    (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
+    (hαa : starRingEnd 𝕜 α' = α') :
+    (aux_isometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.symm.toContinuousLinearMap =
+      α'⁻¹ • e.symm.toContinuousLinearMap := by
+  ext y
+  apply (aux_isometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.injective
+  simp [smul_smul, inv_mul_cancel₀ (a := α') (by grind)]
+
+theorem LinearMap.IsSymmetric.isSymmetric_smul_iff {V : Type*} [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V] {f : V →ₗ[𝕜] V} (hf : f.IsSymmetric) (hf' : f ≠ 0) (α : 𝕜) :
+    (α • f).IsSymmetric ↔ starRingEnd 𝕜 α = α := by
+  refine ⟨fun h ↦ ?_, hf.smul⟩
+  simp only [IsSymmetric, smul_apply, inner_smul_left, inner_smul_right, hf _ _,
+    mul_eq_mul_right_iff, forall_or_left] at h
+  have : f = 0 ↔ ∀ x y, inner 𝕜 x (f y) = inner 𝕜 x ((0 : V →ₗ[𝕜] V) y) := by
+    rw [forall_comm]
+    simp_rw [LinearMap.ext_iff, ← ext_iff_inner_left 𝕜]
+  simp_rw [← (by simpa using this), hf', or_false] at h
+  exact h
+
+theorem ContinuousLinearMap.IsPositive.isPositive_smul_iff {V : Type*} [NormedAddCommGroup V]
+    [InnerProductSpace 𝕜 V] {f : V →L[𝕜] V} (hf : f.IsPositive) (hf' : f ≠ 0) (α : 𝕜) :
+    (α • f).IsPositive ↔ 0 ≤ α := by
+  simp only [IsPositive, coe_smul, hf.isSymmetric.isSymmetric_smul_iff (by exact_mod_cast hf'),
+    reApplyInnerSelf, coe_smul', Pi.smul_apply, inner_smul_left]
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun h ↦ ?_⟩
+  · have : (RCLike.re α : 𝕜) = α := RCLike.conj_eq_iff_re.mp h1
+    apply RCLike.re_nonneg_of_nonneg h1 |>.mp
+    rw [h1, ← this] at h2
+    simp only [RCLike.re_ofReal_mul, mul_nonneg_iff] at h2
+    have := by simpa [reApplyInnerSelf] using fun x ↦ hf.2 x
+    simp only [this, and_true, forall_or_left] at h2
+    obtain (h | h) := h2
+    · exact h
+    · rw [forall_and_left] at h
+      have := hf.isSymmetric.inner_map_self_eq_zero.not.mpr (by exact_mod_cast hf')
+      simp_rw [RCLike.ext_iff (K := 𝕜), forall_and] at this
+      simp only [coe_coe, map_zero] at this
+      have this' := by simpa using hf.isSymmetric.im_inner_apply_self
+      simp_rw [this', forall_true_iff, and_true] at this
+      grind
+  · rw [RCLike.nonneg_iff] at h
+    simp_all only [ne_eq, RCLike.conj_eq_iff_im, RCLike.mul_re, RCLike.conj_re, RCLike.conj_im,
+      neg_zero, zero_mul, sub_zero, true_and]
+    intro x
+    exact mul_nonneg h.1 (hf.2 _)
+
+set_option maxHeartbeats 200400 in
+-- :FIXME: slow proof
+theorem ContinuousStarAlgEquiv.coe_eq_conjugate'
+    {V W : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+    [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+    (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) (hf' : Continuous f.symm) :
+    ∃ U : V ≃ₗᵢ[𝕜] W, ⇑f =
+      fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv := by
+  obtain ⟨y, hy⟩ := f.toContinuousAlgEquiv hf hf' |>.coe_eq_conjugate
+  by_cases! hV : Subsingleton V
+  · by_cases! hV : Subsingleton W
+    · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
+      exact Subsingleton.allEq _ _
+    simpa using congr(f $(Subsingleton.allEq 0 1))
+  have (x : V →L[𝕜] V) : adjoint (f x) = f (adjoint x) := map_star _ _ |>.symm
+  simp_rw [(StarAlgEquiv.coe_toContinuousAlgEquiv _ hf _ ▸ hy), adjoint_comp] at this
+  replace this (x : V →L[𝕜] V) : adjoint y.toContinuousLinearMap ∘L y.toContinuousLinearMap ∘L
+      adjoint x ∘L y.symm.toContinuousLinearMap = adjoint x ∘L
+        adjoint y.toContinuousLinearMap := by
+    simp_rw [← this x, ← comp_assoc, ← adjoint_comp]
+    simp
+  replace this (x : V →L[𝕜] V) : Commute x (adjoint y.toContinuousLinearMap ∘L y) := by
+    specialize this (adjoint x)
+    simp only [adjoint_adjoint] at this
+    simp_rw [Commute, SemiconjBy, mul_def, ← comp_assoc, ← this, comp_assoc]
+    simp
+  replace this :
+      (adjoint y.toContinuousLinearMap ∘L y) ∈ Subalgebra.centralizer 𝕜 (⊤ : Set (V →L[𝕜] V)) := by
+    rw [Subalgebra.mem_centralizer_iff]
+    exact fun _ _ ↦ this _
+  simp only [Set.top_eq_univ, Subalgebra.centralizer_univ, Algebra.IsCentral.center_eq_bot] at this
+  obtain ⟨α, hα⟩ := this
+  simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, Algebra.algebraMap_eq_smul_one] at hα
+  have this : IsUnit (adjoint y.toContinuousLinearMap ∘L y) := isUnit_iff_exists.mpr
+    ⟨y.symm ∘L adjoint y.symm.toContinuousLinearMap, by
+        simp [mul_def, ← comp_assoc, comp_assoc _ _ (adjoint y.toContinuousLinearMap),
+          ← adjoint_comp, one_def, comp_assoc _ y.toContinuousLinearMap]⟩
+  have thisα : α = RCLike.re α := by
+    have this10 := by simpa [IsSelfAdjoint, ← hα, one_def, star_eq_adjoint] using
+      IsSelfAdjoint.adjoint_conj (IsSelfAdjoint.one (W →L[𝕜] W)) y.toContinuousLinearMap
+    rwa [← one_def, (smul_left_injective 𝕜 one_ne_zero).eq_iff, RCLike.conj_eq_iff_re,
+      eq_comm] at this10
+  have thisα' : α ≠ 0 := fun h ↦ by simp [h, ← hα] at this
+  have this2 : 0 ≤ α := by
+    have this1 := thisα.symm ▸ (nonneg_iff_isPositive _ |>.mpr
+      (thisα ▸ hα ▸ isPositive_adjoint_comp_self y.toContinuousLinearMap))
+    rw [← ContinuousLinearMap.IsPositive.isPositive_smul_iff (V := V) isPositive_one]
+    · exact (nonneg_iff_isPositive _).mp this1
+    · exact one_ne_zero' (V →L[𝕜] V)
+  replace this2 := RCLike.ofReal_pos.mp <| thisα ▸ (lt_of_le_of_ne' this2 thisα')
+  have thisU : y.toContinuousLinearMap ∘L adjoint y.toContinuousLinearMap =
+      α • ContinuousLinearMap.id 𝕜 _ := by
+        have := by simpa [one_def, comp_assoc] using congr($hα ∘L y.symm.toContinuousLinearMap)
+        ext
+        apply_fun y.symm using y.symm.injective
+        simp [← this]
+  set αa := (((RCLike.re α : ℝ) ^ (-(1 / 2 : ℝ)) : ℝ) : 𝕜)
+  have αa2 : αa * αa = α⁻¹ := by
+    simp_rw [αa, ← RCLike.ofReal_mul, ← Real.rpow_add this2]
+    rw [thisα]
+    norm_num
+    simp [Real.rpow_neg_one]
+  set U := aux_isometry' y thisα' αa2 hα.symm thisU (by simp [αa])
+  use U
+  have la : αa⁻¹ * αa = 1 := by
+    simp only [one_div, αa]
+    exact inv_mul_cancel₀ (by
+      simp only [ne_eq, map_eq_zero]
+      rw [Real.rpow_eq_zero this2.le (by simp)]
+      exact ne_of_gt this2)
+  simp [U, coe_aux_isometry', coe_symm_aux_isometry', smul_smul, la, ← hy]
