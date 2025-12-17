@@ -208,7 +208,7 @@ Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 library_note2 «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. There are several for doing so.
+arguments to the type of one of the other arguments. There are several reasons for doing so.
 
 When they can be inferred from these other arguments,
 it is faster to use this method than to use type class inference.
