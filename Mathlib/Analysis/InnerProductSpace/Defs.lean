@@ -144,12 +144,6 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left x y r : inner (r • x) y = conj r * inner x y
 
-@[deprecated (since := "2025-04-22")]
-alias PreInnerProductSpace.Core.conj_symm := PreInnerProductSpace.Core.conj_inner_symm
-
-@[deprecated (since := "2025-04-22")]
-alias PreInnerProductSpace.Core.inner_nonneg := PreInnerProductSpace.Core.re_inner_nonneg
-
 attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
@@ -379,8 +373,6 @@ def toNorm : Norm F where norm x := √(re ⟪x, x⟫)
 attribute [local instance] toNorm
 
 theorem norm_eq_sqrt_re_inner (x : F) : ‖x‖ = √(re ⟪x, x⟫) := rfl
-
-@[deprecated (since := "2025-04-22")] alias norm_eq_sqrt_inner := norm_eq_sqrt_re_inner
 
 theorem inner_self_eq_norm_mul_norm (x : F) : re ⟪x, x⟫ = ‖x‖ * ‖x‖ := by
   rw [norm_eq_sqrt_re_inner, ← sqrt_mul inner_self_nonneg, sqrt_mul_self inner_self_nonneg]

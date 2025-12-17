@@ -74,9 +74,6 @@ theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
 
-@[deprecated (since := "2025-04-28")]
-alias _root_.Module.End_isUnit_iff := _root_.Module.End.isUnit_iff
-
 section Automorphisms
 
 variable [Module R M]

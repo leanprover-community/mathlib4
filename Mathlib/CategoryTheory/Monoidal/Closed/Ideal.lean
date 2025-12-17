@@ -330,9 +330,6 @@ lemma Limits.PreservesFiniteProducts.of_exponentialIdeal : PreservesFiniteProduc
   have : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
   .of_preserves_binary_and_terminal _
 
-@[deprecated (since := "2025-04-22")]
-alias preservesFiniteProducts_of_exponentialIdeal := PreservesFiniteProducts.of_exponentialIdeal
-
 end
 
 end CategoryTheory

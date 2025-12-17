@@ -361,8 +361,6 @@ theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
-@[deprecated (since := "2025-04-22")] alias setLintegral_pos_iff := setLIntegral_pos_iff
-
 end
 
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
@@ -642,8 +640,6 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_compl := setLIntegral_compl
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :

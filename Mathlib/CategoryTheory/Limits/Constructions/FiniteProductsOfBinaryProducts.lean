@@ -157,11 +157,6 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
 
-@[deprecated PreservesFiniteProducts.of_preserves_binary_and_terminal (since := "2025-04-22")]
-lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
-    PreservesLimitsOfShape (Discrete (Fin n)) F :=
-  have : PreservesFiniteProducts F := .of_preserves_binary_and_terminal _; inferInstance
-
 end Preserves
 
 /-- Given `n+1` objects of `C`, a cofan for the last `n` with point `c₁.pt`

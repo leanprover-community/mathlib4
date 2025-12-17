@@ -181,10 +181,6 @@ theorem intValuation_def {r : R} :
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
 
-@[deprecated intValuation_apply (since := "2025-04-26")]
-theorem intValuation_toFun (r : R) :
-    v.intValuation r = v.intValuationDef r := rfl
-
 open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuation r = exp

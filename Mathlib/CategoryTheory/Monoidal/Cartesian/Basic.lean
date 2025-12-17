@@ -964,15 +964,6 @@ instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsinglet
 
 end Braided
 
-@[deprecated (since := "2025-04-24")]
-alias oplaxMonoidalOfChosenFiniteProducts := OplaxMonoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias monoidalOfChosenFiniteProducts := Monoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
-
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 

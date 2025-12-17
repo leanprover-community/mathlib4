@@ -806,9 +806,6 @@ instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
 
-@[deprecated (since := "2025-04-22")]
-alias intIsManifoldModelSpace := instIsManifoldModelSpace
-
 end IsManifold
 
 namespace IsManifold

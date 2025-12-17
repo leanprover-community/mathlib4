@@ -676,8 +676,6 @@ theorem contDiffAt_ringInverse [HasSummableGeomSeries R] (x : Rˣ) :
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
 
-@[deprecated (since := "2025-04-22")] alias contDiffAt_ring_inverse := contDiffAt_ringInverse
-
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 @[fun_prop]
