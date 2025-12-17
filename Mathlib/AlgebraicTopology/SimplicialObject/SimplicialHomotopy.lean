@@ -48,18 +48,11 @@ consists of a family of morphisms `h n i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` for `i :
 satisfying compatibility conditions with respect to face and degeneracy maps -/
 structure SimplicialHomotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
-
   /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i = 0..n`. -/
-  h (n : ℕ) (i : Fin (n + 1)) : (X _⦋n⦌ ⟶ Y _⦋n+1⦌)
+  h {n : ℕ} (i : Fin (n + 1)) : (X _⦋n⦌ ⟶ Y _⦋n+1⦌)
 
-  /-- Endpoint `d₀ h₀ = f`. -/
-  d0_h0 (n : ℕ) :
-    h n 0 ≫ Y.δ 0 = f.app (op ⦋n⦌)
-
-  /-- Endpoint `d_{n+1} hₙ = g`. -/
-  dLast_hLast (n : ℕ) :
-    h n (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = g.app (op ⦋n⦌)
-
+  h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = f.app (op ⦋n⦌)
+  h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = g.app (op ⦋n⦌)
   /- nlab: `dᵢ hⱼ = h_{j'-1} dᵢ` if i < j', let j' = j + 1 -/
   /-- `dᵢ h_{j+1} = hⱼ dᵢ` if i < j + 1. -/
   face_lt (n : ℕ) (i : Fin (n + 2)) (j : Fin (n + 1)) (hij : i < j.succ) :
@@ -68,7 +61,7 @@ structure SimplicialHomotopy
   /- nlab: `dᵢ hⱼ = dⱼ h_{j'-1}` if i = j' ≠ 0, let j' = j + 1 -/
   /-- `d_{j+1} h_{j+1} = d_{j+1} hⱼ` if i = j + 1 -/
   face_eq (n : ℕ) (j : Fin (n + 1)) :
-    h (n + 1) j.succ ≫ Y.δ j.succ.castSucc = h (n + 1) j.castSucc ≫ Y.δ j.succ.castSucc
+    h (n + 1) j.succ ≫ Y.δ j.castSucc.succ = h (n + 1) j.castSucc ≫ Y.δ j.castSucc.succ
 
   /- nlab: `dᵢ hⱼ = hⱼ d_{i'-1}` if i' > j + 1, let i' = i + 1 -/
   /-- `d_{i+1} hⱼ = hⱼ dᵢ` if i > j -/
