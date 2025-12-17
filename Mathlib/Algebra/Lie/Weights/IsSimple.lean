@@ -309,14 +309,11 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
     unfold J invtSubmoduleToLieIdeal
     simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
                iSup_eq_bot, not_forall]
-    let q' : (rootSystem H).invtRootSubmodule :=
-      ⟨q, (RootPairing.mem_invtRootSubmodule_iff _).mpr h₀⟩
-    have hq' : q' ≠ ⊥ := by simpa [q', Subtype.ext_iff] using h₁
-    rw [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall] at hq'
+    have hq' : ⟨q, (RootPairing.mem_invtRootSubmodule_iff _).mpr h₀⟩ ≠
+        (⊥ : (rootSystem H).invtRootSubmodule) := by simpa [Subtype.ext_iff]
+    simp only [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall, not_not] at hq'
     obtain ⟨i, hi⟩ := hq'
-    rw [not_not] at hi
-    have hα : i.val.IsNonZero := by grind
-    refine ⟨⟨i.val, hi, hα⟩, fun h_eq_bot => ?_⟩
+    refine ⟨⟨i.val, hi, by grind⟩, fun h_eq_bot => ?_⟩
     obtain ⟨e, he_mem, he_ne⟩ := i.val.exists_ne_zero
     simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
     exact he_ne (h_eq_bot e (Submodule.mem_sup_left (Submodule.mem_sup_left he_mem)))
