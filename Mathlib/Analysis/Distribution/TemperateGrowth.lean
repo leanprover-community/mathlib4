@@ -309,6 +309,9 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   -- The remaining part of the proof is proving that `x ↦ x ^ r` has temperate growth on `t`.
   -- This could be generalized to `t := {y : ℝ | ε < y}` for any `0 < ε < 1` if necessary.
   intro N
+  /- Since `x ^ r` for negative `r` blows up near the origin (and we can't take
+  `t := {y : ℝ | 1 / 2 < y}`), we have to choose `k` later than `N - r` times some factor depending
+  on `t`. -/
   obtain ⟨k, hk⟩ := exists_nat_ge (max r <| (N - r) * Real.log 2 / (Real.log (3 / 2)))
   have hk₁ : r ≤ k := le_sup_left.trans hk
   have hk₂ : Real.log 2 * (N - r) ≤ (Real.log (3 / 2)) * k := by
@@ -319,16 +322,19 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   intro n hn x hx
   have : ContDiffAt ℝ n (fun x ↦ x ^ r) x :=
     Real.contDiffAt_rpow_const <| Or.inl (lt_trans (by norm_num) hx).ne'
+  -- We calculate the derivative of `x ^ r`.
   rw [norm_iteratedFDerivWithin_eq_norm_iteratedDerivWithin,
     iteratedDerivWithin_eq_iteratedDeriv hunique this hx, iteratedDeriv_eq_iterate,
     Real.iter_deriv_rpow_const, norm_mul]
   gcongr 1
   · have : n ∈ Finset.range (N + 1) := by grind
     apply Finset.single_le_sum (fun _ _ ↦ by positivity) this
+  -- It remains to show that `‖x ^ (r - n)‖ ≤ (1 + ‖x‖) ^ k`:
   have hx' : 1 / 2 < x := by simpa [t] using hx
   have hx'' : 0 < x := lt_of_lt_of_le (by norm_num) hx'.le
   simp only [Real.norm_eq_abs]
   apply (Real.abs_rpow_le_abs_rpow _ _).trans
+  -- We consider the two cases `n ≤ r` and `r < n`.
   by_cases! h : 0 ≤ r - n
   · have : r - n ≤ k := by simpa using hk₁.trans (by simp)
     rw [← Real.rpow_natCast]
@@ -336,6 +342,8 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       (Real.rpow_le_rpow_of_exponent_le (by simp) this)
   have h : 0 < n - r := by grind
   calc
+    /- In the case `0 < n - r`, we need the factor `Real.log 2 / (Real.log (3 / 2))` to control
+    the growth near `‖x‖ = 1/2`. -/
     _ = x ^ (-(n - r)) := by
       rw [neg_sub]
       congr
