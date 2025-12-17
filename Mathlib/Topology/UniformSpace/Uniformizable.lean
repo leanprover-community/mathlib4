@@ -33,12 +33,12 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 * <https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf>
 -/
 
-variable {α : Type*}
+variable {X : Type*}
 
 open Filter Set Uniformity UniformSpace SetRel
 
 section UniformSpace
-variable [UniformSpace α]
+variable [UniformSpace X]
 
 /-- To construct a real-valued function separating a point `x` from a closed set in a uniform
 space, we recursively construct pairs of a closed set `c` contained in an open set `u`
@@ -46,19 +46,19 @@ satisfying the following predicate: the closed set is the closure of the ball ce
 at `x` associated to some open entourage `uc`, the open set is the ball centered at `x`
 associated to some entourage `uu`, such that `uu` is a thickening of `uc` by some entourage `s`
 in the sense that the composition `s ○ uc ○ s` is contained in `uu`. -/
-def P (c u : Set α) :=
-  ∃ (x : α) (uc uu s : SetRel α α),
-    IsOpen uc ∧ uc ∈ 𝓤 α ∧ c = closure (ball x uc) ∧
-    u = ball x uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 α
+def P (c u : Set X) :=
+  ∃ (x : X) (uc uu s : SetRel X X),
+    IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (ball x uc) ∧
+    u = ball x uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 X
 
 /-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
 predicate `P`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
 satisfying `P`. We can then use the general `Urysohns.CU` construction to obtain the
 desired real-valued function. -/
-theorem urysohns_main {c u : Set α} (Pcu : P c u) :
-    ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
+theorem urysohns_main {c u : Set X} (Pcu : P c u) :
+    ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, ucu, rfl, rfl, hn, hs⟩ := Pcu
-  obtain ⟨(ds : SetRel α α), hdsu, hdso, -, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
+  obtain ⟨(ds : SetRel X X), hdsu, hdso, -, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
   have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
   have hsub := calc ds ○ (ds ○ uc ○ ds) ○ ds
     _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by simp [comp_assoc]
@@ -72,10 +72,10 @@ theorem urysohns_main {c u : Set α} (Pcu : P c u) :
     rw [closure_eq_inter_uniformity]
     exact iInter₂_subset_of_subset ds hdsu (by simp [comp_assoc])
 
-public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
+public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X where
   completely_regular x K hK hx :=
     have ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
-    have ⟨(u3 : SetRel α α), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
+    have ⟨(u3 : SetRel X X), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
     have hu3O := ((comp_subset_comp_left (comp_subset_comp_right interior_subset))).trans hu3O
     let c : Urysohns.CU P := {
       C := closure (ball x (interior u3))
@@ -96,20 +96,20 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace �
 end UniformSpace
 
 section TopologicalSpace
-variable [t : TopologicalSpace α]
+variable [t : TopologicalSpace X]
 
 public theorem CompletelyRegularSpace.of_exists_uniformSpace
-    (h : ∃ u : UniformSpace α, u.toTopologicalSpace = t) :
-    CompletelyRegularSpace α := by
+    (h : ∃ u : UniformSpace X, u.toTopologicalSpace = t) :
+    CompletelyRegularSpace X := by
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
-public theorem CompletelyRegularSpace.exists_uniformSpace [CompletelyRegularSpace α] :
-    ∃ u : UniformSpace α, u.toTopologicalSpace = t :=
+public theorem CompletelyRegularSpace.exists_uniformSpace [CompletelyRegularSpace X] :
+    ∃ u : UniformSpace X, u.toTopologicalSpace = t :=
   ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩
 
 public theorem completelyRegularSpace_iff_exists_uniformSpace :
-    CompletelyRegularSpace α ↔ ∃ u : UniformSpace α, u.toTopologicalSpace = t :=
+    CompletelyRegularSpace X ↔ ∃ u : UniformSpace X, u.toTopologicalSpace = t :=
   ⟨(·.exists_uniformSpace), .of_exists_uniformSpace⟩
 
 end TopologicalSpace
