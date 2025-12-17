@@ -81,7 +81,6 @@ lean_lib MathlibInit where
 lean_lib Mathlib where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
-  needs := #[`@mathlib/MathlibInit:shared]
   plugins := #[`@mathlib/MathlibInit:shared]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
