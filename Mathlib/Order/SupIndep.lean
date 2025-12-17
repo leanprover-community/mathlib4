@@ -225,7 +225,13 @@ theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Fins
     suffices Disjoint (u.sup f) (v.sup f) by simpa only [sup_map, sup_biUnion, u, v]
     apply SupIndep.disjoint_sup_sup h <;> grind [disjoint_left]
   · suffices Disjoint (f ⟨i, j⟩) ((t.image fun b ↦ ⟨i, b⟩).sup f) by simpa only [sup_image]
-    grind [= SupIndep]
+    -- `grind [=SupIndep]` panics here?!?
+    simp only [SupIndep, mem_sigma] at h
+    apply h
+    · simp_rw [Finset.subset_iff, mem_sigma, mem_image]; clear! f h j; aesop
+    · grind
+    · grind
+
 
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))

@@ -635,14 +635,14 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr high)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
 
 @[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Set.pow_right_monotone hs hmn
 
-@[to_additive (attr := gcongr)]
+@[to_additive (attr := gcongr high)]
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
   (pow_subset_pow_left hst).trans (pow_subset_pow_right ht hmn)
 

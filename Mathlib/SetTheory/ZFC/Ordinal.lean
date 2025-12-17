@@ -347,7 +347,7 @@ theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔
   exact fun h ↦ not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
 
 theorem toZFSet_strictMono : StrictMono toZFSet :=
-  fun _ _ h ↦ by simpa [ssubset_iff_subset_not_subset] using ⟨h.le, h⟩
+  fun _ _ h ↦ by rw [ssubset_iff_subset_not_subset]; simpa using ⟨h.le, h⟩
 
 theorem toZFSet_injective : Function.Injective toZFSet :=
   toZFSet_strictMono.injective

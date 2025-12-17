@@ -225,7 +225,7 @@ theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support :
 
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
-  simp +contextual [subset_iff]
+  rw [subset_iff]; simp +contextual
 
 end PartialOrder
 

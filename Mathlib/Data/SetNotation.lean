@@ -63,25 +63,30 @@ private def elabTermOrTerm (stx₁ stx₂ : Term) (expectedType? : Option Expr) 
 /-- Elaborator for `x ⊆ y` notation. -/
 @[term_elab subsetStx']
 def elabSubsetStx' : TermElab := fun
-  | `($x ⊆ $y), expectedType? => do elabTermOrTerm (← mkSubsetStx x y) (← `($x ≤ $y)) expectedType?
+  | `($x ⊆ $y), expectedType? => do
+    -- Note we use `LE.le x y` instead of `x ≤ y` in order to avoid `binrel%`
+    elabTermOrTerm (← mkSubsetStx x y) (← `(LE.le $x $y)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊂ y` notation. -/
 @[term_elab ssubsetStx']
 def elabSsubsetStx' : TermElab := fun
-  | `($x ⊂ $y), expectedType? => do elabTermOrTerm (← mkSsubsetStx x y) (← `($x < $y)) expectedType?
+  | `($x ⊂ $y), expectedType? => do
+    elabTermOrTerm (← mkSsubsetStx x y) (← `(LT.lt $x $y)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊇ y` notation. -/
 @[term_elab supsetStx']
 def elabSupsetStx' : TermElab := fun
-  | `($x ⊇ $y), expectedType? => do elabTermOrTerm (← mkSupsetStx x y) (← `($x ≥ $y)) expectedType?
+  | `($x ⊇ $y), expectedType? => do
+    elabTermOrTerm (← mkSupsetStx x y) (← `(GE.ge $x $y)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Elaborator for `x ⊃ y` notation. -/
 @[term_elab ssupsetStx']
 def elabSsupsetStx' : TermElab := fun
-  | `($x ⊃ $y), expectedType? => do elabTermOrTerm (← mkSsupsetStx x y) (← `($x > $y)) expectedType?
+  | `($x ⊃ $y), expectedType? => do
+    elabTermOrTerm (← mkSsupsetStx x y) (← `(GT.gt $x $y)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Declare `∀ x ⊆ y, ...` as syntax for `∀ x, x ⊆ y → ...` and `∃ x ⊆ y, ...` as syntax for

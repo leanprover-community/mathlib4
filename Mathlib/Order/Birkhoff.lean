@@ -243,16 +243,15 @@ variable [DecidableEq α]
 @[simp] lemma birkhoffFinset_sup (a b : α) :
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
-  dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
-  simp
+  dsimp only [birkhoffFinset, RelEmbedding.coe_trans, OrderIso.coe_toOrderEmbedding,
+    Fintype.coe_finsetOrderIsoSet_symm, comp_apply]
+  simp [birkhoffSet_sup]
 
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical
   dsimp [OrderEmbedding.birkhoffFinset]
-  rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
-  simp
+  simp [birkhoffSet_inf]
 
 end OrderEmbedding
 
