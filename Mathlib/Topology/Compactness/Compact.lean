@@ -796,15 +796,6 @@ theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
     CompactSpace X :=
   isCompact_univ_iff.mp <| isCompact_generateFrom' hTS <| by simpa
 
-omit [TopologicalSpace X] in
-theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
-    (hTS : T = generateFrom S)
-    (h : ∀ (ι : Type u) (U : ι → S),
-      ⋃ i, U i = (univ (α := X)) → ∃ J : Set ι, J.Finite ∧ ⋃ i ∈ J, U i = (univ (α := X))) :
-    CompactSpace X := by
-  rw [←isCompact_univ_iff]
-  exact isCompact_generateFrom' hTS <| by simpa
-
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
 
