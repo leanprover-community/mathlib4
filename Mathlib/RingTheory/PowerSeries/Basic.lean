@@ -3,13 +3,15 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Tactic.MoveAdd
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.Ideal.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Tactic.MoveAdd
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Formal power series (in one variable)
@@ -45,6 +47,8 @@ We then build some glue to treat formal power series as if they were indexed by 
 Occasionally this leads to proofs that are uglier than expected.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -474,7 +478,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
   ext (_ | n)
   · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       mul_zero, coeff_zero_C, zero_add]
-  · simp only [coeff_succ_mul_X, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero,
+  · simp only [coeff_succ_mul_X, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       if_false, add_zero]
 
 /-- Split off the constant coefficient. -/
@@ -483,7 +487,7 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
   ext (_ | n)
   · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       zero_mul, coeff_zero_C, zero_add]
-  · simp only [coeff_succ_X_mul, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero,
+  · simp only [coeff_succ_X_mul, coeff_mk, map_add, coeff_C, n.succ_ne_zero,
       if_false, add_zero]
 
 section Map
@@ -567,7 +571,7 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff n f
   map_zero' := by
     ext
-    simp only [LinearMap.map_zero, PowerSeries.coeff_mk, mul_zero]
+    simp only [map_zero, PowerSeries.coeff_mk, mul_zero]
   map_one' := by
     ext1
     simp only [mul_boole, PowerSeries.coeff_mk, PowerSeries.coeff_one]
@@ -673,14 +677,14 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => cutsat
+  | zero => lia
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
       · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
           add_tsub_cancel_right]
-        have h₀ : n' = 0 ∨ 1 ≤ n' := by omega
+        have h₀ : n' = 0 ∨ 1 ≤ n' := by lia
         rcases h₀ with h' | h'
         · by_contra h''
           rw [h'] at h''

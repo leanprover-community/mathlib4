@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.CoverLifting
-import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Connected
+module
+
+public import Mathlib.CategoryTheory.Sites.CoverLifting
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-! Localization
 
@@ -20,6 +22,8 @@ is covering for `J`. As a result, the forgetful functor
 `Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 
@@ -328,6 +332,8 @@ abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
 
 section
 
+-- TODO: Generalize this section to arbitrary precoverages.
+
 variable (K : Precoverage C) [K.HasPullbacks] [K.IsStableUnderBaseChange]
 
 /-- The Grothendieck topology on `Over X`, obtained from localizing the topology generated
@@ -337,7 +343,8 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   refine le_antisymm ?_ ?_
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
-    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply] at hR
+    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
+      ← Precoverage.toGrothendieck_toCoverage] at hR
     induction hR with
     | of Z S hS =>
       rw [Sieve.overEquiv_symm_generate]
@@ -355,7 +362,7 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
     rw [Precoverage.mem_comap_iff] at hR
     rw [GrothendieckTopology.mem_toPrecoverage_iff, GrothendieckTopology.mem_over_iff,
       Sieve.overEquiv, Equiv.coe_fn_mk, ← Sieve.generate_map_eq_functorPushforward]
-    exact Coverage.Saturate.of _ _ hR
+    exact Precoverage.Saturate.of _ _ hR
 
 end
 

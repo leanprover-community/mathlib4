@@ -3,10 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -19,6 +21,8 @@ We introduce the bundled categories:
 
 along with the relevant forgetful functors between them.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -664,19 +668,19 @@ namespace CategoryTheory.Iso
 
 /-- Build a `RingEquiv` from an isomorphism in the category `SemiRingCat`. -/
 def semiRingCatIsoToRingEquiv {R S : SemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
 def ringCatIsoToRingEquiv {R S : RingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommSemiRingCat`. -/
 def commSemiRingCatIsoToRingEquiv {R S : CommSemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
 def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
     (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl

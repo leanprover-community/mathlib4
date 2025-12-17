@@ -3,12 +3,16 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Filter.FilterProduct
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Filter.FilterProduct
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences.
 -/
+
+@[expose] public section
 
 
 open Filter Germ Topology

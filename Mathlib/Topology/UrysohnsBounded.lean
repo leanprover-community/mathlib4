@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Urysohn's lemma for bounded continuous functions
@@ -17,6 +19,8 @@ bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate fil
 
 Urysohn's lemma, normal topological space
 -/
+
+@[expose] public section
 
 
 open BoundedContinuousFunction

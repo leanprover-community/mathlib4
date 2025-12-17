@@ -3,12 +3,14 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`
@@ -36,6 +38,8 @@ of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * √ε`.
 This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
 
@@ -103,7 +107,7 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
       (div_nonneg (mul_nonneg (le_of_lt hε) (mul_self_nonneg (g x))) (le_of_lt hnpos)))⟩
     apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one hnpos).mpr _))
     apply le_trans (le_trans _ (le_of_lt hgN)) (Nat.cast_le.mpr hn)
-    apply mul_le_mul (Preorder.le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
+    apply mul_le_mul (le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
     rw [← abs_le_iff_mul_self_le, abs_norm]
     exact norm_coe_le_norm g x
   · apply Eventually.of_forall

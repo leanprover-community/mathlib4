@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The preadditive category structure on the localized category
@@ -31,11 +33,13 @@ a preadditive structure, but only one of these two constructions can be made an 
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open MorphismProperty Preadditive Limits Category
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] (L : C ⥤ D)
   {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
@@ -317,7 +321,7 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 include W in
-lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
     G.Additive ↔ (L ⋙ G).Additive := by
   constructor

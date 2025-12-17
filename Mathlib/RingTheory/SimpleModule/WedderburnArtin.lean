@@ -3,11 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.SimpleModule.Isotypic
-import Mathlib.RingTheory.SimpleRing.Congr
-import Mathlib.RingTheory.SimpleRing.Matrix
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.RingTheory.SimpleModule.Isotypic
+public import Mathlib.RingTheory.SimpleRing.Congr
+public import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Wedderburn–Artin Theorem
@@ -38,6 +40,8 @@ import Mathlib.RingTheory.SimpleRing.Matrix
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
 
 -/
+
+@[expose] public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
@@ -102,7 +106,7 @@ theorem exists_algEquiv_matrix_end_mulOpposite :
       Nonempty (R ≃ₐ[R₀] Matrix (Fin n) (Fin n) (Module.End R I)ᵐᵒᵖ) := by
   have ⟨n, hn, S, hS, ⟨e⟩⟩ := (isIsotypic R R).linearEquiv_fun
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
-  exact .trans (.moduleEndSelf R₀) <| .trans (e.algConj R₀) (endVecAlgEquivMatrixEnd ..)
+  exact .trans (.moduleEndSelf R₀) <| .trans (e.conjAlgEquiv R₀) (endVecAlgEquivMatrixEnd ..)
 
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over a division algebra. -/
@@ -139,7 +143,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
   classical exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
-    (.piCongrRight fun c ↦ ((e c).some.algConj R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
 theorem exists_end_ringEquiv_pi_matrix_end :

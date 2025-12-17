@@ -3,11 +3,12 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Akra-Bazzi theorem: the polynomial growth condition
@@ -25,6 +26,8 @@ make it harder to prove that a particular function grows polynomially, this issu
 arise in practice.
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -114,12 +117,12 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · cutsat
+        · lia
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
         rw [one_div, ← zpow_neg_one, ← mul_assoc, ← zpow_add₀ (by norm_num)]
-        have h₁ : (-1 : ℤ)  + (-k - 1) = -k - 2 := by ring
+        have h₁ : (-1 : ℤ) + (-k - 1) = -k - 2 := by ring
         have h₂ : -(k + (1 : ℤ)) - 1 = -k - 2 := by ring
         rw [h₁]
         rw [h₂] at hz
@@ -235,12 +238,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
 
 lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, f x = 0) ∨ (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) := by
-  if h : ∃ᶠ x in atTop, f x = 0 then
-    exact Or.inl <| eventually_zero_of_frequently_zero hf h
-  else
-    rw [not_frequently] at h
-    push_neg at h
-    cases eventually_atTop_nonneg_or_nonpos hf with
+  by_cases! h : ∃ᶠ x in atTop, f x = 0
+  · exact Or.inl <| eventually_zero_of_frequently_zero hf h
+  · cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>
       refine Or.inr (Or.inl ?_)
       simp only [lt_iff_le_and_ne]

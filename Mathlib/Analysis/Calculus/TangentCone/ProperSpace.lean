@@ -3,8 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.Calculus.TangentCone.Defs
+module
+
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 /-!
 # Tangent cone in a proper space
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Calculus.TangentCone.Defs
 In this file we prove that the tangent cone of a set in a proper normed space
 at an accumulation point of this set is nontrivial.
 -/
+
+@[expose] public section
 
 open Filter Set Metric NormedField
 open scoped Topology

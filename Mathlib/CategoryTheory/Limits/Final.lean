@@ -3,16 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Types.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.AsSmall
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -66,6 +68,8 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 * Borceux, Handbook of Categorical Algebra I, Section 2.11.
   (Note he reverses the roles of definition and main result relative to here!)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -918,6 +922,25 @@ lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).I
 
 end
 
+section
+
+variable {C D : Type*} [Category* C] [Category* D]
+
+instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final
+
+instance (F : C ⥤ Dᵒᵖ) [Final F] : F.leftOp.Initial :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Initial
+
+instance (F : Cᵒᵖ ⥤ D) [Initial F] : F.rightOp.Final :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Final
+
+instance (F : Cᵒᵖ ⥤ D) [Final F] : F.rightOp.Initial :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Initial
+
+end
+
+
 end Functor
 
 section Filtered
@@ -1035,7 +1058,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   constructor
   rintro ⟨d, f⟩
   let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
-  letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+  letI : Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
     ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
@@ -1062,7 +1085,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
   NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
-        isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
+        isoWhiskerRight (ιCompMap α X) H ≪≫ Functor.associator _ _ _) ≪≫
       Final.colimitIso (α.app X) (ι G X ⋙ H))
     (fun f => colimit.hom_ext <| fun d => by
       simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,

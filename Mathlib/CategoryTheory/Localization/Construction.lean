@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-import Mathlib.CategoryTheory.Category.Quiv
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 
@@ -34,6 +36,8 @@ uniqueness is expressed by `uniq`.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -211,7 +215,7 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     induction p with
     | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
-      let p' : X₁ ⟶X₂ := p
+      let p' : X₁ ⟶ X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)

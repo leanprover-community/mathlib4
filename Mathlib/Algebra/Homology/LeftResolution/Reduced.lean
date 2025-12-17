@@ -3,16 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolution.Transport
-import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-import Mathlib.CategoryTheory.MorphismProperty.Retract
+module
+
+public import Mathlib.Algebra.Homology.LeftResolution.Transport
+public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Left resolutions which preserve the zero object
 
 The structure `LeftResolution` allows to define a functorial
 resolution of an object (see `LeftResolution.chainComplexFunctor`
-in the file `Algebra.Homology.LeftResolution.Basic`). In
+in the file `Mathlib/Algebra/Homology/LeftResolution/Basic.lean`). In
 order to extend this resolution to complexes, we not only
 need the functoriality but also that zero morphisms
 are sent to zero. In this file, given `ι : C ⥤ A`,
@@ -32,9 +34,11 @@ to `0 : M` (TODO).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Abelian
 
-variable {A C : Type*} [Category C] [Category A] {ι : C ⥤ A}
+variable {A C : Type*} [Category* C] [Category* A] {ι : C ⥤ A}
   (Λ : LeftResolution ι)
 
 open Idempotents Limits MorphismProperty

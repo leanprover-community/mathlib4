@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Filtered
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
@@ -15,6 +17,8 @@ This defines `PartOrdEmb`, the category of partial orders with order embeddings
 as morphisms. We also show that `PartOrdEmb` has filtered colimits.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

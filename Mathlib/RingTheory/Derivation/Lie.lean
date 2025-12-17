@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Derivation.Basic
 - `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
 -/
+
+@[expose] public section
 
 
 namespace Derivation
@@ -31,7 +35,7 @@ section LieStructures
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
-      simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, Module.End.mul_apply, leibniz,
+      simp only [Ring.lie_def, map_add, smul_eq_mul, Module.End.mul_apply, leibniz,
         coeFn_coe, LinearMap.sub_apply]
       ring⟩
 

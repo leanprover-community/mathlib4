@@ -3,10 +3,12 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Fubini
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Fubini
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservations of limits for bifunctors
@@ -19,12 +21,14 @@ out of this typeclass.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Functor
 
-variable {J₁ J₂ : Type*} [Category J₁] [Category J₂]
-  {C₁ C₂ C : Type*} [Category C₁] [Category C₂] [Category C]
+variable {J₁ J₂ : Type*} [Category* J₁] [Category* J₂]
+  {C₁ C₂ C : Type*} [Category* C₁] [Category* C₂] [Category* C]
 
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cocones
 over these diagrams, `G.mapCocone₂ c₁ c₂` is the cocone over the diagram `J₁ × J₂ ⥤ C` obtained

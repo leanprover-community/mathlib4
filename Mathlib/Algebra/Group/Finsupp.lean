@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -161,9 +165,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by
-  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  simp [AddEquiv.finsuppUnique]
+    AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
 theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where

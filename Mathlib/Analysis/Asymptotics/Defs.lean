@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Asymptotics
@@ -40,6 +42,8 @@ In fact, the right-to-left direction holds without the hypothesis on `g`, and in
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
 -/
+
+@[expose] public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 

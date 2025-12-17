@@ -3,10 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
 
@@ -16,6 +17,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup
 
@@ -150,7 +153,7 @@ def universalHom : R[S⁻¹] →+* T :=
       clear h₃'
       simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
-      simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
+      simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
       simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1

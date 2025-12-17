@@ -3,8 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Fintype.Inv
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Inv
 
 /-! # Equivalence between fintypes
 
@@ -23,6 +25,8 @@ sides of the equivalence are `Fintype`s.
 - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.sign
 

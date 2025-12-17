@@ -3,10 +3,11 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.SumTransform
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Computability.AkraBazzi.SumTransform
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
@@ -58,6 +59,8 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 -/
 
+@[expose] public section
+
 open Finset Real Filter Asymptotics
 open scoped Topology
 
@@ -89,7 +92,7 @@ lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
   _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
     filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_sub_smoothingFn]
       with x hx hderiv
-    rw [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity)]
+    rw [hderiv, Real.deriv_rpow_const]
   _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ (p - 1) / (log x ^ 2) := by
     filter_upwards [eventually_gt_atTop 0] with x hx
     rw [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
@@ -106,7 +109,7 @@ lemma eventually_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
       filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_add_smoothingFn]
         with x hx hderiv
-      simp [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity), neg_div, sub_eq_add_neg]
+      simp [hderiv, Real.deriv_rpow_const, neg_div, sub_eq_add_neg]
     _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ (p - 1) / (log x ^ 2) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       simp [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
@@ -516,8 +519,8 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   | ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
       exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
-                                  _ ≤ b' * n         := by gcongr
-                                  _ ≤ r i n          := h_bi_le_r n hn i
+                                  _ ≤ b' * n := by gcongr
+                                  _ ≤ r i n := h_bi_le_r n hn i
     have g_pos : 0 ≤ g n := R.g_nonneg n (by positivity)
     calc T n
       _ = (∑ i, a i * T (r i n)) + g n := R.h_rec n <| n₀_ge_Rn₀.trans hn

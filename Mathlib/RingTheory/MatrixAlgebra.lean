@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Algebra isomorphisms between tensor products and matrices
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.TensorProduct.Maps
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
 -/
+
+@[expose] public section
 
 open TensorProduct Algebra.TensorProduct Matrix
 

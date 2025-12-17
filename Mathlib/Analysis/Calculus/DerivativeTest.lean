@@ -3,10 +3,12 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
 -/
-import Mathlib.Topology.Order.OrderClosedExtr
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
+module
+
+public import Mathlib.Topology.Order.OrderClosedExtr
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!
 # The First- and Second-Derivative Tests
@@ -43,6 +45,8 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 derivative test, first-derivative test, second-derivative test, calculus
 -/
+
+@[expose] public section
 
 
 open Set Topology

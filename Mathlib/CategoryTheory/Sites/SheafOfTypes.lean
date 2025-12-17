@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.IsSheafFor
+module
+
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -45,6 +47,8 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
+
+@[expose] public section
 
 
 universe w w' v u

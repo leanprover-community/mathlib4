@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 
 /-! # The Kan extension functor
 
@@ -22,13 +24,15 @@ right Kan extension along `L`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) {H : Type*} [Category H]
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) {H : Type*} [Category* H]
 
 section lan
 

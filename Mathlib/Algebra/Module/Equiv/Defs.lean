@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # (Semi)linear equivalences
@@ -32,6 +34,8 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
+
+@[expose] public section
 
 assert_not_exists Field Pi.module
 

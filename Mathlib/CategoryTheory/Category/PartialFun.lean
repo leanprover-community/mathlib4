@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Pointed
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.CategoryTheory.Category.Pointed
+public import Mathlib.Data.PFun
 
 /-!
 # The category of types with partial functions
@@ -25,6 +27,8 @@ constructive.
 * [nLab, *The category of sets and partial functions*]
   (https://ncatlab.org/nlab/show/partial+function)
 -/
+
+@[expose] public section
 
 open CategoryTheory Option
 

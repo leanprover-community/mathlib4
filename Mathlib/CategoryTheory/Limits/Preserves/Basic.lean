@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Preservation and reflection of (co)limits.
@@ -31,6 +33,8 @@ diagram K if F sends every limit cone on K to a limit cone. This is
 vacuously satisfied when K does not admit a limit, which is consistent
 with the above definition of "preserves limits".
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -699,7 +703,7 @@ section
 open Functor
 
 lemma isIso_app_coconePt_of_preservesColimit
-    {C D J : Type*} [Category C] [Category D] [Category J] (K : J ⥤ C) {L L' : C ⥤ D}
+    {C D J : Type*} [Category* C] [Category* D] [Category* J] (K : J ⥤ C) {L L' : C ⥤ D}
     (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
     [PreservesColimit K L] [PreservesColimit K L'] :
     IsIso (α.app c.pt) := by

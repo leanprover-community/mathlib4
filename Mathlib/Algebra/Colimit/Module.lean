@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Algebra.Colimit.DirectLimit
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Congruence.Defs
-import Mathlib.Data.Finset.Order
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Colimit.DirectLimit
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of modules and abelian groups
@@ -26,6 +28,8 @@ so as to make the operations (addition etc.) "computable".
 * `AddCommGroup.DirectLimit G f`
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -91,18 +95,18 @@ theorem of_f {i j hij x} : of R ι G f j (f i j hij x) = of R ι G f i x :=
 
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
-theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f) :
+theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of R ι G f i x = z :=
   Nonempty.elim (by infer_instance) fun ind : ι ↦
     Quotient.inductionOn' z fun z ↦
-      DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
+      DirectSum.induction_on z ⟨ind, 0, map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
-          rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          rw [map_add, of_f, of_f, ihx, ihy]
           rfl ⟩
 
-theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimit G f) :
+theorem exists_of₂ [Nonempty ι] [IsDirectedOrder ι] (z w : DirectLimit G f) :
     ∃ i x y, of R ι G f i x = z ∧ of R ι G f i y = w :=
   have ⟨i, x, hx⟩ := exists_of z
   have ⟨j, y, hy⟩ := exists_of w
@@ -110,7 +114,7 @@ theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimi
   ⟨k, f i k hik x, f j k hjk y, by rw [of_f, hx], by rw [of_f, hy]⟩
 
 @[elab_as_elim]
-protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
+protected theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of R ι G f i x)) : C z :=
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
@@ -153,7 +157,7 @@ theorem lift_unique (F : DirectLimit G f →ₗ[R] P) (x) :
 theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
   ext; simp
 
-lemma lift_injective [IsDirected ι (· ≤ ·)]
+lemma lift_injective [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift R ι G f g Hg) := by
   cases isEmpty_or_nonempty ι
@@ -235,7 +239,7 @@ end Basic
 
 section equiv
 
-variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [DirectedSystem G (f · · ·)]
+variable [Nonempty ι] [IsDirectedOrder ι] [DirectedSystem G (f · · ·)]
 open _root_.DirectLimit
 
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
@@ -254,7 +258,7 @@ theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.
 
 end equiv
 
-variable {G f} [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
+variable {G f} [DirectedSystem G (f · · ·)] [IsDirectedOrder ι]
 
 theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
     ∃ j hij, f i j hij x = f i j hij y := by
@@ -316,13 +320,13 @@ theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Module.DirectLimit.of_f
 
 @[elab_as_elim]
-protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
+protected theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of G f i x)) : C z :=
   Module.DirectLimit.induction_on z ih
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
-theorem of.zero_exact [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h ↦ f i j h] (i x)
+theorem of.zero_exact [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f i j h] (i x)
     (h : of G f i x = 0) : ∃ j hij, f i j hij x = 0 :=
   Module.DirectLimit.of.zero_exact h
 
@@ -368,7 +372,7 @@ theorem lift_unique (F : DirectLimit G f →+ P) (x) :
 theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
   ext; simp
 
-lemma lift_injective [IsDirected ι (· ≤ ·)]
+lemma lift_injective [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) :=
   Module.DirectLimit.lift_injective (f := fun i j hij ↦ (f i j hij).toNatLinearMap) _ Hg injective

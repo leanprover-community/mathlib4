@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Normed.Affine.Simplex
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
+
+public import Mathlib.Analysis.Normed.Affine.Simplex
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Simplices in Euclidean spaces.
@@ -16,6 +18,8 @@ This file defines properties of simplices in a Euclidean space.
 * `Affine.Simplex.AcuteAngled`
 
 -/
+
+@[expose] public section
 
 
 namespace Affine

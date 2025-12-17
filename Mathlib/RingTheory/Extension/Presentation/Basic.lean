@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.Extension.Generators
-import Mathlib.RingTheory.MvPolynomial.Localization
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.Extension.Generators
+public import Mathlib.RingTheory.MvPolynomial.Localization
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -22,7 +24,7 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
   1. `rels`: The type of relations.
   2. `relation : relations → MvPolynomial vars R`: The assignment of
      each relation to a polynomial in the generators.
-- `Algebra.Presentation.IsFinite`: A presentation is called finite, if both variables and relations
+- `Algebra.Presentation.IsFinite`: A presentation is called finite if both variables and relations
   are finite.
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
@@ -39,6 +41,8 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 in June 2024.
 
 -/
+
+@[expose] public section
 
 universe t w u v
 
@@ -276,7 +280,7 @@ private lemma span_range_relation_eq_ker_baseChange :
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
 @[simps relation]
 noncomputable
-def baseChange : Presentation T (T ⊗[R] S) ι σ  where
+def baseChange : Presentation T (T ⊗[R] S) ι σ where
   __ := P.toGenerators.baseChange T
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
   span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
@@ -334,7 +338,7 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
 /-- A choice of pre-image of `Q.relation r` under the canonical
-map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evalation of `P`. -/
+map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evaluation of `P`. -/
 noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
@@ -451,9 +455,7 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
   refine (Finsupp.sum_single_add_single (Finsupp.single () 1) 0 g (-1 : S) _ ?_ ?_).trans ?_
   · simp
   · simp [h0]
-  · simp only [Finsupp.mapDomain_single, h1, map_neg, map_one, Finsupp.mapDomain_zero,
-      monomial_zero', mul_one, add_left_inj]
-    rfl
+  · simp [h1, ← X_pow_eq_monomial]
 
 end Composition
 
@@ -507,10 +509,17 @@ lemma naive_relation : (naive s hs).relation = v := rfl
 
 @[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 
+lemma mem_ker_naive (i : ι) : v i ∈ (naive s hs).ker := relation_mem_ker _ i
+
 end
 
 end Construction
 
 end Presentation
+
+lemma Generators.fg_ker_of_finitePresentation [Algebra.FinitePresentation R S] {α : Type*}
+    (P : Generators R S α) [Finite α] : P.ker.FG := by
+  rw [Generators.ker_eq_ker_aeval_val]
+  exact Algebra.FinitePresentation.ker_fG_of_surjective _ P.aeval_val_surjective
 
 end Algebra

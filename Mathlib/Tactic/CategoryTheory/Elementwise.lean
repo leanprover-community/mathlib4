@@ -3,10 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
+module
 
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Util.AddRelatedDecl
-import Batteries.Tactic.Lint
+public meta import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public meta import Mathlib.Util.AddRelatedDecl
+public meta import Batteries.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -24,13 +25,15 @@ For more details, see the documentation attached to the `syntax` declaration.
 
 - The `@[elementwise]` attribute.
 
-- The ``elementwise_of% h` term elaborator.
+- The `elementwise_of% h` term elaborator.
 
 ## Implementation
 
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
 reimplemented by Kim Morrison in Lean 4.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
@@ -49,7 +52,7 @@ attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise {C : Type*} [Category C] [HasForget C]
+theorem hom_elementwise {C : Type*} [Category* C] [HasForget C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems
@@ -179,14 +182,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type*} [Category C]
+lemma some_lemma {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type*} [Category C]
+lemma some_lemma_apply {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [HasForget C] (x : X) : g (f x) = h x := ...
 ```
@@ -213,7 +216,7 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref stx? fun value levels => do
+    addRelatedDecl src "" "_apply" ref stx? fun value levels => do
       let (newValue, level?) ← elementwiseExpr src value (simpSides := nosimp?.isNone)
       let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w
@@ -254,9 +257,5 @@ elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
   let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
-
--- TODO: elementwise tactic
-syntax "elementwise" (ppSpace colGt ident)* : tactic
-syntax "elementwise!" (ppSpace colGt ident)* : tactic
 
 end Tactic.Elementwise

@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Module.Submodule.Map
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Module.Submodule.Map
 
 /-!
 # Kernel of a linear map
@@ -25,6 +27,8 @@ This file defines the kernel of a linear map.
 linear algebra, vector space, module
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -153,7 +157,7 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   monotone' n m w x h := by
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, LinearMap.map_zero]
+    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
 
 end AddCommMonoid
 

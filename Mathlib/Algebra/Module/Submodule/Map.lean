@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Module.Submodule.LinearMap
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -23,6 +25,8 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 
 submodule, subspace, linear map, pushforward, pullback
 -/
+
+@[expose] public section
 
 open Function Pointwise Set
 
@@ -457,7 +461,7 @@ theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
-  | ⟨b', hb⟩ => Subtype.eq <| show b' = 0 from (mem_bot R).1 hb
+  | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/

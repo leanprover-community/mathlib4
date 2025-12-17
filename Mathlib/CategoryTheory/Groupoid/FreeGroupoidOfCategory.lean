@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
-import Mathlib.CategoryTheory.Category.Grpd
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
+public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Free groupoid on a category
@@ -37,6 +39,8 @@ on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` 
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -196,7 +200,7 @@ theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
-def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
+def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ' :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]

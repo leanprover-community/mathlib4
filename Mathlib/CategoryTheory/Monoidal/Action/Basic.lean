@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Functor.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -36,11 +38,13 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [Category D]
+variable [Category* C] [Category* D]
 /-- A class that carries the non-Prop data required to define a left action of a
 monoidal category `C` on a category `D`, to set up notations. -/
 class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where

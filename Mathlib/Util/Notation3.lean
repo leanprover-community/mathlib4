@@ -3,19 +3,24 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean.Elab.BuiltinCommand
-import Lean.Elab.MacroArgUtil
-import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Tactic.ScopedNS
-import Batteries.Linter.UnreachableTactic
-import Batteries.Util.ExtendedBinder
-import Batteries.Lean.Syntax
-import Lean.Elab.AuxDef
+module
+
+public meta import Lean.Elab.BuiltinCommand
+public meta import Lean.Elab.MacroArgUtil
+public meta import Mathlib.Lean.Elab.Term
+public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public meta import Mathlib.Tactic.ScopedNS
+public meta import Batteries.Linter.UnreachableTactic
+public meta import Batteries.Util.ExtendedBinder
+public meta import Batteries.Lean.Syntax
+public meta import Lean.Elab.AuxDef
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
 -/
+
+public meta section
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -113,7 +118,7 @@ structure MatchState where
   foldState : Std.HashMap Name (Array Term)
 
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
-def Matcher := MatchState → DelabM MatchState
+@[expose] def Matcher := MatchState → DelabM MatchState
   deriving Inhabited
 
 /-- The initial state. -/
@@ -560,7 +565,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
       if let `(stx| $lit:str) := syntaxArgs.back! then
-        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
+        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimAsciiEnd.copy):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←

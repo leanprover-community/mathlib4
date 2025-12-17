@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.Logic.Function.Coequalizer
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Logic.Function.Coequalizer
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Coequalizers in Type
@@ -15,6 +17,8 @@ The coequalizer of a pair of maps `(f, g)` from `X` to `Y`
 is the quotient of `Y` by `∀ x : Y, f x ~ g x`
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -36,7 +40,7 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
       (fun _ ↦ rfl)
       (fun _ _ hm ↦ funext (fun x ↦ Quot.inductionOn x (congr_fun hm)))
 
-/-- If `π : Y ⟶ Z` is an coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
+/-- If `π : Y ⟶ Z` is a coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
 then `π ⁻¹' (π '' U) = U`.
 -/
 theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)

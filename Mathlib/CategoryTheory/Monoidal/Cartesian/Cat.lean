@@ -3,13 +3,17 @@ Copyright (c) 2024 Nicolas Rolland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen finite products in `Cat`
 
 This file proves that the Cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -82,13 +86,13 @@ lemma whiskerLeft_snd (X : Cat) {A : Cat} {B : Cat} (f : A ⟶ B) :
     (X ◁ f) ⋙ Prod.snd _ _ = Prod.snd _ _ ⋙ f := rfl
 
 lemma whiskerRight {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    f ▷  X  = f.prod (𝟭 X) := rfl
+    f ▷ X = f.prod (𝟭 X) := rfl
 
 lemma whiskerRight_fst {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    (f ▷ X) ⋙ Prod.fst _ _  = Prod.fst _ _ ⋙ f := rfl
+    (f ▷ X) ⋙ Prod.fst _ _ = Prod.fst _ _ ⋙ f := rfl
 
 lemma whiskerRight_snd {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
-    (f ▷ X) ⋙ Prod.snd _ _  = Prod.snd _ _ := rfl
+    (f ▷ X) ⋙ Prod.snd _ _ = Prod.snd _ _ := rfl
 
 lemma tensorHom {A : Cat} {B : Cat} (f : A ⟶ B) {X : Cat} {Y : Cat} (g : X ⟶ Y) :
     f ⊗ₘ g = f.prod g := rfl

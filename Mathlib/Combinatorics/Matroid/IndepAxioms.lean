@@ -3,9 +3,11 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Combinatorics.Matroid.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Matroid Independence and Basis axioms
@@ -84,6 +86,8 @@ for the inverse of `e`).
 
 * `Matroid.ofIsBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -224,8 +228,7 @@ provided independence is determined by its behaviour on finite sets. -/
     (indep_aug := by
       have htofin : ∀ I e, Indep I → ¬ Indep (insert e I) →
         ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
-        by_contra! h
-        obtain ⟨I, e, -, hIe, h⟩ := h
+        by_contra! ⟨I, e, -, hIe, h⟩
         refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
         exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
       intro I B hI hImax hBmax

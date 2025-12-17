@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan Gin-ge Chen,
 Jovan Gerbscheid
 -/
-import Mathlib.Tactic.Translate.Core
+module
+
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_additive]` attribute.
@@ -13,16 +15,18 @@ The `@[to_additive]` attribute is used to translate multiplicative declarations 
 additive equivalent. See the docstrings of `to_additive` for more information.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.ToAdditive
 open Lean Elab Translate
 
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
@@ -58,14 +62,14 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
-Use the `to_additive existing` syntax to use an existing additive declaration, instead of
-automatically generating it.
-
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is mostly useful to translate declarations using
 `Pow` to those using `SMul`.
+
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it. This attempts to autogenerate the `(reorder := ...)` argument.
 
 Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
 version:
@@ -125,10 +129,10 @@ There are some exceptions to this heuristic:
 * Identifiers that have the `@[to_additive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
   You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive (relevant_arg := n)]` then the argument
-  in position `n` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `(relevant_arg := n)` to a
-  declaration when the first argument has no multiplicative type-class, but argument `n` does.
+* If an identifier `d` has attribute `@[to_additive (relevant_arg := α)]` then the argument
+  `α` is checked for a fixed type, instead of checking the first argument.
+  `@[to_additive]` will automatically add the attribute `(relevant_arg := α)` to a
+  declaration when the first argument has no multiplicative type-class, but argument `α` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
@@ -160,7 +164,7 @@ mismatch error.
     attribute `[to_additive_ignore_args k]` to `d`.
     Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
   * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
-    all. This can be achieved by setting `relevant_arg` out of bounds, e.g. `(relevant_arg := 100)`.
+    all. This can be achieved with the option `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -258,38 +262,23 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
+@[inherit_doc TranslateData.argInfoAttr]
+initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
-/-- Linter to check that the `relevant_arg` attribute is not given manually -/
-register_option linter.toAdditiveRelevantArg : Bool := {
-  defValue := true
-  descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
 
-@[inherit_doc to_additive_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_additive_relevant_arg
+initialize
+  registerBuiltinAttribute {
+    name := `to_additive_do_translate
     descr := "Auxiliary attribute for `to_additive` stating \
-      which arguments are the types with a multiplicative structure."
-    add := fun
-    | _, stx@`(attr| to_additive_relevant_arg $id) => do
-      Linter.logLintIf linter.toAdditiveRelevantArg stx
-        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
-      pure <| id.getNat.pred
-    | _, _ => throwUnsupportedSyntax }
-
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -357,13 +346,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
   ("addSingle", "Single"),
-  ("add_single", "Single"),
   ("addSupport", "Support"),
-  ("add_support", "Support"),
   ("addTSupport", "TSupport"),
-  ("add_tsupport", "TSupport"),
   ("addIndicator", "Indicator"),
-  ("add_indicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
@@ -389,11 +374,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr := ignoreArgsAttr
-  reorderAttr := reorderAttr
-  relevantArgAttr := relevantArgAttr
-  dontTranslateAttr := dontTranslateAttr
-  translations := translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
@@ -403,7 +384,7 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
@@ -412,6 +393,6 @@ initialize registerBuiltinAttribute {
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  Command.liftCoreM <| insertTranslation data src.getId tgt.getId
+  translations.add src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive

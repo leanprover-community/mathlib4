@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
 ## Expand multivariate polynomials
@@ -16,6 +18,8 @@ This operation is called `MvPolynomial.expand` and it is an algebra homomorphism
 
 * `MvPolynomial.expand`: expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial

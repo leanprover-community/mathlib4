@@ -3,12 +3,14 @@ Copyright (c) 2023 Sidharth Hariharan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Sidharth Hariharan
 -/
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Logic.Function.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -39,6 +41,8 @@ of Patrick Massot.
 * Proving uniqueness of the decomposition
 
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) [CommRing R] [IsDomain R]

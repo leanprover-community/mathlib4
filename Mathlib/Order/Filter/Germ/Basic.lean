@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Germ of a function at a filter
@@ -51,6 +53,8 @@ For each of the following structures we prove that if `β` has this structure, t
 
 filter, germ
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing
 

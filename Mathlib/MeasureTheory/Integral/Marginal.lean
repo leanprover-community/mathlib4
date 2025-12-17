@@ -3,7 +3,9 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+module
+
+public import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 # Marginals of multivariate functions
@@ -52,6 +54,8 @@ since there is no well-behaved measure on the domain of `f`.
 * Define the marginal function for functions taking values in a Banach space.
 
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal

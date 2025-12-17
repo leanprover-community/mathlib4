@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Over and under categories
@@ -19,6 +21,8 @@ Over (and under) categories are special cases of comma categories.
 
 Comma, Slice, Coslice, Over, Under
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -356,13 +360,13 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 
-lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
-def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -440,14 +444,14 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
 /-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
 For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
 @[simps]
-protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
     J ⥤ Over X where
   obj j := mk (s.app j)
   map f := homMk (D.map f)
 
 /-- The induced cone on `Over X` on the lifted functor. -/
 @[simps]
-def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+def liftCone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
     Cone (Over.lift D s) where
   pt := mk p
@@ -455,7 +459,7 @@ def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.
 
 /-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
 and `J` is nonempty. -/
-def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
+def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
     (hc : IsLimit c) :
@@ -762,13 +766,13 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
 
-lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
-def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -845,14 +849,14 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
 
 /-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
 @[simps]
-protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
     J ⥤ Under X where
   obj j := .mk (s.app j)
   map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
 
 /-- The induced cocone on `Under X` from on the lifted functor. -/
 @[simps]
-def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+def liftCocone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
     Cocone (Under.lift D s) where
   pt := mk p
@@ -860,7 +864,7 @@ def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.cons
 
 /-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
 and `J` is nonempty. -/
-def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
+def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
     (hc : IsColimit c) :

@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `Mon (C ⥤ D) ≌ C ⥤ Mon D`
@@ -25,6 +27,8 @@ Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -201,7 +205,7 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Comon D) :=
   NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end ComonFunctorCategoryEquivalence
 
@@ -259,7 +263,7 @@ def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon D) :=
   NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end CommMonFunctorCategoryEquivalence
 

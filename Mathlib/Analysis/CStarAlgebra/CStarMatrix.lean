@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -31,6 +32,8 @@ replace the uniformity and bornology by the Pi ones when registering the
 `NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace
   WithCStarModule
@@ -694,7 +697,7 @@ end TopologyAux
 
 namespace CStarMatrix
 
-section non_unital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -771,9 +774,9 @@ noncomputable instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
-end non_unital
+end NonUnital
 
-section unital
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -789,7 +792,7 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
 
-end unital
+end Unital
 
 section
 

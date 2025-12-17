@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
@@ -114,6 +115,8 @@ TODO: Define a coercion to MvPolynomial.
 
 -/
 
+@[expose] public section
+
 namespace MvPowerSeries
 
 noncomputable section
@@ -128,9 +131,7 @@ variable (w : σ → ℕ) {f g : MvPowerSeries σ R}
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
-  refine not_iff_not.mp ?_
-  simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact MvPowerSeries.ext_iff
+  simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
@@ -216,7 +217,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
-  · rw [h, weightedOrder_eq_top_iff, LinearMap.map_zero]
+  · rw [h, weightedOrder_eq_top_iff, map_zero]
   · rw [weightedOrder_eq_nat]
     constructor
     · use d
@@ -294,9 +295,7 @@ theorem le_weightedOrder_mul :
 theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simpa [add_smul] using
-      le_trans (add_le_add_right hn (f.weightedOrder w)) (le_weightedOrder_mul w)
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :

@@ -3,14 +3,16 @@ Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Algebra.Squarefree.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -37,7 +39,7 @@ This is different from the radical of an ideal.
 
 ### For Euclidean domains
 
-- `EuclideanDomain.divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
+- `EuclideanDomain.divRadical`: For an element `a` in a Euclidean domain, `a / radical a`.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
@@ -53,6 +55,8 @@ This is different from the radical of an ideal.
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -401,7 +405,7 @@ namespace EuclideanDomain
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
   {a b u x : E}
 
-/-- Division of an element by its radical in an Euclidean domain. -/
+/-- Division of an element by its radical in a Euclidean domain. -/
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical : radical a * divRadical a = a := by
@@ -452,17 +456,17 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
 namespace Nat
 
 @[simp] theorem radical_le_self_iff {n : ℕ} : radical n ≤ n ↔ n ≠ 0 :=
-  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by cutsat) radical_dvd_self⟩
+  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
 
 @[simp] theorem two_le_radical_iff {n : ℕ} : 2 ≤ radical n ↔ 2 ≤ n := by
   refine ⟨?_, ?_⟩
   · match n with | 0 | 1 | _ + 2 => simp
   · intro hn
-    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by cutsat)
+    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by lia)
     trans p
     · apply hp.two_le
     · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
-      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by cutsat)]
+      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by lia)]
 
 @[simp] theorem one_lt_radical_iff {n : ℕ} : 1 < radical n ↔ 1 < n := two_le_radical_iff
 
