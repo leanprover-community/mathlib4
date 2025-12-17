@@ -1190,7 +1190,7 @@ section DenselyOrdered
 
 variable [LinearOrder α]
 
-/-- A preorder cannot be both densely ordered and locally finite,
+/-- A linear order cannot be both densely ordered and locally finite,
 unless it is trivial (all elements are equal). -/
 theorem not_locallyFiniteOrder [DenselyOrdered α] [LocallyFiniteOrder α] :
     Subsingleton α := by
@@ -1202,7 +1202,7 @@ theorem not_locallyFiniteOrder [DenselyOrdered α] [LocallyFiniteOrder α] :
   · contradiction
   · exact not_lt_of_denselyOrdered_of_locallyFinite y x h
 
-/-- A nontrivial densely ordered preorder is not locally finite. -/
+/-- A nontrivial densely ordered linear order is not locally finite. -/
 theorem not_locallyFiniteOrder_of_nontrivial [DenselyOrdered α] [Nontrivial α] :
     IsEmpty (LocallyFiniteOrder α) := by
   constructor
