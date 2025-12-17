@@ -95,10 +95,11 @@ theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero,
 @[simp]
 theorem Ico_succ_singleton : Ico a (a + 1) = {a} := by grind
 
-set_option linter.deprecated false in
 @[simp]
 theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
-  rw [← Icc_pred_right _ h, Icc_self]
+  ext x
+  rw [mem_Ico, mem_singleton]
+  lia
 
 @[simp]
 theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by grind
@@ -126,11 +127,15 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   rintro ⟨x, hx, rfl⟩
   lia
 
-set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
-  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
-    and_comm (a := a ≠ x), lt_iff_le_and_ne]
+  simp_rw [mem_erase, mem_Ico]
+  lia
+
+theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ico a b) := by
+  ext x
+  simp_rw [mem_insert, mem_Ico]
+  lia
 
 set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
