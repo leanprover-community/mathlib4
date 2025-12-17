@@ -92,7 +92,7 @@ theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : -(x 
   have := M.smul_mem_support
   aesop
 
-/-- The support `M ∩ -M` of a submonoid `M` of a ring `R`, as an ideal. -/ 
+/-- The support `M ∩ -M` of a submonoid `M` of a ring `R`, as an ideal. -/
 def support : Ideal R where
   __ := supportAddSubgroup M
   smul_mem' := have := M.smul_mem_support; by aesop
