@@ -23,9 +23,9 @@ We prove inequalities between these covering and packing numbers.
 ## Main definitions
 
 * `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
-  cardinal of an `ε`cover.
-* `coveringNumber`: the covering number(or internal covering number) of a set `A` for radius `ε` is
-  the minimal cardinal of an `ε`cover contained in `A`.
+  cardinal of an `ε`-cover.
+* `coveringNumber`: the covering number (or internal covering number) of a set `A` for radius `ε` is
+  the minimal cardinal of an `ε`-cover contained in `A`.
 * `packingNumber`: the packing number of a set `A` for radius `ε` is the maximal cardinal of
   an `ε`-separated set in `A`.
 
@@ -59,8 +59,8 @@ noncomputable
 def externalCoveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
   ⨅ (C : Set X) (_ : IsCover ε A C), C.encard
 
-/-- The covering number(or internal covering number) of a set `A` for radius `ε` is
-the minimal cardinal of an `ε`cover contained in `A`. -/
+/-- The covering number (or internal covering number) of a set `A` for radius `ε` is
+the minimal cardinal of an `ε`-cover contained in `A`. -/
 noncomputable
 def coveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
   ⨅ (C : Set X) (_ : C ⊆ A) (_ : IsCover ε A C), C.encard
@@ -154,7 +154,7 @@ lemma externalCoveringNumber_le_coveringNumber (ε : ℝ≥0) (A : Set X) :
   simp only [externalCoveringNumber, coveringNumber, le_iInf_iff]
   exact fun C _ hC_cover ↦ iInf₂_le C hC_cover
 
-theorem packingNumber_two_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
+theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
     packingNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
   simp only [packingNumber, ENNReal.coe_mul, ENNReal.coe_ofNat, externalCoveringNumber, le_iInf_iff,
     iSup_le_iff]
@@ -165,46 +165,18 @@ theorem packingNumber_two_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
   have hf' (x : D) : edist x.1 (f x) ≤ ε := (hC_cover (hD_subset x.2)).choose_spec.2
   -- `⊢ D.encard ≤ C.encard`
   -- It suffices to prove that `f` is injective
-  rcases isEmpty_or_nonempty X with hX_empty | hX_nonempty
-  · simp [Set.eq_empty_of_isEmpty D]
-  let x₀ : X := hX_nonempty.some
-  classical
-  refine Set.encard_le_encard_of_injOn (f := fun x ↦ if hx : x ∈ D then f ⟨x, hx⟩ else x₀) ?_ ?_
-  · intro x hx
-    simp [hx]
-  -- We now prove injectivity
-  intro x hxD y hyD hfxy
-  simp only [hxD, ↓reduceDIte, hyD] at hfxy
-  replace hfxy : f ⟨x, hxD⟩ = f ⟨y, hyD⟩ := by ext; exact hfxy
-  by_contra hxy
-  specialize hD_separated hxD hyD hxy
-  suffices 0 < edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) by simp [hfxy] at this
-  have hx_ne_top : edist x (f ⟨x, hxD⟩) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' ⟨x, hxD⟩)
-  have hy_ne_top : edist y (f ⟨y, hyD⟩) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' ⟨y, hyD⟩)
-  calc 0
-  _ ≤ 2 * ε - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := zero_le'
-  _ < edist x y - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := by
-    rw [lt_tsub_iff_left, lt_tsub_iff_left]
-    refine lt_of_eq_of_lt ?_ hD_separated
-    rw [add_comm (edist y _), ENNReal.sub_add_eq_add_sub _ hy_ne_top,
-      ENNReal.add_sub_cancel_right hy_ne_top, add_comm,
-      ENNReal.sub_add_eq_add_sub _ hx_ne_top, ENNReal.add_sub_cancel_right hx_ne_top]
-    · refine (hf' ⟨x, hxD⟩).trans ?_
-      rw [two_mul]
-      exact le_self_add
-    · refine ENNReal.le_sub_of_add_le_left hx_ne_top ?_
+  simp only [← Set.toENat_cardinalMk]
+  gcongr
+  refine Cardinal.mk_le_of_injective (f := f) fun x y hxy ↦ Subtype.ext ?_
+  apply Set.Pairwise.eq hD_separated x.2 y.2
+  simp only [not_lt]
+  calc
+    edist (x : X) y ≤ edist (x : X) (f x) + edist (f x : X) y := edist_triangle ..
+    _ ≤ 2 * ε := by
       rw [two_mul]
       gcongr
-      · exact hf' ⟨x, hxD⟩
-      · exact hf' ⟨y, hyD⟩
-  _ ≤ (edist x (f ⟨x, hxD⟩) + edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) + edist (f ⟨y, hyD⟩ : X) y)
-      - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := by
-    gcongr
-    exact edist_triangle4 x (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) y
-  _ = edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) := by
-    simp only [hfxy, edist_self, add_zero]
-    rw [edist_comm (f ⟨y, hyD⟩ : X), add_comm, ENNReal.add_sub_cancel_right, tsub_self]
-    rwa [← hfxy]
+      · exact hf' x
+      · simpa [edist_comm, hxy] using hf' y
 
 end Comparisons
 
