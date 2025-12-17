@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-! The cohomology of a sheaf of groups in degree 1
 
@@ -39,6 +41,8 @@ case, it would be a particular case of Čech cohomology (TODO).
 * [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
 
 -/
+
+@[expose] public section
 
 universe w' w v u
 

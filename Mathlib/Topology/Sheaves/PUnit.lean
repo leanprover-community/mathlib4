@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Presheaves on `PUnit`
 
 Presheaves on `PUnit` satisfy sheaf condition iff its value at empty set is a terminal object.
 -/
+
+@[expose] public section
 
 
 namespace TopCat.Presheaf

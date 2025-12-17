@@ -3,9 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Rank
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Rank
 
 /-!
 # Existence of Cartan subalgebras
@@ -26,6 +27,8 @@ following [barnes1967].
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 
@@ -272,7 +275,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      cutsat
+      lia
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
@@ -283,7 +286,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · cutsat
+    · lia
     · dsimp only [r] at hi ⊢
       rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
@@ -339,7 +342,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
-    apply Nat.find_min hz'; cutsat
+    apply Nat.find_min hz'; lia
   · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)

@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
+module
+
+public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
 /-!
 
@@ -20,11 +22,13 @@ braided, in such a way that the localization functor is braided. If `C` is symme
 the monoidal structure on `D` is also symmetric.
 -/
 
+@[expose] public section
+
 open CategoryTheory Category MonoidalCategory BraidedCategory Functor
 
 namespace CategoryTheory.Localization.Monoidal
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [MonoidalCategory C] [W.IsMonoidal] [L.IsLocalization W]
   {unit : D} (ε : L.obj (𝟙_ C) ≅ unit)
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Rishikesh Vaishnav. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rishikesh Vaishnav
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Conditional Probability
@@ -54,6 +56,8 @@ the conditioning set has non-zero measure should be named using the abbreviation
 conditional, conditioned, bayes
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open ENNReal MeasureTheory MeasureTheory.Measure MeasurableSpace Set
@@ -87,7 +91,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 
 /-- Unexpander for `μ[|s]` notation. -/
 @[app_unexpander ProbabilityTheory.cond]
-def condUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $μ $s) => `($μ[|$s])
   | _ => throw ()
 
@@ -97,7 +101,7 @@ def condUnexpander : Lean.PrettyPrinter.Unexpander
 
 /-- Delaborator for `μ[t|s]` notation. -/
 @[app_delab DFunLike.coe]
-def delabCondApplied : Delab :=
+meta def delabCondApplied : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     let e ← getExpr
     guard <| e.isAppOfArity' ``DFunLike.coe 6

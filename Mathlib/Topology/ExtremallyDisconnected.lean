@@ -3,8 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Compactification.StoneCech
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Extremally disconnected spaces
@@ -27,6 +29,8 @@ compact Hausdorff spaces.
 
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
+
+@[expose] public section
 
 noncomputable section
 

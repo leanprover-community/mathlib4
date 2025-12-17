@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Basic
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Interaction of separation properties with connectedness properties
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -25,8 +29,7 @@ instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconne
 
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
-  by_contra! h
-  rcases h with ⟨x, y, hxy⟩
+  by_contra! ⟨x, y, hxy⟩
   rw [Ne, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
   exact hxy (mem_univ x)
 

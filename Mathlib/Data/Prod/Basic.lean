@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Iterate
-import Aesop
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Iterate
+public import Aesop
+public import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`
@@ -15,6 +17,8 @@ This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
+@[expose] public section
+
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
@@ -22,8 +26,10 @@ namespace Prod
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
@@ -299,19 +305,19 @@ open Lean PrettyPrinter Delaborator
 When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
 rather than as `x.fst` and `x.snd`.
 -/
-register_option pp.numericProj.prod : Bool := {
+meta register_option pp.numericProj.prod : Bool := {
   defValue := true
   descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
 }
 
 /-- Tell whether pretty-printing should use numeric projection notations `.1`
 and `.2` for `Prod.fst` and `Prod.snd`. -/
-def getPPNumericProjProd (o : Options) : Bool :=
+meta def getPPNumericProjProd (o : Options) : Bool :=
   o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
 @[app_delab Prod.fst]
-def delabProdFst : Delab :=
+meta def delabProdFst : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|
@@ -321,7 +327,7 @@ def delabProdFst : Delab :=
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
 @[app_delab Prod.snd]
-def delabProdSnd : Delab :=
+meta def delabProdSnd : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|

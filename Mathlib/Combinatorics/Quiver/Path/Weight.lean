@@ -3,8 +3,10 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Algebra.Order.Ring.Defs
 
 
 /-!
@@ -26,6 +28,8 @@ weights of its edges, where weights are taken from a monoid.
 * `Quiver.Path.weight_pos`: If all edge weights are positive, the path weight is positive.
 * `Quiver.Path.weightOfEPs_nonneg`: If all edge weights are non-negative, so is the path weight.
 -/
+
+@[expose] public section
 
 namespace Quiver.Path
 

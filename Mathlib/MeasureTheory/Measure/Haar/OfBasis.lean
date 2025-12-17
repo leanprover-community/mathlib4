@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -24,6 +26,8 @@ In particular, we declare a `MeasureSpace` instance on any finite-dimensional in
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
+
+@[expose] public section
 
 
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
@@ -64,7 +68,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, _root_.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, _root_.map_sum, map_smulₛₗ, RingHom.id_apply]
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
 @[simp]
@@ -110,11 +114,11 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
-    simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
+    simp_rw [parallelepiped, H, A, smul_eq_mul, mul_one]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
       ← image_comp, Function.comp_apply, image_id']
   · right
-    simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
+    simp_rw [H, parallelepiped, smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
@@ -207,14 +211,14 @@ theorem parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (haveI := FiniteDimensional.of_fintype_basis b
+    (haveI := b.finiteDimensional_of_finite
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
+    (haveI := (b.map e).finiteDimensional_of_finite
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
 theorem prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
-    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
+    (v.prod w).parallelepiped = v.parallelepiped ×ˢ w.parallelepiped := by
   ext x
   simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
     mem_parallelepiped_iff]
@@ -254,7 +258,7 @@ instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarM
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 
 instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
@@ -277,8 +281,8 @@ variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 
 theorem prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
-  have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
+  have : FiniteDimensional ℝ E := v.finiteDimensional_of_finite
+  have : FiniteDimensional ℝ F := w.finiteDimensional_of_finite
   simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end Module.Basis

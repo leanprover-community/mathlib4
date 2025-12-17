@@ -3,7 +3,9 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Constructions.Pi
+module
+
+public import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 # Marginals of multivariate functions
@@ -52,6 +54,8 @@ since there is no well-behaved measure on the domain of `f`.
 * Define the marginal function for functions taking values in a Banach space.
 
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal
@@ -108,7 +112,7 @@ theorem lmarginal_congr {x y : ∀ i, X i} (f : (∀ i, X i) → ℝ≥0∞)
 theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, X i) → ℝ≥0∞) (x : ∀ i, X i) (y : X i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∂μ) x := by
-  grind [Function.update_of_ne, MeasureTheory.lmarginal_congr]
+  grind [MeasureTheory.lmarginal_congr]
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, X i) → ℝ≥0∞) (i : δ) :

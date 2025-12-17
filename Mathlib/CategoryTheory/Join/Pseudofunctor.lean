@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctoriality of categorical joins
@@ -14,6 +16,8 @@ In this file, we promote the join construction to two pseudofunctors
 each variable.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -25,7 +29,7 @@ open Bicategory Functor
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
 
 section
-variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
 
 
 variable (A) in
@@ -72,7 +76,7 @@ lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) 
       (mapCompLeft D G H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 variable (A) in
 @[reassoc]

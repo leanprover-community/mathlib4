@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.Weight
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -23,6 +24,8 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α
@@ -141,11 +144,11 @@ theorem le_iff {x y : DegLex (α →₀ ℕ)} :
 instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
     rw [le_iff] at h ⊢
-    simpa only [ofDegLex_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
+    simpa only [ofDegLex_add, map_add, add_lt_add_iff_left, add_right_inj, toLex_add,
       add_le_add_iff_left] using h
   add_le_add_left a b h c := by
     rw [le_iff] at h ⊢
-    simpa [ofDegLex_add, degree_add] using h
+    simpa [ofDegLex_add, map_add] using h
 
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
@@ -174,7 +177,7 @@ theorem monotone_degree :
 noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
-    simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]
+    simp only [le_iff, ofDegLex_toDegLex, toLex_zero, map_zero]
     rcases eq_zero_or_pos (ofDegLex x).degree with (h | h)
     · simp only [h, lt_self_iff_false, true_and, false_or]
       exact bot_le
@@ -201,10 +204,10 @@ noncomputable def degLex :
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
     simp only [AddEquiv.coe_mk, DegLex.le_iff, ofDegLex_toDegLex]
-    by_cases ha : a.degree < b.degree
+    by_cases! ha : a.degree < b.degree
     · exact Or.inl ha
-    · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
-      rw [← add_tsub_cancel_of_le h, degree_add]
+    · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
+      rw [← add_tsub_cancel_of_le h, map_add]
       exact Nat.le_add_right a.degree (b - a).degree
 
 theorem degLex_le_iff {a b : σ →₀ ℕ} :
@@ -236,8 +239,9 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
 example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
-  simp only [degLex_lt_iff, lt_iff, ofDegLex_toDegLex, degree_add,
-    degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
+  rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
+  simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,
+    lt_self_iff_false, toLex_add, true_and, false_or]
   use 0
   simp
 

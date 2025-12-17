@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Topology.Category.CompHausLike.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.Topology.Category.CompHausLike.Basic
 /-!
 
 # Explicit limits and colimits
@@ -33,6 +35,8 @@ which may be useful due to their definitional properties.
 * Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Topology
 
@@ -199,8 +203,7 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
-      (g.hom.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (by fun_prop) (by fun_prop)).isCompact
   CompHausLike.of P set
 
 /--

@@ -3,9 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Gluing
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+module
+
+public import Mathlib.Topology.Gluing
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 
 /-!
 # Gluing structured spaces
@@ -53,6 +55,8 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -77,7 +81,7 @@ namespace PresheafedSpace
 2. A presheafed space `U i` for each `i : J`.
 3. A presheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
-  connect to the limits library easier.)
+  connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
 such that
@@ -90,7 +94,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
-structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
+structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{v, u, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
 attribute [instance] GlueData.f_open
@@ -516,7 +520,7 @@ namespace SheafedSpace
 2. A sheafed space `U i` for each `i : J`.
 3. A sheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
-  connect to the limits library easier.)
+  connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
 such that
@@ -587,7 +591,7 @@ namespace LocallyRingedSpace
 2. A locally ringed space `U i` for each `i : J`.
 3. A locally ringed space `V i j` for each `i j : J`.
   (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
-  connect to the limits library easier.)
+  connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
 such that

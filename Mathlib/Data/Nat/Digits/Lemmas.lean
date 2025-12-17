@@ -3,19 +3,23 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Nat.Digits.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number
 
 This provides lemma about the digits of natural numbers.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -68,8 +72,7 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     k < (b.digits n).length ↔ b ^ k ≤ n := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   exact digits_length_le_iff hb n
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
@@ -85,12 +88,12 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
-  by_cases hnb : n < b + 2
+  by_cases! hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
-    exact Nat.div_pos (le_of_not_gt hnb) (zero_lt_succ (succ b))
+    exact Nat.div_pos hnb (zero_lt_succ (succ b))
 
 theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
@@ -144,6 +147,8 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
+-- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
+set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
@@ -257,7 +262,7 @@ theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
       rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · rcases n with _ | _ <;> simp_all [show b = 0 by cutsat]
+  · rcases n with _ | _ <;> simp_all [show b = 0 by lia]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
@@ -300,5 +305,19 @@ theorem ofDigits_neg_one :
   | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
+
+/-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
+theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+  clear h
+  rw [List.getD_eq_getElem?_getD]
+  induction n using Nat.caseStrongRecOn generalizing i with
+  | zero => simp
+  | ind n IH =>
+    rcases i with _ | i
+    · rw [← List.head?_eq_getElem?, ← default_eq_zero, Option.getD_default_eq_iget,
+        ← List.head!_eq_head?, head!_digits (by grind)]
+      simp
+    · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
 end Nat

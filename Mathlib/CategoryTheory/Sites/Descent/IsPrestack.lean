@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Cat
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Over
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Prestacks: descent of morphisms
@@ -44,6 +46,8 @@ by saying that the functors mentioned above are essentially surjective.
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 
@@ -119,13 +123,13 @@ variable (F) {S : C} (M N : F.obj (.mk (op S)))
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
-of morphisms $$p^* M ⟶ p^* N$$. -/
+of morphisms $p^* M ⟶ p^* N$. -/
 @[simps]
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).obj M ⟶ (F.map (.toLoc T.unop.hom.op)).obj N
   map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
-/-- Compatiblity isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
+/-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
       F.presheafHom ((F.map (.toLoc q.op)).obj M) ((F.map (.toLoc q.op)).obj N) :=
@@ -156,7 +160,7 @@ class IsPrestack (J : GrothendieckTopology C) : Prop where
 /-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
 and `M` and `N` are two objects in `F.obj (.mk (op S))`, this is the sheaf of
 morphisms from `M` to `N`: it sends an object `T : Over S` corresponding to
-a morphism `p : X ⟶ S` to the type of morphisms $$p^* M ⟶ p^* N$$. -/
+a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 @[simps]
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :

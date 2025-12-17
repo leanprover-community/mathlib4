@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
 
 /-!
 # Increment partition for Szemerédi Regularity Lemma
@@ -32,6 +34,8 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
@@ -70,7 +74,7 @@ theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.
   rw [Nat.sub_add_cancel a_add_one_le_four_pow_parts_card,
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), ← add_mul]
   congr
-  rw [filter_card_add_filter_neg_card_eq_card, card_attach]
+  rw [card_filter_add_card_filter_not, card_attach]
 
 variable (hP G ε)
 
@@ -104,7 +108,7 @@ private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
       (distinctPairs hP G ε) := by
   simp +unfoldPartialApp only [distinctPairs, Set.PairwiseDisjoint,
-    Function.onFun, disjoint_left, mem_product]
+    Function.onFun, Finset.disjoint_left, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1

@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 /-!
 # The diagonal object of a morphism.
@@ -16,6 +18,8 @@ of a morphism `f : X ⟶ Y`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -23,7 +27,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X Y Z : C}
+variable {C : Type*} [Category* C] {X Y Z : C}
 
 namespace pullback
 

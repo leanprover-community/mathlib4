@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Notation
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Cycle
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Periodic points
@@ -40,6 +42,8 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -207,7 +211,7 @@ theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   rcases h with ⟨n, _, h⟩
   use f^[n - 1] x
   nth_rw 1 [← iterate_one f]
-  rw [← iterate_add_apply, Nat.add_sub_cancel' (by cutsat)]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by lia)]
   exact h
 
 @[deprecated (since := "2025-04-27")]
@@ -504,6 +508,8 @@ end Function
 
 namespace Function
 
+section Prod
+
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
@@ -523,6 +529,28 @@ theorem isPeriodicPt_prodMap (x : α × β) :
 theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
     IsPeriodicPt (Prod.map f g) n (a, b) :=
   (isPeriodicPt_prodMap _).mpr ⟨ha, hb⟩
+
+end Prod
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i} {n : ℕ}
+
+@[simp]
+theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
+  funext_iff
+
+theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Pi.map f) x :=
+  isFixedPt_piMap.mpr h
+
+@[simp]
+theorem isPeriodicPt_piMap : IsPeriodicPt (Pi.map f) n x ↔ ∀ i, IsPeriodicPt (f i) n (x i) := by
+  simp [IsPeriodicPt]
+
+theorem IsPeriodicPt.piMap (h : ∀ i, IsPeriodicPt (f i) n (x i)) : IsPeriodicPt (Pi.map f) n x :=
+  isPeriodicPt_piMap.mpr h
+
+end Pi
 
 end Function
 

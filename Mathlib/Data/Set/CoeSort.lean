@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Data.Set.Defs
 
 /-!
 # Coercing sets to types.
@@ -16,6 +18,8 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 - `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
 -/
+
+@[expose] public section
 
 namespace Set
 
