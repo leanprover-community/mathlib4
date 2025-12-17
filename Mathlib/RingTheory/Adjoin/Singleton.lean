@@ -27,6 +27,7 @@ namespace Algebra
 
 open Polynomial
 
+/-- Ring homomorphism between `A[a]` and `A[↑a]`. -/
 def RingHom.adjoinAlgebraMap :
     Algebra.adjoin A {a} →+* Algebra.adjoin A {(algebraMap B C) a} :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp
@@ -50,6 +51,7 @@ instance : Algebra (Algebra.adjoin A {a}) (Algebra.adjoin A {(algebraMap B C) a}
 instance : IsScalarTower (Algebra.adjoin A {a}) (Algebra.adjoin A {(algebraMap B C) a}) C :=
   IsScalarTower.of_algebraMap_eq' (by rfl)
 
+/-- If the `algebraMap` injective then we have a Ring isomorphism between A[a] and A[↑a]. -/
 noncomputable def RingHom.adjoinAlgebraMapEquiv [FaithfulSMul B C] :
     Algebra.adjoin A {a} ≃+* Algebra.adjoin A {(algebraMap B C) a} := by
   apply RingEquiv.ofBijective (RingHom.adjoinAlgebraMap a)

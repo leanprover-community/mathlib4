@@ -143,6 +143,7 @@ variable {A B C : Type*} [Field A] [CommRing B] [Field C] [Algebra A B] [Algebra
 
 variable [IsScalarTower A B C] (a : B)
 
+/-- Ring homomorphism between `A[a]` and `A⟮↑a⟯`. -/
 noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
     Algebra.adjoin A {a} →+* A⟮((algebraMap B C) a)⟯ :=
   RingHom.comp (Subalgebra.inclusion <|

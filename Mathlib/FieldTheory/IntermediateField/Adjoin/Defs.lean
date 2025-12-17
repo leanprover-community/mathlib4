@@ -575,6 +575,7 @@ theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S := by
 variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B C] [Algebra A C]
   [IsScalarTower A B C] (a : B)
 
+/-- Ring homomorphism between `A⟮a⟯` and `A⟮↑a⟯`. -/
 def RingHom.adjoinAlgebraMap : A⟮a⟯ →+* A⟮((algebraMap B C) a)⟯ :=
   RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮a⟯)) _
    (fun x ↦ by
