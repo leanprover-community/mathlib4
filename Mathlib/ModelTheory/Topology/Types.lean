@@ -66,7 +66,7 @@ instance : TotallySeparatedSpace (CompleteType T α) := by
         by change ¬∼φ∈q; rwa [not_mem_iff,←hφ, not_not, ←not_mem_iff]
       ⟩)
 
-instance {n : ℕ} : CompactSpace (T.CompleteType (Fin n)) := by
+instance : CompactSpace (T.CompleteType α) := by
   constructor
   rw[isCompact_iff_ultrafilter_le_nhds]
   intros F _
