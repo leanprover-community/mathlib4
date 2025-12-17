@@ -159,7 +159,7 @@ The proximity function `f * g` at `⊤` is less than or equal to the sum of the 
 -/
 theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
-    proximity (f₁ * f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) := by
+    proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
   calc proximity (f₁ * f₂) ⊤
     _ = circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 := by
       simp [proximity]
@@ -168,16 +168,17 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn
       apply circleAverage_mono
       · simp_rw [← norm_mul]
         apply circleIntegrable_posLog_norm_meromorphicOn
-        exact MeromorphicOn.fun_mul (fun x a ↦ h₁f₁ x trivial) fun x a ↦ h₁f₂ x trivial
-      · apply (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x trivial)).add
-          (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x trivial))
+        exact MeromorphicOn.fun_mul (fun x a ↦ h₁f₁ x (Set.mem_univ _))
+          fun x a ↦ h₁f₂ x (Set.mem_univ _)
+      · apply (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x (Set.mem_univ _))).add
+          (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x (Set.mem_univ _)))
       · exact fun _ _ ↦ posLog_mul
     _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0:= by
       ext r
       apply circleAverage_add
-      · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x trivial)
-      · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x trivial)
-    _ = (proximity f₁ ⊤) + (proximity f₂ ⊤) := rfl
+      · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x (Set.mem_univ _))
+      · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x (Set.mem_univ _))
+    _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
 @[deprecated (since := "2025-12-11")] alias proximity_top_mul_le := proximity_mul_top_le
 
@@ -203,10 +204,8 @@ function of `f` at `⊤`.
 -/
 @[simp] theorem proximity_pow_top {f : ℂ → ℂ} {n : ℕ} :
     proximity (f ^ n) ⊤ = n • (proximity f ⊤) := by
-  simp only [proximity, reduceDIte, Pi.pow_apply, norm_pow, posLog_pow, nsmul_eq_mul]
-  ext _
-  rw [Pi.mul_apply, Pi.natCast_apply, ← smul_eq_mul, ← circleAverage_fun_smul]
-  rfl
+  ext x
+  simp [proximity, ← smul_eq_mul, circleAverage_fun_smul]
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `0` equals `n` times the proximity
@@ -214,6 +213,6 @@ function of `f` at `0`.
 -/
 @[simp] theorem proximity_pow_zero {f : ℂ → ℂ} {n : ℕ} :
     proximity (f ^ n) 0 = n • (proximity f 0) := by
-  rw [← proximity_inv, ← proximity_inv, (by aesop : (f ^ n)⁻¹ = f⁻¹ ^ n), proximity_pow_top]
+  rw [← proximity_inv, ← proximity_inv, ← inv_pow, proximity_pow_top]
 
 end ValueDistribution

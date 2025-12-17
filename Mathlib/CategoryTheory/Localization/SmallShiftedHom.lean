@@ -352,7 +352,7 @@ noncomputable def precompEquiv {X Y Z : C}
   toFun α := (mk₀ _ _ rfl f).comp α (add_zero _)
   invFun β := (mk₀Inv _ rfl _ hf).comp β (add_zero _)
   left_inv α := by simp [← comp_assoc]
-  right_inv β  := by simp [← comp_assoc]
+  right_inv β := by simp [← comp_assoc]
 
 section ChangeOfUniverse
 

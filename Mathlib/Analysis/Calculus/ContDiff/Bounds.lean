@@ -575,7 +575,7 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
     (hx : x ∈ s) (hn : n ≤ N) :
     ‖iteratedFDerivWithin 𝕜 n (fun y : E => (f y) c) s x‖ ≤
       ‖c‖ * ‖iteratedFDerivWithin 𝕜 n f s x‖ := by
-  apply ((ContinuousLinearMap.apply 𝕜 G c).norm_iteratedFDerivWithin_comp_left  hf hs hx hn).trans
+  apply ((ContinuousLinearMap.apply 𝕜 G c).norm_iteratedFDerivWithin_comp_left hf hs hx hn).trans
   gcongr
   refine (ContinuousLinearMap.apply 𝕜 G c).opNorm_le_bound (norm_nonneg _) fun f => ?_
   rw [ContinuousLinearMap.apply_apply, mul_comm]

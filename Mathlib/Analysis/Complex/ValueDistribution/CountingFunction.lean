@@ -296,7 +296,7 @@ sum of the logarithmic counting functions for the poles of `f` and `g`, respecti
 -/
 theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
-    logCounting (f₁ + f₂) ⊤ r ≤ ((logCounting f₁ ⊤) + (logCounting f₂ ⊤)) r := by
+    logCounting (f₁ + f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
   simp only [logCounting, ↓reduceDIte]
   rw [← Function.locallyFinsuppWithin.logCounting.map_add]
   exact Function.locallyFinsuppWithin.logCounting_le (negPart_divisor_add_le_add h₁f₁ h₁f₂) hr
@@ -307,7 +307,7 @@ the sum of the logarithmic counting functions for the poles of `f` and `g`, resp
 -/
 theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
-    logCounting (f₁ + f₂) ⊤ ≤ᶠ[Filter.atTop] (logCounting f₁ ⊤) + (logCounting f₂ ⊤) := by
+    logCounting (f₁ + f₂) ⊤ ≤ᶠ[Filter.atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
   filter_upwards [Filter.eventually_ge_atTop 1]
   exact fun _ hr ↦ logCounting_add_top_le h₁f₁ h₁f₂ hr
 
