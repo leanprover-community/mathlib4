@@ -130,20 +130,7 @@ end LinearMap
 
 noncomputable section
 
-variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-/-- The underlying bilinear map of a perfect pairing. -/
-add_decl_doc PerfectPairing.toLinearMap
-
-variable {R M N}
-
-namespace PerfectPairing
-
-set_option linter.deprecated false
-
-variable (p : PerfectPairing R M N)
-
-end PerfectPairing
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace LinearMap
 variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]
