@@ -75,8 +75,8 @@ def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
 noncomputable def DenseAt.precompEquivOfFinal
     {C' : Type*} [Category* C'] (G : C' ⥤ C) [(CostructuredArrow.pre G F Y).Final] :
     (G ⋙ F).DenseAt Y ≃ F.DenseAt Y :=
-  (Functor.Final.isColimitWhiskerEquiv (CostructuredArrow.pre G F Y)
-    ((LeftExtension.mk (𝟭 D) F.rightUnitor.inv).coconeAt Y))
+  Functor.Final.isColimitWhiskerEquiv (CostructuredArrow.pre G F Y)
+    ((LeftExtension.mk (𝟭 D) F.rightUnitor.inv).coconeAt Y)
 
 /-- If `F : C ⥤ D` is dense at `Y : D`, then so is `G ⋙ F` if
 the canonical functor `CostructuredArrow (G ≫ F) Y ⥤ CostructuredArrow F Y` is final.
