@@ -403,7 +403,6 @@ theorem mem_comap (S : NonUnitalSubalgebra R B) (f : F) (x : A) : x ∈ comap f 
 
 @[simp]
 theorem comap_toSubmodule (S : NonUnitalSubalgebra R B) (f : F) :
-    -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
     (comap f S).toSubmodule = Submodule.comap (LinearMapClass.linearMap f) S.toSubmodule :=
   rfl
 
