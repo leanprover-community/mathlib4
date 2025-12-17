@@ -131,4 +131,29 @@ lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   simpa [ind_iff_ind_underMk, underObj_ind_eq_ind_underObj,
     ObjectProperty.ind_ind.{w} this] using hf
 
+open Cardinal in
+attribute [local instance] fact_isRegular_aleph0 in
+lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
+    {X Y : C} (f : X ⟶ Y)
+    [(IsCardinalAccessibleCategory.{w} (Under X) ℵ₀)] :
+    ind.{w} P f ↔ ∀ {Z : C} (p : X ⟶ Z) (g : Z ⟶ Y) (hp : isFinitelyPresentable.{w} _ p)
+      (hpg : p ≫ g = f),
+      ∃ (W : C) (u : Z ⟶ W) (v : W ⟶ Y), u ≫ v = g ∧ P (p ≫ u) := by
+  rw [ind_iff_ind_underMk, ObjectProperty.ind_iff_exists]
+  · refine ⟨?_, ?_⟩
+    · intro H Z p g hp hpg
+      have : IsFinitelyPresentable (CategoryTheory.Under.mk p) := sorry
+      obtain ⟨W, u, v, huv, hW⟩ := H (CategoryTheory.Under.homMk (U := CategoryTheory.Under.mk p)
+        (V := CategoryTheory.Under.mk f) g hpg)
+      use W.right, u.right, v.right, congr($(huv).right)
+      rwa [show p ≫ u.right = W.hom from CategoryTheory.Under.w u]
+    · intro H Z g hZ
+      obtain ⟨W, u, v, huv, hW⟩ := H Z.hom g.right hZ (CategoryTheory.Under.w g)
+      refine ⟨CategoryTheory.Under.mk (Z.hom ≫ u), CategoryTheory.Under.homMk u,
+        CategoryTheory.Under.homMk v, ?_, ?_⟩
+      · ext
+        simpa
+      · exact hW
+  · sorry
+
 end CategoryTheory.MorphismProperty
