@@ -194,10 +194,10 @@ set_option trace.Elab.DiffGeo true in
 -- The reason this test fails is that Bundle.TotalSpace F (TangentSpace I : M → Type _) is not
 -- the way to state smoothness.
 /--
-error: failed to synthesize
+error: failed to synthesize instance of type class
   TopologicalSpace (TotalSpace F (TangentSpace I))
 
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 #synth IsManifold I.tangent 1 (Bundle.TotalSpace F (TangentSpace I : M → Type _))
@@ -299,10 +299,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
       `E'' →SL[id'] E'''` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize
+      failed to synthesize instance of type class
         NontriviallyNormedField (E'' →SL[id'] E''')
       ⏎
-      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 #check MDiff f
@@ -382,10 +382,10 @@ variable {k : Set.Icc x x → ℝ} in
 #check MDiff k
 
 /--
-error: failed to synthesize
+error: failed to synthesize instance of type class
   Preorder α
 
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
@@ -469,10 +469,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
       `↑(Set.Icc x y)` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize
+      failed to synthesize instance of type class
         NontriviallyNormedField ↑(Set.Icc x y)
       ⏎
-      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 #check MDiffAt g

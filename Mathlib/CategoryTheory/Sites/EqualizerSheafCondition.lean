@@ -280,7 +280,7 @@ The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)`
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 @[stacks 00VM "The rightmost object of the fork diagram there."]
-def SecondObj : Type w  :=
+def SecondObj : Type w :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]

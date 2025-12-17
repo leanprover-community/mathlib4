@@ -493,7 +493,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
   | pointIndex j => if j = i then 1 else 0
   | circumcenterIndex => 0
 
-/-- `point_weights_with_circumcenter` sums to 1. -/
+/-- `pointWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
