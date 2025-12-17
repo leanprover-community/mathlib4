@@ -114,12 +114,12 @@ instance NormedSpace.discreteTopology_zmultiples
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _,
       ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
-lemma Metric.diam_sphere_eq {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] [Nontrivial G]
-    (x : G) {r : ℝ} (hr : 0 ≤ r) :
+lemma Metric.diam_sphere_eq {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+    (x : E) {r : ℝ} (hr : 0 ≤ r) :
     diam (sphere x r) = 2 * r := by
   apply le_antisymm
     (diam_mono sphere_subset_closedBall isBounded_closedBall |>.trans <| diam_closedBall hr)
-  obtain ⟨y, hy⟩ := exists_ne (0 : G)
+  obtain ⟨y, hy⟩ := exists_ne (0 : E)
   rw [← norm_ne_zero_iff] at hy
   calc
     2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
