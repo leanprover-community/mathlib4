@@ -572,6 +572,23 @@ theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ �
 theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S := by
   rw [← iSup_subtype'', ← gc.l_iSup, iSup_subtype'']; congr; exact S.biUnion_of_singleton
 
+variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B C] [Algebra A C]
+  [IsScalarTower A B C] (a : B)
+
+def RingHom.adjoinAlgebraMap : A⟮a⟯ →+* A⟮((algebraMap B C) a)⟯ :=
+  RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮a⟯)) _
+   (fun x ↦ by
+    rw [show (algebraMap B C) a = (Algebra.ofId B C).restrictScalars A a by rfl,
+      ← Set.image_singleton, ← IntermediateField.adjoin_map A {a}]
+    use x
+    simp)
+
+instance : Algebra A⟮a⟯ A⟮(algebraMap B C) a⟯ :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
+
+instance : IsScalarTower A⟮a⟯ A⟮(algebraMap B C) a⟯ C :=
+  IsScalarTower.of_algebraMap_eq' (by rfl)
+
 end AdjoinSimple
 
 end AdjoinDef
