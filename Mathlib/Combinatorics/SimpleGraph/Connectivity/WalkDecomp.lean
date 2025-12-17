@@ -55,9 +55,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 
 @[simp]
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
-    (p.takeUntil w hwp).Nil ↔ u = w := by
-  refine ⟨?_, fun h => by subst h; simp⟩
-  exact Nil.eq
+    (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
