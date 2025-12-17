@@ -386,5 +386,3 @@ theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
           fun ⟨y, hne, hy⟩ => ⟨⟨y,
           (isConjRoot_iff_mem_minpoly_rootSet h.isIntegral).mp hy⟩, hne.symm⟩⟩
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_iff_exists_ne_and_isConjRoot := notMem_iff_exists_ne_and_isConjRoot

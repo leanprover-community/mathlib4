@@ -222,12 +222,6 @@ theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
   simp only [Function.mem_fixedPoints_iff]
   rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]
 
-@[deprecated (since := "2025-05-19")]
-alias mem_fixedPoints_iff_apply_mem_of_mem_centralizer :=
-  apply_mem_fixedPoints_iff_mem_of_mem_centralizer
-
-
-
 variable [DecidableEq α]
 
 lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}

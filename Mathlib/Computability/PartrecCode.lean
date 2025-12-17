@@ -220,8 +220,6 @@ theorem primrec₂_pair : Primrec₂ pair :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias pair_prim := primrec₂_pair
-
 theorem primrec₂_comp : Primrec₂ comp :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
@@ -231,8 +229,6 @@ theorem primrec₂_comp : Primrec₂ comp :=
             Primrec₂.natPair.comp (encode_iff.2 <| (Primrec.ofNat Code).comp fst)
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
-
-@[deprecated (since := "2025-05-12")] alias comp_prim := primrec₂_comp
 
 theorem primrec₂_prec : Primrec₂ prec :=
   Primrec₂.ofNat_iff.2 <|
@@ -244,8 +240,6 @@ theorem primrec₂_prec : Primrec₂ prec :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias prec_prim := primrec₂_prec
-
 theorem primrec_rfind' : Primrec rfind' :=
   ofNat_iff.2 <|
     encode_iff.1 <|
@@ -253,8 +247,6 @@ theorem primrec_rfind' : Primrec rfind' :=
         (nat_double_succ.comp <| nat_double_succ.comp <|
           encode_iff.2 <| Primrec.ofNat Code)
         (const 4)
-
-@[deprecated (since := "2025-05-12")] alias rfind_prim := primrec_rfind'
 
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem primrec_recOn' {α σ}
@@ -338,8 +330,6 @@ theorem primrec_recOn' {α σ}
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 
-@[deprecated (since := "2025-05-12")] alias rec_prim' := primrec_recOn'
-
 /-- Recursion on `Nat.Partrec.Code` is primitive recursive. -/
 theorem primrec_recOn {α σ}
     [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Primrec c) {z : α → σ}
@@ -359,8 +349,6 @@ theorem primrec_recOn {α σ}
     (co := fun a b => co a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hco)
     (pc := fun a b => pc a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hpc)
     (rf := fun a b => rf a b.1 b.2) (.mk hrf)
-
-@[deprecated (since := "2025-05-12")] alias rec_prim := primrec_recOn
 
 end Nat.Partrec.Code
 end
@@ -454,8 +442,6 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 
-@[deprecated (since := "2025-05-12")] alias rec_computable := computable_recOn
-
 end
 
 /-- The interpretation of a `Nat.Partrec.Code` as a partial function.
@@ -522,13 +508,9 @@ theorem primrec_const : Primrec Code.const :=
     fun n => by simp; induction n <;>
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 
-@[deprecated (since := "2025-05-12")] alias const_prim := primrec_const
-
 theorem primrec₂_curry : Primrec₂ curry :=
   primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
     (_root_.Primrec.const Code.id)
-
-@[deprecated (since := "2025-05-12")] alias curry_prim := primrec₂_curry
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
@@ -995,8 +977,6 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
     (Primrec.list_getElem?.comp (this.comp (_root_.Primrec.const ())
       (Primrec.encode_iff.2 Primrec.fst)) Primrec.snd) Primrec.snd.to₂).of_eq
     fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map, Option.bind_map]
-
-@[deprecated (since := "2025-05-12")] alias evaln_prim := primrec_evaln
 
 end
 

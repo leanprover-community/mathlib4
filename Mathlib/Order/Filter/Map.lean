@@ -242,8 +242,6 @@ theorem comap_id' : comap (fun x => x) f = f := comap_id
 theorem comap_const_of_notMem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
 
-@[deprecated (since := "2025-05-23")] alias comap_const_of_not_mem := comap_const_of_notMem
-
 theorem comap_const_of_mem {x : β} (h : ∀ t ∈ g, x ∈ t) : comap (fun _ : α => x) g = ⊤ :=
   top_unique fun _ hs => univ_mem' fun _ => h _ (mem_comap'.1 hs) rfl
 

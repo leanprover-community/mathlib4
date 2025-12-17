@@ -87,8 +87,6 @@ lemma fun_add {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
     MeromorphicAt (fun z ↦ f z + g z) x :=
   hf.add hg
 
-@[deprecated (since := "2025-05-09")] alias add' := fun_add
-
 @[fun_prop]
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
@@ -104,8 +102,6 @@ lemma fun_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg
     MeromorphicAt (fun z ↦ f z • g z) x :=
   hf.smul hg
 
-@[deprecated (since := "2025-05-09")] alias smul' := fun_smul
-
 @[fun_prop]
 lemma mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
@@ -115,8 +111,6 @@ lemma mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x
 lemma fun_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (fun z ↦ f z * g z) x :=
   hf.smul hg
-
-@[deprecated (since := "2025-05-09")] alias mul' := fun_mul
 
 /-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop]
@@ -168,8 +162,6 @@ lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
 lemma fun_neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ -f z) x :=
   hf.neg
 
-@[deprecated (since := "2025-05-09")] alias neg' := fun_neg
-
 @[simp]
 lemma neg_iff {f : 𝕜 → E} :
     MeromorphicAt (-f) x ↔ MeromorphicAt f x :=
@@ -219,8 +211,6 @@ at `x`.
 lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
   exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
-
-@[deprecated (since := "2025-05-09")] alias sub' := fun_sub
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
 neighbourhood of `x` (not on `f x`) -/
@@ -283,8 +273,6 @@ lemma inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x 
 lemma fun_inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=
   hf.inv
 
-@[deprecated (since := "2025-05-09")] alias inv' := fun_inv
-
 @[simp]
 lemma inv_iff {f : 𝕜 → 𝕜} :
     MeromorphicAt f⁻¹ x ↔ MeromorphicAt f x :=
@@ -300,8 +288,6 @@ lemma fun_div {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt
     MeromorphicAt (fun z ↦ f z / g z) x :=
   hf.div hg
 
-@[deprecated (since := "2025-05-09")] alias div' := fun_div
-
 @[fun_prop]
 lemma pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
   induction n with
@@ -313,8 +299,6 @@ lemma fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.pow n
 
-@[deprecated (since := "2025-05-09")] alias pow' := fun_pow
-
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
@@ -325,8 +309,6 @@ lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicA
 lemma fun_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) :
     MeromorphicAt (fun z ↦ (f z) ^ n) x :=
   hf.zpow n
-
-@[deprecated (since := "2025-05-09")] alias zpow' := fun_zpow
 
 /-- If a function is meromorphic at a point, then it is continuous at nearby points. -/
 theorem eventually_continuousAt {f : 𝕜 → E}

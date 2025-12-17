@@ -164,9 +164,6 @@ theorem mem_neighborFinset (w : V) : w ∈ G.neighborFinset v ↔ G.Adj v w :=
 
 theorem notMem_neighborFinset_self : v ∉ G.neighborFinset v := by simp
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_neighborFinset_self := notMem_neighborFinset_self
-
 theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
   Finset.disjoint_singleton_right.mpr <| notMem_neighborFinset_self _ _
 
@@ -191,9 +188,6 @@ theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
 
 theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support := by
   rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
-
-@[deprecated (since := "2025-05-23")]
-alias degree_eq_zero_iff_not_mem_support := degree_eq_zero_iff_notMem_support
 
 @[simp]
 theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
