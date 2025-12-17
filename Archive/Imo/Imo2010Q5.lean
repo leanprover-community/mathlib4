@@ -74,7 +74,8 @@ lemma single_add_two {k : ℕ} {i : Fin 6} : (single (i + 2) k : Fin 6 → ℕ) 
 lemma exists_pow : ∃ f : ℕ → ℕ → ℕ, ∀ a b, f a b = a ^ b :=
   ⟨(· ^ ·), fun _ _ ↦ rfl⟩
 
-/-- `pow` is an opaque power function, used to avoid deep recursion in the kernel. -/
+/-- `pow` is an opaque power function, used to avoid deep recursion in the kernel.
+See https://github.com/leanprover/lean4/issues/11713 -/
 noncomputable def pow : ℕ → ℕ → ℕ :=
   exists_pow.choose
 
