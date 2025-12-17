@@ -305,7 +305,6 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-set_option backward.proofsInPublic false in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg_add_cancel := by
