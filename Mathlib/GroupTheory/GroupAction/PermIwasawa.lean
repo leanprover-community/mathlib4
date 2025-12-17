@@ -10,6 +10,10 @@ public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
+/-! # The three Iwasawa structures on permutation and alternating groups
+
+-/
+
 @[expose] public section
 
 open scoped Pointwise
@@ -123,9 +127,23 @@ end Equiv.Perm
 
 namespace alternatingGroup
 
-open MulAction Equiv.Perm Equiv
+open MulAction Equiv.Perm Equiv Subgroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
+
+-- The `convert` is bizarre
+def j {p : ℕ} (s : Nat.Combination α p) :
+    alternatingGroup s →* alternatingGroup α where
+  toFun x := ⟨Perm.ofSubtype (x : Perm s), by
+    have := mem_alternatingGroup.mp x.prop
+    rw [mem_alternatingGroup, sign_ofSubtype]
+    convert this⟩
+  map_mul' := by simp
+  map_one' := by simp
+
+example {p : ℕ} (s : Nat.Combination α p) (K : Subgroup (alternatingGroup s)) :
+    Subgroup (alternatingGroup α) := by
+  exact K.map (j s)
 
 def ofSubtype {α : Type*} [Fintype α] [DecidableEq α] {p : α → Prop} [DecidablePred p] :
     alternatingGroup (Subtype p) →* alternatingGroup α where
@@ -135,8 +153,8 @@ def ofSubtype {α : Type*} [Fintype α] [DecidableEq α] {p : α → Prop} [Deci
   map_one' := by simp
 
 theorem mapOfSubtype {p : ℕ} (s : Nat.Combination α p) :
-    Subgroup.map (ofSubtype : Perm (s : Finset α) →* Perm α) (alternatingGroup ↥(s : Finset α)) =
-      (ofSubtype : Perm (s : Finset α) →* Perm α).range ⊓ (alternatingGroup α) := by
+    (alternatingGroup ↥(s : Finset α)).map (Perm.ofSubtype : Perm (s : Finset α) →* Perm α) =
+      (Perm.ofSubtype : Perm (s : Finset α) →* Perm α).range ⊓ (alternatingGroup α) := by
   ext k
   rw [Subgroup.mem_map, Subgroup.mem_inf, MonoidHom.mem_range]
   simp only [mem_alternatingGroup]
@@ -150,9 +168,9 @@ theorem mapOfSubtype {p : ℕ} (s : Nat.Combination α p) :
 
 lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingGroup α) :
     ((alternatingGroup ↥((g • s : Nat.Combination α p) : Finset α)).map
-      ofSubtype).subgroupOf (alternatingGroup α) =
+      Perm.ofSubtype).subgroupOf (alternatingGroup α) =
     MulAut.conj g •
-      ((alternatingGroup ↥(s : Finset α)).map ofSubtype).subgroupOf (alternatingGroup α) := by
+      ((alternatingGroup ↥(s : Finset α)).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
   classical
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
@@ -169,8 +187,34 @@ lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingG
     simp only [sign_mul, sign_inv, mul_right_comm]
     simp
 
+example {p : ℕ} (s : Nat.Combination α p) (g : alternatingGroup α) :
+    map (j (g • s)) ⊤ = MulAut.conj g • map (j s) ⊤ := by
+  rcases g with ⟨g, hg⟩
+  ext ⟨k, hk⟩
+  simp only [mk_smul, j, mem_map, mem_top, MonoidHom.coe_mk, OneHom.coe_mk, ← Subtype.coe_inj,
+    true_and, Subtype.exists, mem_alternatingGroup, exists_prop, mem_smul_iff_inv_smul_mem,
+    MulAut.smul_def, MulAut.inv_apply]
+  simp
+  sorry
+
+
+def iwasawaStructure_three' : IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
+  T s := Subgroup.map (j s) ⊤
+  is_comm s := by
+    suffices IsCyclic (alternatingGroup s) by
+      let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
+      apply map_isMulCommutative _
+    apply isCyclic_of_prime_card (p := 3)
+    have : Nontrivial s := by
+      rw [← Fintype.one_lt_card_iff_nontrivial, Fintype.card_coe, s.prop]
+      norm_num
+    rw [nat_card_alternatingGroup, Nat.card_eq_finsetCard, s.prop]
+    norm_num [Nat.factorial]
+  is_conj s g := sorry
+  is_generator := sorry
+
 def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
-  T s := (Subgroup.map ofSubtype (alternatingGroup s)).subgroupOf (alternatingGroup α)
+  T s := ((alternatingGroup s).map Perm.ofSubtype).subgroupOf (alternatingGroup α)
   is_comm s := by
     suffices IsCyclic (alternatingGroup s) by
       let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
@@ -184,8 +228,14 @@ def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combina
   is_conj g s := conj_map_subgroupOf s g
   is_generator := sorry
 
+open Classical in
+example (s : Nat.Combination α 4) :
+    alternatingGroup s →* alternatingGroup α := by
+  exact alternatingGroup.ofSubtype (p := fun x ↦ x ∈ (s : Finset α))
+
 def iwasawaStructure_four : IwasawaStructure (alternatingGroup α) (Nat.Combination α 4) where
-  T s := (Subgroup.map ofSubtype (kleinFour (α := s))).subgroupOf (alternatingGroup α)
+  let j : alternatingGroup s →* alternatingGroup α := ofSubtype
+  T s := ((kleinFour s).map (ofSubtype : alternatingGroup s →* alternatingGroup α)).subgroupOf (alternatingGroup α)
   is_comm s := by
     suffices IsCyclic (alternatingGroup s) by
       let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
