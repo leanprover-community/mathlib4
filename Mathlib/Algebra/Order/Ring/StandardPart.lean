@@ -265,6 +265,9 @@ theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk
   congr
   exact Subsingleton.allEq _ _
 
+theorem standardPart_ne_zero {x : K} (h : mk x = 0) : stdPart x ≠ 0 := by
+  rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+
 @[simp]
 theorem stdPart_zero : stdPart (0 : K) = 0 := by
   rw [stdPart, dif_pos] <;> simp
