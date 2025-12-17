@@ -362,7 +362,7 @@ theorem is_real_TFAE (z : K) :
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
-    _ ↔ _ := by simp only [eq_comm]
+    _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
   (is_real_TFAE z).out 0 2
