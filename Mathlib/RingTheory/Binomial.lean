@@ -384,7 +384,8 @@ variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
 theorem multichoose_eq (r : R) (n : ℕ) : multichoose r n = choose (r + n - 1) n := by
   rw [choose]
-  abel_nf
+  congr
+  abel
 
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
     (descPochhammer ℤ n).smeval r = n.factorial • choose r n := by
