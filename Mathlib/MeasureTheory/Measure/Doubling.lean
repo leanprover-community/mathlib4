@@ -26,7 +26,7 @@ This file records basic facts about uniformly locally doubling measures.
 
 @[expose] public section
 
-assert_not_exists Real.rpow_add
+assert_not_exists Real.instPow
 
 noncomputable section
 
