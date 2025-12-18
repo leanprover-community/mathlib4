@@ -73,6 +73,8 @@ end aux
 
 namespace Height
 
+universe u
+
 /-!
 ### Families of admissible absolute values
 
@@ -83,7 +85,7 @@ family of absolute values on `K` satisfying a product formula.
 /-- A type class capturing an admissible family of absolute values. -/
 class AdmissibleAbsValues (K : Type*) [Field K] where
   /-- The type indexing the family of archimedean absolute values -/
-  ArchAbsVal : Type*
+  ArchAbsVal : Type u
   /-- The archimedean absolute values. -/
   archAbsVal : ArchAbsVal → AbsoluteValue K ℝ
   /-- There are only finitely many archimedean absolute values. -/
@@ -94,7 +96,7 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
   /-- The weights are positive. -/
   weight_pos : ∀ v, 0 < weight v
   /-- The type indexing the nonarchimedean absolute values. -/
-  NonarchAbsVal : Type*
+  NonarchAbsVal : Type u
   /-- The nonarchimedean absolute values. -/
   nonarchAbsVal : NonarchAbsVal → AbsoluteValue K ℝ
   /-- The nonarchimedean absolute values are indeed nonarchimedean. -/
