@@ -239,7 +239,7 @@ theorem div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_i
 theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
   div_eq_zero_iff.not.trans not_or
 
-@[simp] lemma div_self (h : a ≠ 0) : a / a = 1 := h.isUnit.div_self
+lemma div_self (h : a ≠ 0) : a / a = 1 := h.isUnit.div_self
 
 @[simp]
 lemma div_self_eq_one_iff : a / a = 1 ↔ a ≠ 0 where
