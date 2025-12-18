@@ -148,7 +148,7 @@ theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
   refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
-  simp[sum_apply, Finset.mul_sum,Finset.sum_mul, Finsupp.sum_finsetSum_comm,
+  simp [sum_apply, Finset.mul_sum,Finset.sum_mul, Finsupp.sum_finsetSum_comm,
     Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
 
 /-!
@@ -399,7 +399,7 @@ theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
     (vecMulVec a (star a)).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
 
-/-- The matrix `vecMulVec (star a) a` is always postive semi-definite. -/
+/-- The matrix `vecMulVec (star a) a` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
     (vecMulVec (star a) a).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]

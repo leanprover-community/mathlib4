@@ -172,6 +172,10 @@ variable {G} {u v w : V}
 theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) :=
   ENat.iInf_toNat
 
+@[grind =]
+lemma Reachable.coe_dist_eq_edist (h : G.Reachable u v) : G.dist u v = G.edist u v :=
+  ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr h
+
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   dist_eq_sInf ▸ Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
@@ -187,6 +191,7 @@ theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
 theorem dist_eq_zero_iff_eq_or_not_reachable :
     G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 
+@[simp, grind =]
 theorem dist_self : dist G v v = 0 := by simp
 
 protected theorem Reachable.dist_eq_zero_iff (hr : G.Reachable u v) :
@@ -230,6 +235,20 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
+lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
+    G.dist u w ≤ G.dist u v + G.dist v w := by
+  by_cases! h' : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
+  rw [← ENat.coe_le_coe, ENat.coe_add]
+  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+
+lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
+    G.dist u w ≤ G.dist u v + G.dist v w := by
+  by_cases! h' : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
+  rw [← ENat.coe_le_coe, ENat.coe_add]
+  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+
 theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
@@ -251,13 +270,15 @@ theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
   rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
   decide
 
-theorem Connected.diff_dist_adj (hG : G.Connected) (hadj : G.Adj v w) :
+theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  by_cases! huw : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable, Reachable.trans, Adj.reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
-  have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
-  have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
-  omega
+  have : G.dist u w ≤ G.dist u v + G.dist v w := hadj.reachable.dist_triangle_right u
+  have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
+  lia
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
@@ -319,8 +340,8 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
       lia)]
-    omega
-  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+    lia
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; lia
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail

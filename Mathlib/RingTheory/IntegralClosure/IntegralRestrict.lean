@@ -87,7 +87,7 @@ def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI := (IsFractionRing.injective A K).isDomain
   haveI := NoZeroSMulDivisors.trans_faithfulSMul A K L₂
   haveI := IsIntegralClosure.isLocalization A K L B
-  haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
+  haveI H : ∀ (y : Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B₂ L₂).comp σ) (y : B)) := by
     rintro ⟨_, x, hx, rfl⟩
     simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
@@ -434,7 +434,7 @@ attribute [local instance] FractionRing.liftAlgebra
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Algebra.IsIntegral A B₂]
     [NoZeroSMulDivisors A B₂] [Algebra.IsAlgebraic (FractionRing A) (FractionRing B)]
     [Algebra.IsAlgebraic (FractionRing A) (FractionRing B₂)]
-     (x : B) (σ : B ≃ₐ[A] B₂) :
+    (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -519,7 +519,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
   rw [← isIntegral_algHom_iff (toAlgHom A L E)
     (FaithfulSMul.algebraMap_injective L E), coe_toAlgHom', map_mul, map_inv₀,
     algebraMap_apply A K L, algebraMap_intNorm (L := L), ← algebraMap_apply, ← algebraMap_apply,
-    norm_eq_prod_roots _ (IsAlgClosed.splits_codomain _), ← Multiset.prod_erase
+    norm_eq_prod_roots _ (IsAlgClosed.splits _), ← Multiset.prod_erase
     (a := algebraMap B E x)]
   · have := NoZeroSMulDivisors.trans_faithfulSMul B L E
     rw [mul_pow, ← mul_pow_sub_one (Nat.pos_iff_ne_zero.1 Module.finrank_pos) (algebraMap B E x),
