@@ -422,16 +422,13 @@ theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
   fun x ↦ by cases x <;> simp; simpa using @h _
 
-@[to_dual untop_le_iff]
+@[to_dual (attr := simp) untop_le_iff]
 lemma le_unbot_iff (hx : x ≠ ⊥) : a ≤ unbot x hx ↔ a ≤ x := by lift x to α using hx; simp
-@[to_dual le_untop_iff]
+@[to_dual (attr := simp) le_untop_iff]
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ a ↔ x ≤ a := by lift x to α using hx; simp
 
 @[to_dual (reorder := hx hy)]
-lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.unbot hy ↔ x ≤ y := by
-  lift x to α using hx
-  lift y to α using hy
-  simp
+lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.unbot hy ↔ x ≤ y := by simp
 
 @[to_dual]
 alias ⟨_, unbot_mono⟩ := unbot_le_unbot_iff
@@ -488,16 +485,13 @@ lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exis
 `PartialOrder α`. -/]
 protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
-@[to_dual untop_lt_iff]
+@[to_dual (attr := simp) untop_lt_iff]
 lemma lt_unbot_iff (hx : x ≠ ⊥) : a < unbot x hx ↔ a < x := by lift x to α using hx; simp
-@[to_dual lt_untop_iff]
+@[to_dual (attr := simp) lt_untop_iff]
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using hx; simp
 
-@[to_dual (attr := simp) (reorder := hx hy)]
-lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by
-  lift x to α using hx
-  lift y to α using hy
-  simp
+@[to_dual (reorder := hx hy)]
+lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by simp
 
 @[deprecated (since := "2025-12-05")]
 alias unbot_lt_unbot := unbot_lt_unbot_iff
