@@ -207,7 +207,6 @@ open ContinuousMapZero
 
 variable [IsTopologicalRing A] [T2Space A]
 
-set_option linter.flexible false in -- simp followed by `exact le_rfl`
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are
@@ -272,7 +271,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
   `b = cfcₙ id b + cfcₙ 0 (-c) = cfcₙ (·⁺) b - cfcₙ (·⁺) (-c) = cfcₙ (·⁺) a = a⁺`, where the
   second equality follows because these functions are equal on the spectra of `b` and `-c`,
   respectively, since `0 ≤ b` and `-c ≤ 0`. -/
-  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp; exact le_rfl⟩
+  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp⟩
   replace key := congr($key f)
   simp only [cfcₙHomSuperset_apply, NonUnitalStarAlgHom.coe_mk', NonUnitalAlgHom.coe_mk, ψ,
     Pi.add_apply, cfcₙHom_eq_cfcₙ_extend (·⁺)] at key

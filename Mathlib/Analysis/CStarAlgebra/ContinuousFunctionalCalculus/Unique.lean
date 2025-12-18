@@ -376,7 +376,7 @@ instance NNReal.instContinuousMapZero.UniqueHom
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
         continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
     have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    have e0 : e 0 = 0 := by ext; simp [e]; rfl
+    have e0 : e 0 = 0 := by ext; simp [e]
     have e0' : e.symm 0 = 0 := by
       simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :

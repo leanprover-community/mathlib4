@@ -336,4 +336,19 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
 
 lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
 
+section Zero
+
+variable {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)]
+
+/-- not marked as an instance because it would be a bad one in general, but it can
+be useful when working with `ContinuousMapZero` and the non-unital continuous
+functional calculus. -/
+def zeroOfFactMem : Zero s where
+  zero := ⟨0, Fact.out⟩
+
+attribute [local instance] Set.zeroOfFactMem in
+@[simp] protected theorem coe_zero : ((0 : s) : X) = 0 := rfl
+
+end Zero
+
 end Set
