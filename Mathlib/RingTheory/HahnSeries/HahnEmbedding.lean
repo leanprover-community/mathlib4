@@ -17,7 +17,7 @@ public import Mathlib.GroupTheory.DivisibleHull
 # Hahn embedding theorem
 
 In this file, we prove the Hahn embedding theorem: every linearly ordered abelian group
-can be embedded as an ordered subgroup of `Lex (HahnSeries Ω ℝ)`, where `Ω` is the finite
+can be embedded as an ordered subgroup of `Lex ℝ⟦Ω⟧`, where `Ω` is the type of finite
 Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrderedAddMonoid`.
 
 ## References
@@ -28,7 +28,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 @[expose] public section
 
-open ArchimedeanClass
+open ArchimedeanClass HahnSeries
 
 variable (M : Type*) [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
@@ -44,8 +44,8 @@ instance : Nonempty (HahnEmbedding.Seed ℚ M ℝ) := by
   · simpa using hf c
 
 theorem hahnEmbedding_isOrderedModule_rat :
-    ∃ f : M →ₗ[ℚ] Lex (HahnSeries (FiniteArchimedeanClass M) ℝ), StrictMono f ∧
-      ∀ a, mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+    ∃ f : M →ₗ[ℚ] Lex ℝ⟦FiniteArchimedeanClass M⟧, StrictMono f ∧
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   apply hahnEmbedding_isOrderedModule
 
 end Module
@@ -54,12 +54,12 @@ end Module
 **Hahn embedding theorem**
 
 For a linearly ordered additive group `M`, there exists an injective `OrderAddMonoidHom` from `M` to
-`Lex (HahnSeries (FiniteArchimedeanClass M) ℝ)` that sends each `a : M` to an element of the
-`a`-Archimedean class of the Hahn series.
+`Lex ℝ⟦FiniteArchimedeanClass M⟧` that sends each `a : M` to an element of the `a`-Archimedean class
+of the Hahn series.
 -/
 theorem hahnEmbedding_isOrderedAddMonoid :
-    ∃ f : M →+o Lex (HahnSeries (FiniteArchimedeanClass M) ℝ), Function.Injective f ∧
-      ∀ a, mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+    ∃ f : M →+o Lex ℝ⟦FiniteArchimedeanClass M⟧, Function.Injective f ∧
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   /-
   The desired embedding is the composition of three functions:
 
@@ -69,9 +69,9 @@ theorem hahnEmbedding_isOrderedAddMonoid :
   `f₁` ↓+o                                           ↓o~
       `D-Hull M`                                    `ArchimedeanClass (D-Hull M)`
   `f₂` ↓+o                                           ↓o~
-      `Lex (HahnSeries (F-A-Class (D-Hull M)) ℝ)`   `WithTop (F-A-Class (D-Hull M))`
+      `Lex ℝ⟦F-A-Class (D-Hull M)⟧`                 `WithTop (F-A-Class (D-Hull M))`
   `f₃` ↓+o(~)                                        ↓o~
-      `Lex (HahnSeries (F-A-Class M) ℝ)`            `WithTop (F-A-Class M)`
+      `Lex ℝ⟦F-A-Class M⟧`                          `WithTop (F-A-Class M)`
   -/
   let f₁ := DivisibleHull.coeOrderAddMonoidHom M
   have hf₁ : Function.Injective f₁ := DivisibleHull.coe_injective
@@ -83,12 +83,11 @@ theorem hahnEmbedding_isOrderedAddMonoid :
   have hf₂class (a : DivisibleHull M) :
       mk a = (FiniteArchimedeanClass.withTopOrderIso (DivisibleHull M)) (ofLex (f₂ a)).orderTop :=
     hf₂class' a
-  let f₃ : Lex (HahnSeries (FiniteArchimedeanClass (DivisibleHull M)) ℝ) →+o
-      Lex (HahnSeries (FiniteArchimedeanClass M) ℝ) :=
+  let f₃ : Lex ℝ⟦FiniteArchimedeanClass (DivisibleHull M)⟧ →+o Lex ℝ⟦FiniteArchimedeanClass M⟧ :=
     HahnSeries.embDomainOrderAddMonoidHom
     (FiniteArchimedeanClass.congrOrderIso (DivisibleHull.archimedeanClassOrderIso M).symm)
   have hf₃ : Function.Injective f₃ := HahnSeries.embDomainOrderAddMonoidHom_injective _
-  have hf₃class (a : Lex (HahnSeries (FiniteArchimedeanClass (DivisibleHull M)) ℝ)) :
+  have hf₃class (a : Lex ℝ⟦FiniteArchimedeanClass (DivisibleHull M)⟧) :
       (ofLex a).orderTop = OrderIso.withTopCongr
       ((FiniteArchimedeanClass.congrOrderIso (DivisibleHull.archimedeanClassOrderIso M)))
       (ofLex (f₃ a)).orderTop := by

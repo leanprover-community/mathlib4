@@ -224,7 +224,7 @@ def pullback.snd : pullback f g ⟶ Y :=
 
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
-  ext ⟨_,h⟩; exact h
+  ext ⟨_, h⟩; exact h
 
 /--
 Construct a morphism to the explicit pullback given morphisms to the factors

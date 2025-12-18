@@ -136,8 +136,8 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
   simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
   intro a ha b hb hab
-  wlog H : a < b generalizing a b with h
-  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+  wlog! H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne H hab.symm
     exact (h hb ha hab.symm this).symm
   have : y a ≤ b := by
     by_contra!

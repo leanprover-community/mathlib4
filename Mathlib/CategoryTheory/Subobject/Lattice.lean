@@ -634,7 +634,7 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  · refine(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
+  · refine (underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
     · refine Sigma.desc ?_
       rintro ⟨g, m⟩
       refine underlying.map (homOfLE (k _ ?_))

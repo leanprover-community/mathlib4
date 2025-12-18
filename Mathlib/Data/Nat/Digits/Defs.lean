@@ -358,7 +358,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   cases hd
   · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> omega
+    · apply Nat.div_lt_self <;> lia
     · assumption
 
 -- TODO: find a good way to fix the linter error; simp_all is called on three goals, one remains
@@ -521,7 +521,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
   | succ f ih =>
     grind
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 

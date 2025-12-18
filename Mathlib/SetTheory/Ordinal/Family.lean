@@ -66,7 +66,7 @@ def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
-def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.toType → α :=
+def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.ToType → α :=
   familyOfBFamily' (· < ·) (type_toType o) f
 
 @[simp]
@@ -85,7 +85,7 @@ theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrde
   simp only [familyOfBFamily', typein_enum]
 
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
-    familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
+    familyOfBFamily o f (enum (α := o.ToType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
     = f i hi :=
   familyOfBFamily'_enum _ (type_toType o) f _ _
 
@@ -128,7 +128,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
   rw [← range_familyOfBFamily]
-  exact @Set.range_const _ o.toType (toType_nonempty_iff_ne_zero.2 ho) c
+  exact @Set.range_const _ o.ToType (toType_nonempty_iff_ne_zero.2 ho) c
 
 theorem comp_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α)
     (g : α → β) : (fun i hi => g (bfamilyOfFamily' r f i hi)) = bfamilyOfFamily' r (g ∘ f) :=
@@ -556,7 +556,7 @@ theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set
   ⟨_, lsub_notMem_range f⟩
 
 @[simp]
-theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < ·)) = o :=
+theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.ToType) (· < ·)) = o :=
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
       by_contra! h
@@ -564,15 +564,15 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 theorem iSup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
-    iSup (typein ((· < ·) : o.toType → o.toType → Prop)) = o := by
+    iSup (typein ((· < ·) : o.ToType → o.ToType → Prop)) = o := by
   rw [(iSup_eq_lsub_iff.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]
   assumption
 
 @[simp]
 theorem iSup_typein_succ {o : Ordinal} :
-    iSup (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) = o := by
+    iSup (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) = o := by
   rcases iSup_eq_lsub_or_succ_iSup_eq_lsub
-      (typein ((· < ·) : (succ o).toType → (succ o).toType → Prop)) with h | h
+      (typein ((· < ·) : (succ o).ToType → (succ o).ToType → Prop)) with h | h
   · rw [iSup_eq_lsub_iff] at h
     simp only [lsub_typein] at h
     exact (h o (lt_succ o)).false.elim

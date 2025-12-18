@@ -134,6 +134,10 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 
+/-- A class for an `IsDirected` relation `≤`. -/
+@[to_dual IsCodirectedOrder /-- A class for an `IsDirected` relation `≥`. -/]
+abbrev IsDirectedOrder (α : Type*) [LE α] : Prop := IsDirected α (· ≤ ·)
+
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
 
@@ -169,33 +173,36 @@ theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) :
     ⟨c, h ha, h hb⟩⟩
 
 @[to_dual exists_le_le]
-theorem exists_ge_ge [LE α] [IsDirected α (· ≤ ·)] (a b : α) : ∃ c, a ≤ c ∧ b ≤ c :=
+theorem exists_ge_ge [LE α] [IsDirectedOrder α] (a b : α) : ∃ c, a ≤ c ∧ b ≤ c :=
   directed_of (· ≤ ·) a b
 
 @[to_dual isDirected_le]
-instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := by
+instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ := by
   assumption
 
 /-- A monotone function on an upwards-directed type is directed. -/
-@[to_dual directed_of_isDirected_ge
-/-- An antitone function on a downwards-directed type is directed. -/]
-theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
+theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
   directed_id.mono_comp _ H
 
-theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
+theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=
   directed_of_isDirected_le
 
-theorem Antitone.directed_ge [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β}
+theorem Antitone.directed_ge [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β}
     (hf : Antitone f) : Directed (· ≥ ·) f :=
   directed_of_isDirected_le hf
 
-theorem Monotone.directed_ge [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+/-- An antitone function on a downwards-directed type is directed. -/
+theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β → Prop} {f : α → β}
+    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
+  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
+
+theorem Monotone.directed_ge [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Directed (· ≥ ·) f :=
   directed_of_isDirected_ge fun _ _ h ↦ hf h
 
-theorem Antitone.directed_le [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Antitone f) : Directed (· ≤ ·) f :=
   directed_of_isDirected_ge fun _ _ h ↦ hf h
 
@@ -230,7 +237,7 @@ section Preorder
 variable [Preorder α] {a : α}
 
 @[to_dual]
-protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop a := fun b ↦
+protected theorem IsMax.isTop [IsDirectedOrder α] (h : IsMax a) : IsTop a := fun b ↦
   let ⟨_, hca, hcb⟩ := exists_ge_ge a b
   hcb.trans (h hca)
 
@@ -241,11 +248,11 @@ lemma DirectedOn.is_top_of_is_max {s : Set α} (hd : DirectedOn (· ≤ ·) s)
   xa.trans (hmax x xs xm)
 
 @[to_dual isBot_or_exists_lt]
-theorem isTop_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
+theorem isTop_or_exists_gt [IsDirectedOrder α] (a : α) : IsTop a ∨ ∃ b, a < b :=
   (em (IsMax a)).imp IsMax.isTop not_isMax_iff.mp
 
 @[to_dual]
-theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
+theorem isTop_iff_isMax [IsDirectedOrder α] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
 end Preorder
@@ -260,14 +267,14 @@ variable [Nontrivial β]
 
 variable (β) in
 @[to_dual exists_lt_of_directed_le]
-theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
+theorem exists_lt_of_directed_ge [IsCodirectedOrder β] :
     ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
   exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 
 @[to_dual]
-protected theorem IsMax.not_isMin [IsDirected β (· ≤ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b := by
+protected theorem IsMax.not_isMin [IsDirectedOrder β] {b : β} (hb : IsMax b) : ¬ IsMin b := by
   intro hb'
   obtain ⟨a, c, hac⟩ := exists_lt_of_directed_le β
   have := hb.isTop a
@@ -275,7 +282,7 @@ protected theorem IsMax.not_isMin [IsDirected β (· ≤ ·)] {b : β} (hb : IsM
   exact hb'.not_lt hac
 
 @[to_dual]
-protected theorem IsMin.not_isMax' [IsDirected β (· ≤ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b :=
+protected theorem IsMin.not_isMax' [IsDirectedOrder β] {b : β} (hb : IsMin b) : ¬ IsMax b :=
   fun hb' ↦ hb'.toDual.not_isMax hb.toDual
 
 end Nontrivial
@@ -285,7 +292,7 @@ variable [Preorder α] {f : α → β} {s : Set α}
 -- TODO: Generalise the following two lemmas to connected orders
 
 /-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
-lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
+lemma constant_of_monotone_antitone [IsDirectedOrder α] (hf : Monotone f) (hf' : Antitone f)
     (a b : α) : f a = f b := by
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
   exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
@@ -301,20 +308,20 @@ end PartialOrder
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
-    IsDirected α (· ≤ ·) :=
+    IsDirectedOrder α :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeInf.to_isDirected_ge [SemilatticeInf α] :
-    IsDirected α (· ≥ ·) :=
+    IsCodirectedOrder α :=
   ⟨fun a b => ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
+instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirectedOrder α :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
+instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsCodirectedOrder α :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 
 namespace DirectedOn
