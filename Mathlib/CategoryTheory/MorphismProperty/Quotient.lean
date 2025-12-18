@@ -23,7 +23,7 @@ variable {C : Type*} [Category C]
 
 class HasQuotient (W : MorphismProperty C) (homRel : HomRel C) : Prop where
   iff (W) : ∀ ⦃X Y : C⦄ ⦃f g : X ⟶ Y⦄, homRel f g → (W f ↔ W g)
-  compClosure_eq_self : Quotient.CompClosure homRel = homRel
+  compClosure_eq_self (W homRel) : Quotient.CompClosure homRel = homRel
 
 variable (W : MorphismProperty C) {homRel : HomRel C}
 
@@ -43,19 +43,15 @@ def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
 
 lemma quotient_iff [W.HasQuotient homRel] {X Y : C} (f : X ⟶ Y) :
     W.quotient homRel ((Quotient.functor homRel).map f) ↔ W f := by
-  constructor
-  · rintro ⟨f', hf', h⟩
-    rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-      HasQuotient.compClosure_eq_self (W := W)] at h
-    rwa [HasQuotient.iff_of_eqvGen W h]
-  · intro hf
-    exact ⟨f, hf, rfl⟩
+  refine ⟨fun ⟨f', hf', h⟩ ↦ ?_, fun hf ↦ ⟨f, hf, rfl⟩⟩
+  rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
+    HasQuotient.compClosure_eq_self W] at h
+  rwa [HasQuotient.iff_of_eqvGen W h]
 
 lemma eq_inverseImage_quotientFunctor [W.HasQuotient homRel] :
     W = (W.quotient homRel).inverseImage (Quotient.functor _) := by
   ext
-  symm
-  apply quotient_iff
+  exact (quotient_iff _ _ _).symm
 
 end MorphismProperty
 
