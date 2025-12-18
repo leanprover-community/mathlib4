@@ -422,28 +422,33 @@ theorem HasDerivWithinAt.derivWithin (h : HasDerivWithinAt f f' s x)
 theorem fderivWithin_derivWithin : (fderivWithin 𝕜 f s x : 𝕜 → F) 1 = derivWithin f s x :=
   rfl
 
-theorem derivWithin_fderivWithin :
+theorem toSpanSingleton_derivWithin :
     toSpanSingleton 𝕜 (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 
-theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
-  simp [← derivWithin_fderivWithin]
+@[deprecated (since := "2025-12-18")] alias derivWithin_fderivWithin := toSpanSingleton_derivWithin
 
-theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
-  rfl
+theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp [← toSpanSingleton_derivWithin]
+
+theorem fderiv_apply_one_eq_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x := rfl
+
+@[deprecated (since := "2025-12-18")] alias fderiv_deriv := fderiv_apply_one_eq_deriv
 
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
-  rw [← fderiv_deriv, ← map_smul]
+  rw [← fderiv_apply_one_eq_deriv, ← map_smul]
   simp only [smul_eq_mul, mul_one]
 
-theorem deriv_fderiv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
+theorem toSpanSingleton_deriv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
   simp only [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
+
+@[deprecated (since := "2025-12-18")] alias deriv_fderiv := toSpanSingleton_deriv
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
 
 theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := by
-  simp [← deriv_fderiv]
+  simp [← toSpanSingleton_deriv]
 
 theorem DifferentiableAt.derivWithin (h : DifferentiableAt 𝕜 f x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = deriv f x := by

@@ -30,14 +30,10 @@ theorem det_pi {ι R M : Type*} [Fintype ι] [CommRing R] [AddCommGroup M]
     (pi (fun i ↦ (f i).comp (proj i))).det = ∏ i, (f i).det :=
   LinearMap.det_pi _
 
-theorem det_smulRight_one {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
-    ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
-  simp
-
-@[deprecated (since := "2025-12-18")] alias det_one_smulRight := det_smulRight_one
-
 theorem det_toSpanSingleton {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]
-    (v : 𝕜) : (toSpanSingleton 𝕜 v).det = v := det_smulRight_one _
+    (v : 𝕜) : (toSpanSingleton 𝕜 v).det = v := by simp
+
+@[deprecated (since := "2025-12-18")] alias det_one_smulRight := det_toSpanSingleton
 
 end ContinuousLinearMap
 

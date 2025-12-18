@@ -193,12 +193,13 @@ lemma isMIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_comp_mul_ne_zero :=
   isMIntegralCurve_comp_mul_ne_zero
 
+open ContinuousLinearMap in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
 is a global integral curve of `v`. -/
 lemma isMIntegralCurve_const {x : M} (h : v x = 0) : IsMIntegralCurve (fun _ ↦ x) v := by
   intro t
-  rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
-    ContinuousLinearMap.smulRight_one_map_one]
+  rw [h, ← zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ), smulRight_one_eq_toSpanSingleton,
+    toSpanSingleton_apply_map_one]
   exact hasMFDerivAt_const ..
 
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_const := isMIntegralCurve_const
