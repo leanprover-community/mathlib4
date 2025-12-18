@@ -114,7 +114,7 @@ namespace Bicategory
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
 abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
 
-instance (C : Type*) [Category C] : IsLocallyDiscrete (LocallyDiscrete C) :=
+instance (C : Type*) [Category* C] : IsLocallyDiscrete (LocallyDiscrete C) :=
   fun _ _ ↦ Discrete.isDiscrete _
 
 instance (B : Type*) [Bicategory B] [IsLocallyDiscrete B] : Strict B where
