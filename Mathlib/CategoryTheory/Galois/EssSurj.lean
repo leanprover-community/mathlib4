@@ -210,11 +210,7 @@ private def coconeQuotientDiagIsColimit :
     apply Action.hom_ext
     ext (x : Aut F ⧸ V.toSubgroup)
     induction x using Quotient.inductionOn with | _ σ
-    dsimp
-    rw [← hf (SingleObj.star _)]
-    dsimp
-    simp only [← ConcreteCategory.comp_apply, Action.inv_hom_hom, Category.id_comp,
-      quotientToQuotientOfLE_hom_mk]
+    simp [← hf (SingleObj.star _), ← ConcreteCategory.comp_apply]
 
 end
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Reid Barton
+Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
 module
 
@@ -18,15 +18,11 @@ category induced from `D` along `F`.
 
 ## Implementation notes
 
-It looks odd to make `D` an explicit argument of `InducedCategory`,
-when it is determined by the argument `F` anyways. The reason to make `D`
-explicit is in order to control its syntactic form, so that instances
-like `InducedCategory.has_forget₂` (elsewhere) refer to the correct
-form of `D`. This is used to set up several algebraic categories like
+The type of morphisms between `X` and `Y` in `InducedCategory D F` is
+not definitionally equal to `F X ⟶ F Y`. Instead, this type is made
+a `1`-field structure. Use `InducedCategory.homMk` to construct
+morphisms in induced categories.
 
-  def CommMon : Type (u+1) := InducedCategory Mon (Bundled.map @CommMonoid.toMonoid)
-  -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
-  -- even though `MonCat = Bundled Monoid`!
 -/
 
 @[expose] public section

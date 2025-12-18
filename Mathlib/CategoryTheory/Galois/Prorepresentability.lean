@@ -325,12 +325,9 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
 noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
-    (fun {A B} f ↦ by
-      ext (φ : Aut A.obj)
-      dsimp
-      erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
-      simp [-Hom.comp, ← f.comp]
-      rfl)
+    (fun f ↦ by
+      ext
+      simp [evaluationEquivOfIsGalois, -Hom.comp, ← f.comp])
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=

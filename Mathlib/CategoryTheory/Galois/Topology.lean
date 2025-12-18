@@ -69,30 +69,30 @@ lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl�
 instance : TopologicalSpace (Aut F) :=
   TopologicalSpace.induced (autEmbedding F) inferInstance
 
-/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
-automorphisms. -/
-lemma autEmbedding_range :
+/-lemma autEmbedding_range :
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
-    rfl
+    rfl-/
+
+/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
+automorphisms. -/
+lemma autEmbedding_range :
+    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
+      (a f.left).hom ≫ F.map f.hom } := by
+  ext a
+  simp only [Set.mem_range, id_obj, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
+  refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
+  use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   rw [autEmbedding_range]
-  refine isClosed_iInter (fun f ↦ ?_)
-  let Z : Set ((X : C) → F.obj X → F.obj X) :=
-    {a | a f.right ∘ F.map f.hom = F.map f.hom ∘ a f.left }
-  have hZ : IsClosed Z := isClosed_eq (by fun_prop) (by fun_prop)
-  convert IsClosed.preimage (f := fun (a : ((X : C) → Aut (F.obj X))) ↦ fun x ↦ (a x).hom.hom)
-    (by fun_prop) hZ
-  ext a
-  dsimp
-  rw [← Functor.map_injective_iff (forget FintypeCat)]
-  rfl
+  exact isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl

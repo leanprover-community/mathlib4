@@ -200,10 +200,8 @@ private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
 
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
-  erw [← DFunLike.congr_fun (piComparison_comp_π F _ t), FintypeCat.comp_apply,
-    ← PreservesProduct.iso_hom]
-  simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
-  exact Concrete.productEquiv_symm_apply_π.{w, w, w+1} (fun _ : F.obj X ↦ F.obj X) id t
+  rw [← piComparison_comp_π]
+  simp [← PreservesProduct.iso_hom, mkSelfProdFib]
 
 variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
@@ -217,9 +215,7 @@ variable {u a}
 
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
-  dsimp at h
-  simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h,
-    mkSelfProdFib_map_π F X x]
+  simp_all
 
 variable [IsConnected A]
 

@@ -78,6 +78,10 @@ theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
 theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 
+@[simp]
+lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
+    f.hom x = f x := rfl
+
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
   DFunLike.congr_fun f.hom_inv_id x
@@ -104,6 +108,26 @@ lemma id_hom (X : FintypeCat) : InducedCategory.Hom.hom (𝟙 X) = id := rfl
 @[simp, reassoc]
 lemma comp_hom {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom ∘ f.hom := rfl
+
+@[simp]
+lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
+    homMk f = 𝟙 X ↔ f = id := by
+  constructor
+  · intro h
+    ext x
+    exact ConcreteCategory.congr_hom h x
+  · rintro rfl
+    rfl
+
+@[simp]
+lemma homMk_eq_comp_iff {X Y Z : FintypeCat} (f : X → Y) (g : Y → Z) (h : X → Z) :
+    homMk h = homMk f ≫ homMk g ↔ h = g ∘ f := by
+  constructor
+  · intro h
+    ext x
+    exact ConcreteCategory.congr_hom h x
+  · rintro rfl
+    rfl
 
 -- See `equivEquivIso` in the root namespace for the analogue in `Type`.
 /-- Equivalences between finite types are the same as isomorphisms in `FintypeCat`. -/
@@ -231,15 +255,6 @@ noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
-  map_id X := by
-    ext x
-    rw [homMk_apply]
-    simp
-  map_comp f g := by
-    ext x
-    simp only [comp_hom, ConcreteCategory.comp_apply]
-    rw [homMk_apply, homMk_apply, homMk_apply]
-    simp
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for

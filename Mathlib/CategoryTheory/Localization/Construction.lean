@@ -344,6 +344,7 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
         ext
         dsimp
+        -- Why does `rw` work but not `simp`?
         rw [NatTransExtension.app_eq, InducedCategory.eqToHom_hom,
           InducedCategory.eqToHom_hom]
         simp)
