@@ -3,8 +3,10 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.List.AList
+module
+
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.List.AList
 
 /-!
 # Connections between `Finsupp` and `AList`
@@ -16,6 +18,8 @@ import Mathlib.Data.List.AList
   via `AList.lookup`, sending absent keys to zero.
 
 -/
+
+@[expose] public section
 
 
 namespace Finsupp

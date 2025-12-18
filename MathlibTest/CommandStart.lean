@@ -1,5 +1,7 @@
+module
+
 import Aesop.Frontend.Attribute
-import Mathlib.Tactic.Linter.CommandStart
+import all Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
@@ -97,6 +99,9 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
+
+-- TODO: right now, defining a second private `Add` instance causes an error
+-- Once the fix for lean4#11385 lands in mathlib; revert this to an `Add` instance
 /--
 warning: declaration uses 'sorry'
 ---
@@ -111,7 +116,7 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-instance   {R} : Add R := sorry
+instance   {R} : Sub R := sorry
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")

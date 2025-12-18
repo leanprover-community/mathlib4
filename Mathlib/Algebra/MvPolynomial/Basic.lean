@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Regular.Pow
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Regular.Pow
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Multivariate polynomials
@@ -62,6 +64,8 @@ the polynomial being represented.
 polynomial, multivariate polynomial, multivariable polynomial
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -402,9 +406,6 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
     motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add
 
-@[deprecated (since := "2025-03-11")]
-alias induction_on''' := monomial_add_induction_on
-
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
@@ -507,6 +508,10 @@ theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
+
+lemma support_C (c : R) [h : Decidable (c = 0)] :
+    (C (σ := σ) c).support = if c = 0 then ∅ else {0} :=
+  support_monomial
 
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
@@ -781,6 +786,36 @@ lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
 
+theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
+    (ha : IsRegular a) :
+    IsRegular (monomial m a) := by
+  rw [← isLeftRegular_iff_isRegular]
+  intro p q h
+  ext d
+  have h' := congr_arg  (coeff (m + d)) h
+  simp only [coeff_monomial_mul] at h'
+  rw [← ha.left.eq_iff, h']
+
+@[simp]
+theorem monomial_one_mul_cancel_left_iff {m : σ →₀ ℕ} :
+    monomial m 1 * p = monomial m 1 * q ↔ p = q :=
+  isRegular_one.monomial.left.eq_iff
+
+@[simp]
+theorem X_mul_cancel_left_iff {i : σ} :
+    X i * p = X i * q ↔ p = q :=
+  monomial_one_mul_cancel_left_iff
+
+@[simp]
+theorem monomial_one_mul_cancel_right_iff {m : σ →₀ ℕ} :
+    p * monomial m 1 = q * monomial m 1 ↔ p = q :=
+  isRegular_one.monomial.right.eq_iff
+
+@[simp]
+theorem X_mul_cancel_right_iff {i : σ} :
+    p * X i = q * X i ↔ p = q :=
+  monomial_one_mul_cancel_right_iff
+
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
@@ -959,7 +994,7 @@ variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i 
   {n : ℕ}
 
 variable (σ M) in
-/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}

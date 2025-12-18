@@ -3,9 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Reflexive coequalizers
@@ -39,7 +42,7 @@ reflexive.
 * `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
   has all colimits of shape `WalkingReflexivePair`.
 
-# TODO
+## TODO
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
 * If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.
@@ -48,6 +51,8 @@ reflexive.
 * Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
   reflexive pair.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -203,7 +208,7 @@ inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
 def Hom.comp :
-    ∀ { X Y Z : WalkingReflexivePair } (_ : Hom X Y)
+    ∀ {X Y Z : WalkingReflexivePair} (_ : Hom X Y)
       (_ : Hom Y Z), Hom X Z
   | _, _, _, id _, h => h
   | _, _, _, h, id _ => h
@@ -294,12 +299,12 @@ instance (X : WalkingReflexivePair) :
     IsConnected (StructuredArrow X inclusionWalkingReflexivePair) := by
   cases X with
   | zero =>
-      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := one) (𝟙 _)) ?_
+      refine IsConnected.of_induct (j₀ := StructuredArrow.mk (Y := one) (𝟙 _)) ?_
       rintro p h₁ h₂ ⟨⟨⟨⟩⟩, (_ | _), ⟨_⟩⟩
       · exact (h₂ (StructuredArrow.homMk .left)).2 h₁
       · exact h₁
   | one =>
-      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := zero) (𝟙 _))
+      refine IsConnected.of_induct (j₀ := StructuredArrow.mk (Y := zero) (𝟙 _))
         (fun p h₁ h₂ ↦ ?_)
       have hₗ : StructuredArrow.mk left ∈ p := (h₂ (StructuredArrow.homMk .left)).1 h₁
       have hᵣ : StructuredArrow.mk right ∈ p := (h₂ (StructuredArrow.homMk .right)).1 h₁
@@ -565,12 +570,12 @@ lemma hasReflexiveCoequalizer_iff_hasCoequalizer :
 
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
-  IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm|>.trans <|
+  IsColimit.equivIsoColimit (reflexiveCoforkEquivCoforkObjIso F G).symm |>.trans <|
     (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans <|
       Functor.Final.isColimitWhiskerEquiv _ _
 
@@ -605,7 +610,7 @@ variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g] [h : HasCoequalizer f g
 
 instance ofIsReflexivePair_hasColimit_of_hasCoequalizer :
     HasColimit (ofIsReflexivePair f g) :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/

@@ -3,13 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 /-!
 
 # Being an isomorphism is local at the target
 
 -/
+
+@[expose] public section
 
 open CategoryTheory MorphismProperty
 
@@ -32,8 +36,7 @@ lemma isomorphisms_eq_stalkwise :
     (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
-instance : IsZariskiLocalAtTarget (isomorphisms Scheme) :=
-  isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
+example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
   convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY

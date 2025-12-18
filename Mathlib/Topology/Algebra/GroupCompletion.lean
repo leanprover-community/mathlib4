@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Completion of topological groups:
@@ -27,6 +29,8 @@ the main constructions deal with continuous group morphisms.
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

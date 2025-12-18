@@ -54,7 +54,7 @@ theorem imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
   have H : a ^ 4 + b ^ 4 + c ^ 4 ≠ 0 := by positivity
   calc
     _ ≥ _ := add_le_add (add_le_add (bound ha hb hc) (bound hb hc ha)) (bound hc ha hb)
-    _ = 1 := by ring_nf at H ⊢; field_simp
+    _ = 1 := by ring_nf at H ⊢; field
 
 end Imo2001Q2
 

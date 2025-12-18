@@ -3,7 +3,9 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Structured arrow categories on `Comma.map`
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 We characterize structured arrow categories on arbitrary instances of `Comma.map` as a
 comma category itself.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -55,12 +59,9 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
   map {Y Z} f := homMk ⟨by exact f.left.right, by exact f.right.right,
       by exact congrArg CommaMorphism.right f.w⟩ (by
       ext
-      <;> simp only [Comma.map_obj_right, Comma.map_obj_left,
-          Functor.const_obj_obj,
+      <;> simp only [Comma.map_obj_right, Comma.map_obj_left, Functor.const_obj_obj,
           mk_left, mk_right, mk_hom_eq_self, Comma.comp_left, Comma.map_map_left, w]
-      · simp only [Comma.map_obj_right,
-
-        Comma.comp_right, Comma.map_map_right, w] )
+      · simp only [Comma.map_obj_right, Comma.comp_right, Comma.map_map_right, w] )
   map_id X := by ext <;> rfl
   map_comp f g := by ext <;> rfl
 
