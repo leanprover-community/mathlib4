@@ -53,7 +53,7 @@ lemma IsRegularLocalRing.of_isDVR [IsDomain R] [IsDiscreteValuationRing R] :
   rw [← Set.ncard_singleton x, hx]
   exact Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton x)
 
-lemma IsRegularRing.of_isPID [IsDomain R] [IsPrincipalIdealRing R] : IsRegularRing R := by
+lemma IsRegularRing.of_isDedekindDomain [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   by_cases isf : IsField R
   · exact IsRegularRing.of_isField R isf
   · refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
@@ -62,14 +62,14 @@ lemma IsRegularRing.of_isPID [IsDomain R] [IsPrincipalIdealRing R] : IsRegularRi
         rw [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal]
         simp [eqbot]
       exact IsRegularLocalRing.of_isField _ this
-    · have : p.IsMaximal := IsPrime.to_maximal_ideal eqbot
+    · have : p.IsMaximal := Ideal.IsPrime.isMaximal hp eqbot
       apply (isRegularLocalRing_def _).mpr
         (le_antisymm _ (ringKrullDim_le_spanFinrank_maximalIdeal _))
-      rw [IsLocalization.AtPrime.ringKrullDim_eq_height p,
-        IsPrincipalIdealRing.height_eq_one_of_isMaximal p isf,
-        ← Localization.AtPrime.map_eq_maximalIdeal, WithBot.coe_one, Nat.cast_le_one]
-      rcases IsPrincipalIdealRing.principal p with ⟨x, hx⟩
-      simp only [hx, Ideal.submodule_span_eq, Ideal.map_span, Set.image_singleton]
+      have isd := IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain
+        R eqbot (Localization.AtPrime p)
+      rcases IsPrincipalIdealRing.principal (maximalIdeal (Localization.AtPrime p)) with ⟨x, hx⟩
+      simp only [IsPrincipalIdealRing.ringKrullDim_eq_one (Localization.AtPrime p)
+        (isd.not_isField _), Nat.cast_le_one, hx, Ideal.submodule_span_eq]
       exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite
         (Set.finite_singleton _)) (Set.ncard_singleton _)
 
