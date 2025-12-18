@@ -39,7 +39,7 @@ theorem smul_prod_of_smul {ι : Type*} [Finite ι] (x : ι → M)
   exact Submodule.sum_mem _ <| fun i hi ↦
     Submodule.smul_top_le_comap_smul_top I (LinearMap.single R (fun i ↦ M) i) (h i)
 
-variable [Module.Finite R M] [Free R M] (f : M →ₗ[R] N)
+variable [Module.Finite R M] [Module.Free R M] (f : M →ₗ[R] N)
 
 theorem mem_smul_top_of_range_le_smul_top (hf : LinearMap.range f ≤ I • ⊤) :
     f ∈ I • (⊤ : Submodule R (M →ₗ[R] N)) := by
@@ -66,11 +66,9 @@ lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat
 omit [Small.{v} R] in
 lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
     [ntr : Nontrivial M] : Nontrivial R := by
-  apply not_subsingleton_iff_nontrivial.mp
-  by_contra h
+  by_contra! h
   absurd ntr
-  apply not_nontrivial_iff_subsingleton.mpr
-  apply subsingleton_of_forall_eq 0 (fun m ↦ ?_)
+  apply not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
 namespace AddCommGrpCat
@@ -135,29 +133,17 @@ lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Modu
   apply finte_free_ext_vanish_iff
 
 lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-    (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))) :
-    Function.Surjective (Classical.choose (Module.projective_lifting_property
-    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
-    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))).toFun := by
-  let f := Classical.choose (Module.projective_lifting_property
-    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
-    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
-  have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
-    Classical.choose_spec (Module.projective_lifting_property
-    (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-    ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap.comp
-    (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-    (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
+    (ι : Type*) (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)))
+    (f : (ι →₀ Shrink.{v, u} R) →ₗ[R] M) (hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ ∘ₗ f =
+    (LinearEquiv.restrictScalars R b.repr).symm ∘ₗ
+    Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ (Shrink.linearEquiv R R))) :
+    Function.Surjective f := by
   have : Function.Surjective ((LinearEquiv.restrictScalars R b.repr).symm.toLinearMap ∘ₗ
     Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap)) := by
-    apply Function.Surjective.comp (LinearEquiv.restrictScalars R b.repr).symm.surjective
+    apply (LinearEquiv.restrictScalars R b.repr).symm.surjective.comp
     apply Finsupp.mapRange_surjective _ (by simp)
-    apply Function.Surjective.comp (Submodule.mkQ_surjective _) (Shrink.linearEquiv R R).surjective
+    apply (Submodule.mkQ_surjective _).comp (Shrink.linearEquiv R R).surjective
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
@@ -167,6 +153,38 @@ instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
     __ := Submodule.mkQ (I • ⊤)
     map_smul' _ _ := rfl }
   Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+
+lemma basis_lift_ker_le [IsLocalRing R]
+    (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (ι : Type*)
+    (b : Basis ι (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M)))
+    (f : (ι →₀ Shrink.{v, u} R) →ₗ[R] M) (hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ ∘ₗ f =
+    (LinearEquiv.restrictScalars R b.repr).symm ∘ₗ
+    Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ (Shrink.linearEquiv R R))) :
+  LinearMap.ker f ≤ maximalIdeal R • (⊤ : Submodule R _) := by
+  let _ := Quotient.field (maximalIdeal R)
+  let fin := FiniteDimensional.fintypeBasisIndex b
+  apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
+  rw [hf]
+  intro x
+  have : x ∈ LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ
+    (Shrink.linearEquiv R R))) ↔ ∀ i : ι, x i ∈ (maximalIdeal R).comap (Shrink.ringEquiv R) := by
+    simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
+    congr!
+    simp [Quotient.eq_zero_iff_mem, Shrink.ringEquiv]
+  simp only [LinearEquiv.ker_comp, this, mem_comap]
+  intro h
+  rw [← (Finsupp.univ_sum_single x)]
+  apply Submodule.sum_mem
+  intro i hi
+  have : Finsupp.single i (x i) = ((Shrink.ringEquiv R) (x i)) • Finsupp.single i 1 := by
+    rw [Finsupp.smul_single]
+    congr
+    apply (Shrink.algEquiv R R).injective
+    rw [map_smul, map_one, smul_eq_mul, mul_one]
+    rfl
+  rw [this]
+  apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
 
 lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M ⟶ N)
     (mem : f ∈ (Module.annihilator R L) • (⊤ : Submodule R (M ⟶ N))) :
@@ -188,7 +206,7 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
-    1 + IsLocalRing.depth M = IsLocalRing.depth.{v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
+    1 + IsLocalRing.depth M = IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
   let _ := Quotient.field (maximalIdeal R)
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
@@ -204,11 +222,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
     (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
     (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
-  have surjf : Function.Surjective f := basis_lift M ι B
-  have : Module.Finite R (ι →₀ Shrink.{v} R) := by
-    simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
-  have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
-  have free : Module.Free R (ι →₀ Shrink.{v} R) := inferInstance
+  have surjf : Function.Surjective f := basis_lift M ι B f hf
   let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
   have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
   have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
@@ -223,31 +237,9 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @(ModuleCat.of R (LinearMap.ker f)).free_of_projective_of_isLocalRing _ _ _ _ _ ?_
     rw [projective_iff_hasProjectiveDimensionLT_one]
-    rcases free with ⟨⟨B⟩⟩
-    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 (ModuleCat.projective_of_free B.2)).mp le1
-  have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v} R)) := by
-    apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
-    rw [hf]
-    intro x
-    have : x ∈ LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (maximalIdeal R) ∘ₗ
-      (Shrink.linearEquiv R R))) ↔ ∀ i : ι, x i ∈ (maximalIdeal R).comap (Shrink.ringEquiv R) := by
-      simp only [LinearMap.mem_ker, Finsupp.mapRange.linearMap_apply, LinearMap.coe_comp,
-        LinearEquiv.coe_coe, mem_comap, Finsupp.ext_iff, Finsupp.zero_apply]
-      congr!
-      simp [Quotient.eq_zero_iff_mem, Shrink.ringEquiv]
-    simp only [LinearEquiv.ker_comp, this, mem_comap]
-    intro h
-    rw [← (Finsupp.univ_sum_single x)]
-    apply Submodule.sum_mem
-    intro i hi
-    have : Finsupp.single i (x i) = ((Shrink.ringEquiv R) (x i)) • Finsupp.single i 1 := by
-      rw [Finsupp.smul_single]
-      congr
-      apply (Shrink.algEquiv R R).injective
-      rw [map_smul, map_one, smul_eq_mul, mul_one]
-      rfl
-    rw [this]
-    apply Submodule.smul_mem_smul (h i) (Set.mem_univ _)
+    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 inferInstance).mp le1
+  have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v} R)) :=
+    basis_lift_ker_le M ι B f hf
   let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
   have Sf_mem : S.f ∈ (Module.annihilator R K) • (⊤ : Submodule R (S.X₁ ⟶ S.X₂)) := by
     simp only [K, S, LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ maximalIdeal R)),
@@ -270,8 +262,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       · have := AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
           (Ext.covariant_sequence_exact₂' K S_exact i) (hom_zero i) (zero.eq_zero_of_tgt _)
         exact (finte_free_ext_vanish_iff S.X₂ K i).mp this
-      · have := AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
-          (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
+      · have := AddCommGrpCat.subsingleton_of_isZero <|
+          (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl).isZero_of_both_zeros
           (zero.eq_zero_of_src _) (hom_zero (i + 1))
         exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
     · have zero1 : IsZero (AddCommGrpCat.of (Ext K S.X₂ i)) :=
@@ -289,7 +281,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     intro i hi
     by_cases eq0 : i = 0
     · rw [eq0, ← finte_free_ext_vanish_iff S.X₁]
-      have mono := extFunctorObj_zero_preserve_momoMorphism K S.X₁ S.X₂ S.f S_exact.mono_f
+      have mono := Ext.mono_postcomp_mk₀_of_mono K S.X₁ S.X₂ S.f S_exact.mono_f
       exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ (hom_zero 0))
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
@@ -314,7 +306,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
 theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (netop : projectiveDimension M ≠ ⊤) :
     projectiveDimension M + IsLocalRing.depth M =
-    IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
+    IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
     classical
     obtain ⟨n, hn⟩: ∃ n : ℕ, projectiveDimension M = n := by
       generalize hd : projectiveDimension M = d
@@ -326,9 +318,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
       | coe d =>
         induction d with
         | top => simp [hd] at netop
-        | coe d =>
-          use d
-          rfl
+        | coe d => exact ⟨d, rfl⟩
     induction n generalizing M
     · simp only [hn, CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, zero_add, WithBot.coe_inj]
       have : HasProjectiveDimensionLE M 0 := by simp [← projectiveDimension_le_iff, hn]
@@ -342,10 +332,9 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           ((projectiveDimension_ge_iff M 1).mp (by simp [hn, eq0]))
       · let _ := Quotient.field (maximalIdeal R)
         rcases Module.exists_finite_presentation R M with ⟨P, _, _, free, _, f, surjf⟩
-        have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
         let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
         have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
-        have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
+        have ntr2 : Nontrivial S.X₂ := surjf.nontrivial
         have ntr1 : Nontrivial S.X₁ := by
           by_contra H
           have : Subsingleton (LinearMap.ker f) := not_nontrivial_iff_subsingleton.mp H
@@ -369,7 +358,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         have h_ker := ih S.X₁ (by simpa [projdim] using not_eq_of_beq_eq_false rfl) projdim
         have h_ker' : n + IsLocalRing.depth S.X₁ =
           IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-          simp [projdim] at h_ker
+          rw [projdim] at h_ker
           exact WithBot.coe_inj.mp h_ker
         let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
         have depth_pos : IsLocalRing.depth S.X₁ > 0 := by
@@ -386,22 +375,20 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         have ext_iso (i : ℕ) (lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R))) :
           IsIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
           apply (CategoryTheory.isIso_iff_mono_and_epi _).mpr ⟨?_, ?_⟩
-          · apply ShortComplex.Exact.mono_g (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
-            apply IsZero.eq_zero_of_src (@AddCommGrpCat.isZero_of_subsingleton _ ?_)
+          · apply (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl).mono_g
+            apply (@AddCommGrpCat.isZero_of_subsingleton _ ?_).eq_zero_of_src
             simpa [finte_free_ext_vanish_iff] using
               ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
-          · apply ShortComplex.Exact.epi_f (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl)
-            apply IsZero.eq_zero_of_tgt (@AddCommGrpCat.isZero_of_subsingleton _ ?_)
+          · apply (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl).epi_f
+            apply (@AddCommGrpCat.isZero_of_subsingleton _ ?_).eq_zero_of_tgt
             simpa [finte_free_ext_vanish_iff] using ext_subsingleton_of_lt_moduleDepth lt
         have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
           by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
           · --might be able to removed using Ischbeck theorem
-            simp [eqtop, S] at h_ker'
+            simp only [eqtop, add_top, S] at h_ker'
             have M_depth_eqtop : IsLocalRing.depth M = ⊤ := by
               apply (moduleDepth_eq_top_iff _ _).mpr (fun i ↦ ?_)
-              have lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-                simp [← h_ker', ENat.add_lt_top]
-              have := ext_iso i lt
+              have := ext_iso i (by simp [← h_ker', ENat.add_lt_top])
               rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                 (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
               apply ext_subsingleton_of_lt_moduleDepth
