@@ -209,7 +209,7 @@ abbrev ofProfinite (G : Profinite) [Group G] [IsTopologicalGroup G] :
 profinite additive group. -/]
 def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
-  letI (a : α): Group (β a).toProfinite := (β a).group
+  letI (a : α) : Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
   letI : IsTopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype

@@ -77,8 +77,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
         apply funext
         rintro S
         -- Porting note: end replacement block
-        apply hb
-    )
+        apply hb)
 
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
