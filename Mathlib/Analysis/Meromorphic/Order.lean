@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 
 /-!
 # Orders of Meromorphic Functions
@@ -864,20 +865,65 @@ lemma AnalyticAt.analyticOrderAt_comp (hf : AnalyticAt 𝕜 f (g x)) (hg : Analy
   simpa [hf.meromorphicOrderAt_eq, (hf.comp hg).meromorphicOrderAt_eq, ← ENat.map_mul]
     using hf.meromorphicAt.meromorphicOrderAt_comp hg hg_nc
 
-/-- If `g` is analytic at `x`, `f` is meromorphic at `g x`, and `g' x ≠ 0`, then the order of
-`f ∘ g` at `x` is the order of `f` at `g x`. -/
-lemma MeromorphicAt.meromorphicOrderAt_comp_of_deriv_ne_zero
-    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
-    meromorphicOrderAt (f ∘ g) x = meromorphicOrderAt f (g x) := by
-  have hgo : analyticOrderAt _ x = 1 := hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg'
-  rw [hf.meromorphicOrderAt_comp hg, hgo] <;>
-  simp [eventuallyConst_iff_analyticOrderAt_sub_eq_top, hgo]
+lemma meromorphicAt_comp_iff_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)
+    [CompleteSpace 𝕜] [CharZero 𝕜] :
+    MeromorphicAt (f ∘ g) x ↔ MeromorphicAt f (g x) := by
+  refine ⟨fun hf ↦ ?_, (MeromorphicAt.comp_analyticAt · hg)⟩
+  let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
+  have hra : AnalyticAt 𝕜 r (g x) := hg.analyticAt_localInverse hg'
+  have : r (g x) = x := HasStrictFDerivAt.localInverse_apply_image ..
+  rw [← this] at hf
+  refine (hf.comp_analyticAt hra).congr (.filter_mono ?_ nhdsWithin_le_nhds)
+  exact EventuallyEq.fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
 
-/-- If `g` is analytic at `x`, `f` is meromorphic at `g x`, and `g' x ≠ 0`, then the order of
-`f ∘ g` at `x` is the order of `f` at `g x`. -/
-lemma AnalyticAt.analyticOrderAt_comp_of_deriv_ne_zero {g : 𝕜 → 𝕜}
-    (hf : AnalyticAt 𝕜 f (g x)) (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
+/-- If `g` is analytic at `x`, and `g' x ≠ 0`, then the meromorphic order of
+`f ∘ g` at `x` is the meromorphic order of `f` at `g x` (even if `f` is not meromorphic). -/
+lemma meromorphicOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)
+    [CompleteSpace 𝕜] [CharZero 𝕜] :
+    meromorphicOrderAt (f ∘ g) x = meromorphicOrderAt f (g x) := by
+  by_cases hf : MeromorphicAt f (g x)
+  · have hgo : analyticOrderAt _ x = 1 := hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg'
+    rw [hf.meromorphicOrderAt_comp hg, hgo] <;>
+    simp [eventuallyConst_iff_analyticOrderAt_sub_eq_top, hgo]
+  · rw [meromorphicOrderAt_of_not_meromorphicAt hf, meromorphicOrderAt_of_not_meromorphicAt]
+    rwa [meromorphicAt_comp_iff_of_deriv_ne_zero hg hg']
+
+lemma analyticAt_comp_iff_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)
+    [CompleteSpace 𝕜] [CharZero 𝕜] :
+    AnalyticAt 𝕜 (f ∘ g) x ↔ AnalyticAt 𝕜 f (g x) := by
+  refine ⟨fun hf ↦ ?_, (AnalyticAt.comp · hg)⟩
+  let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
+  have hra : AnalyticAt 𝕜 r (g x) := hg.analyticAt_localInverse hg'
+  have : r (g x) = x := HasStrictFDerivAt.localInverse_apply_image ..
+  rw [← this] at hf
+  exact (hf.comp hra).congr <| .fun_comp (HasStrictDerivAt.eventually_right_inverse ..) f
+
+/-- If `g` is analytic at `x`, and `g' x ≠ 0`, then the analytic order of
+`f ∘ g` at `x` is the analytic order of `f` at `g x` (even if `f` is not analytic). -/
+lemma analyticOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0)
+    [CompleteSpace 𝕜] [CharZero 𝕜] :
     analyticOrderAt (f ∘ g) x = analyticOrderAt f (g x) := by
-  simp [hf.analyticOrderAt_comp hg, hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg']
+  by_cases hf : AnalyticAt 𝕜 f (g x)
+  · simp [hf.analyticOrderAt_comp hg, hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg']
+  · rw [analyticOrderAt_of_not_analyticAt hf, analyticOrderAt_of_not_analyticAt]
+    rwa [analyticAt_comp_iff_of_deriv_ne_zero hg hg']
 
 end comp
+
+section smul
+
+variable {g : 𝕜 → 𝕜}
+
+lemma meromorphicOrderAt_smul_of_ne_zero (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    meromorphicOrderAt (g • f) x = meromorphicOrderAt f x := by
+  by_cases hf : MeromorphicAt f x
+  · simp [meromorphicOrderAt_smul hg.meromorphicAt hf, hg.meromorphicOrderAt_eq,
+      hg.analyticOrderAt_eq_zero.mpr hg']
+  · rw [meromorphicOrderAt_of_not_meromorphicAt hf, meromorphicOrderAt_of_not_meromorphicAt]
+    rwa [meromorphicAt_smul_iff_of_ne_zero hg hg']
+
+lemma meromorphicOrderAt_mul_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    meromorphicOrderAt (g * f) x = meromorphicOrderAt f x :=
+  meromorphicOrderAt_smul_of_ne_zero hg hg'
+
+end smul

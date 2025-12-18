@@ -415,6 +415,23 @@ Iterated derivatives of meromorphic functions are meromorphic.
 
 end MeromorphicAt
 
+section smul_iff
+
+variable {g : 𝕜 → 𝕜} {x : 𝕜}
+
+lemma meromorphicAt_smul_iff_of_ne_zero {f : 𝕜 → E} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    MeromorphicAt (g • f) x ↔ MeromorphicAt f x := by
+  refine ⟨fun hfg ↦ ?_, hg.meromorphicAt.smul⟩
+  refine (hg.inv hg').meromorphicAt.smul hfg |>.congr ?_
+  filter_upwards [(hg.continuousAt.mono_left nhdsWithin_le_nhds).eventually_ne hg'] with z hz
+  simp [inv_smul_smul₀ hz]
+
+lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
+    MeromorphicAt (g * f) x ↔ MeromorphicAt f x :=
+  meromorphicAt_smul_iff_of_ne_zero hg hg'
+
+end smul_iff
+
 /-- Meromorphy of a function on a set. -/
 def MeromorphicOn (f : 𝕜 → E) (U : Set 𝕜) : Prop := ∀ x ∈ U, MeromorphicAt f x
 
