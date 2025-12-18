@@ -150,7 +150,8 @@ theorem IsPositive.isPositive_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsPositive
   simp only [RCLike.conj_ofReal, RCLike.mul_re, RCLike.ofReal_re, RCLike.ofReal_im, zero_mul,
     sub_zero] at h2 ⊢
   simp only [mul_nonneg_iff, hf.2, and_true, forall_or_left] at h2
-  have := by simpa only [RCLike.ext_iff (K := 𝕜)] using hf.isSymmetric.inner_map_self_eq_zero.not.mpr hf'
+  have := by simpa only [RCLike.ext_iff (K := 𝕜)] using
+    hf.isSymmetric.inner_map_self_eq_zero.not.mpr hf'
   have := hf.isSymmetric.im_inner_apply_self
   have := hf.2
   grind
