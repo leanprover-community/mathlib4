@@ -160,7 +160,6 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     · apply exists_le_of_le_sup
       exact f.unop.le
     · rw [← hm]
-      dsimp
       simp only [Category.assoc]
       congr
       apply limit.lift_π
