@@ -6,7 +6,7 @@ open scoped ENNReal
 
 namespace MeasureTheory
 
-variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X : Ω → ℝ≥0∞}
+variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
 open Classical in
 noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω)
@@ -42,7 +42,7 @@ theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFin
     P⁻[X|mΩ] = 0 := by rwa [condLExp, dif_pos hm, dif_neg]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
-    {X : Ω → ℝ≥0∞} (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
+    (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
   simp [condLExp, hm, hσ, hX]
 
 theorem condLExp_of_not_sub_sigma_measurable (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω)
@@ -50,6 +50,7 @@ theorem condLExp_of_not_sub_sigma_measurable (hm : mΩ ≤ mΩ₀) (P : Measure[
     P⁻[X|mΩ] = ∂((P.withDensity X).trim hm)/∂(P.trim hm) := by
   simp [condLExp, hm, hσ, hX]
 
+@[fun_prop]
 theorem measurable_condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
     Measurable[mΩ] P⁻[X|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
@@ -78,8 +79,8 @@ theorem lintegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim h
   simpa [← setLIntegral_univ] using setLIntegral_condLExp _ _ _ .univ
 
 theorem eq_condLExp_ae (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
-    (X : Ω → ℝ≥0∞) {Y : Ω → ℝ≥0∞} (hY : Measurable[mΩ] Y)
-    (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, Y ω ∂P) :
+    (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)
+    (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
     Y =ᵐ[P] P⁻[X|mΩ] := by
   --change P {ω | Y ω ≠ P⁻[X|mΩ] ω} = 0
   have h₁ : MeasurableSet[mΩ] {ω | Y ω > P⁻[X|mΩ] ω} := by sorry
@@ -99,7 +100,7 @@ theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
     · refine eq_condLExp_ae _ _ _ (measurable_condLExp _ _ _) (fun s hs ↦ ?_)
       repeat rw [setLIntegral_condLExp _ _ _ hs]
       apply setLIntegral_congr_fun_ae (hm s hs)
-      filter_upwards [hXY] using (fun _ h _ ↦ h.symm)
+      filter_upwards [hXY] using (fun _ h _ ↦ h)
     simp [condLExp_of_not_sigmaFinite hm hσ]
   simp [condLExp_of_not_le hm]
 
@@ -118,13 +119,29 @@ theorem condLExp_bot' (X : Ω → ℝ≥0∞) :
 theorem condLExp_bot [IsProbabilityMeasure P] (X : Ω → ℝ≥0∞) :
     P⁻[X|⊥] = fun _ => ∫⁻ ω, X ω ∂P := by sorry
 
--- condLExp_mono (test)
+theorem condLExp_mono (hXY : X ≤ᵐ[P] Y) :
+    P⁻[X|mΩ] ≤ᵐ[P] P⁻[Y|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · simp_rw [condLExp_of_not_le hm]; rfl
+  by_cases hσ : SigmaFinite (P.trim hm)
+  swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; rfl
+  sorry
 
--- condLExp_add
+theorem condLExp_add (X Y : Ω → ℝ≥0∞) :
+    P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · simp_rw [condLExp_of_not_le hm]; simp
+  by_cases hσ : SigmaFinite (P.trim hm)
+  swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; simp
+  refine (eq_condLExp_ae _ _ _ (by fun_prop) ?_).symm
+  intro s hs
+  simp only [Pi.add_apply]
+  rw [lintegral_add_left (by measurability)]
+  sorry
 
--- condLExp_finset_sum
+-- condLExp_finset_sum (induction on add)
 
--- condLExp_smul
+-- condLExp_smul (same sort of idea)
 
 -- Add docs
 
