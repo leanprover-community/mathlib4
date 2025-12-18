@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 open Limits Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 An effective epi family precomposed by a family of split epis is effective epimorphic.
@@ -77,7 +77,7 @@ instance IsSplitEpi.EffectiveEpi {B X : C} (f : X ⟶ B) [IsSplitEpi f] : Effect
 If a family of morphisms with fixed target, precomposed by a family of epis is
 effective epimorphic, then the original family is as well.
 -/
-noncomputable def effectiveEpiFamilyStructOfComp {C : Type*} [Category C]
+noncomputable def effectiveEpiFamilyStructOfComp {C : Type*} [Category* C]
     {I : Type*} {Z Y : I → C} {X : C} (g : ∀ i, Z i ⟶ Y i) (f : ∀ i, Y i ⟶ X)
     [EffectiveEpiFamily _ (fun i => g i ≫ f i)] [∀ i, Epi (g i)] :
     EffectiveEpiFamilyStruct _ f where

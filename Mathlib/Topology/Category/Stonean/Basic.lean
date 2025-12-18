@@ -84,7 +84,7 @@ abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful :=
   CompHausLike.fullyFaithfulToCompHausLike _
 
 open CompHausLike
