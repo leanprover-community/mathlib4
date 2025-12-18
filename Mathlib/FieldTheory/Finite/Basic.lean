@@ -559,7 +559,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 
 /-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
-| 0     => Finite.of_fintype ℤˣ
+| 0 => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
 
 open FiniteField

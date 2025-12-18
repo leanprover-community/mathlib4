@@ -39,7 +39,7 @@ type-theoretic products.
 -/
 def productCone : BinaryFan X Y :=
   BinaryFan.mk (P := CompHausLike.of P (X × Y))
-    (TopCat.ofHom { toFun := Prod.fst }) (TopCat.ofHom { toFun := Prod.snd })
+    (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
 /--
 When the predicate `P` is preserved under taking type-theoretic products, that product is a

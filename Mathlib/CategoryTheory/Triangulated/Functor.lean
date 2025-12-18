@@ -303,7 +303,7 @@ end Triangulated
 open Triangulated
 
 /-- If `F : C ⥤ D` is a triangulated functor from a triangulated category, then `D`
-is also triangulated if tuples of composables arrows in `D` can be lifted to `C`. -/
+is also triangulated if tuples of composable arrows in `D` can be lifted to `C`. -/
 lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
     [(F.mapComposableArrows 2).EssSurj] [IsTriangulated C] :
