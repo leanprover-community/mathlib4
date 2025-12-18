@@ -265,8 +265,18 @@ theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk
   congr
   exact Subsingleton.allEq _ _
 
-theorem stdPart_ne_zero {x : K} (h : mk x = 0) : stdPart x ≠ 0 := by
-  rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+@[simp]
+theorem stdPart_eq_zero_iff {x : K} : stdPart x = 0 ↔ mk x ≠ 0 where
+  mpr := stdPart_of_mk_ne_zero
+  mp := by
+    contrapose!
+    intro h
+    rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+
+theorem stdPart_ne_zero_iff {x : K} : stdPart x ≠ 0 ↔ mk x = 0 :=
+  stdPart_eq_zero_iff.ne_left
+
+alias ⟨_, stdPart_ne_zero⟩ := stdPart_ne_zero_iff
 
 theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
