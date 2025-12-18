@@ -133,19 +133,21 @@ variable {M : SheafOfModules.{u'} R} (P : Presentation M)
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
-abbrev Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
+def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
   (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
     F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
+def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
   (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
-    P.mapRelations F η ≫ P.mapGenerators F η = 0 := by simp [← Functor.map_comp]
+    P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
+  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
+    ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
@@ -154,10 +156,10 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
-    refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)) _ _ ?_
-      (isColimitOfPreserves F P.isColimit)
+    refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
+      (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocones.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=
