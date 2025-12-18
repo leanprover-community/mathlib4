@@ -376,20 +376,38 @@ theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   apply OrderRingHom.monotone'
   rwa [FiniteElement.mk_le_mk_iff]
 
+theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
+  aesop (add simp [lt_neg])
+
+theorem neg_setOf_real_lt (f : ℝ →+*o K) : -{r | f r < x} = {r | -x < f r} := by
+  rw [neg_eq_iff_eq_neg, neg_setOf_lt_real, neg_neg]
+
+theorem nonempty_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | x < f r}.Nonempty := by
+  obtain ⟨n, hn⟩ := hx
+  refine ⟨n + 1, lt_of_le_of_lt (b := ↑n) (le_of_abs_le ?_) ?_⟩
+  · simpa using hn
+  · simp
+
+theorem bddBelow_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddBelow {r | x < f r} := by
+  obtain ⟨n, hn⟩ := hx
+  refine ⟨-n, fun r hr ↦ ?_⟩
+  by_contra! hr'
+  apply (neg_le_of_abs_le hn).not_gt (hr.trans_le _)
+  simpa using f.monotone' hr'.le
+
+theorem nonempty_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | f r < x}.Nonempty := by
+  rw [← Set.nonempty_neg, neg_setOf_real_lt]
+  exact nonempty_setOf_lt_real f (by simpa)
+
+theorem bddAbove_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddAbove {r | f r < x} := by
+  rw [← bddBelow_neg, neg_setOf_real_lt]
+  exact bddBelow_setOf_lt_real f (by simpa)
+
 attribute [local simp] Nat.cast_add_one_pos in
 theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
   obtain hx | hx := le_or_gt 0 (mk x)
-  · have hn : {r | x < f r}.Nonempty := by
-      obtain ⟨n, hn⟩ := hx
-      refine ⟨n + 1, lt_of_le_of_lt (b := ↑n) (le_of_abs_le ?_) ?_⟩
-      · simpa using hn
-      · simp
-    have hb : BddBelow {r | x < f r} := by
-      obtain ⟨n, hn⟩ := hx
-      refine ⟨-n, fun r hr ↦ ?_⟩
-      by_contra! hr'
-      apply (neg_le_of_abs_le hn).not_gt (hr.trans_le _)
-      simpa using f.monotone' hr'.le
+  · have hn := nonempty_setOf_lt_real f hx
+    have hb := bddBelow_setOf_lt_real f hx
     rw [← mk_sub_pos_iff f hx, ← mk_one, mk_lt_mk, abs_one]
     rintro (_ | n); · simp
     rw [nsmul_eq_mul, Nat.cast_add_one, ← lt_inv_mul_iff₀ n.cast_add_one_pos, mul_one]
