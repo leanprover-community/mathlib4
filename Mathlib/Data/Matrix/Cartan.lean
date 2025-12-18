@@ -203,6 +203,20 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
                            0, -1,  2,  0;
                            0, -1,  0,  2] := by decide
 
+
+
+/-! ### Exceptional matrix diagonal entries -/
+
+@[simp] theorem E₆_diag (i : Fin 6) : E₆ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₇_diag (i : Fin 7) : E₇ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₈_diag (i : Fin 8) : E₈ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
+
 end Properties
 
 end CartanMatrix

@@ -200,7 +200,7 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
-lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
@@ -381,6 +381,11 @@ theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt
 
 end IsOpenMap
 
+/-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed.
+
+One way to understand this result is that `f : X → Y` is open if and only if its fibers vary in a
+**lower hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
+`(f ⁻¹' {y} ∩ U).Nonempty` is open in `Y`. See `isOpenMap_iff_lowerHemicontinuous`. -/
 lemma isOpenMap_iff_kernImage :
     IsOpenMap f ↔ ∀ {u : Set X}, IsClosed u → IsClosed (kernImage f u) := by
   rw [IsOpenMap, compl_surjective.forall]
@@ -472,7 +477,7 @@ end IsClosedMap
 
 One way to understand this result is that `f : X → Y` is closed if and only if its fibers vary in an
 **upper hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
-`f ⁻¹' {y} ⊆ U` is open in `Y`. -/
+`f ⁻¹' {y} ⊆ U` is open in `Y`. See `isClosedMap_iff_upperHemicontinuous`. -/
 lemma isClosedMap_iff_kernImage :
     IsClosedMap f ↔ ∀ {u : Set X}, IsOpen u → IsOpen (kernImage f u) := by
   rw [IsClosedMap, compl_surjective.forall]

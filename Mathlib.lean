@@ -1012,6 +1012,7 @@ public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
@@ -2833,6 +2834,7 @@ public import Mathlib.CategoryTheory.Monoidal.Opposite.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Functor
 public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
@@ -5270,6 +5272,7 @@ public import Mathlib.NumberTheory.NumberField.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
@@ -5636,6 +5639,7 @@ public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
 public import Mathlib.Probability.Distributions.Pareto
 public import Mathlib.Probability.Distributions.Poisson
+public import Mathlib.Probability.Distributions.SetBernoulli
 public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.HasLawExists
@@ -7157,6 +7161,7 @@ public import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Topology.MetricSpace.CoveringNumbers
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Topology.MetricSpace.DilationEquiv
@@ -7268,7 +7273,9 @@ public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.PreorderRestrict
 public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
 public import Mathlib.Topology.Separation.Basic
