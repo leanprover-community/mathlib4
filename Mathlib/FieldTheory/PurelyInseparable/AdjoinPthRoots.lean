@@ -40,24 +40,24 @@ noncomputable section
 variable {k : Type*} [Field k]
 variable (p : ℕ) [ExpChar k p]
 
-private instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
+instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
 /-- Given a field `k` of exponential characteristic `p` and a subset `S` of `k`, the field
 `adjoin_pth_roots p S` is obtained by adjoining all `p`-th roots of elements of `S` to `k`. We
 construct this as an object of type `IntermediateField k (AlgebraicClosure k)`, which automatically
 gives us the structure of a field and of a `k`-algebra. -/
-def adjoin_pth_roots (S : Set k) : IntermediateField k (AlgebraicClosure k) :=
+def IntermediateField.adjoinPthRoots (S : Set k) : IntermediateField k (AlgebraicClosure k) :=
   IntermediateField.adjoin k <|
     (frobenius (AlgebraicClosure k) p) ⁻¹' ((algebraMap k (AlgebraicClosure k)) '' S)
 
-lemma adjoin_pth_roots.mono {S T : Set k} (hST : S ⊆ T) :
-    adjoin_pth_roots p S ≤ adjoin_pth_roots p T :=
+lemma adjoinPthRoots_mono {S T : Set k} (hST : S ⊆ T) :
+    adjoinPthRoots p S ≤ adjoinPthRoots p T :=
   IntermediateField.adjoin.mono k _ _ <| Set.preimage_mono <| Set.image_mono hST
 
 /-- If the set `S` whose `p`-th roots we adjoin is finite, then the obtained field extension
 `(adjoin_pth_roots p S) / k` is finite. -/
-lemma adjoin_pth_roots.finite_of_finite (S : Set k) [Finite S] :
-    FiniteDimensional k (adjoin_pth_roots p S) := by
+lemma adjoinPthRoots_finite_of_finite (S : Set k) [Finite S] :
+    FiniteDimensional k (adjoinPthRoots p S) := by
   -- The set of elements to adjoin to `k` is finite:
   have hFin : Finite ((frobenius (AlgebraicClosure k) p) ⁻¹'
       ((algebraMap k (AlgebraicClosure k)) '' S)) := by
@@ -81,9 +81,9 @@ lemma adjoin_pth_roots.finite_of_finite (S : Set k) [Finite S] :
   exact isIntegral_algebraMap
 
 /-- The field extension `(adjoin_pth_roots p S) / k` is purely inseparable. -/
-instance adjoin_pth_roots.purelyInseparable (S : Set k) :
-    IsPurelyInseparable k (adjoin_pth_roots p S) := by
-  unfold adjoin_pth_roots
+instance adjoinPthRoots_purelyInseparable (S : Set k) :
+    IsPurelyInseparable k (adjoinPthRoots p S) := by
+  unfold adjoinPthRoots
   rw [IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem k (AlgebraicClosure k) p]
   intro s hs
   use 1
@@ -95,9 +95,9 @@ instance adjoin_pth_roots.purelyInseparable (S : Set k) :
 
 /-- If `y ∈ S`, then there is an element `x ∈ adjoin_pth_roots p S` with the property that
 `y = x ^ p`. -/
-lemma adjoin_pth_roots.mem_frobenius_img {S : Set k} {y : k} (hy : y ∈ S) :
+lemma adjoinPthRoots_mem_frobenius_img {S : Set k} {y : k} (hy : y ∈ S) :
     algebraMap k (AlgebraicClosure k) y ∈ Subfield.map (frobenius (AlgebraicClosure k) p)
-      (adjoin_pth_roots p S).toSubfield := by
+      (adjoinPthRoots p S).toSubfield := by
   use (frobeniusEquiv (AlgebraicClosure k) p).symm (algebraMap k _ y)
   refine ⟨?_, by simp⟩
   apply Subfield.mem_closure_of_mem
@@ -107,13 +107,13 @@ lemma adjoin_pth_roots.mem_frobenius_img {S : Set k} {y : k} (hy : y ∈ S) :
 
 -- a relative version of `adjoin_pth_roots.frob_img_mem`, which allows for
 -- `adjoin_pth_roots` to be embedded in the algebraic closure of a bigger field.
-lemma adjoin_pth_roots.mem_frobenius_img' (K : Type*) [Field K] [Algebra k K] {S : Set k} {y : K}
+lemma adjoinPthRoots_mem_frobenius_img' (K : Type*) [Field K] [Algebra k K] {S : Set k} {y : K}
     (hy : y ∈ (algebraMap k K) '' S) :
     haveI : ExpChar (AlgebraicClosure K) p := ExpChar.of_injective_algebraMap' k _
     algebraMap K (AlgebraicClosure K) y ∈ Subfield.map (frobenius (AlgebraicClosure K) p)
-      ((adjoin_pth_roots p S).map IsAlgClosed.lift).toSubfield := by
+      ((adjoinPthRoots p S).map IsAlgClosed.lift).toSubfield := by
   haveI : ExpChar (AlgebraicClosure K) p := ExpChar.of_injective_algebraMap' k _
-  unfold adjoin_pth_roots
+  unfold adjoinPthRoots
   rw [Subfield.mem_map]
   use (frobeniusEquiv (AlgebraicClosure K) p).symm (algebraMap K _ y)
   refine ⟨?_, by simp⟩
