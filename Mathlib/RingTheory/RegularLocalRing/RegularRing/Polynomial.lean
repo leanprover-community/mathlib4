@@ -53,8 +53,7 @@ lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
       ← Submodule.FG.generators_ncard fg]
     exact le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Set.Finite.image _ fg'))
       (Set.ncard_image_le fg')
-  · let _ : q.IsPrime := Ideal.isPrime_map_C_of_isPrime (IsMaximal.isPrime' (maximalIdeal R))
-    have lt : q < p := by
+  · have lt : q < p := by
       apply lt_of_le_of_ne qle
       by_contra eq
       exact eq0 ((map_eq_bot_iff_le_ker _).mpr (le_of_eq (Ker.trans eq).symm))
