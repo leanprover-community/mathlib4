@@ -56,16 +56,23 @@ open Equiv Fin
 /-! ### The braid group -/
 
 /-- The braid group `B_n` on `n` strands. This is the Artin group of type A_{n-1}. -/
-abbrev BraidGroup (n : ℕ) : Type := (CoxeterMatrix.Aₙ (n - 1)).ArtinGroup
+def BraidGroup : ℕ → Type
+| 0 => Unit
+| n + 1 => (CoxeterMatrix.Aₙ n).ArtinGroup
 
 namespace BraidGroup
 
 variable {n : ℕ}
 
+instance : Group (BraidGroup n) :=
+  match n with
+  | 0 => inferInstanceAs (Group Unit)
+  | n + 1 => inferInstanceAs (Group (CoxeterMatrix.Aₙ n).ArtinGroup)
+
 /-- The i-th standard Artin generator σ_i of the braid group B_n.
 This corresponds to crossing strand i over strand i+1. -/
-def σ (i : Fin (n - 1)) : BraidGroup n :=
-  (CoxeterMatrix.Aₙ (n - 1)).artinGenerator i
+def σ (i : Fin n) : BraidGroup (n + 1) :=
+  (CoxeterMatrix.Aₙ n).artinGenerator i
 
 end BraidGroup
 
@@ -77,25 +84,34 @@ namespace BraidGroup
 sending σ_i to the adjacent transposition (i, i+1).
 
 This is defined as the composition of `artinToCoxeter` and `typeAₙToPermHom`. -/
-def toPermHom (n : ℕ) : BraidGroup (n + 1) →* Perm (Fin (n + 1)) :=
-  (CoxeterMatrix.typeAₙToPermHom n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter
+def toPermHom (n : ℕ) : BraidGroup n →* Perm (Fin n) :=
+  match n with
+  | 0 => MulAction.toPermHom Unit (Fin 0)
+  | n + 1 => (CoxeterMatrix.typeAₙToPermHom n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter
 
 @[simp]
 theorem toPermHom_σ (n : ℕ) (i : Fin n) :
-    toPermHom n (σ i) = swapFun n i := by
-  show (CoxeterMatrix.typeAₙToPermHom n)
-      ((CoxeterMatrix.Aₙ n).artinToCoxeter ((CoxeterMatrix.Aₙ n).artinGenerator i)) = _
-  simp
+    toPermHom (n + 1) (σ i) = swapFun n i := by
+  -- This proof is strangely fragile
+  -- e.g. changing the `rw` to `simp only` results in a timeout,
+  -- and while `simp only [CoxeterMatrix.artinToCoxeter_artinGenerator]`
+  -- should work before the `exact`, it doesn't, nor does `rw`, while `erw` times out.
+  simp only [toPermHom, σ]
+  rw [MonoidHom.coe_comp, Function.comp_apply]
+  exact CoxeterMatrix.typeAₙToPermHom_simple _ _
 
 /-- The surjection from B_{n+1} to S_{n+1} is surjective. -/
 theorem toPermHom_surjective (n : ℕ) : Function.Surjective (toPermHom n) :=
-  (CoxeterMatrix.typeAₙToPermHom_surjective n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter_surjective
+  match n with
+  | 0 => Function.surjective_to_subsingleton ⇑(toPermHom 0)
+  | n + 1 =>
+    (CoxeterMatrix.typeAₙToPermHom_surjective n).comp (CoxeterMatrix.Aₙ n).artinToCoxeter_surjective
 
 /-! ### Small braid groups -/
 
 /-- The braid group B_0 is trivial (no generators). -/
 instance : Unique (BraidGroup 0) :=
-  inferInstanceAs (Unique (CoxeterMatrix.Aₙ 0).ArtinGroup)
+  inferInstanceAs (Unique Unit)
 
 /-- The braid group B_1 is trivial (no generators). -/
 instance : Unique (BraidGroup 1) :=
@@ -113,11 +129,11 @@ theorem artinRelationsSet_Aₙ_one_eq_one :
     fin_cases i; fin_cases j
     -- artinRelation 0 0 with M 0 0 = 1
     simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.diagonal,
-      CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel]
+      CoxeterSystem.alternatingWord, mul_inv_cancel]
   · intro hr
     use 0, 0
     simp only [CoxeterMatrix.artinRelation, CoxeterMatrix.diagonal,
-      CoxeterMatrix.alternatingWord_one, CoxeterMatrix.freeGroupProd_singleton, mul_inv_cancel, hr]
+      CoxeterSystem.alternatingWord, mul_inv_cancel, hr]
 
 /-- The braid group B_2 is isomorphic to ℤ (one generator, no non-trivial relations).
 The isomorphism sends the unique generator σ_0 to 1 ∈ ℤ. -/
