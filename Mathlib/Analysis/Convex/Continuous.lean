@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Zichen Wang
 -/
-import Mathlib.Analysis.Normed.Affine.Convex
+module
+
+public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous
@@ -11,6 +13,8 @@ import Mathlib.Analysis.Normed.Affine.Convex
 This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
+
+@[expose] public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology

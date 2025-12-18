@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 
@@ -17,6 +19,8 @@ and reflects isomorphisms.
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -584,7 +588,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         dsimp
         rw [Category.assoc] }
 
-instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=

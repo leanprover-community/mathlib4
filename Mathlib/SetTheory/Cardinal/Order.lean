@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Fintype.Option
-import Mathlib.Order.InitialSeg
-import Mathlib.Order.Nat
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.SetTheory.Cardinal.Defs
-import Mathlib.SetTheory.Cardinal.SchroederBernstein
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Order.InitialSeg
+public import Mathlib.Order.Nat
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 
 /-!
 # Order on cardinal numbers
@@ -57,6 +59,8 @@ cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open List Function Order Set
@@ -79,7 +83,6 @@ instance : LE Cardinal.{u} :=
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
 instance partialOrder : PartialOrder Cardinal.{u} where
-  le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
     exact ⟨Embedding.refl _⟩
@@ -111,7 +114,7 @@ theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f)
 
 theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
   ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
-    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
+    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.ext⟩⟩⟩
 
 theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
@@ -307,7 +310,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     bot_le _ := bot_le
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    mul_le_mul_left _ _ := mul_le_mul_left
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
@@ -492,7 +495,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
             (Equiv.ulift.image _).trans
               (Equiv.trans
                 (by
-                  rw [Equiv.image_eq_preimage]
+                  rw [Equiv.image_eq_preimage_symm]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
@@ -634,7 +637,7 @@ theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 @[simp]
 theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
     (n : Cardinal) = lift.{v} a ↔ (n : Cardinal) = a := by
-  rw [← lift_natCast.{v,u} n, lift_inj]
+  rw [← lift_natCast.{v, u} n, lift_inj]
 
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
@@ -653,7 +656,7 @@ theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
-  rw [← lift_natCast.{v,u}, lift_le]
+  rw [← lift_natCast.{v, u}, lift_le]
 
 @[simp]
 theorem lift_le_one_iff {a : Cardinal.{u}} :
@@ -667,7 +670,7 @@ theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
-  rw [← lift_natCast.{v,u}, lift_le]
+  rw [← lift_natCast.{v, u}, lift_le]
 
 @[simp]
 theorem one_le_lift_iff {a : Cardinal.{u}} :
@@ -681,7 +684,7 @@ theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
-  rw [← lift_natCast.{v,u}, lift_lt]
+  rw [← lift_natCast.{v, u}, lift_lt]
 
 @[simp]
 theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
@@ -690,7 +693,7 @@ theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
-  rw [← lift_natCast.{v,u}, lift_lt]
+  rw [← lift_natCast.{v, u}, lift_lt]
 
 @[simp]
 theorem zero_lt_lift_iff {a : Cardinal.{u}} :

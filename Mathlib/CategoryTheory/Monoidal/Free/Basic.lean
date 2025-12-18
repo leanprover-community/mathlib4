@@ -3,7 +3,9 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The free monoidal category over a type
@@ -21,6 +23,8 @@ is obvious from the construction, and the latter is what is commonly known as th
 theorem. Both of these properties are proved in the file `Coherence.lean`.
 
 -/
+
+@[expose] public section
 
 
 universe v' u u'

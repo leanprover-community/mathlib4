@@ -3,8 +3,10 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.LinearAlgebra.Dimension.Constructions
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Linear recurrence
@@ -34,6 +36,8 @@ This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -71,7 +75,7 @@ def mkSol (init : Fin E.order → R) : ℕ → R
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by omega
+        have _ : n - E.order + k < n := by lia
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
@@ -107,6 +111,8 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
+-- TODO: there's a non-terminal simp here
+set_option linter.flexible false in
 /-- The space of solutions of `E`, as a `Submodule` over `R` of the module `ℕ → R`. -/
 def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
@@ -159,7 +165,8 @@ def tupleSucc : (Fin E.order → R) →ₗ[R] Fin E.order → R where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    split_ifs with h <;> simp [h, mul_sum]
+    split_ifs with h <;>
+      simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, h, ↓reduceDIte, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 
 end CommSemiring

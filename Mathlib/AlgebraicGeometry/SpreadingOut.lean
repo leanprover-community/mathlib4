@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.Noetherian
-import Mathlib.AlgebraicGeometry.Stalk
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.Stalk
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Spreading out morphisms
@@ -43,6 +45,8 @@ Show that certain morphism properties can also be spread out.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory
@@ -64,7 +68,7 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at H ⊢
   intro t ht
   have := hU.isLocalization_basicOpen f
-  obtain ⟨t, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) t
+  obtain ⟨t, s, rfl⟩ := IsLocalization.exists_mk'_eq (.powers f) t
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra, TopCat.Presheaf.germ_res_apply] at ht
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
@@ -100,7 +104,7 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
   obtain ⟨U, hxU, hU, hU', H⟩ :=
     Y.exists_le_and_germ_injective (f x) (V := f.opensRange) ⟨x, rfl⟩
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
-  obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
+  obtain rfl : f ''ᵁ V = U := Subtype.ext_iff.mp (Subtype.ext_iff.mp hV)
   obtain ⟨y, hy, e : f y = f x⟩ := hxU
   obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
@@ -136,7 +140,7 @@ lemma Scheme.IsGermInjective.Spec
     exact (isAffineOpen_top (Spec R)).basicOpen _
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
     (S := ((Spec.structureSheaf R).val.obj (.op <| PrimeSpectrum.basicOpen f))) (.powers f) x
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
@@ -352,7 +356,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
-Given `S`-schemes `X Y`, a point `x : X`, and a `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
+Given `S`-schemes `X Y`, a point `x : X`, and an `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
 we may spread it out to an `S`-morphism `f : U ⟶ Y`
 provided that `Y` is locally of finite type over `S` and
 `X` is "germ-injective" at `x` (e.g. when it's integral or locally Noetherian).

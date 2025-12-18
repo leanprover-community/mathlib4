@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.TopComparison
-import Mathlib.Topology.Category.Sequential
-import Mathlib.Topology.Category.LightProfinite.Sequence
+module
+
+public import Mathlib.Condensed.Light.TopComparison
+public import Mathlib.Topology.Category.Sequential
+public import Mathlib.Topology.Category.LightProfinite.Sequence
 /-!
 
 # The adjunction between light condensed sets and topological spaces
@@ -17,6 +19,8 @@ is bijective (but not in general an isomorphism) and conclude that the right adj
 The counit is an isomorphism for sequential spaces, and we conclude that the functor
 `topCatToLightCondSet` is fully faithful when restricted to sequential spaces.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -30,7 +34,7 @@ variable (X : LightCondSet.{u})
 private def coinducingCoprod :
     (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
       X.val.obj ⟨LightProfinite.of PUnit⟩ :=
-  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u+1}).const s).op i
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
 
 /-- Let `X` be a light condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from light profinite sets `S` to `X(*)`, corresponding to elements of `X(S)`.
@@ -62,8 +66,9 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
       apply continuous_sigma
       intro ⟨S, x⟩
       simp only [Function.comp_apply, coinducingCoprod]
-      rw [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u+1}).const a).op x)) = _
-        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u+1}).const a).op x]
+      rw
+        [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u + 1}).const a).op x)) = _
+        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u + 1}).const a).op x]
       exact continuous_coinducingCoprod _ _ }
 
 /-- The functor `LightCondSet ⥤ TopCat` -/
@@ -96,7 +101,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   val := {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
+      toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
@@ -163,7 +168,6 @@ can only prove this for `X : TopCat.{0}`.
 noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
     X.toLightCondSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply SeqContinuous.continuous
     unfold SeqContinuous

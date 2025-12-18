@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Divisibility
@@ -27,6 +29,8 @@ The divisibility relation is defined for all monoids, and as such, depends on th
 
 divisibility, divides
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

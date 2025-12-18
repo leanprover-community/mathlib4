@@ -3,12 +3,14 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Geometry.RingedSpace.SheafedSpace
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Geometry.RingedSpace.SheafedSpace
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Ringed spaces
@@ -19,6 +21,8 @@ The facts collected in this file are typically stated for locally ringed spaces,
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -46,7 +50,7 @@ open SheafedSpace
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
     (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = (0 : X.presheaf.obj (op U)) :=
-  RingHom.map_zero _
+  map_zero _
 
 variable (X : RingedSpace)
 
@@ -82,7 +86,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
   simp only [map_mul, map_one] at heq'
-  simpa using isUnit_of_mul_eq_one _ _ heq'
+  simpa using .of_mul_eq_one _ heq'
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
@@ -105,20 +109,17 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
       X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
-    rw [← RingHom.map_mul, hg x, germ_res_apply X.presheaf _ _ _ f,
-      ← germ_res_apply X.presheaf (iVU y) z hzVy f,
-      ← RingHom.map_mul, (hg y), RingHom.map_one, RingHom.map_one]
+    rw [← map_mul, hg x, germ_res_apply X.presheaf _ _ _ f,
+      ← germ_res_apply X.presheaf (iVU y) z hzVy f, ← map_mul, (hg y), map_one, map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
     -- We need to rephrase the result from `HasForget` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
-  apply isUnit_of_mul_eq_one f gl
-  apply X.sheaf.eq_of_locally_eq' V U iVU hcover
-  intro i
+  refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
   -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
   change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
-  rw [RingHom.map_one, RingHom.map_mul, gl_spec]
+  rw [map_one, map_mul, gl_spec]
   exact hg i
 
 /-- The basic open of a section `f` is the set of all points `x`, such that the germ of `f` at

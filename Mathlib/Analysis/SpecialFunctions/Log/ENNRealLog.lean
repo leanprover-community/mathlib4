@@ -3,8 +3,10 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Data.EReal.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -27,6 +29,8 @@ the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
 ## Tags
 ENNReal, EReal, logarithm
 -/
+
+@[expose] public section
 namespace ENNReal
 
 open scoped NNReal
