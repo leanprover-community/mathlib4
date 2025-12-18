@@ -598,9 +598,9 @@ theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lif
     constructor <;> rintro ⟨⟨i, hi⟩, rfl⟩
     · refine ⟨⟨i.lift, ?_⟩, (IH _ hi).symm⟩
       simpa
-    · obtain ⟨j, rfl⟩ := Ordinal.mem_range_lift_of_le hi.le
+    · obtain ⟨i, rfl⟩ := Ordinal.mem_range_lift_of_le hi.le
       rw [mem_Iio, Ordinal.lift_lt] at hi
-      exact ⟨⟨j, hi⟩, IH _ hi⟩
+      exact ⟨⟨i, hi⟩, IH _ hi⟩
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
