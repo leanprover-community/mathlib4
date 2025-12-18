@@ -366,7 +366,7 @@ theorem AntitoneOn.convex_ge (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 
 theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (β := βᵒᵈ)  hf hs r
+  MonotoneOn.convex_lt (β := βᵒᵈ) hf hs r
 
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
