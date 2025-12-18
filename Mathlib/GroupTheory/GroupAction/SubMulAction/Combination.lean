@@ -258,6 +258,41 @@ theorem isPretransitive : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
   isPretransitive_of_isMultiplyPretransitive _ _
     (Equiv.Perm.isMultiplyPretransitive α n)
 
+theorem isPretransitive_alternatingGroup [Fintype α] :
+    IsPretransitive (alternatingGroup α) (n.Combination α) := by
+  wlog hn : 2 * n ≤ Fintype.card α
+  · have : IsPretransitive (alternatingGroup α) (Combination α (Fintype.card α - n)) := by
+      rw [not_le] at hn
+      apply this
+      rw [Nat.mul_sub, Nat.sub_le_iff_le_add, two_mul]
+      simp only [add_le_add_iff_left]
+      exact hn.le
+    -- utiliser la bijection du passage au complémentaire
+    sorry
+  by_cases hn' : n = 0
+  · suffices Subsingleton (Nat.Combination α n) by
+      infer_instance
+    rw [← Finite.card_le_one_iff_subsingleton,
+      Nat.Combination.card, hn']
+    simp
+  by_cases hn' : n = 1
+  · -- utiliser la bijection avec α
+    sorry
+  · have hn' : 2 ≤ n := by grind
+    apply IsPretransitive.of_surjective_map
+      (mulActionHom_of_embedding_surjective (alternatingGroup α) α)
+    have : IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α -2) := by
+      exact alternatingGroup.isMultiplyPretransitive α
+    simp only [card_eq_fintype_card] at this
+    apply isMultiplyPretransitive_of_le (n := Fintype.card α - 2)
+    · rw [Nat.le_sub_iff_add_le]
+      · apply le_trans (by grind) hn
+      · grind
+    · simp
+
+
+
+
 end
 
 section
