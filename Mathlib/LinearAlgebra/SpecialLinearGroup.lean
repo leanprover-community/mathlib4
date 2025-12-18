@@ -132,11 +132,11 @@ theorem coe_mk (A : V ≃ₗ[R] V) (h : A.det = 1) : ↑(⟨A, h⟩ : SpecialLin
   rfl
 
 @[simp]
-theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B  : V ≃ₗ[R] V) :=
+theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B  : V ≃ₗ[R] V) :=
+theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
@@ -208,7 +208,7 @@ lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
 
 lemma toGeneralLinearGroup_injective :
-    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) :=  by
+    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
   simp [toGeneralLinearGroup, toLinearEquiv_injective]
 
 lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
