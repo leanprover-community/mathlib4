@@ -6,9 +6,7 @@ Authors: Anne Baanen, Ashvni Narayanan
 module
 
 public import Mathlib.FieldTheory.RatFunc.Degree
-public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 # Function fields
@@ -218,6 +216,19 @@ theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := b
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
   rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
+
+instance : Valuation.IsRankOneDiscrete (inftyValuation Fq) where
+  exists_generator_lt_one' := by
+    have h : IsUnit (exp (-1 : ℤ)) := normalize_eq_one.mp rfl
+    refine ⟨h.unit, ?_, compareOfLessAndEq_eq_lt.mp rfl⟩
+    ext x
+    rw [Subgroup.mem_zpowers_iff, ← SetLike.mem_coe, ← Units.val_injective.mem_set_image,
+      MonoidWithZeroHom.valueGroup_eq_range]
+    simp only [Set.mem_diff, Set.mem_range, Set.mem_singleton_iff, Units.ne_zero,
+      not_false_eq_true, and_true]
+    exact ⟨fun ⟨k, hk⟩ ↦ ⟨RatFunc.X^(-k), by simp [← hk]⟩, fun ⟨y, hy⟩ ↦
+      ⟨- (log ((FunctionField.inftyValuation Fq) y)),
+        by ext; simp [← hy, exp_log (hy ▸ Units.ne_zero x)]⟩⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
