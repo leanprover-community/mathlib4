@@ -384,8 +384,8 @@ alias Continuous.along_snd := Continuous.curry_right
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
-      generateFrom (image2 (·  ×ˢ ·) s t) :=
-  let G := generateFrom (image2  (·  ×ˢ ·) s t)
+      generateFrom (image2 (· ×ˢ ·) s t) :=
+  let G := generateFrom (image2 (· ×ˢ ·) s t)
   le_antisymm
     (le_generateFrom fun _ ⟨_, hu, _, hv, g_eq⟩ =>
       g_eq.symm ▸

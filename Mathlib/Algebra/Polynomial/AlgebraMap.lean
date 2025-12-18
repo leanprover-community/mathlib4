@@ -403,6 +403,10 @@ theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 
+theorem aeval_smul (f : R[X]) {G : Type*} [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
+    (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
+  rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
+
 @[simp]
 lemma coe_aeval_mk_apply {S : Subalgebra R A} (h : x ∈ S) :
     (aeval (⟨x, h⟩ : S) p : A) = aeval x p :=
@@ -737,7 +741,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
   intro i j hij H
   obtain hi | rfl | hi := lt_trichotomy i l
-  · have hj : m < j := by omega
+  · have hj : m < j := by lia
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · lia
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]

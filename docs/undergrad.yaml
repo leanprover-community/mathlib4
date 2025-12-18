@@ -586,13 +586,13 @@ Probability Theory:
 # 12.
 Distribution calculus:
   Spaces $\mathcal{D}(\R^d)$:
-    smooth functions with compact support on $\R^d$: ''
+    smooth functions with compact support on $\R^d$: 'TestFunction'
     stability by derivation: ''
     stability by multiplication by a smooth function: ''
     partitions of unity: ''
     constructing approximations of probability density functions in spaces of common functions (trig, exp, rational, log, etc): ''
   Distributions on $\R^d$:
-    definition of distributions: ''
+    definition of distributions: 'Distribution'
     locally integrable functions as distributions: ''
     derivative of a distribution: ''
     Dirac measures: ''
@@ -610,15 +610,15 @@ Distribution calculus:
     Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:
-    definition: ''
+    definition: 'TemperedDistribution'
     derivation of tempered distributions: ''
     multiplication by a function $C^\infty$ of slow growth: ''
     $L^2$ functions and Riesz representation: ''
-    $L^p$ functions: ''
+    $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''
     Dirac comb: ''
-    Fourier transforms: ''
-    inverse Fourier transform: ''
+    Fourier transforms: 'TemperedDistribution.fourierTransformCLM'
+    inverse Fourier transform: 'TemperedDistribution.fourierTransformInvCLM'
     Fourier transform and derivation: ''
     Fourier transform and convolution product: ''
   Applications:

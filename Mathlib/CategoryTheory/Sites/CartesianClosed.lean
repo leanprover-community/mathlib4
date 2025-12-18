@@ -23,7 +23,7 @@ noncomputable section
 
 open CategoryTheory Presheaf
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C) (A : Type*) [Category* A]
 
 instance [HasSheafify J A] [CartesianMonoidalCategory A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=
