@@ -75,7 +75,7 @@ lemma minimal_cover_no_isolated (hminc : IsMinimalCover G C) : ∀ v ∈ C, ∃ 
   have hneq : C' ≠ C := fun h => by simp_all [C']
   suffices h : IsVertexCover G C' from (absurd · hneq) <| hminc.right C' diff_subset h
   intro w₁ w₂ hadj
-  have hwᵢC : w₁ ∈ C ∨ w₂ ∈ C := hminc.left w₁ w₂ hadj
+  have hwᵢC : w₁ ∈ C ∨ w₂ ∈ C := hminc.left hadj
   rcases hwᵢC with hwᵢC | hwᵢC
   · refine Or.inl ⟨hwᵢC, ?_⟩; by_contra! hwv; exact absurd (hwv ▸ hadj) (hnadj w₂)
   · refine Or.inr ⟨hwᵢC, ?_⟩; by_contra! hwv; exact absurd (hwv ▸ hadj).symm (hnadj w₁)
@@ -109,7 +109,7 @@ lemma hall_condition {hbi : G.IsBipartiteWith s t} (hminC : IsMinSizeCover G C)
     _ = #C := congr_arg (fun x : Set V => #x) (by simpa using hAsubC)
   suffices h : ∀ {v w : V}, G.Adj v w → v ∈ C → v ∈ C' ∨ w ∈ C' from by
     intro v w hadj
-    rcases hminC.left v w hadj with hvC | hwC
+    rcases hminC.left hadj with hvC | hwC
     · exact h hadj hvC
     · exact (h hadj.symm hwC).symm
   intro v w hadj hvC

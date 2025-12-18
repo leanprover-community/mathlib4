@@ -108,7 +108,7 @@ private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
       (distinctPairs hP G ε) := by
   simp +unfoldPartialApp only [distinctPairs, Set.PairwiseDisjoint,
-    Function.onFun, disjoint_left, mem_product]
+    Function.onFun, Finset.disjoint_left, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1

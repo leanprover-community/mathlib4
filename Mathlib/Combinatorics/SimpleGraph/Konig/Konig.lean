@@ -108,7 +108,7 @@ lemma konig_finite_matching
     have hwG: w ∈ G'.verts := Or.inr (Or.inr ⟨CS, rfl⟩)
     obtain ⟨hadj, hnv, hnw⟩ := hf C hCS;
     have hadj_coe: G'.coe.Adj ⟨v, hvG⟩ ⟨w, hwG⟩ := Or.inr ⟨⟨C, hCS⟩, Or.inl ⟨rfl, rfl⟩⟩
-    rcases hC _ _ hadj_coe <;> grind
+    rcases hC hadj_coe <;> grind
   have h : #C ≤ #M.edgeSet := by
     obtain ⟨N', ⟨hN', hN'card⟩⟩ := konig_finite_graph (G := G'.coe) (hbi := hbi') ⟨hC, hCmin⟩
     let N : Subgraph G := subgraph_upcast N'
@@ -121,7 +121,7 @@ lemma konig_finite_matching
     intro v w hadj
     have hadj' : G'.Adj v w := Or.inl hadj
     have hadj'_coe : G'.coe.Adj ⟨v, G'.edge_vert hadj'⟩ ⟨w, G'.edge_vert hadj'.symm⟩ := hadj'
-    rcases hC _ _ hadj'_coe <;> grind
+    rcases hC hadj'_coe <;> grind
   have hfinC : #C < ℵ₀ := lt_of_le_of_lt h hfin
   suffices hsub: Subtype.val '' C ⊆ M.verts from ⟨hsub, heq_subtype ▸ h, by simpa⟩
   rintro v hvC
@@ -138,7 +138,7 @@ lemma konig_finite_matching
   have hvwM : v ∈ M.verts ∧ w ∈ M.verts := ⟨M.edge_vert hadj, M.edge_vert hadj.symm⟩
   have hvwG : v ∈ G'.verts ∧ w ∈ G'.verts := ⟨Or.inl hvwM.1, Or.inl hvwM.2⟩
   have : G'.coe.Adj ⟨v, hvwG.1⟩ ⟨w, hvwG.2⟩ := Or.inl hadj
-  rcases hC _ _ this with hC | hC
+  rcases hC this with hC | hC
   · use ⟨v, ⟨by simpa [hvwG] using hC, M.edge_vert hadj⟩⟩
     simpa [f, hvw] using hM.1.toEdge_eq_of_adj hvwM.1 hadj
   · use ⟨w, ⟨by simpa [hvwG] using hC, M.edge_vert hadj.symm⟩⟩

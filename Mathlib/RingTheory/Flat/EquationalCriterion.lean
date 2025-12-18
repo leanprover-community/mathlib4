@@ -160,7 +160,7 @@ theorem tfae_equational_criterion : List.TFAE [
         LinearMap.congr_fun ha'y' (Finsupp.single i 1)
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
-        ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
+        ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using DFunLike.congr_fun ha' j
   tfae_finish
 

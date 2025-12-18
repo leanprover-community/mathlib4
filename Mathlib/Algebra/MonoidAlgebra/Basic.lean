@@ -263,28 +263,25 @@ variable (k A)
 @[to_additive (dont_translate := A)
 /-- If `e : G ≃+ H` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
-def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] :=
-  .ofLinearEquiv
-    (Finsupp.domLCongr e)
-    (by ext; simp [one_def, MonoidAlgebra])
-    (fun f g ↦ by
-      classical ext; simp [mul_def]; simp [MonoidAlgebra, Finsupp.single_apply, e.eq_symm_apply])
+def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] where
+  toRingEquiv := mapDomainRingEquiv A e
+  __ := Finsupp.domLCongr (R := k) (M := A) e.toEquiv
+  commutes' _ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma domCongr_apply (e : G ≃* H) (x : A[G]) (h : H) : domCongr k A e x h = x (e.symm h) := by
+  simp [domCongr]
 
 @[to_additive]
-theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
-  AlgHom.ext fun _ => equivMapDomain_eq_mapDomain _ _
+theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e := rfl
 
 @[to_additive (attr := simp)]
-theorem domCongr_apply (e : G ≃* H) (f : A[G]) (h : H) : domCongr k A e f h = f (e.symm h) := rfl
-
-@[to_additive (attr := simp)]
-theorem domCongr_support (e : G ≃* H) (f : A[G]) : (domCongr k A e f).support = f.support.map e :=
-  rfl
+lemma domCongr_support (e : G ≃* H) (f : A[G]) : (domCongr k A e f).support = f.support.map e := by
+  ext; simp
 
 @[to_additive (attr := simp)]
 theorem domCongr_single (e : G ≃* H) (g : G) (a : A) :
-    domCongr k A e (single g a) = single (e g) a :=
-  Finsupp.equivMapDomain_single _ _ _
+    domCongr k A e (single g a) = single (e g) a := by simp [domCongr]
 
 @[to_additive (attr := simp)]
 lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
@@ -407,15 +404,21 @@ That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra R[M] S[M] :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
 
-attribute [local instance] algebraMonoidAlgebra
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.algebraMonoidAlgebra
+  AddMonoidAlgebra.algebraAddMonoidAlgebra
+
+open scoped AlgebraMonoidAlgebra
 
 @[to_additive (attr := simp)]
 lemma algebraMap_def : algebraMap R[M] S[M] = mapRangeRingHom M (algebraMap R S) := rfl
 
 @[to_additive (dont_translate := R)]
-instance [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
-    IsScalarTower R S[M] T[M] :=
+lemma isScalarTower_monoidAlgebra [CommSemiring T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] : IsScalarTower R S[M] T[M] :=
   .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
+
+scoped[AlgebraMonoidAlgebra] attribute [instance] MonoidAlgebra.isScalarTower_monoidAlgebra
+  AddMonoidAlgebra.vaddAssocClass_addMonoidAlgebra
 
 end MonoidAlgebra
 

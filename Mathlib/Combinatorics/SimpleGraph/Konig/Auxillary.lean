@@ -136,7 +136,7 @@ public lemma konig_card_matching_le_card_cover
   simp only [SimpleGraph.IsVertexCover] at hC
   have hadj : M.Adj v w := by simpa only [Subgraph.mem_edgeSet] using he
   have hverts : v ∈ M.verts ∧ w ∈ M.verts := ⟨M.edge_vert hadj, M.edge_vert hadj.symm⟩
-  have : v ∈ C ∨ w ∈ C := hC v w <| M.adj_sub hadj
+  have : v ∈ C ∨ w ∈ C := hC <| M.adj_sub hadj
   rcases this with hvC | hwC <;> simp only [Subtype.exists, f]
   · refine ⟨v, ⟨hvC, ?_⟩⟩; simp [hverts, hM.toEdge_eq_of_adj hverts.left hadj]
   · refine ⟨w, ⟨hwC, ?_⟩⟩; simp [hverts, hM.toEdge_eq_of_adj hverts.right hadj.symm]
