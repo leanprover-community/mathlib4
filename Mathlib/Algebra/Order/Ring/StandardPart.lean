@@ -231,7 +231,7 @@ theorem mk_ratCast (q : ℚ) : mk (q : FiniteElement K) = q := by
   cases q with | div n d hd
   rw [← mul_left_inj' (c := ↑d) (mod_cast hd), ← map_natCast mk d, ← map_mul,
     ← FiniteElement.mk_natCast (mk_natCast_nonneg d), FiniteElement.mk_mul]
-  aesop
+  simp_all
 
 /-- An embedding from an Archimedean field into `K` induces an embedding into
 `FiniteResidueField K`. -/
