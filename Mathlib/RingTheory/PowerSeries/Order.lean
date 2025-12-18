@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # Formal power series (in one variable) - Order
 
@@ -135,6 +136,15 @@ theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
   | top => simp
   | coe n => simp [order_eq_nat]
 
+theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine MvPowerSeries.le_order fun d hd => by
+      have : coeff ↑(Finsupp.degree d) φ = 0 := coeff_of_lt_order _ hd
+      have eq_aux : d.degree = d () := Finset.sum_eq_single _ (by simp) (by simp)
+      exact (PowerSeries.coeff_def rfl (R := R)) ▸ (eq_aux ▸ this)
+  · refine le_order φ (MvPowerSeries.order φ) fun i hi => by
+      rw [← Finsupp.degree_single () i] at hi
+      exact MvPowerSeries.coeff_of_lt_order hi
 
 /-- The order of the sum of two formal power series
 is at least the minimum of their orders. -/
