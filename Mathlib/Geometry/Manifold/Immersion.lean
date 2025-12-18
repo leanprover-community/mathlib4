@@ -49,6 +49,8 @@ This shortens the overall argument, as the definition of submersions has the sam
   replacing the complement `F` by an isomorphic copy
 * `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
+* `IsImmersionAt.exists_nbhd_restr_isEmbedding`: if `f` is an immersion at `x`, then `x` has a
+  neighbourhood on which `f` is an embedding
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
 * `IsImmersion.id`: the identity map is an immersion
@@ -685,6 +687,15 @@ lemma _root_.IsOpen.isImmersionAt :
   exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
     fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
     by simp [hx.isImmersionAtOfComplement_complement]⟩
+
+open Topology in
+/-- If `f` an immersion at `x`, then `x` has an open neighbourhood `s` such that the restriction
+of `f` to `s` is an embedding. -/
+lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt I J n f x) :
+    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ IsEmbedding (s.restrict f) := by
+  rw [IsImmersionAt_def] at h
+  obtain ⟨F, _, _, h⟩ := h
+  exact h.exists_nbhd_restr_isEmbedding
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
