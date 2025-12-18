@@ -161,14 +161,14 @@ lemma FromOdd_parts_sum {n : ℕ} (P : n.Partition) : (FromOdd_parts P).sum = n 
   simpa [P.parts_sum] using (Finset.sum_multiset_count P.parts).symm
 
 /-- The map from odd partitions to distinct partitions on the `Partition` level. -/
-def FromOdd {n : ℕ} (P : n.Partition) (_ : P ∈ odds n) : n.Partition :=
+def FromOdd {n : ℕ} (P : n.Partition) : n.Partition :=
   { parts := FromOdd_parts P,
     parts_pos := FromOdd_parts_pos P,
     parts_sum := FromOdd_parts_sum P }
 
 /-- The image of an odd partition under `FromOdd` is a distinct partition. -/
 theorem InDist {n : ℕ} (P : n.Partition) (P_odd : P ∈ (odds n)) :
-    FromOdd P P_odd ∈ (distincts n) := by
+    FromOdd P ∈ (distincts n) := by
   simp only [distincts, FromOdd, Finset.mem_filter, Finset.mem_univ, true_and]
   rw [FromOdd_parts]
   apply Multiset.nodup_bind.mpr
@@ -217,7 +217,7 @@ lemma FromDistPart_sum (b : ℕ) : (FromDistPart b).sum = b := by
 /-- The multiset which is the union of `FromDistPart b` over distinct parts `b` of a partition `Q`.
 This is the map from distinct partitions to odd partitions on the `Multiset` level. -/
 def FromDist_parts {n : ℕ} (Q : n.Partition) : Multiset ℕ :=
-  ∑ b' ∈ Q.parts.toFinset, (FromDistPart b')
+  ∑ b ∈ Q.parts.toFinset, (FromDistPart b)
 
 /-- Each part in the multiset `FromDist_parts` is positive. -/
 lemma FromDist_parts_pos {n : ℕ} (Q : n.Partition) {a : ℕ} : a ∈ (FromDist_parts Q) → a > 0 := by
@@ -316,10 +316,10 @@ Finally, we use `LeftInvPart_SameHof` to conclude that the total contribution is
 binary expansion of the original multiplicity of `a` in `P`.
 -/
 theorem LeftInv {n : ℕ} (P : n.Partition) (P_odd : P ∈ odds n) :
-    FromDist (FromOdd P P_odd) (InDist P P_odd) = P := by
+    FromDist (FromOdd P) (InDist P P_odd) = P := by
   ext a
   simp only [FromDist, FromDist_parts, Multiset.count_sum']
-  have hsubset : (FromOddPart P a).toFinset ⊆ (FromOdd P P_odd).parts.toFinset := by
+  have hsubset : (FromOddPart P a).toFinset ⊆ (FromOdd P).parts.toFinset := by
     apply Multiset.toFinset_subset.mpr
     simp only [FromOdd, FromOdd_parts]
     apply Multiset.subset_of_le
@@ -493,7 +493,7 @@ Such `a` has to be `hof b`, so instead of `FromOdd` we can consider only `FromOd
 The reduced case is then handled by `RightInvPart_same_hof`.
 -/
 theorem RightInv {n : ℕ} (Q : n.Partition) (Q_dist : Q ∈ distincts n) :
-    FromOdd (FromDist Q Q_dist) (InOdd Q Q_dist) = Q := by
+    FromOdd (FromDist Q Q_dist) = Q := by
   ext b
   simp only [FromOdd, FromOdd_parts]
   rw [← Finsetsum_eq_Bind]
@@ -527,4 +527,4 @@ theorem RightInv {n : ℕ} (Q : n.Partition) (Q_dist : Q ∈ distincts n) :
 /-- Euler's identity: The number of odd partitions of `n` equals
 the number of distinct partitions of `n`. -/
 theorem EulerIdentity (n : ℕ) : (odds n).card = (distincts n).card :=
-  Finset.card_bij' FromOdd FromDist InDist InOdd LeftInv RightInv
+  Finset.card_bij' (fun P _ ↦ FromOdd P) FromDist InDist InOdd LeftInv RightInv
