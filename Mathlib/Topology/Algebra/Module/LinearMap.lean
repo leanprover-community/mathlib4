@@ -691,14 +691,17 @@ end
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
 @[simp]
-theorem smulRight_one_one (c : R₁ →L[R₁] M₂) : smulRight (1 : R₁ →L[R₁] R₁) (c 1) = c := by
+theorem smulRight_id_map_one (c : R₁ →L[R₁] M₂) : smulRight (.id R₁ R₁) (c 1) = c := by
   ext
   simp [← ContinuousLinearMap.map_smul_of_tower]
 
 @[simp]
-theorem smulRight_one_eq_iff {f f' : M₂} :
-    smulRight (1 : R₁ →L[R₁] R₁) f = smulRight (1 : R₁ →L[R₁] R₁) f' ↔ f = f' := by
-  simp only [ContinuousLinearMap.ext_ring_iff, smulRight_apply, one_apply, one_smul]
+theorem smulRight_id_eq_iff {f f' : M₂} :
+    smulRight (.id R₁ R₁) f = smulRight (.id R₁ R₁) f' ↔ f = f' := by
+  simp [ContinuousLinearMap.ext_ring_iff]
+
+@[deprecated (since := "2025-12-18")] alias smulRight_one_one := smulRight_id_map_one
+@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := smulRight_id_eq_iff
 
 theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =

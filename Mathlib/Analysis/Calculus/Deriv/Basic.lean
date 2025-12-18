@@ -113,7 +113,7 @@ variable [ContinuousSMul 𝕜 F]
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges along the filter `L`.
 -/
 def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (x : 𝕜) (L : Filter 𝕜) :=
-  HasFDerivAtFilter f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x L
+  HasFDerivAtFilter f (smulRight (.id 𝕜 𝕜) f') x L
 
 /-- `f` has the derivative `f'` at the point `x` within the subset `s`.
 
@@ -133,7 +133,7 @@ def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
 
 That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. -/
 def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
-  HasStrictFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x
+  HasStrictFDerivAt f (smulRight (.id 𝕜 𝕜) f') x
 
 end
 /-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
