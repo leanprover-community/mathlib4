@@ -326,7 +326,7 @@ jobs:
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
             # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
             echo "Checking out parent commit and getting cache for those files"
-            git checkout HEAD^
+            git checkout ${{ github.event.before || 'HEAD^' }}
             ../master-branch/.lake/build/bin/cache get
             # Run again with --repo, to ensure we actually get the oleans.
             ../master-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
