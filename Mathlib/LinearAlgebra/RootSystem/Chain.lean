@@ -225,6 +225,7 @@ lemma coe_chainBotCoeff_eq_sSup :
 
 omit h
 
+set_option backward.privateInPublic true in
 private lemma chainCoeff_reflectionPerm_left_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
@@ -240,9 +241,12 @@ private lemma chainCoeff_reflectionPerm_left_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-05-28")]
 alias chainCoeff_reflection_perm_left_aux := chainCoeff_reflectionPerm_left_aux
 
+set_option backward.privateInPublic true in
 private lemma chainCoeff_reflectionPerm_right_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
@@ -258,6 +262,8 @@ private lemma chainCoeff_reflectionPerm_right_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-05-28")]
 alias chainCoeff_reflection_perm_right_aux := chainCoeff_reflectionPerm_right_aux
 

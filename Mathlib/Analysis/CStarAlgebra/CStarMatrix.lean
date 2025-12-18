@@ -623,6 +623,7 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.privateInPublic true in
 private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 

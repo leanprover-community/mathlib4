@@ -25,6 +25,8 @@ import subprocess
 
 TARGET_LINE = "@[expose] public section"
 INSERT = ["", "set_option backward.privateInPublic false", "set_option backward.privateInPublic.warn true"]
+SET1 = "set_option backward.privateInPublic false"
+SET2 = "set_option backward.privateInPublic.warn true"
 
 
 def process_file(path: Path) -> tuple[bool, str]:
@@ -39,13 +41,45 @@ def process_file(path: Path) -> tuple[bool, str]:
         if lines[i].strip() == TARGET_LINE:
             # Examine the next few lines to see if we've already got the option
             j = i + 1
-            next_chunk = "\n".join(lines[j : min(n, j + 6)])
+            # capture up to the next 6 lines (should be enough)
+            next_chunk_lines = lines[j : min(n, j + 6)]
+            next_chunk = "\n".join(next_chunk_lines)
             if "set_option backward.privateInPublic" in next_chunk:
-                # already present for this occurrence
+                # already present for this occurrence -> leave as-is
                 pass
             else:
                 out.extend(INSERT)
                 changed = True
+        i += 1
+
+    new_text = "\n".join(out) + ("\n" if text.endswith("\n") else "")
+    return changed, new_text
+
+
+def revert_file(path: Path) -> tuple[bool, str]:
+    """Remove previously-inserted set_option lines after the target line."""
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    out: list[str] = []
+    changed = False
+    i = 0
+    n = len(lines)
+    while i < n:
+        out.append(lines[i])
+        if lines[i].strip() == TARGET_LINE:
+            # Look ahead for the exact pattern we inserted: optional blank, then SET1 and SET2
+            j = i + 1
+            if j < n and lines[j].strip() == "":
+                # blank present
+                if j + 2 < n and lines[j + 1].strip() == SET1 and lines[j + 2].strip() == SET2:
+                    # skip the blank and the two set_option lines
+                    i = j + 2
+                    changed = True
+            else:
+                # no blank; check for SET1 then SET2
+                if j + 1 < n and lines[j].strip() == SET1 and lines[j + 1].strip() == SET2:
+                    i = j + 1
+                    changed = True
         i += 1
 
     new_text = "\n".join(out) + ("\n" if text.endswith("\n") else "")
@@ -99,6 +133,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", default="warnings_only.txt", help="Path to list file")
     ap.add_argument("--apply", action="store_true", help="Apply changes in-place")
+    ap.add_argument("--revert", action="store_true", help="Remove previously inserted set_option lines")
     ap.add_argument("--git-commit", action="store_true", help="Commit changes (requires --apply)")
     args = ap.parse_args()
 
@@ -110,7 +145,10 @@ def main() -> int:
 
     changed_files: list[Path] = []
     for f in files:
-        changed, new_text = process_file(f)
+        if args.revert:
+            changed, new_text = revert_file(f)
+        else:
+            changed, new_text = process_file(f)
         if changed:
             old_text = f.read_text(encoding="utf-8")
             diff = difflib.unified_diff(
@@ -133,7 +171,10 @@ def main() -> int:
         if args.apply and args.git_commit:
             try:
                 subprocess.run(["git", "add"] + [str(p) for p in changed_files], check=True)
-                msg = "Insert backward.privateInPublic set_option after @[expose] public section"
+                if args.revert:
+                    msg = "Remove backward.privateInPublic set_option after @[expose] public section"
+                else:
+                    msg = "Insert backward.privateInPublic set_option after @[expose] public section"
                 subprocess.run(["git", "commit", "-m", msg], check=True)
                 print("Committed the changes.")
             except subprocess.CalledProcessError as e:
