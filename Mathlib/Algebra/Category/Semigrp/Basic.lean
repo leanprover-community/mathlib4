@@ -78,9 +78,9 @@ structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
-set_option backward.privateInPublic true in
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
   private mk ::
   /-- The underlying `MulHom`. -/
@@ -88,17 +88,17 @@ structure MagmaCat.Hom (A B : MagmaCat.{u}) where
 
 namespace MagmaCat
 
-@[to_additive]
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+@[to_additive]
 instance : Category MagmaCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-@[to_additive]
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+@[to_additive]
 instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
