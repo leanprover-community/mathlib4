@@ -25,27 +25,34 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-/-- Natural embedding `ℝ → ℝ*`. -/
-@[coe] def ofReal (r : ℝ) : ℝ* :=
-  ofFun <| Function.const _ r
+/-- Construct a hyperreal number from a sequence of real numbers. -/
+def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
+
+theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 instance : Zero ℝ* where
-  zero := ofReal 0
+  zero := ofSeq 0
 
 instance : One ℝ* where
-  one := ofReal 1
+  one := ofSeq 1
 
 instance : Inhabited ℝ* where
   default := 0
 
-noncomputable instance : Field ℝ* :=
-  inferInstanceAs (Field (Germ _ _))
+noncomputable instance : Field ℝ* where
+  zero := 0
+  one := 1
+  __ := inferInstanceAs (Field (Germ _ _))
 
 noncomputable instance : LinearOrder ℝ* :=
   inferInstanceAs (LinearOrder (Germ _ _))
 
 instance : IsStrictOrderedRing ℝ* :=
   inferInstanceAs (IsStrictOrderedRing (Germ _ _))
+
+/-- Natural embedding `ℝ → ℝ*`. -/
+@[coe] def ofReal (r : ℝ) : ℝ* :=
+  ofSeq (Function.const _ r)
 
 noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
 
@@ -136,11 +143,6 @@ theorem coe_max (x y : ℝ) : ((max x y : ℝ) : ℝ*) = max ↑x ↑y :=
 @[simp, norm_cast]
 theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
   Germ.const_min _ _
-
-/-- Construct a hyperreal number from a sequence of real numbers. -/
-def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
-
-theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
