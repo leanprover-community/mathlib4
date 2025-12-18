@@ -198,7 +198,7 @@ is a global integral curve of `v`. -/
 lemma isMIntegralCurve_const {x : M} (h : v x = 0) : IsMIntegralCurve (fun _ ↦ x) v := by
   intro t
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
-    ContinuousLinearMap.smulRight_one_one]
+    ContinuousLinearMap.smulRight_one_map_one]
   exact hasMFDerivAt_const ..
 
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_const := isMIntegralCurve_const

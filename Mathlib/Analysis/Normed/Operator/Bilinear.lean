@@ -405,6 +405,9 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 @[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
   simp [← smulRight_id_eq_toSpanSingleton, norm_id_of_nontrivial_seminorm ⟨(1 : 𝕜), by simp⟩]
 
+@[simp] theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_toSpanSingleton _
+
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
 `smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/

@@ -691,21 +691,20 @@ end
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
 @[simp]
-theorem smulRight_id_map_one (c : R₁ →L[R₁] M₂) : smulRight (.id R₁ R₁) (c 1) = c := by
+theorem smulRight_one_map_one (c : R₁ →L[R₁] M₂) : smulRight (1 : R₁ →L[R₁] R₁) (c 1) = c := by
   ext
   simp [← ContinuousLinearMap.map_smul_of_tower]
 
+@[deprecated (since := "2025-12-18")] alias smulRight_one_one := smulRight_one_map_one
+
 @[simp]
-theorem smulRight_id_eq_iff {f f' : M₂} :
-    smulRight (.id R₁ R₁) f = smulRight (.id R₁ R₁) f' ↔ f = f' := by
+theorem smulRight_one_eq_iff {f f' : M₂} :
+    smulRight (1 : R₁ →L[R₁] R₁) f = smulRight (1 : R₁ →L[R₁] R₁) f' ↔ f = f' := by
   simp [ContinuousLinearMap.ext_ring_iff]
 
-@[deprecated (since := "2025-12-18")] alias smulRight_one_one := smulRight_id_map_one
-@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := smulRight_id_eq_iff
-
 theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (smulRight (.id R₁ R₁) x).comp (smulRight (.id R₁ R₁) c) =
-      smulRight (.id R₁ R₁) (c • x) := by
+    (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
+      smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
   ext
   simp
 
@@ -738,7 +737,7 @@ theorem toSpanSingleton_apply_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
 @[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
 
 @[simp] theorem toSpanSingleton_apply_map_one (c : R₁ →L[R₁] M₂) : toSpanSingleton R₁ (c 1) = c :=
-  smulRight_id_map_one _
+  smulRight_one_map_one _
 
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
@@ -774,7 +773,7 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
 
 @[simp]
 theorem toSpanSingleton_inj {f f' : M₂} :
-    toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := smulRight_id_eq_iff
+    toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := smulRight_one_eq_iff
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
@@ -896,17 +895,15 @@ instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
-theorem smulRight_id_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    smulRight (.id R R) c ^ n = smulRight (.id R R) (c ^ n) := by
+theorem smulRight_one_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
+    smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
   induction n with
   | zero => ext; simp
   | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
 
-@[deprecated (since := "2025-12-18")] alias smulRight_one_pow := smulRight_id_pow
-
 theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
     toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) :=
-  smulRight_id_pow _ _
+  smulRight_one_pow _ _
 
 section
 
