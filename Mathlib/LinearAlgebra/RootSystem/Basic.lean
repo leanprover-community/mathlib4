@@ -255,7 +255,7 @@ def mk'' :
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
+    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
 
 @[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
 
