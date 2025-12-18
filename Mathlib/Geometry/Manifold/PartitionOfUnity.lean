@@ -641,11 +641,11 @@ theorem exists_contMDiffSection_forall_mem_convex_of_local
   have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
   exact h_mem_t j x h_x_in_Umap_j
 
-@[deprecated (since := "2025-11-06")]
+@[deprecated (since := "2025-12-17")]
 alias exists_contMDiffOn_section_forall_mem_convex_of_local :=
   exists_contMDiffSection_forall_mem_convex_of_local
 
-@[deprecated (since := "2025-11-06")]
+@[deprecated (since := "2025-12-17")]
 alias exists_smooth_section_forall_mem_convex_of_local :=
   exists_contMDiffSection_forall_mem_convex_of_local
 
@@ -665,11 +665,11 @@ theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (
       ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
   ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
-@[deprecated (since := "2025-11-06")]
+@[deprecated (since := "2025-12-17")]
 alias exists_contMDiffOn_forall_mem_convex_of_local :=
   exists_contMDiffMap_forall_mem_convex_of_local
 
-@[deprecated (since := "2025-11-06")]
+@[deprecated (since := "2025-12-17")]
 alias exists_smooth_forall_mem_convex_of_local := exists_contMDiffMap_forall_mem_convex_of_local
 
 /-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be
@@ -683,7 +683,7 @@ theorem exists_contMDiffMap_forall_mem_convex_of_local_const (ht : ∀ x, Convex
     let ⟨c, hc⟩ := Hloc x
     ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
 
-@[deprecated (since := "2025-11-06")]
+@[deprecated (since := "2025-12-17")]
 alias exists_smooth_forall_mem_convex_of_local_const :=
   exists_contMDiffMap_forall_mem_convex_of_local_const
 

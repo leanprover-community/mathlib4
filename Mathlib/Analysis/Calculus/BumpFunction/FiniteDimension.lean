@@ -74,7 +74,7 @@ theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s
     apply mem_closedBall_self
     exact (half_pos d_pos).le
 
-@[deprecated (since := "2025-11-17")]
+@[deprecated (since := "2025-12-17")]
 alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
 
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
@@ -190,7 +190,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
 
-@[deprecated (since := "2025-11-17")]
+@[deprecated (since := "2025-12-17")]
 alias IsOpen.exists_smooth_support_eq := IsOpen.exists_contDiff_support_eq
 
 end
