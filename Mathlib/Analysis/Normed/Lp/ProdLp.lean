@@ -1140,7 +1140,7 @@ def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α �
     · simp [WithLp.prod_edist_eq_add hp, ENNReal.rpow_inv_rpow hp.ne', add_assoc]
 
 /-- Right identity of the `L^p` product as an isometric equivalence. -/
-@[simps! symm_apply]
+@[simps! apply symm_apply]
 def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
   __ := (WithLp.equiv _ _).trans (Equiv.prodUnique _ _)
   isometry_toFun x y : edist x.fst y.fst = edist x y := by
@@ -1150,16 +1150,14 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
     · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 
-@[simp]
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
   rfl
 
 /-- Left identity of the `L^p` product as an isometric equivalence. -/
-@[simps! symm_apply]
+@[simps! apply symm_apply]
 def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
   (withLpProdComm p α β).trans (withLpProdUnique p β α)
 
-@[simp]
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithLp.snd :=
   rfl
 
@@ -1222,21 +1220,19 @@ def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ₗᵢ[𝕜] WithL
   norm_map' := (IsometryEquiv.withLpProdAssoc p α β γ).isometry.norm_map_of_map_zero rfl
 
 /-- Right identity of the `L^p` product as a linear isometric equivalence. -/
-@[simps! symm_apply]
+@[simps! apply symm_apply]
 def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
   __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
   norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
 
-@[simp]
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
   rfl
 
 /-- Left identity of the `L^p` product as a linear isometric equivalence. -/
-@[simps! symm_apply]
+@[simps! apply symm_apply]
 def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
   (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
 
-@[simp]
 theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=
   rfl
 
