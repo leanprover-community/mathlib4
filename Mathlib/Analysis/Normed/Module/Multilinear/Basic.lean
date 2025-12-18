@@ -263,7 +263,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         rcases eq_or_ne j i with rfl | h
         · simp only [ite_true, Function.update_self]
           exact norm_le_pi_norm (m₁ - m₂) _
-        · simp [h, - le_sup_iff, - sup_le_iff, sup_le_sup, norm_le_pi_norm]
+        · simp [h, -le_sup_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
         simp [card_univ_diff]
@@ -730,7 +730,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def]
   refine (List.norm_prod_le' ?_).trans_eq ?_
-  · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil_iff]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 

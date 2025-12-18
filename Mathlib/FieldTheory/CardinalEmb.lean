@@ -83,7 +83,7 @@ noncomputable section
 set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => (Module.rank F E).ord.toType
+local notation "ι" => (Module.rank F E).ord.ToType
 
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
@@ -135,7 +135,7 @@ def leastExt : ι → ι :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
       · exact (Subalgebra.equivOfEq _ _ <| adjoin_toSubalgebra_of_isAlgebraic
-          fun x _ ↦ IsAlgebraic.isAlgebraic x)|>.toLinearEquiv.rank_eq.trans_lt <|
+          fun x _ ↦ IsAlgebraic.isAlgebraic x) |>.toLinearEquiv.rank_eq.trans_lt <|
           (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
 
 local notation "φ" => leastExt F E
@@ -248,7 +248,7 @@ theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ 
 
 section Lim
 
-variable {i : WithTop (Module.rank F E).ord.toType} -- WithTop ι doesn't work
+variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le

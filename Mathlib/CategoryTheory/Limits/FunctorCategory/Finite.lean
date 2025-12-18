@@ -21,7 +21,7 @@ that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {K : Type*} [Category K]
+variable {C : Type*} [Category* C] {K : Type*} [Category* K]
 
 instance [HasFiniteLimits C] : HasFiniteLimits (K ⥤ C) := ⟨fun _ ↦ inferInstance⟩
 
