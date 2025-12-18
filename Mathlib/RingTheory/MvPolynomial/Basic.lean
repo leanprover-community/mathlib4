@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
@@ -71,8 +72,24 @@ end CharZero
 
 section ExpChar
 
-instance [h : ExpChar R p] : ExpChar (MvPolynomial σ R) p := by
-  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+variable [ExpChar R p]
+
+instance : ExpChar (MvPolynomial σ R) p := by
+  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+
+theorem expand_char {f : MvPolynomial σ R} :
+    (f.expand p).map (frobenius R p) = f ^ p :=
+  f.induction_on' fun _ _ => by simp [monomial_pow, frobenius]
+    fun _ _ ha hb => by rw [map_add, map_add, ha, hb, add_pow_expChar]
+
+theorem map_expand_char_pow (f : MvPolynomial σ R) (n : ℕ) :
+    map (frobenius R p ^ n) (expand (p ^ n) f) = f ^ p ^ n := by
+  induction n with
+  | zero => simp [RingHom.one_def, map_id]
+  | succ _ n_ih =>
+    symm
+    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
+      expand_mul, ← map_expand]
 
 end ExpChar
 
