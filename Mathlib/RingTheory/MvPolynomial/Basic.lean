@@ -69,6 +69,13 @@ instance [CharZero R] : CharZero (MvPolynomial σ R) where
 
 end CharZero
 
+section ExpChar
+
+instance [h : ExpChar R p] : ExpChar (MvPolynomial σ R) p := by
+  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+
+end ExpChar
+
 section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)

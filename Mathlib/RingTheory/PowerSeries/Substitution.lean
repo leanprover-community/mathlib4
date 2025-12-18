@@ -257,6 +257,16 @@ theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
+omit [Algebra R S] in
+theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
+    (f.subst a).map h = (f.map h).subst (a.map h) := by
+  ext n
+  have {r : R} : h r = h.toAddMonoidHom r := rfl
+  rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
+    AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
+  intro d
+  simp [←map_pow]
+
 section
 
 theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeries R) :
