@@ -337,10 +337,10 @@ variable {U X : C} (m : U ⟶ X) [Mono m]
 def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
-along the characteristic map of `m`. -/
-noncomputable def iso : MonoOver.mk' m ≅
+    along the characteristic map of `m`. -/
+noncomputable def iso : MonoOver.mk m ≅
     Subobject.representative.obj ((Subobject.pullback (h.χ m)).obj h.Ω₀) :=
-  (Subobject.representativeIso (.mk' m)).symm ≪≫ Subobject.representative.mapIso
+  (Subobject.representativeIso (.mk m)).symm ≪≫ Subobject.representative.mapIso
     (eqToIso (h.pullback_homEquiv_symm_obj_Ω₀ (.mk m)).symm)
 
 /-- `h.π m` is the first projection in the following pullback square:
@@ -355,21 +355,23 @@ noncomputable def iso : MonoOver.mk' m ≅
     ```
 -/
 noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
-  (h.iso m).hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀
+  (h.iso m).hom.hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀
 
 @[reassoc (attr := simp)]
 lemma iso_inv_left_π :
-    (h.iso m).inv.left ≫ h.π m = Subobject.pullbackπ (h.χ m) h.Ω₀ := by
+    (h.iso m).inv.hom.left ≫ h.π m = Subobject.pullbackπ (h.χ m) h.Ω₀ := by
   dsimp only [π]
   rw [← Over.comp_left_assoc]
   convert Category.id_comp _ using 2
   exact (MonoOver.forget _ ⋙ Over.forget _).congr_map (h.iso m).inv_hom_id
 
 @[reassoc (attr := simp)]
-lemma iso_inv_left_comp :
-    (h.iso m).inv.left ≫ m =
+lemma iso_inv_hom_left_comp :
+    (h.iso m).inv.hom.left ≫ m =
       ((Subobject.pullback (h.χ m)).obj h.Ω₀).arrow :=
   MonoOver.w (h.iso m).inv
+
+@[deprecated (since := "2025-12-18")] alias iso_inv_left_comp := iso_inv_hom_left_comp
 
 lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     IsPullback m (h.π m) (h.χ m) h.Ω₀.arrow := by

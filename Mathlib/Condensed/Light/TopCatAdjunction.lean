@@ -139,7 +139,7 @@ instance (X : LightCondSet.{u}) : SequentialSpace (lightCondSetToTopCat.obj X) :
 /-- The functor from light condensed sets to topological spaces lands in sequential spaces. -/
 def lightCondSetToSequential : LightCondSet.{u} ⥤ Sequential.{u} where
   obj X := Sequential.of (lightCondSetToTopCat.obj X)
-  map f := toTopCatMap f
+  map f := InducedCategory.homMk (toTopCatMap f)
 
 /--
 The functor from topological spaces to light condensed sets restricted to sequential spaces.

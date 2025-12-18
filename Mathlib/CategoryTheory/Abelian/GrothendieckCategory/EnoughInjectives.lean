@@ -220,7 +220,7 @@ at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
 @[simps]
 noncomputable def functorToMonoOver : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' (transfiniteIterate (largerSubobject hG) j A₀).arrow
+  obj j := MonoOver.mk (transfiniteIterate (largerSubobject hG) j A₀).arrow
   map {j j'} f := MonoOver.homMk (Subobject.ofLE _ _
       (monotone_transfiniteIterate _ _ (le_largerSubobject hG) (leOfHom f)))
 

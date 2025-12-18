@@ -347,6 +347,20 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
+@[simp]
+lemma InducedCategory.eqToHom_hom {C D : Type*} [Category D] {F : C → D}
+    {X Y : InducedCategory D F} (h : X = Y) :
+    (eqToHom h).hom = eqToHom (by subst h; rfl) := by
+  subst h
+  rfl
+
+@[simp]
+lemma ObjectProperty.eqToHom_hom {C : Type*} [Category C] {P : ObjectProperty C}
+    {X Y : P.FullSubcategory} (h : X = Y) :
+    (eqToHom h).hom = eqToHom (by subst h; rfl) := by
+  subst h
+  rfl
+
 /-- If `T ≃ D` is a bijection and `D` is a category, then
 `InducedCategory D e` is equivalent to `D`. -/
 @[simps]
@@ -355,19 +369,8 @@ def Equivalence.induced {T : Type*} (e : T ≃ D) :
   functor := inducedFunctor e
   inverse :=
     { obj := e.symm
-      map {X Y} f := show e (e.symm X) ⟶ e (e.symm Y) from
-        eqToHom (e.apply_symm_apply X) ≫ f ≫
-          eqToHom (e.apply_symm_apply Y).symm
-      map_comp {X Y Z} f g := by
-        dsimp
-        rw [Category.assoc]
-        erw [Category.assoc]
-        rw [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
-  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
-    dsimp
-    erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
-    rfl )
+      map f := InducedCategory.homMk (eqToHom (by simp) ≫ f ≫ eqToHom (by simp)) }
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
-  functor_unitIso_comp X := eqToHom_trans (by simp) (by simp)
 
 end CategoryTheory

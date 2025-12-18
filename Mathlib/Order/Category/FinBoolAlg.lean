@@ -58,7 +58,7 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  InducedCategory.category FinBoolAlg.toBoolAlg
+  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
@@ -68,7 +68,7 @@ instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := .of X
-  forget₂.map f := FinBddDistLat.ofHom f.hom
+  forget₂.map f := FinBddDistLat.ofHom f.hom.hom
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
@@ -79,7 +79,7 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.obj X := .of X
-  forget₂.map {X Y} f := PartOrd.ofHom f.hom
+  forget₂.map {X Y} f := InducedCategory.homMk (PartOrd.ofHom f.hom.hom)
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
   map_injective h := by
@@ -90,8 +90,8 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
 them. -/
 @[simps]
 def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := BoolAlg.ofHom e
-  inv := BoolAlg.ofHom e.symm
+  hom := InducedCategory.homMk (BoolAlg.ofHom e)
+  inv := InducedCategory.homMk (BoolAlg.ofHom e.symm)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
@@ -99,7 +99,7 @@ def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps map]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map f := BoolAlg.ofHom f.hom.dual
+  map f := InducedCategory.homMk (BoolAlg.ofHom f.hom.hom.dual)
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -121,4 +121,5 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| .of (Set X)
   map {X Y} f :=
-    Quiver.Hom.op <| BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f
+    Quiver.Hom.op <| InducedCategory.homMk <|
+      BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f

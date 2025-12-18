@@ -154,7 +154,7 @@ instance (X : CondensedSet.{u}) :
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
   obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
-  map f := toTopCatMap f
+  map f := InducedCategory.homMk (toTopCatMap f)
 
 /--
 The functor from topological spaces to condensed sets restricted to compactly generated spaces.

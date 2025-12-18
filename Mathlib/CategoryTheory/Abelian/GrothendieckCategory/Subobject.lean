@@ -50,8 +50,7 @@ functor `J ⥤ C`, and `f : c.pt ⟶ X` is induced by the inclusions,
 then `f` is a monomorphism. -/
 lemma mono_of_isColimit_monoOver : Mono f := by
   let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
-    { app j := (F.obj j).obj.hom
-      naturality _ _ f := (F.map f).w }
+    { app j := (F.obj j).obj.hom }
   have := NatTrans.mono_of_mono_app α
   exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
 

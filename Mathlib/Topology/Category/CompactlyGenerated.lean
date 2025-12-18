@@ -47,7 +47,7 @@ instance : CoeSort CompactlyGenerated Type* :=
 attribute [instance] is_compactly_generated
 
 instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
-  InducedCategory.category toTop
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -100,8 +100,8 @@ def homeoOfIso {X Y : CompactlyGenerated.{u, w}} (f : X ≅ Y) : X ≃ₜ Y wher
   invFun := f.inv
   left_inv := f.hom_inv_id_apply
   right_inv := f.inv_hom_id_apply
-  continuous_toFun := f.hom.hom.continuous
-  continuous_invFun := f.inv.hom.continuous
+  continuous_toFun := f.hom.hom.hom.continuous
+  continuous_invFun := f.inv.hom.hom.continuous
 
 /-- The equivalence between isomorphisms in `CompactlyGenerated` and homeomorphisms
 of topological spaces. -/

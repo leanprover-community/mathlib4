@@ -201,7 +201,7 @@ end ShrinkHoms
 namespace Shrink
 
 noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
-  InducedCategory.category (equivShrink C).symm
+  inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
@@ -229,11 +229,10 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
-    letI : Category S := InducedCategory.category (e'.trans e).symm
-    refine ⟨⟨S, this, ⟨?_⟩⟩⟩
-    refine (ShrinkHoms.equivalence C).trans <|
-      (skeletonEquivalence (ShrinkHoms C)).symm.trans
-        ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
+    exact ⟨⟨InducedCategory _ (e'.trans e).symm, inferInstance,
+      ⟨(ShrinkHoms.equivalence C).trans
+      ((skeletonEquivalence (ShrinkHoms C)).symm.trans
+      (inducedFunctor _).asEquivalence.symm)⟩⟩⟩
 
 instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
