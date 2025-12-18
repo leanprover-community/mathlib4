@@ -280,9 +280,8 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
-  have := decidableEqOfDecidableLE (α := Ideal A)
-  have := decidableLTOfDecidableLE (α := Ideal A)
+open Classical in
+instance : LinearOrder (Ideal A) :=
   Lattice.toLinearOrder (Ideal A)
 
 end

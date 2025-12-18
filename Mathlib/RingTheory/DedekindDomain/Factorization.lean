@@ -70,9 +70,9 @@ open scoped Classical in
 def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
   v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
 
-open Associates in
+open Classical Associates in
 theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
-    [DecidableEq (Ideal R)] {I : Ideal R} (hI : I ≠ 0) :
+    {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   classical

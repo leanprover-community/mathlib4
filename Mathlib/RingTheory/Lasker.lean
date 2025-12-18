@@ -45,7 +45,8 @@ variable {R}
 
 namespace Ideal
 
-lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
+open Classical in
+lemma decomposition_erase_inf {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) :
     ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
   induction s using Finset.eraseInduction with
@@ -88,7 +89,8 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     · rw [← hI, radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
       rw [hIJ, ← hJ, radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
-lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [DecidableEq (Ideal R)]
+open Classical in
+lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     {I : Ideal R} {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
@@ -97,7 +99,8 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [Decidab
   obtain ⟨u, hut, hu, hu'⟩ := decomposition_erase_inf ht
   exact ⟨u, hu, fun _ hi ↦ ht' (hut hi), ht''.mono hut, hu'⟩
 
-lemma IsLasker.minimal [DecidableEq (Ideal R)] (h : IsLasker R) (I : Ideal R) :
+open Classical in
+lemma IsLasker.minimal (h : IsLasker R) (I : Ideal R) :
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
       (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
