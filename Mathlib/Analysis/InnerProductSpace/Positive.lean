@@ -143,7 +143,7 @@ open scoped ComplexOrder in
 theorem IsPositive.isPositive_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsPositive) (hf' : f ≠ 0) {α : 𝕜} :
     (α • f).IsPositive ↔ 0 ≤ α := by
   refine ⟨fun h ↦ ?_, hf.smul_of_nonneg⟩
-  simp only [IsPositive, hf.isSymmetric.isSymmetric_smul_iff (hf'), smul_apply, inner_smul_left,
+  simp only [IsPositive, hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left,
     IsSelfAdjoint, RCLike.star_def, RCLike.nonneg_iff (K := 𝕜)] at h ⊢
   obtain ⟨h1, h2⟩ := h
   rw [← RCLike.conj_eq_iff_re.mp h1] at h2 ⊢
