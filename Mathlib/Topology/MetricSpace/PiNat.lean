@@ -979,7 +979,7 @@ def toPiNatEquiv : X ≃ PiNatEmbed X Y f where
   left_inv _ := rfl
   right_inv _ := rfl
 
-@[simp] lemma ofPiNat_inj {x y : PiNatEmbed X Y f} :  x.ofPiNat = y.ofPiNat ↔ x = y :=
+@[simp] lemma ofPiNat_inj {x y : PiNatEmbed X Y f} : x.ofPiNat = y.ofPiNat ↔ x = y :=
   (toPiNatEquiv X Y f).symm.injective.eq_iff
 
 @[simp] lemma «forall» {P : PiNatEmbed X Y f → Prop} : (∀ x, P x) ↔ ∀ x, P (toPiNat x) :=
