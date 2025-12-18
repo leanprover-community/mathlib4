@@ -79,7 +79,7 @@ and `aevel`, the expression does't look good. -/
 variable (q : ℕ) (hq : 0 < q)
 
 @[simp]
-theorem coeff_expand_smul (φ : PowerSeries R) (m : ℕ) :
+theorem coeff_expand_mul (φ : PowerSeries R) (m : ℕ) :
     (expand p hp φ).coeff (p * m) = φ.coeff m := by
   classical
   erw [coeff, ← smul_eq_mul, (Finsupp.smul_single p () m).symm, MvPowerSeries.coeff_expand_smul]
