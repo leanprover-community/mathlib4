@@ -308,15 +308,28 @@ jobs:
       - name: get cache (3/3 - finalize cache operation)
         id: get
         shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        env:
+          REF_NAME: ${{ github.head_ref || github.ref_name }}
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           cd pr-branch
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
+            # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
+            echo "Checking out parent commit and getting cache for those files"
+            git checkout HEAD^
+            ../master-branch/.lake/build/bin/cache get
+            # Run again with --repo, to ensure we actually get the oleans.
+            ../master-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
+
+            echo "Switching back to branch: $REF_NAME"
+            git checkout "$REF_NAME"
+
             echo "Fetching all remaining cache..."
 
             ../master-branch/.lake/build/bin/cache get
 
             # Run again with --repo, to ensure we actually get the oleans.
-            ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+            ../master-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
