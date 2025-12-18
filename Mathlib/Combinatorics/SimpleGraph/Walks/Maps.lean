@@ -114,7 +114,6 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | nil => simp at h
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
-      cases hinj h.1
       grind
 
 section mapLe

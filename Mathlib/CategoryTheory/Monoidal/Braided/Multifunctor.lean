@@ -23,7 +23,7 @@ phrased as equalities of natural transformations between trifunctors
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 open MonoidalCategory Functor
 

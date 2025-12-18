@@ -132,16 +132,16 @@ instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R 
 end
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R S[ι] := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R (MonoidAlgebra S ι) := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end MonoidAlgebra
 
