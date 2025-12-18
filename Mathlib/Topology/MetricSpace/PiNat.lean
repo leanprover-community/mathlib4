@@ -1147,6 +1147,10 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
   exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
 
+@[deprecated "This version is more general as compact metric spaces are separable"
+(since := "2025-11-27")] alias
+exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
+
 end MetricSpace
 end PiNatEmbed
 end Metric
