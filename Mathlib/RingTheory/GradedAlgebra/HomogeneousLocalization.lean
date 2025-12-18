@@ -689,7 +689,7 @@ lemma awayMapAux_mk (n a i hi) :
     (Localization.mk g ⟨f * g, (Submonoid.mem_powers_iff _ _).mpr ⟨1, by simp [hx]⟩⟩) = 1 := by
     rw [← Algebra.smul_def, Localization.smul_mk]
     exact Localization.mk_self ⟨f*g, _⟩
-  simp [awayMapAux]
+  simp only [awayMapAux, RingHom.coe_comp, Function.comp_apply, algebraMap_apply, val_mk]
   rw [Localization.awayLift_mk (hv := this), ← Algebra.smul_def,
     Localization.mk_pow, Localization.smul_mk]
   subst hx
@@ -795,7 +795,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     letI := (awayMap 𝒜 hg hx).toAlgebra
     IsLocalization.Away (isLocalizationElem hf hg) (Away 𝒜 x) := by
   letI := (awayMap 𝒜 hg hx).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨r, n, rfl⟩
     rw [map_pow, RingHom.algebraMap_toAlgebra]
     let z : Away 𝒜 x := Away.mk 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) (d + e)

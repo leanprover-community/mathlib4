@@ -374,7 +374,7 @@ theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) :=
   (mem_one_iff S).mpr ⟨x, rfl⟩
 
 theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
-  (mem_one_iff S).mpr ⟨1, RingHom.map_one _⟩
+  (mem_one_iff S).mpr ⟨1, map_one _⟩
 
 variable {S}
 
@@ -630,13 +630,13 @@ variable {S P}
 
 section Order
 
-@[deprecated _root_.add_le_add_left (since := "2025-09-14")]
+@[deprecated _root_.add_le_add_right (since := "2025-09-14")]
 theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J := _root_.add_le_add_left hIJ _
+    J' + I ≤ J' + J := _root_.add_le_add_right hIJ _
 
-@[deprecated mul_le_mul_left' (since := "2025-09-14")]
+@[deprecated mul_le_mul_right (since := "2025-09-14")]
 theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J := mul_le_mul_left' hIJ _
+    J' * I ≤ J' * J := mul_le_mul_right hIJ _
 
 @[deprecated le_mul_of_one_le_left' (since := "2025-09-14")]
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I :=
@@ -656,12 +656,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, RingHom.map_add]
+      rw [mem_setOf, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, RingHom.map_zero]
+    · rw [mem_setOf, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, RingHom.map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor

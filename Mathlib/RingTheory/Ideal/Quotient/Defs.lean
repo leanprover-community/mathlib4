@@ -112,6 +112,9 @@ theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
+lemma mk_eq_one_iff_sub_mem (x : R) : mk I x = 1 ↔ x - 1 ∈ I := by
+  rw [← mk_eq_mk_iff_sub_mem, map_one]
+
 @[simp]
 theorem mk_out (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x :=
   Quotient.out_eq x

@@ -135,17 +135,19 @@ instance : Top (Submodule R M) :=
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
   rfl
 
+@[simp] lemma mem_top {x : M} : x ∈ (⊤ : Submodule R M) := trivial
+
 @[simp]
 theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
   rfl
 
 @[simp]
-lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 @[simp]
-theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
-  trivial
+lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
 
 instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
@@ -214,7 +216,7 @@ theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
 
@@ -231,7 +233,7 @@ theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
 
 @[deprecated (since := "2025-08-31")] alias finset_inf_coe := coe_finsetInf
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
   rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
 
@@ -242,7 +244,7 @@ theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ 
   Set.mem_iInter₂
 
 @[simp]
-theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
 
 @[simp]

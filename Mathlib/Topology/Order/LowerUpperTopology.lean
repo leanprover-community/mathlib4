@@ -409,7 +409,7 @@ instance : ClosedIicTopology α :=
 theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
   IsLower.isClosed_upperClosure (α := αᵒᵈ) h
 
-/-- Every set open in the upper topology is a upper set. -/
+/-- Every set open in the upper topology is an upper set. -/
 theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
   IsLower.isLowerSet_of_isOpen (α := αᵒᵈ) h
 

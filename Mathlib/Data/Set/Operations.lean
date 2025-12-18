@@ -171,6 +171,14 @@ def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_
 @[simp] lemma rangeFactorization_bijective :
     (Set.rangeFactorization f).Bijective ↔ f.Injective := by simp [Function.Bijective]
 
+@[simp] lemma rangeFactorization_eq_rangeFactorization_iff {ι : Sort*} {α : Type*} {f : ι → α}
+    (a b : ι) : Set.rangeFactorization f a = Set.rangeFactorization f b ↔ f a = f b := by
+  simp [Set.rangeFactorization]
+
+lemma rangeFactorization_eq_iff {ι : Sort*} {α : Type*} {f : ι → α} (a : ι) (b : Set.range f) :
+    Set.rangeFactorization f a = b ↔ f a = b := by
+  rw [Set.rangeFactorization, ← b.coe_eta b.2, Subtype.ext_iff]
+
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
