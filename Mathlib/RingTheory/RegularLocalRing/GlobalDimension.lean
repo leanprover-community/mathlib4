@@ -78,7 +78,6 @@ lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [S
 variable (R) in
 theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
     globalDimension.{v} R = ringKrullDim R := by
-  classical
   rw [globalDimension_eq_sup_projectiveDimension_finite]
   have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
     rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
@@ -88,20 +87,16 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
     intro M hM
     by_cases ntr : Nontrivial M
     · have finM := projectiveDimension_ne_top_of_isRegularLocalRing M
-      have nz : ¬Limits.IsZero M := ModuleCat.isZero_iff_subsingleton.not.mpr
-        (not_subsingleton_iff_nontrivial.mpr ntr)
       have eq : projectiveDimension M + depth M = ringKrullDim R := by
         rw [← depth_eq, AuslanderBuchsbaum M finM]
       simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
     · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
       simp [(projectiveDimension_eq_bot_iff M).mpr (ModuleCat.isZero_iff_subsingleton.mpr this)]
-  · let _ : Small.{v, u} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
+  · let _ : Small.{v} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
     let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
     let _ : Module.Finite R k :=
       Module.Finite.equiv (Shrink.linearEquiv R (ResidueField R)).symm
     have fink := projectiveDimension_ne_top_of_isRegularLocalRing k
-    have nz : ¬Limits.IsZero k := ModuleCat.isZero_iff_subsingleton.not.mpr
-      (not_subsingleton_iff_nontrivial.mpr inferInstance)
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
       rw [← depth_eq, AuslanderBuchsbaum k fink]
     have eq0 : depth k = 0 := by
