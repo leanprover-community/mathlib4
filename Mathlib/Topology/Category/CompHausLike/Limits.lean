@@ -277,7 +277,6 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 instance : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩
 
-
 /-- The functor to `TopCat` creates pullbacks if they exist. -/
 noncomputable instance : CreatesLimit (cospan f g) (compHausLikeToTop P) :=
   createsLimitOfFullyFaithfulOfIso (pullback f g)
