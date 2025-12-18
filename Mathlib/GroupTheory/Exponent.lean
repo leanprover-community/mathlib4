@@ -175,7 +175,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
   by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
-  cutsat
+  lia
 
 @[to_additive AddMonoid.exp_eq_one_iff]
 theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
@@ -498,6 +498,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
+set_option backward.proofsInPublic true in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by

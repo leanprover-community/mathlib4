@@ -208,7 +208,7 @@ variable {m n : ℕ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ ↦ by cutsat, fun h ↦ ⟨n / 2, by cutsat⟩⟩
+  ⟨fun ⟨m, hm⟩ ↦ by lia, fun h ↦ ⟨n / 2, by lia⟩⟩
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 
@@ -237,9 +237,9 @@ lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind
 
 lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m + n) % 2 = 1 := by grind
 
-@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by cutsat
+@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by lia
 
-@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by cutsat
+@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by lia
 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by grind
 

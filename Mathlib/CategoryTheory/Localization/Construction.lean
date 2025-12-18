@@ -28,7 +28,7 @@ The obvious functor `Q W : C ⥤ W.Localization` satisfies the universal propert
 of the localization. Indeed, if `G : C ⥤ D` sends morphisms in `W` to isomorphisms
 in `D` (i.e. we have `hG : W.IsInvertedBy G`), then there exists a unique functor
 `G' : W.Localization ⥤ D` such that `Q W ≫ G' = G`. This `G'` is `lift G hG`.
-The expected property of `lift G hG` if expressed by the lemma `fac` and the
+The expected property of `lift G hG` is expressed by the lemma `fac` and the
 uniqueness is expressed by `uniq`.
 
 ## References
@@ -215,7 +215,7 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     induction p with
     | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
-      let p' : X₁ ⟶X₂ := p
+      let p' : X₁ ⟶ X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
