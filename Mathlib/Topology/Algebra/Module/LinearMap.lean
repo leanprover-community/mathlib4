@@ -690,8 +690,8 @@ end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
-theorem smulRight_comp [ContinuousSMul R₁ M₁] (f : M₁ →L[R₁] R₁) {x : M₂} {y : M₁} :
-    (smulRight f x).comp (smulRight f y) = smulRight f (f y • x) := by
+theorem smulRight_comp [ContinuousSMul R₁ M₁] (f g : M₁ →L[R₁] R₁) {x : M₂} {y : M₁} :
+    (smulRight f x).comp (smulRight g y) = smulRight g (f y • x) := by
   ext
   simp
 
@@ -768,7 +768,7 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
-      toSpanSingleton R₁ (c • x) := smulRight_comp 1
+      toSpanSingleton R₁ (c • x) := smulRight_comp 1 1
 
 end ToSpanSingleton
 
