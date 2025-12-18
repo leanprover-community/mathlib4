@@ -191,8 +191,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u 
     profiniteToCompHaus.map_injective
       ((CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _
         (fun j ↦ by
-          dsimp
-          rw [← h]
+          simp [← h]
           rfl))
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
