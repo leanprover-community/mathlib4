@@ -66,14 +66,16 @@ attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
 
 @[simp]
 lemma top_ne_zero : (⊤ : α) ≠ 0 := by
-  intro nh
-  have ⟨a, b, h⟩ := Nontrivial.exists_pair_ne (α := α)
-  have : a + 0 ≠ b + 0 := by simpa
-  simp [← nh] at this
+  intro h
+  obtain ⟨a, ha⟩ := exists_ne (0 : α)
+  rw [← zero_add a] at ha
+  simp [top_add, -zero_add, ← h] at ha
 
 @[simp]
 lemma zero_ne_top : 0 ≠ (⊤ : α) :=
   top_ne_zero.symm
+
+@[simp] lemma top_pos : (0 : α) < ⊤ := lt_top_iff_ne_top.2 top_ne_zero.symm
 
 lemma add_neg_cancel_of_ne_top (h : a ≠ ⊤) : a + -a = 0 :=
   LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
@@ -124,14 +126,6 @@ lemma add_neg_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + b + -b = a 
 
 lemma neg_add_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + -b + b = a := by
   simp [add_assoc, neg_add_cancel_of_ne_top hb]
-
-@[simp] lemma top_ne_zero : (⊤ : α) ≠ 0 := by
-  intro h
-  obtain ⟨a, ha⟩ := exists_ne (0 : α)
-  rw [← zero_add a] at ha
-  simp [top_add, -zero_add, ← h] at ha
-
-@[simp] lemma top_pos : (0 : α) < ⊤ := lt_top_iff_ne_top.2 top_ne_zero.symm
 
 @[simp] lemma isAddUnit_iff : IsAddUnit a ↔ a ≠ ⊤ where
   mp := by rintro ⟨⟨b, c, hbc, -⟩, rfl⟩ rfl; simp [top_add] at hbc
