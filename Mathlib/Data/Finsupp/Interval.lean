@@ -59,7 +59,7 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq ι]
 variable {f g : ι →₀ α} {i : ι} {a : α}
 
 /-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
-@[simps toFun]
+@[simps apply]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support := f.support ∪ g.support
@@ -92,7 +92,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
 
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 
-theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)):= by
+theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) := by
   simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 
 theorem card_Ico : #(Ico f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 1 := by

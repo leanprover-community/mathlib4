@@ -690,6 +690,22 @@ lemma isTangentAt_insphere_iff_eq_touchpoint {i : Fin (n + 1)} {p : P} :
       p = s.touchpoint ∅ i :=
   s.excenterExists_empty.isTangentAt_exsphere_iff_eq_touchpoint
 
+variable {s} in
+lemma ExcenterExists.affineSpan_faceOpposite_eq_orthRadius [hf : Fact (Module.finrank ℝ V = n)]
+    {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    affineSpan ℝ (Set.range (s.faceOpposite i).points) =
+      (s.exsphere signs).orthRadius (s.touchpoint signs i) := by
+  refine (h.isTangentAt_touchpoint i).eq_orthRadius_of_finrank_add_one_eq (h.exradius_pos.ne') ?_
+  rw [direction_affineSpan, (s.faceOpposite i).independent.finrank_vectorSpan_add_one,
+    Fintype.card_fin, hf.out]
+  have := NeZero.ne n
+  lia
+
+lemma affineSpan_faceOpposite_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = n)]
+    (i : Fin (n + 1)) :
+    affineSpan ℝ (Set.range (s.faceOpposite i).points) = s.insphere.orthRadius (s.touchpoint ∅ i) :=
+  s.excenterExists_empty.affineSpan_faceOpposite_eq_orthRadius i
+
 lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {signs : Finset (Fin (n + 1))} :
     (∃ r : ℝ, ∀ i, s.signedInfDist i p = (if i ∈ signs then -1 else 1) * r) ↔
@@ -1015,6 +1031,19 @@ lemma excenter_eq_incenter_or_excenter_singleton_of_ne (signs : Finset (Fin 3)) 
     rw [h]
     have : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear h; decide +revert
     grind
+
+lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
+    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃] =
+      (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
+  convert (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
+  have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
+  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+
+lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
+    {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃] = t.insphere.orthRadius (t.touchpoint ∅ i₁) :=
+  t.affineSpan_pair_eq_orthRadius ∅ h₁₂ h₁₃ h₂₃
 
 lemma sbtw_touchpoint_empty {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     Sbtw ℝ (t.points i₁) (t.touchpoint ∅ i₂) (t.points i₃) := by

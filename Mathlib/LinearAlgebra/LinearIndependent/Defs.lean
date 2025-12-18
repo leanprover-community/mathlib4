@@ -633,7 +633,7 @@ theorem not_linearIndependent_iffₒₛ :
       ∃ (s t : Finset ι) (f : ι → R),
         Disjoint s t ∧ ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ ∃ i ∈ s, 0 < f i := by
   simp only [linearIndependent_iffₒₛ, pos_iff_ne_zero]
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_,
     fun ⟨s, t, f, hst, heq, hi⟩ => ⟨s, t, f, hst, heq, .inl hi⟩⟩
   rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
