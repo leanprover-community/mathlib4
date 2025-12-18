@@ -83,8 +83,7 @@ lemma add_neg_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + b + -b = a 
 lemma neg_add_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + -b + b = a := by
   simp [add_assoc, neg_add_cancel_of_ne_top hb]
 
-@[simp]
-lemma top_ne_zero : (⊤ : α) ≠ 0 := by
+@[simp] lemma top_ne_zero : (⊤ : α) ≠ 0 := by
   intro h
   obtain ⟨a, ha⟩ := exists_ne (0 : α)
   rw [← zero_add a] at ha
