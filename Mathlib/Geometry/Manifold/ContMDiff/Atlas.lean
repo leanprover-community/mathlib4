@@ -315,52 +315,27 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
     (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
       ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · -- Backward direction: from smoothness in coordinates to smoothness on manifold
-    -- Strategy: decompose f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I)
-    -- where f' is the coordinate expression
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy]
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
+  · -- Decompose `f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I)` on `s`,
+    -- where `f'` is the expression in the charts `φ` and `ψ`.
     set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
-    -- Use the characterization with the given charts
-    rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy]
-    refine ⟨?_, ?_⟩
-    · -- Continuity part
-      -- Decompose: f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I) on s
-      have eq1 : EqOn (f' ∘ φ.extend I) (ψ.extend J ∘ f) s := by
-        intro x hx
-        simp only [f', Function.comp_apply]
-        rw [φ.extend_left_inv (hs hx)]
-      -- Step 1: f' ∘ (φ.extend I) is continuous at y within s
-      have step1 : ContinuousWithinAt (f' ∘ (φ.extend I)) s y := by
-        refine h.continuousWithinAt.comp (((contMDiffOn_extend hφ).continuousOn y hy).mono hs) ?_
-        intro x hx
-        constructor
-        · rw [mem_preimage, φ.extend_left_inv (hs hx)]
-          exact hx
-        · exact mem_range_self _
-      -- Step 2: (ψ.extend J).symm ∘ f' ∘ (φ.extend I) is continuous at y within s
-      have step2 : ContinuousWithinAt ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s y := by
-        -- TODO: same hold proven three times!
-        refine ContinuousWithinAt.comp (t := J '' ψ.target) ?_ step1 (fun x hx ↦ ?_)
-        · refine (contMDiffOn_extend_symm hψ).continuousOn ?_ ?_
-          all_goals
-            simp only [Function.comp_apply, f', φ.extend_left_inv hy]
-            exact mem_image_of_mem J (ψ.mapsTo hgy)
-        · simp only [Function.comp_apply, f', φ.extend_left_inv (hs hx)]
-          exact mem_image_of_mem J (ψ.mapsTo (hmaps hx))
-      -- Step 3: this equals f on s
-      have eq2 : EqOn f ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
-        intro x hx
-        simp only [Function.comp_apply, f']
-        rw [φ.extend_left_inv (hs hx), ψ.extend_left_inv (hmaps hx)]
-      -- Also need the equality at y
-      have eq_at_y : f y = ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) y := by
-        simp only [Function.comp_apply, f']
-        rw [φ.extend_left_inv hy, ψ.extend_left_inv hgy]
-      exact step2.congr_of_eventuallyEq (eventually_nhdsWithin_of_forall eq2) eq_at_y
-    · rwa [← contMDiffWithinAt_iff_contDiffWithinAt]
-  · -- Forward direction: from smoothness on manifold to smoothness in coordinates
-    rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy] at h
-    rw [contMDiffWithinAt_iff_contDiffWithinAt]
+    have eq : EqOn f ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := fun x hx ↦ by
+      simp only [f', comp_apply, φ.extend_left_inv (hs hx), ψ.extend_left_inv (hmaps hx)]
+    have step1 : ContinuousWithinAt (f' ∘ (φ.extend I)) s y :=
+      h.continuousWithinAt.comp (((contMDiffOn_extend hφ).continuousOn y hy).mono hs)
+        fun x hx ↦ ⟨by rwa [mem_preimage, φ.extend_left_inv (hs hx)], mem_range_self _⟩
+    have step2 : ContinuousWithinAt ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s y := by
+      refine ContinuousWithinAt.comp (t := J '' ψ.target) ?_ step1 ?_
+      · refine (contMDiffOn_extend_symm hψ).continuousOn ?_ ?_
+        all_goals
+          simp only [f', comp_apply, φ.extend_left_inv hy]; exact mem_image_of_mem J (ψ.mapsTo hgy)
+      · intro x hx; simp only [f', comp_apply, φ.extend_left_inv (hs hx)]
+        exact mem_image_of_mem J (ψ.mapsTo (hmaps hx))
+    exact step2.congr_of_eventuallyEq (eventually_nhdsWithin_of_forall eq)
+      (by simp only [f', comp_apply, φ.extend_left_inv hy, ψ.extend_left_inv hgy])
+  · rwa [← contMDiffWithinAt_iff_contDiffWithinAt]
+  · rw [contMDiffWithinAt_iff_contDiffWithinAt]
     exact h.2
 
 theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
