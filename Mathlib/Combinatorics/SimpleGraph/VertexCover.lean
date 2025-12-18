@@ -25,7 +25,7 @@ namespace SimpleGraph
 
 variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
 
-section IsVertexCover
+@[expose] public section IsVertexCover
 
 /-- `C` is a vertex cover of `G` if every edge in `G` is incident to at least one vertex in `C`. -/
 def IsVertexCover (G : SimpleGraph V) (c : Set V) : Prop :=
