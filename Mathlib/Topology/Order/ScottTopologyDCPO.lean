@@ -12,7 +12,7 @@ public import Mathlib.Topology.Sets.Opens
 /-!
 # Scott Complete Partial Order
 
-Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algberaic DCPOs.
+Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algebraic DCPOs.
 
 ## Main Definitions
 - `Compact`: The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
