@@ -5,10 +5,8 @@ Authors: Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 public import Mathlib.CategoryTheory.ExtremalEpi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!
@@ -34,6 +32,8 @@ semantics for regular logic.
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -61,11 +61,10 @@ variable {X Y : C} (f : X ⟶ Y)
 
 instance : Preregular C where
   exists_fac f g :=
-    let : RegularEpi (pullback.snd g f) := by
+    have : IsRegularEpi (pullback.snd g f) := by
       have := Regular.regularEpiIsStableUnderBaseChange.of_isPullback
-        (IsPullback.of_hasPullback g f) ⟨inferInstance⟩
-      simp at this
-      exact regularEpiOfIsRegularEpi <| pullback.snd g f
+        (IsPullback.of_hasPullback g f) ⟨⟨(IsRegularEpi.getStruct g)⟩⟩
+      simpa using this
     ⟨pullback g f, pullback.snd g f, inferInstance, pullback.fst g f, pullback.condition⟩
 
 noncomputable section
@@ -90,12 +89,9 @@ See `monoFactorisation` for the actual mono factorisation.
 def e : X ⟶ (I f) :=
   coequalizer.π (pullback.fst f f) (pullback.snd f f)
 
-/-- The canonical regular epi structore on `e f`, as the coequalizer of the kernel pair of `f`. -/
-local instance eRegularEpi : RegularEpi (e f) := by
-  dsimp [e]; infer_instance
-
 instance e_isRegularEpi : IsRegularEpi (e f) := by
-  dsimp [e]; infer_instance
+  dsimp [e]
+  infer_instance
 
 /--
 The `mono` component of the chosen mono factorisation associated to any regular category.
@@ -154,7 +150,7 @@ def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   __ := monoFactorisation f
   e_strong_epi := by
     dsimp [monoFactorisation]
-    apply strongEpi_of_regularEpi
+    infer_instance
 
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
@@ -162,10 +158,11 @@ instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (e f) (m f) (by simp)
-  RegularEpi.ofArrowIso <| Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f))
+  RegularEpi.ofArrowIso (Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f)))
+    (IsRegularEpi.getStruct _)
 
 instance isRegularEpi_of_extremalEpi (f : X ⟶ Y) [ExtremalEpi f] : IsRegularEpi f :=
-  ⟨regularEpiOfExtremalEpi f⟩
+  ⟨⟨regularEpiOfExtremalEpi f⟩⟩
 
 end Regular.StrongEpiMonoFactorisation
 end
