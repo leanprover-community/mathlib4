@@ -257,7 +257,7 @@ theorem isClosed_J
     apply Set.subset_inter hz'
     apply subset_trans (monotone_C _ hbb'.le) hz'2
     -- The first goal is to rewrite hfy (lsc of (f ⬝ y)) into an ∀ᶠ form
-  simp only [UpperSemicontinuousOn, UpperSemicontinuousWithinAt] at hfx
+  simp only [UpperSemicontinuousOn] at hfx
   have := lt_of_le_of_lt hx hbb'
   dsimp only [Function.comp_apply] at this
   specialize hfx x.val x.prop z (cY.segment_subset y.prop y'.prop z.prop) b'

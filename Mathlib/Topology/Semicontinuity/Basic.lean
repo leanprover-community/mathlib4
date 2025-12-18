@@ -191,7 +191,7 @@ end
 
 section
 
-variable {ι : Type*} {f : ι → α → β} {I : Set ι}
+variable {ι : Type*} {f : ι → α → β} [Preorder β] {I : Set ι}
 
 theorem lowerSemicontinuousOn_of_forall_isMaxOn_and_mem
     (hfy : ∀ i ∈ I, LowerSemicontinuousOn (f i) s)
