@@ -20,8 +20,10 @@ of the theorem. The main definition is `HasRankNullity.{u} R`, which states that
 2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
 
 The following instances are provided in mathlib:
-1. `DivisionRing.hasRankNullity` for division rings in `LinearAlgebra/Dimension/DivisionRing.lean`.
-2. `IsDomain.hasRankNullity` for commutative domains in `LinearAlgebra/Dimension/Localization.lean`.
+1. `DivisionRing.hasRankNullity` for division rings in
+   `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`.
+2. `IsDomain.hasRankNullity` for commutative domains in
+   `Mathlib/LinearAlgebra/Dimension/Localization.lean`.
 
 TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondition R]`.
 See `nonempty_oreSet_of_strongRankCondition` for a start.
@@ -228,7 +230,7 @@ lemma Submodule.disjoint_ker_of_finrank_le [NoZeroSMulDivisors R M] {N : Type*} 
   rw [← LinearMap.range_domRestrict] at h
   have := (LinearMap.ker (f.domRestrict L)).finrank_quotient_add_finrank
   rw [LinearEquiv.finrank_eq (f.domRestrict L).quotKerEquivRange] at this
-  omega
+  lia
 
 end Finrank
 
