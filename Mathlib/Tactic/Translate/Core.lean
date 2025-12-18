@@ -1004,7 +1004,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
         if getLinterValue linter.deprecated (← getLinterOptions) then
           let hintSuggestion := {
             diffGranularity := .none
-            toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
+            toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trimAscii ++ " -/" }
           }
           let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
             (codeActionPrefix? := "Update to: ") (forceList := false)

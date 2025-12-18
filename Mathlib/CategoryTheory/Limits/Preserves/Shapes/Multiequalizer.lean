@@ -28,7 +28,7 @@ universe w w' v u
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace Limits
 

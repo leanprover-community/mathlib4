@@ -42,7 +42,7 @@ local notation3 "BoxPoly" =>
   {p : ℤ[X] | p.natDegree < n + 1 ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
 
 open Finset in
-theorem card_eq_of_natDegree_le_of_coeff_le (h_B : ∀ i, ⌈B₁ i⌉ ≤ ⌊B₂ i⌋) :
+theorem card_eq_of_natDegree_le_of_coeff_le :
     Set.ncard BoxPoly = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
   let e : BoxPoly ≃ Icc (⌈B₁ ·⌉) (⌊B₂ ·⌋) := {
     toFun p := ⟨toFn (n + 1) p, by
@@ -69,11 +69,8 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
   have h_card :
       Set.ncard {p : ℤ[X] | p.natDegree < n + 1 ∧ ∀ i : Fin (n + 1), ‖p.coeff i‖ ≤ n.choose i * B} =
       ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := by
-    have h_B (i : Fin (n + 1)) : ⌈-(n.choose i * B  : ℝ)⌉ ≤ ⌊(n.choose i * B : ℝ)⌋ := by
-      simp only [ceil_neg, neg_le_self_iff, floor_nonneg]
-      positivity
     conv => enter [1, 1, 1, p, 2, i]; rw [norm_eq_abs, abs_le]
-    rw [card_eq_of_natDegree_le_of_coeff_le h_B]
+    rw [card_eq_of_natDegree_le_of_coeff_le]
     simp only [ceil_neg, sub_neg_eq_add, ← two_mul]
     apply Finset.prod_congr rfl fun i _ ↦ ?_
     zify
