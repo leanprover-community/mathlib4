@@ -122,4 +122,35 @@ noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
 
+section
+
+variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
+  [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
+  (η : F.obj (unit R) ≅ unit S) (I : Type u) (i : I)
+  [PreservesColimitsOfShape (Discrete I) F]
+
+/-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
+If `F` preserves coproducts and `F.obj (unit R) ≅ unit S`, then `F` preserves free sheaves of
+modules. -/
+noncomputable def mapFree : F.obj (free I) ≅ free (R := S) I :=
+  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
+    (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ η).symm
+
+@[reassoc (attr := simp)]
+lemma ιFree_mapFree_inv :
+    ιFree i ≫ (mapFree F η I).inv = η.inv ≫ F.map (ιFree i) := by
+  simp [mapFree, ← freeCofan_inj, Cofan.inj]
+
+@[reassoc (attr := simp)]
+lemma map_ιFree_mapFree_hom :
+    F.map (ιFree i) ≫ (mapFree F η I).hom = η.hom ≫ ιFree i := by
+  have : η.inv ≫ η.hom ≫ ιFree i = (η.inv ≫ F.map (ιFree i)) ≫ (mapFree F η I).hom := by
+    simp [← ιFree_mapFree_inv]
+  rw [←Iso.hom_inv_id_assoc η (η.hom ≫ ιFree i)]
+  simp [this]
+
+end
+
 end SheafOfModules
