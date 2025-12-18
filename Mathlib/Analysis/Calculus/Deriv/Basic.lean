@@ -99,7 +99,7 @@ noncomputable section
 open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight smulRight_id_eq_iff toSpanSingleton)
+open ContinuousLinearMap (smulRight toSpanSingleton_inj toSpanSingleton)
 
 section TVS
 
@@ -259,7 +259,7 @@ theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : Differentiable
 
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
-  smulRight_id_eq_iff.mp <| UniqueDiffWithinAt.eq H h h₁
+  toSpanSingleton_inj.mp <| UniqueDiffWithinAt.eq H h h₁
 
 theorem hasDerivAtFilter_iff_isLittleO :
     HasDerivAtFilter f f' x L ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[L] fun x' => x' - x :=
@@ -371,7 +371,7 @@ theorem hasDerivWithinAt_univ : HasDerivWithinAt f f' univ x ↔ HasDerivAt f f'
   hasFDerivWithinAt_univ
 
 theorem HasDerivAt.unique (h₀ : HasDerivAt f f₀' x) (h₁ : HasDerivAt f f₁' x) : f₀' = f₁' :=
-  smulRight_id_eq_iff.mp <| h₀.hasFDerivAt.unique h₁
+  toSpanSingleton_inj.mp <| h₀.hasFDerivAt.unique h₁
 
 theorem hasDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasDerivWithinAt f f' (s ∩ t) x ↔ HasDerivWithinAt f f' s x :=

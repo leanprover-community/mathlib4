@@ -771,6 +771,14 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
     f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
   coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
+@[simp]
+theorem toSpanSingleton_inj {f f' : M₂} :
+    toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := smulRight_id_eq_iff
+
+theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
+    (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
+      toSpanSingleton R₁ (c • x) := smulRight_comp
+
 end ToSpanSingleton
 
 end Semiring

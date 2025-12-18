@@ -379,9 +379,8 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
     {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
     (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
+  simp [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
     hg hf_int hf']
-  simp only [det_one_smulRight]
 
 lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
     (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
@@ -389,9 +388,8 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
     {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
     (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+  simp [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
       f hg hf_int hf']
-  simp only [det_one_smulRight]
 
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
@@ -409,10 +407,9 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
     {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
     (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+  simp [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
       f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
       (fun x _ => (hf' x).hasDerivWithinAt)]
-  simp only [det_one_smulRight]
 
 end WithDensity
 
