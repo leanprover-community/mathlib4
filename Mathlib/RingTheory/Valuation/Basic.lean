@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
-public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 
@@ -556,8 +555,6 @@ class IsTrivialOnConstants {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Al
 
 attribute [grind =>] IsTrivialOnConstants.trivial
 
-section IsTrivialOnConstants
-
 variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
   [IsTrivialOnConstants A v]
 
@@ -565,25 +562,6 @@ variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Va
 theorem IsTrivialOnConstants.integer : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
   intro a
   by_cases a = 0 <;> grind [zero_le']
-
-end IsTrivialOnConstants
-
-namespace FiniteField
-
-variable {Fq A : Type*} [Field Fq] [Fintype Fq] [Ring A] [Algebra Fq A] (v : Valuation A Γ₀)
-
-@[grind =>]
-lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 := by
-  have hpow : (v (algebraMap Fq A a)) ^ (Fintype.card Fq - 1) = 1 := by
-    simp [← map_pow, FiniteField.pow_card_sub_one_eq_one a ha]
-  grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
-
-lemma algebraMap_le_one (v : Valuation A Γ₀) (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
-  by_cases a = 0 <;> grind [zero_le']
-
-instance : IsTrivialOnConstants Fq v where trivial a ha := FiniteField.algebraMap_eq_one v a ha
-
-end FiniteField
 
 end IsTrivialOnConstants
 
