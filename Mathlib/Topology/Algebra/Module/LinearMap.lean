@@ -327,7 +327,7 @@ instance one : One (M₁ →L[R₁] M₁) :=
 
 @[simp] theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
-@[simp] theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
+theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
 
 @[simp, norm_cast]
 theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
