@@ -129,10 +129,7 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     Iso.conj_apply, ← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff]
   dsimp only [Action.forget_map, Functor.mapIso_hom]
   rw [i.hom.comm g]
-  dsimp
-  rw [← ObjectProperty.FullSubcategory.comp_hom_assoc, Action.inv_hom_hom,
-    ObjectProperty.FullSubcategory.id_hom, Category.id_comp]
-  rfl
+  cat_disch
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
