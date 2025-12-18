@@ -393,7 +393,7 @@ variable {K L}
 theorem spectralNorm.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
     spectralNorm K E x = spectralNorm K L (algebraMap E L x) := by
-  have hx :  minpoly K (algebraMap E L x) = minpoly K x :=
+  have hx : minpoly K (algebraMap E L x) = minpoly K x :=
     minpoly.algebraMap_eq (algebraMap E L).injective x
   simp only [spectralNorm, hx]
 
@@ -916,7 +916,7 @@ lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra 
       eval_map]
   rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x)) this]
 
-omit [Algebra.IsAlgebraic K L]  in
+omit [Algebra.IsAlgebraic K L] in
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`,
   considered as an element of `E`, is equal to the spectral norm of the product of the `E`-valued
