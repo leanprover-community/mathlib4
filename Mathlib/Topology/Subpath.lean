@@ -14,6 +14,14 @@ reparameterized to have domain `[0, 1]` and possibly with a reverse of direction
 The main result `Path.Homotopy.subpathTransSubpath` shows that subpaths concatenate nicely.
 In particular: following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`.
+
+`Path.subpath` is similar in behavior to `Path.truncate`. When t₀ ≤ t₁, they are reparamterizations
+of each other (not yet proven). However, `Path.subpath` works without assuming an order on `t₀` and
+`t₁`, and is convenient for concrete manipulations (e.g., `Path.Homotopy.subpathTransSubpath`).
+
+## TODO
+
+Prove that `Path.truncateOfLE` and `Path.subpath` are reparameterizations of each other.
 -/
 
 noncomputable section
@@ -108,9 +116,6 @@ copy of `Path.refl`. -/
 def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) ((γ.subpath t₀ t₂).trans (Path.refl _)) where
   toFun x := ((γ.subpath t₀ (subpathAux t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
-  /- Technical note: One would hope the proof of continuity could be made much simpler by using
-  a theorem like `Continuous.pathExtend`, but that does not work in this case because the
-  endpoints of our subpaths depend on our input `x` (i.e., the types don't quite match). -/
   continuous_toFun := by
     let γ₁ (t : I) := γ.subpath t₀ (subpathAux t₁ t₂ t)
     let γ₂ (t : I) := γ.subpath (subpathAux t₁ t₂ t) t₂
@@ -137,9 +142,6 @@ is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`.
 def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) :=
   trans (subpathTransSubpathRefl γ t₀ t₁ t₂) (transRefl _)
-
-/- Possible extension: It may be worth proving that `Path.truncateOfLE` and `Path.subpath` are
-reparameterizations of one another. -/
 
 end Path.Homotopy
 end
