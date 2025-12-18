@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
 
@@ -226,15 +227,46 @@ lemma isMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, 
     M.IsMatching := by
   obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
   intro a ha
-  simp_all
+  simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff]
   suffices he : ∃ b : V, M.Adj a b from by
     obtain ⟨b, hadj⟩ := he
     refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
     have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
     have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
-    cases hb <;> cases hb' <;> rcases ha
-    all_goals (simp_all <;> exfalso <;> exact G.loopless _ <| M.adj_sub (by assumption))
+    cases hb <;> cases hb' <;> rcases ha <;>
+    try (simp_all only [Set.mem_singleton_iff] <;> exfalso <;>
+    refine G.loopless _ <| M.adj_sub (by assumption))
   exact Or.elim ha (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
+
+section card
+
+open Cardinal
+
+lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.verts := by
+  let f : M.coe.Dart → M.verts := fun d => d.fst
+  let g : M.verts → M.coe.Dart := fun v =>
+    let w : V := (hM v.prop).choose
+    have hadj : M.Adj v w := ((hM v.property).choose_spec).left
+    ⟨⟨v, ⟨w, M.edge_vert hadj.symm⟩⟩, hadj⟩
+  refine Cardinal.mk_congr ⟨f, g, ?L, ?R⟩ <;>
+    simp only [f, g, LeftInverse, RightInverse, implies_true]
+  rintro ⟨⟨v, w⟩, hadj⟩
+  simpa using Subtype.val_inj.mp ((hM v.prop).choose_spec.right w hadj).symm
+
+lemma IsMatching.edge_card_eq_double_vert_card (hM : M.IsMatching) :
+    #M.verts = 2 * #M.edgeSet := by
+  refine hM.dart_card_eq_vert_card.symm.trans ?_
+  apply M.coe.card_darts.trans
+  suffices h : #M.coe.edgeSet = #M.edgeSet from congr_arg _ h
+  simp only [edgeSet_coe]
+  refine Cardinal.mk_preimage_of_injective_of_subset_range _ M.edgeSet ?inj ?range
+  · exact Sym2.map.injective Subtype.val_injective
+  · rintro e he
+    let ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+    have hadj := Subgraph.mem_edgeSet.mp (hvw ▸ he)
+    exact ⟨s(⟨v, M.edge_vert hadj⟩, ⟨w, M.edge_vert hadj.symm⟩), by simpa using hvw⟩
+
+end card
 
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
@@ -555,7 +587,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
         rw [Walk.mem_verts_toSubgraph] at hv
         refine (Set.nonempty_of_ncard_ne_zero ?_).mono (p.toSubgraph.neighborSet_subset v)
         rw [hp.1.ncard_neighborSet_toSubgraph_eq_two hv]
-        omega
+        lia
       refine @Classical.ofNonempty _ ?_
       rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
         h this, hp.1.ncard_neighborSet_toSubgraph_eq_two (p.mem_verts_toSubgraph.mp hv)])
@@ -665,7 +697,7 @@ contained in any strictly larger matching. -/
 def Subgraph.IsMaximalMatching (M : Subgraph G) : Prop :=
   Maximal IsMatching M
 
-lemma exists_isMaximalMatching : ∃ M : G.Subgraph, M.IsMaximalMatching := by
+lemma exists_isMaximalMatching (G : SimpleGraph V) : ∃ M : G.Subgraph, M.IsMaximalMatching := by
   refine Exists.imp' (fun m : {M : G.Subgraph // M.IsMatching} ↦ m.val)
     (fun ⟨M, hM⟩ hmax ↦ ⟨hM, fun M' hM' hge ↦ (by simp_all [IsMax])⟩)
     (zorn_le fun ch hch ↦ ?_)
