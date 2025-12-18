@@ -99,7 +99,7 @@ noncomputable section
 open scoped Topology ENNReal NNReal
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight smulRight_id_eq_iff)
+open ContinuousLinearMap (smulRight smulRight_id_eq_iff toSpanSingleton)
 
 section TVS
 
@@ -113,7 +113,7 @@ variable [ContinuousSMul 𝕜 F]
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges along the filter `L`.
 -/
 def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (x : 𝕜) (L : Filter 𝕜) :=
-  HasFDerivAtFilter f (smulRight (.id 𝕜 𝕜) f') x L
+  HasFDerivAtFilter f (toSpanSingleton 𝕜 f') x L
 
 /-- `f` has the derivative `f'` at the point `x` within the subset `s`.
 
@@ -133,7 +133,7 @@ def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
 
 That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. -/
 def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
-  HasStrictFDerivAt f (smulRight (.id 𝕜 𝕜) f') x
+  HasStrictFDerivAt f (toSpanSingleton 𝕜 f') x
 
 end
 /-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
@@ -175,7 +175,7 @@ theorem hasFDerivWithinAt_iff_hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
 
 /-- Expressing `HasDerivWithinAt f f' s x` in terms of `HasFDerivWithinAt` -/
 theorem hasDerivWithinAt_iff_hasFDerivWithinAt {f' : F} :
-    HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (smulRight (.id 𝕜 𝕜) f') s x :=
+    HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (toSpanSingleton 𝕜 f') s x :=
   Iff.rfl
 
 theorem HasFDerivWithinAt.hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
@@ -183,7 +183,7 @@ theorem HasFDerivWithinAt.hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
   hasFDerivWithinAt_iff_hasDerivWithinAt.mp
 
 theorem HasDerivWithinAt.hasFDerivWithinAt {f' : F} :
-    HasDerivWithinAt f f' s x → HasFDerivWithinAt f (smulRight (.id 𝕜 𝕜) f') s x :=
+    HasDerivWithinAt f f' s x → HasFDerivWithinAt f (toSpanSingleton 𝕜 f') s x :=
   hasDerivWithinAt_iff_hasFDerivWithinAt.mp
 
 /-- Expressing `HasFDerivAt f f' x` in terms of `HasDerivAt` -/
@@ -202,14 +202,14 @@ protected theorem HasStrictFDerivAt.hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
   hasStrictFDerivAt_iff_hasStrictDerivAt.mp
 
 theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
-    HasStrictDerivAt f f' x ↔ HasStrictFDerivAt f (smulRight (.id 𝕜 𝕜) f') x :=
+    HasStrictDerivAt f f' x ↔ HasStrictFDerivAt f (toSpanSingleton 𝕜 f') x :=
   Iff.rfl
 
 alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
 theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
-    HasDerivAt f f' x ↔ HasFDerivAt f (smulRight (.id 𝕜 𝕜) f') x :=
+    HasDerivAt f f' x ↔ HasFDerivAt f (toSpanSingleton 𝕜 f') x :=
   Iff.rfl
 
 alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
@@ -423,7 +423,7 @@ theorem fderivWithin_derivWithin : (fderivWithin 𝕜 f s x : 𝕜 → F) 1 = de
   rfl
 
 theorem derivWithin_fderivWithin :
-    smulRight (1 : 𝕜 →L[𝕜] 𝕜) (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
+    toSpanSingleton 𝕜 (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 
 theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
   simp [← derivWithin_fderivWithin]
@@ -436,8 +436,8 @@ theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y �
   rw [← fderiv_deriv, ← map_smul]
   simp only [smul_eq_mul, mul_one]
 
-theorem deriv_fderiv : smulRight (.id 𝕜 𝕜) (deriv f x) = fderiv 𝕜 f x := by
-  simp only [deriv, ContinuousLinearMap.smulRight_id_map_one]
+theorem deriv_fderiv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
+  simp only [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
@@ -512,7 +512,8 @@ theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi
     have B := (differentiableWithinAt_Ioi_iff_Ici.1 H).hasDerivWithinAt
-    simpa using (uniqueDiffOn_Ici x).eq left_mem_Ici A B
+    simpa [← ContinuousLinearMap.smulRight_id_eq_toSpanSingleton] using
+      (uniqueDiffOn_Ici x).eq left_mem_Ici A B
   · rw [derivWithin_zero_of_not_differentiableWithinAt H,
       derivWithin_zero_of_not_differentiableWithinAt]
     rwa [differentiableWithinAt_Ioi_iff_Ici] at H
@@ -872,7 +873,7 @@ lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :
   let R : 𝕜 →SL[σ'] 𝕜 := ⟨σ'.toSemilinearMap, σ'.isometry.continuous⟩
   have hR (k : 𝕜) : R k = σ' k := rfl
   rw [hasDerivAt_iff_hasFDerivAt]
-  convert HasFDerivAt.comp_semilinear L R (f' := smulRight (.id 𝕜 𝕜) f') ?_
+  convert HasFDerivAt.comp_semilinear L R (f' := toSpanSingleton 𝕜 f') ?_
   · ext
     simp [R]
   · rwa [← hasDerivAt_iff_hasFDerivAt, hR, RingHomInvPair.comp_apply_eq]
