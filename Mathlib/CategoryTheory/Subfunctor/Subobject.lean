@@ -31,8 +31,8 @@ namespace Subfunctor
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
   functor :=
-    { obj A := MonoOver.mk' A.ι
-      map {A B} f := MonoOver.homMk (Subfunctor.homOfLe (leOfHom f)) }
+    { obj A := MonoOver.mk A.ι
+      map {A B} f := MonoOver.homMk (Subpresheaf.homOfLe (leOfHom f)) }
   inverse :=
     { obj X := Subfunctor.range X.arrow
       map {X Y} f := homOfLE (by
