@@ -157,8 +157,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
     apply lightProfiniteToCompHaus.map_injective
     apply (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S)
     intro j
-    dsimp
-    rw [← h]
+    simp [← h]
     rfl
 
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
