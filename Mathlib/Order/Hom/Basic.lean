@@ -92,10 +92,6 @@ This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
-to_dual_insert_cast_fun OrderEmbedding :=
-  { this with map_rel_iff' := by grind [this.map_rel_iff']},
-  { this with map_rel_iff' := by grind [this.map_rel_iff']}
-
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
@@ -104,12 +100,12 @@ This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
-to_dual_insert_cast_fun OrderIso :=
-  { this with map_rel_iff' := by grind [this.map_rel_iff']},
-  { this with map_rel_iff' := by grind [this.map_rel_iff']}
-
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
+
+-- These instances are here just to make `to_dual` work correctly
+instance (α β : Type*) [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+instance (α β : Type*) [LE α] [LE β] : FunLike (α ≃o β) α β := RelIso.instFunLike
 
 section
 
