@@ -48,8 +48,8 @@ A regular category is a category with finite limits, such that every kernel pair
 and such that regular epimorphisms are stable under base change.
 -/
 class Regular extends HasFiniteLimits C where
-  hasCoequalizer_of_isKernelPair {a b c : C} {f : a ⟶ b} {g1 g2 : c ⟶ a} :
-    IsKernelPair f g1 g2 → HasCoequalizer g1 g2
+  hasCoequalizer_of_isKernelPair {X Y Z : C} {f : X ⟶ Y} {g₁ g₂ : Z ⟶ X} :
+    IsKernelPair f g₁ g₂ → HasCoequalizer g₁ g₂
   regularEpiIsStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange (.regularEpi C)
 
 variable {C} [Regular C]
@@ -67,12 +67,7 @@ instance {X Y B : C} (f : X ⟶ B) (g : Y ⟶ B) [HasPullback f g] [IsRegularEpi
   infer_instance
 
 instance : Preregular C where
-  exists_fac f g :=
-    have : IsRegularEpi (pullback.snd g f) := by
-      have := Regular.regularEpiIsStableUnderBaseChange.of_isPullback
-        (IsPullback.of_hasPullback g f) ⟨⟨(IsRegularEpi.getStruct g)⟩⟩
-      simpa using this
-    ⟨pullback g f, pullback.snd g f, inferInstance, pullback.fst g f, pullback.condition⟩
+  exists_fac f g := ⟨_, pullback.snd g f, inferInstance, pullback.fst g f, pullback.condition⟩
 
 variable {X Y : C} (f : X ⟶ Y)
 
