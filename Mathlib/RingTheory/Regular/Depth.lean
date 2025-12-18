@@ -290,35 +290,6 @@ lemma exists_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     ext_subsingleton_of_exists_isRegular I n N Nsupp M smul_lt h4 i hi
   tfae_finish
 
-section
-
-universe w
-
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
-
-lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism
-    (L M N : C) (f : M ⟶ N) (mono : Mono f) :
-    Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
-  rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
-  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
-  simp only [AddCommGrpCat.hom_ofHom, AddMonoidHom.mem_ker, AddMonoidHom.flip_apply,
-    Ext.bilinearComp_apply_apply] at hx
-  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (Ext.addEquiv₀ x ≫ f) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
-  exact Ext.addEquiv₀.map_eq_zero_iff.mp (zero_of_comp_mono f this)
-
-lemma CategoryTheory.Abelian.extFunctor_post_apply_zero_preserve_momoMorphism
-    (L M N : C) (g : M ⟶ N) (mono : Epi g) :
-    Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ g)).precomp L (zero_add 0)) := by
-  rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
-  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
-  simp only [AddCommGrpCat.hom_ofHom, AddMonoidHom.mem_ker, Ext.bilinearComp_apply_apply] at hx
-  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (g ≫ Ext.addEquiv₀ x) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
-  exact Ext.addEquiv₀.map_eq_zero_iff.mp (zero_of_epi_comp g this)
-
-end
-
 /-!
 
 # The Definition of Depth
@@ -538,7 +509,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_fst
     @AddCommGrpCat.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
   by_cases eq0 : i = 0
   · rw [eq0] at zero2 ⊢
-    have := extFunctor_post_apply_zero_preserve_momoMorphism.{v} N _ _ S.g hS.epi_g
+    have := Ext.mono_precomp_mk₀_of_epi N _ _ S.g hS.epi_g
     exact AddCommGrpCat.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
   · have hi1' : (i - 1 : ℕ) < moduleDepth S.X₁ N := by
       have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
@@ -574,7 +545,7 @@ lemma moduleDepth_ge_min_of_shortExact_fst_snd
     @AddCommGrpCat.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
   by_cases eq0 : i = 0
   · rw [eq0] at zero2 ⊢
-    have := extFunctorObj_zero_preserve_momoMorphism.{v} N _ _ S.f hS.mono_f
+    have := Ext.mono_postcomp_mk₀_of_mono N _ _ S.f hS.mono_f
     exact AddCommGrpCat.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
   · have hi3' : (i - 1 : ℕ) < moduleDepth N S.X₃ := by
       have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
