@@ -131,10 +131,6 @@ namespace algebraMap
 
 @[deprecated (since := "2025-12-18")] alias coe_sub := map_sub
 
-@[deprecated (since := "2025-12-18")] alias coe_smul := Algebra.algebraMap_eq_smul_one
-
-@[deprecated (since := "2025-12-18")] alias coe_smul' := Algebra.algebraMap_eq_smul_one
-
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring.
@@ -388,3 +384,7 @@ end id
 end Semiring
 
 end Algebra
+
+@[deprecated (since := "2025-12-18")] alias AlgebraMap.coe_smul := Algebra.algebraMap_eq_smul_one
+
+@[deprecated (since := "2025-12-18")] alias AlgebraMap.coe_smul' := Algebra.algebraMap_eq_smul_one
