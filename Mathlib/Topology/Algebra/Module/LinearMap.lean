@@ -753,7 +753,7 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
 
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
-@[simp] theorem smulRight_id_eq_toSpanSingleton (x : M₁) :
+theorem smulRight_id_eq_toSpanSingleton (x : M₁) :
     (.id R₁ R₁ : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
 
