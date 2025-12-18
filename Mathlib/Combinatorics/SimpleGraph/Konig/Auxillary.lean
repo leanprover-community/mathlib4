@@ -17,10 +17,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 
-
-open Cardinal SimpleGraph SimpleGraph.Subgraph
-namespace SimpleGraph
-
 /-!
 # Auxiliary lemmas for Kőnig's theorem
 
@@ -39,6 +35,9 @@ These results are prerequisites for both the finite and general versions of Kőn
 ## Tags
 matching, vertex cover, bipartite graph, König, cardinality
 -/
+
+open Cardinal SimpleGraph SimpleGraph.Subgraph
+namespace SimpleGraph
 
 public section konig_aux
 
@@ -136,7 +135,7 @@ public lemma konig_card_matching_le_card_cover
   simp only [SimpleGraph.IsVertexCover] at hC
   have hadj : M.Adj v w := by simpa only [Subgraph.mem_edgeSet] using he
   have hverts : v ∈ M.verts ∧ w ∈ M.verts := ⟨M.edge_vert hadj, M.edge_vert hadj.symm⟩
-  have : v ∈ C ∨ w ∈ C := hC <| M.adj_sub hadj
+  have : v ∈ C ∨ w ∈ C := hC v w <| M.adj_sub hadj
   rcases this with hvC | hwC <;> simp only [Subtype.exists, f]
   · refine ⟨v, ⟨hvC, ?_⟩⟩; simp [hverts, hM.toEdge_eq_of_adj hverts.left hadj]
   · refine ⟨w, ⟨hwC, ?_⟩⟩; simp [hverts, hM.toEdge_eq_of_adj hverts.right hadj.symm]
