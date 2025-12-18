@@ -562,7 +562,7 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv _ _
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  dsimp [IsOpenImmersion]  
+  dsimp [IsOpenImmersion]
   rw [← D.ι_isoPresheafedSpace_inv]
   have := D.toPresheafedSpaceGlueData.ιIsOpenImmersion i
   infer_instance
