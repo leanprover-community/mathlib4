@@ -119,8 +119,7 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
   ext y
   simp only [neg_mul, ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
     Function.comp_apply, ofRealCLM_apply, smul_eq_mul, ContinuousLinearMap.comp_neg,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply,
-    real_smul, neg_inj]
+    ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
   ring
 
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
