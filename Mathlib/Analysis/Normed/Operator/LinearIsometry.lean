@@ -848,7 +848,7 @@ instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) 
 instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
-theorem toContinuousLinearMap_toLinearIsometry_eq_coe :
+theorem toContinuousLinearMap_toLinearIsometry :
     e.toLinearIsometry.toContinuousLinearMap = e := rfl
 
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e := rfl
