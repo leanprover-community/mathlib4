@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Setoid.Basic
@@ -567,3 +568,32 @@ lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
   ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
 
 end Units
+
+section FixedPoints
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α] {H : Subgroup G}
+
+@[to_additive]
+lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) {a : α} (ha : a ∈ MulAction.fixedPoints H α) :
+    g • a ∈ MulAction.fixedPoints H α := by
+  intro h
+  rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
+  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+
+/-- The set of fixed points of a normal subgroup is stable under the group action. -/
+@[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
+def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
+  carrier := MulAction.fixedPoints H α
+  smul_mem' := smul_mem_fixedPoints_of_normal
+
+instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
+  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+
+@[simp]
+lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) (a : MulAction.fixedPoints H α) :
+    (g • a : MulAction.fixedPoints H α) = g • (a : α) :=
+  rfl
+
+end FixedPoints

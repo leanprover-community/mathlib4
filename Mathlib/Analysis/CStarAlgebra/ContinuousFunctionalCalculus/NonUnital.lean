@@ -127,7 +127,7 @@ section cfcₙHom
 
 variable {a : A} (ha : p a)
 
-/-- The non-unital star algebra homomorphism underlying a instance of the continuous functional
+/-- The non-unital star algebra homomorphism underlying an instance of the continuous functional
 calculus for non-unital algebras; a version for continuous functions on the quasispectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`.
@@ -259,6 +259,7 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
   have hg0 : (Function.extend Subtype.val f g) 0 = 0 := by
     rw [← quasispectrum.coe_zero (R := R) a, Subtype.val_injective.extend_apply]
     exact map_zero f
+  generalize Function.extend Subtype.val f g = f' at *
   rw [cfcₙ_apply ..]
   congr!
 
@@ -564,7 +565,7 @@ lemma cfcₙ_sub : cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
-lemma cfcₙ_neg : cfcₙ (fun x ↦ - (f x)) a = - (cfcₙ f a) := by
+lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
   by_cases h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
   · obtain ⟨ha, hf, h0⟩ := h
     rw [cfcₙ_apply f a, ← map_neg, cfcₙ_apply ..]

@@ -502,10 +502,7 @@ theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
 /-- Path composition commutes with products -/
 theorem trans_prod_eq_prod_trans (γ₁ : Path a₁ a₂) (δ₁ : Path a₂ a₃) (γ₂ : Path b₁ b₂)
     (δ₂ : Path b₂ b₃) : (γ₁.prod γ₂).trans (δ₁.prod δ₂) = (γ₁.trans δ₁).prod (γ₂.trans δ₂) := by
-  unfold Path.trans
-  ext t <;>
-  · simp only [Path.coe_mk_mk, Path.prod_coe]
-    grind
+  grind
 
 end Prod
 
