@@ -91,6 +91,16 @@ theorem mk_neg {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
+@[simp]
+theorem mk_le_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
+    FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
+  .rfl
+
+@[simp]
+theorem mk_lt_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
+    FiniteElement.mk x hx < .mk y hy ↔ x < y :=
+  .rfl
+
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
@@ -255,6 +265,16 @@ theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk
   congr
   exact Subsingleton.allEq _ _
 
+theorem stdPart_ne_zero {x : K} (h : mk x = 0) : stdPart x ≠ 0 := by
+  rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
+
+theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
+  intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
+  unfold stdPart
+  rw [dif_pos hx, dif_pos hy]
+  apply OrderRingHom.monotone'
+  rwa [FiniteElement.mk_le_mk_iff]
+
 @[simp]
 theorem stdPart_zero : stdPart (0 : K) = 0 := by
   rw [stdPart, dif_pos] <;> simp
@@ -285,16 +305,30 @@ theorem stdPart_inv (x : K) : stdPart x⁻¹ = (stdPart x)⁻¹ := by
   · rw [stdPart_of_mk_ne_zero hx, stdPart_of_mk_ne_zero, inv_zero]
     rwa [mk_inv, neg_ne_zero]
 
-theorem stdPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    stdPart (x + y) = stdPart x + stdPart y := by
+theorem stdPart_add (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x + y) = stdPart x + stdPart y := by
   unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_add _ (FiniteElement.mk x hx) (.mk y hy)
 
-theorem stdPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    stdPart (x - y) = stdPart x - stdPart y := by
+theorem stdPart_add_of_mk_neg_left (hx : 0 < mk x) : stdPart (x + y) = stdPart y := by
+  obtain hy | hy := le_or_gt 0 (mk y)
+  · rw [stdPart_add hx.le hy, stdPart_of_mk_ne_zero hx.ne', zero_add]
+  · rw [stdPart_of_mk_ne_zero hy.ne, stdPart_of_mk_ne_zero]
+    rw [mk_add_eq_mk_right (hy.trans hx)]
+    exact hy.ne
+
+theorem stdPart_add_of_mk_neg_right (hy : 0 < mk y) : stdPart (x + y) = stdPart x := by
+  rw [add_comm, stdPart_add_of_mk_neg_left hy]
+
+theorem stdPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x - y) = stdPart x - stdPart y := by
   rw [sub_eq_add_neg, sub_eq_add_neg, stdPart_add hx, stdPart_neg]
   rwa [mk_neg]
+
+theorem stdPart_sub_of_mk_neg_left (hx : 0 < mk x) : stdPart (x - y) = -stdPart y := by
+  rw [sub_eq_add_neg, stdPart_add_of_mk_neg_left hx, stdPart_neg]
+
+theorem stdPart_sub_of_mk_neg_right (hy : 0 < mk y) : stdPart (x - y) = stdPart x := by
+  rw [sub_eq_add_neg, stdPart_add_of_mk_neg_right (by simpa)]
 
 theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     stdPart (x * y) = stdPart x * stdPart y := by
