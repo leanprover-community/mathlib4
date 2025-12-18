@@ -165,23 +165,25 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
       - `h_comm n : g' (n+1) ≫ p n = f ≫ k n`, which can be obtained from h_down n. -/
     have h_comm (n : ℕ) (k : Y ⟶ lightToProfinite.obj (S.component n)) (h_down :
         f ≫ k = g ≫ lightToProfinite.map (S.proj n)) : f ≫ k =
-          g ≫ S.proj (n+1) ≫ lightToProfinite.map (S.transitionMap n) := by
-      rw [h_down]
-      exact congrArg _ (S.proj_comp_transitionMap n).symm
+          g ≫ lightToProfinite.map (S.proj (n+1)) ≫ lightToProfinite.map (S.transitionMap n) := by
+      rw [h_down, ← Functor.map_comp, ← S.proj_comp_transitionMap n]
     have h_step (n : ℕ) (k : Y ⟶ lightToProfinite.obj (S.component n))
         (h_down : f ≫ k = g ≫ lightToProfinite.map (S.proj n)) :
         ∃ k' : Y ⟶ lightToProfinite.obj (S.component (n+1)), k' ≫
-          lightToProfinite.map (S.transitionMap n) = k ∧ f ≫ k' = g ≫ S.proj (n+1) :=
+          lightToProfinite.map (S.transitionMap n) = k ∧ f ≫ k' = g ≫
+            lightToProfinite.map (S.proj (n+1)) :=
       exists_lift_of_finite_of_mono_of_epi f (lightToProfinite.map (S.transitionMap n))
         (g ≫ lightToProfinite.map (S.proj (n+1))) k (h_comm _ _ h_down)
-    let lifts (n : ℕ) := { k : Y ⟶ lightToProfinite.obj (S.component n) // f ≫ k = g ≫ S.proj n }
+    let lifts (n : ℕ) := { k : Y ⟶ lightToProfinite.obj (S.component n) //
+      f ≫ k = g ≫ lightToProfinite.map (S.proj n) }
     let next (n : ℕ) : lifts n → lifts (n+1) :=
       fun k ↦ ⟨(h_step n k.val k.property).choose, (h_step n k.val k.property).choose_spec.2⟩
     -- now define a sequence of lifts using induction
     let k_seq (n : Nat) : lifts n := Nat.rec ⟨k0, h_down0⟩ next n
     -- `h_up` and `h_down` are the required commutativity properties
-    have h_down (n : ℕ) : f ≫ (k_seq n).val = g ≫ S.proj n := (k_seq n).prop
-    have h_up : ∀ n, (k_seq (n+1)).val ≫ S.transitionMap n = (k_seq n).val
+    have h_down (n : ℕ) : f ≫ (k_seq n).val = g ≫ lightToProfinite.map (S.proj n) :=
+      (k_seq n).prop
+    have h_up : ∀ n, (k_seq (n+1)).val ≫ lightToProfinite.map (S.transitionMap n) = (k_seq n).val
     | 0 => (h_step 0 k0 h_down0).choose_spec.1
     | n + 1 => (h_step (n+1) (k_seq (n+1)).val (k_seq (n+1)).prop).choose_spec.1
     let k_cone : Cone (S.diagram ⋙ lightToProfinite) :=
@@ -202,4 +204,6 @@ end Profinite
 instance LightProfinite.injective (S : LightProfinite.{u}) [Nonempty S] : Injective S where
   factors {X Y} g f _ := by
     obtain ⟨h, _⟩ := Injective.factors (lightToProfinite.map g) (lightToProfinite.map f)
-    exact ⟨lightToProfiniteFullyFaithful.preimage h, by cat_disch⟩
+    refine ⟨lightToProfiniteFullyFaithful.preimage h, ?_⟩
+    apply lightToProfiniteFullyFaithful.map_injective
+    cat_disch
