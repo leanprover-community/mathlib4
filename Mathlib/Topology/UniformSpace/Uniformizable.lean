@@ -78,8 +78,8 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
     have ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have ⟨(u3 : SetRel X X), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
     have hu3O := ((comp_subset_comp_left (comp_subset_comp_right interior_subset))).trans hu3O
-    let c : Urysohns.CU IsThickening := {
-      C := closure (ball x (interior u3))
+    let c : Urysohns.CU IsThickening :=
+    { C := closure (ball x (interior u3))
       U := ball x O
       closed_C := isClosed_closure
       open_U := isOpen_ball x hOo
@@ -88,8 +88,7 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
         exact (iInter₂_subset u3 hu3u).trans hu3O
       hP _ IsThickeningcu _ _ := urysohns_main IsThickeningcu
       P_C_U := ⟨x, interior u3, u3,
-        isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩
-    }
+        isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩ }
     ⟨fun x ↦ ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
       Subtype.ext (c.lim_of_mem_C x <| subset_closure (refl_mem_uniformity <|
         interior_mem_uniformity hu3u)), fun y hy ↦ Subtype.ext (c.lim_of_notMem_U y (hbO · hy))⟩
