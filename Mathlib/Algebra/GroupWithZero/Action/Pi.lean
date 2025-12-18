@@ -3,11 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.GroupWithZero.Pi
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Tactic.Common
 
 /-!
 # Pi instances for multiplicative actions with zero
@@ -20,6 +22,8 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Prod`
 * `Algebra.GroupWithZero.Action.Units`
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -84,7 +88,6 @@ theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMu
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
   single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 
--- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)

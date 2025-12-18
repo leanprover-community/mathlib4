@@ -3,11 +3,15 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.PowMod
-import Mathlib.Tactic.ReduceModChar.Ext
+module
+
+public meta import Mathlib.Data.ZMod.Basic
+public meta import Mathlib.RingTheory.Polynomial.Basic
+public meta import Mathlib.Tactic.NormNum.DivMod
+public meta import Mathlib.Tactic.NormNum.PowMod
+public meta import Mathlib.Tactic.ReduceModChar.Ext
+public meta import Mathlib.Util.AtLocation
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
 
 /-!
 # `reduce_mod_char` tactic
@@ -31,6 +35,8 @@ In addition to the main functionality, we call `normNeg` and `normNegCoeffMul` t
 with multiplication by `p - 1`, and simp lemmas tagged `@[reduce_mod_char]` to clean up the
 resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
+
+public meta section
 
 open Lean Meta Simp
 open Lean.Elab
@@ -190,7 +196,7 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
+    let some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
     return .intLike (← instantiateMVarsQ n) instRing instCharP
 
@@ -261,26 +267,6 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
 
   return r
 
-/-- Reduce all numeric subexpressions of the goal modulo their characteristic. -/
-partial def reduceModCharTarget (expensive := false) : TacticM Unit := do
-  liftMetaTactic1 fun goal ↦ do
-    let tgt ← instantiateMVars (← goal.getType)
-    let prf ← derive (expensive := expensive) tgt
-    if prf.expr.consumeMData.isConstOf ``True then
-      match prf.proof? with
-      | some proof => goal.assign (← mkOfEqTrue proof)
-      | none => goal.assign (mkConst ``True.intro)
-      return none
-    else
-      applySimpResultToTarget goal tgt prf
-
-/-- Reduce all numeric subexpressions of the given hypothesis modulo their characteristic. -/
-partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Unit :=
-  liftMetaTactic1 fun goal ↦ do
-    let hyp ← instantiateMVars (← fvarId.getDecl).type
-    let prf ← derive (expensive := expensive) hyp
-    return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
-
 open Parser.Tactic
 
 /--
@@ -306,23 +292,16 @@ syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
 @[inherit_doc reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
+open Mathlib.Tactic in
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
-  match expandOptLocation (Lean.mkOptionalNode loc) with
-  | Location.targets hyps target => do
-    (← getFVarIds hyps).forM reduceModCharHyp
-    if target then reduceModCharTarget
-  | Location.wildcard => do
-    (← (← getMainGoal).getNondepPropHyps).forM reduceModCharHyp
-    reduceModCharTarget
+  let loc := expandOptLocation (Lean.mkOptionalNode loc)
+  transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
+    (failIfUnchanged := false)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
-  match expandOptLocation (Lean.mkOptionalNode loc) with
-  | Location.targets hyps target => do
-    (← getFVarIds hyps).forM (reduceModCharHyp (expensive := true))
-    if target then reduceModCharTarget (expensive := true)
-  | Location.wildcard => do
-    (← (← getMainGoal).getNondepPropHyps).forM (reduceModCharHyp (expensive := true))
-    reduceModCharTarget (expensive := true)
+  let loc := expandOptLocation (Lean.mkOptionalNode loc)
+  transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
+    loc (failIfUnchanged := false)
 
 end ReduceModChar
 

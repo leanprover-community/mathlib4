@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Category instance for algebras over a commutative ring
@@ -15,6 +17,8 @@ We introduce the bundled category `AlgCat` of algebras over a fixed commutative 
 with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -128,11 +132,9 @@ lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
 lemma hom_inv_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited (AlgCat R) :=
@@ -200,7 +202,7 @@ end AlgCat
 variable {R}
 variable {X₁ X₂ : Type u}
 
-/-- Build an isomorphism in the category `AlgCat R` from a `AlgEquiv` between `Algebra`s. -/
+/-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgCat.of R X₁ ≅ AlgCat.of R X₂ where
@@ -209,7 +211,7 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
 
 namespace CategoryTheory.Iso
 
-/-- Build a `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
+/-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with

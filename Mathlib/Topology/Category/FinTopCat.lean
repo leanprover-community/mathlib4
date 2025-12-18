@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of finite topological spaces
@@ -13,6 +15,8 @@ Definition of the category of finite topological spaces with the canonical
 forgetful functors.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -36,7 +40,7 @@ instance : CoeSort FinTopCat (Type u) :=
 attribute [instance] fintype
 
 instance : Category FinTopCat :=
-  InducedCategory.category toTop
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory FinTopCat (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -53,7 +57,8 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
 
 /-- The forgetful functor to `FintypeCat`. -/
 instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.hom.toFun) HEq.rfl
+  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl)
+    (fun f ↦ FintypeCat.homMk f) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X

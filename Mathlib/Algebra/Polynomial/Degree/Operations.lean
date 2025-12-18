@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
     The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -119,6 +123,9 @@ variable [Ring R]
 theorem coeff_mul_X_sub_C {p : R[X]} {r : R} {a : ℕ} :
     coeff (p * (X - C r)) (a + 1) = coeff p a - coeff p (a + 1) * r := by simp [mul_sub]
 
+theorem coeff_X_sub_C_mul {p : R[X]} {r : R} {a : ℕ} :
+    coeff ((X - C r) * p) (a + 1) = coeff p a - r * coeff p (a + 1) := by simp [sub_mul]
+
 end Ring
 
 section Semiring
@@ -196,9 +203,9 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
 @[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
-  by_cases hpd : p.degree ≤ 0
+  by_cases! hpd : p.degree ≤ 0
   · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
-  · rw [not_le, degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
+  · rw [degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
     exact natDegree_add_eq_left_of_natDegree_lt hpd
 
 @[simp] theorem natDegree_C_add {a : R} : (C a + p).natDegree = p.natDegree := by
@@ -247,9 +254,11 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
   refine (congr_arg _ <| natDegree_eq_of_le_of_coeff_ne_zero pn ?_).trans p1
   exact ne_of_eq_of_ne p1 one_ne_zero
 
-theorem monic_of_degree_le_of_coeff_eq_one (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) :
-    Monic p :=
+theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) : Monic p :=
   monic_of_natDegree_le_of_coeff_eq_one n (natDegree_le_of_degree_le pn) p1
+
+@[deprecated (since := "2025-10-24")]
+alias monic_of_degree_le_of_coeff_eq_one := monic_of_degree_le
 
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     leadingCoeff (p + q) = leadingCoeff q := by
@@ -428,7 +437,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
           exact leadingCoeff_eq_zero.mp hi
         calc
           (p ^ i * p).natDegree ≤ (p ^ i).natDegree + p.natDegree := natDegree_mul_le
-          _ < i * p.natDegree + p.natDegree := add_lt_add_right h1 _
+          _ < i * p.natDegree + p.natDegree := by gcongr
     · rw [← natDegree_pow' hp1, ← leadingCoeff_pow' hp1]
       exact coeff_mul_degree_add_degree _ _
 
@@ -485,6 +494,7 @@ theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
+@[simp]
 theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 

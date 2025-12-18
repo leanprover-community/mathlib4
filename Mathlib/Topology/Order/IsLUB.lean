@@ -3,12 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+module
 
-import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Properties of LUB and GLB in an order topology
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -163,6 +166,30 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
   hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
+/-- A closed interval in a conditionally complete linear order is compact.
+Also see general API on `CompactIccSpace`. -/
+protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] (a b : α) :
+    IsCompact (Icc a b) := by
+  simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff]
+  refine (le_or_gt a b).elim (fun _ f hfab ↦ ?_) (by simp [·])
+  by_contra! hf
+  have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx _ ↦ hf x hx (le_trans (by simpa) (pure_le_nhds x))
+  set s := { x ∈ Icc a b | Icc a x ∉ f }
+  have hsb : b ∈ upperBounds s := fun x hx ↦ hx.1.2
+  have ha : a ∈ s := by simp [s, *]
+  let c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
+  have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
+  have (i : _) (hic : i < c) : Ioi i ∈ f := by
+    have ⟨j, hj, hij, hjc⟩ := hsc.exists_between hic
+    filter_upwards [f.compl_mem_iff_notMem.mpr hj.2, hfab]; grind
+  have ⟨x, hx, hxf⟩ : ∃ x, c < x ∧ Iio x ∉ f := by simpa [nhds_eq_order, eq_true this] using hf c hc
+  have : Icc a c ∉ f := mt (mem_of_superset · (by grind)) hxf
+  have : x ∈ Icc a b := ⟨by grind, le_of_not_gt fun h ↦ hxf (mem_of_superset hfab (by grind))⟩
+  have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
+  exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
@@ -226,14 +253,14 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
   apply hx.exists_seq_strictMono_tendsto_of_notMem (by simp) hnonempty |>.imp
-  aesop
+  simp_all
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ := exists_lt x
   apply hs.exists_seq_strictMono_tendsto_of_lt (exists_lt x).choose_spec |>.imp
-  aesop
+  simp_all
 
 theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder β]
     [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)

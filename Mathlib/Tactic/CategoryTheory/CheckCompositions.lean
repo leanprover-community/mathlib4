@@ -3,7 +3,9 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public meta import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 The `check_compositions` tactic,
@@ -15,6 +17,8 @@ although typically `simp` should reduce rather than increase the reported discre
 
 `check_compositions` may be useful in diagnosing uses of `erw` in the category theory library.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.CheckCompositions
 

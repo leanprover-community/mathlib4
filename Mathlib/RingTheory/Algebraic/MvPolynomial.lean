@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Algebraic.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Transcendental elements in `MvPolynomial`
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Algebraic.Basic
 This file lists some results on some elements in `MvPolynomial σ R` being transcendental
 over the base ring `R` and subrings `MvPolynomial.supported` of `MvPolynomial σ R`.
 -/
+
+@[expose] public section
 
 universe u v w
 
