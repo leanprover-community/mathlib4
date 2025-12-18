@@ -71,6 +71,9 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     · rw [dif_pos hx]
       exact (Exists.choose_spec (hmem m hx)).1 hm
 
+@[deprecated (since := "2025-12-09")]
+alias PadicInt.dividedPowers_of_injective := DividedPowers.ofInjective
+
 end Injective
 
 namespace PadicInt

@@ -42,7 +42,7 @@ theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X'
 instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
   { inst with }
 
-@[simp] theorem ReflQuiver.id_eq_id {C : Type*} [Category C] (X : C) : 𝟙rq X = 𝟙 X := rfl
+@[simp] theorem ReflQuiver.id_eq_id {C : Type*} [Category* C] (X : C) : 𝟙rq X = 𝟙 X := rfl
 
 /-- A morphism of reflexive quivers called a `ReflPrefunctor`. -/
 structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [ReflQuiver.{v₂} W]
@@ -51,6 +51,8 @@ structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [
   map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by cat_disch
 
 namespace ReflPrefunctor
+
+attribute [simp] map_id
 
 -- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
@@ -123,8 +125,8 @@ infixl:60 " ⋙rq " => ReflPrefunctor.comp
 /-- Notation for the identity prefunctor on a reflexive quiver. -/
 notation "𝟭rq" => id
 
-theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
-    (h : f = g) : F.map f = F.map g := congrArg F.map h
+theorem congr_map {U V : Type*} [ReflQuiver U] [ReflQuiver V] (F : U ⥤rq V) {X Y : U}
+    {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g := congrArg F.map h
 
 /-- An equality of refl prefunctors gives an equality on objects. -/
 theorem congr_obj {U V : Type*} [ReflQuiver U] [ReflQuiver V] {F G : U ⥤rq V}
@@ -140,9 +142,9 @@ theorem congr_hom {U V : Type*} [ReflQuiver U] [ReflQuiver V] {F G : U ⥤rq V}
 end ReflPrefunctor
 
 /-- A functor has an underlying refl prefunctor. -/
-def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
+def Functor.toReflPrefunctor {C D} [Category* C] [Category* D] (F : C ⥤ D) : C ⥤rq D := { F with }
 
-theorem Functor.toReflPrefunctor.map_comp {C D E} [Category C] [Category D] [Category E]
+theorem Functor.toReflPrefunctor.map_comp {C D E} [Category* C] [Category* D] [Category* E]
     (F : C ⥤ D) (G : D ⥤ E) :
     toReflPrefunctor (F ⋙ G) = toReflPrefunctor F ⋙rq toReflPrefunctor G := rfl
 
