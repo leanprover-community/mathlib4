@@ -375,7 +375,7 @@ initialize registerBuiltinAttribute {
             let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let xs := xs.eraseIdx i (by grind)
             let auxType ← mkForallFVars xs type
-            let auxValue ← mkLambdaFVars (xs.push x) type
+            let auxValue ← mkLambdaFVars (xs.push x) val
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
           break
