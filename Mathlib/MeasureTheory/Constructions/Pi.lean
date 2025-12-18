@@ -565,7 +565,7 @@ instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι �
     IsUnifLocDoublingMeasure (Measure.pi μ) := by
   use ∏ i, IsUnifLocDoublingMeasure.doublingConstant (μ i)
   filter_upwards [Filter.eventually_all.mpr fun i ↦
-      IsUnifLocDoublingMeasure.exists_measure_closedBall_le_mul' (μ i),
+      IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
     eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
   simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
     using Fintype.prod_mono' fun i ↦ hr i (x i)

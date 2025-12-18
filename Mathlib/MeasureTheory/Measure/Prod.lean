@@ -338,8 +338,8 @@ instance _root_.IsUnifLocDoublingMeasure.prod {X Y : Type*}
     IsUnifLocDoublingMeasure (μ.prod ν) := by
   constructor
   use doublingConstant μ * doublingConstant ν
-  filter_upwards [exists_measure_closedBall_le_mul' μ, exists_measure_closedBall_le_mul' ν]
-    with r hμr hνr x
+  filter_upwards [eventually_measure_le_doublingConstant_mul μ,
+    eventually_measure_le_doublingConstant_mul ν] with r hμr hνr x
   rw [← closedBall_prod_same, prod_prod, ← closedBall_prod_same, prod_prod]
   grw [hμr, hνr, ENNReal.coe_mul, mul_mul_mul_comm]
 
