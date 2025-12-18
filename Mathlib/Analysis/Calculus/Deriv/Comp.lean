@@ -42,8 +42,6 @@ open scoped Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
-
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -315,7 +313,7 @@ protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
     HasDerivAtFilter f^[n] (f' ^ n) x L := by
   have := hf.iterate hL hx n
-  rwa [ContinuousLinearMap.smulRight_id_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasDerivAt f^[n] (f' ^ n) x :=
@@ -324,13 +322,13 @@ protected nonrec theorem HasDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf 
 protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf : HasDerivWithinAt f f' s x)
     (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) : HasDerivWithinAt f^[n] (f' ^ n) s x := by
   have := HasFDerivWithinAt.iterate hf hx hs n
-  rwa [ContinuousLinearMap.smulRight_id_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n
-  rwa [ContinuousLinearMap.smulRight_id_pow] at this
+  rwa [ContinuousLinearMap.toSpanSingleton_pow] at this
 
 end Composition
 

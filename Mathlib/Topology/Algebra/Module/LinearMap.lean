@@ -895,6 +895,10 @@ theorem smulRight_id_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n :
 
 @[deprecated (since := "2025-12-18")] alias smulRight_one_pow := smulRight_id_pow
 
+theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
+    toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) :=
+  smulRight_id_pow _ _
+
 section
 
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
