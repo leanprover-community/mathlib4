@@ -120,9 +120,9 @@ lemma Preconnected.degree_zero_iff {H : G.Subgraph} (h : H.Preconnected) (v : H.
   have := hn.coe_sort
   simpa [hv] using h.coe.degree_pos_of_nontrivial v
 
-lemma Connected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected)
-    (v : H.verts) : ∃ u, H.Adj v u := by
-  have := h.coe.preconnected.exists_adj_of_nontrivial v
+lemma Preconnected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts]
+    (h : H.Preconnected) (v : H.verts) : ∃ u, H.Adj v u := by
+  have := h.coe.exists_adj_of_nontrivial v
   tauto
 
 /--
