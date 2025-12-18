@@ -136,22 +136,13 @@ theorem is_one_preprimitive_iff :
     · intro s hs
       suffices s = ∅ by
         rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+      simpa using hs
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
-  rcases Nat.lt_or_ge n 1 with h0 | h1
-  · rw [Nat.lt_one_iff] at h0
-    rw [h0]
-    apply is_zero_preprimitive
   rw [isMultiplyPreprimitive_iff]
   constructor
   · rw [← ofStabilizer.isMultiplyPretransitive]
@@ -212,8 +203,8 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     have htt' : t = Subtype.val ⁻¹' t' :=
       (Set.preimage_image_eq _ Subtype.coe_injective).symm
     rw [htt']
-    suffices IsPreprimitive (fixingSubgroup M (s ∪ t')) (ofFixingSubgroup M (s ∪ t')) by
-      apply IsPreprimitive.of_surjective map_ofFixingSubgroupUnion_bijective.surjective
+    suffices IsPreprimitive (fixingSubgroup M (s ∪ t')) (ofFixingSubgroup M (s ∪ t')) from
+      IsPreprimitive.of_surjective map_ofFixingSubgroupUnion_bijective.surjective
     apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
     rw [Set.encard_union_eq _]
     · rw [Subtype.coe_injective.encard_image, add_assoc, ht,
@@ -226,21 +217,18 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
 theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     (hα : ↑n.succ ≤ ENat.card α) [IsMultiplyPretransitive M α n.succ] :
     IsMultiplyPreprimitive M α n := by
-  rcases Nat.eq_zero_or_pos n with hn | hn
-  · rw [hn]
-    exact is_zero_preprimitive M α
+  cases n with
+  | zero => exact is_zero_preprimitive M α
+  | succ n =>
   rw [isMultiplyPreprimitive_iff]
   constructor
-  · exact isMultiplyPretransitive_of_le' (Nat.le_succ n) hα
+  · exact isMultiplyPretransitive_of_le' (Nat.le_succ _) hα
   · intro s hs
-    obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
+    rw [Nat.cast_add_one, WithTop.add_right_inj ENat.one_ne_top] at hs
     apply isPreprimitive_of_is_two_pretransitive
-    have hs' : s.encard = m := by
-      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
-      exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
-    have : Finite s := Set.finite_of_encard_eq_coe hs'
-    apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)
-    simp [Set.ncard, hs', hm, add_comm 1]
+    have : Finite s := Set.finite_of_encard_eq_coe hs
+    refine ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := (n + 1).succ) ?_
+    simp [Set.ncard_def, hs]
 
 /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/
 @[to_additive /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/]
@@ -272,22 +260,19 @@ theorem IsMultiplyPreprimitive.of_bijective_map
     have hs' : f '' s = t := Set.image_preimage_eq t hf.surjective
     let φ' : fixingSubgroup M s → fixingSubgroup N t := fun ⟨m, hm⟩ ↦
       ⟨φ m, fun ⟨y, hy⟩ => by
-        rw [← hs', Set.mem_image] at hy
-        obtain ⟨x, hx, hx'⟩ := hy
-        simp only
-        rw [← hx', ← map_smulₛₗ]
-        apply congr_arg
         rw [mem_fixingSubgroup_iff] at hm
-        exact hm x hx⟩
+        rw [← hs', Set.mem_image] at hy
+        obtain ⟨x, hx, rfl⟩ := hy
+        simp only
+        rw [← map_smulₛₗ, hm x hx]⟩
     let f' : SubMulAction.ofFixingSubgroup M s →ₑ[φ'] SubMulAction.ofFixingSubgroup N t :=
       { toFun := fun ⟨x, hx⟩ => ⟨f.toFun x, fun h => hx (Set.mem_preimage.mp h)⟩
-        map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ =>
-          by
+        map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
           rw [← SetLike.coe_eq_coe]
           exact f.map_smul' m x }
     have hf' : Function.Surjective f' := by
       rintro ⟨y, hy⟩
-      obtain ⟨x, hx⟩ := hf.right y
+      obtain ⟨x, hx⟩ := hf.surjective y
       use ⟨x, ?_⟩
       · simpa only [f', ← Subtype.coe_inj] using hx
       · intro h
