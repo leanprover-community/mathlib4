@@ -517,7 +517,7 @@ lemma preservesLimit_empty_of_isIso_terminalComparison [IsIso (terminalCompariso
     PreservesLimit (Functor.empty.{0} C) F := by
   apply preservesLimit_of_preserves_limit_cone isTerminalTensorUnit
   apply isLimitChangeEmptyCone D isTerminalTensorUnit
-  exact asIso (terminalComparison F)|>.symm
+  exact asIso (terminalComparison F) |>.symm
 
 /-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
 noncomputable def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] :
@@ -963,15 +963,6 @@ noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts 
 instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsingleton
 
 end Braided
-
-@[deprecated (since := "2025-04-24")]
-alias oplaxMonoidalOfChosenFiniteProducts := OplaxMonoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias monoidalOfChosenFiniteProducts := Monoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
 
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}

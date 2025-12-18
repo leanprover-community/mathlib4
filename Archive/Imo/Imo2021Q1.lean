@@ -52,7 +52,7 @@ lemma exists_numbers_in_interval {n : ℕ} (hn : 100 ≤ n) :
   have h₂ := Nat.succ_le_succ_sqrt' (n + 1)
   have h₃ : 10 ≤ (n + 1).sqrt := by
     rw [Nat.le_sqrt]
-    omega
+    lia
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1
   refine ⟨l, ?_, ?_⟩
@@ -65,8 +65,8 @@ lemma exists_triplet_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
       IsSquare (a + b) ∧ IsSquare (c + a) ∧ IsSquare (b + c) := by
   obtain ⟨l, hl1, hl2⟩ := exists_numbers_in_interval hn
   have hl : 1 < l := by contrapose! hl1; interval_cases l <;> linarith
-  have h₁ : 4 * l ≤ 2 * l ^ 2 := by omega
-  have h₂ : 1 ≤ 2 * l := by omega
+  have h₁ : 4 * l ≤ 2 * l ^ 2 := by lia
+  have h₂ : 1 ≤ 2 * l := by lia
   refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
     ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + 1, ?_⟩⟩
   all_goals zify [h₁, h₂]; linarith

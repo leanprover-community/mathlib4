@@ -851,6 +851,8 @@ theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s 
   rw [← inter_setOf_eq_sep s p, ← inter_setOf_eq_sep t p,
     ← inter_assoc, ← left_eq_inter.mpr hst]
 
+@[deprecated (since := "2025-12-10")] alias sep_of_subset := sep_eq_inter_sep
+
 @[simp]
 theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
   inf_lt_right

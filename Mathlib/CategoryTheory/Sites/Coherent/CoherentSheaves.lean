@@ -25,7 +25,7 @@ This file characterises sheaves for the coherent topology
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C]
+variable {C : Type*} [Category* C] [Precoherent C]
 
 universe w in
 lemma isSheaf_coherent (P : Cᵒᵖ ⥤ Type w) :

@@ -87,8 +87,8 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     (mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q where
   hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).1.v p q hpq ≫ (σ q).s -
     (mappingCone.snd (homOfDegreewiseSplit S σ)).v p p (add_zero p) ≫
-      by exact (Cochain.ofHom S.f).v (p + 1) q (by omega)
-  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by omega) -
+      by exact (Cochain.ofHom S.f).v (p + 1) q (by lia)
+  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by lia) -
     by exact (σ q).r ≫ (S.X₁.XIsoOfEq hpq.symm).hom ≫
       (mappingCone.inr (homOfDegreewiseSplit S σ)).f p
   hom_inv_id := by
@@ -196,7 +196,7 @@ cochain complexes. -/
 @[simps]
 noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
     ((triangleRotateShortComplex φ).map (eval _ _ n)).Splitting where
-  s := -(inl φ).v (n + 1) n (by omega)
+  s := -(inl φ).v (n + 1) n (by lia)
   r := (snd φ).v n n (add_zero n)
   id := by simp [ext_from_iff φ _ _ rfl]
 

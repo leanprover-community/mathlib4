@@ -429,7 +429,7 @@ end Equalizers
 
 section
 
-variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+variable {C : Type*} [Category* C] [Preadditive C] {X Y : C}
 
 instance : SMul (Units ℤ) (X ≅ Y) where
   smul a e :=
