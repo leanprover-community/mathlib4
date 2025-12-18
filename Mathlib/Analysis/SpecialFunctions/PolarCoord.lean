@@ -241,15 +241,13 @@ theorem abs_fst_of_mem_pi_polarCoord_target {p : ι → ℝ × ℝ}
     |(p i).1| = (p i).1 :=
   abs_of_pos ((Set.mem_univ_pi.mp hp) i).1
 
-variable [Finite ι] in
-theorem hasFDerivAt_pi_polarCoord_symm (p : ι → ℝ × ℝ) :
+theorem hasFDerivAt_pi_polarCoord_symm [Finite ι] (p : ι → ℝ × ℝ) :
     HasFDerivAt (fun x i ↦ polarCoord.symm (x i)) (fderivPiPolarCoordSymm p) p := by
   have := Fintype.ofFinite ι
   rw [fderivPiPolarCoordSymm, hasFDerivAt_pi]
   exact fun i ↦ HasFDerivAt.comp _ (hasFDerivAt_polarCoord_symm _) (hasFDerivAt_apply i _)
 
-variable [Finite ι] in
-theorem measurableSet_pi_polarCoord_target :
+theorem measurableSet_pi_polarCoord_target [Finite ι] :
     MeasurableSet (Set.univ.pi fun _ : ι ↦ polarCoord.target) :=
   MeasurableSet.univ_pi fun _ ↦ polarCoord.open_target.measurableSet
 
