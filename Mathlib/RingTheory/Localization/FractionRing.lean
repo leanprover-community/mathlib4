@@ -168,10 +168,7 @@ theorem self_iff_surjective : IsFractionRing R R ↔ Function.Surjective (algebr
 
 variable {K}
 
-open algebraMap in
-@[norm_cast]
-theorem coe_inj {a b : R} : (↑a : K) = ↑b ↔ a = b :=
-  algebraMap.coe_inj _ _
+@[deprecated (since := "2025-12-18")] alias coe_inj := FaithfulSMul.algebraMap_injective
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=

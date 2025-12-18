@@ -331,6 +331,10 @@ lemma algebraMap_injective : Injective (algebraMap R A) :=
   (faithfulSMul_iff_algebraMap_injective R A).mp inferInstance
 
 @[simp]
+lemma algebraMap_eq_iff {r s : R} : algebraMap R A r = algebraMap R A s ↔ r = s :=
+  (algebraMap_injective R A).eq_iff
+
+@[simp]
 lemma algebraMap_eq_zero_iff {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
   map_eq_zero_iff (algebraMap R A) <| algebraMap_injective R A
 

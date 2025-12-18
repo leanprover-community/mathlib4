@@ -38,7 +38,7 @@ then `L` is ultrametric (i.e. the norm on `L` is nonarchimedean) if `K` is.
 theorem IsUltrametricDist.of_normedAlgebra [NormedDivisionRing L] [NormedAlgebra K L]
     [h : IsUltrametricDist K] : IsUltrametricDist L := by
   rw [isUltrametricDist_iff_forall_norm_natCast_le_one] at h ⊢
-  exact fun n => (algebraMap.coe_natCast (R := K) (A := L) n) ▸ norm_algebraMap' L (n : K) ▸ h n
+  exact fun n => (map_natCast (algebraMap K L) n) ▸ norm_algebraMap' L (n : K) ▸ h n
 
 variable (K L) in
 /--

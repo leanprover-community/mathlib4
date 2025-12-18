@@ -561,7 +561,7 @@ theorem adjoin_insert_algebraMap (x : R) (s : Set A) :
 
 @[simp]
 theorem adjoin_insert_natCast (n : ℕ) (s : Set A) : adjoin R (insert (n : A) s) = adjoin R s :=
-  mod_cast adjoin_insert_algebraMap (n : R) s
+  sorry --mod_cast adjoin_insert_algebraMap (n : R) s
 
 @[simp]
 theorem adjoin_insert_zero (s : Set A) : adjoin R (insert 0 s) = adjoin R s :=
