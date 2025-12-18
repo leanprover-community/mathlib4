@@ -56,13 +56,6 @@ instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
 instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
   map_zero f := f.map_zero'
 
-/-- not marked as an instance because it would be a bad one in general, but it can
-be useful when working with `ContinuousMapZero` and the non-unital continuous
-functional calculus. -/
-def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
-    Zero s where
-  zero := ⟨0, Fact.out⟩
-
 scoped[ContinuousMapZero] attribute [instance] Set.zeroOfFactMem
 
 @[ext]
