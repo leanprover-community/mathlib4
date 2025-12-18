@@ -21,6 +21,11 @@ the (simplicial) generators linearly span the module.
 * `PointedCone.IsSimplicial`: A pointed cone is simplicial if it equals the conic span of
   a finite linearly independent set.
 * `PointedCone.IsGenerating`: Abbreviation - generating if it spans the whole module.
+
+## Results
+
+* `PointedCone.span_isSimplicial`: The conic span of a linearly independent finite set is
+  simplicial.
 * `PointedCone.IsSimplicial.toBasis`: A simplicial generating cone determines a basis.
 
 ## Implementation notes
@@ -56,6 +61,11 @@ linearly independent over `R`. -/
 def IsSimplicial : Prop :=
   ∃ s : Finset M, LinearIndependent R ((↑) : s → M) ∧ span R (s : Set M) = C
 
+/-- The conic span of a finite linearly independent set is simplicial. -/
+theorem span_isSimplicial (s : Finset M) (hli : LinearIndependent R ((↑) : s → M)) :
+    (span R (s : Set M)).IsSimplicial :=
+  ⟨s, hli, rfl⟩
+
 /-- Abbreviation: A pointed cone is generating iff its underlying convex cone is generating. -/
 abbrev IsGenerating : Prop := (C : ConvexCone R M).IsGenerating
 
@@ -73,19 +83,19 @@ lemma IsSimplicial.linearIndependent_generators (h : C.IsSimplicial) :
 lemma IsSimplicial.span_generators (h : C.IsSimplicial) : span R (h.generators : Set M) = C :=
   h.choose_spec.2
 
-/-- If a simplicial cone is generating, its generators linearly span the whole space. -/
-lemma IsSimplicial.span_generators_eq_top (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
-    Submodule.span R (h_simp.generators : Set M) = ⊤ := by
+/-- If a simplicial cone is generating, every element lies in the linear span of its generators. -/
+lemma IsSimplicial.top_le_span_generators (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
+    ⊤ ≤ Submodule.span R (h_simp.generators : Set M) := by
   simp only [← Submodule.span_span_of_tower R≥0 R (h_simp.generators : Set M),
     h_simp.span_generators]
-  exact h_gen
+  exact h_gen.symm.le
 
 /-- The generators of a simplicial generating cone also form a basis for the module. -/
 noncomputable def IsSimplicial.toBasis (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
     Module.Basis h_simp.generators R M :=
   Module.Basis.mk h_simp.linearIndependent_generators (by
     rw [Subtype.range_coe_subtype, Finset.setOf_mem]
-    exact le_of_eq (h_simp.span_generators_eq_top h_gen).symm)
+    exact h_simp.top_le_span_generators h_gen)
 
 /-- The basis `toBasis` acts as the natural inclusion map: evaluating it at each generator
 index yields the generator itself. -/
