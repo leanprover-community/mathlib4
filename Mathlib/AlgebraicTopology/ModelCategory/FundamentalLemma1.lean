@@ -30,17 +30,17 @@ variable (C : Type*) [Category C] [ModelCategory C]
 namespace CofibrantObject
 
 def homRel : HomRel (CofibrantObject C) :=
-  fun X Y ↦ RightHomotopyRel (X := X.1) (Y := Y.1)
+  fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
 
 lemma homRel_iff_rightHomotopyRel {X Y : CofibrantObject C} {f g : X ⟶ Y} :
-    homRel C f g ↔ RightHomotopyRel (ι.map f) (ι.map g) := Iff.rfl
+    homRel C f g ↔ RightHomotopyRel f.hom g.hom := Iff.rfl
 
 lemma compClosure_homRel :
     Quotient.CompClosure (homRel C) = homRel C := by
   ext X Y f g
   refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
   rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p).precomp i
+  exact (h.postcomp p.hom).precomp i.hom
 
 abbrev π := Quotient (CofibrantObject.homRel C)
 
@@ -63,24 +63,31 @@ lemma toπ_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.1] (f g : X ⟶ Y) 
   dsimp [toπ]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
     compClosure_homRel]
-  exact (RightHomotopyRel.equivalence _ _).eqvGen_iff
+  refine ⟨?_, .rel _ _⟩
+  rw [homRel_iff_rightHomotopyRel]
+  intro h
+  induction h with
+  | rel _ _ h => exact h
+  | refl => exact .refl _
+  | symm _ _ _ h => exact .symm h
+  | trans _ _ _ _ _ h h' => exact .trans h h'
 
 end CofibrantObject
 
 namespace FibrantObject
 
 def homRel : HomRel (FibrantObject C) :=
-  fun X Y ↦ LeftHomotopyRel (X := X.1) (Y := Y.1)
+  fun _ _ f g ↦ LeftHomotopyRel f.hom g.hom
 
 lemma homRel_iff_leftHomotopyRel {X Y : FibrantObject C} {f g : X ⟶ Y} :
-    homRel C f g ↔ LeftHomotopyRel (ι.map f) (ι.map g) := Iff.rfl
+    homRel C f g ↔ LeftHomotopyRel f.hom g.hom := Iff.rfl
 
 lemma compClosure_homRel :
     Quotient.CompClosure (homRel C) = homRel C := by
   ext X Y f g
   refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
   rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p).precomp i
+  exact (h.postcomp p.hom).precomp i.hom
 
 abbrev π := Quotient (FibrantObject.homRel C)
 
@@ -103,7 +110,14 @@ lemma toπ_map_eq_iff {X Y : FibrantObject C} [IsCofibrant X.1] (f g : X ⟶ Y) 
   dsimp [toπ]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
     compClosure_homRel]
-  exact (LeftHomotopyRel.equivalence _ _).eqvGen_iff
+  refine ⟨?_, .rel _ _⟩
+  rw [homRel_iff_leftHomotopyRel]
+  intro h
+  induction h with
+  | rel _ _ h => exact h
+  | refl => exact .refl _
+  | symm _ _ _ h => exact .symm h
+  | trans _ _ _ _ _ h h' => exact .trans h h'
 
 end FibrantObject
 
@@ -142,9 +156,8 @@ lemma factorsThroughLocalization :
   let L := (weakEquivalences (CofibrantObject C)).Q
   rw [areEqualizedByLocalization_iff L]
   suffices L.map (homMk P.p₀) = L.map (homMk P.p₁) by
-    simp only [← h.h₀, ← h.h₁]
-    change L.map (homMk h.h ≫ homMk P.p₀) = L.map (homMk h.h ≫ homMk P.p₁)
-    simp only [Functor.map_comp, this]
+    simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
+      show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp, this]
   have := Localization.inverts L (weakEquivalences _) (homMk P.ι) (by
     rw [← weakEquivalence_iff]
     rw [weakEquivalence_iff_ι_map]
@@ -182,11 +195,13 @@ def π.exists_resolution (X : C) :
   rw [isCofibrant_iff_of_isInitial h.i initialIsInitial]
   infer_instance
 
-noncomputable def π.resolutionObj (X : C) : CofibrantObject C :=
-    ⟨(exists_resolution X).choose,
-      (exists_resolution X).choose_spec.choose⟩
+noncomputable def π.resolutionObj (X : C) : C :=
+    (exists_resolution X).choose
 
-noncomputable def π.pResolutionObj (X : C) : ι.obj (resolutionObj X) ⟶ X :=
+instance (X : C) : IsCofibrant (π.resolutionObj X) :=
+  (π.exists_resolution X).choose_spec.choose
+
+noncomputable def π.pResolutionObj (X : C) : resolutionObj X ⟶ X :=
   (exists_resolution X).choose_spec.choose_spec.choose
 
 instance (X : C) : Fibration (π.pResolutionObj X) :=
@@ -197,7 +212,7 @@ instance (X : C) : WeakEquivalence (π.pResolutionObj X) :=
 
 def π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
-      ι.map g ≫ pResolutionObj Y = pResolutionObj X ≫ f := by
+      g ≫ pResolutionObj Y = pResolutionObj X ≫ f := by
   have sq : CommSq (initial.to _) (initial.to _) (pResolutionObj Y)
     (pResolutionObj X ≫ f) := ⟨by simp⟩
   exact ⟨sq.lift, sq.fac_right⟩
@@ -208,40 +223,37 @@ noncomputable def π.resolutionMap {X Y : C} (f : X ⟶ Y) :
 
 @[reassoc (attr := simp)]
 lemma π.resolutionMap_fac {X Y : C} (f : X ⟶ Y) :
-    ι.map (resolutionMap f) ≫ pResolutionObj Y =
+    resolutionMap f ≫ pResolutionObj Y =
       pResolutionObj X ≫ f :=
   (exists_resolution_map f).choose_spec
 
 @[simp]
 lemma π.weakEquivalence_resolutionMap_iff {X Y : C} (f : X ⟶ Y) :
     WeakEquivalence (resolutionMap f) ↔ WeakEquivalence f := by
-  rw [weakEquivalence_iff_ι_map,
-    ← weakEquivalence_postcomp_iff _ (pResolutionObj Y),
+  rw [← weakEquivalence_postcomp_iff _ (pResolutionObj Y),
     π.resolutionMap_fac, weakEquivalence_precomp_iff]
 
-lemma π.resolutionObj_hom_ext {X : CofibrantObject C} {Y : C} {f g : X ⟶ resolutionObj Y}
-    (h : LeftHomotopyRel (ι.map f ≫ pResolutionObj Y) (ι.map g ≫ pResolutionObj Y)) :
-    toπ.map f = toπ.map g := by
+lemma π.resolutionObj_hom_ext {X : C} [IsCofibrant X] {Y : C} {f g : X ⟶ resolutionObj Y}
+    (h : LeftHomotopyRel (f ≫ pResolutionObj Y) (g ≫ pResolutionObj Y)) :
+    toπ.map (homMk f) = toπ.map (homMk g) := by
   apply toπ_map_eq
   rw [homRel_iff_rightHomotopyRel]
   apply LeftHomotopyRel.rightHomotopyRel
   rw [← LeftHomotopyClass.mk_eq_mk_iff] at h ⊢
   exact (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence
-    (X := X.obj) (g := pResolutionObj Y)).1 h
+    (X := X) (g := pResolutionObj Y)).1 h
 
 noncomputable def π.resolution : C ⥤ CofibrantObject.π C where
-  obj X := toπ.obj (resolutionObj X)
-  map f := toπ.map (resolutionMap f)
+  obj X := toπ.obj (mk (resolutionObj X))
+  map f := toπ.map (homMk (resolutionMap f))
   map_id X := by
     rw [← toπ.map_id]
     apply resolutionObj_hom_ext
-    rw [resolutionMap_fac, Category.comp_id, ι.map_id, Category.id_comp]
-    exact .refl _
+    simpa using .refl _
   map_comp {X₁ X₂ X₃} f g := by
     rw [← toπ.map_comp]
     apply resolutionObj_hom_ext
-    rw [resolutionMap_fac, ι.map_comp_assoc, resolutionMap_fac, resolutionMap_fac_assoc]
-    exact .refl _
+    simpa using .refl _
 
 variable (C) in
 @[simps]
@@ -251,12 +263,15 @@ noncomputable def π.localizerMorphismResolution :
   functor := π.resolution
   map _ _ _ h := by
     simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff, π.resolution,
-      weakEquivalence_toπ_map_iff, weakEquivalence_resolutionMap_iff] using h
+      weakEquivalence_toπ_map_iff, weakEquivalence_resolutionMap_iff,
+      weakEquivalence_homMk_iff] using h
 
 @[simps]
 noncomputable def π.ιCompResolutionNatTrans : ι ⋙ π.resolution (C := C) ⟶ toπ where
-  app X := toπ.map (pResolutionObj (ι.obj X))
-  naturality _ _ f := toπ.congr_map (π.resolutionMap_fac (ι.map f))
+  app X := toπ.map { hom := (π.pResolutionObj (ι.obj X)) }
+  naturality _ _ f :=  toπ.congr_map (by
+    ext : 1
+    exact π.resolutionMap_fac f.hom)
 
 instance π.weakEquivalence_ιCompResolutionNatTrans_app (X : CofibrantObject C) :
     WeakEquivalence (ιCompResolutionNatTrans.app X) := by
@@ -288,7 +303,8 @@ def π.toπCompToLocalizationIso : toπ ⋙ toLocalization L ≅ ι ⋙ L := Iso
 noncomputable def π.resolutionCompToLocalizationNatTrans :
     π.resolution ⋙ π.toLocalization L ⟶ L where
   app X := L.map (pResolutionObj X)
-  naturality _ _ f := by simpa using L.congr_map (π.resolutionMap_fac f)
+  naturality _ _ f := by
+    simpa only [Functor.map_comp] using L.congr_map (π.resolutionMap_fac f)
 
 instance : IsIso (π.resolutionCompToLocalizationNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]

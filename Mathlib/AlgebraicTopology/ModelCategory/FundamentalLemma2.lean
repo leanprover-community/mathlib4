@@ -24,19 +24,22 @@ variable (C : Type*) [Category C] [ModelCategory C]
 namespace BifibrantObject
 
 def homRel : HomRel (BifibrantObject C) :=
-  fun X Y ↦ RightHomotopyRel (X := X.1) (Y := Y.1)
+  fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
 
 instance : Congruence (homRel C) where
-  equivalence := RightHomotopyRel.equivalence _ _
-  compLeft p _ _ h := h.precomp p
-  compRight p h := h.postcomp p
+  equivalence :=
+    { refl _ := .refl _
+      symm h := .symm h
+      trans h₁ h₂ := .trans h₁ h₂ }
+  compLeft p _ _ h := h.precomp p.hom
+  compRight p h := h.postcomp p.hom
 
 lemma compClosure_homRel :
     Quotient.CompClosure (homRel C) = homRel C := by
   ext X Y f g
   refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
   rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p).precomp i
+  exact (h.postcomp p.hom).precomp i.hom
 
 section
 
@@ -75,27 +78,19 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ E) :
   · intro H K L f g h
     obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
     have := isCofibrant_of_cofibration P.ι
-    let γ : K ⟶ mk P.P := h.h
-    let p₀ : mk P.P ⟶ L := P.p₀
-    let p₁ : mk P.P ⟶ L := P.p₁
-    let s : L ⟶ mk P.P := P.ι
-    have : IsIso (F.map s) := H _ (by
+    have : IsIso (F.map (homMk P.ι)) := H _ (by
       rw [← weakEquivalence_iff, weakEquivalence_iff_ι_map]
       exact inferInstanceAs (WeakEquivalence P.ι))
-    simp only [← h.h₀, ← h.h₁]
-    change F.map (γ ≫ p₀) = F.map (γ ≫ p₁)
-    simp only [Functor.map_comp]
+    simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
+      show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp]
     congr 1
-    simp only [← cancel_epi (F.map s), ← Functor.map_comp]
-    congr 1
-    exact ι.map_injective (P.ι_p₀.trans P.ι_p₁.symm)
+    simp [← cancel_epi (F.map (homMk P.ι)), ← Functor.map_comp]
   · intro h X Y f hf
     rw [← weakEquivalence_iff, weakEquivalence_iff_ι_map] at hf
-    let f' := (bifibrantObjects C).ι.map f
-    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.whitehead f'
-    refine ⟨F.map g', ?_, ?_⟩
+    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.whitehead ((bifibrantObjects C).ι.map f)
+    refine ⟨F.map (homMk g'), ?_, ?_⟩
     all_goals
-    · rw [← F.map_comp, ← F.map_id]
+      rw [← F.map_comp, ← F.map_id]
       apply h
       assumption
 
@@ -159,9 +154,8 @@ variable {C} {X Y : C} [IsCofibrant X] [IsCofibrant Y] [IsFibrant X] [IsFibrant 
 def π.homEquivRight :
     RightHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) where
   toFun := Quot.lift (fun f ↦ toπ.map (homMk f)) (fun _ _ h ↦ by rwa [toπ_map_eq_iff])
-  invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
+  invFun := Quot.lift (fun f ↦ .mk f.hom) (fun _ _ h ↦ by
     rw [compClosure_homRel] at h
-    dsimp
     rwa [RightHomotopyClass.mk_eq_mk_iff])
   left_inv := by rintro ⟨f⟩; rfl
   right_inv := by rintro ⟨f⟩; rfl
@@ -204,7 +198,7 @@ lemma exists_bifibrant (X : CofibrantObject C) :
   have : IsFibrant h.Z := by
     rw [isFibrant_iff_of_isTerminal h.p terminalIsTerminal]
     infer_instance
-  exact ⟨BifibrantObject.mk h.Z, h.i, inferInstanceAs (Cofibration h.i),
+  exact ⟨BifibrantObject.mk h.Z, homMk h.i, inferInstanceAs (Cofibration h.i),
     inferInstanceAs (WeakEquivalence h.i)⟩
 
 noncomputable def bifibrantResolutionObj (X : CofibrantObject C) :
@@ -237,7 +231,7 @@ lemma exists_bifibrant_map {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
       f ≫ iBifibrantResolutionObj X₂ := by
   have sq : CommSq (ι.map (f ≫ iBifibrantResolutionObj X₂))
     (ι.map (iBifibrantResolutionObj X₁)) (terminal.from _) (terminal.from _) := ⟨by simp⟩
-  exact ⟨sq.lift, sq.fac_left⟩
+  exact ⟨BifibrantObject.homMk sq.lift, by cat_disch⟩
 
 noncomputable def bifibrantResolutionMap {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     bifibrantResolutionObj X₁ ⟶ bifibrantResolutionObj X₂ :=
@@ -339,18 +333,26 @@ instance (X : CofibrantObject.π C) : WeakEquivalence (π.adjUnit.app X) := by
 noncomputable def π.adjCounit' :
     𝟭 (BifibrantObject.π C) ⟶ BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution :=
   Quotient.natTransLift _
-    { app X := BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj))
-      naturality X₁ X₂ f := BifibrantObject.toπ.congr_map
-        (bifibrantResolutionMap_fac (f : .mk X₁.obj ⟶ .mk X₂.obj )).symm }
+    { app X :=
+        BifibrantObject.toπ.map
+          (BifibrantObject.homMk (iBifibrantResolutionObj (.mk X.obj)).hom)
+      naturality X₁ X₂ f := BifibrantObject.toπ.congr_map (by
+        have := (ObjectProperty.ι _).congr_map
+          (bifibrantResolutionMap_fac (CofibrantObject.homMk f.hom)).symm
+        ext : 1
+        dsimp
+        exact this ) }
 
 lemma π.adjCounit'_app (X : BifibrantObject C) :
     π.adjCounit'.app (BifibrantObject.toπ.obj X) =
-      BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj)) := rfl
+      BifibrantObject.toπ.map (BifibrantObject.homMk
+        (iBifibrantResolutionObj (.mk X.obj)).hom) := rfl
 
 instance (X : BifibrantObject.π C) : IsIso (π.adjCounit'.app X) := by
   obtain ⟨X, rfl⟩ := BifibrantObject.toπ_obj_surjective X
   rw [π.adjCounit'_app]
-  have : WeakEquivalence (C := BifibrantObject C) ((mk X.obj).iBifibrantResolutionObj) := by
+  have : WeakEquivalence (C := BifibrantObject C)
+      (BifibrantObject.homMk ((mk X.obj).iBifibrantResolutionObj).hom) := by
     rw [weakEquivalence_iff_ι_map]
     change WeakEquivalence (ι.map (CofibrantObject.mk X.obj).iBifibrantResolutionObj)
     infer_instance
@@ -364,7 +366,8 @@ noncomputable def π.adjCounitIso :
 
 lemma π.adjCounitIso_inv_app (X : BifibrantObject C) :
     π.adjCounitIso.inv.app (BifibrantObject.toπ.obj X) =
-      BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj)) := rfl
+      BifibrantObject.toπ.map (BifibrantObject.homMk
+        ((iBifibrantResolutionObj (.mk X.obj))).hom) := rfl
 
 noncomputable def π.adj :
     π.bifibrantResolution (C := C) ⊣ BifibrantObject.π.ιCofibrantObject where
@@ -432,7 +435,7 @@ lemma exists_bifibrant (X : FibrantObject C) :
   have : IsCofibrant h.Z := by
     rw [isCofibrant_iff_of_isInitial h.i initialIsInitial]
     infer_instance
-  exact ⟨BifibrantObject.mk h.Z, h.p, inferInstanceAs (Fibration h.p),
+  exact ⟨BifibrantObject.mk h.Z, homMk h.p, inferInstanceAs (Fibration h.p),
     inferInstanceAs (WeakEquivalence h.p)⟩
 
 -- TODO: dualize
