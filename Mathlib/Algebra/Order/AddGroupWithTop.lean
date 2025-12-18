@@ -88,23 +88,6 @@ lemma sub_self_eq_zero_iff_ne_top : a - a = 0 ↔ a ≠ ⊤ := by
 
 alias ⟨_, sub_self_eq_zero_of_ne_top⟩ := sub_self_eq_zero_iff_ne_top
 
-@[simp]
-lemma sub_top (a : α) : a - ⊤ = ⊤ := by
-  rw [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
-
-@[simp]
-lemma add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  constructor
-  · intro h
-    by_contra nh
-    rw [not_or] at nh
-    replace h := congrArg (-a + ·) h
-    dsimp only at h
-    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top, zero_add] at h
-    · exact nh.2 h
-    · exact nh.1
-  · rintro (rfl | rfl) <;> simp
-
 @[deprecated (since := "2025-12-14")] protected alias add_neg_cancel := add_neg_cancel_of_ne_top
 
 /-! Note: The following lemmas are special cases of the corresponding `IsAddUnit` lemmas. -/
