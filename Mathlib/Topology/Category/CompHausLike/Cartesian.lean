@@ -76,7 +76,7 @@ Explicit binary cofan in `CompHausLike P`, given that the predicate `P` is prese
 type-theoretic sums.
 -/
 def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := CompHausLike.of P (X ⊕ Y))
-  (ConcreteCategory.ofHom { toFun := Sum.inl }) (ConcreteCategory.ofHom { toFun := Sum.inr })
+  (ofHom _ { toFun := Sum.inl }) (ofHom _ { toFun := Sum.inr })
 
 /--
 When the predicate `P` is preserved under taking type-theoretic sums, that sum is a
