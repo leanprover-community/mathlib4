@@ -111,7 +111,7 @@ def _root_.CategoryTheory.InducedCategory.homLinearEquiv
     {X Y : InducedCategory C F} :
     (X ⟶ Y) ≃ₗ[R] (F X ⟶ F Y) where
   toAddEquiv := InducedCategory.homAddEquiv
-  map_smul' := by aesop_cat
+  map_smul' := by cat_disch
 
 end InducedCategory
 
