@@ -240,7 +240,7 @@ lemma isMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, 
 
 section card
 
-open scoped Cardinal
+open Cardinal
 
 lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.verts := by
   let f : M.coe.Dart → M.verts := fun d => d.fst
@@ -248,23 +248,23 @@ lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.v
     let w : V := (hM v.prop).choose
     have hadj : M.Adj v w := ((hM v.property).choose_spec).left
     ⟨⟨v, ⟨w, M.edge_vert hadj.symm⟩⟩, hadj⟩
-  refine Cardinal.mk_congr ⟨f, g, ?L, ?R⟩ <;> simp [f, g, LeftInverse, RightInverse]
+  refine Cardinal.mk_congr ⟨f, g, ?L, ?R⟩ <;>
+    simp only [f, g, LeftInverse, RightInverse, implies_true]
   rintro ⟨⟨v, w⟩, hadj⟩
   simpa using Subtype.val_inj.mp ((hM v.prop).choose_spec.right w hadj).symm
 
 lemma IsMatching.edge_card_eq_double_vert_card (hM : M.IsMatching) :
-    #M.verts = 2 * #M.edgeSet := by sorry
-  -- trans #M.coe.Dart
-  -- · exact hM.dart_card_eq_vert_card.symm
-  -- · apply (SimpleGraph.card_darts (G := M.coe)).trans
-  --   suffices h : #M.coe.edgeSet = #M.edgeSet from congr_arg _ h
-  --   simp
-  --   refine Cardinal.mk_preimage_of_injective_of_subset_range _ M.edgeSet ?inj ?range
-  --   · exact Sym2.map.injective Subtype.val_injective
-  --   · rintro e he
-  --     let ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
-  --     have hadj := Subgraph.mem_edgeSet.mp (hvw ▸ he)
-  --     exact ⟨s(⟨v, M.edge_vert hadj⟩, ⟨w, M.edge_vert hadj.symm⟩), by simpa using hvw⟩
+    #M.verts = 2 * #M.edgeSet := by
+  refine hM.dart_card_eq_vert_card.symm.trans ?_
+  apply M.coe.card_darts.trans
+  suffices h : #M.coe.edgeSet = #M.edgeSet from congr_arg _ h
+  simp only [edgeSet_coe]
+  refine Cardinal.mk_preimage_of_injective_of_subset_range _ M.edgeSet ?inj ?range
+  · exact Sym2.map.injective Subtype.val_injective
+  · rintro e he
+    let ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+    have hadj := Subgraph.mem_edgeSet.mp (hvw ▸ he)
+    exact ⟨s(⟨v, M.edge_vert hadj⟩, ⟨w, M.edge_vert hadj.symm⟩), by simpa using hvw⟩
 
 end card
 
