@@ -9,6 +9,7 @@ module
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
+public import Mathlib.GroupTheory.Perm.MaximalSubgroups
 
 /-! # The three Iwasawa structures on permutation and alternating groups
 
@@ -18,7 +19,44 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 open scoped Pointwise
 
-open MulAction
+open MulAction Equiv.Perm Equiv
+
+/-- The action of `Equiv.Perm α` on `n.Combination α` is preprimitive
+provided 1 ≤ n < #α and #α ≠ 2*n -/
+theorem Nat.Combination_isPreprimitive
+    {α : Type*} [DecidableEq α] [Fintype α]
+    {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Fintype.card α)
+    (hα : Fintype.card α ≠ 2 * n) :
+    IsPreprimitive (Perm α) (n.Combination α) := by
+  rcases Nat.eq_or_lt_of_le h_one_le with h_one | h_one_lt
+  · -- n = 1 :
+    rw [← h_one]
+    have : IsPreprimitive (Perm α) α := inferInstance
+    apply IsPreprimitive.of_surjective
+      (Nat.Combination.mulActionHom_singleton_bijective (Perm α) α).surjective
+  -- 1 < n
+  have : Nontrivial α := by
+    rw [← Fintype.one_lt_card_iff_nontrivial]
+    exact lt_trans h_one_lt hn
+  have : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
+    Combination.isPretransitive α
+    -- n.Combination_isPretransitive α
+  have : Nontrivial (n.Combination α) := by
+    apply Combination.nontrivial' h_one_le
+    simpa using hn
+  obtain ⟨s⟩ := this.to_nonempty
+  rw [← isCoatom_stabilizer_iff_preprimitive _ s]
+  suffices stabilizer (Perm α) s = stabilizer (Perm α) (s : Set α) by
+    rw [this]
+    apply isCoatom_stabilizer
+    · rwa [Combination.nonempty_iff]
+    · simpa only [← Nat.Combination.coe_coe, ← Finset.coe_compl, Finset.coe_nonempty,
+        ← Finset.card_compl_lt_iff_nonempty, compl_compl, Combination.card_eq]
+    · contrapose hα
+      rw [← Nat.card_eq_fintype_card, hα, Nat.mul_left_cancel_iff (by norm_num),
+        ← Nat.Combination.coe_coe, Set.ncard_coe_finset, Combination.card_eq]
+  ext g
+  simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
 
 theorem IsKleinFour.isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
     IsMulCommutative G where
@@ -49,32 +87,37 @@ theorem Finset.map_equiv_eq_smul {α : Type*} [DecidableEq α]
 
 namespace Equiv.Perm
 
+open Subgroup
+
 variable {α : Type*} [DecidableEq α]
+
+theorem disjoint_swap_swap [Fintype α]
+    {x y z t : α} (h : [x, y, z, t].Nodup) :
+    Disjoint (swap x y) (swap z t) := by
+  rw [Equiv.Perm.disjoint_iff_disjoint_support]
+  rw [(Equiv.Perm.support_swap_iff x y).mpr (by grind)]
+  rw [(Equiv.Perm.support_swap_iff z t).mpr (by grind)]
+  simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, not_or,
+    Finset.disjoint_singleton_right]
+  grind
 
 theorem cycleType_swap_mul_swap' [Fintype α]
     {x y z t : α} (h : [x, y, z, t].Nodup) :
     ((swap x y) * (swap z t)).cycleType = {2, 2} := by
-  rw [Disjoint.cycleType_mul ?_]
-  · rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
-    · simp
-    · rw [Equiv.Perm.swap_isSwap_iff]
-      grind
-    · rw [Equiv.Perm.swap_isSwap_iff]
-      grind
-  · rw [Equiv.Perm.disjoint_iff_disjoint_support]
-    rw [(Equiv.Perm.support_swap_iff x y).mpr (by grind)]
-    rw [(Equiv.Perm.support_swap_iff z t).mpr (by grind)]
-    simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, not_or,
-      Finset.disjoint_singleton_right]
+  rw [(disjoint_swap_swap h).cycleType_mul]
+  rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
+  · simp
+  · rw [Equiv.Perm.swap_isSwap_iff]
+    grind
+  · rw [Equiv.Perm.swap_isSwap_iff]
     grind
 
 theorem sign_swap_mul_swap' [Fintype α]
     {x y z t : α} (h : [x, y, z, t].Nodup) :
     ((swap x y) * (swap z t)).sign = 1 := by
-  rw [sign_of_cycleType, cycleType_swap_mul_swap' (by grind)]
+  rw [sign_of_cycleType, cycleType_swap_mul_swap' (by grind),
+    ← Units.val_inj]
   norm_num
-  -- (-1) ^ 6 = 1
-  rfl
 
 theorem support_swap_mul_swap' [Fintype α]
     {x y z t : α} (h : [x, y, z, t].Nodup) :
@@ -95,6 +138,63 @@ theorem support_swap_mul_swap' [Fintype α]
     · simp only [mem_support, coe_mul, Function.comp_apply]; grind
     · simp only [Finset.singleton_subset_iff, mem_support, coe_mul, Function.comp_apply]; grind
 
+example [Fintype α] (g : Perm α) (hg3 : g.IsThreeCycle) (a : α) :
+    g.support = {a, g a, g (g a)} ↔ a ∈ g.support := by
+  constructor
+  · intro hg
+    simp [hg]
+  · intro ha
+    symm
+    apply Finset.eq_of_subset_of_card_le
+    · apply Finset.insert_subset ha
+      apply Finset.insert_subset
+      · rwa [Perm.apply_mem_support]
+      simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
+    · rw [hg3.card_support]
+      simp only [mem_support, ne_eq] at ha
+      rw [Finset.card_insert_eq_ite, if_neg]
+      · rw [Finset.card_insert_eq_ite, if_neg]
+        · simp
+        · simpa using Ne.symm ha
+      · simp only [Finset.mem_insert, Finset.mem_singleton]
+        contrapose ha
+        rcases ha with ha | ha
+        · exact ha.symm
+        · suffices (g ^ 3) a = a by
+            simpa [pow_succ, ← ha] using this
+          suffices g ^ 3 = 1 by simp [this]
+          rw [← hg3.orderOf, pow_orderOf_eq_one]
+
+
+
+
+
+
+
+
+example [Fintype α] (g : Perm α) (hg3 : g.IsThreeCycle) (a : α) :
+    g = (swap a (g a)) * (swap (g a) (g (g a))) ↔
+      a ∈ g.support := by
+  constructor
+  · intro hg
+    rw [Perm.mem_support]
+    intro hx
+    simp only [hx, swap_self, mul_refl] at hg
+    sorry
+  intro hx
+  ext x
+  by_cases hx : x ∈ g.support
+  · simp only [hG, Finset.mem_insert, Finset.mem_singleton] at hx
+    rcases hx with rfl | (rfl | rfl)
+    · simp [swap_apply_of_ne_of_ne (Ne.symm hx1) hx3, x2]
+    · simp [swap_apply_of_ne_of_ne (Ne.symm hx3) hx2, x3]
+    · simp [hx1x3]
+  · rw [notMem_support.mp hx]
+    simp only [hG, Finset.mem_insert, Finset.mem_singleton, not_or] at hx
+    simp [Equiv.swap_apply_of_ne_of_ne hx.2.1 hx.2.2,
+      Equiv.swap_apply_of_ne_of_ne hx.1 hx.2.1]
+  sorry
+
 theorem closure_isCycleType22_eq_alternatingGroup
     [Fintype α] (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
@@ -104,7 +204,7 @@ theorem closure_isCycleType22_eq_alternatingGroup
     simp only [Set.mem_setOf_eq] at hg
     simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
   · rw [← Equiv.Perm.closure_three_cycles_eq_alternating,
-    Subgroup.closure_le]
+      Subgroup.closure_le]
     intro g hg3
     obtain ⟨x1, hx1'⟩ := hg3.isCycle.nonempty_support
     let x2 := g x1
@@ -262,6 +362,41 @@ def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) whe
     set s : Nat.Combination α 2 := ⟨{a, b}, Finset.card_pair hab⟩
     apply Subgroup.mem_iSup_of_mem s
     exact ⟨swap ⟨a, by aesop⟩ ⟨b, by aesop⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
+
+/-- If `α` has at least 5 elements, then the only nontrivial
+normal sugroup of `Equiv.Perm α` is `alternatingGroup α`. -/
+theorem Equiv.Perm.le_alternatingGroup
+    {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
+    {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
+    alternatingGroup α ≤ N := by
+  rw [Nat.card_eq_fintype_card] at hα
+  rw [← alternatingGroup.commutator_perm_eq hα]
+  have : IsPreprimitive (Perm α) (Nat.Combination α 2) := by
+    refine Nat.Combination_isPreprimitive (by norm_num) ?_ ?_
+    · apply lt_of_lt_of_le (by norm_num) hα
+    · intro h
+      simp [h] at hα
+  classical
+  apply iwasawaStructure_two.commutator_le
+  intro h
+  obtain ⟨g, hgN, hg_ne⟩ := N.nontrivial_iff_exists_ne_one.mp ntN
+  suffices ∃ s : Nat.Combination α 2, g • s ≠ s by
+    obtain ⟨s, hs⟩ := this
+    have := Set.mem_univ s
+    rw [← h, mem_fixedPoints] at this
+    apply hs
+    rw [← Subgroup.mk_smul g hgN, this]
+  contrapose! hg_ne
+  replace hg_ne : (toPerm g : Perm (Nat.Combination α 2)) = 1 := by
+    ext1 s
+    exact hg_ne s
+  rw [Nat.Combination.mulAction_faithful (n := 2)
+    (G := Perm α) (α := α) (g := g)
+    (by norm_num)
+    (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+          Nat.ofNat_lt_cast]
+        apply le_trans (by norm_num) hα)] at hg_ne
+  exact hg_ne
 
 end Equiv.Perm
 

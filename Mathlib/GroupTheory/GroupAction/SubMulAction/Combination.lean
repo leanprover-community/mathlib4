@@ -38,7 +38,7 @@ acts pretransitively on `n.Combination α`, for all `n`.
 the complement of an `n`-combination, as an `m`-combination.
 This map is an equivariant map with respect to a group action on `α`.
 
-* `Nat.toCombination_one_equivariant`:
+* `Nat.Combination.mulActionHom_singleton`:
 The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 -/
@@ -70,6 +70,21 @@ theorem coe_coe {s : n.Combination α} :
     ((s : Finset α) : Set α) = s := rfl
 
 theorem mem_coe_iff {s : Nat.Combination α n} {a : α} : a ∈ (s : Finset α) ↔ a ∈ s := .rfl
+
+theorem card_eq (s : Nat.Combination α n) : (s : Finset α).card = n :=
+  s.prop
+
+theorem ncard_eq (s : Nat.Combination α n) : (s : Set α).ncard = n := by
+  rw [← coe_coe, Set.ncard_coe_finset, s.prop]
+
+theorem nonempty_iff {s : Nat.Combination α n} :
+    (s : Set α).Nonempty ↔ 1 ≤ n := by
+  rw [← Nat.Combination.coe_coe, Finset.coe_nonempty, ← one_le_card, s.prop]
+
+theorem nontrivial_iff {s : Nat.Combination α n} :
+    (s : Set α).Nontrivial ↔ 2 ≤ n := by
+  rw [← coe_coe, Finset.nontrivial_coe, ← one_lt_card_iff_nontrivial,
+    card_eq, add_one_le_iff]
 
 theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
