@@ -90,7 +90,7 @@ theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
   (hasFDerivAt_inv x_ne_zero).hasFDerivWithinAt
 
 theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
-  rw [← deriv_fderiv, deriv_inv]
+  rw [← toSpanSingleton_deriv, deriv_inv]
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
