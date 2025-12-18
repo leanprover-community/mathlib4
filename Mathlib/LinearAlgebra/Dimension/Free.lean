@@ -3,10 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.AlgebraTower
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Rank of free modules
@@ -18,6 +20,8 @@ import Mathlib.SetTheory.Cardinal.Finsupp
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -242,13 +246,63 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
   (finBasisOfFinrankEq R M h).reindex (Equiv.ofUnique _ _)
 
+/-- If a finite module of `finrank 1` has a basis, then this basis has a unique element. -/
+theorem Basis.nonempty_unique_index_of_finrank_eq_one
+    {ι : Type*} (b : Module.Basis ι R M) (d1 : Module.finrank R M = 1) :
+    Nonempty (Unique ι) := by
+  -- why isn't this an instance?
+  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
+  haveI : Module.Finite R M :=
+    Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
+  have : Finite ι := Module.Finite.finite_basis b
+  have : Fintype ι := Fintype.ofFinite ι
+  rwa [Module.finrank_eq_card_basis b, Fintype.card_eq_one_iff_nonempty_unique] at d1
+
+theorem nonempty_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
+    Nonempty (R ≃ₗ[R] M) := by
+  let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
+  have : Unique ι := (b.nonempty_unique_index_of_finrank_eq_one d1).some
+  exact ⟨((b.equivFun).trans (LinearEquiv.funUnique ι R R)).symm⟩
+
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R M = 1} {v : M} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
-    fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
+    fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
+
+variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
+    {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
+
+theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
+    (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
+    ∃! c : R, u = c • LinearMap.id := by
+  let e := (nonempty_linearEquiv_of_finrank_eq_one d1).some
+  set c := e.symm (u (e 1)) with hc
+  suffices u = c • LinearMap.id by
+    use c
+    simp only [this, true_and]
+    intro d hcd
+    rw [LinearMap.ext_iff] at hcd
+    simpa using (LinearEquiv.congr_arg (e := e.symm) (hcd (e 1))).symm
+  ext x
+  have (x : M) : x = (e.symm x) • (e 1) := by simp [← LinearEquiv.map_smul]
+  rw [this x]
+  simp only [hc, map_smul, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
+  rw [← this]
+
+/-- Endomorphisms of a free module of rank one are homotheties. -/
+@[simps apply]
+noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
+    R ≃ₗ[R] (M →ₗ[R] M) where
+  toFun := fun c ↦ c • LinearMap.id
+  map_add' c d := by ext; simp [add_smul]
+  map_smul' c d := by ext; simp [mul_smul]
+  invFun u := (u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose
+  left_inv c := by
+    simp [← (LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one d1 _).choose_spec.2 c]
+  right_inv u := ((u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose_spec.1).symm
 
 end Module
 

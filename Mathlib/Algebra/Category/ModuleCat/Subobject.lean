@@ -3,10 +3,12 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobjects in the category of `R`-modules
@@ -15,6 +17,8 @@ We construct an explicit order isomorphism between the categorical subobjects of
 and its submodules. This immediately implies that the category of `R`-modules is well-powered.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

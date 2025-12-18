@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+public import Mathlib.CategoryTheory.Monoidal.Opposite
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Braided and symmetric monoidal categories
@@ -30,6 +32,8 @@ The rationale is that we are not carrying any additional data, just requiring a 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
 
 -/
+
+@[expose] public section
 
 
 
@@ -84,7 +88,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory
 
 @[simp, reassoc]
 theorem braiding_tensor_left_hom (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).hom  =
+    (β_ (X ⊗ Y) Z).hom =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
         (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom := by
   apply (cancel_epi (α_ X Y Z).inv).1
@@ -95,7 +99,7 @@ theorem braiding_tensor_left_hom (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_right_hom (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).hom  =
+    (β_ X (Y ⊗ Z)).hom =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
         Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv := by
   apply (cancel_epi (α_ X Y Z).hom).1
@@ -106,7 +110,7 @@ theorem braiding_tensor_right_hom (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_left_inv (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).inv  =
+    (β_ (X ⊗ Y) Z).inv =
       (α_ Z X Y).inv ≫ (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
@@ -115,7 +119,7 @@ theorem braiding_tensor_left_inv (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_right_inv (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).inv  =
+    (β_ X (Y ⊗ Z)).inv =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
         (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
@@ -211,7 +215,7 @@ end BraidedCategory
 Verifying the axioms for a braiding by checking that the candidate braiding is sent to a braiding
 by a faithful monoidal functor.
 -/
-def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
     (w : ∀ X Y, μ F _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ μ F _ _ := by cat_disch) :
@@ -256,7 +260,7 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [Monoidal
 @[deprecated (since := "2025-07-12")] alias braidedCategoryOfFaithful := BraidedCategory.ofFaithful
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
-noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
   .ofFaithful F fun X Y ↦ F.preimageIso ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ μIso F _ _)
@@ -525,19 +529,25 @@ lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
-def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
-noncomputable def symmetricCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
   let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
     braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
-  symmetricCategoryOfFaithful F
+  .ofFaithful F
+
+@[deprecated (since := "2025-10-17")]
+alias symmetricCategoryOfFaithful := SymmetricCategory.ofFaithful
+
+@[deprecated (since := "2025-10-17")]
+alias symmetricCategoryOfFullyFaithful := SymmetricCategory.ofFullyFaithful
 
 namespace Functor.Braided
 

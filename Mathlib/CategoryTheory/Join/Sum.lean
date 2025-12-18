@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Sums.Basic
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
 
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`
@@ -15,9 +17,11 @@ We also provide `Faithful` and `EssSurj` instances on this functor.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Join
 
-variable (C D : Type*) [Category C] [Category D]
+variable (C D : Type*) [Category* C] [Category* D]
 
 /-- The canonical functor from the sum to the join.
 It sends `inl c` to `left c` and `inr d` to `right d`. -/

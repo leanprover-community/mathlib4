@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # The Giry monad
@@ -15,7 +17,7 @@ measurable spaces and measurable functions, called the Giry monad.
 Note that most sources use the term "Giry monad" for the restriction
 to *probability* measures. Here we include all measures on X.
 
-See also `MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
+See also `Mathlib/MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
 monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 ## References
@@ -26,6 +28,8 @@ monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 giry monad
 -/
+
+@[expose] public section
 
 
 noncomputable section

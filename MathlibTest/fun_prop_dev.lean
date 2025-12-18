@@ -629,3 +629,45 @@ def snd (x : α×β) := x.2
 example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
   fail_if_success fun_prop
   apply silentSorry
+
+-- In the following example, `fun_prop` used to panic with a "loose bvar in expression" error.
+
+@[fun_prop]
+opaque AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
+
+opaque foo4 : Bool → Bool
+
+@[fun_prop]
+theorem aemeas_foo4 (μ : Bool) : AEMeas foo4 μ := silentSorry
+
+@[fun_prop]
+theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
+
+example : Con foo4 := by fun_prop
+
+/-!
+  Some tests to ensure state changes made by the discharger (to their goals' contexts) are not
+  reverted by `fun_prop`, which is necessary for correct functionality of `disch := grind`.
+-/
+section StateReversionBug
+
+@[fun_prop] theorem div_Con' [Zero β] [Div β] (f g : α → β) (hf : Con f) (hg : Con g)
+    (h : ∀ x, g x ≠ 0) : Con (fun x => f x / g x) := silentSorry
+
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  fun_prop (disch := grind)
+
+-- In case the behaviour of `grind` changes, here's a more explicit test.
+open Lean Elab Tactic Meta in
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  have : ∀ x, g x ≠ 0 := by grind
+  fun_prop (disch := run_tac
+    let goal ← getMainGoal
+    let ty ← goal.getType
+    let mvar ← mkFreshExprSyntheticOpaqueMVar ty
+    let _ ← mvar.mvarId!.assumption
+    goal.assign <| ← mkAuxTheorem ty (← instantiateMVars mvar))
+
+end StateReversionBug

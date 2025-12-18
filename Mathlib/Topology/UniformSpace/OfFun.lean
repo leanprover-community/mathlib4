@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Defs
+module
+
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Construct a `UniformSpace` from a `dist`-like function
@@ -15,6 +17,8 @@ given a `dist`-like function
 
 RFC: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped Uniformity

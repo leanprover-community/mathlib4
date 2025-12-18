@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # Support of homological complexes
 
@@ -23,6 +25,8 @@ complementary embedding `e'`.)
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
@@ -31,7 +35,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (e' : K ≅ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
@@ -138,7 +142,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
 instance map_isStrictlySupported [K.IsStrictlySupported e] :

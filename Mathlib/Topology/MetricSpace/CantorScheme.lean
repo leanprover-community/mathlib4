@@ -3,7 +3,9 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.MetricSpace.PiNat
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -37,6 +39,8 @@ in this file. See instead `PiNat.res`.
 scheme, cantor scheme, lusin scheme, approximation.
 
 -/
+
+@[expose] public section
 
 namespace CantorScheme
 

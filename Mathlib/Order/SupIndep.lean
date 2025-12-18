@@ -3,12 +3,14 @@ Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.ModularLattice
+module
+
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.ModularLattice
 
 /-!
 # Supremum independence
@@ -39,6 +41,8 @@ For the finite version, we avoid the "obvious" definition
 `∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f)` because `erase` would require decidable equality on
 `ι`.
 -/
+
+@[expose] public section
 
 
 variable {α β ι ι' : Type*}
@@ -209,8 +213,7 @@ protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v
   induction u using Finset.induction generalizing v with
   | empty => simp
   | insert x u hx ih =>
-    specialize ih (v := insert x v)
-    grind [= SupIndep, = disjoint_comm, ← Disjoint.disjoint_sup_left_of_disjoint_sup_right]
+    grind [= SupIndep, Disjoint.disjoint_sup_left_of_disjoint_sup_right]
 
 theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
     {f : Sigma β → α} : (s.sigma g).SupIndep f ↔ (s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
@@ -412,7 +415,7 @@ lemma iSupIndep.injOn_iInf {β : ι → Type*} (t : (i : ι) → β i → α) (h
   simp_all
 
 theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
-  suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
+  suffices univ = {i | t i ≠ ⊥} by simpa [← this] using ht.injOn
   simp_all
 
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :

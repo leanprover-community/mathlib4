@@ -3,11 +3,13 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Order.Ring.Ordering.Defs
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Order.Ring.Ordering.Defs
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Ring orderings
@@ -19,6 +21,8 @@ We prove basic properties of (pre)orderings on rings and their supports.
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] {P : RingPreordering R}
 

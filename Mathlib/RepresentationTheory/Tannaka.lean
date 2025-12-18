@@ -3,7 +3,9 @@ Copyright (c) 2025 Yacine Benmeuraiem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yacine Benmeuraiem
 -/
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Tannaka duality for finite groups
@@ -20,6 +22,8 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 <https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -112,9 +116,6 @@ lemma equivHom_injective [Nontrivial k] : Function.Injective (equivHom k G) := b
   classical
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
-
-@[deprecated (since := "2025-04-27")]
-alias equivHom_inj := equivHom_injective
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where

@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Logic.OpClass
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Logic.OpClass
+public import Mathlib.Order.Lattice
 
 /-!
 # `max` and `min`
@@ -15,6 +17,8 @@ This file proves basic properties about maxima and minima on a `LinearOrder`.
 
 min, max
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -119,11 +123,7 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
 or `min a b = b` and `b < a`.
 Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
-  by_cases h : a ≤ b
-  · left
-    exact ⟨min_eq_left h, h⟩
-  · right
-    exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
+  grind
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
 or `max a b = b` and `a < b`.
@@ -132,20 +132,16 @@ theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b
   @min_cases αᵒᵈ _ a b
 
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
-  constructor
-  · intro h
-    refine Or.imp (fun h' => ?_) (fun h' => ?_) (le_total a b) <;> exact ⟨by simpa [h'] using h, h'⟩
-  · rintro (⟨rfl, h⟩ | ⟨rfl, h⟩) <;> simp [h]
+  grind
 
 theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
   @min_eq_iff αᵒᵈ _ a b c
 
 theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
-  simp_rw [lt_min_iff, min_lt_iff, or_iff_left (lt_irrefl _)]
-  exact and_congr_left fun h => or_iff_left_of_imp h.trans
+  grind
 
 theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
-  simp_rw [min_comm a, min_lt_min_left_iff]
+  grind
 
 theorem max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=
   @min_lt_min_left_iff αᵒᵈ _ _ _ _
@@ -173,13 +169,13 @@ theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
   @max_lt_max αᵒᵈ _ _ _ _ _ h₁ h₂
 
 theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
-  rw [min_assoc, min_comm b, min_assoc]
+  grind
 
 theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
-  rw [← max_assoc, max_comm a, max_assoc]
+  grind
 
 theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b := by
-  rw [max_assoc, max_comm b, max_assoc]
+  grind
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by

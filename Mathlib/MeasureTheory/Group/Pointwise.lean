@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex J. Best
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # Pointwise set operations on `MeasurableSet`s
@@ -12,6 +14,8 @@ In this file we prove several versions of the following fact: if `s` is a measur
 `a • s`. Note that the pointwise product of two measurable sets need not be measurable, so there is
 no `MeasurableSet.mul` etc.
 -/
+
+@[expose] public section
 
 
 open Pointwise
