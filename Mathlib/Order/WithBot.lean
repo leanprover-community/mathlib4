@@ -396,8 +396,11 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 instance instOrderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
 @[to_dual]
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) where
+instance instOrderTop [OrderTop α] : OrderTop (WithBot α) where 
   le_top x := by cases x <;> simp [le_def]
+
+@[to_dual]
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) where
 
 /-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
 @[to_dual (attr := simp) top_le_iff
