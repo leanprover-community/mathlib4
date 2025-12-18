@@ -5,7 +5,7 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.FieldTheory.Differential.Basic
 public import Mathlib.FieldTheory.Galois.Basic

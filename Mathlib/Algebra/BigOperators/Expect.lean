@@ -379,11 +379,8 @@ end Semifield
 end Finset
 
 namespace algebraMap
-variable [Semifield M] [CharZero M] [Semifield N] [CharZero N] [Algebra M N]
 
-@[simp, norm_cast]
-lemma coe_expect (s : Finset ι) (f : ι → M) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : N) :=
-  map_expect (algebraMap _ _) _ _
+@[deprecated (since := "2025-12-18")] alias coe_expect := map_expect
 
 end algebraMap
 
