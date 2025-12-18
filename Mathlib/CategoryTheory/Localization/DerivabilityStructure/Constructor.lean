@@ -37,7 +37,7 @@ namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -51,7 +51,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 namespace Constructor
 
-variable {D : Type*} [Category D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
+variable {D : Type*} [Category* D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
   {X₂ : C₂} {X₃ : D} (y : L.obj X₂ ⟶ X₃)
 
 /-- Given `Φ : LocalizerMorphism W₁ W₂`, `L : C₂ ⥤ D` a localization functor for `W₂` and
