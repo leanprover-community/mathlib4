@@ -174,8 +174,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
       ((TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S))
     uniq := fun S m hm => InducedCategory.hom_ext
       ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _ (fun j ↦ by
-        dsimp
-        rw [← hm]
+        simp [← hm]
         rfl )) }
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
