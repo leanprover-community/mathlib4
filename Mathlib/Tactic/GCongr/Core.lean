@@ -344,16 +344,16 @@ initialize registerBuiltinAttribute {
           withLocalDeclD `_a q fun x => do
             let gcongrLemma ← makeGCongrLemma declName p (xs.push x) prio
             let auxType ← mkForallFVars (xs.push x) p
-            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxValue ← mkLambdaFVars xs (mkApp3 (.const ``Iff.mpr []) p q val)
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) p q <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
         catch _ =>
           withLocalDeclD `_a p fun x => do
             let gcongrLemma ← makeGCongrLemma declName q (xs.push x) prio
             let auxType ← mkForallFVars (xs.push x) q
-            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxValue ← mkLambdaFVars xs (mkApp3 (.const ``Iff.mp []) p q val)
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) p q <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
       | _ =>
@@ -368,19 +368,19 @@ initialize registerBuiltinAttribute {
           let hyp ← inferType x
           unless hyp.getAppFn.isConstOf c do continue
           let type ← mkForallFVars #[x] type
-          let gcongrLemma ← makeGCongrLemma declName type xs.pop prio
+          let xs' :=  xs.eraseIdx i (by grind)
+          let gcongrLemma ← makeGCongrLemma declName type xs' prio
           if i == xs.size - 1 then
             gcongrExt.add gcongrLemma kind
           else
-            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let xs := xs.eraseIdx i (by grind)
-            let auxType ← mkForallFVars xs type
-            let auxValue ← mkLambdaFVars (xs.push x) val
+            let auxType ← mkForallFVars xs' type
+            let auxValue ← mkLambdaFVars (xs'.push x) <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
           break
     catch _ =>
-      -- If none of the methods work, we throw the error of the "normal" attempt.
+      -- If none of the methods work, we throw the error thrown by the "normal" attempt.
       throw e
 }
 
