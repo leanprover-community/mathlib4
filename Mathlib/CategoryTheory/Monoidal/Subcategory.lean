@@ -195,7 +195,7 @@ theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
 
-@[deprecated (since := "2025-07-02")] alias ihom_map := ihom_map_hom
+@[deprecated (since := "2025-12-18")] alias ihom_map := ihom_map_hom
 
 end Closed
 

@@ -95,8 +95,8 @@ variable (R : Type u) [Ring R]
 
 @[simp] lemma hom_hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom.hom = LinearMap.id := rfl
 
-@[deprecated (since := "2025-07-03")] alias hom_comp := hom_hom_comp
-@[deprecated (since := "2025-07-03")] alias hom_id := hom_hom_id
+@[deprecated (since := "2025-12-18")] alias hom_comp := hom_hom_comp
+@[deprecated (since := "2025-12-18")] alias hom_id := hom_hom_id
 
 instance : Inhabited (FGModuleCat.{v} R) :=
   ⟨⟨ModuleCat.of R PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩

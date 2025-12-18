@@ -470,7 +470,7 @@ lemma isIso_hom_left_iff_subobjectMk_eq :
     fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
       by simp [← cancel_mono Q.1.hom]⟩⟩
 
-@[deprecated (since := "2025-07-04")]
+@[deprecated (since := "2025-12-18")]
 alias isIso_left_iff_subobjectMk_eq := isIso_hom_left_iff_subobjectMk_eq
 
 lemma isIso_iff_subobjectMk_eq :

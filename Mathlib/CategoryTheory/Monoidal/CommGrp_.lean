@@ -78,8 +78,8 @@ theorem comp_hom {R S T : CommGrp C} (f : R ⟶ S) (g : S ⟶ T) :
 theorem hom_ext {A B : CommGrp C} (f g : A ⟶ B) (h : f.hom.hom.hom = g.hom.hom.hom) : f = g :=
   InducedCategory.hom_ext (Grp.hom_ext _ _ h)
 
-@[deprecated (since := "2025-07-03")] alias id' := id_hom
-@[deprecated (since := "2025-07-03")] alias comp' := comp_hom
+@[deprecated (since := "2025-12-18")] alias id' := id_hom
+@[deprecated (since := "2025-12-18")] alias comp' := comp_hom
 
 section
 
@@ -184,8 +184,8 @@ abbrev mkIso : G ≅ H :=
 @[simp] lemma mkIso_hom_hom_hom_hom : (mkIso e one_f mul_f).hom.hom.hom.hom = e.hom := rfl
 @[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
 
-@[deprecated (since := "2025-07-03")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
-@[deprecated (since := "2025-07-03")] alias mkIso_inv_hom := mkIso_inv_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom_hom
 
 end
 

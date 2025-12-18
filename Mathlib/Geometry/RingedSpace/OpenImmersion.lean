@@ -540,8 +540,8 @@ theorem toSheafedSpaceHom_hom_base : (toSheafedSpaceHom Y f).hom.base = f.base :
 theorem toSheafedSpaceHom_hom_c : (toSheafedSpaceHom Y f).hom.c = f.c :=
   rfl
 
-@[deprecated (since := "2025-07-05")] alias toSheafedSpaceHom_base := toSheafedSpaceHom_hom_base
-@[deprecated (since := "2025-07-05")] alias toSheafedSpaceHom_c := toSheafedSpaceHom_hom_c
+@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_base := toSheafedSpaceHom_hom_base
+@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_c := toSheafedSpaceHom_hom_c
 
 instance toSheafedSpace_isOpenImmersion : SheafedSpace.IsOpenImmersion (toSheafedSpaceHom Y f) :=
   H

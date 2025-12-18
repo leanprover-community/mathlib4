@@ -333,11 +333,11 @@ theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
-@[deprecated (since := "2025-07-02")]
+@[deprecated (since := "2025-12-18")]
 alias AdditiveFunctor.ofLeftExact_map := AdditiveFunctor.ofLeftExact_map_hom
-@[deprecated (since := "2025-07-02")]
+@[deprecated (since := "2025-12-18")]
 alias AdditiveFunctor.ofRightExact_map := AdditiveFunctor.ofRightExact_map_hom
-@[deprecated (since := "2025-07-02")]
+@[deprecated (since := "2025-12-18")]
 alias AdditiveFunctor.ofExact_map := AdditiveFunctor.ofExact_map_hom
 
 end Exact

@@ -71,8 +71,8 @@ lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
 lemma FullSubcategory.comp_hom {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-@[deprecated (since := "2025-06-26")] alias FullSubcategory.id_def := FullSubcategory.id_hom
-@[deprecated (since := "2025-06-26")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
+@[deprecated (since := "2025-12-18")] alias FullSubcategory.id_def := FullSubcategory.id_hom
+@[deprecated (since := "2025-12-18")] alias FullSubcategory.comp_def := FullSubcategory.comp_hom
 
 variable {P} in
 /-- Constructor for morphisms in a full subcategory. -/

@@ -371,7 +371,7 @@ lemma iso_inv_hom_left_comp :
       ((Subobject.pullback (h.χ m)).obj h.Ω₀).arrow :=
   MonoOver.w (h.iso m).inv
 
-@[deprecated (since := "2025-07-04")] alias iso_inv_left_comp := iso_inv_hom_left_comp
+@[deprecated (since := "2025-12-18")] alias iso_inv_left_comp := iso_inv_hom_left_comp
 
 lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
     IsPullback m (h.π m) (h.χ m) h.Ω₀.arrow := by

@@ -109,7 +109,7 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-@[deprecated (since := "2025-06-26")] alias preCounitIso :=
+@[deprecated (since := "2025-12-18")] alias preCounitIso :=
   fromSkeletonToSkeletonIso
 
 @[reassoc, simp]

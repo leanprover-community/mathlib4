@@ -155,13 +155,13 @@ theorem congr_hom_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U)
     α.hom.c.app U = β.hom.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) :=
   (PresheafedSpace.congr_app (by rw [h]) U)
 
-@[deprecated (since := "2025-07-04")] alias id_base := id_hom_base
-@[deprecated (since := "2025-07-04")] alias id_c := id_hom_c
-@[deprecated (since := "2025-07-04")] alias id_c_app := id_hom_c_app
-@[deprecated (since := "2025-07-04")] alias comp_base := comp_hom_base
-@[deprecated (since := "2025-07-04")] alias comp_c_app := comp_hom_c_app
-@[deprecated (since := "2025-07-04")] alias comp_c_app' := comp_hom_c_app'
-@[deprecated (since := "2025-07-04")] alias congr_app := congr_hom_app
+@[deprecated (since := "2025-12-18")] alias id_base := id_hom_base
+@[deprecated (since := "2025-12-18")] alias id_c := id_hom_c
+@[deprecated (since := "2025-12-18")] alias id_c_app := id_hom_c_app
+@[deprecated (since := "2025-12-18")] alias comp_base := comp_hom_base
+@[deprecated (since := "2025-12-18")] alias comp_c_app := comp_hom_c_app
+@[deprecated (since := "2025-12-18")] alias comp_c_app' := comp_hom_c_app'
+@[deprecated (since := "2025-12-18")] alias congr_app := congr_hom_app
 
 variable (C)
 
