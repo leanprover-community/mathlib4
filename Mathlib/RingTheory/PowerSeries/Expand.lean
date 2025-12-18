@@ -33,7 +33,7 @@ noncomputable def expand : PowerSeries R →ₐ[R] PowerSeries R :=
   MvPowerSeries.expand p hp
 
 theorem expand_apply (f : PowerSeries R) : expand p hp f = subst (X ^ p) f := by
-  simp only [expand, MvPowerSeries.expand, subst, X]
+  simp [expand, MvPowerSeries.expand, subst, X]
 
 theorem expand_C (r : R) : expand p hp (C r : PowerSeries R) = C r := by
   conv_lhs => rw [← mul_one (C r), ← smul_eq_C_mul, expand, AlgHom.map_smul_of_tower,
