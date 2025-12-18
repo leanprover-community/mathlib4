@@ -45,7 +45,7 @@ theorem lintegral_image_eq_lintegral_abs_deriv_mul
     (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
     (g : ℝ → ℝ≥0∞) :
     ∫⁻ x in f '' s, g x = ∫⁻ x in s, ENNReal.ofReal (|f' x|) * g (f x) := by
-  simpa only [det_one_smulRight] using
+  simpa only [det_smulRight_id] using
     lintegral_image_eq_lintegral_abs_det_fderiv_mul volume hs
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
 
@@ -56,7 +56,7 @@ function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • 
 theorem integrableOn_image_iff_integrableOn_abs_deriv_smul
     (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
     (g : ℝ → F) : IntegrableOn g (f '' s) ↔ IntegrableOn (fun x => |f' x| • g (f x)) s := by
-  simpa only [det_one_smulRight] using
+  simpa only [det_smulRight_id] using
     integrableOn_image_iff_integrableOn_abs_det_fderiv_smul volume hs
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
 
@@ -66,7 +66,7 @@ function `g : ℝ → F` on `f '' s` coincides with the integral of `|(f' x)| �
 theorem integral_image_eq_integral_abs_deriv_smul
     (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
     (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
-  simpa only [det_one_smulRight] using
+  simpa only [det_smulRight_id] using
     integral_image_eq_integral_abs_det_fderiv_smul volume hs
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
 

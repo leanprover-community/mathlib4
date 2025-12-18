@@ -348,8 +348,7 @@ equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
 theorem HasFDerivWithinAt.comp_hasDerivWithinAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
+  simpa using (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
 
 /-- The composition `l ∘ f` where `l : F → E` and `f : 𝕜 → F`, has a derivative within a set
 equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
@@ -361,8 +360,7 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt_of_eq {t : Set F}
 
 theorem HasFDerivWithinAt.comp_hasDerivAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
+  simpa using (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
 
 theorem HasFDerivWithinAt.comp_hasDerivAt_of_eq {t : Set F} (hl : HasFDerivWithinAt l l' t y)
     (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) :
@@ -393,8 +391,7 @@ theorem HasFDerivAt.comp_hasDerivAt_of_eq
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
-    (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
+  simpa using (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :
