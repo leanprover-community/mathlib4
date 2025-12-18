@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # IMO 2010 Q5
@@ -70,17 +70,6 @@ lemma single_succ {k : ℕ} {i : Fin 6} : (single (i + 1) k : Fin 6 → ℕ) i =
 lemma single_succ' {k : ℕ} {i : Fin 6} : (single i k : Fin 6 → ℕ) (i + 1) = 0 := by simp
 
 lemma single_add_two {k : ℕ} {i : Fin 6} : (single (i + 2) k : Fin 6 → ℕ) i = 0 := by simp
-
-lemma exists_pow : ∃ f : ℕ → ℕ → ℕ, ∀ a b, f a b = a ^ b :=
-  ⟨(· ^ ·), fun _ _ ↦ rfl⟩
-
-/-- `pow` is an opaque power function, used to avoid deep recursion in the kernel.
-See https://github.com/leanprover/lean4/issues/11713 -/
-noncomputable def pow : ℕ → ℕ → ℕ :=
-  exists_pow.choose
-
-lemma pow_def (a b : ℕ) : pow a b = a ^ b :=
-  exists_pow.choose_spec ..
 
 namespace Reachable
 
@@ -174,8 +163,7 @@ lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
 
 /-- From `(0, 0, k+1, n, 0, 0)` with `n > 0` we can reach `(0, 0, k, 2^n, 0, 0)`. -/
 lemma exp_mid {k n : ℕ} (h : Reachable (single 2 (k + 1) + single 3 n)) (hn : 0 < n) :
-    Reachable (single 2 k + single 3 (pow 2 n)) := by
-  rw [pow_def]
+    Reachable (single 2 k + single 3 (2 ^ n)) := by
   have md := h.exp (show 3 < 4 by decide) (by simp [hn])
     (by simp [add_apply, single_eq_of_ne]) (by simp [add_apply, single_eq_of_ne])
   convert md.move2 (show 2 < 4 by decide) (by
@@ -212,41 +200,44 @@ lemma reduce {m n : ℕ} (h : Reachable (single 3 n)) (hmn : m ≤ n) : Reachabl
       rw [swap_apply_def]; split_ifs <;> grind
 
 /-- The key power tower inequality in the solution. -/
-lemma tower_inequality : pow 2010 (pow 2010 2010) ≤ pow 2 (pow 2 (pow 2 (pow 2 (pow 2 11)))) :=
+lemma tower_inequality {m n : ℕ} (hm : m = 2010) (hn : n = 11) :
+    2010 ^ 2010 ^ m ≤ 2 ^ 2 ^ 2 ^ 2 ^ 2 ^ n := by
   calc
-    _ ≤ pow 2 (11 * pow 2010 2010) := by
-      rw [pow_def 2, pow_mul, pow_def]; gcongr; norm_num
+    _ ≤ 2 ^ (11 * 2010 ^ m) := by rw [pow_mul]; gcongr <;> lia
+    _ ≤ _ := Nat.pow_le_pow_right Nat.zero_lt_two ?_
+  calc
+    _ ≤ 2 ^ (4 + 11 * m) := by rw [pow_add, pow_mul]; gcongr <;> lia
+    _ ≤ _ := Nat.pow_le_pow_right Nat.zero_lt_two ?_
+  calc
+    _ ≤ 2 ^ 2 ^ 2 ^ 2 := by rw [hm]; lia
     _ ≤ _ := by
-      rw [pow_def 2, pow_def 2]; apply Nat.pow_le_pow_right zero_lt_two
-      calc
-        _ ≤ pow 2 (4 + 11 * 2010) := by
-          rw [pow_def 2, pow_add, pow_mul, pow_def]; gcongr <;> norm_num
-        _ ≤ _ := by
-          rw [pow_def 2, pow_def 2]; apply Nat.pow_le_pow_right zero_lt_two
-          calc
-            _ ≤ 2 ^ 2 ^ 2 ^ 2 := by norm_num
-            _ ≤ _ := by
-              iterate 3 rw [pow_def]; apply Nat.pow_le_pow_right zero_lt_two
-              norm_num
+      iterate 3 apply Nat.pow_le_pow_right Nat.zero_lt_two
+      lia
 
 /-- `(0, 0, 0, 2010 ^ 2010 ^ 2010 / 4, 0, 0)` is reachable. -/
-lemma quarter_target : Reachable (single 3 (pow 2010 (pow 2010 2010) / 4)) := by
-  have R := five_eleven.exp_mid (by norm_num)
-  iterate 4 replace R := R.exp_mid (by rw [pow_def]; norm_num)
+lemma quarter_target {m : ℕ} (hm : m = 2010) : Reachable (single 3 (2010 ^ 2010 ^ m / 4)) := by
+  have R := five_eleven.exp_mid (by lia)
+  set n : ℕ := 11
+  iterate 4 replace R := R.exp_mid (Nat.two_pow_pos _)
   rw [single_zero, zero_add] at R
-  exact R.reduce ((Nat.div_le_self ..).trans tower_inequality)
+  exact R.reduce ((Nat.div_le_self ..).trans (tower_inequality hm rfl))
 
 end Reachable
 
 open Reachable in
-theorem result : Reachable (single 5 (pow 2010 (pow 2010 2010))) := by
-  convert (quarter_target.push (show 3 < 5 by decide)).push (show 4 < 5 by decide)
+theorem result : Reachable (single 5 (2010 ^ 2010 ^ 2010)) := by
+  -- `m` is defined to avoid deep recursion in the kernel.
+  -- See https://github.com/leanprover/lean4/issues/11713
+  set m : ℕ := 2010
+  have hm : m = 2010 := by rfl
+  convert ((quarter_target hm).push (show 3 < 5 by decide)).push (show 4 < 5 by decide)
   simp only [single_eq_same, tsub_self, Fin.reduceAdd, zero_add, single_inj]
   rw [← mul_assoc, show 2 * 2 = 4 by rfl, mul_comm, Nat.div_mul_cancel]
   trans 2010 ^ 2
-  · norm_num
-  · rw [pow_def]; apply pow_dvd_pow; trans 2010 ^ 1
-    · norm_num
-    · rw [pow_def]; gcongr <;> norm_num
+  · lia
+  · apply pow_dvd_pow
+    trans 2010 ^ 1
+    · lia
+    · gcongr <;> lia
 
 end Imo2010Q5
