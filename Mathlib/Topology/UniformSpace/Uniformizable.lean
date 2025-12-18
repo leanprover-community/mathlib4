@@ -51,12 +51,13 @@ def IsThickening (c u : Set X) :=
     IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (ball x uc) ∧
     ball x (s ○ uc ○ s) ⊆ u ∧ s ∈ 𝓤 X
 
-/-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
-predicate `IsThickening`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
-satisfying `IsThickening`. We can then use the general `Urysohns.CU` construction to obtain the
-desired real-valued function. -/
+/-- Given a pair consisting of a closed set `c` contained in an open set `u`
+satisfying the predicate `IsThickening`, it is always possible to refine it to two pairs
+`c ⊆ v` and `closure v ⊆ u` satisfying `IsThickening`. We can then use the general `Urysohns.CU`
+construction to obtain the desired real-valued function. -/
 theorem urysohns_main {c u : Set X} (IsThickeningcu : IsThickening c u) :
-    ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ IsThickening c v ∧ IsThickening (closure v) u := by
+    ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧
+      IsThickening c v ∧ IsThickening (closure v) u := by
   obtain ⟨x, uc, s, huc, ucu, rfl, hn, hs⟩ := IsThickeningcu
   obtain ⟨(ds : SetRel X X), hdsu, hdso, -, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
   have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
