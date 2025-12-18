@@ -75,11 +75,11 @@ theorem freeGroupProd_append (l₁ l₂ : List B) :
 
 /-- The Artin relation for indices `i` and `j`: the two alternating words of length `M i j`
 are equal. This is encoded as
-`freeGroupProd (alternatingWord j i (M i j)) * freeGroupProd (alternatingWord i j (M i j))⁻¹ = 1`
-where `alternatingWord` is `CoxeterSystem.alternatingWord`. -/
+`freeGroupProd (CoxeterSystem.alternatingWord i j (M i j)) *
+  freeGroupProd (CoxeterSystem.alternatingWord j i (M i j))⁻¹ = 1`. -/
 def artinRelation (i j : B) : FreeGroup B :=
-  freeGroupProd (CoxeterSystem.alternatingWord j i (M i j)) *
-    (freeGroupProd (CoxeterSystem.alternatingWord i j (M i j)))⁻¹
+  freeGroupProd (CoxeterSystem.alternatingWord i j (M i j)) *
+    (freeGroupProd (CoxeterSystem.alternatingWord j i (M i j)))⁻¹
 
 /-- The set of all Artin relations associated to the Coxeter matrix `M`. -/
 def artinRelationsSet : Set (FreeGroup B) :=
@@ -113,21 +113,22 @@ def artinGenerator (i : B) : M.ArtinGroup := PresentedGroup.of i
 
 /-! ### Universal property -/
 
-/-- Compute the alternating product of `f` applied to `i` and `j`, of length `m`. -/
+/-- Compute the alternating product of `f` applied to `i` and `j`, of length `m`, ending with `f j`.
+This matches the convention of `CoxeterSystem.alternatingWord i j m` which ends with `j`. -/
 def alternatingProd {G : Type*} [Monoid G] (f : B → G) (i j : B) : ℕ → G
   | 0 => 1
-  | m + 1 => alternatingProd f j i m * f i
+  | m + 1 => alternatingProd f j i m * f j
 
 @[simp]
 theorem alternatingProd_zero {G : Type*} [Monoid G] (f : B → G) (i j : B) :
     alternatingProd f i j 0 = 1 := rfl
 
 theorem alternatingProd_succ {G : Type*} [Monoid G] (f : B → G) (i j : B) (m : ℕ) :
-    alternatingProd f i j (m + 1) = alternatingProd f j i m * f i := rfl
+    alternatingProd f i j (m + 1) = alternatingProd f j i m * f j := rfl
 
 theorem freeGroupProd_alternatingWord_eq_lift_alternatingProd {G : Type*} [Group G] (f : B → G)
     (i j : B) (m : ℕ) :
-    FreeGroup.lift f (freeGroupProd (CoxeterSystem.alternatingWord j i m)) =
+    FreeGroup.lift f (freeGroupProd (CoxeterSystem.alternatingWord i j m)) =
       alternatingProd f i j m := by
   induction m generalizing i j with
   | zero => simp [freeGroupProd, alternatingProd, CoxeterSystem.alternatingWord]
@@ -196,7 +197,7 @@ theorem artinGenerator_generates (S : Subgroup M.ArtinGroup)
 alternating word. -/
 theorem alternatingProd_simple_eq_wordProd (i j : B) (m : ℕ) :
     alternatingProd M.simple i j m =
-      M.toCoxeterSystem.wordProd (CoxeterSystem.alternatingWord j i m) := by
+      M.toCoxeterSystem.wordProd (CoxeterSystem.alternatingWord i j m) := by
   induction m generalizing i j with
   | zero => simp [alternatingProd, CoxeterSystem.wordProd, CoxeterSystem.alternatingWord]
   | succ m ih =>
@@ -208,8 +209,8 @@ theorem alternatingProd_simple_eq_wordProd (i j : B) (m : ℕ) :
 /-- The simple reflections in the Coxeter group satisfy the Artin relations. -/
 theorem simple_isArtinLiftable : M.IsArtinLiftable M.simple := fun i j => by
   simp only [alternatingProd_simple_eq_wordProd]
-  convert M.toCoxeterSystem.wordProd_braidWord_eq j i using 2
-  all_goals (unfold CoxeterSystem.braidWord; congr 1; exact (M.symmetric j i).symm)
+  convert M.toCoxeterSystem.wordProd_braidWord_eq i j using 2
+  all_goals simp only [CoxeterSystem.braidWord, M.symmetric]
 
 /-- The canonical homomorphism from the Artin group to the Coxeter group. -/
 def artinToCoxeter : M.ArtinGroup →* M.Group :=
