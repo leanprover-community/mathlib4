@@ -515,7 +515,7 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
 @[simp, nontriviality]
-theorem isDiag_of_subsingleton [Subsingleton α] (e : Sym2 α) : e.IsDiag := e.ind Subsingleton.elim
+lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind Subsingleton.elim
 
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagSet : Set (Sym2 α) := {z | z.IsDiag}
@@ -540,7 +540,7 @@ theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by simp
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
 set_option linter.deprecated false in
-@[deprecated "This is the equational lemma" (since := "2025-12-10")]
+@[deprecated Set.compl_setOf (since := "2025-12-10")]
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
 
