@@ -77,7 +77,7 @@ def compactLowerSet {α : Type*} [CompletePartialOrder α] (x : α) := Set.Iic x
 /-- Encodes notion of observable properties in programs (points are program semantics) -/
 class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
   algebraic : ∀ x : α, (compactLowerSet x).Nonempty ∧ DirectedOn (· ≤ ·) (compactLowerSet x) ∧
-  x = sSup (compactLowerSet x)
+    x = sSup (compactLowerSet x)
 
 end CompletePartialOrder
 
