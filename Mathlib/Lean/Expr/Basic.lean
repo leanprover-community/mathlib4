@@ -233,10 +233,10 @@ forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x
 Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
 -/
 @[inline] partial def isAppOrForallOfConstP (p : Name → Bool) (type : Expr) : Bool :=
-    match type.cleanupAnnotations.getAppFn' with
-    | .const n _ => p n
-    | .forallE _ _ body _ => isAppOrForallOfConstP p body
-    | _ => false
+  match type.cleanupAnnotations.getAppFn' with
+  | .const n _ => p n
+  | .forallE _ _ body _ => isAppOrForallOfConstP p body
+  | _ => false
 
 /--
 Returns `true` if `type` is an application of a constant `declName`, or a

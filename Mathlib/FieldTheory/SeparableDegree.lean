@@ -213,7 +213,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F E (S := S) hK (hS ▸ mem_top)) _)
-    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits _) _)
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
 if `E = F(S)` such that every element
@@ -227,7 +227,7 @@ and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
-    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
@@ -336,7 +336,7 @@ theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := b
   use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
-  exact ⟨ne_of_apply_ne _ h, by simp only [aeval_def, ← eval_map, eval_rootOfSplits]⟩
+  exact ⟨ne_of_apply_ne _ h, by simp only [← eval_map_algebraMap, eval_rootOfSplits]⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
@@ -379,7 +379,7 @@ variable (E) in
 the number of distinct roots of it over any algebraically closed field. -/
 theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
-  natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
+  natSepDegree_eq_of_splits f (IsAlgClosed.splits _)
 
 theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical

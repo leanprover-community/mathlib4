@@ -52,10 +52,9 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
         Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
           (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator R M)))
       simp [eq0, IsLocalRing.depth, moduleDepth_eq_depth_of_supp_eq (maximalIdeal R) N M smul_lt
-        <| support_of_supportDim_eq_zero R N dim]
-  · have eqr (n : ℕ∞) : n.toNat = r → n = r := by
-      let _ : NeZero r := ⟨eq0⟩
-      simp
+        (support_of_supportDim_eq_zero R N dim)]
+  · let _ : NeZero r := ⟨eq0⟩
+    have eqr (n : ℕ∞) : n.toNat = r → n = r := by simp
     refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
       (motive := fun L ↦ (∀ (Lntr : Nontrivial L),
         (((Module.supportDim R L).unbot (Module.supportDim_ne_bot_of_nontrivial R L))).toNat = r →
@@ -147,8 +146,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           simp only [← hk, ← ENat.coe_sub, ← hm, Nat.cast_lt]
           simp only [← hm, Nat.cast_lt] at dimlt'
           omega
-      have zero : IsZero
-        (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
+      have zero : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (QuotSMulTop x L)) M (i + 1))) :=
         @AddCommGrpCat.isZero_of_subsingleton _ this
       have epi' : Function.Surjective
         ⇑(x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
@@ -195,14 +193,11 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           · exact ihr _ lt (ModuleCat.of.{v} R L3) rfl
           · exact ih3' ntr.2 eq
         let S : ShortComplex (ModuleCat.{v} R) := {
-          X₁ := ModuleCat.of R L1
-          X₂ := ModuleCat.of R L2
-          X₃ := ModuleCat.of R L3
           f := ModuleCat.ofHom f
           g := ModuleCat.ofHom g
           zero := by
             ext
-            simp [Function.Exact.apply_apply_eq_zero exac] }
+            simp [exac.apply_apply_eq_zero] }
         have hS : S.ShortExact := {
           exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
           mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
@@ -245,10 +240,6 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   let _ := Quotient.nontrivial_iff.mpr ass.1.ne_top'
-  let _ : Module.Finite R (Shrink.{v} (R ⧸ P)) :=
-    Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ P)).symm
-  let _ : Nontrivial (Shrink.{v} (R ⧸ P)) :=
-    (Shrink.linearEquiv R (R ⧸ P)).nontrivial
   have dep0 : moduleDepth (of R (Shrink.{v} (R ⧸ P))) M = 0 := by
     rw [moduleDepth_eq_zero_of_hom_nontrivial,
       (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]

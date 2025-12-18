@@ -23,8 +23,6 @@ classes and allows to transfer order instances.
 ## Type synonyms
 
 * `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
-* `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
-  `IsTotal α (≤)`.
 
 ### Transferring orders
 
@@ -398,18 +396,30 @@ theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
 @[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
 @[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
+@[to_dual le_of_forall_gt_imp_ne]
+theorem le_of_forall_lt_imp_ne (H : ∀ c < a, c ≠ b) : a ≤ b :=
+  le_of_not_gt fun hb ↦ H b hb rfl
+
+@[to_dual lt_of_forall_ge_imp_ne]
+theorem lt_of_forall_le_imp_ne (H : ∀ c ≤ a, c ≠ b) : a < b :=
+  lt_of_not_ge fun hb ↦ H b hb rfl
+
+@[to_dual forall_gt_imp_ne_iff_le]
+theorem forall_lt_imp_ne_iff_le : (∀ c < a, c ≠ b) ↔ a ≤ b :=
+  ⟨le_of_forall_lt_imp_ne, fun ha _ hc ↦ (hc.trans_le ha).ne⟩
+
+@[to_dual forall_ge_imp_ne_iff_lt]
+theorem forall_le_imp_ne_iff_lt : (∀ c ≤ a, c ≠ b) ↔ a < b :=
+  ⟨lt_of_forall_le_imp_ne, fun ha _ hc ↦ (hc.trans_lt ha).ne⟩
+
 @[to_dual eq_of_forall_gt_iff]
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
-
-section ltByCases
 
 @[to_dual self (reorder := ltc gtc)]
 lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x y x' y' : α}
     (ltc : x < y ↔ x' < y') (gtc : y < x ↔ y' < x') :
     x = y ↔ x' = y' := by grind
-
-end ltByCases
 
 /-! #### `min`/`max` recursors -/
 
@@ -1233,16 +1243,20 @@ instance Prop.partialOrder : PartialOrder Prop where
 
 end «Prop»
 
-/-! ### Linear order from a total partial order -/
+/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
 
-
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
+**Do not use this**: instead, build a `LinearOrder` instance directly. -/
+@[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
 def AsLinearOrder (α : Type*) :=
   α
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
   ⟨(default : α)⟩
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
