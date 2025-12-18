@@ -347,10 +347,6 @@ i.e. ways to select `k` items (up to permutation) from `n` items with replacemen
 Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
 
-TODO: Prove that `choose (-n) k = (-1)^k * multichoose n k`,
-where `choose` is the generalized binomial coefficient.
-<https://github.com/leanprover-community/mathlib/pull/15072#issuecomment-1171415738>
-
 -/
 
 /--
