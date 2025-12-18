@@ -403,57 +403,57 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
-open Topology in
-/-- If `f` an immersion at `x`, then `x` has an open neighbourhood `s` such that the restriction
-of `f` to `s` is an embedding. -/
-lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAtOfComplement F I J n f x) :
-    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ IsEmbedding (s.restrict f) := by
-  have := h.writtenInCharts
-  use h.domChart.source
-  refine ⟨h.domChart.open_source, h.domChart.open_source.mem_nhds h.mem_domChart_source, ?_⟩
+open Topology
+
+/-- If `f` is an immersion at `x`, then restriction `f` to `h.domChart.source` is an embedding. -/
+lemma isEmbedding_restr_domChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+    IsEmbedding (h.domChart.source.restrict f) := by
   have hj : IsEmbedding (h.equiv ∘ fun x ↦ (x, 0)) :=
     h.equiv.toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
   letI rhs := (h.codChart.extend J).symm ∘ (h.equiv ∘ fun x ↦ (x, 0)) ∘ (h.domChart.extend I)
   have : h.domChart.source.restrict f = h.domChart.source.restrict rhs := by
     ext ⟨x, hx⟩
     simpa using h.eqOn_domChart_source hx
-  have hrhs : IsEmbedding (h.domChart.source.restrict rhs) := by
-    -- Local notation for readability.
-    set s := h.domChart.source
-    set φ := h.domChart.extend I
-    set ψ := h.codChart.extend J
-    /- We write s.restrict rhs as the composition of three embeddings:
-    - ψ restricted to its target (TODO! is this true?)
-    - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
-    - φ restricted to its source. -/
-    let floc := (h.equiv ∘ fun x ↦ (x, (0 : F)))
-    have aux (x : s): (floc ∘ (s.restrict φ)) x ∈ ψ.target := by
-      obtain ⟨x, hx⟩ := x
-      -- XXX: replace by the right rewrite!
-      change (⇑h.equiv ∘ fun x ↦ (x, 0)) ((s.restrict φ) ⟨x, hx⟩) ∈ ψ.target
-      have : (s.restrict φ) ⟨x, hx⟩ ∈ φ.target := by
-        simp only [restrict_apply]
-        apply (h.domChart.extend I).map_source
-        rwa [OpenPartialHomeomorph.extend_source]
-      rw [← h.writtenInCharts this]
-      rw [h.codChart.extend_target_eq_image_source]
-      apply mem_image_of_mem
-      apply h.mapsto_domChart_source_codChart_source
-      simp only [restrict_apply]
-      simp_rw [← h.domChart.extend_source (I := I)]
-      exact (h.domChart.extend I).map_target this
-    let bs : s → (h.codChart.extend J).target :=
-      Set.codRestrict (floc ∘ (s.restrict φ)) (h.codChart.extend J).target aux
-    have : s.restrict rhs = (ψ.target.restrict ψ.symm) ∘ bs := by
-      ext ⟨x, hx⟩
-      simp [bs, rhs, comp_apply, floc, φ, ψ]
-    rw [this]
-    refine h.codChart.isEmbedding_extend_symm_restrict.comp  ?_
-    -- TODO: make fun_prop do this!
-    exact (hj.comp h.domChart.isEmbedding_extend_restrict).codRestrict
-      (h.codChart.extend J).target aux
   rw [this]
-  exact hrhs
+  -- Local notation for readability.
+  set s := h.domChart.source
+  set φ := h.domChart.extend I
+  set ψ := h.codChart.extend J
+  /- We write s.restrict rhs as the composition of three embeddings:
+  - ψ restricted to its target (TODO! is this true?)
+  - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
+  - φ restricted to its source. -/
+  have aux (x : s): ((h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ (s.restrict φ)) x ∈ ψ.target := by
+    obtain ⟨x, hx⟩ := x
+    -- XXX: replace by the right rewrite!
+    change (h.equiv ∘ fun x ↦ (x, 0)) ((s.restrict φ) ⟨x, hx⟩) ∈ ψ.target
+    have : (s.restrict φ) ⟨x, hx⟩ ∈ φ.target := by
+      simp only [restrict_apply]
+      apply (h.domChart.extend I).map_source
+      rwa [OpenPartialHomeomorph.extend_source]
+    rw [← h.writtenInCharts this, h.codChart.extend_target_eq_image_source]
+    apply mem_image_of_mem
+    apply h.mapsto_domChart_source_codChart_source
+    simp_rw [restrict_apply, ← h.domChart.extend_source (I := I)]
+    exact (h.domChart.extend I).map_target this
+  let bs : s → (h.codChart.extend J).target :=
+    Set.codRestrict ((h.equiv ∘ fun x ↦ (x, (0 : F))) ∘
+      (s.restrict φ)) (h.codChart.extend J).target aux
+  have : s.restrict rhs = (ψ.target.restrict ψ.symm) ∘ bs := by
+    ext ⟨x, hx⟩
+    simp [bs, rhs, comp_apply, φ, ψ]
+  rw [this]
+  refine h.codChart.isEmbedding_extend_symm_restrict.comp  ?_
+  -- TODO: make fun_prop do this!
+  exact (hj.comp h.domChart.isEmbedding_extend_restrict).codRestrict
+    (h.codChart.extend J).target aux
+
+/-- If `f` an immersion at `x`, then `x` has an open neighbourhood `s` such that the restriction
+of `f` to `s` is an embedding. -/
+lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAtOfComplement F I J n f x) :
+    ∃ s : Set M, IsOpen s ∧ s ∈ 𝓝 x ∧ IsEmbedding (s.restrict f) :=
+  ⟨h.domChart.source, h.domChart.open_source,
+    h.domChart.open_source.mem_nhds h.mem_domChart_source, h.isEmbedding_restr_domChart_source⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
