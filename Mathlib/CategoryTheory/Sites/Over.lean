@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Functor.Flat
 
 /-! Localization
 
@@ -238,6 +240,27 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
   Functor.isContinuous_of_coverPreserving
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)
+
+section
+
+open CategoryTheory Limits
+
+variable {C : Type u'} [SmallCategory C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+
+theorem over_star_coverPreserving (X : C) :
+    CoverPreserving J (J.over X) (Over.star X) where
+  cover_preserve {U} S hs := by
+    refine J.superset_covering ?_ (J.pullback_stable prod.snd hs)
+    intro y f hf
+    dsimp [Sieve.overEquiv]
+    rw [← Presieve.functorPushforward_comp]
+    refine ⟨_, _, prod.lift (f ≫ prod.fst) (𝟙 _), hf, Limits.prod.hom_ext ?_ ?_⟩ <;> simp
+
+instance (X : C) : (Over.star X).IsContinuous J (J.over X) :=
+  Functor.isContinuous_of_coverPreserving
+    (compatiblePreservingOfFlat (J.over X) (Over.star X)) (over_star_coverPreserving X)
+
+end
 
 section
 

@@ -108,4 +108,20 @@ def congrLeftFunctor (E : Type*) [Category* E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D
 
 end Equivalence
 
+section
+
+@[simp]
+lemma _root_.CategoryTheory.Equivalence.symm_counit.{v₁, v₂, u₁, u₂}
+    {C : Type u₁} [Category.{v₁, u₁} C]
+    {D : Type u₂} [Category.{v₂, u₂} D]
+    (e : C ≌ D) : e.symm.counit = e.unitInv := rfl
+
+@[simp]
+lemma _root_.CategoryTheory.Equivalence.symm_unit.{v₁, v₂, u₁, u₂}
+    {C : Type u₁} [Category.{v₁, u₁} C]
+    {D : Type u₂} [Category.{v₂, u₂} D]
+    (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
+
+end
+
 end CategoryTheory
