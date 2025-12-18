@@ -630,11 +630,14 @@ theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
 
 end Lattice
 
-theorem filter_card_add_filter_neg_card_eq_card
+theorem card_filter_add_card_filter_not
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     #(s.filter p) + #(s.filter fun a ↦ ¬ p a) = #s := by
   classical
-  rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
+  rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_not_eq]
+
+@[deprecated (since := "2025-12-12")]
+alias filter_card_add_filter_neg_card_eq_card := card_filter_add_card_filter_not
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
@@ -867,7 +870,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
   | s =>
     H s fun {t} ht h =>
       have := Finset.card_lt_card h
-      have : n - #t < n - #s := by omega
+      have : n - #t < n - #s := by lia
       strongDownwardInduction H t ht
   termination_by s => n - #s
 

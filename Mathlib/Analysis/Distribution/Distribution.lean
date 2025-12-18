@@ -92,7 +92,7 @@ distribution is nothing more than a distribution taking values in the real vecto
 
 ### Order of distributions
 
-Based on established practice in the litterature, a natural way to express the order of a
+Based on established practice in the literature, a natural way to express the order of a
 distribution would be to introduce a predicate `Distribution.HasOrderAtMost` on the space of all
 distributions. Here though, we define a separate space `𝓓'^{n}(Ω, F)` whose elements are precisely
 distributions of order at most `n`.
@@ -160,7 +160,8 @@ abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 /-- Notation for the space of distributions of order less than `n`. -/
 scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω F n
 
-/-- Notation for the space of distributions. -/
+/-- We denote `𝓓'(Ω, F)` the space of `F`-valued distributions on `Ω`. Note that using `𝓓'`
+is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
 
