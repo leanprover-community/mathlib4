@@ -35,8 +35,7 @@ The following notations are scoped to the `Ordinal` namespace.
 The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
-- `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
-  `Mathlib/SetTheory/Cardinal/Continuum.lean`.
+- `ℶ_ o` is notation for `beth o`. `𝔠` is notation for `ℶ_ 1`.
 -/
 
 @[expose] public section
@@ -198,9 +197,11 @@ def omega : Ordinal ↪o Ordinal :=
 
 @[inherit_doc]
 scoped notation "ω_ " => omega
+recommended_spelling "omega" for "ω_" in [omega, «termω_»]
 
 /-- `ω₁` is the first uncountable ordinal. -/
-scoped notation "ω₁" => ω_ 1
+scoped notation3 "ω₁" => ω_ 1
+recommended_spelling "omega1" for "ω₁" in [«termω₁»]
 
 theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
   rfl
@@ -364,9 +365,11 @@ def aleph : Ordinal ↪o Cardinal :=
 
 @[inherit_doc]
 scoped notation "ℵ_ " => aleph
+recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
 
 /-- `ℵ₁` is the first uncountable cardinal. -/
-scoped notation "ℵ₁" => ℵ_ 1
+scoped notation3 "ℵ₁" => ℵ_ 1
+recommended_spelling "aleph1" for "ℵ₁" in [«termℵ₁»]
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -450,9 +453,12 @@ theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c 
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
   rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
 
-theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
+theorem aleph0_lt_aleph1 : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
   apply lt_succ
+
+@[deprecated (since := "2025-12-18")]
+alias aleph0_lt_aleph_one := aleph0_lt_aleph1
 
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
