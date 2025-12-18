@@ -29,7 +29,7 @@ namespace CategoryTheory.Abelian
 
 open Category Limits Preadditive ZeroObject
 
-variable {A C : Type*} [Category C] [Category A] (ι : C ⥤ A)
+variable {A C : Type*} [Category* C] [Category* A] (ι : C ⥤ A)
 
 /-- Given a fully faithful functor `ι : C ⥤ A`, this structure contains the data
 of a functor `F : A ⥤ C` and a functorial epimorphism
