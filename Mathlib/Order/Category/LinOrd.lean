@@ -42,9 +42,9 @@ instance : CoeSort LinOrd (Type _) :=
 
 attribute [coe] LinOrd.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
-set_option backward.privateInPublic true in
 structure Hom (X Y : LinOrd.{u}) where
   private mk ::
   /-- The underlying `OrderHom`. -/
