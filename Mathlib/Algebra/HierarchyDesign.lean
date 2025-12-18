@@ -221,7 +221,7 @@ instance arguments implicitly, otherwise Lean will refuse to apply them.
 For example, in measure theory a space `X` will often come equipped with a canonical base
 sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
 `MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
-abelian groups, but terms `G : ModuleCat ℤ` come with two (propeq) `Module ℤ G` instances:
+abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
 one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
