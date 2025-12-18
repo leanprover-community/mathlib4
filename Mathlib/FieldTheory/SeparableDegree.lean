@@ -213,7 +213,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F E (S := S) hK (hS ▸ mem_top)) _)
-    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits _) _)
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
 if `E = F(S)` such that every element
@@ -227,7 +227,7 @@ and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
-    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
@@ -379,7 +379,7 @@ variable (E) in
 the number of distinct roots of it over any algebraically closed field. -/
 theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
-  natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
+  natSepDegree_eq_of_splits f (IsAlgClosed.splits _)
 
 theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical

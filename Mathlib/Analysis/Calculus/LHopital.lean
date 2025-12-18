@@ -295,7 +295,7 @@ theorem lhopital_zero_nhdsLT (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' x) 
   rw [mem_nhdsLT_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨l, hal, hl⟩
   refine lhopital_zero_left_on_Ioo hal ?_ ?_ ?_ hfa hga hdiv <;> intro x hx <;> apply_assumption <;>
-    first | exact (hl hx).1.1| exact (hl hx).1.2| exact (hl hx).2
+    first | exact (hl hx).1.1 | exact (hl hx).1.2 | exact (hl hx).2
 
 /-- L'Hôpital's rule for approaching a real, `HasDerivAt` version. This
   does not require anything about the situation at `a` -/
@@ -355,7 +355,7 @@ theorem lhopital_zero_atTop (hff' : ∀ᶠ x in atTop, HasDerivAt f (f' x) x)
   rcases hs with ⟨l, hl⟩
   have hl' : Ioi l ⊆ s := fun x hx => hl x (le_of_lt hx)
   refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx => hg' x <| (hl' hx).2) hftop hgtop hdiv <;>
-    intro x hx <;> apply_assumption <;> first | exact (hl' hx).1.1| exact (hl' hx).1.2
+    intro x hx <;> apply_assumption <;> first | exact (hl' hx).1.1 | exact (hl' hx).1.2
 
 /-- L'Hôpital's rule for approaching -∞, `HasDerivAt` version -/
 theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
@@ -372,7 +372,7 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
   rcases hs with ⟨l, hl⟩
   have hl' : Iio l ⊆ s := fun x hx => hl x (le_of_lt hx)
   refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx => hg' x <| (hl' hx).2) hfbot hgbot hdiv <;>
-    intro x hx <;> apply_assumption <;> first | exact (hl' hx).1.1| exact (hl' hx).1.2
+    intro x hx <;> apply_assumption <;> first | exact (hl' hx).1.1 | exact (hl' hx).1.2
 
 end HasDerivAt
 
