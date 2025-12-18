@@ -5,7 +5,7 @@ Authors: Newell Jensen
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Isometry
+-- public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
@@ -13,10 +13,19 @@ public import Mathlib.Topology.MetricSpace.Thickening
 
 A **Delone set** `D ⊆ X` in a metric space is a set which is both:
 
-* **uniformly discrete**: there exists `r > 0` such that any two distinct points
-  of `D` are at distance at least `r`;
-* **relatively dense**: there exists `R > 0` such that every point of `X`
-  is within distance `R` of some point of `D`.
+* **uniformly discrete**: there exists a sufficiently small scale at which
+  distinct points of `D` are separated.
+* **relatively dense**: there exists a sufficiently large scale at which
+  every point of `X` is close to some point of `D`.
+
+In metric terms, this means that there exist constants `r > 0` and `R > 0`
+such that distinct points of `D` are at distance at least `r`, and every point
+of `X` lies within distance `R` of `D`.
+
+In this file, these notions are formulated in terms of **metric entourages**
+(i.e. relations belonging to the uniformity), rather than directly using
+metric inequalities. This makes the theory compatible with the general
+uniform-space infrastructure.
 
 Delone sets arise in discrete geometry, crystallography, quasicrystals,
 aperiodic order, and tiling theory.
@@ -24,10 +33,10 @@ aperiodic order, and tiling theory.
 ## Main definitions
 
 * `UniformlyDiscrete (D : Set X)`
-  Positive packing radius separating distinct points of `D`.
+  Existence of an entourage separating distinct points of `D`.
 
 * `RelativelyDense (D : Set X)`
-  Positive covering radius so that `R`-balls around `D` cover `X`.
+  Existence of an entourage whose image of `D` covers the whole space.
 
 * `DeloneSet X`
   A structure bundling a uniformly discrete and relatively dense set.
@@ -39,25 +48,44 @@ aperiodic order, and tiling theory.
 * `DeloneSet.dist_pos_of_ne`: distinct points lie at positive distance.
 * `DeloneSet.subset_ball_singleton`: small balls contain at most one point of a Delone set.
 * `DeloneSet.map`: Delone sets are preserved by isometries (with `map_id`, `map_comp`, `map_symm`).
+
+## TODO
+
+The definition `distLT` is a temporary metric-derived entourage used to
+phrase the theory of Delone sets in terms of relations / entourages.
+
+Once mathlib provides a canonical family of entourages indexed by a quantitative
+parameter (e.g. `ℝ≥0`) for metric spaces, this definition should be removed and
+all occurrences of `distLT ε` replaced by the corresponding canonical entourage.
 -/
 
 @[expose] public section
 
-open Metric
+open scoped Uniformity
 
 variable {X Y : Type*} [MetricSpace X] [MetricSpace Y]
 
 namespace Metric
 
-/-- A set `D` in a metric space is *uniformly discrete* if there exists `r > 0`
-such that distinct points of `D` are at least distance `r` apart. -/
-def UniformlyDiscrete (D : Set X) : Prop :=
-    ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → r ≤ dist x y
+/-- The metric `ε`-entourage as a relation (a set of pairs). -/
+def distLT (ε : ℝ) : SetRel X X :=
+  {p : X × X | dist p.1 p.2 < ε}
 
-/-- A set `D` in a metric space is *relatively dense* if there exists `R > 0`
-such that every point of the space is within distance `R` of some point in `D`. -/
+/-- If `ε > 0`, then the metric entourage `distLT ε` belongs to the uniformity. -/
+lemma distLT_mem_uniformity {ε : ℝ} (hε : 0 < ε) : distLT (X := X) ε ∈ 𝓤 X := by
+  refine (mem_uniformity_dist).2 ?_
+  refine ⟨ε, hε, ?_⟩
+  exact fun ⦃a b⦄ a₁ ↦ a₁
+
+/-- A set `D` is uniformly discrete if some metric entourage separates
+distinct points of `D`. -/
+def UniformlyDiscrete (D : Set X) : Prop :=
+  ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → (x, y) ∉ distLT (X := X) r
+
+/-- A set `D` is relatively dense if some metric entourage covers the
+whole space from `D`. -/
 def RelativelyDense (D : Set X) : Prop :=
-    ∃ R > 0, ∀ x : X, ∃ y ∈ D, dist x y ≤ R
+  ∃ R > 0, ∀ x : X, ∃ y ∈ D, (x, y) ∈ distLT (X := X) R
 
 /-- If `D ⊆ E` and `E` is uniformly discrete, then so is `D`. -/
 lemma UniformlyDiscrete.mono {D E : Set X} (hDE : D ⊆ E) :
@@ -71,7 +99,7 @@ lemma RelativelyDense.mono {D E : Set X} (hDE : D ⊆ E) :
     RelativelyDense D → RelativelyDense E := by
   rintro ⟨R, hR, hcov⟩
   refine ⟨R, hR, fun x ↦ ?_⟩
-  rcases hcov x with ⟨y, hyD, hxy⟩
+  obtain ⟨y, hyD, hxy⟩ := hcov x
   exact ⟨y, hDE hyD, hxy⟩
 
 lemma RelativelyDense.cthickening_eq_univ
@@ -81,20 +109,26 @@ lemma RelativelyDense.cthickening_eq_univ
   refine ⟨R, hRpos, ?_⟩
   ext x; constructor
   · intro _; trivial
-  · intro _; rcases hcov x with ⟨y, hyD, hxy⟩
-    exact mem_cthickening_of_dist_le x y R D hyD hxy
+  · intro _; obtain ⟨y, hyD, hxy⟩ := hcov x
+    have : dist x y ≤ R := by
+      simpa [distLT] using (le_of_lt hxy)
+    exact mem_cthickening_of_dist_le x y R D hyD this
 
 end Metric
 
 namespace Delone
 
+open Metric
+
 /-- A **Delone set** in a metric space: uniformly discrete and relatively dense. -/
 structure DeloneSet (X : Type*) [MetricSpace X] where
   /-- The underlying set of a Delone set. -/
   (carrier : Set X)
-  /-- Uniform discreteness: distinct points of the set are separated by a positive distance. -/
+  /-- Uniform discreteness: distinct points of the set are separated by a
+  sufficiently small entourage. -/
   (uniformlyDiscrete : UniformlyDiscrete carrier)
-  /-- Relative denseness: every point of the space is within some bounded distance of the set. -/
+  /-- Relative denseness: every point of the space is related by a bounded
+  entourage to the set. -/
   (relativelyDense : RelativelyDense carrier)
 
 attribute [simp] DeloneSet.carrier
@@ -113,37 +147,38 @@ point of the ambient space lies within distance `R` of some point of the set. -/
 noncomputable def coveringRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.relativelyDense
 
-lemma coveringRadius_pos (D : DeloneSet X) :
-    0 < D.coveringRadius :=
+lemma coveringRadius_pos (D : DeloneSet X) : 0 < D.coveringRadius :=
   (Classical.choose_spec D.relativelyDense).1
 
 lemma dist_le_coveringRadius (D : DeloneSet X) (x : X) :
-    ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius :=
-  (Classical.choose_spec D.relativelyDense).2 x
+    ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius := by
+  obtain ⟨y, hy, hxy⟩ := (Classical.choose_spec D.relativelyDense).2 x
+  refine ⟨y, hy, ?_⟩
+  simpa [distLT] using (le_of_lt hxy)
 
 /-- The **packing radius** of a Delone set: a chosen constant `r > 0` such that any
 two distinct points of the set are at distance at least `r`. -/
 noncomputable def packingRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.uniformlyDiscrete
 
-lemma packingRadius_pos (D : DeloneSet X) :
-    0 < D.packingRadius :=
+lemma packingRadius_pos (D : DeloneSet X) : 0 < D.packingRadius :=
   (Classical.choose_spec D.uniformlyDiscrete).1
 
-lemma le_dist_of_mem_ne (D : DeloneSet X)
-    {x y : X} (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
-    D.packingRadius ≤ dist x y :=
-  (Classical.choose_spec D.uniformlyDiscrete).2 hx hy hne
+lemma le_dist_of_mem_ne (D : DeloneSet X) {x y : X}
+    (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
+    D.packingRadius ≤ dist x y := by
+  have hnot :
+      (x, y) ∉ distLT (X := X) D.packingRadius :=
+    (Classical.choose_spec D.uniformlyDiscrete).2 hx hy hne
+  simpa [distLT] using (le_of_not_gt hnot)
 
-/-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
     0 < dist x y :=
   lt_of_lt_of_le D.packingRadius_pos <| D.le_dist_of_mem_ne hx hy hne
 
-/--
-If the packing radius of a Delone set is `r`, then for any `z : X` the open ball
-`ball z (r / 2)` contains at most one point of the Delone set. -/
+/-- For a Delone set `D`, there exists a radius `r > 0` such that, for any
+`z ∈ D`, the open ball `ball z r` contains at most one point of the Delone set. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ ⦃x y z⦄, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
     x ∈ ball z r → y ∈ ball z r → x = y := by
@@ -162,16 +197,17 @@ def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
   uniformlyDiscrete := by
     refine ⟨D.packingRadius, D.packingRadius_pos, ?_⟩
     rintro y y' ⟨x, hx, rfl⟩ ⟨x', hx', rfl⟩ hne
-    simpa [f.dist_eq] using D.le_dist_of_mem_ne hx hx' (by grind)
+    simpa [f.dist_eq, distLT] using D.le_dist_of_mem_ne hx hx' (by grind)
   relativelyDense := by
-    refine ⟨D.coveringRadius, D.coveringRadius_pos, ?_⟩
-    intro y
-    obtain ⟨x, hxD, hdist⟩ := D.dist_le_coveringRadius (f.symm y)
-    refine ⟨f x, ⟨x, hxD, rfl⟩, ?_⟩
-    have hdist' : dist y (f x) = dist (f.symm y) x := by
-      simpa [f.apply_symm_apply y] using
-        f.dist_eq (f.symm y) x
-    simpa [hdist'] using hdist
+    obtain ⟨R, hR, hcov⟩ := D.relativelyDense
+    refine ⟨R, hR, ?_⟩
+    intro y; obtain ⟨x, hx, hxy⟩ := hcov (f.symm y)
+    refine ⟨f x, ⟨x, hx, rfl⟩, ?_⟩
+    have hthis : dist (f.symm y) x < R := by
+      simpa [distLT] using hxy
+    have hdist : dist y (f x) = dist (f.symm y) x := by
+      simpa using (f.dist_eq (f.symm y) x)
+    simpa [distLT, hdist] using hthis
 }
 
 @[ext] lemma ext {D E : DeloneSet X} (h : D.carrier = E.carrier) : D = E := by
