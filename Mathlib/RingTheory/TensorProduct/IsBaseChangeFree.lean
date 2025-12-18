@@ -87,7 +87,7 @@ open TensorProduct
 variable {ι : Type*} (b : Module.Basis ι R V)
 
 theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
-  have : DecidableEq ι := Classical.typeDecidableEq ι
+  classical
   let j := TensorProduct.finsuppScalarRight' A R ι R
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)

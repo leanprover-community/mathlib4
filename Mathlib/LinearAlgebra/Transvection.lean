@@ -19,7 +19,16 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
   `LinearMap.transvection f v` is the linear map given by `x ↦ x + f x • v`,
 
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
-  a linear equivalence.
+ a linear equivalence.
+
+## Note on terminology
+
+In the mathematical litterature, linear maps of the form `LinearMap.transvection f v`
+are only called “transvections” when `f v = 0`. Otherwise, they are sometimes
+called “dilations” (especially if `f v ≠ -1`).
+
+The definition is almost the same as that of `Module.preReflection f v`,
+up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
 
 -/
 
@@ -33,7 +42,8 @@ variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
-NB. It is only a transvection when `f v = 0`. See also `Module.preReflection`. -/
+NB. In mathematics, these linear maps are only called “transvections” when `f v = 0`.
+See also `Module.preReflection` for a similar definition, up to a sign. -/
 def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
   map_add' x y := by simp only [map_add]; module
