@@ -35,7 +35,8 @@ The following notations are scoped to the `Ordinal` namespace.
 The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
-- `ℶ_ o` is notation for `beth o`. `𝔠` is notation for `ℶ_ 1`.
+- `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
+  `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
 @[expose] public section
