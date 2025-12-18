@@ -16,7 +16,7 @@ $$f(x) = \sum_{n=0}^\infty a^n \cos (b^n\pi x)$$
 and prove that it is continuous everywhere but differentiable nowhere for $a \in (0, 1)$, and
 a positive odd integer $b$ such that
 
-$$ab > 1 + \frac{3}{2}\pi$
+$$ab > 1 + \frac{3}{2}\pi$$
 
 which is the original bound given by Karl Weierstrass. There is a better bound $ab \ge 1$ given by
 [G. H. Hardy][hardyweierstrass] with a less elementary proof, which is not implemented here.
