@@ -242,6 +242,7 @@ structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
@@ -251,12 +252,16 @@ structure Semigrp.Hom (A B : Semigrp.{u}) where
 
 namespace Semigrp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category Semigrp.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   hom := Hom.hom'
