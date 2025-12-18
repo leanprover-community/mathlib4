@@ -249,8 +249,12 @@ private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subty
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
