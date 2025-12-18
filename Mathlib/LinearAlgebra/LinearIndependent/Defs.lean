@@ -531,7 +531,7 @@ alias LinearIndependent.not_mem_span := LinearIndependent.notMem_span
 
 lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by  simpa [Set.compl_eq_univ_diff] using hi'
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_diff] using hi'
 
 @[deprecated (since := "2025-05-23")] alias LinearIndepOn.not_mem_span := LinearIndepOn.notMem_span
 

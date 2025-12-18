@@ -158,7 +158,7 @@ theorem charpoly_natCast (k : ℕ) :
   simp [charpoly]
 
 theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
-    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n :=
   charpoly_natCast _
 
 @[simp]
@@ -285,7 +285,7 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
   charpoly_units_conj M⁻¹ N
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
-    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+    (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]

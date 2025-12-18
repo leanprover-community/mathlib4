@@ -130,7 +130,7 @@ tensor products of the quotient and the quotient of the tensor product:
 noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     M ⊗[R] (N ⧸ (n : Submodule R N)) ≃ₗ[R]
     (M ⊗[R] N) ⧸ (LinearMap.range (map (LinearMap.id : M →ₗ[R] M) n.subtype)) :=
-  congr ((Submodule.quotEquivOfEqBot _ rfl).symm) (LinearEquiv.refl _ _)  ≪≫ₗ
+  congr ((Submodule.quotEquivOfEqBot _ rfl).symm) (LinearEquiv.refl _ _) ≪≫ₗ
   quotientTensorQuotientEquiv (⊥ : Submodule R M) n ≪≫ₗ
   Submodule.Quotient.equiv _ _ (LinearEquiv.refl _ _) (by
     simp only [Submodule.map_sup]
@@ -161,7 +161,7 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     rw [← Submodule.map_coe_toLinearMap, ← LinearMap.range_comp,
       ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
       map₂_eq_range_lift_comp_mapIncl]
-    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦  rfl))
+    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦ rfl))
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as

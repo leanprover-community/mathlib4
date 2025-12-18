@@ -111,7 +111,7 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
         tauto
       rw [← sub_scalar_sq_eq_discr, hm, trace_add, scalar_apply, trace_diagonal]
       simp [mul_div_cancel_left₀ _ (NeZero.ne (2 : K)),
-        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero , hnsq]
+        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero, hnsq]
 
 end Field
 
