@@ -36,7 +36,7 @@ abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (�
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
 @[simps! pt π_app]
 def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
-  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v,u} α)
+  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v, u} α)
 
 /-- The constructed fan is indeed a limit -/
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where

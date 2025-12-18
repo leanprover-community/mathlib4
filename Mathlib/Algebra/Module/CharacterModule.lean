@@ -200,7 +200,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
      intSpanEquivQuotAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_apply_one,
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn

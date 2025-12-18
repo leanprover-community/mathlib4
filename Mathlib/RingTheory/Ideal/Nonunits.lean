@@ -66,3 +66,48 @@ theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits �
   apply H
   apply Ideal.subset_span
   exact Set.mem_singleton a
+
+namespace Submonoid
+
+variable {C : Type*} [SetLike C α]
+
+theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a : S} (ha : IsUnit a) :
+    (a : α)⁻¹ ∈ S := by
+  obtain ⟨u, rfl⟩ := ha
+  convert u⁻¹.1.2
+  exact (map_inv ((subtype <| ofClass S).comp <| Units.coeHom S) u).symm
+
+section Group
+
+variable [Group α] [SubmonoidClass C α] {S : C} {a : S}
+
+theorem isUnit_iff : IsUnit a ↔ (a : α)⁻¹ ∈ S where
+  mp := inv_mem_of_isUnit
+  mpr h := ⟨⟨a, ⟨_, h⟩, Subtype.ext (mul_inv_cancel _), Subtype.ext (inv_mul_cancel _)⟩, rfl⟩
+
+protected theorem mem_nonunits_iff : a ∈ nonunits S ↔ (a : α)⁻¹ ∉ S := by
+  rw [mem_nonunits_iff, isUnit_iff]
+
+end Group
+
+section GroupWithZero
+
+variable [GroupWithZero α] [SubmonoidClass C α] {S : C} {a : S}
+
+theorem isUnit_iff_and : IsUnit a ↔ (a : α) ≠ 0 ∧ (a : α)⁻¹ ∈ S where
+  mp h := ⟨(h.map <| subtype <| ofClass S).ne_zero, inv_mem_of_isUnit h⟩
+  mpr h :=
+    ⟨⟨a, ⟨_, h.2⟩, Subtype.ext (mul_inv_cancel₀ h.1), Subtype.ext (inv_mul_cancel₀ h.1)⟩, rfl⟩
+
+theorem isUnit_iff_of_ne_zero (ha : (a : α) ≠ 0) : IsUnit a ↔ (a : α)⁻¹ ∈ S := by
+  rw [isUnit_iff_and, and_iff_right ha]
+
+theorem mem_nonunits_iff_or : a ∈ nonunits S ↔ (a : α) = 0 ∨ (a : α)⁻¹ ∉ S := by
+  rw [mem_nonunits_iff, isUnit_iff_and, not_and_or, Ne, not_not]
+
+theorem mem_nonunits_iff_of_ne_zero (ha : (a : α) ≠ 0) : a ∈ nonunits S ↔ (a : α)⁻¹ ∉ S := by
+  rw [mem_nonunits_iff_or, or_iff_right ha]
+
+end GroupWithZero
+
+end Submonoid
