@@ -103,7 +103,7 @@ It is induced by the coequalizer of the kernel pair of an arrow `f`.
 See `monoFactorisation` for the actual mono factorisation.
 -/
 def m : (I f) ⟶ Y :=
-  coequalizer.desc f (IsKernelPair.of_hasPullback f).w
+  coequalizer.desc f pullback.condition
 
 @[reassoc (attr := simp)]
 lemma fac : (e f) ≫ (m f) = f :=
@@ -115,7 +115,7 @@ instance m_mono : Mono (m f) := by
   let k₂ := pullback.snd (m f) (m f)
   let d : _ ⟶ (pullback (m f) (m f)) :=
     pullback.lift (pullback.fst f f ≫ e f) (pullback.snd f f ≫ e f)
-      (by simp; rw [pullback.condition])
+      (by simp [pullback.condition])
   let g₁ : _ ⟶ (pullback (e f) k₁) := pullback.lift (pullback.fst f f) d (by simp [d, k₁])
   let g₂ : _ ⟶ (pullback k₂ (e f)) := pullback.lift d (pullback.snd f f) (by simp [d, k₂])
   let sq₁ := IsPullback.of_hasPullback (e f) k₁
@@ -159,7 +159,7 @@ def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-/-- In a regular category, every extremal epimorphism is an epimorphism. -/
+/-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (e f) (m f) (by simp)
   RegularEpi.ofArrowIso <| Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f))

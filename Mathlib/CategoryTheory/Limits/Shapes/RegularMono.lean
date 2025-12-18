@@ -119,7 +119,7 @@ def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
 
 instance (priority := low) mono_of_isRegularMono (f : X ⟶ Y) [h : IsRegularMono f] : Mono f :=
   have := regularMonoOfIsRegularMono f
-  RegularMono.mono f
+  inferInstance
 
 instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
@@ -297,7 +297,7 @@ def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
 
 instance (priority := low) epi_of_isRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] : Epi f :=
   have := regularEpiOfIsRegularEpi f
-  RegularEpi.epi f
+  inferInstance
 
 instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
