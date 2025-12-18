@@ -3,17 +3,18 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Algebra.Ring.Basic
-import Mathlib.Algebra.Field.MinimalAxioms
-import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+public import Mathlib.Algebra.Field.MinimalAxioms
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
-# The First Order Theory of Fields
+# The First-Order Theory of Fields
 
-This file defines the first order theory of fields as a theory over the language of rings.
+This file defines the first-order theory of fields as a theory over the language of rings.
 
 ## Main definitions
 
@@ -24,6 +25,8 @@ This file defines the first order theory of fields as a theory over the language
   by `fieldOfModelField` are compatible with the ring operations on `K` given by the
   `Language.ring.Structure` instance.
 -/
+
+@[expose] public section
 
 variable {K : Type*}
 
@@ -47,7 +50,7 @@ inductive FieldAxiom : Type
   | leftDistrib : FieldAxiom
   | existsPairNE : FieldAxiom
 
-/-- The first order sentence corresponding to each field axiom -/
+/-- The first-order sentence corresponding to each field axiom -/
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .addAssoc => ∀' ∀' ∀' (((&0 + &1) + &2) =' (&0 + (&1 + &2)))
@@ -74,7 +77,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
   | .leftDistrib => ∀ x y z : K, x * (y + z) = x * y + x * z
   | .existsPairNE => ∃ x y : K, x ≠ y
 
-/-- The first order theory of fields, as a theory over the language of rings -/
+/-- The first-order theory of fields, as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
   Set.range FieldAxiom.toSentence
 

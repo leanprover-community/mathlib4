@@ -3,8 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Scott topology
@@ -25,10 +27,10 @@ This file introduces the Scott topology on a preorder.
 
 - `Topology.IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
 - `Topology.IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
-- `Topology.IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are
+- `Topology.IsScott.monotone_of_continuous`: Functions continuous w.r.t. the Scott topology are
   monotone.
 - `Topology.IsScott.scottContinuousOn_iff_continuous` - a function is Scott continuous (preserves
-  least upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
+  least upper bounds of directed sets) if and only if it is continuous w.r.t. the Scott topology.
 - `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
@@ -58,6 +60,8 @@ The converse is true in some special cases, but not in general
 
 Scott topology, preorder
 -/
+
+@[expose] public section
 
 open Set
 

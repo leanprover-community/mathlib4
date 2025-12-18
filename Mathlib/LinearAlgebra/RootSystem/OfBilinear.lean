@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
@@ -20,6 +22,8 @@ integral lattice with an arbitrary reflexive module equipped with a bilinear for
 ## TODO
 * properties
 -/
+
+@[expose] public section
 
 open Set Function Module
 
@@ -78,7 +82,7 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
+  simp only [reflection_apply, map_sub, map_smul, sub_apply,
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
@@ -112,7 +116,7 @@ open LinearMap IsReflective
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
     RootPairing {x : M | IsReflective B x} R M (Dual R M) where
-  toPerfectPairing := (IsReflexive.toPerfectPairingDual (R := R) (M := M)).flip
+  toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
     { toFun := fun x => IsReflective.coroot B x.2
@@ -137,17 +141,13 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           specialize h2y x
           rw [coroot_apply_self] at h2y
           rw [mul_comm, ← h2x, ← hSB.eq, RingHom.id_apply, ← h2y, mul_comm]
-        rw [Subtype.ext_iff_val, ← sub_eq_zero]
+        rw [Subtype.ext_iff, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
         refine h2.1 ?_
         dsimp only
         rw [h2x z, ← h2y z, hxy, h2xy] }
-  root_coroot_two x := by
-    dsimp only [coe_setOf, Embedding.coe_subtype, PerfectPairing.toLinearMap_apply, mem_setOf_eq,
-      id_eq, eq_mp_eq_cast, RingHom.id_apply, eq_mpr_eq_cast, cast_eq, LinearMap.sub_apply,
-      Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
-    exact coroot_apply_self B x.2
+  root_coroot_two x := coroot_apply_self B x.2
   reflectionPerm x :=
     { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
@@ -163,7 +163,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     simp [Module.reflection_apply]
   reflectionPerm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
-      PerfectPairing.flip_apply_apply, IsReflexive.toPerfectPairingDual_toFun, Equiv.coe_fn_mk]
+      Dual.eval_apply, Equiv.coe_fn_mk]
     ext z
     simp only [sub_apply, smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_

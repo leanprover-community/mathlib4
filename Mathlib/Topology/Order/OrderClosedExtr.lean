@@ -3,9 +3,10 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot
 -/
+module
 
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Local maxima from monotonicity and antitonicity
@@ -25,6 +26,8 @@ and its dual.
 * `isLocalMin_of_anti_mono'` : a version of `isLocalMax_of_mono_anti'` for minima.
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter
 

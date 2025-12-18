@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Heyting.Basic
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Order.Heyting.Basic
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.WithBot
 
 /-!
 # Orders on a sum type
@@ -25,6 +27,8 @@ type synonym.
 
 * `α ⊕ₗ β`:  The linear sum of `α` and `β`.
 -/
+
+@[expose] public section
 
 
 variable {α β γ : Type*}
@@ -679,7 +683,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp
+      · simp only [ge_iff_le]
         change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)

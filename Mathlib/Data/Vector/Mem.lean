@@ -3,7 +3,9 @@ Copyright (c) 2022 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Theorems about membership of elements in vectors
@@ -14,6 +16,8 @@ Having the length available in the type allows some of the lemmas to be
 In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -31,7 +35,6 @@ theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
       ⟨i, by rwa [toList_length], h⟩⟩
 
 theorem notMem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
-  unfold Vector.nil
   simp
 
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil

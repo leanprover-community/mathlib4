@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.Quotient
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Localization of quotient categories
@@ -21,11 +23,13 @@ induces an equivalence on localized categories.
 
 -/
 
+@[expose] public section
+
 namespace HomRel
 
 open CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (homRel : HomRel C)
+variable {C D : Type*} [Category* C] [Category* D] (homRel : HomRel C)
 
 /-- Given `homRel : HomRel C` and `W : MorphismProperty C`, this is the property
 that whenever `homRel f g`, then the morphisms `f` and `g` are sent to the
@@ -44,7 +48,7 @@ open Localization
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 /-- If `L' : Quotient homRel ⥤ D` satisfies the strict universal property of the
 localization, then `Quotient.functor homRel ⋙ L'` also satisfies it. -/

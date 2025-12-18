@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2024. All rights reserved.
+Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Defining a monoid given by generators and relations
@@ -26,6 +27,8 @@ given by generators `x : α` and relations `rels`.
 
 generators, relations, monoid presentations
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -99,7 +102,7 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
     Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
   rw [Submonoid.eq_top_iff']
   intro x
-  induction' x with a
+  induction x with | _ a
   induction a with
   | one => exact Submonoid.one_mem _
   | of x => exact subset_closure <| by simp [range, of]

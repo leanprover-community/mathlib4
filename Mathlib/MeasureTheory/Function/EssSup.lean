@@ -3,10 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.Order.Filter.ENNReal
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Measure.Count
+public import Mathlib.Order.Filter.ENNReal
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
@@ -15,7 +17,7 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSpace.lean`).
+the `L∞` space (see `Mathlib/MeasureTheory/Function/LpSeminorm/Defs.lean`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
@@ -27,6 +29,8 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 * `essSup f μ := (ae μ).limsup f`
 * `essInf f μ := (ae μ).liminf f`
 -/
+
+@[expose] public section
 
 
 open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace

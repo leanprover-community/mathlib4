@@ -3,16 +3,18 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.ClearExclamation
+module
+
+public meta import Mathlib.Algebra.GroupWithZero.Invertible
+public meta import Mathlib.Algebra.Ring.Int.Defs
+public meta import Mathlib.Data.Nat.Cast.Basic
+public meta import Mathlib.Data.Nat.Cast.Commute
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.HaveI
+public meta import Mathlib.Tactic.ClearExclamation
 
 /-!
-## `norm_num` basic plugins
+# `norm_num` basic plugins
 
 This file adds `norm_num` plugins for
 * constructors and constants
@@ -22,6 +24,8 @@ This file adds `norm_num` plugins for
 
 See other files in this directory for many more plugins.
 -/
+
+public meta section
 
 universe u
 
@@ -34,7 +38,7 @@ open Qq
 
 theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 
-/-! # Constructors and constants -/
+/-! ### Constructors and constants -/
 
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
@@ -43,7 +47,7 @@ theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 
 @[norm_num Zero.zero] def evalZero : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
   match e with
-  | ~q(Zero.zero) => return .isNat sα (mkRawNatLit 0) q(isNat_zero $α)
+  | ~q(Zero.zero) => return .isNat sα q(nat_lit 0) q(isNat_zero $α)
 
 theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 
@@ -51,7 +55,7 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
 @[norm_num One.one] def evalOne : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
   match e with
-  | ~q(One.one) => return .isNat sα (mkRawNatLit 1) q(isNat_one $α)
+  | ~q(One.one) => return .isNat sα q(nat_lit 1) q(isNat_one $α)
 
 theorem isNat_ofNat (α : Type u) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
@@ -81,6 +85,20 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
+theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
+  ⟨congr_arg Int.negOfNat h.1⟩
+
+/-- `norm_num` extension for `Int.negOfNat`.
+
+It's useful for calling `derive` with the numerator of an `.isNegNNRat` branch. -/
+@[norm_num Int.negOfNat _]
+def evalNegOfNat : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℤ), ~q(Int.negOfNat $a) =>
+    let ⟨n, pn⟩ ← deriveNat (u := 0) a q(inferInstance)
+    return .isNegNat q(inferInstance) n q(isInt_negOfNat $a $n $pn)
+  | _ => failure
+
 theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
   | _, _, ⟨rfl⟩ => ⟨rfl⟩
 
@@ -99,7 +117,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
   | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
   | _ => failure
 
-/-! # Casts -/
+/-! ### Casts -/
 
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -135,9 +153,9 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
     return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
-/-! # Arithmetic -/
+/-! ### Arithmetic -/
 
-library_note "norm_num lemma function equality"/--
+library_note2 «norm_num lemma function equality» /--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
@@ -223,6 +241,66 @@ def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   | some e => pure e
 
 attribute [local instance] monadLiftOptionMetaM in
+/-- The result of adding two norm_num results. -/
+def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
+    (inst : Q(Add $α) := by exact q(delta% inferInstance)) :
+    MetaM (Result q($a + $b)) := do
+  let rec intArm (rα : Q(Ring $α)) := do
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
+    let zc := za + zb
+    have c := mkRawIntLit zc
+    haveI' : Int.add $na $nb =Q $c := ⟨⟩
+    return .isInt rα c zc q(isInt_add (.refl _) $pa $pb (.refl $c))
+  let rec nnratArm (dsα : Q(DivisionSemiring $α)) : MetaM (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
+    let qc := qa + qb
+    let dd := qa.den * qb.den
+    let k := dd / qc.den
+    have t1 : Q(ℕ) := mkRawNatLit (k * qc.num.toNat)
+    have t2 : Q(ℕ) := mkRawNatLit dd
+    have nc : Q(ℕ) := mkRawNatLit qc.num.toNat
+    have dc : Q(ℕ) := mkRawNatLit qc.den
+    have k : Q(ℕ) := mkRawNatLit k
+    let r1 : Q(Nat.add (Nat.mul $na $db) (Nat.mul $nb $da) = Nat.mul $k $nc) :=
+      (q(Eq.refl $t1) : Expr)
+    let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+    return .isNNRat' dsα qc nc dc q(isNNRat_add (.refl _) $pa $pb $r1 $r2)
+  let rec ratArm (dα : Q(DivisionRing $α)) : MetaM (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
+    let qc := qa + qb
+    let dd := qa.den * qb.den
+    let k := dd / qc.den
+    have t1 : Q(ℤ) := mkRawIntLit (k * qc.num)
+    have t2 : Q(ℕ) := mkRawNatLit dd
+    have nc : Q(ℤ) := mkRawIntLit qc.num
+    have dc : Q(ℕ) := mkRawNatLit qc.den
+    have k : Q(ℕ) := mkRawNatLit k
+    let r1 : Q(Int.add (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
+      (q(Eq.refl $t1) : Expr)
+    let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+    return .isRat dα qc nc dc q(isRat_add (.refl _) $pa $pb $r1 $r2)
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
+  -- mixing positive rationals and negative naturals means we need to use the full rat handler
+  | .isNNRat _dsα .., .isNegNat _rα .. | .isNegNat _rα .., .isNNRat _dsα .. =>
+    -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
+    -- so would still need to be in `MetaM`.
+    let dα ← synthInstanceQ q(DivisionRing $α)
+    assumeInstancesCommute
+    ratArm q($dα)
+  | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
+  | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
+  | .isNat _ na pa, .isNat sα nb pb =>
+    assumeInstancesCommute
+    have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
+    haveI' : Nat.add $na $nb =Q $c := ⟨⟩
+    return .isNat sα c q(isNat_add (.refl _) $pa $pb (.refl $c))
+
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ + _] def evalAdd : NormNumExt where eval {u α} e := do
@@ -239,67 +317,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNegNNRat _ .., .isNat _ .. | .isNegNNRat _ .., .isNegNat _ ..
     | .isNegNNRat _ .., .isNNRat _ .. | .isNegNNRat _ .., .isNegNNRat _ .. =>
     guard <|← withNewMCtxDepth <| isDefEq f q(HAdd.hAdd (α := $α))
-  let rec
-  /-- Main part of `evalAdd`. -/
-  core : MetaM (Result e) := do
-    let rec intArm (rα : Q(Ring $α)) := do
-      haveI' : $e =Q $a + $b := ⟨⟩
-      let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
-      haveI' : $f =Q HAdd.hAdd := ⟨⟩
-      let zc := za + zb
-      have c := mkRawIntLit zc
-      haveI' : Int.add $na $nb =Q $c := ⟨⟩
-      return .isInt rα c zc q(isInt_add (f := $f) (.refl $f) $pa $pb (.refl $c))
-    let rec nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
-      haveI' : $e =Q $a + $b := ⟨⟩
-      haveI' : $f =Q HAdd.hAdd := ⟨⟩
-      let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
-      let qc := qa + qb
-      let dd := qa.den * qb.den
-      let k := dd / qc.den
-      have t1 : Q(ℕ) := mkRawNatLit (k * qc.num.toNat)
-      have t2 : Q(ℕ) := mkRawNatLit dd
-      have nc : Q(ℕ) := mkRawNatLit qc.num.toNat
-      have dc : Q(ℕ) := mkRawNatLit qc.den
-      have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Nat.add (Nat.mul $na $db) (Nat.mul $nb $da) = Nat.mul $k $nc) :=
-        (q(Eq.refl $t1) : Expr)
-      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isNNRat' dsα qc nc dc q(isNNRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      haveI' : $e =Q $a + $b := ⟨⟩
-      haveI' : $f =Q HAdd.hAdd := ⟨⟩
-      let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
-      let qc := qa + qb
-      let dd := qa.den * qb.den
-      let k := dd / qc.den
-      have t1 : Q(ℤ) := mkRawIntLit (k * qc.num)
-      have t2 : Q(ℕ) := mkRawNatLit dd
-      have nc : Q(ℤ) := mkRawIntLit qc.num
-      have dc : Q(ℕ) := mkRawNatLit qc.den
-      have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Int.add (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
-        (q(Eq.refl $t1) : Expr)
-      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isRat dα qc nc dc q(isRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
-    | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
-    -- mixing positive rationals and negative naturals means we need to use the full rat handler
-    | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
-      -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
-      -- so would still need to be in `MetaM`.
-      ratArm (←synthInstanceQ q(DivisionRing $α))
-    | .isNNRat dsα .., _ | _, .isNNRat dsα .. => nnratArm dsα
-    | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
-    | .isNat _ na pa, .isNat sα nb pb =>
-      haveI' : $e =Q $a + $b := ⟨⟩
-      haveI' : $f =Q HAdd.hAdd := ⟨⟩
-      assumeInstancesCommute
-      have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
-      haveI' : Nat.add $na $nb =Q $c := ⟨⟩
-      return .isNat sα c q(isNat_add (f := $f) (.refl $f) $pa $pb (.refl $c))
-  core
+    ra.add rb
 
 -- see note [norm_num lemma function equality]
 theorem isInt_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {a' b : ℤ},
@@ -312,6 +330,32 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
 attribute [local instance] monadLiftOptionMetaM in
+/-- The result of negating a norm_num result. -/
+def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
+    (rα : Q(Ring $α) := by exact q(delta% inferInstance)) :
+    MetaM (Result q(-$a)) := do
+  let intArm (rα : Q(Ring $α)) := do
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← ra.toInt rα
+    let zb := -za
+    have b := mkRawIntLit zb
+    haveI' : Int.neg $na =Q $b := ⟨⟩
+    return .isInt rα b zb q(isInt_neg (.refl _) $pa (.refl $b))
+  let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
+    let qb := -qa
+    have nb := mkRawIntLit qb.num
+    haveI' : Int.neg $na =Q $nb := ⟨⟩
+    return .isRat dα qb nb da q(isRat_neg (.refl _) $pa (.refl $nb))
+  match ra with
+  | .isBool _ .. => failure
+  | .isNat _ .. => intArm rα
+  | .isNegNat rα .. => intArm rα
+  | .isNNRat _dsα .. => ratArm (← synthInstanceQ q(DivisionRing $α))
+  | .isNegNNRat dα .. => ratArm dα
+
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `-a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
@@ -320,30 +364,7 @@ such that `norm_num` successfully recognises `a`. -/
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   haveI' _e_eq : $e =Q -$a := ⟨⟩
-  let rec
-  /-- Main part of `evalNeg`. -/
-  core : MetaM (Result e) := do
-    let intArm (rα : Q(Ring $α)) := do
-      assumeInstancesCommute
-      let ⟨za, na, pa⟩ ← ra.toInt rα
-      let zb := -za
-      have b := mkRawIntLit zb
-      haveI' : Int.neg $na =Q $b := ⟨⟩
-      return .isInt rα b zb q(isInt_neg (f := $f) (.refl $f) $pa (.refl $b))
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      assumeInstancesCommute
-      let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
-      let qb := -qa
-      have nb := mkRawIntLit qb.num
-      haveI' : Int.neg $na =Q $nb := ⟨⟩
-      return .isRat dα qb nb da q(isRat_neg (f := $f) (.refl $f) $pa (.refl $nb))
-    match ra with
-    | .isBool _ .. => failure
-    | .isNat _ .. => intArm rα
-    | .isNegNat rα .. => intArm rα
-    | .isNNRat _dsα .. => ratArm (← synthInstanceQ q(DivisionRing $α))
-    | .isNegNNRat dα .. => ratArm dα
-  core
+  ra.neg
 
 -- see note [norm_num lemma function equality]
 theorem isInt_sub {α} [Ring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℤ},
@@ -361,6 +382,43 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
 attribute [local instance] monadLiftOptionMetaM in
+/-- The result of subtracting two norm_num results. -/
+def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
+    (inst : Q(Ring $α) := by exact q(delta% inferInstance)) :
+    MetaM (Result q($a - $b)) := do
+  let intArm (rα : Q(Ring $α)) := do
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
+    let zc := za - zb
+    have c := mkRawIntLit zc
+    haveI' : Int.sub $na $nb =Q $c := ⟨⟩
+    return Result.isInt rα c zc q(isInt_sub (.refl _) $pa $pb (.refl $c))
+  let ratArm (dα : Q(DivisionRing $α)) : MetaM (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
+    let qc := qa - qb
+    let dd := qa.den * qb.den
+    let k := dd / qc.den
+    have t1 : Q(ℤ) := mkRawIntLit (k * qc.num)
+    have t2 : Q(ℕ) := mkRawNatLit dd
+    have nc : Q(ℤ) := mkRawIntLit qc.num
+    have dc : Q(ℕ) := mkRawNatLit qc.den
+    have k : Q(ℕ) := mkRawNatLit k
+    let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
+      (q(Eq.refl $t1) : Expr)
+    let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+    return .isRat dα qc nc dc q(isRat_sub (.refl _) $pa $pb $r1 $r2)
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. =>
+    ratArm dα
+  | _, .isNNRat _dsα .. | .isNNRat _dsα .., _ =>
+    ratArm (← synthInstanceQ q(DivisionRing $α))
+  | .isNegNat _rα .., _ | _, .isNegNat _rα ..
+  | .isNat _ .., .isNat _ .. =>
+    intArm inst
+
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ - _] def evalSub : NormNumExt where eval {u α} e := do
@@ -369,40 +427,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let ra ← derive a; let rb ← derive b
   haveI' _e_eq : $e =Q $a - $b := ⟨⟩
-  let rec
-  /-- Main part of `evalSub`. -/
-  core : MetaM (Result e) := do
-    let intArm (rα : Q(Ring $α)) := do
-      assumeInstancesCommute
-      let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
-      let zc := za - zb
-      have c := mkRawIntLit zc
-      haveI' : Int.sub $na $nb =Q $c := ⟨⟩
-      return Result.isInt rα c zc q(isInt_sub (f := $f) (.refl $f) $pa $pb (.refl $c))
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      assumeInstancesCommute
-      let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
-      let qc := qa - qb
-      let dd := qa.den * qb.den
-      let k := dd / qc.den
-      have t1 : Q(ℤ) := mkRawIntLit (k * qc.num)
-      have t2 : Q(ℕ) := mkRawNatLit dd
-      have nc : Q(ℤ) := mkRawIntLit qc.num
-      have dc : Q(ℕ) := mkRawNatLit qc.den
-      have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Int.sub (Int.mul $na $db) (Int.mul $nb $da) = Int.mul $k $nc) :=
-        (q(Eq.refl $t1) : Expr)
-      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isRat dα qc nc dc q(isRat_sub (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
-    | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. =>
-      ratArm dα
-    | _, .isNNRat _dsα .. | .isNNRat _dsα .., _ =>
-      ratArm (← synthInstanceQ q(DivisionRing $α))
-    | .isNegNat rα .., _ | _, .isNegNat rα ..
-    | .isNat _ .., .isNat _ .. => intArm rα
-  core
+  ra.sub rb
 
 -- see note [norm_num lemma function equality]
 theorem isNat_mul {α} [Semiring α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
@@ -455,6 +480,64 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 attribute [local instance] monadLiftOptionMetaM in
+/-- The result of multiplying two norm_num results. -/
+def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
+    (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
+    MetaM (Result q($a * $b)) := do
+  let intArm (rα : Q(Ring $α)) := do
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
+    let zc := za * zb
+    have c := mkRawIntLit zc
+    haveI' : Int.mul $na $nb =Q $c := ⟨⟩
+    return .isInt rα c zc q(isInt_mul (.refl _) $pa $pb (.refl $c))
+  let nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
+    let qc := qa * qb
+    let dd := qa.den * qb.den
+    let k := dd / qc.den
+    have nc : Q(ℕ) := mkRawNatLit qc.num.toNat
+    have dc : Q(ℕ) := mkRawNatLit qc.den
+    have k : Q(ℕ) := mkRawNatLit k
+    let r1 : Q(Nat.mul $na $nb = Nat.mul $k $nc) :=
+      (q(Eq.refl (Nat.mul $na $nb)) : Expr)
+    have t2 : Q(ℕ) := mkRawNatLit dd
+    let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+    return .isNNRat' dsα qc nc dc q(isNNRat_mul (.refl _) $pa $pb $r1 $r2)
+  let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+    assumeInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
+    let qc := qa * qb
+    let dd := qa.den * qb.den
+    let k := dd / qc.den
+    have nc : Q(ℤ) := mkRawIntLit qc.num
+    have dc : Q(ℕ) := mkRawNatLit qc.den
+    have k : Q(ℕ) := mkRawNatLit k
+    let r1 : Q(Int.mul $na $nb = Int.mul $k $nc) :=
+      (q(Eq.refl (Int.mul $na $nb)) : Expr)
+    have t2 : Q(ℕ) := mkRawNatLit dd
+    let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
+    return .isRat dα qc nc dc q(isRat_mul (.refl _) $pa $pb $r1 $r2)
+  match ra, rb with
+  | .isBool .., _ | _, .isBool .. => failure
+  | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. =>
+    ratArm dα
+  -- mixing positive rationals and negative naturals means we need to use the full rat handler
+  | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
+    -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
+    -- so would still need to be in `MetaM`.
+    ratArm (←synthInstanceQ q(DivisionRing $α))
+  | .isNNRat dsα .., _ | _, .isNNRat dsα .. =>
+    nnratArm dsα
+  | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
+  | .isNat mα' na pa, .isNat mα nb pb => do
+    haveI' : $mα =Q by clear! $mα $mα'; apply AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
+    assumeInstancesCommute
+    have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
+    haveI' : Nat.mul $na $nb =Q $c := ⟨⟩
+    return .isNat mα c q(isNat_mul (.refl _) $pa $pb (.refl $c))
+
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _] def evalMul : NormNumExt where eval {u α} e := do
@@ -464,63 +547,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
   haveI' : $f =Q HMul.hMul := ⟨⟩
   haveI' : $e =Q $a * $b := ⟨⟩
-  let rec
-  /-- Main part of `evalMul`. -/
-  core : MetaM (Result e) := do
-    let rec intArm (rα : Q(Ring $α)) := do
-      assumeInstancesCommute
-      let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
-      let zc := za * zb
-      have c := mkRawIntLit zc
-      haveI' : Int.mul $na $nb =Q $c := ⟨⟩
-      return .isInt rα c zc q(isInt_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
-    let rec nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
-      assumeInstancesCommute
-      let ⟨qa, na, da, pa⟩ ← ra.toNNRat' dsα; let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' dsα
-      let qc := qa * qb
-      let dd := qa.den * qb.den
-      let k := dd / qc.den
-      have nc : Q(ℕ) := mkRawNatLit qc.num.toNat
-      have dc : Q(ℕ) := mkRawNatLit qc.den
-      have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Nat.mul $na $nb = Nat.mul $k $nc) :=
-        (q(Eq.refl (Nat.mul $na $nb)) : Expr)
-      have t2 : Q(ℕ) := mkRawNatLit dd
-      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isNNRat' dsα qc nc dc q(isNNRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    let rec ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      assumeInstancesCommute
-      let ⟨qa, na, da, pa⟩ ← ra.toRat' dα; let ⟨qb, nb, db, pb⟩ ← rb.toRat' dα
-      let qc := qa * qb
-      let dd := qa.den * qb.den
-      let k := dd / qc.den
-      have nc : Q(ℤ) := mkRawIntLit qc.num
-      have dc : Q(ℕ) := mkRawNatLit qc.den
-      have k : Q(ℕ) := mkRawNatLit k
-      let r1 : Q(Int.mul $na $nb = Int.mul $k $nc) :=
-        (q(Eq.refl (Int.mul $na $nb)) : Expr)
-      have t2 : Q(ℕ) := mkRawNatLit dd
-      let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
-      return .isRat dα qc nc dc q(isRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
-    match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
-    | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. =>
-      ratArm dα
-    -- mixing positive rationals and negative naturals means we need to use the full rat handler
-    | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
-      -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
-      -- so would still need to be in `MetaM`.
-      ratArm (←synthInstanceQ q(DivisionRing $α))
-    | .isNNRat dsα .., _ | _, .isNNRat dsα .. =>
-      nnratArm dsα
-    | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
-    | .isNat mα' na pa, .isNat mα nb pb =>
-      haveI' : $mα =Q by clear! $mα $mα'; apply AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
-      assumeInstancesCommute
-      have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
-      haveI' : Nat.mul $na $nb =Q $c := ⟨⟩
-      return .isNat mα c q(isNat_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
-  core
+  ra.mul rb
 
 theorem isNNRat_div {α : Type u} [DivisionSemiring α] : {a b : α} → {cn : ℕ} → {cd : ℕ} →
     IsNNRat (a * b⁻¹) cn cd → IsNNRat (a / b) cn cd
@@ -556,7 +583,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     return .isRat dα qa na da q(isRat_div $pa)
 
-/-! # Logic -/
+/-! ### Logic -/
 
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
@@ -576,7 +603,7 @@ such that `norm_num` successfully recognises `a`. -/
   | true => return .isFalse q(not_not_intro $p)
   | false => return .isTrue q($p)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 variable {α : Type u}
 
@@ -603,7 +630,7 @@ theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (·
 theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
 theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
-/-! # Nat operations -/
+/-! ### Nat operations -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c

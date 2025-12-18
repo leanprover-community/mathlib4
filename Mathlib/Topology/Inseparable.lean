@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
-import Mathlib.Order.UpperLower.Closure
-import Mathlib.Order.UpperLower.Fibration
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -25,7 +27,7 @@ In this file we prove basic properties of the following notions defined elsewher
 
 We also prove various basic properties of the relation `Inseparable`.
 
-## Notations
+## Notation
 
 - `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;
@@ -35,6 +37,8 @@ We also prove various basic properties of the relation `Inseparable`.
 
 topological space, separation setoid
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Topology
@@ -51,8 +55,8 @@ below. -/
 theorem specializes_TFAE (x y : X) :
     List.TFAE [x ⤳ y,
       pure x ≤ 𝓝 y,
-      ∀ s : Set X , IsOpen s → y ∈ s → x ∈ s,
-      ∀ s : Set X , IsClosed s → x ∈ s → y ∈ s,
+      ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s,
+      ∀ s : Set X, IsClosed s → x ∈ s → y ∈ s,
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
@@ -373,7 +377,7 @@ lemma SpecializingMap.comp {f : X → Y} {g : Y → Z}
     (hf : SpecializingMap f) (hg : SpecializingMap g) :
     SpecializingMap (g ∘ f) := by
   simp only [specializingMap_iff_stableUnderSpecialization_image, Set.image_comp] at *
-  exact fun s h ↦ hg _ (hf  _ h)
+  exact fun s h ↦ hg _ (hf _ h)
 
 lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
   specializingMap_iff_stableUnderSpecialization_image_singleton.mpr <|
@@ -381,13 +385,13 @@ lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
 
 lemma Topology.IsInducing.specializingMap (hf : IsInducing f)
     (h : StableUnderSpecialization (range f)) : SpecializingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
 lemma Topology.IsInducing.generalizingMap (hf : IsInducing f)
     (h : StableUnderGeneralization (range f)) : GeneralizingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
@@ -416,7 +420,7 @@ lemma GeneralizingMap.comp {f : X → Y} {g : Y → Z}
     (hf : GeneralizingMap f) (hg : GeneralizingMap g) :
     GeneralizingMap (g ∘ f) := by
   simp only [GeneralizingMap_iff_stableUnderGeneralization_image, Set.image_comp] at *
-  exact fun s h ↦ hg _ (hf  _ h)
+  exact fun s h ↦ hg _ (hf _ h)
 
 /-!
 ### `Inseparable` relation
@@ -556,6 +560,12 @@ theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
 theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
   Quotient.eq''
 
+protected theorem «forall» {P : SeparationQuotient X → Prop} : (∀ x, P x) ↔ ∀ x, P (.mk x) :=
+  Quotient.forall
+
+protected theorem «exists» {P : SeparationQuotient X → Prop} : (∃ x, P x) ↔ ∃ x, P (.mk x) :=
+  Quotient.exists
+
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
   Quot.mk_surjective
 
@@ -571,6 +581,19 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
+
+@[simp]
+theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
+    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
+  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+
+theorem subsingleton_iff {t : TopologicalSpace α} :
+    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+  Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
+
+theorem nontrivial_iff {t : TopologicalSpace α} :
+    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
+  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
@@ -611,9 +634,6 @@ theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
 is the neighborhood of its equivalence class. -/
 theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
-
-@[deprecated map_mk_nhds (since := "2025-03-21")]
-theorem nhds_mk (x : X) : 𝓝 (mk x) = .map mk (𝓝 x) := .symm <| map_mk_nhds ..
 
 theorem map_mk_nhdsSet : map mk (𝓝ˢ s) = 𝓝ˢ (mk '' s) := by
   rw [← comap_mk_nhdsSet_image, map_comap_of_surjective surjective_mk]

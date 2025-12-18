@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Yury Kudryashov
 -/
-import Mathlib.Data.Option.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Paracompact topological spaces
@@ -43,6 +45,8 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 
 compact space, paracompact space, locally finite covering
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -105,6 +109,21 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
   refine ⟨v ∘ some, fun i ↦ vo _, ?_, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
+
+theorem ParacompactSpace.of_hasBasis {ι : X → Sort*} {p : ∀ x, ι x → Prop} {s : ∀ x, ι x → Set X}
+    (hb : ∀ x, (𝓝 x).HasBasis (p x) (s x))
+    (h : ∀ f : (x : X) → ι x, (∀ x, p x (f x)) →
+      ∃ (β : Type u) (t : β → Set X), (∀ b, IsOpen (t b)) ∧ (⋃ b, t b) = univ ∧ LocallyFinite t ∧
+        ∀ b, ∃ x, t b ⊆ s x (f x)) : ParacompactSpace X where
+  locallyFinite_refinement α S ho hu := by
+    have := fun x ↦ (iUnion_eq_univ_iff.1 hu x).imp fun a ha ↦ (hb _).mem_iff.1 ((ho a).mem_nhds ha)
+    choose a f hp hsub using this
+    rcases h f hp with ⟨β, t, hto, ht, htf, hts⟩
+    refine ⟨range t, Subtype.val, forall_subtype_range_iff.2 hto, ?_, htf.on_range,
+      forall_subtype_range_iff.2 fun b ↦ ?_⟩
+    · rwa [iUnion_subtype, biUnion_range]
+    · rcases hts b with ⟨x, hx⟩
+      exact ⟨_, hx.trans (hsub _)⟩
 
 theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
     (he : IsClosedEmbedding e) : ParacompactSpace X where

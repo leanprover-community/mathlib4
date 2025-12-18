@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -33,6 +35,8 @@ We also deduce that the corresponding maps are measurable embeddings.
 
 measurable, equivalence, group action
 -/
+
+@[expose] public section
 
 open scoped Pointwise NNReal
 
@@ -232,11 +236,13 @@ noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
   smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
     rw [Measure.map_add]; exact measurable_const_smul ..
 
-lemma dmaSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
+lemma domSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
     (g • μ) s = μ (DomMulAct.mk.symm g • s) := by
   refine ((MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
   congr 1
   exact Set.preimage_smul_inv (DomMulAct.mk.symm g) s
+
+@[deprecated (since := "2025-08-05")] alias dmaSMul_apply := domSMul_apply
 
 instance : SMulCommClass ℝ≥0 Gᵈᵐᵃ (Measure A) where
   smul_comm r g μ := show r • μ.map _ = (r • μ).map _ by simp
