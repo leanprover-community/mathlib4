@@ -367,6 +367,7 @@ lemma polarizationEquiv_toLinearMap :
   change e.symm (e _) = _
   simp
 
+-- Not `simp` to avoid losing the information that we're applying an `Equiv`.
 lemma polarizationEquiv_apply (m : M) :
     P.PolarizationEquiv m = P.Polarization m :=
   congr($P.polarizationEquiv_toLinearMap m)
