@@ -198,8 +198,7 @@ open ContinuousLinearMap in
 is a global integral curve of `v`. -/
 lemma isMIntegralCurve_const {x : M} (h : v x = 0) : IsMIntegralCurve (fun _ ↦ x) v := by
   intro t
-  rw [h, ← zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ), smulRight_one_eq_toSpanSingleton,
-    toSpanSingleton_apply_map_one]
+  rw [h, smulRight_one_eq_toSpanSingleton, toSpanSingleton_zero]
   exact hasMFDerivAt_const ..
 
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_const := isMIntegralCurve_const
