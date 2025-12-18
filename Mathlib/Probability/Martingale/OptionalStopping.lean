@@ -108,7 +108,7 @@ protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submart
     simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top, ge_iff_le]
     exact h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)
       (fun ω => min_le_min (hσ_le_π ω) le_rfl) fun ω => (min_le_left _ _).trans (hπ_le_n ω)
-  · exact Adapted.stoppedProcess_of_discrete h.stronglyAdapted hτ
+  · exact StronglyAdapted.stoppedProcess_of_discrete h.stronglyAdapted hτ
   · exact fun i =>
       h.integrable_stoppedValue ((isStoppingTime_const _ i).min hτ) fun ω => min_le_left _ _
 

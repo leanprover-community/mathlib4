@@ -367,7 +367,7 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
-protected theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
+theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
   change StronglyMeasurable[ℱ n] fun ω =>
