@@ -1022,7 +1022,7 @@ lemma exists_isAffineOpen_preimage_eq
   obtain ⟨j, hj⟩ := Scheme.exists_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
   refine ⟨_, _, hj, ?_⟩
   rw [← Scheme.Hom.comp_preimage, c.w]
-  rfl
+  simp
 
 open TopologicalSpace in
 include hc in
@@ -1048,7 +1048,7 @@ lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
   refine ⟨k, s, fun x ↦ D.map (fkj ≫ fi x.1 x.2) ⁻¹ᵁ V _, ?_, fun k ↦ ⟨(hV k).preimage _, ?_⟩⟩
   · refine top_le_iff.mp (e.symm.trans_le ?_)
     simp_rw [Hom.preimage_iSup, ← Hom.comp_preimage, iSup_subtype, ← D.map_comp]
-    rfl
+    simp
   · rw [← hVU, ← Hom.comp_preimage, c.w]
 
 end IsAffine
