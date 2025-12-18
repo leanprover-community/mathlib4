@@ -55,7 +55,7 @@ Scott topology, Algebraic DCPO, Stone Duality
 notation x:arg "ᵘ" => Set.Ici x
 namespace CompletePartialOrder
 /-- approximants: read as x is way smaller than y -/
-def Approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) :=
+def Approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) : Prop :=
   ∀ (d : Set α), DirectedOn (· ≤ ·) d → y ≤ sSup d → ∃ a ∈ d, x ≤ a
 
 -- A different notion of compact from what we want is defined here
