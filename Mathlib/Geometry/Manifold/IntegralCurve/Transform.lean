@@ -130,7 +130,7 @@ lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
   rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.one_apply (R₁ := ℝ) a,
-    ← ContinuousLinearMap.smulRight_comp]
+    ← ContinuousLinearMap.smulRight_comp_smulRight]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
