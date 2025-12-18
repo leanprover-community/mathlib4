@@ -91,16 +91,6 @@ theorem mk_neg {x : K} (h : 0 ≤ mk x) :
     -FiniteElement.mk x h = FiniteElement.mk (-x) (by rwa [mk_neg]) :=
   rfl
 
-@[simp]
-theorem mk_le_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
-    FiniteElement.mk x hx ≤ .mk y hy ↔ x ≤ y :=
-  .rfl
-
-@[simp]
-theorem mk_lt_mk_iff {x y : K} {hx : 0 ≤ mk x} {hy : 0 ≤ mk y} :
-    FiniteElement.mk x hx < .mk y hy ↔ x < y :=
-  .rfl
-
 theorem not_isUnit_iff_mk_pos {x : FiniteElement K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
@@ -265,9 +255,6 @@ theorem stdPart_of_mk_nonneg (f : FiniteResidueField K →+*o ℝ) (h : 0 ≤ mk
   congr
   exact Subsingleton.allEq _ _
 
-theorem standardPart_ne_zero {x : K} (h : mk x = 0) : stdPart x ≠ 0 := by
-  rwa [stdPart_of_mk_nonneg default h.ge, map_ne_zero, FiniteResidueField.mk_ne_zero]
-
 @[simp]
 theorem stdPart_zero : stdPart (0 : K) = 0 := by
   rw [stdPart, dif_pos] <;> simp
@@ -368,13 +355,6 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
-
-theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
-  intro x (hx : 0 ≤ mk x) y (hy : 0 ≤ mk y) h
-  unfold stdPart
-  rw [dif_pos hx, dif_pos hy]
-  apply OrderRingHom.monotone'
-  rwa [FiniteElement.mk_le_mk_iff]
 
 private theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
   aesop (add simp [lt_neg])
