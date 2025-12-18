@@ -3,11 +3,13 @@ Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Closure
-import Mathlib.Geometry.Convex.Cone.Pointed
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
-import Mathlib.Topology.Algebra.Order.Module
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Convex.Cone.Closure
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones
@@ -39,6 +41,8 @@ The next steps are:
 - [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
 
 -/
+
+@[expose] public section
 
 open ContinuousLinearMap Filter Function Set
 
@@ -106,7 +110,7 @@ lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
 end T1Space
 
-/-- The closure of image of a proper cone under a `R`-linear map is a proper cone. We
+/-- The closure of image of a proper cone under an `R`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
 abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
   ClosedSubmodule.comap (f.restrictScalars R≥0) C
@@ -192,9 +196,6 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
     (continuous_id.smul continuous_const).continuousWithinAt
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
-
-@[deprecated (since := "2025-04-18")]
-alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
 
 variable [IsOrderedRing 𝕜]
 

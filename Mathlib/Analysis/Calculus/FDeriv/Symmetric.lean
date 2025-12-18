@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+module
+
+public import Mathlib.Analysis.Analytic.IteratedFDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -59,6 +61,8 @@ in `Convex.isLittleO_alternate_sum_square`, but the argument is essentially the 
 when `v` and `w` both point towards the interior of `s`, to make sure that all the sides of the
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Set Filter
@@ -356,7 +360,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
   convert TA1.sub TA2 using 1
   ext h
-  simp only [two_smul, smul_add, ← add_assoc, ContinuousLinearMap.map_add,
+  simp only [two_smul, smul_add, ← add_assoc, map_add,
     ContinuousLinearMap.add_apply]
   abel
 
@@ -379,7 +383,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      match_scalars <;> field_simp
+      match_scalars <;> field
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       simp [field]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
@@ -419,17 +423,16 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, add_right_inj,
-      ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', add_zero,
-      smul_zero] at this
+    simp only [map_add, map_smul, add_right_inj, ContinuousLinearMap.add_apply, Pi.smul_apply,
+      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_smul,
-    ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, ContinuousLinearMap.add_apply, Pi.smul_apply,
+    ContinuousLinearMap.coe_smul', C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.Topology.MetricSpace.MetricSeparated
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -105,6 +107,8 @@ dimension.
 
 Hausdorff measure, measure, metric measure
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal Topology
@@ -210,7 +214,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
+    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; lia
   refine ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
     fun x hx y hy => ?_⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
@@ -919,9 +923,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp; ring
+        _ = x i := by field
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp; ring
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le
@@ -981,8 +985,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
 
 variable (ι X)
 
-theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
-    [SecondCountableTopology X] (d : ℝ) :
+theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.funUnique ι X) μH[d] μH[d] :=
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 

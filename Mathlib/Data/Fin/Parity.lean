@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Iván Renison
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Parity in `Fin n`
@@ -16,6 +18,8 @@ iff `n` is odd or `Fin.val k` is even.
 We also prove a lemma about parity of `Fin.succAbove i j + Fin.predAbove j i`
 which can be used to prove `d ∘ d = 0` for de Rham cohomologies.
 -/
+
+@[expose] public section
 
 open Fin
 

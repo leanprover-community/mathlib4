@@ -3,9 +3,11 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # Lattice Congruences
@@ -29,10 +31,12 @@ import Mathlib.Order.Hom.Lattice
 Lattice, Congruence
 -/
 
+@[expose] public section
+
 variable {F α β : Type*} [Lattice α] [Lattice β]
 
 variable (α) in
-/-- An equivalence relation is a congruence relation for the latice structure if it is compatible
+/-- An equivalence relation is a congruence relation for the lattice structure if it is compatible
 with the `inf` and `sup` operations. -/
 structure LatticeCon extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)

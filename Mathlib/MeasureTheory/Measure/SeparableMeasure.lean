@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.SetAlgebra
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure
@@ -62,6 +64,8 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 
 separable measure, measure-dense, Lp space, second-countable
 -/
+
+@[expose] public section
 
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
@@ -268,7 +272,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
   measurable s hs := hgen ▸ measurableSet_generateFrom hs
   approx s ms hμs ε ε_pos := by
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
-    let T := Accumulate S.set
+    let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by

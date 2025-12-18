@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
+module
+
+public import Mathlib.Algebra.Exact
 
 /-!
 # The five lemma in terms of modules
@@ -39,6 +41,8 @@ In theory, we could prove these in the multiplicative version and let `to_additi
 the additive variants. But `Function.Exact` currently has no multiplicative analogue (yet).
 -/
 
+@[expose] public section
+
 assert_not_exists Cardinal
 
 namespace AddMonoidHom
@@ -71,6 +75,16 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
   use f₁ o + a
   simp [← show g₁ (i₁ o) = i₂ (f₁ o) by simpa using DFunLike.congr_fun hc₁ o, hb]
 
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of one four lemma such that the left-most term is zero in terms of (additive)
+groups. For a diagram explaining the variables, see the module docstring. -/
+lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surjective i₂)
+    (hi₃ : Function.Injective i₃) (hg₀ : Function.Injective g₁) : Function.Surjective i₁ := by
+  refine surjective_of_surjective_of_surjective_of_injective (0 : Unit →+ M₁) f₁ f₂ (0 : Unit →+ N₁)
+    g₁ g₂ 0 i₁ i₂ i₃ (by simp) hc₁ hc₂ hf₁ (fun y ↦ ?_) hg₁ (fun | .unit => ⟨0, rfl⟩) hi₂ hi₃
+  simp only [Set.mem_range, zero_apply, exists_const]
+  exact ⟨fun h ↦ (hg₀ ((map_zero _).trans h.symm)), fun h ↦ h ▸ (map_zero _)⟩
+
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
 /-- One four lemma in terms of (additive) groups. For a diagram explaining the variables,
 see the module docstring. -/
@@ -89,6 +103,15 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
   subst hy
   rw [hf₁.apply_apply_eq_zero]
 
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of one four lemma such that the right-most term is zero in terms of (additive)
+groups. For a diagram explaining the variables, see the module docstring. -/
+lemma injective_of_surjective_of_injective_of_right_exact (hi₁ : Function.Surjective i₁)
+    (hi₂ : Function.Injective i₂) (hf₂ : Function.Surjective f₂) : Function.Injective i₃ :=
+  injective_of_surjective_of_injective_of_injective f₁ f₂ (0 : M₃ →+ Unit) g₁ g₂ (0 : N₃ →+ Unit)
+    i₁ i₂ i₃ 0 hc₁ hc₂ (by simp) hf₁ (fun y ↦ by simpa using hf₂ y) hg₁ hi₁ hi₂
+    (fun | .unit => by simp)
+
 include hf₁ hf₂ hf₃ hg₁ hg₂ hg₃ hc₁ hc₂ hc₃ hc₄ in
 /-- The five lemma in terms of (additive) groups. For a diagram explaining the variables,
 see the module docstring. -/
@@ -99,6 +122,28 @@ lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Fu
       hc₁ hc₂ hc₃ hf₁ hf₂ hg₁ hi₁ hi₂.1 hi₄.1,
     surjective_of_surjective_of_surjective_of_injective f₂ f₃ f₄ g₂ g₃ g₄ i₂ i₃ i₄ i₅
       hc₂ hc₃ hc₄ hf₃ hg₂ hg₃ hi₂.2 hi₄.2 hi₅⟩
+
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of the five lemma in terms of (additive) groups. For a diagram explaining the
+variables, see the module docstring. -/
+lemma bijective_of_bijective_of_injective_of_left_exact (hi₂ : Function.Bijective i₂)
+    (hi₃ : Function.Injective i₃) (hf₀ : Function.Injective f₁) (hg₀ : Function.Injective g₁) :
+    Function.Bijective i₁ :=
+  ⟨fun {x y} h ↦ (hf₀ (hi₂.1 (congr($hc₁ x).symm.trans (congr(g₁ $h).trans congr($hc₁ y))))),
+    surjective_of_surjective_of_injective_of_left_exact f₁ f₂ g₁ g₂ i₁ i₂ i₃
+      hc₁ hc₂ hf₁ hg₁ hi₂.2 hi₃ hg₀⟩
+
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of the five lemma in terms of (additive) groups. For a diagram explaining the
+variables, see the module docstring. -/
+lemma bijective_of_surjective_of_bijective_of_right_exact (hi₁ : Function.Surjective i₁)
+    (hi₂ : Function.Bijective i₂) (hf₂ : Function.Surjective f₂) (hg₂ : Function.Surjective g₂) :
+    Function.Bijective i₃ := by
+  refine ⟨injective_of_surjective_of_injective_of_right_exact f₁ f₂ g₁ g₂ i₁ i₂ i₃
+    hc₁ hc₂ hf₁ hg₁ hi₁ hi₂.1 hf₂, fun y ↦ ?_⟩
+  obtain ⟨y, rfl⟩ := hg₂ y
+  obtain ⟨y, rfl⟩ := hi₂.2 y
+  exact ⟨f₂ y, congr($hc₂ y).symm⟩
 
 end AddMonoidHom
 
@@ -132,6 +177,17 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₂ x)
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₂ hg₁ hg₂ hi₁ hi₃ hi₄
 
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of one four lemma such that the left-most term is zero in terms of modules.
+For a diagram explaining the variables, see the module docstring. -/
+lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surjective i₂)
+    (hi₃ : Function.Injective i₃) (hg₀ : Function.Injective g₁) : Function.Surjective i₁ := by
+  refine surjective_of_surjective_of_surjective_of_injective (0 : Unit →ₗ[R] M₁) f₁ f₂
+    (0 : Unit →ₗ[R] N₁) g₁ g₂ 0 i₁ i₂ i₃ (by simp) hc₁ hc₂ hf₁ (fun y ↦ ?_) hg₁
+    (fun | .unit => ⟨0, rfl⟩) hi₂ hi₃
+  simp only [Set.mem_range, zero_apply, exists_const]
+  exact ⟨fun h ↦ (hg₀ ((map_zero _).trans h.symm)), fun h ↦ h ▸ (map_zero _)⟩
+
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
 /-- One four lemma in terms of modules. For a diagram explaining the variables,
 see the module docstring. -/
@@ -145,6 +201,15 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₂ x)
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₁ hf₂ hg₁ hi₁ hi₂ hi₄
 
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of one four lemma such that the right-most term is zero in terms of (additive)
+groups. For a diagram explaining the variables, see the module docstring. -/
+lemma injective_of_surjective_of_injective_of_right_exact (hi₁ : Function.Surjective i₁)
+    (hi₂ : Function.Injective i₂) (hf₂ : Function.Surjective f₂) : Function.Injective i₃ :=
+  injective_of_surjective_of_injective_of_injective f₁ f₂ (0 : M₃ →ₗ[R] Unit) g₁ g₂
+    (0 : N₃ →ₗ[R] Unit) i₁ i₂ i₃ 0 hc₁ hc₂ (by simp) hf₁ (fun y ↦ by simpa using hf₂ y) hg₁ hi₁ hi₂
+      (fun | .unit => by simp)
+
 include hf₁ hf₂ hf₃ hg₁ hg₂ hg₃ hc₁ hc₂ hc₃ hc₄ in
 /-- The five lemma in terms of modules. For a diagram explaining the variables,
 see the module docstring. -/
@@ -155,5 +220,27 @@ lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Fu
       hc₁ hc₂ hc₃ hf₁ hf₂ hg₁ hi₁ hi₂.1 hi₄.1,
     surjective_of_surjective_of_surjective_of_injective f₂ f₃ f₄ g₂ g₃ g₄ i₂ i₃ i₄ i₅
       hc₂ hc₃ hc₄ hf₃ hg₂ hg₃ hi₂.2 hi₄.2 hi₅⟩
+
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of the five lemma in terms of modules. For a diagram explaining the variables,
+see the module docstring. -/
+lemma bijective_of_bijective_of_injective_of_left_exact (hi₂ : Function.Bijective i₂)
+    (hi₃ : Function.Injective i₃) (hf₀ : Function.Injective f₁) (hg₀ : Function.Injective g₁) :
+    Function.Bijective i₁ :=
+  ⟨fun {x y} h ↦ (hf₀ (hi₂.1 (congr($hc₁ x).symm.trans (congr(g₁ $h).trans congr($hc₁ y))))),
+    surjective_of_surjective_of_injective_of_left_exact f₁ f₂ g₁ g₂ i₁ i₂ i₃
+      hc₁ hc₂ hf₁ hg₁ hi₂.2 hi₃ hg₀⟩
+
+include hf₁ hg₁ hc₁ hc₂ in
+/-- A special case of the five lemma in terms of modules. For a diagram explaining the variables,
+see the module docstring. -/
+lemma bijective_of_surjective_of_bijective_of_right_exact (hi₁ : Function.Surjective i₁)
+    (hi₂ : Function.Bijective i₂) (hf₂ : Function.Surjective f₂) (hg₂ : Function.Surjective g₂) :
+    Function.Bijective i₃ := by
+  refine ⟨injective_of_surjective_of_injective_of_right_exact f₁ f₂ g₁ g₂ i₁ i₂ i₃
+    hc₁ hc₂ hf₁ hg₁ hi₁ hi₂.1 hf₂, fun y ↦ ?_⟩
+  obtain ⟨y, rfl⟩ := hg₂ y
+  obtain ⟨y, rfl⟩ := hi₂.2 y
+  exact ⟨f₂ y, congr($hc₂ y).symm⟩
 
 end LinearMap

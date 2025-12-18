@@ -3,8 +3,9 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
 /-!
 # Integer Complement
@@ -13,6 +14,8 @@ We define the complement of the integers in the complex plane and give some basi
 We also show that the upper half plane embeds into the integer complement.
 
 -/
+
+@[expose] public section
 
 open UpperHalfPlane
 

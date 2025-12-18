@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+module
+
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 
 /-! # Pointwise instances on `Subring`s
 
@@ -20,6 +22,8 @@ This file is almost identical to the file `Mathlib/Algebra/Ring/Subsemiring/Poin
 possible, try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 open Set

@@ -3,9 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.GroupTheory.FreeAbelianGroup
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -30,6 +33,8 @@ category of abelian groups.
 * `abelianizeAdj`: proves that `GrpCat.abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -88,13 +93,12 @@ example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f 
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
-    by_cases hX : IsEmpty X
+    by_cases! hX : IsEmpty X
     · constructor
       intros
       apply (IsInitial.isInitialObj free _
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
-    · push_neg at hX
-      have hf : Function.Injective f := by rwa [← mono_iff_injective]
+    · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance

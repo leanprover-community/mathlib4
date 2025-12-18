@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -16,6 +18,8 @@ see the type synonyms `AddMonoidAlgebra`
 (which is in turn used to define `Polynomial` and `MvPolynomial`)
 and `MonoidAlgebra`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
