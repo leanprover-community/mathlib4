@@ -410,10 +410,10 @@ theorem factorsThrough_toFunLifted_π :
   rw [toFun'_eq_of_inclusion f p q hAB', toFun'_eq_of_inclusion f p' q hA'B']
   · simp only [hq, comp_toLinearMap, rTensor_comp, LinearMap.comp_apply]
     rw [← hu', h]
-    simp only [← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap]
-    rfl
-  · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
-    congr; ext; rfl
+    simp only [← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap,
+      Subalgebra.inclusion_comp_inclusion]
+  · simp only [hq, hu, comp_toLinearMap, rTensor_comp, Subalgebra.inclusion_comp_inclusion,
+      ← LinearMap.comp_apply]
 
 theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :

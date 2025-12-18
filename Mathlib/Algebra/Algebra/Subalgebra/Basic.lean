@@ -684,6 +684,11 @@ theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
   Subtype.ext rfl
 
 @[simp]
+theorem inclusion_comp_inclusion (hst : S ≤ T) (htu : T ≤ U) :
+    (inclusion htu).comp (inclusion hst) = inclusion (le_trans hst htu) :=
+  rfl
+
+@[simp]
 theorem val_comp_inclusion (hst : S ≤ T) :
     T.val.comp (inclusion hst) = S.val :=
   rfl
