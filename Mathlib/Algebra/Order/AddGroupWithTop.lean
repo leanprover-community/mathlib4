@@ -64,8 +64,6 @@ variable [LinearOrderedAddCommGroupWithTop α] {a b : α}
 
 attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
 
-alias ⟨_, sub_self_eq_zero_of_ne_top⟩ := sub_self_eq_zero_iff_ne_top
-
 @[deprecated (since := "2025-12-14")] protected alias add_neg_cancel := add_neg_cancel_of_ne_top
 
 /-! Note: The following lemmas are special cases of the corresponding `IsAddUnit` lemmas. -/
@@ -104,6 +102,8 @@ lemma add_neg_cancel_iff_ne_top : a + -a = 0 ↔ a ≠ ⊤ where
 @[simp]
 lemma sub_self_eq_zero_iff_ne_top : a - a = 0 ↔ a ≠ ⊤ := by
   rw [sub_eq_add_neg, add_neg_cancel_iff_ne_top]
+
+alias ⟨_, sub_self_eq_zero_of_ne_top⟩ := sub_self_eq_zero_iff_ne_top
 
 @[simp] lemma isAddUnit_iff : IsAddUnit a ↔ a ≠ ⊤ where
   mp := by rintro ⟨⟨b, c, hbc, -⟩, rfl⟩ rfl; simp [top_add] at hbc
