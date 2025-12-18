@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.Sheaves.LocalPredicate
 
