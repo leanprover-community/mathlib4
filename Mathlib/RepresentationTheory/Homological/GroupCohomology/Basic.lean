@@ -52,7 +52,7 @@ specialized to `H⁰`, `H¹`, `H²`.
 Group cohomology is typically stated for `G`-modules, or equivalently modules over the group ring
 `ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
 Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
+definition. We avoid using instances `Module k[G] A` so that we do not run into
 possible scalar action diamonds.
 
 ## TODO
