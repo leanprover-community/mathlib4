@@ -3,10 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Data.Set.UnionLift
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -16,6 +18,8 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 -/
+
+@[expose] public section
 
 
 open Function Topology
@@ -152,6 +156,19 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
+/-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
+`e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
+@[simps]
+def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
+    [TopologicalSpace X₁] [TopologicalSpace X₂]
+    [TopologicalSpace Y₁] [TopologicalSpace Y₂]
+    (e : X₁ ≃ₜ X₂) (e' : Y₁ ≃ₜ Y₂) :
+    C(X₁, Y₁) ≃ C(X₂, Y₂) where
+  toFun f := ContinuousMap.comp ⟨_, e'.continuous⟩ (f.comp ⟨_, e.symm.continuous⟩)
+  invFun g := ContinuousMap.comp ⟨_, e'.symm.continuous⟩ (g.comp ⟨_, e.continuous⟩)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
@@ -264,7 +281,7 @@ def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 
 @[simp]
-theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) :=
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.restrict f :=
   rfl
 
 @[simp]
@@ -361,7 +378,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
 @[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
-  simp only [coe_restrict, Function.comp_apply, liftCover_coe]
+  simp only [restrict_apply, liftCover_coe]
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),

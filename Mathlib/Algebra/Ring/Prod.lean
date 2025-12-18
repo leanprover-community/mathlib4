@@ -3,13 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Int.Cast.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Data.Int.Cast.Prod
+public import Mathlib.Algebra.GroupWithZero.Prod
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# Semiring, ring etc structures on `R × S`
+# Semiring, ring etc. structures on `R × S`
 
 In this file we define two-binop (`Semiring`, `Ring` etc) structures on `R × S`. We also prove
 trivial `simp` lemmas, and define the following operations on `RingHom`s and similarly for
@@ -21,6 +23,8 @@ trivial `simp` lemmas, and define the following operations on `RingHom`s and sim
 * `f.prod_map g : R × S → R' × S'`: `Prod.map f g` as a `RingHom`,
   sends `(x, y)` to `(f x, g y)`.
 -/
+
+@[expose] public section
 
 
 variable {R R' S S' T : Type*}

@@ -3,14 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Control.Combinators
-import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Attr.Core
+module
+
+public import Mathlib.Control.Combinators
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 Extends the theory on functors, applicatives and monads.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -65,8 +68,7 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f) by
-    rw [← bind_pure_comp, bind_assoc]
-    simp [pure_bind, Function.comp_def]
+    simp [Function.comp_def]
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]

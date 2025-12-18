@@ -3,14 +3,18 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.SuccPred.Limit
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
 
 -/
+
+@[expose] public section
 
 open Order Set
 
@@ -73,7 +77,7 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     rw [not_isMax_iff] at h
     exact hs.not_gt (csInf_mem h)
   succ_le_of_lt {a b} ha := by
-    simp [ha.not_isMax]
+    simp only [ha.not_isMax, ↓reduceIte]
     exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha
 
 end ConditionallyCompleteLinearOrder

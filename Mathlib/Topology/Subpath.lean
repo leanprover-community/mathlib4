@@ -124,18 +124,16 @@ def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     fun_prop
   map_zero_left := by
     intro _
-    congr
-    repeat exact subpathAux_zero t₁ t₂
+    rw [subpathAux_zero]
+    rfl
   map_one_left := by
     intro _
-    congr
-    · exact subpathAux_one t₁ t₂
-    · exact subpathAux_one t₁ t₂
-    · rw [subpathAux_one, subpath_self]
+    rw [subpathAux_one, subpath_self]
+    rfl
   prop' := by
     intro _ _ hx
-    rcases hx with rfl | rfl
-    all_goals simp
+    rcases hx with rfl | rfl <;>
+    simp
 
 /-- Following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`. -/

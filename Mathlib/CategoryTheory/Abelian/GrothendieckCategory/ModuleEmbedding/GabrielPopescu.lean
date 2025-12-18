@@ -3,12 +3,14 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
-import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-import Mathlib.CategoryTheory.Preadditive.LiftToFinset
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
+public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # The Gabriel-Popescu theorem
@@ -31,6 +33,8 @@ The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (E
 * [Barry Mitchell, *A quick proof of the Gabriel-Popesco theorem*][mitchell1981]
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Limits Abelian
@@ -40,7 +44,7 @@ namespace CategoryTheory.IsGrothendieckAbelian
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
 instance {G : C} : (preadditiveCoyonedaObj G).IsRightAdjoint :=
-  isRightAdjoint_of_preservesLimits_of_isCoseparating (isCoseparator_coseparator _) _
+  isRightAdjoint_of_preservesLimits_of_isCoseparating.{v} (isCoseparator_coseparator _) _
 
 /-- The left adjoint of the functor `Hom(G, ·)`, which can be thought of as `· ⊗ G`. -/
 noncomputable def tensorObj (G : C) : ModuleCat (End G)ᵐᵒᵖ ⥤ C :=
@@ -84,7 +88,7 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   simp only [Category.assoc, ι_d]
   let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (h ≫ pullback.fst _ _ ≫ Sigma.π _ x)
   suffices ∑ x ∈ F.attach, r x • f.hom x.1.as = 0 by simpa [End.smul_left, r] using this
-  simp only [← LinearMap.map_smul, ← map_sum]
+  simp only [← map_smul, ← map_sum]
   suffices ∑ x ∈ F.attach, r x • x.1.as = 0 by simp [this]
   simp only [← g.hom.map_eq_zero_iff ((ModuleCat.mono_iff_injective _).1 hg), map_sum, map_smul]
   simp only [← ι_d g, End.smul_left, MulOpposite.unop_op, Category.assoc, r]

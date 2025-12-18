@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 /-!
 # Split a box along one or more hyperplanes
@@ -34,6 +36,8 @@ is available as `BoxIntegral.Prepartition.compl`.
 
 rectangular box, partition, hyperplane
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -247,9 +251,9 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
   classical
-  induction' s using Finset.induction_on with p s _ ihp
-  · simp
-  · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert p s _ ihp => simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 
 open scoped Classical in
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as

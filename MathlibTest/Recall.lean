@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Data.Complex.Trigonometric
 
 set_option linter.style.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
@@ -27,7 +27,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  fun z ↦ (Complex.exp' z).lim
+  Complex.wrapped✝.1
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 
@@ -85,7 +85,7 @@ recall Nat.add_comm {n m : Nat} : n + m = m + n
 recall add_assoc {G : Type _} [AddSemigroup G] (a b c : G) : a + b + c = a + (b + c)
 recall add_assoc
 
-/-- error: unknown constant 'nonexistent' -/
+/-- error: Unknown constant `nonexistent` -/
 #guard_msgs in recall nonexistent
 
 axiom bar : Nat

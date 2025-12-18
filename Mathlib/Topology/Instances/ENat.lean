@@ -3,15 +3,19 @@ Copyright (c) 2022 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Filter.Pointwise
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on extended natural numbers
 -/
+
+@[expose] public section
 
 open Filter Set Topology
 
@@ -55,8 +59,8 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
-  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal]
-  exact Option.forall_ne_none
+  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal, ENat.forall_ne_top,
+    mem_Ioi]
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩

@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Star.Basic
 /-!
 # Morphisms of star monoids
 
@@ -23,6 +25,8 @@ a corresponding morphism between the unitary groups in a star monoid.
 
 monoid, star
 -/
+
+@[expose] public section
 
 variable {F A B C D : Type*}
 
@@ -94,9 +98,7 @@ theorem copy_eq (f : A →⋆* B) (f' : A → B) (h : f' = f) : f.copy f' h = f 
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A →* B) (h) :
-    ((⟨f, h⟩ : A  →⋆* B) : A → B) = f :=
-  rfl
+theorem coe_mk (f : A →* B) (h) : ((⟨f, h⟩ : A →⋆* B) : A → B) = f := rfl
 
 section Id
 
@@ -159,7 +161,6 @@ theorem one_apply (a : A) : (1 : A →⋆* A) a = a :=
 end Comp
 
 end StarMonoidHom
-
 
 /-! ### Star monoid equivalences -/
 
@@ -259,6 +260,10 @@ theorem coe_toMulEquiv (f : A ≃⋆* B) : ⇑f.toMulEquiv = f :=
   rfl
 
 @[simp]
+theorem toMulEquiv_symm (f : A ≃⋆* B) : f.symm.toMulEquiv = f.toMulEquiv.symm :=
+  rfl
+
+@[simp]
 theorem refl_symm : (.refl A : A ≃⋆* A).symm = .refl A :=
   rfl
 
@@ -291,6 +296,11 @@ theorem coe_trans (e₁ : A ≃⋆* B) (e₂ : B ≃⋆* C) : ⇑(e₁.trans e�
 theorem trans_apply (e₁ : A ≃⋆* B) (e₂ : B ≃⋆* C) (x : A) : (e₁.trans e₂) x = e₂ (e₁ x) :=
   rfl
 
+@[simp]
+theorem toMulEquiv_trans (e₁ : A ≃⋆* B) (e₂ : B ≃⋆* C) :
+    (e₁.trans e₂).toMulEquiv = e₁.toMulEquiv.trans e₂.toMulEquiv :=
+  rfl
+
 theorem leftInverse_symm (e : A ≃⋆* B) : Function.LeftInverse e.symm e :=
   e.left_inv
 
@@ -302,6 +312,14 @@ end Basic
 section Bijective
 
 variable [Monoid A] [Monoid B] [Star A] [Star B]
+
+/-- Reinterpret a `StarMulEquiv` as a `StarMonoidHom`. -/
+@[simps]
+def toStarMonoidHom (f : A ≃⋆* B) : A →⋆* B where
+  toFun := f
+  map_one' := map_one f
+  map_mul' := map_mul f
+  map_star' := map_star f
 
 /-- If a star monoid morphism has an inverse, it is an isomorphism of star monoids. -/
 @[simps]

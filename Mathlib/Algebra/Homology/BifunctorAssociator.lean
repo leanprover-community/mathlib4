@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Homology.Bifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Associator
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
 # The associator for actions of bifunctors on homological complexes
@@ -34,6 +36,8 @@ the associator for the monoidal category structure on homological complexes.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits
@@ -41,7 +45,7 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
   [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms C₃]
   [Preadditive C₁₂] [Preadditive C₂₃] [Preadditive C₄]
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
@@ -633,7 +637,7 @@ lemma d_eq :
   rw [add_assoc]
   congr 1
   apply mapBifunctor₂₃.hom_ext (c₁₂ := c₁₂)
-  intros i₁ i₂ i₃ h
+  intro i₁ i₂ i₃ h
   simp only [Preadditive.comp_add, ι_D₂, ι_D₃]
   rw [ι_eq _ _ _ _ _ _ _ _ _ _ _ _ _ rfl
       (by rw [← h, ← ComplexShape.assoc c₁ c₂ c₃ c₁₂ c₂₃ c₄]; rfl),
