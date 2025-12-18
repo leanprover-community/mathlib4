@@ -5,7 +5,6 @@ Authors: Newell Jensen
 -/
 module
 
--- public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
