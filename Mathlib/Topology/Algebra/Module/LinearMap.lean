@@ -690,7 +690,9 @@ end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
-theorem smulRight_comp_smulRight [ContinuousSMul R₁ M₁] (f g : M₁ →L[R₁] R₁) {x : M₂} {y : M₁} :
+theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R₁ M₃]
+    [TopologicalSpace M₃] [ContinuousSMul R₁ M₃]
+    (f : M₃ →L[R₁] R₁) (g : M₁ →L[R₁] R₁) {x : M₂} {y : M₃} :
     (smulRight f x).comp (smulRight g y) = smulRight g (f y • x) := by
   ext
   simp
