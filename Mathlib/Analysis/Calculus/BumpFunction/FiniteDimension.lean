@@ -18,7 +18,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 Let `E` be a finite-dimensional real normed vector space. We show that any open set `s` in `E` is
 exactly the support of a smooth function taking values in `[0, 1]`,
-in `IsOpen.exists_smooth_support_eq`.
+in `IsOpen.exists_contDiff_support_eq`.
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
@@ -42,9 +42,9 @@ variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 /-- If a set `s` is a neighborhood of `x`, then there exists a smooth function `f` taking
 values in `[0, 1]`, supported in `s` and with `f x = 1`. -/
-theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
+theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s ∈ 𝓝 x) :
     ∃ f : E → ℝ,
-      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ∞ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
+      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ n f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
   obtain ⟨d : ℝ, d_pos : 0 < d, hd : Euclidean.closedBall x d ⊆ s⟩ :=
     Euclidean.nhds_basis_closedBall.mem_iff.1 hs
   let c : ContDiffBump (toEuclidean x) :=
@@ -74,10 +74,13 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
     apply mem_closedBall_self
     exact (half_pos d_pos).le
 
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
+
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
-theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
-    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
     countably many such functions, say `g i`.
@@ -94,7 +97,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     have : ⋃ f : ι, (f : E → ℝ).support = s := by
       refine Subset.antisymm (iUnion_subset fun f => f.2.1) ?_
       intro x hx
-      rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
+      rcases exists_contDiff_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
         simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero, not_false_iff]
@@ -142,7 +145,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
       simp only [Finset.mem_range]
-      omega
+      lia
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
@@ -171,8 +174,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
       exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
-  · refine
-      contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
+  · apply ContDiff.of_le _ (show (n : WithTop ℕ∞) ≤ ∞ from mod_cast le_top)
+    refine
+      contDiff_tsum_of_eventually (fun k => (g_smooth k).const_smul (r k))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
     simp only [Nat.cofinite_eq_atTop, Filter.eventually_atTop]
@@ -185,6 +189,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     intro n
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
+
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.exists_smooth_support_eq := IsOpen.exists_contDiff_support_eq
 
 end
 
@@ -209,7 +216,7 @@ theorem u_exists :
   have A : IsOpen (ball (0 : E) 1) := isOpen_ball
   obtain ⟨f, f_support, f_smooth, f_range⟩ :
       ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
-    A.exists_smooth_support_eq
+    A.exists_contDiff_support_eq
   have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
   refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _

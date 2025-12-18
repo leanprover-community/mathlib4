@@ -28,7 +28,7 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroObject C]
 
 section
 
@@ -228,11 +228,8 @@ lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
 
 @[simp]
 lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
-  ext i'
-  by_cases hi' : ∃ i, e.f i = i'
-  · obtain ⟨i, hi⟩ := hi'
-    simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  ext
+  simpa using extendMap_id_f _ _ _
 
 @[simp]
 lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
@@ -325,7 +322,7 @@ end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
+variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C]
 
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is
 the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
