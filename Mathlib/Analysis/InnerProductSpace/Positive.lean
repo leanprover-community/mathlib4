@@ -142,9 +142,8 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
 open scoped ComplexOrder in
 theorem IsPositive.isPositive_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsPositive) (hf' : f ≠ 0) {α : 𝕜} :
     (α • f).IsPositive ↔ 0 ≤ α := by
-  refine ⟨fun h ↦ ?_, hf.smul_of_nonneg⟩
-  simp only [IsPositive, hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left] at h
-  obtain ⟨h1, h2⟩ := h
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, hf.smul_of_nonneg⟩
+  simp only [hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left] at h1 h2
   simp only [im_eq_zero_iff_isSelfAdjoint.mpr h1, nonneg_iff (K := 𝕜), and_true]
   rw [← conj_eq_iff_re.mp h1, conj_ofReal] at h2
   have := by simpa [RCLike.ext_iff (K := 𝕜), hf.isSymmetric] using
