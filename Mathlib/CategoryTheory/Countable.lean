@@ -37,6 +37,9 @@ attribute [instance] CountableCategory.countableObj CountableCategory.countableH
 instance countableCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
+instance {J : Type u} [Countable J] [Category* J] [Quiver.IsThin J] : CountableCategory J :=
+  CountableCategory.mk inferInstance (fun _ _ ↦ ⟨fun _ ↦ 0, fun _ _ _ ↦ Subsingleton.elim _ _⟩)
+
 instance : CountableCategory ℕ where
 
 namespace CountableCategory
