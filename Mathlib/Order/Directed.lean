@@ -198,10 +198,12 @@ theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β 
     (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
   directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
 
+@[to_dual existing directed_le]
 theorem Monotone.directed_ge [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Directed (· ≥ ·) f :=
   directed_of_isDirected_ge fun _ _ h ↦ hf h
 
+@[to_dual existing directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Antitone f) : Directed (· ≤ ·) f :=
   directed_of_isDirected_ge fun _ _ h ↦ hf h
@@ -307,22 +309,15 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
 end PartialOrder
 
 -- see Note [lower instance priority]
-instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
+@[to_dual to_isCodirectedOrder]
+instance (priority := 100) SemilatticeSup.to_isDirectedOrder [SemilatticeSup α] :
     IsDirectedOrder α :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) SemilatticeInf.to_isDirected_ge [SemilatticeInf α] :
-    IsCodirectedOrder α :=
-  ⟨fun a b => ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
-
--- see Note [lower instance priority]
-instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirectedOrder α :=
+@[to_dual to_isCodirectedOrder]
+instance (priority := 100) OrderTop.to_isDirectedOrder [LE α] [OrderTop α] : IsDirectedOrder α :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
-
--- see Note [lower instance priority]
-instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsCodirectedOrder α :=
-  ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 
 namespace DirectedOn
 
