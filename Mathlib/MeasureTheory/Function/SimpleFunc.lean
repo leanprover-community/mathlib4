@@ -116,7 +116,7 @@ theorem exists_range_iff {f : α →ₛ β} {p : β → Prop} : (∃ y ∈ f.ran
 theorem preimage_eq_empty_iff (f : α →ₛ β) (b : β) : f ⁻¹' {b} = ∅ ↔ b ∉ f.range :=
   preimage_singleton_eq_empty.trans <| not_congr mem_range.symm
 
-theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirected β (· ≤ ·)] (f : α →ₛ β) :
+theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirectedOrder β] (f : α →ₛ β) :
     ∃ C, ∀ x, f x ≤ C :=
   f.range.exists_le.imp fun _ => forall_mem_range.1
 
@@ -166,11 +166,11 @@ theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' 
   measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurable f := fun s _ =>
   measurableSet_preimage f s
 
-@[measurability]
+@[fun_prop]
 protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
   f.measurable.aemeasurable
@@ -701,7 +701,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
 @[to_additive]
 instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
-  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
@@ -1394,7 +1394,7 @@ and supremum of increasing sequences of functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → motive (Set.indicator s fun _ => c))
@@ -1417,7 +1417,7 @@ functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (Set.indicator s fun _ ↦ c))
@@ -1429,7 +1429,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
   convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
     (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
-    (fun m n hmn a ↦ Set.indicator_le_indicator_of_subset (by gcongr) (by simp) _)
+    (fun m n hmn a ↦ by dsimp; grw [hmn])
     (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))
       (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]

@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Finite.Prod
@@ -634,12 +635,12 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
   suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hlt, hle, he⟩
-    refine ⟨n₂ - n₁, by cutsat, by cutsat, ?_⟩
+    refine ⟨n₂ - n₁, by lia, by lia, ?_⟩
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
     convert he
-    cutsat
+    lia
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩

@@ -26,7 +26,7 @@ We provide various useful constructors:
   give adjunctions.
 
 There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
-existence of a adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
+existence of an adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
 adjoint can be obtained as `F.rightAdjoint`.
 
 `Adjunction.comp` composes adjunctions.
@@ -69,9 +69,9 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 ## Other files related to adjunctions
 
-* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
-  and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
-  `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
+* The file `Mathlib/CategoryTheory/Monad/Adjunction.lean` develops the basic relationship between
+  adjunctions and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an
+  isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
 @[expose] public section
@@ -82,7 +82,7 @@ namespace CategoryTheory
 open Category Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
@@ -503,6 +503,16 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
+/-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
+This states that `Adjunction.homEquiv` is natural in both arguments. -/
+@[simps!]
+def compUliftCoyonedaIso (adj : F ⊣ G) :
+    F.op ⋙ uliftCoyoneda.{max w v₁} ≅
+      uliftCoyoneda.{max w v₂} ⋙ (whiskeringLeft _ _ _).obj G :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ (Equiv.ulift.trans
+      ((adj.homEquiv X.unop Y).trans Equiv.ulift.symm)).toIso))
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
@@ -645,7 +655,7 @@ namespace Equivalence
 variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
-simply use `e.symm.toAdjunction`. -/
+simply use `e.symm.toAdjunction`.) -/
 @[simps]
 def toAdjunction : e.functor ⊣ e.inverse where
   unit := e.unit
@@ -665,7 +675,7 @@ lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
 
 lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
 
-lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+lemma trans_toAdjunction {E : Type*} [Category* E] (e' : D ≌ E) :
     (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := rfl
 
 end Equivalence

@@ -45,8 +45,8 @@ variable {M : Type*} [AddCommMonoid M]
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat
 
 variable (M) in
-/-- The divisible hull of a `AddCommMonoid` (as a ℕ-module) is the localized module by
-`ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisble group, or a `ℚ≥0`-module. -/
+/-- The divisible hull of an `AddCommMonoid` (as a ℕ-module) is the localized module by
+`ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisible group, or a `ℚ≥0`-module. -/
 abbrev DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
 
 namespace DivisibleHull
@@ -301,7 +301,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [mk_add_mk]
     rw [mk_lt_mk] at ⊢ h
     simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
-    have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
+    have := add_lt_add_right (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert this using 3 <;> ring)
 

@@ -15,7 +15,9 @@ import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
+import Counterexamples.NowhereDifferentiable
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
+import Counterexamples.PeanoCurve
 import Counterexamples.Phillips
 import Counterexamples.PolynomialIsDomain
 import Counterexamples.Pseudoelement

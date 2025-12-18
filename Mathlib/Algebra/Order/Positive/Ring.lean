@@ -53,10 +53,10 @@ instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder 
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 
 instance addLeftStrictMono : AddLeftStrictMono { x : M // 0 < x } :=
-  ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
+  ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
 
 instance addRightStrictMono [AddRightStrictMono M] : AddRightStrictMono { x : M // 0 < x } :=
-  ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
+  ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
 
 instance addLeftReflectLT [AddLeftReflectLT M] : AddLeftReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_left h⟩
@@ -74,7 +74,7 @@ end AddBasic
 
 instance addLeftMono [AddMonoid M] [PartialOrder M] [AddLeftStrictMono M] :
     AddLeftMono { x : M // 0 < x } :=
-  ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_left h _) h₁⟩
+  ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_right h _) h₁⟩
 
 section Mul
 
@@ -120,9 +120,8 @@ instance commMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
   Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
 
 instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R] :
-    IsOrderedMonoid { x : R // 0 < x } :=
-  { mul_le_mul_left := fun _ _ hxy c =>
-      Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le }
+    IsOrderedMonoid { x : R // 0 < x } where
+  mul_le_mul_left _ _ hxy c := Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_right hxy c.2.le
 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/

@@ -232,12 +232,12 @@ instance : Group (CoprodI G) :=
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
-      | one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
+      | one => rw [map_one, MulOpposite.unop_one, one_mul]
       | of m ih =>
         change of _⁻¹ * of _ = 1
         rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | mul x y ihx ihy =>
-        rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
+        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
@@ -341,7 +341,7 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
+  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
   else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
@@ -820,7 +820,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
     calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
-        simp [MulAction.mul_smul]
+        simp [mul_smul]
       _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
@@ -1025,7 +1025,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | succ n _hle hi =>
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • a i • (Y i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
@@ -1043,7 +1043,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           | pred n hle hi =>
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := mul_smul _ _ _
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi

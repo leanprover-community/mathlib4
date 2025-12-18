@@ -128,7 +128,7 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
   apply Submodule.span_eq_span
   · rintro _ ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
-    rw [RingHom.map_add]
+    rw [map_add]
     exact add_mem (Submodule.subset_span ⟨i, Set.mem_union_left _ hi, by simp⟩)
       (Submodule.subset_span ⟨j, Set.mem_union_right _ hj, by simp⟩)
   · rintro _ ⟨y, hy, rfl⟩
@@ -163,7 +163,7 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨f a, Set.mem_image_of_mem f ha, by rw [Algebra.linearMap_apply, IsLocalization.map_eq hf a]⟩
-  · rintro _ ⟨_ , ⟨a, ha, rfl⟩, rfl⟩
+  · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨algebraMap A K a, mem_coeIdeal_of_mem M ha, IsLocalization.map_eq hf a⟩
 

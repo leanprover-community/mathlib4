@@ -48,7 +48,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject Pretriangulated Triangulated
 
-variable {C : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ]
+variable {C : Type*} [Category* C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace ObjectProperty
