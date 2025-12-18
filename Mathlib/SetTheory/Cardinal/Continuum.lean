@@ -82,9 +82,12 @@ theorem continuum_pos : 0 < 𝔠 :=
 theorem continuum_ne_zero : 𝔠 ≠ 0 :=
   continuum_pos.ne'
 
-theorem aleph_one_le_continuum : ℵ₁ ≤ 𝔠 := by
+theorem aleph1_le_continuum : ℵ₁ ≤ 𝔠 := by
   rw [← succ_aleph0]
   exact Order.succ_le_of_lt aleph0_lt_continuum
+
+@[deprecated (since := "2025-12-18")]
+alias aleph_one_le_continuum := aleph1_le_continuum
 
 @[simp]
 theorem continuum_toNat : toNat continuum = 0 :=

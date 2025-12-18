@@ -123,8 +123,8 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     simp_rw [exists_prop] at hI
     refine ⟨_, Ordinal.lsub_lt_ord_lift ?_ fun n => (hI n).1,
       iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_lsub I n, (hI n).2⟩⟩
-    rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
-    exact aleph0_lt_aleph_one
+    rw [mk_nat, lift_aleph0, isRegular_aleph1.cof_omega_eq]
+    exact aleph0_lt_aleph1
 
 theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
@@ -177,11 +177,11 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
       rw [← Ordinal.lift_le.{u}, lift_omega, Ordinal.lift_one, ← ord_aleph] at hi
       have H := card_le_of_le_ord hi
       rw [← Ordinal.lift_card] at H
-      apply H.trans <| aleph_one_le_continuum.trans <| power_le_power_right _
+      apply H.trans <| aleph1_le_continuum.trans <| power_le_power_right _
       rw [lift_max, Cardinal.lift_ofNat]
       exact le_max_right _ _
   rw [generateMeasurableRec]
-  apply_rules [(mk_union_le _ _).trans, add_le_of_le (aleph_one_le_continuum.trans A),
+  apply_rules [(mk_union_le _ _).trans, add_le_of_le (aleph1_le_continuum.trans A),
     mk_image_le.trans]
   · exact (self_le_power _ one_le_aleph0).trans (power_le_power_right (le_max_left _ _))
   · rw [mk_singleton]

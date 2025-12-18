@@ -105,10 +105,10 @@ theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a �
   simpa [Set.finite_singleton x] using hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
-abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph_one
+abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph1
 
 theorem mem_cocountable {s : Set α} :
     s ∈ cocountable ↔ (sᶜ : Set α).Countable := by
-  rw [Cardinal.countable_iff_lt_aleph_one, mem_cocardinal]
+  rw [Cardinal.countable_iff_lt_aleph1, mem_cocardinal]
 
 end Filter

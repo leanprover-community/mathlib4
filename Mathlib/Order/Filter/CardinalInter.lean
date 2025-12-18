@@ -69,13 +69,16 @@ theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInte
 instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableInterFilter l] :
     CardinalInterFilter l ℵ₁ where
   cardinal_sInter_mem S hS a :=
-    CountableInterFilter.countable_sInter_mem S ((countable_iff_lt_aleph_one S).mpr hS) a
+    CountableInterFilter.countable_sInter_mem S ((countable_iff_lt_aleph1 S).mpr hS) a
 
-theorem cardinalInterFilter_aleph_one_iff :
+theorem cardinalInterFilter_aleph1_iff :
     CardinalInterFilter l ℵ₁ ↔ CountableInterFilter l :=
   ⟨fun _ ↦ ⟨fun S h a ↦
-    CardinalInterFilter.cardinal_sInter_mem S ((countable_iff_lt_aleph_one S).1 h) a⟩,
+    CardinalInterFilter.cardinal_sInter_mem S ((countable_iff_lt_aleph1 S).1 h) a⟩,
    fun _ ↦ CountableInterFilter.toCardinalInterFilter l⟩
+
+@[deprecated (since := "2025-12-18")]
+alias cardinalInterFilter_aleph_one_iff := cardinalInterFilter_aleph1_iff
 
 /-- Every `CardinalInterFilter` for some `c` also is a `CardinalInterFilter` for any `a ≤ c`. -/
 theorem CardinalInterFilter.of_cardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]

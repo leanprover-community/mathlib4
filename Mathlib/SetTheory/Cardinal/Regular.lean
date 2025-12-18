@@ -95,9 +95,12 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
           apply typein_lt_type)⟩
 
-theorem isRegular_aleph_one : IsRegular ℵ₁ := by
+theorem isRegular_aleph1 : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
   exact isRegular_succ le_rfl
+
+@[deprecated (since := "2025-12-18")]
+alias isRegular_aleph_one := isRegular_aleph1
 
 theorem isRegular_preAleph_succ {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (succ o)) := by
   rw [preAleph_succ]
@@ -306,8 +309,8 @@ lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
     (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
     iSup o < (aleph 1).ord := by
   apply iSup_lt_ord_lift _ ho
-  rw [Cardinal.isRegular_aleph_one.cof_eq]
-  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+  rw [Cardinal.isRegular_aleph1.cof_eq]
+  exact mk_le_aleph0.trans_lt aleph0_lt_aleph1
 
 end Ordinal
 

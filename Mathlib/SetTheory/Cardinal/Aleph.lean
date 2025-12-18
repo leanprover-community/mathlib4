@@ -460,8 +460,11 @@ theorem aleph0_lt_aleph1 : ℵ₀ < ℵ₁ := by
 @[deprecated (since := "2025-12-18")]
 alias aleph0_lt_aleph_one := aleph0_lt_aleph1
 
-theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
+theorem countable_iff_lt_aleph1 {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
+
+@[deprecated (since := "2025-12-18")]
+alias countable_iff_lt_aleph_one := countable_iff_lt_aleph1
 
 @[simp]
 theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
@@ -605,6 +608,7 @@ def beth (o : Ordinal.{u}) : Cardinal.{u} :=
 
 @[inherit_doc]
 scoped notation "ℶ_ " => beth
+recommended_spelling "beth" for "ℶ_" in [beth, «termℶ_»]
 
 theorem beth_eq_preBeth (o : Ordinal) : beth o = preBeth (ω + o) :=
   rfl
