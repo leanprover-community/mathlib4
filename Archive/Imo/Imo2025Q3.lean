@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
 import Mathlib.NumberTheory.LSeries.PrimesInAP
-import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.Tactic.Simproc.Factors
 
@@ -170,7 +169,7 @@ lemma IsBonza : bonza fExample := by
       · by_cases lt : b = 1
         · simp [lt]
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
-          rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
+          rw [← Int.natCast_pow_pred b a hb]
           exact padicValNat.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
