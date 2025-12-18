@@ -357,7 +357,7 @@ theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
 theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
-    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
+    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion <| forall_mem_range.2 h
 
 theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
@@ -648,6 +648,9 @@ lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_Linde
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
+
+theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
+    s.Countable := hs.countable hs'.to_subtype
 
 protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=

@@ -199,7 +199,8 @@ set_option backward.privateInPublic.warn false in
 0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
-    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    map_map_of_eq V (InducedCategory.hom_ext
+      (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm),
     map_map_of_eq V rfl⟩
 
 set_option backward.privateInPublic true in
@@ -214,7 +215,9 @@ set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
-  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
+  ⟨V.map δ2₂.op φ,
+    map_map_of_eq V (InducedCategory.hom_ext (SimplexCategory.δ_comp_δ (j := 1) le_rfl)),
+    map_map_of_eq V rfl⟩
 
 end Truncated
 
@@ -458,7 +461,7 @@ variable {V W} (f : V ⟶ W)
 def mapHomotopyCategory :
     V.HomotopyCategory ⥤ W.HomotopyCategory :=
   CategoryTheory.Quotient.lift _
-    ((oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ quotientFunctor W) (by
+    (((oneTruncation₂ ⋙ Cat.freeRefl).map f).toFunctor ⋙ quotientFunctor W) (by
       rintro _ _ _ _ ⟨h⟩
       exact CategoryTheory.Quotient.sound _ ⟨h.map f⟩)
 
@@ -475,12 +478,13 @@ end
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u, u} where
   obj V := Cat.of V.HomotopyCategory
-  map F := mapHomotopyCategory F
-  map_id _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
-  map_comp _ _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
+  map F := (mapHomotopyCategory F).toCatHom
+  map_id _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
+  map_comp _ _ := by ext1; exact HomotopyCategory.functor_ext (by simp) (by cat_disch)
 
 theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map f).toFunctor ⋙
+      SSet.Truncated.HomotopyCategory.quotientFunctor Y =
       SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an

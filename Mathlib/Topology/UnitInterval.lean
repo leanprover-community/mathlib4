@@ -230,19 +230,19 @@ instance : LinearOrderedCommMonoidWithZero I where
   zero_le_one := nonneg'
   mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
 
-lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
   exact Icc_bot.symm
 
-lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
   rw [preimage_subtype_val_Iio]
   exact Ico_bot.symm
 
-lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
   rw [preimage_subtype_val_Ici]
   exact Icc_top.symm
 
-lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
@@ -290,10 +290,10 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n + 1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
-    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
+    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n := abs_eq_self.2 <| sub_nonneg.2 ht.1
     _ ≤ projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
     _ ≤ (|projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n| : α) := le_abs_self _
-    _ ≤ |a + (n + 1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    _ ≤ |a + (n + 1) • δ - (a + n • δ)| := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le

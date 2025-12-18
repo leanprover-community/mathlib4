@@ -35,7 +35,7 @@ set_option backward.privateInPublic true in
 private def coinducingCoprod :
     (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
       X.val.obj ⟨LightProfinite.of PUnit⟩ :=
-  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u+1}).const s).op i
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -71,8 +71,9 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
       apply continuous_sigma
       intro ⟨S, x⟩
       simp only [Function.comp_apply, coinducingCoprod]
-      rw [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u+1}).const a).op x)) = _
-        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u+1}).const a).op x]
+      rw
+        [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u + 1}).const a).op x)) = _
+        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u + 1}).const a).op x]
       exact continuous_coinducingCoprod _ _ }
 
 /-- The functor `LightCondSet ⥤ TopCat` -/
@@ -105,7 +106,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   val := {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
+      toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
@@ -143,7 +144,7 @@ instance (X : LightCondSet.{u}) : SequentialSpace (lightCondSetToTopCat.obj X) :
 /-- The functor from light condensed sets to topological spaces lands in sequential spaces. -/
 def lightCondSetToSequential : LightCondSet.{u} ⥤ Sequential.{u} where
   obj X := Sequential.of (lightCondSetToTopCat.obj X)
-  map f := toTopCatMap f
+  map f := InducedCategory.homMk (toTopCatMap f)
 
 /--
 The functor from topological spaces to light condensed sets restricted to sequential spaces.

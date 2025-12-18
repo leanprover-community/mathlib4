@@ -68,7 +68,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
   FiniteDimensional.of_isCompact_closedBall₀ 𝕜 zero_lt_one
     (isCompact_of_isClosed_of_isVonNBounded 𝕜 Metric.isClosed_closedBall
-      (NormedSpace.isVonNBounded_closedBall _ _ _) )
+      (NormedSpace.isVonNBounded_closedBall _ _ _))
 
 end MontelSpace
 

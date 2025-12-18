@@ -381,7 +381,7 @@ theorem embAlgebra_injective : Function.Injective (embAlgebra R M A) := by
   simpa [embAlgebra] using
     Flat.rTensor_preserves_injective_linearMap _ (FaithfulSMul.algebraMap_injective R A)
 
-/-- An invertible `R`-module as a `R`-submodule of an `R`-algebra. -/
+/-- An invertible `R`-module as an `R`-submodule of an `R`-algebra. -/
 noncomputable def toSubmodule : Submodule R A := LinearMap.range (embAlgebra R M A)
 
 end Algebra

@@ -552,18 +552,12 @@ section AddGroup
 
 variable [AddGroup k]
 
-set_option backward.privateInPublic true in
-private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
-  | ⟨a⟩ => ⟨-a⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Neg (SkewMonoidAlgebra k G) :=
-  ⟨neg⟩
+@[no_expose] instance : Neg (SkewMonoidAlgebra k G) :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
 theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+  (rfl)
 
 instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec
