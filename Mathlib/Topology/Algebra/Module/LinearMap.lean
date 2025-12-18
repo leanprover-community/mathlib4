@@ -325,11 +325,9 @@ end
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
-theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
-  rfl
+@[simp] theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
-theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
-  rfl
+@[simp] theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
 
 @[simp, norm_cast]
 theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
@@ -347,9 +345,7 @@ theorem toContinuousAddMonoidHom_id :
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
-@[simp]
-theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
-  rfl
+theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x := rfl
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
