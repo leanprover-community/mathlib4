@@ -3,16 +3,21 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 
 /-!
 # Yoneda embedding of `CommMon C`
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
@@ -31,3 +36,5 @@ lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ f
 
 @[deprecated (since := "2025-09-14")]
 alias IsCommMon.ofRepresentableBy := IsCommMonObj.ofRepresentableBy
+
+end CategoryTheory

@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Descent of morphism properties
@@ -13,11 +15,13 @@ if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P`
 Dually, we define `P.CodescendsAlong Q`.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MorphismProperty
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 variable {P Q W : MorphismProperty C}
 

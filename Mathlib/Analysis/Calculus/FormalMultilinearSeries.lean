@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
 /-!
 # Formal multilinear series
@@ -21,6 +23,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 multilinear, formal series
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -305,7 +309,7 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
   convert (p n).toMultilinearMap.map_smul_univ y 1
-  simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
+  simp only [Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
   rw [← mkPiRing_coeff_eq p, ContinuousMultilinearMap.mkPiRing_eq_zero_iff]

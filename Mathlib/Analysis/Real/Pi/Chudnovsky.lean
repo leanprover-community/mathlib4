@@ -3,8 +3,11 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Batteries.Data.Rat.Float
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Batteries.Data.Rat.Float
+meta import Batteries.Data.Rat.Float  -- for `#eval` sanity check
 
 /-!
 # Chudnovsky's formula for π
@@ -23,7 +26,7 @@ but at present we are a long way off.
 * Prove the sum equals `π⁻¹`, as stated using `proof_wanted` below.
 * Show that each imaginary quadratic field of class number 1 (corresponding to Heegner numbers)
   gives a Ramanujan type formula, and that this is the formula coming from 163,
-  with $$j(\frac{1+\sqrt{-163}}{2}) = -640320^3$$, and the other magic constants coming from
+  with `j ((1 + √-163) / 2) = -640320^3`, and the other magic constants coming from
   Eisenstein series.
 
 ## References
@@ -31,6 +34,8 @@ but at present we are a long way off.
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 
 -/
+
+@[expose] public section
 
 open scoped Real BigOperators
 open Nat

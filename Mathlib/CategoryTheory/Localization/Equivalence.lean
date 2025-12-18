@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Localization functors are preserved through equivalences
@@ -20,12 +22,14 @@ that a functor between localized categories is an equivalence.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D]
-  [Category D₁] [Category D₂]
+variable {C₁ C₂ D D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* D₁] [Category* D₂]
 
 namespace Localization
 

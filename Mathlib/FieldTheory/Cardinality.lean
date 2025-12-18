@@ -3,13 +3,15 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Field.TransferInstance
-import Mathlib.Algebra.Field.ULift
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.Rat.Encodable
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.RingTheory.Localization.Cardinality
-import Mathlib.SetTheory.Cardinal.Divisibility
+module
+
+public import Mathlib.Algebra.Field.TransferInstance
+public import Mathlib.Algebra.Field.ULift
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Divisibility
 
 /-!
 # Cardinality of Fields
@@ -25,6 +27,8 @@ a field structure, and so can all types with prime power cardinalities, and this
 * `Field.nonempty_iff` : There is a field structure on type iff its cardinality is a prime power.
 
 -/
+
+@[expose] public section
 
 
 local notation "‖" x "‖" => Fintype.card x

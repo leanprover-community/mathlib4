@@ -3,7 +3,9 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.Order.Filter.Prod
+module
+
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # Curried Filters
@@ -43,6 +45,8 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 
 uniform convergence, curried filters, product filters
 -/
+
+@[expose] public section
 
 
 namespace Filter

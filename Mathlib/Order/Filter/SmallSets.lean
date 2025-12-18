@@ -3,8 +3,10 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The filter of small sets
@@ -19,6 +21,9 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 `f` tends to the Dirac delta distribution.
 -/
 
+assert_not_exists Set.Finite
+
+@[expose] public section
 
 open Filter
 

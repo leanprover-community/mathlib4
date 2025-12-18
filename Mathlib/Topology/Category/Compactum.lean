@@ -3,12 +3,14 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
+module
+
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -20,7 +22,8 @@ Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the 
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 
-See the file `CategoryTheory.Monad.Algebra` for a general version, as well as the following link.
+See the file `Mathlib/CategoryTheory/Monad/Algebra.lean` for a general version, as well as the
+following link.
 https://ncatlab.org/nlab/show/monad
 
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
@@ -68,6 +71,8 @@ We also add wrappers around structures which already exist. Here are the main on
 - https://ncatlab.org/nlab/show/ultrafilter
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adomas Baliuka
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions
@@ -47,6 +49,8 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 
 entropy, Shannon, binary, nit, nepit
 -/
+
+@[expose] public section
 
 namespace Real
 variable {q : ℕ} {p : ℝ}
@@ -179,7 +183,6 @@ lemma differentiableAt_binEntropy_iff_ne_zero_one :
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
 
-set_option push_neg.use_distrib true in
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
 lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := by
@@ -192,7 +195,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
-    push_neg at hp
+    push_neg +distrib at hp
     obtain rfl | rfl := hp <;> simp
 
 /-! ### `q`-ary entropy -/
@@ -277,7 +280,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
       intro p hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
-    convert ContinuousWithinAt.tendsto_nhdsWithin (x :=(1 : ℝ)) contF.continuousWithinAt this
+    convert ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
     filter_upwards [Ico_mem_nhdsLT h₁] with p hx

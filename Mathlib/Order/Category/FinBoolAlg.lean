@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Category.BoolAlg
-import Mathlib.Order.Category.FinBddDistLat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Category.BoolAlg
+public import Mathlib.Order.Category.FinBddDistLat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of finite Boolean algebras
@@ -26,6 +28,8 @@ FintypeCat_to_FinBoolAlg_op.left_op
 
 `FinBoolAlg` is essentially small.
 -/
+
+@[expose] public section
 
 
 universe u

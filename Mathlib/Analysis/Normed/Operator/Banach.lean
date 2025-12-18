@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Baire.CompleteMetrizable
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Banach open mapping theorem
@@ -15,6 +17,8 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 This file contains the Banach open mapping theorem, i.e., the fact that a bijective
 bounded linear map between Banach spaces has a bounded inverse.
 -/
+
+@[expose] public section
 
 open Function Metric Set Filter Finset Topology NNReal
 
@@ -309,7 +313,7 @@ variable [CompleteSpace E] [RingHomInvPair σ' σ]
 theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous e.symm := by
   rw [continuous_def]
   intro s hs
-  rw [← e.image_eq_preimage]
+  rw [← e.image_eq_preimage_symm]
   rw [← e.coe_coe] at h ⊢
   exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 

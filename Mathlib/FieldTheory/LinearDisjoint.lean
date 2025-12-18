@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
-import Mathlib.RingTheory.LinearDisjoint
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
+public import Mathlib.RingTheory.LinearDisjoint
 
 /-!
 
@@ -130,6 +132,8 @@ The following results are related to the equivalent characterizations in
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -475,8 +479,8 @@ theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
   let i : L ≃ₐ[F] L' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)
   have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
       (Algebra.adjoin L' (A : Set E)).toSubsemiring := by
-    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
-      Algebra.adjoin_toSubsemiring]
+    rw [adjoin_intermediateField_toSubalgebra_of_isAlgebraic _ _ halg.symm,
+      Algebra.adjoin_toSubsemiring, Algebra.adjoin_toSubsemiring]
     congr 2
     ext x
     simp only [Set.mem_range, Subtype.exists]
@@ -508,8 +512,8 @@ theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint
   set L' := (IsScalarTower.toAlgHom F L E).range
   have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
       (Algebra.adjoin A (L' : Set E)).toSubsemiring := by
-    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
-      Algebra.adjoin_toSubsemiring, Set.union_comm]
+    rw [adjoin_intermediateField_toSubalgebra_of_isAlgebraic _ _ halg.symm,
+      Algebra.adjoin_toSubsemiring, Algebra.adjoin_toSubsemiring, Set.union_comm]
     congr 2
     ext x
     simp
@@ -751,7 +755,7 @@ theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
     (x : B) :
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
   rw [linearDisjoint_iff'] at h₁
-  refine h₁.norm_algebraMap ?_  x
+  refine h₁.norm_algebraMap ?_ x
   simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
 
 end LinearDisjoint

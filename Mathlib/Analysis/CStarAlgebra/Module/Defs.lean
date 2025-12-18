@@ -3,7 +3,10 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!
@@ -54,6 +57,8 @@ then an `InnerProductSpace` over `ℂ`.
 + Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
   December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder RightActions
 
@@ -206,7 +211,8 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
             _ ≤ ‖x‖ ^ 2 • (a * star a) - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
-                      calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) := CStarAlgebra.conjugate_le_norm_smul'
+                      calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) :=
+                          CStarAlgebra.star_right_conjugate_le_norm_smul
                         _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
                           rw [Real.sq_sqrt]
                           positivity

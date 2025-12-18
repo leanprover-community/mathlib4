@@ -3,10 +3,12 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.SetTheory.Cardinal.Subfield
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Erdős-Kaplansky theorem
@@ -16,6 +18,8 @@ import Mathlib.SetTheory.Cardinal.Subfield
   equal to its cardinality.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

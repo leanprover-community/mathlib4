@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 /-!
 # Diffeomorphisms
@@ -51,6 +53,8 @@ practice.
 
 diffeomorphism, manifold
 -/
+
+@[expose] public section
 
 
 open scoped Manifold Topology ContDiff
@@ -238,16 +242,16 @@ theorem symm_toEquiv (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.toEquiv = h.toEquiv.s
 theorem toEquiv_coe_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toEquiv.symm = h.symm :=
   rfl
 
-theorem image_eq_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h '' s = h.symm ⁻¹' s :=
-  h.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h '' s = h.symm ⁻¹' s :=
+  h.toEquiv.image_eq_preimage_symm s
 
 theorem symm_image_eq_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h.symm '' s = h ⁻¹' s :=
-  h.symm.image_eq_preimage s
+  h.symm.image_eq_preimage_symm s
 
 @[simp, mfld_simps]
 nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
     range (h ∘ f) = h.symm ⁻¹' range f := by
-  rw [range_comp, image_eq_preimage]
+  rw [range_comp, image_eq_preimage_symm]
 
 @[simp]
 theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' (h.symm '' s) = s :=
@@ -286,7 +290,7 @@ theorem contMDiffWithinAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) 
     rw [← h.symm_apply_apply x] at Hfh
     simpa only [Function.comp_def, h.apply_symm_apply] using
       Hfh.comp (h x) (h.symm.contMDiffWithinAt.of_le hm) (mapsTo_preimage _ _)
-  · rw [← h.image_eq_preimage]
+  · rw [← h.image_eq_preimage_symm]
     exact fun hf => hf.comp x (h.contMDiffWithinAt.of_le hm) (mapsTo_image _ _)
 
 @[simp]
@@ -339,7 +343,7 @@ theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
-  simp [h.image_eq_preimage]
+  simp [h.image_eq_preimage_symm]
 
 @[simp]
 theorem uniqueMDiffOn_image (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M} :
@@ -411,9 +415,9 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   nonempty_interior' := by
     simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
       ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe, range_comp,
-      ContinuousLinearEquiv.image_eq_preimage]
+      ContinuousLinearEquiv.image_eq_preimage_symm]
     apply Nonempty.mono (preimage_interior_subset_interior_preimage e.symm.continuous)
-    rw [← ContinuousLinearEquiv.image_eq_preimage]
+    rw [← ContinuousLinearEquiv.image_eq_preimage_symm]
     simpa using I.nonempty_interior
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
@@ -456,8 +460,8 @@ alias coe_extChartAt_transDiffeomorph_symm := coe_extChartAt_transContinuousLine
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
     (extChartAt (I.transContinuousLinearEquiv e) x).target
       = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps,
-    ← comp_def]
+  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage_symm,
+    mfld_simps, ← comp_def]
 
 @[deprecated (since := "2025-06-12")]
 alias extChartAt_transDiffeomorph_target := extChartAt_transContinuousLinearEquiv_target
@@ -474,7 +478,7 @@ instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   simp [preimage_comp, range_comp, mapsTo_iff_subset_preimage,
-    ContinuousLinearEquiv.image_eq_preimage]
+    ContinuousLinearEquiv.image_eq_preimage_symm]
 
 variable (I M)
 

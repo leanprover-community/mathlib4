@@ -3,12 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Module.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Module.TransferInstance
 
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`
 -/
+
+@[expose] public section
 
 -- FIXME: `to_additive` is incompatible with `noncomputable section`.
 -- See https://github.com/leanprover-community/mathlib4/issues/1074.

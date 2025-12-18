@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # `Finsupp`s supported on a given submodule
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Span.Defs
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -166,6 +170,18 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
   rw [mem_bot, single_eq_zero] at this
   exact hy this
+
+lemma codisjoint_supported_supported {s t : Set α} (h : Codisjoint s t) :
+    Codisjoint (supported M R s) (supported M R t) := by
+  rw [codisjoint_iff, eq_top_iff, ← supported_union,
+    show s ∪ t = .univ from codisjoint_iff.mp h, supported_univ]
+
+lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
+    Codisjoint (supported M R s) (supported M R t) ↔ Codisjoint s t := by
+  refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
+  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using h (Finsupp.single a x)
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/

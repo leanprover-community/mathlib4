@@ -3,8 +3,10 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Nonarchimedean functions
@@ -13,6 +15,8 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of
 nonarchimedean functions.
 -/
+
+@[expose] public section
 
 namespace IsNonarchimedean
 

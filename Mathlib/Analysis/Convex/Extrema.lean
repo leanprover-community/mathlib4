@@ -3,10 +3,12 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Minima and maxima of convex functions
@@ -14,6 +16,8 @@ import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 We show that if a function `f : E → β` is convex, then a local minimum is also
 a global minimum, and likewise for concave functions.
 -/
+
+@[expose] public section
 
 
 variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]
