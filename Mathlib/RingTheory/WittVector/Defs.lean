@@ -80,6 +80,10 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
   simp only at h
   simp [funext_iff, h]
 
+theorem coeff_surjective (n : ℕ) :
+    Function.Surjective (fun (x : 𝕎 R) ↦ x.coeff n) :=
+  fun x ↦ ⟨(mk p fun _ ↦ x), rfl⟩
+
 variable (p)
 
 @[simp]
