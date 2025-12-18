@@ -100,9 +100,6 @@ def pairwiseToOpensLeCoverMap :
   | _, _, id_pair _ _ => 𝟙 _
   | _, _, left _ _ => ObjectProperty.homMk (homOfLE inf_le_left)
   | _, _, right _ _ => ObjectProperty.homMk (homOfLE inf_le_right)
-    --(by rw [← Subtype.coe_le_coe]; exact inf_le_right)
-  --| _, _, left _ _ => homOfLE (by rw [← Subtype.coe_le_coe]; exact inf_le_left)
-  --| _, _, right _ _ => homOfLE (by rw [← Subtype.coe_le_coe]; exact inf_le_right)
 
 /-- The category of single and double intersections of the `U i` maps into the category
 of open sets below some `U i`.
