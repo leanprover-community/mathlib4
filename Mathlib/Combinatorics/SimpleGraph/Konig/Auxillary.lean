@@ -70,7 +70,6 @@ lemma upcast_matching {G' : Subgraph G} {M' : Subgraph G'.coe} :
     have : ↑w' = w := uniq w' hvG' (G'.edge_vert <| M'.adj_sub hadj'.symm) hadj'
     simp_rw [this.symm]
 
-@[simp]
 lemma card_upcast_edgeSet {G' : Subgraph G} (N : Subgraph G'.coe) :
   #(subgraph_upcast N).edgeSet = #N.edgeSet := by
   simpa [subgraph_upcast] using Cardinal.mk_image_eq <| Sym2.map.injective Subtype.val_injective
