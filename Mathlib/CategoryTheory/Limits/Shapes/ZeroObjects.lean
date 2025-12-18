@@ -40,7 +40,7 @@ namespace Limits
 /-- An object `X` in a category is a *zero object* if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `has_zero_object`. -/
+This is a characteristic predicate for `HasZeroObject`. -/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))

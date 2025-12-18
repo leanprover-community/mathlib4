@@ -31,7 +31,7 @@ namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a limit.
@@ -213,7 +213,7 @@ instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J)
 instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 
--- We can't just made this an `abbreviation`
+-- We can't just made this an `abbrev`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
 finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same

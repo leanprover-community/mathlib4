@@ -269,7 +269,7 @@ theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMo
   · intro h
     exact F.map_mono f
 
-/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `split_epi_category`,
+/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `SplitEpiCategory`,
 then `D` also is. -/
 theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
