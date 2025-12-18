@@ -55,8 +55,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
-* `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
-
+* `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`.
 
 ## Implementation notes
 

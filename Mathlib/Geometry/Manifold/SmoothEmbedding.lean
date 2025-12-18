@@ -22,7 +22,7 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.id`: the identity map is a smooth embedding
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
-* `IsSmoothEmbedding.contMDiff`: if `f` is a smooth embedding, it is `C^n`.
+* `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`.
 
 ## Implementation notes
 
@@ -91,7 +91,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
   rw [isSmoothEmbedding_iff]
   exact ⟨IsImmersion.of_opens s, IsEmbedding.subtypeVal⟩
 
-/-- A smooth embedding is smooth. -/
+/-- A smooth embedding is automatically smooth. -/
 lemma contMDiff [IsManifold I n M] [IsManifold J n N] (hf : IsSmoothEmbedding I J n f) :
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
