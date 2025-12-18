@@ -173,7 +173,6 @@ theorem edist_congr_left {x y z : α} (h : edist x y = 0) : edist z x = edist z 
   rw [edist_comm z x, edist_comm z y]
   apply edist_congr_right h
 
--- new theorem
 theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
@@ -237,7 +236,7 @@ theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
     ↔ IsOpen[((uniformSpaceOfEDist
     m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
 
-abbrev PseudoEMetricSpace_def {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
+abbrev pseudoEMetricSpaceOfEDist {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : PseudoEMetricSpace α where
   edist := edist
@@ -251,7 +250,7 @@ theorem EMetric.Uniformity_eq {α : Type u} [EDist α] (edist_self : ∀ x : α,
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
     (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle) =
-    (PseudoEMetricSpace_def edist_self edist_comm edist_triangle).toUniformSpace := by rfl
+    (pseudoEMetricSpaceOfEDist edist_self edist_comm edist_triangle).toUniformSpace := by rfl
 
 /-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.

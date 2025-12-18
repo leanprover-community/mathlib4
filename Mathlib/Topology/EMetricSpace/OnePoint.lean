@@ -127,11 +127,11 @@ private lemma eq_of_edist_eq_zero' {α : Type u} [TopologicalSpace α] (m : Weak
   | ∞, ∞ => by simp
 
 lemma prod_open_iff {α : Type u} {m : PseudoEMetricSpace α} (s : Set (OnePoint α)) :
-    IsOpen[(PseudoEMetricSpace_def (edist_self' m.toWeakPseudoEMetricSpace)
+    IsOpen[(pseudoEMetricSpaceOfEDist (edist_self' m.toWeakPseudoEMetricSpace)
     (edist_comm' m.toWeakPseudoEMetricSpace)
     (edist_triangle' m.toWeakPseudoEMetricSpace)).toUniformSpace.toTopologicalSpace] s
     ↔ IsOpen (OnePoint.some ⁻¹' s) := by
-  rw [@EMetric.isOpen_iff _ m, @EMetric.isOpen_iff _ (PseudoEMetricSpace_def
+  rw [@EMetric.isOpen_iff _ m, @EMetric.isOpen_iff _ (pseudoEMetricSpaceOfEDist
     (edist_self' m.toWeakPseudoEMetricSpace) (edist_comm' m.toWeakPseudoEMetricSpace)
     (edist_triangle' m.toWeakPseudoEMetricSpace))]
   constructor <;> intro h x xh
@@ -162,7 +162,7 @@ instance toWeakPseudoEMetricSpace
   topology_le := by
     rw [EMetric.Uniformity_eq]
     intro s sh
-    apply (@EMetric.isOpen_iff (OnePoint α) (PseudoEMetricSpace_def
+    apply (@EMetric.isOpen_iff (OnePoint α) (pseudoEMetricSpaceOfEDist
       (edist_self' m) (edist_comm' m) (edist_triangle' m))).2
     intro x xs
     match x with
@@ -171,13 +171,13 @@ instance toWeakPseudoEMetricSpace
       simpa [ball_infty_of_pos]
     | (x : α) =>
       let t := (ball (α := OnePoint α) x 1 ∩ s)
-      have op: IsOpen[(PseudoEMetricSpace_def
+      have op: IsOpen[(pseudoEMetricSpaceOfEDist
           m.edist_self m.edist_comm m.edist_triangle).toUniformSpace.toTopologicalSpace]
           (OnePoint.some ⁻¹' s) := by
         apply m.topology_le
         refine Continuous.isOpen_preimage ?_ s sh
         exact OnePoint.continuous_coe
-      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α (PseudoEMetricSpace_def
+      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α (pseudoEMetricSpaceOfEDist
         m.edist_self m.edist_comm m.edist_triangle)).1 op x (mem_preimage.mpr xs)
       use ε
       refine ⟨εp, ?_⟩
@@ -187,7 +187,7 @@ instance toWeakPseudoEMetricSpace
     intro x s sO
     match x with
     | (x : α) =>
-      have po : IsOpen[(PseudoEMetricSpace_def
+      have po : IsOpen[(pseudoEMetricSpaceOfEDist
           m.edist_self m.edist_comm m.edist_triangle).toUniformSpace.toTopologicalSpace]
           (OnePoint.some ⁻¹' s) := (prod_open_iff s).1 sO
       obtain ⟨s', s'o, s's⟩ := m.topology_eq_on_restrict x po
@@ -206,7 +206,7 @@ instance toWeakPseudoEMetricSpace
           rw [(OnePoint.isOpenEmbedding_coe).injective rh'] at rh
           exact s's.1 rh
         · use z
-          exact ⟨s's.2 h, rfl⟩
+          tauto
     | ∞ =>
       apply discreteTopology_iff_forall_isOpen.1
       rw [ball_infty_of_pos ENNReal.zero_lt_top]
