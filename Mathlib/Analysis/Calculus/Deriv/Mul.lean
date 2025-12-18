@@ -275,11 +275,7 @@ theorem HasDerivAt.mul (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) :
 
 theorem HasStrictDerivAt.fun_mul (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c y * d y) (c' * d x + c x * d') x := by
-  have := (HasStrictFDerivAt.mul' hc hd).hasStrictDerivAt
-  rwa [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, one_smul,
-    add_comm] at this
+  simpa [add_comm] using (HasStrictFDerivAt.mul' hc hd).hasStrictDerivAt
 
 theorem HasStrictDerivAt.mul (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (c * d) (c' * d x + c x * d') x :=
