@@ -15,6 +15,20 @@ Let $\mathbb{N}+$ denote the set of positive integers. A function $f: \mathbb{N}
 \mathbb{N}+$ is said to be bonza if $f(a)$ divides $b^a-f(b)^{f(a)}$ for all positive integers $a$
 and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
 $f$ and all positive integers $n$.
+
+## Solution
+
+We follow solution from https://web.evanchen.cc/exams/IMO-2025-notes.pdf.
+
+We first plug in `a = b = n` to get the basic constraint `∀ n, f n ∣ n ^ n`. Next, one shows that
+unless `f` is the identity, every odd prime must satisfy `f(p)=1`. From here, any odd prime divisor
+of `f(n)` is ruled out by taking `a = n, b = p`, so `f(n)` is always a power of `2`.
+Finally, evaluating `a = n, b = 3` gives `f n ∣ 3 ^ n - 1`, and according to the LTE lemma, we have
+`padicValNat 2 (3 ^ n - 1) = padicValNat 2 n + 2` for `Even n`. Therefore,
+`f(n) ≤ 2 ^ (padicValNat 2 n + 2) ≤ 4 * n`, so `c=4` works.
+
+A matching construction is `f(n)=1` for `Odd n`, `f(4)=16`, and `f(n)=2` for other `Even n`, which
+attains the bound, showing the optimal answer is `c=4`.
 -/
 
 open Nat Int
@@ -75,7 +89,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
     bonza_not_x_apply_prime_of_gt_eq_one hf hnf
   have apply_dvd_pow_sub {a p : ℕ} (ha : a > 0) (pp : p.Prime) (hp : p > N) :
       (f a : ℤ) ∣ p ^ a - 1 := by
-    simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by omega)
+    simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by lia)
   intro q hq qp
   obtain ⟨k, ha1, ha2⟩ : ∃ k, k ≤ q ∧ f q = q ^ k :=
     (dvd_prime_pow qp).mp (bonza_apply_dvd_pow hf (zero_lt_of_lt hq))
@@ -85,14 +99,14 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
       _ ∣ (f q : ℤ) := by simp [ha2, natCast_pow q k, ch]
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
     obtain ⟨p, hp⟩ : ∃ p > N, p.Prime ∧ p ≡ -1 [ZMOD q] :=
-      forall_exists_prime_gt_and_zmodEq N (by omega) isCoprime_one_left.neg_left
+      forall_exists_prime_gt_and_zmodEq N (by lia) isCoprime_one_left.neg_left
     have : 1 ≡ -1 [ZMOD q] := by calc
       _ ≡ p ^ q [ZMOD q] := by grind [Int.modEq_iff_dvd]
       _ ≡ p [ZMOD q] := ModEq.pow_prime_eq_self qp p
       _ ≡ _ [ZMOD q] := hp.2.2
     rw [modEq_comm, Int.modEq_iff_dvd] at this
     have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
-    omega
+    lia
 
 /-- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two -/
 lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
@@ -152,7 +166,7 @@ lemma bonza_fExample : fExample ∈ bonza := by
         · simp [lt]
         have : (padicValNat 2 a + 2) ≤ padicValInt 2 (b ^ a - 1) := by
           rw [← LucasLehmer.Int.natCast_pow_pred b a hb]
-          exact padicValNat.pow_two_sub_one_ge (by omega) (two_dvd_ne_zero.mpr hb1) (by omega)
+          exact padicValNat.pow_two_sub_one_ge (by lia) (two_dvd_ne_zero.mpr hb1) (by lia)
             (even_iff.mpr (by simpa using ch1))
         exact Int.dvd_trans (pow_dvd_pow 2 this) (padicValInt_dvd ((b : ℤ) ^ a - 1))
       · grind [verify_case_two_dvd]
@@ -161,7 +175,7 @@ lemma bonza_fExample : fExample ∈ bonza := by
 
 theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x, x > 0 → f x = x
-  · simpa [hnf n hn] using by omega
+  · simpa [hnf n hn] using by lia
   · obtain ⟨k, hk⟩ := bonza_not_id_two_pow hf hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
@@ -178,8 +192,8 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
         _ = 4 * 2 ^ padicValNat 2 n := by
           have : padicValNat 2 (3 ^ n - 1) + 1 = 3 + padicValNat 2 n := by
             simpa [← factorization_def _ prime_two, ← primeFactorsList_count_eq] using
-              padicValNat.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by omega) ch
-          have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by omega
+              padicValNat.pow_two_sub_one (show 1 < 3 by simp) (by simp) (by lia) ch
+          have : padicValNat 2 (3 ^ n - 1) = 2 + padicValNat 2 n := by lia
           rw [congrArg (HPow.hPow 2) this, Nat.pow_add]
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
     · have : k = 0 := by
@@ -187,7 +201,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : f ∈ bonza) {n : ℕ} (hn : 0 < n) : f
         have : Odd (f n) := ch.pow.of_dvd_nat (bonza_apply_dvd_pow hf hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
-      simpa [hk, this] using by omega
+      simpa [hk, this] using by lia
 
 theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, f ∈ bonza → ∀ n, 0 < n → f n ≤ c * n} 4 := by
   constructor
