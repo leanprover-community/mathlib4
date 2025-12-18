@@ -17,7 +17,7 @@ zero, where order is involved.
 
 @[expose] public section
 
-/-- A version of `Finset.one_le_prod''` for `PosmulMono` in place of `MulLeftMono`. -/
+/-- A version of `Finset.one_le_prod''` for `PosMulMono` in place of `MulLeftMono`. -/
 lemma Finset.one_le_prod {α M : Type*} (s : Finset α) [CommMonoidWithZero M]
     [Preorder M] [ZeroLEOneClass M] [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ i ∈ s, f i := by
