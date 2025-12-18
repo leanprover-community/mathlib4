@@ -6339,6 +6339,7 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.RingTheory.Valuation.Extension
+public import Mathlib.RingTheory.Valuation.FiniteField
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.IntegrallyClosed
