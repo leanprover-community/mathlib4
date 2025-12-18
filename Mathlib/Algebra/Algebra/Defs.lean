@@ -115,21 +115,21 @@ theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semirin
 
 namespace algebraMap
 
-@[deprecated (since := "2025-12-18")] alias coe_zero := map_zero (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_zero := map_zero
 
-@[deprecated (since := "2025-12-18")] alias coe_one := map_one (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_one := map_one
 
-@[deprecated (since := "2025-12-18")] alias coe_natCast := map_natCast (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_natCast := map_natCast
 
-@[deprecated (since := "2025-12-18")] alias coe_add := map_add (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_add := map_add
 
-@[deprecated (since := "2025-12-18")] alias coe_mul := map_mul (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_mul := map_mul
 
-@[deprecated (since := "2025-12-18")] alias coe_pow := map_pow (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_pow := map_pow
 
-@[deprecated (since := "2025-12-18")] alias coe_neg := map_neg (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_neg := map_neg
 
-@[deprecated (since := "2025-12-18")] alias coe_sub := map_sub (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_sub := map_sub
 
 end algebraMap
 
