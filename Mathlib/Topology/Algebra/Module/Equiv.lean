@@ -1234,7 +1234,7 @@ protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
 
 protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
   by_contra H
-  obtain ⟨_, _⟩ : Subsingleton M ∧ Subsingleton M₂ := by simpa [inverse, H] using hf
+  obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
   simp_all [Subsingleton.elim f 0]
 
 @[simp]
