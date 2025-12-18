@@ -159,6 +159,19 @@ lemma covariant_sequence_exact₃ {n₀ : ℕ} (x₃ : Ext X S.X₃ n₀) {n₁ 
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₃ hx₃
 
+lemma postcomp_mk₀_injective_of_mono (L M N : C) (f : M ⟶ N) (mono : Mono f) :
+    Function.Injective (((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
+  rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
+  intro x hx
+  simp only [AddMonoidHom.mem_ker, AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hx
+  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
+  have : (Ext.addEquiv₀ x ≫ f) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
+  exact Ext.addEquiv₀.map_eq_zero_iff.mp (Limits.zero_of_comp_mono f this)
+
+lemma mono_postcomp_mk₀_of_mono (L M N : C) (f : M ⟶ N) (mono : Mono f) :
+    Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) :=
+  (AddCommGrpCat.mono_iff_injective _).mpr (postcomp_mk₀_injective_of_mono L M N f mono)
+
 end CovariantSequence
 
 section ContravariantSequence
@@ -276,6 +289,19 @@ lemma contravariant_sequence_exact₃ {n₁ : ℕ} (x₃ : Ext S.X₃ Y n₁)
   have := contravariant_sequence_exact₃' hS Y n₀ n₁ hn₀
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₃ hx₃
+
+lemma precomp_mk₀_injective_of_epi (L M N : C) (g : M ⟶ N) (epi : Epi g) :
+    Function.Injective (((Ext.mk₀ g)).precomp L (zero_add 0)) := by
+  rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall]
+  intro x hx
+  simp only [AddMonoidHom.mem_ker, Ext.bilinearComp_apply_apply] at hx
+  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
+  have : (g ≫ Ext.addEquiv₀ x) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
+  exact Ext.addEquiv₀.map_eq_zero_iff.mp (Limits.zero_of_epi_comp g this)
+
+lemma mono_precomp_mk₀_of_epi (L M N : C) (g : M ⟶ N) (epi : Epi g) :
+    Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ g)).precomp L (zero_add 0)) :=
+  (AddCommGrpCat.mono_iff_injective _).mpr (precomp_mk₀_injective_of_epi L M N g epi)
 
 end ContravariantSequence
 
