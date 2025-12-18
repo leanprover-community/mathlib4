@@ -31,6 +31,7 @@ This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 
 @[expose] public section
 
+
 universe u v
 
 open CategoryTheory

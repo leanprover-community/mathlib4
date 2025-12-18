@@ -37,6 +37,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 @[expose] public section
 
+
 open Finset Fintype SimpleGraph SzemerediRegularity
 
 open scoped SzemerediRegularity.Positivity

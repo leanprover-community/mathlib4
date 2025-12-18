@@ -21,6 +21,7 @@ Finish the equivalence with `BoolAlg`.
 
 @[expose] public section
 
+
 universe u
 
 open CategoryTheory Order

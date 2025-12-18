@@ -16,6 +16,7 @@ This defines `BoolAlg`, the category of Boolean algebras.
 
 @[expose] public section
 
+
 open OrderDual Opposite Set
 
 universe u

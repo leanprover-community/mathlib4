@@ -20,6 +20,7 @@ Upper/lower sets are preserved under pointwise algebraic operations in ordered g
 
 @[expose] public section
 
+
 open Function Set
 
 open Pointwise

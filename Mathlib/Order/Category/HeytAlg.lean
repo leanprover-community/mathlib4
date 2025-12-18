@@ -16,6 +16,7 @@ This file defines `HeytAlg`, the category of Heyting algebras.
 
 @[expose] public section
 
+
 universe u
 
 open CategoryTheory Opposite Order

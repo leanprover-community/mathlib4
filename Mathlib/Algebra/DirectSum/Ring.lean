@@ -76,6 +76,7 @@ graded ring, filtered ring, direct sum, add_submonoid
 
 @[expose] public section
 
+
 variable {ι : Type*} [DecidableEq ι]
 
 namespace DirectSum

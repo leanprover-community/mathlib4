@@ -31,6 +31,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 
 @[expose] public section
 
+
 noncomputable section
 
 /-- The skew monoid algebra of `G` over `k` is the type of finite formal `k`-linear

@@ -15,6 +15,7 @@ This defines `LinOrd`, the category of linear orders with monotone maps.
 
 @[expose] public section
 
+
 open CategoryTheory
 
 universe u

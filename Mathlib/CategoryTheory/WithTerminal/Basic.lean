@@ -42,6 +42,7 @@ from `Cat` to `Cat`.
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 universe v u

@@ -44,6 +44,7 @@ Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 @[expose] public section
 
+
 /-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
 presentation $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
 $a^i$ and `xa i` for $x * a^i$.

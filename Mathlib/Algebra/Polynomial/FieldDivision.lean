@@ -21,6 +21,7 @@ This file starts looking like the ring theory of $R[X]$
 
 @[expose] public section
 
+
 noncomputable section
 
 open Polynomial

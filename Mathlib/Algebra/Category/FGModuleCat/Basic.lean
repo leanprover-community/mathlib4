@@ -34,6 +34,7 @@ and then as a right-rigid monoidal category.
 
 @[expose] public section
 
+
 noncomputable section
 
 open CategoryTheory Module
@@ -238,6 +239,7 @@ theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
       (F := ((ModuleCat.of K (Module.Dual K V) ⊗ V.obj).carrier →ₗ[K] (𝟙_ (ModuleCat K))))
       (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
+
 set_option backward.privateInPublic true in
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V

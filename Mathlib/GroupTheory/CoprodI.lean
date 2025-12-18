@@ -82,6 +82,7 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 
 @[expose] public section
 
+
 open Set
 
 variable {ι : Type*} (M : ι → Type*) [∀ i, Monoid (M i)]

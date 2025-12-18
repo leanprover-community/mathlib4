@@ -22,6 +22,7 @@ public import Mathlib.Algebra.Ring.Basic
 
 @[expose] public section
 
+
 universe u
 
 namespace EuclideanDomain
