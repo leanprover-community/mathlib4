@@ -92,8 +92,7 @@ theorem eq_id_of_finrank_le_one
       rw [this x, this v, map_smul, smul_eq_mul, ← mul_smul, mul_assoc, hfv, mul_zero, zero_smul]
     intro x
     have : x = ∑ i, b.repr x i • b i := (Basis.sum_equivFun b x).symm
-    rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i)] at this
-    grind
+    rwa [Finset.sum_eq_single_of_mem i (Finset.mem_univ i) (by grind)] at this
 
 theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
     (f : Dual R V) (v : V) (e : V ≃ₗ[R] W) :
