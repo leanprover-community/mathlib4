@@ -112,7 +112,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?')
+  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?') |>.offset
   return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/
