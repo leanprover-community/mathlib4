@@ -795,6 +795,22 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 theorem sinh_lt_cosh : sinh x < cosh x :=
   lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
+theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem abs_tanh_lt_one (x : ℝ) : |tanh x| < 1 :=
+  abs_lt.mpr ⟨neg_one_lt_tanh x, tanh_lt_one x⟩
+
+theorem tanh_sq_lt_one (x : ℝ) : (tanh x) ^ 2 < 1 :=
+  (sq_lt_one_iff_abs_lt_one (tanh x)).mpr (abs_tanh_lt_one x)
+
 end Real
 
 namespace Real
