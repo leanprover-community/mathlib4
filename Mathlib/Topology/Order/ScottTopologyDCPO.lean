@@ -15,10 +15,10 @@ public import Mathlib.Topology.Sets.Opens
 Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algberaic DCPOs.
 
 ## Main Definitions
-- `Compact` - The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
-there is some a ∈ A s.t. x ≤ a already.
-- `AlgebraicDCPO` - an extension of `CompletePartialOrder` which is additionally "algebraic".
-Algebraicity has a correspondence with axioms of a Scott topology
+- `Compact`: The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
+  there is some a ∈ A s.t. x ≤ a already.
+- `AlgebraicDCPO`: an extension of `CompletePartialOrder` which is additionally "algebraic".
+  Algebraicity has a correspondence with axioms of a Scott topology.
 
 ## Main Statements
 - `specialization_iff_ge`: The original order and the specialization order induced by the Scott
