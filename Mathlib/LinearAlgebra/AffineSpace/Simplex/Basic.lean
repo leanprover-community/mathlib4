@@ -313,8 +313,7 @@ theorem restrict_map_restrict
     letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
     letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
     (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
-      (s.map f hf).restrict S₂ (
-        Eq.trans_le
+      (s.map f hf).restrict S₂ (Eq.trans_le
           (by simp [AffineSubspace.map_span, Set.range_comp])
           (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
   rfl

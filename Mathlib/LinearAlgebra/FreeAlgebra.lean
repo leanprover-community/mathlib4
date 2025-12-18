@@ -60,5 +60,5 @@ theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [
   · rw [rank_subsingleton]; exact one_le_aleph0.trans (le_max_right _ _)
   rw [← lift_le.{max u v}]
   refine (lift_rank_range_le (FreeAlgebra.lift R ((↑) : s → S)).toLinearMap).trans ?_
-  rw [FreeAlgebra.rank_eq, lift_id'.{v,u}, lift_umax.{v,u}, lift_le, max_comm]
+  rw [FreeAlgebra.rank_eq, lift_id'.{v, u}, lift_umax.{v, u}, lift_le, max_comm]
   exact mk_list_le_max _

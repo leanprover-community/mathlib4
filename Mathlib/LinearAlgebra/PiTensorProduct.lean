@@ -880,7 +880,7 @@ section tmulEquiv
 
 See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
 def tmulEquiv :
-    (⨂[R] (_ : ι), M)  ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
+    (⨂[R] (_ : ι), M) ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
   tmulEquivDep R (fun _ ↦ M)
 
 @[simp]

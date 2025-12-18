@@ -105,7 +105,7 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
-    rw [Subtype.coe_mk, ← hsec x,mkQ_apply, Quotient.mk_eq_zero]
+    rw [Subtype.coe_mk, ← hsec x, mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,

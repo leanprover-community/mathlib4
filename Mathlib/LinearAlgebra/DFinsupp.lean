@@ -618,7 +618,7 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
 /-- If `(pᵢ)ᵢ` is a family of independent submodules that generates the whole module `N`, then
 `N` is isomorphic to the direct sum of the submodules. -/
 @[simps! apply] noncomputable def iSupIndep.linearEquiv {p : ι → Submodule R N} (ind : iSupIndep p)
-    (iSup_top : ⨆ i, p i = ⊤) : (Π₀ i, p i) ≃ₗ[R] N  :=
+    (iSup_top : ⨆ i, p i = ⊤) : (Π₀ i, p i) ≃ₗ[R] N :=
   .ofBijective _ ⟨ind.dfinsupp_lsum_injective, by
     rwa [← LinearMap.range_eq_top, ← Submodule.iSup_eq_range_dfinsupp_lsum]⟩
 

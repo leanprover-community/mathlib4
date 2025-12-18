@@ -136,7 +136,7 @@ lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
   rw [hxy]
 
 @[gcongr]
-lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
+lemma neg (hxy : x ≡ y [SMOD U]) : -x ≡ - y [SMOD U] := by
   simpa only [SModEq.def, Quotient.mk_neg, neg_inj]
 
 @[gcongr]

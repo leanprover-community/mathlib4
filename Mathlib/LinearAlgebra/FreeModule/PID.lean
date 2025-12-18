@@ -209,8 +209,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
         a • ϕ ⟨y', y'M⟩ = ϕ ⟨a • y', _⟩ := (ϕ.map_smul a ⟨y', y'M⟩).symm
         _ = ϕ ⟨y, N_le_M yN⟩ := by simp only [a_smul_y']
         _ = a := ϕy_eq
-        _ = a * 1 := (mul_one a).symm
-        )
+        _ = a * 1 := (mul_one a).symm)
   have ϕy'_ne_zero : ϕ ⟨y', y'M⟩ ≠ 0 := by simpa only [ϕy'_eq] using one_ne_zero
   -- `M' := ker (ϕ : M → R)` is smaller than `M` and `N' := ker (ϕ : N → R)` is smaller than `N`.
   let M' : Submodule R O := (LinearMap.ker ϕ).map M.subtype
