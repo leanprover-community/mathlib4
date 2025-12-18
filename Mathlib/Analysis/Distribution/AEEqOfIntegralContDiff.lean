@@ -150,7 +150,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : 
 
 @[deprecated (since := "2025-12-17")]
 alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' :=
-IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero'
+  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero'
 
 variable [SigmaCompactSpace M]
 
@@ -169,7 +169,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero {U : Set M} (hU : I
 
 @[deprecated (since := "2025-12-17")]
 alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero :=
-IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero
+  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero
 
 /-- If two locally integrable functions on a finite-dimensional real manifold have the same integral
 when multiplied by any smooth compactly supported function, then they coincide almost everywhere. -/

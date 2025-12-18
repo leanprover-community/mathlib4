@@ -705,7 +705,7 @@ theorem Emetric.exists_contMDiffMap_forall_closedBall_subset
 
 @[deprecated (since := "2025-12-17")]
 alias Emetric.exists_smooth_forall_closedBall_subset :=
-Emetric.exists_contMDiffMap_forall_closedBall_subset
+  Emetric.exists_contMDiffMap_forall_closedBall_subset
 
 /-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
 family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
@@ -725,7 +725,7 @@ theorem Metric.exists_contMDiffMap_forall_closedBall_subset
 
 @[deprecated (since := "2025-12-17")]
 alias Metric.exists_smooth_forall_closedBall_subset :=
-Metric.exists_contMDiffMap_forall_closedBall_subset
+  Metric.exists_contMDiffMap_forall_closedBall_subset
 
 lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
     ∃ f : H → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
