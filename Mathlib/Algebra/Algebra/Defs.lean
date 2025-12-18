@@ -131,6 +131,12 @@ namespace algebraMap
 
 @[deprecated (since := "2025-12-18")] alias coe_sub := map_sub
 
+@[deprecated (since := "2025-12-18")] alias coe_smul := Algebra.algebraMap_eq_smul_one
+
+@[deprecated (since := "2025-12-18")] alias coe_smul' := Algebra.algebraMap_eq_smul_one
+
+end algebraMap
+
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring.
@@ -384,19 +390,3 @@ end id
 end Semiring
 
 end Algebra
-
-section algebraMap
-
-variable {A B : Type*} (a : A) (b : B) (C : Type*)
-  [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
-
-@[norm_cast]
-theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a • (b : C) := by
-  simp [Algebra.algebraMap_eq_smul_one]
-
-@[norm_cast]
-theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
-    (a • b : B) = a • (b : C) := by
-  simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
-
-end algebraMap
