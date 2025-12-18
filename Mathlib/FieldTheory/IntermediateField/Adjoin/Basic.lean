@@ -192,8 +192,7 @@ open Set CompleteLattice
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
 theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
-  simp_rw [isCompactElement_iff_le_of_directed_sSup_le,
-    adjoin_simple_le_iff, sSup_eq_iSup', ← exists_prop]
+  simp_rw [IsCompactElement, adjoin_simple_le_iff, sSup_eq_iSup', ← exists_prop]
   intro s hne hs hx
   have := hne.to_subtype
   rwa [← SetLike.mem_coe, coe_iSup_of_directed hs.directed_val, mem_iUnion, Subtype.exists] at hx
