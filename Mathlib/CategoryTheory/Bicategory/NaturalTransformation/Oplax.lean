@@ -208,8 +208,6 @@ structure OplaxTrans (F G : B ⥤ᵒᵖᴸ C) where
 attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
   OplaxTrans.naturality_comp
 
-@[deprecated (since := "2025-04-23")] alias _root_.CategoryTheory.OplaxNatTrans := OplaxTrans
-
 namespace OplaxTrans
 
 variable {F : B ⥤ᵒᵖᴸ C} {G H : B ⥤ᵒᵖᴸ C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
@@ -331,8 +329,6 @@ structure StrongTrans (F G : B ⥤ᵒᵖᴸ C) where
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
     cat_disch
-
-@[deprecated (since := "2025-04-23")] alias StrongOplaxNatTrans := StrongTrans
 
 attribute [nolint docBlame] CategoryTheory.Oplax.StrongTrans.app
   CategoryTheory.Oplax.StrongTrans.naturality
