@@ -93,20 +93,6 @@ noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
   Pi.ringHom fun I ↦ (Localization.localRingHom _ _ f rfl).comp <|
     Pi.evalRingHom _ (⟨_, I.2.comap_bijective f hf⟩ : MaximalSpectrum R)
 
-section jmcNew
-
-set_option pp.proofs true in
-lemma mapPiLocalization_apply (r) (I) :
-    mapPiLocalization f hf r I =
-      (Localization.localRingHom (Ideal.comap f I.asIdeal) I.asIdeal f rfl)
-        (r (⟨_, I.2.comap_bijective f hf⟩ : MaximalSpectrum R)) := by
-  dsimp only [mapPiLocalization, Pi.ringHom, Localization.localRingHom]
-  dsimp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, RingHom.comp_apply]
-  dsimp only [Pi.evalRingHom_apply]
-  sorry
-
-end jmcNew
-
 theorem mapPiLocalization_naturality :
     (mapPiLocalization f hf).comp (toPiLocalization R) =
       (toPiLocalization S).comp f := by

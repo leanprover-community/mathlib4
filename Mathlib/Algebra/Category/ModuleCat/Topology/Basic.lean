@@ -62,9 +62,9 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
-set_option backward.privateInPublic true in
 structure Hom (X Y : TopModuleCat.{v} R) where
   -- use `ofHom` instead
   private ofHom' ::
@@ -341,10 +341,10 @@ end Limit
 
 section Adjunction
 
-/-- The functor equipping a module over a topological ring with the finest possible
-topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- The functor equipping a module over a topological ring with the finest possible
+topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
