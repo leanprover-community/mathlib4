@@ -46,7 +46,12 @@ such as groups, modules and rings.
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
-  /-- auxiliary quotient function, the one used will have `A` explicit -/
+  /--
+  `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`.
+
+  This differs from `HasQuotient.quotient'` in that the `A` argument is explicit,
+  which is necessary to make Lean show the notation in the goal state.
+  -/
   Quotient (A) : B → Type max u v
 
 @[deprecated HasQuotient.Quotient (since := "2025-12-18")]
