@@ -3,8 +3,10 @@ Copyright (c) 2020 Heather Macbeth, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Archimedean groups
@@ -30,6 +32,8 @@ The file also supports multiplicative groups via `MulArchimedean`.
 The result is also used in `Topology.Instances.Real` as an ingredient in the classification of
 subgroups of `ℝ`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Basis.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.InvariantBasisNumber
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
@@ -41,6 +43,8 @@ For modules over rings with invariant basis number
   free `R`-algebra of rank `2`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -420,6 +424,25 @@ theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S
 
 namespace Module
 
+omit [StrongRankCondition R] in
+theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
+    0 < Module.rank R M :=
+  have := Module.nontrivial R M
+  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
+    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
+
+theorem rank_pos_iff_of_free [Module.Free R M] :
+    0 < Module.rank R M ↔ Nontrivial M := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
+  rw [← not_subsingleton_iff_nontrivial]
+  intro h'
+  simp only [rank_subsingleton', lt_self_iff_false] at h
+
+theorem rank_zero_iff_of_free [Module.Free R M] :
+    Module.rank R M = 0 ↔ Subsingleton M := by
+  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
+    ← Module.rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
+
 theorem finrank_eq_nat_card_basis (h : Basis ι R M) :
     finrank R M = Nat.card ι := by
   rw [Nat.card, ← toNat_lift.{v}, h.mk_eq_rank, toNat_lift, finrank]
@@ -481,6 +504,17 @@ noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R
 @[simp]
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
+
+theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
+    Module.finrank R M = 0 ↔ Subsingleton M := by
+  have := Module.rank_lt_aleph0 R M
+  rw [← not_le] at this
+  simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
+    0 < Module.finrank R M ↔ Nontrivial M := by
+  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
+  simp [Module.finrank_eq_zero_iff_of_free]
 
 /-- If `M` is finite, then `finrank N = rank N` for all `N : Submodule M`. Note that
 such an `N` need not be finitely generated. -/

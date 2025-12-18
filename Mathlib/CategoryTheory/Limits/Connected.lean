@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Connected limits
@@ -25,6 +27,8 @@ that the functor given by `(X × -)` preserves any connected limit.
 That is, any limit of shape `J` where `J` is a connected category is
 preserved by the functor `(X × -)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -222,8 +226,7 @@ lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
             · simp
           uniq := fun s m L => by
             apply Limits.prod.hom_ext
-            · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
-              rfl
+            · simp [← L]
             · rw [limit.lift_π]
               apply l.uniq (forgetCone s)
               intro j

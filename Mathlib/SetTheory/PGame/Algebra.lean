@@ -3,10 +3,12 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.SetTheory.PGame.Order
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.SetTheory.PGame.Order
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -31,6 +33,8 @@ equivalence relations at the level of pregames, the notion of a `Relabelling` of
 (defined in `Mathlib/SetTheory/PGame/Basic.lean`); for example, there is a relabelling between
 `x + (y + z)` and `(x + y) + z`.
 -/
+
+@[expose] public section
 
 namespace SetTheory.PGame
 
@@ -712,16 +716,16 @@ theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   apply add_lf_add_right h
 
 instance addRightStrictMono : AddRightStrictMono PGame :=
-  ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_right h.2 x⟩⟩
+  ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_right h.2 x⟩⟩
 
 instance addLeftStrictMono : AddLeftStrictMono PGame :=
-  ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
+  ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_left h.2 x⟩⟩
 
 theorem add_lf_add_of_lf_of_le {w x y z : PGame} (hwx : w ⧏ x) (hyz : y ≤ z) : w + y ⧏ x + z :=
-  lf_of_lf_of_le (add_lf_add_right hwx y) (add_le_add_left hyz x)
+  lf_of_lf_of_le (add_lf_add_right hwx y) (add_le_add_right hyz x)
 
 theorem add_lf_add_of_le_of_lf {w x y z : PGame} (hwx : w ≤ x) (hyz : y ⧏ z) : w + y ⧏ x + z :=
-  lf_of_le_of_lf (add_le_add_right hwx y) (add_lf_add_left hyz x)
+  lf_of_le_of_lf (add_le_add_left hwx y) (add_lf_add_left hyz x)
 
 theorem add_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w + y ≈ x + z :=
   ⟨add_le_add h₁.1 h₂.1, add_le_add h₁.2 h₂.2⟩
@@ -741,15 +745,14 @@ theorem sub_congr_left {x y z : PGame} (h : x ≈ y) : x - z ≈ y - z :=
 theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
   sub_congr equiv_rfl
 
-theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
-  ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
-    calc
+theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x where
+  mp h := (zero_le_add_neg_cancel x).trans (add_le_add_left h _)
+  mpr h := calc
       x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ≤ y - x + x := by gcongr
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
+      _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
       _ ≤ y := (PGame.add_zero y).le
-      ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
@@ -757,19 +760,18 @@ theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
       x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
-      _ ≤ y := (PGame.add_zero y).le
-      ⟩
-
-theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
-  ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
-    calc
-      x ≤ 0 + x := (PGame.zero_add x).symm.le
-      _ < y - x + x := add_lt_add_right h _
-      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
       _ ≤ y := (PGame.add_zero y).le
       ⟩
+
+theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x where
+  mp h := lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_left h _)
+  mpr h := calc
+      x ≤ 0 + x := (PGame.zero_add x).symm.le
+      _ < y - x + x := by gcongr
+      _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
+      _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
+      _ ≤ y := (PGame.add_zero y).le
 
 /-! ### Interaction of option insertion with negation -/
 

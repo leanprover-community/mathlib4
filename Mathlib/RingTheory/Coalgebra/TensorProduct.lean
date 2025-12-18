@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Tensor products of coalgebras
@@ -21,6 +23,8 @@ In particular, when `R = S` we get tensor products of coalgebras, and when `A = 
 the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -47,14 +51,10 @@ lemma comul_def :
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
 lemma counit_def :
     Coalgebra.counit (R := S) (A := A ⊗[R] B) =
       AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
   rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
 lemma comul_tmul (x : A) (y : B) :
@@ -76,7 +76,9 @@ of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstr
 scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction $var with
-      | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
+      | zero =>
+        -- avoid the more general `map_zero` for performance reasons
+        simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
       | add _ _ h₁ h₂ =>
         -- avoid the more general `map_add` for performance reasons

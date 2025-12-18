@@ -3,9 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.LocallyConstant
-import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.LightProfinite.Extend
+module
+
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.Extend
+
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
@@ -14,6 +17,8 @@ This file provides the necessary API to prove that a condensed set `X` is discre
 for every profinite set `S = limᵢSᵢ`, `X(S) ≅ colimᵢX(Sᵢ)`, and the analogous result for light
 condensed sets.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -186,6 +191,7 @@ def fintypeCatAsCofan (X : Profinite) :
     Cofan (fun (_ : X) ↦ (Profinite.of (PUnit.{u + 1}))) :=
   Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
 
+set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `Profinite`. -/
 def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by
@@ -452,6 +458,7 @@ def fintypeCatAsCofan (X : LightProfinite) :
     Cofan (fun (_ : X) ↦ (LightProfinite.of (PUnit.{u + 1}))) :=
   Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
 
+set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
 def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) := by

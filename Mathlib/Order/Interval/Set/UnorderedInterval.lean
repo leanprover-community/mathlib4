@@ -3,11 +3,14 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Data.Set.Order
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Set.Order
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Tactic.Common
+public import Mathlib.Order.MinMax
 
 /-!
 # Intervals without endpoints ordering
@@ -34,6 +37,8 @@ We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope 
 make the notation available.
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -62,9 +67,6 @@ open Interval
 lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   Icc_toDual (α := α)
-
-@[deprecated (since := "2025-03-20")]
-alias dual_uIcc := uIcc_toDual
 
 @[simp]
 theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
@@ -336,9 +338,6 @@ def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
   Ioo_toDual (α := α)
 
-@[deprecated (since := "2025-03-20")]
-alias dual_uIoo := uIoo_toDual
-
 @[simp]
 theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=
   Ioo_ofDual
@@ -356,6 +355,9 @@ lemma uIoo_of_lt (h : a < b) : uIoo a b = Ioo a b := uIoo_of_le h.le
 lemma uIoo_of_gt (h : b < a) : uIoo a b = Ioo b a := uIoo_of_ge h.le
 
 lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+
+@[simp] lemma left_notMem_uIoo : a ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
+@[simp] lemma right_notMem_uIoo : b ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
 
 lemma Ioo_subset_uIoo : Ioo a b ⊆ uIoo a b := Ioo_subset_Ioo inf_le_left le_sup_right
 
@@ -376,8 +378,22 @@ lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of
 
 lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
 
-theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
+lemma uIoo_subset_uIcc_self : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]
+
+@[deprecated uIoo_subset_uIcc_self (since := "2025-11-09")]
+lemma uIoo_subset_uIcc (a b : α) : uIoo a b ⊆ uIcc a b := uIoo_subset_uIcc_self
+
+lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : uIoo a₁ b₁ ⊆ Ioo a₂ b₂ :=
+  Ioo_subset_Ioo (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
+
+@[simp] lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
+  simp [uIoo, eq_comm]
+
+lemma uIoo_eq_union : uIoo a b = Ioo a b ∪ Ioo b a := by
+  rcases lt_or_ge a b with h | h
+  · simp [uIoo_of_lt, h, Ioo_eq_empty_of_le h.le]
+  · simp [uIoo_of_ge, h]
 
 end uIoo
 

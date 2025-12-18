@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotence of the Karoubi envelope
@@ -12,6 +14,8 @@ In this file, we construct the equivalence of categories
 `KaroubiKaroubi.equivalence C : Karoubi C ≌ Karoubi (Karoubi C)` for any category `C`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Category
@@ -24,7 +28,7 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by

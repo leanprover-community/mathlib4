@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Quaternion
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Tactic.Ring
 
 /-!
 # Basis on a quaternion-like algebra
@@ -21,6 +23,8 @@ import Mathlib.Tactic.Ring
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
   data / proofs is non-negligible.
 -/
+
+@[expose] public section
 
 
 open Quaternion
