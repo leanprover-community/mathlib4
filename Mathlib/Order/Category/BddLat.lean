@@ -22,10 +22,6 @@ understood to entail having a bottom and a top element.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 universe u
 
 open CategoryTheory

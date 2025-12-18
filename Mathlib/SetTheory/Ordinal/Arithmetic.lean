@@ -49,9 +49,6 @@ Various other basic arithmetic results are given in `Principal.lean` instead.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists Field Module
 
 noncomputable section

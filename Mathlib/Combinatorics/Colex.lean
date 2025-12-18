@@ -61,9 +61,6 @@ colex, colexicographic, binary
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Function
 
 variable {α β : Type*}

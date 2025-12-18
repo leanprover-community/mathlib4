@@ -16,10 +16,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 open CategoryTheory
 
 open CategoryTheory.Limits

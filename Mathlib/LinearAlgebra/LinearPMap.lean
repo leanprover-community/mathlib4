@@ -32,9 +32,6 @@ They are also the basis for the theory of unbounded operators.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe u v w
 
 /-- A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/

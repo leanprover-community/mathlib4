@@ -33,9 +33,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory
 
 open CategoryTheory.Limits

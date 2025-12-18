@@ -45,9 +45,6 @@ to prove that the second exterior derivative of a differential form is zero.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Fin Function
 
 namespace ContinuousAlternatingMap

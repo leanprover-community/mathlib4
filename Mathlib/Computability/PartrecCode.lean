@@ -44,9 +44,6 @@ of some code.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Encodable Denumerable
 
 namespace Nat.Partrec

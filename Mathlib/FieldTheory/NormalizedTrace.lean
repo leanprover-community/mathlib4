@@ -35,9 +35,6 @@ integral) extension of `F`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace Algebra
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]

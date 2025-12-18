@@ -14,9 +14,6 @@ public import Mathlib.Data.ZMod.Basic
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
 

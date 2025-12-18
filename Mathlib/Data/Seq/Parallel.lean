@@ -20,9 +20,6 @@ honor sequence equivalence (irrelevance of computation time).)
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe u v
 
 namespace Computation

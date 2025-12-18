@@ -34,10 +34,6 @@ space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCou
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 noncomputable section
 
 universe u v w

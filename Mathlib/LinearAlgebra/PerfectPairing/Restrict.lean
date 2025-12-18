@@ -25,9 +25,6 @@ We provide API for restricting perfect pairings to submodules and for restrictin
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Function Module Set
 open Submodule (span subset_span)
 

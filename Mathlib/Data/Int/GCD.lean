@@ -35,9 +35,6 @@ Bézout's lemma, Bezout's lemma
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 /-! ### Extended Euclidean algorithm -/
 
 

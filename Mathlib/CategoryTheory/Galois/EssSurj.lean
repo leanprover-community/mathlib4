@@ -39,9 +39,6 @@ For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Proje
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 universe u₁ u₂

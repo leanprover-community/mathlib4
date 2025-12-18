@@ -31,10 +31,6 @@ This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 universe u v
 
 open CategoryTheory

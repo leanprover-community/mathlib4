@@ -20,10 +20,6 @@ Upper/lower sets are preserved under pointwise algebraic operations in ordered g
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 open Function Set
 
 open Pointwise

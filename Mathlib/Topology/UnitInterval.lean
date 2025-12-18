@@ -21,9 +21,6 @@ We provide basic instances, as well as a custom tactic for discharging
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open Topology Filter Set Int Set.Icc

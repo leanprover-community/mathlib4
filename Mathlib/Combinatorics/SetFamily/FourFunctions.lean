@@ -58,9 +58,6 @@ earlier file and give it a proper API.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Finset Fintype Function
 open scoped FinsetFamily
 

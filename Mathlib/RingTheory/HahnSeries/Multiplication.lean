@@ -51,9 +51,6 @@ The following may be useful for composing vertex operators, but they seem to tak
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Finset Function HahnSeries Pointwise
 
 noncomputable section

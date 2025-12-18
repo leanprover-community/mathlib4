@@ -38,9 +38,6 @@ and require `0⁻¹ = 0`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists DenselyOrdered Ring
 
 open Function

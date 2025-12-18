@@ -29,9 +29,6 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Filter Topology Set ContinuousLinearMap Bornology
 
 section Definition

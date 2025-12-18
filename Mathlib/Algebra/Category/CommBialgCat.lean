@@ -18,9 +18,6 @@ commutative ring `R` along with the forgetful functor to `CommAlgCat`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open Bialgebra Coalgebra Opposite CategoryTheory Limits MonObj

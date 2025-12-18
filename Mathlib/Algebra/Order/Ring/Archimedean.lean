@@ -40,9 +40,6 @@ reasons:
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
 namespace ArchimedeanClass

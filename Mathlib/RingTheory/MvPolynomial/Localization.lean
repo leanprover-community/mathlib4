@@ -28,9 +28,6 @@ In this file we show some results connecting multivariate polynomial rings and l
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 variable {σ R : Type*} [CommRing R] (M : Submonoid R)
 variable (S : Type*) [CommRing S] [Algebra R S]
 

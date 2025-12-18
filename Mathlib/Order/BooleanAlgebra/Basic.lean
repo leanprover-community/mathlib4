@@ -27,9 +27,6 @@ generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe u v
 
 variable {α : Type u} {β : Type*} {x y z : α}

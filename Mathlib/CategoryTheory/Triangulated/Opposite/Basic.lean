@@ -36,9 +36,6 @@ functor is `shiftFunctor Cᵒᵖ n` and whose inverse functor is `(shiftFunctor 
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject

@@ -34,9 +34,6 @@ to unify the APIs where possible.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v
 
 variable {R S M : Type*}

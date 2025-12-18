@@ -30,9 +30,6 @@ Show that the forgetful functor to `TopCat` preserves filtered colimits.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v u
 
 variable (R : Type u) [Ring R] [TopologicalSpace R]

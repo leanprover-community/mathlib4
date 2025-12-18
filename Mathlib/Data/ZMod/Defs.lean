@@ -33,10 +33,6 @@ able to import some part of `ZMod`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 namespace Fin
 
 /-!

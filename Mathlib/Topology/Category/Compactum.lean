@@ -74,9 +74,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter

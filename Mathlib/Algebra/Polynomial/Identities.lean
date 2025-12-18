@@ -17,10 +17,6 @@ The main def is `Polynomial.binomExpansion`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 noncomputable section
 
 namespace Polynomial

@@ -28,9 +28,6 @@ We also characterize Jacobson radicals of ideals in such rings.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 /-! ### Left ideals in a matrix semiring -/
 
 namespace Ideal

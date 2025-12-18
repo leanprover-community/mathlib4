@@ -32,9 +32,6 @@ compact Hausdorff spaces.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open Function Set

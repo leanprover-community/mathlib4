@@ -44,9 +44,6 @@ From a slightly different perspective in order to reuse material in `Topology.Un
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open Filter Set

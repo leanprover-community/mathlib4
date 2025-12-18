@@ -24,9 +24,6 @@ along with the relevant forgetful functors between them.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe u v
 
 open CategoryTheory

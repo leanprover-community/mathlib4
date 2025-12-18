@@ -73,9 +73,6 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
 
 noncomputable section

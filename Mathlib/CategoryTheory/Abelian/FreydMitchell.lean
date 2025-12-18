@@ -76,9 +76,6 @@ small category, then this does not change anything.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v u
 
 open CategoryTheory Limits

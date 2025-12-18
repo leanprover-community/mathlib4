@@ -21,6 +21,7 @@ import difflib
 from pathlib import Path
 import sys
 import subprocess
+import re
 
 
 TARGET_LINE = "@[expose] public section"
@@ -86,6 +87,27 @@ def revert_file(path: Path) -> tuple[bool, str]:
     return changed, new_text
 
 
+def remove_exact_file(path: Path) -> tuple[bool, str]:
+    """Remove only the exact inserted block (optional blank then SET1 and SET2)
+    immediately following `TARGET_LINE`.
+    This uses a precise regex so it does not touch other `set_option` usages
+    like `set_option ... true in`.
+    """
+    text = path.read_text(encoding="utf-8")
+    # Capture the target line + its newline in group 1, optionally one blank line,
+    # then the exact two set_option lines (allowing surrounding whitespace).
+    pattern = re.compile(
+        r"(^\s*@\[expose\]\s*public\s+section\s*\n)"  # group 1: target line
+        r"(?:\n)?\s*"  # optional single blank line
+        r"set_option\s+backward\.privateInPublic\s+false\s*\n"
+        r"\s*set_option\s+backward\.privateInPublic\.warn\s+true\s*\n?",
+        re.MULTILINE,
+    )
+    new_text, nsub = pattern.subn(r"\1", text)
+    changed = nsub > 0
+    return changed, new_text
+
+
 def get_files_from_list(list_path: Path) -> list[Path]:
     if not list_path.exists():
         print(f"List file not found: {list_path}", file=sys.stderr)
@@ -134,6 +156,11 @@ def main() -> int:
     ap.add_argument("--list", default="warnings_only.txt", help="Path to list file")
     ap.add_argument("--apply", action="store_true", help="Apply changes in-place")
     ap.add_argument("--revert", action="store_true", help="Remove previously inserted set_option lines")
+    ap.add_argument(
+        "--remove-exact",
+        action="store_true",
+        help="Remove only the exact inserted set_option block after the target line",
+    )
     ap.add_argument("--git-commit", action="store_true", help="Commit changes (requires --apply)")
     args = ap.parse_args()
 
@@ -144,8 +171,15 @@ def main() -> int:
         return 0
 
     changed_files: list[Path] = []
+    # Ensure flags are used sensibly
+    if args.revert and args.remove_exact:
+        print("Error: --revert and --remove-exact are mutually exclusive", file=sys.stderr)
+        return 2
+
     for f in files:
-        if args.revert:
+        if args.remove_exact:
+            changed, new_text = remove_exact_file(f)
+        elif args.revert:
             changed, new_text = revert_file(f)
         else:
             changed, new_text = process_file(f)
@@ -173,6 +207,8 @@ def main() -> int:
                 subprocess.run(["git", "add"] + [str(p) for p in changed_files], check=True)
                 if args.revert:
                     msg = "Remove backward.privateInPublic set_option after @[expose] public section"
+                elif args.remove_exact:
+                    msg = "Remove exact backward.privateInPublic set_option block after @[expose] public section"
                 else:
                     msg = "Insert backward.privateInPublic set_option after @[expose] public section"
                 subprocess.run(["git", "commit", "-m", msg], check=True)

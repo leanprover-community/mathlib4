@@ -52,9 +52,6 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open scoped MonoidAlgebra
 
 variable (R X : Type*) [CommSemiring R]

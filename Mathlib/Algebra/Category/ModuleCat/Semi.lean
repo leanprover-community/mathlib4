@@ -38,10 +38,6 @@ Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a 
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 open CategoryTheory Limits WalkingParallelPair
 
 universe v u

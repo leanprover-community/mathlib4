@@ -73,10 +73,6 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 noncomputable section
 
 open DirectSum Pointwise

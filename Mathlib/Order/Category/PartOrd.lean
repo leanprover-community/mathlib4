@@ -17,9 +17,6 @@ This defines `PartOrd`, the category of partial orders with monotone maps.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory
 
 universe u

@@ -42,9 +42,6 @@ change of signs in the "action" part of the Lie bracket.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace LieAlgebra
 
 variable {R N L M : Type*}

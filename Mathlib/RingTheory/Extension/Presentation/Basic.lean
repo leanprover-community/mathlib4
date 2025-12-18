@@ -44,9 +44,6 @@ in June 2024.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe t w u v
 
 open TensorProduct MvPolynomial

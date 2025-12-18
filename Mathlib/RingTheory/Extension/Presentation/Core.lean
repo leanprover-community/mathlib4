@@ -24,9 +24,6 @@ this API can be used to remove Noetherian hypothesis in certain cases.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open TensorProduct
 
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]

@@ -46,9 +46,6 @@ kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Nat
 open scoped FinsetFamily
 

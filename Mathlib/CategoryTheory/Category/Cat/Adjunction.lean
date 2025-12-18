@@ -25,9 +25,6 @@ All this could be made with 2-functors
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v u
 namespace CategoryTheory.Cat
 

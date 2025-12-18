@@ -48,9 +48,6 @@ approach, it turns out that direct proofs are easier and more efficient.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 suppress_compilation
 
 noncomputable section

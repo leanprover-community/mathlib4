@@ -60,9 +60,6 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Order Set
 
 variable {ι : Type*} [Preorder ι] {F₁ F₂ F X : ι → Type*}

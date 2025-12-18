@@ -14,9 +14,6 @@ public import Mathlib.Algebra.Star.Basic
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace RingQuot
 
 universe u

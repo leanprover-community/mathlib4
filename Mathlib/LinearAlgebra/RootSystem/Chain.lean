@@ -29,9 +29,6 @@ length, `p + q` is at most 3.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open FaithfulSMul Function Set Submodule

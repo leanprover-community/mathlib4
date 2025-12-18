@@ -34,10 +34,6 @@ and then as a right-rigid monoidal category.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 noncomputable section
 
 open CategoryTheory Module

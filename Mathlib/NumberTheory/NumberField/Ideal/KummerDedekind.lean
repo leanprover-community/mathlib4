@@ -49,9 +49,6 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open Polynomial NumberField Ideal KummerDedekind UniqueFactorizationMonoid

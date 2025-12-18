@@ -20,9 +20,6 @@ categories.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory MonoidalClosed Limits

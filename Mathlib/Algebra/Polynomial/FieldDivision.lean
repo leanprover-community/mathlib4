@@ -21,10 +21,6 @@ This file starts looking like the ring theory of $R[X]$
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 noncomputable section
 
 open Polynomial

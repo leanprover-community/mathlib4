@@ -18,9 +18,6 @@ This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace LieModule
 
 section

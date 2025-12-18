@@ -62,9 +62,6 @@ Show:
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open TensorProduct
 
 universe u v

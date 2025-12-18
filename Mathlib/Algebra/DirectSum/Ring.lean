@@ -76,10 +76,6 @@ graded ring, filtered ring, direct sum, add_submonoid
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 variable {ι : Type*} [DecidableEq ι]
 
 namespace DirectSum

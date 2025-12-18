@@ -31,9 +31,6 @@ Some instances are in `Mathlib/AlgebraicGeometry/Morphisms/ClosedImmersion` and
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory TopologicalSpace PrimeSpectrum Limits
 
 universe u

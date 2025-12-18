@@ -49,9 +49,6 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section

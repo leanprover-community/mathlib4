@@ -21,9 +21,6 @@ This file defines the type of signs $\{-1, 0, 1\}$ and its basic arithmetic inst
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 -- Don't generate unnecessary `sizeOf_spec` lemmas which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
 /-- The type of signs. -/

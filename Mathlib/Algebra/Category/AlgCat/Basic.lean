@@ -20,9 +20,6 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory Limits
 
 universe v u

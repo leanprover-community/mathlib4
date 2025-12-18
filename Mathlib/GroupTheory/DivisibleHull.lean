@@ -40,9 +40,6 @@ it.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 variable {M : Type*} [AddCommMonoid M]
 
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat

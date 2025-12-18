@@ -66,9 +66,6 @@ subsemigroup, range, product, map, comap
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists MonoidWithZero
 
 variable {M N P σ : Type*}

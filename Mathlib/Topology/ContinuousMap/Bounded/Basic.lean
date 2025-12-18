@@ -17,9 +17,6 @@ The type of bounded continuous functions taking values in a metric space, with t
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists CStarRing
 
 noncomputable section

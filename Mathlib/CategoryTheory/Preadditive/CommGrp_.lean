@@ -19,9 +19,6 @@ structure of the commutative group objects.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 universe v u
 
 namespace CategoryTheory.Preadditive

@@ -62,9 +62,6 @@ and then replace the uniformity and bornology with the correct ones.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CStarModule CStarRing
 
 namespace WithCStarModule

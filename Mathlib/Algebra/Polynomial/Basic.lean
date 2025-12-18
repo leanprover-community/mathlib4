@@ -59,9 +59,6 @@ in general not be used once the basic API for polynomials is constructed.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`,

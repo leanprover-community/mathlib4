@@ -44,9 +44,6 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 noncomputable section
 
 open scoped Topology ENNReal Cardinal

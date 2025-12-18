@@ -27,9 +27,6 @@ they are def-eqs, perhaps constructing it from specified `MorphismProperty`s.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace CategoryTheory.Bicategory
 
 variable {B : Type*} (C : Type*) [Bicategory C] (F : B → C)

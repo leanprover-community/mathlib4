@@ -26,10 +26,6 @@ Scoped in the `ModularForm` namespace, this file defines
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 open Complex UpperHalfPlane ModularGroup
 
 open scoped MatrixGroups

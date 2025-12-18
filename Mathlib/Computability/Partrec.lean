@@ -31,9 +31,6 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open List (Vector)
 open Encodable Denumerable Part
 

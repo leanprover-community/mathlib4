@@ -29,9 +29,6 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists Ring
 
 namespace Nat

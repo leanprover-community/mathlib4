@@ -20,9 +20,6 @@ realized in a ring `R` is equal to the lift of the element of `FreeCommRing α` 
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace FirstOrder
 
 namespace Ring

@@ -19,9 +19,6 @@ As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-vers
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory Limits
 
 universe w w' v₁ v₂ u₁ u₂

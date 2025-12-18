@@ -59,9 +59,6 @@ for the empty set by convention.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists Module Field
 
 noncomputable section

@@ -42,10 +42,6 @@ from `Cat` to `Cat`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
-
 namespace CategoryTheory
 
 universe v u

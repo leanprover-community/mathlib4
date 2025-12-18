@@ -35,9 +35,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 suppress_compilation
 
 open Bornology Metric

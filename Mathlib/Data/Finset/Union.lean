@@ -30,9 +30,6 @@ Remove `Finset.biUnion` in favour of `Finset.sup`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}

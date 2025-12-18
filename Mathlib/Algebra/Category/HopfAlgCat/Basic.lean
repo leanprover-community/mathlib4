@@ -20,9 +20,6 @@ This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open CategoryTheory
 
 universe v u

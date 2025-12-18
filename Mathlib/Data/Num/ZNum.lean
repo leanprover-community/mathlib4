@@ -17,9 +17,6 @@ This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open Int
 
 attribute [local simp] add_assoc

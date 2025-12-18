@@ -51,9 +51,6 @@ prove analogous results.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem

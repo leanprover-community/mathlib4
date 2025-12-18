@@ -48,9 +48,6 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
 

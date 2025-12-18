@@ -24,9 +24,6 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 namespace SimpleGraph
 
 /-- Circulant graph over additive group `G` with jumps `s` -/

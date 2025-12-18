@@ -35,9 +35,6 @@ below for more details.
 
 @[expose] public section
 
-set_option backward.privateInPublic false
-set_option backward.privateInPublic.warn true
-
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace
   WithCStarModule
 
