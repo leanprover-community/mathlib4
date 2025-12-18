@@ -64,28 +64,6 @@ variable [LinearOrderedAddCommGroupWithTop α] {a b : α}
 
 attribute [simp] LinearOrderedAddCommGroupWithTop.neg_top
 
-@[simp]
-lemma top_ne_zero : (⊤ : α) ≠ 0 := by
-  intro h
-  obtain ⟨a, ha⟩ := exists_ne (0 : α)
-  rw [← zero_add a] at ha
-  simp [top_add, -zero_add, ← h] at ha
-
-@[simp]
-lemma zero_ne_top : 0 ≠ (⊤ : α) :=
-  top_ne_zero.symm
-
-@[simp] lemma top_pos : (0 : α) < ⊤ := lt_top_iff_ne_top.2 top_ne_zero.symm
-
-@[simp]
-lemma add_neg_cancel_iff_ne_top : a + -a = 0 ↔ a ≠ ⊤ where
-  mp := by contrapose; simp +contextual
-  mpr := add_neg_cancel_of_ne_top
-
-@[simp]
-lemma sub_self_eq_zero_iff_ne_top : a - a = 0 ↔ a ≠ ⊤ := by
-  rw [sub_eq_add_neg, add_neg_cancel_iff_ne_top]
-
 alias ⟨_, sub_self_eq_zero_of_ne_top⟩ := sub_self_eq_zero_iff_ne_top
 
 @[deprecated (since := "2025-12-14")] protected alias add_neg_cancel := add_neg_cancel_of_ne_top
@@ -106,6 +84,26 @@ lemma add_neg_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + b + -b = a 
 
 lemma neg_add_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + -b + b = a := by
   simp [add_assoc, neg_add_cancel_of_ne_top hb]
+
+@[simp]
+lemma top_ne_zero : (⊤ : α) ≠ 0 := by
+  intro h
+  obtain ⟨a, ha⟩ := exists_ne (0 : α)
+  rw [← zero_add a] at ha
+  simp [top_add, -zero_add, ← h] at ha
+
+@[simp] lemma zero_ne_top : 0 ≠ (⊤ : α) := top_ne_zero.symm
+
+@[simp] lemma top_pos : (0 : α) < ⊤ := lt_top_iff_ne_top.2 top_ne_zero.symm
+
+@[simp]
+lemma add_neg_cancel_iff_ne_top : a + -a = 0 ↔ a ≠ ⊤ where
+  mp := by contrapose; simp +contextual
+  mpr h := add_neg_cancel_of_ne_top h
+
+@[simp]
+lemma sub_self_eq_zero_iff_ne_top : a - a = 0 ↔ a ≠ ⊤ := by
+  rw [sub_eq_add_neg, add_neg_cancel_iff_ne_top]
 
 @[simp] lemma isAddUnit_iff : IsAddUnit a ↔ a ≠ ⊤ where
   mp := by rintro ⟨⟨b, c, hbc, -⟩, rfl⟩ rfl; simp [top_add] at hbc
