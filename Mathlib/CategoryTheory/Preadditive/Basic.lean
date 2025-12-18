@@ -5,6 +5,7 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
+public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Module.End
@@ -98,16 +99,24 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
+
+variable {F} in
+/-- The additive equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a preadditive category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homAddEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃+ (F X ⟶ F Y) where
+  toEquiv := InducedCategory.homEquiv
+  map_add' := by aesop_cat
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
+  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]

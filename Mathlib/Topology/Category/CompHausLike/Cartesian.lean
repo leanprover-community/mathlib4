@@ -32,14 +32,14 @@ type-theoretic products.
 -/
 def productCone : BinaryFan X Y :=
   BinaryFan.mk (P := CompHausLike.of P (X × Y))
-    (TopCat.ofHom { toFun := Prod.fst }) (TopCat.ofHom { toFun := Prod.snd })
+    (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
 /--
 When the predicate `P` is preserved under taking type-theoretic products, that product is a
 category-theoretic product in `CompHausLike P`.
 -/
 def productIsLimit : IsLimit (productCone X Y) where
-  lift := fun S : BinaryFan X Y ↦ TopCat.ofHom {
+  lift := fun S : BinaryFan X Y ↦ ofHom _ {
     toFun := fun s ↦ (S.fst s, S.snd s)  }
   fac := by rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by

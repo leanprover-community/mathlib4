@@ -31,7 +31,7 @@ namespace Subpresheaf
 @[simps]
 noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
   functor :=
-    { obj A := MonoOver.mk' A.ι
+    { obj A := MonoOver.mk A.ι
       map {A B} f := MonoOver.homMk (Subpresheaf.homOfLe (leOfHom f)) }
   inverse :=
     { obj X := Subpresheaf.range X.arrow

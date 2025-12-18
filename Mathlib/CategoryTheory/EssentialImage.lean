@@ -104,8 +104,7 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : F.essImage Y
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+  mem_essImage := fun ⟨_, hY⟩ => ⟨hY.witness, ⟨F.essImage.isoMk hY.getIso⟩⟩
 
 theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
   mem_essImage Y := by
@@ -172,31 +171,18 @@ variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
 functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
 @[simps] def essImage.liftFunctor : J ⥤ C where
   obj j := F.toEssImage.objPreimage ⟨G.obj j, hG j⟩
-  -- TODO: `map` isn't type-correct:
-  -- It conflates `⟨G.obj i, hG i⟩ ⟶ ⟨G.obj j, hG j⟩` and `G.obj i ⟶ G.obj j`.
-  map {i j} f := F.preimage <|
-    (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom ≫ G.map f ≫
-      (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv
-  map_id i := F.map_injective <| by
-    simpa [-Iso.hom_inv_id] using (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom_inv_id
-  map_comp {i j k} f g := F.map_injective <| by
-    simp only [Functor.map_comp, Category.assoc, Functor.map_preimage]
-    congr 2
-    symm
-    convert (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv_hom_id_assoc (G.map g ≫
-      (F.toEssImage.objObjPreimageIso ⟨G.obj k, hG k⟩).inv)
+  map {i j} f :=
+    F.preimage <|
+    (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom.hom ≫ G.map f ≫
+      (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv.hom
+  map_id _ := F.map_injective  (by simp)
+  map_comp _ _ := F.map_injective (by simp)
 
 /-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does
 factor through `essImage.liftFunctor G F hG`. -/
 @[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
   NatIso.ofComponents
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
-      fun {i j} f ↦ by
-    simp only [Functor.comp_obj, liftFunctor_obj, Functor.comp_map, liftFunctor_map,
-      Functor.map_preimage, Functor.mapIso_hom, ObjectProperty.ι_map, Category.assoc]
-    congr 1
-    convert Category.comp_id _
-    exact (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv_hom_id
 
 end Functor
 

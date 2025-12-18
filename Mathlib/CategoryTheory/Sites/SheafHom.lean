@@ -135,7 +135,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
       π :=
         { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
           naturality := by
-            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
+            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨⟨f : Z₂ ⟶ Z₁⟩⟩
             dsimp
             rw [id_comp, assoc]
             have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
