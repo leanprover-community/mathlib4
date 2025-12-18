@@ -632,7 +632,7 @@ theorem ι_isoSheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  change SheafedSpace.IsOpenImmersion _
+  dsimp [IsOpenImmersion]
   rw [← D.ι_isoSheafedSpace_inv]
   apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
   -- Porting note: this was automatic
