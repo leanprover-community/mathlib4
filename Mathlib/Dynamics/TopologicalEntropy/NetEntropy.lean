@@ -333,7 +333,7 @@ theorem coverEntropyInf_eq_iSup_netEntropyInfEntourage :
     coverEntropyInf T F = ⨆ U ∈ 𝓤 X, netEntropyInfEntourage T F U := by
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
-    have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
+    have := isRefl_of_mem_uniformity V_uni
     apply (coverEntropyInfEntourage_antitone T F V_U).trans (le_iSup₂_of_le V V_uni _)
     exact coverEntropyInfEntourage_le_netEntropyInfEntourage T F
   · apply (netEntropyInfEntourage_antitone T F SetRel.symmetrize_subset_self).trans
@@ -349,7 +349,7 @@ theorem coverEntropy_eq_iSup_netEntropyEntourage :
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · obtain ⟨V, V_uni, V_symm, V_comp_U⟩ := comp_symm_mem_uniformity_sets U_uni
     apply (coverEntropyEntourage_antitone T F V_comp_U).trans (le_iSup₂_of_le V V_uni _)
-    have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
+    have := isRefl_of_mem_uniformity V_uni
     exact coverEntropyEntourage_le_netEntropyEntourage T F
   · apply (netEntropyEntourage_antitone T F SetRel.symmetrize_subset_self).trans
     apply (le_iSup₂ (SetRel.symmetrize U) (symmetrize_mem_uniformity U_uni)).trans'

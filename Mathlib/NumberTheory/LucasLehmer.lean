@@ -627,7 +627,7 @@ Lean 4 kernel, which has the capability of efficiently reducing natural number e
 With this reduction in hand, it's a simple matter of applying the lemma
 `LucasLehmer.residue_eq_zero_iff_sMod_eq_zero`.
 
-See [Archive/Examples/MersennePrimes.lean] for certifications of all Mersenne primes
+See `Archive/Examples/MersennePrimes.lean` for certifications of all Mersenne primes
 up through `mersenne 4423`.
 -/
 
@@ -747,14 +747,14 @@ end LucasLehmer
 
 /-!
 This implementation works successfully to prove `(2^4423 - 1).Prime`,
-and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
+and all the Mersenne primes up to this point appear in `Archive/Examples/MersennePrimes.lean`.
 These can be calculated nearly instantly, and `(2^9689 - 1).Prime` only fails due to deep
 recursion.
 
 (Note by kmill: the following notes were for the Lean 3 version. They seem like they could still
 be useful, so I'm leaving them here.)
 
-There's still low hanging fruit available to do faster computations
+There's still low-hanging fruit available to do faster computations
 based on the formula
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]

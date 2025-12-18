@@ -288,6 +288,7 @@ theorem comap_top (f : G →* N) : (⊤ : Subgroup N).comap f = ⊤ :=
 def subgroupOf (H K : Subgroup G) : Subgroup K :=
   H.comap K.subtype
 
+set_option backward.proofsInPublic true in
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
 @[to_additive (attr := simps)
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/]

@@ -77,7 +77,7 @@ lemma preReflection_apply :
 variable {x f}
 
 lemma preReflection_apply_self (h : f x = 2) :
-    preReflection x f x = - x := by
+    preReflection x f x = -x := by
   rw [preReflection_apply, h, two_smul]; abel
 
 lemma involutive_preReflection (h : f x = 2) :
@@ -106,7 +106,7 @@ lemma reflection_apply (h : f x = 2) :
 
 @[simp]
 lemma reflection_apply_self (h : f x = 2) :
-    reflection h x = - x :=
+    reflection h x = -x :=
   preReflection_apply_self h
 
 lemma involutive_reflection (h : f x = 2) :

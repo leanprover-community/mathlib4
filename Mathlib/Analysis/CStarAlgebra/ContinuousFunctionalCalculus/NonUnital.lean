@@ -565,7 +565,7 @@ lemma cfcₙ_sub : cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
-lemma cfcₙ_neg : cfcₙ (fun x ↦ - (f x)) a = - (cfcₙ f a) := by
+lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
   by_cases h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
   · obtain ⟨ha, hf, h0⟩ := h
     rw [cfcₙ_apply f a, ← map_neg, cfcₙ_apply ..]

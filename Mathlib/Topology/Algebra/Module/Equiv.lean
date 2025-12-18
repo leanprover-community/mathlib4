@@ -1177,8 +1177,6 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M
   simp
   rfl
 
-@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
-
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
@@ -1198,14 +1196,9 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
-
 theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
   simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
-
-@[deprecated (since := "2025-04-22")]
-alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]

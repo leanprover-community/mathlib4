@@ -382,8 +382,8 @@ variable (H)
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
-    RootSystem H.root K (Dual K H) H :=
-  RootSystem.mk'
+    RootPairing H.root K (Dual K H) H :=
+  RootPairing.mk''
     .id
     { toFun := (↑)
       inj' := by
@@ -396,8 +396,10 @@ def rootSystem :
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
-    (fun α β ↦
-      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
+
+instance : (rootSystem H).IsRootSystem :=
+  RootPairing.isRootSystem_mk'' fun α β ↦
+    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :

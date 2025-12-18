@@ -113,7 +113,7 @@ added in base `p`. The set is expressed by filtering `Ico 1 b` where `b` is any 
 than `log p (n + k)`. -/
 theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     (choose (n + k) k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
-  have h₁ : (choose (n + k) k).factorization p +  (k ! * n !).factorization p
+  have h₁ : (choose (n + k) k).factorization p + (k ! * n !).factorization p
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
@@ -130,7 +130,7 @@ are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
 is any bound greater than `log p n`. -/
 theorem factorization_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     (choose n k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
-  rw [←factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
+  rw [← factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
 
 /-- Modified version of `emultiplicity_le_emultiplicity_of_dvd_right`
 but for factorization. -/

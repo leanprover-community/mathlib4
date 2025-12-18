@@ -33,7 +33,7 @@ section UniformlyOn
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 theorem HasSumUniformlyOn.of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
-    (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) s :=  by
+    (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) s := by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn, tendstoUniformlyOn_tsum hu hfu]
 
 theorem HasSumUniformlyOn.of_norm_le_summable_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
@@ -101,7 +101,7 @@ theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen 
   | zero => simp
   | succ m hm =>
     simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by lia) hr)]
+    rw [← derivWithin_tsum hs hx _ _ (fun n r hr ↦ hf2 n m r (by lia) hr)]
     · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by lia))
           (fun k r e hr he ↦ hf2 k r e (by lia) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by lia))
           (fun k r e hr he ↦ hf2 k r e (by lia) he))

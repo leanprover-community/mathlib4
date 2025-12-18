@@ -133,7 +133,7 @@ theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 
 theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
-    (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X)  :=
+    (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
   (coverDense_iff_isBasis _).2 h
 
 end TopCat.Opens

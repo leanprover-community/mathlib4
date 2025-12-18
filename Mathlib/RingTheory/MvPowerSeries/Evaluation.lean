@@ -117,6 +117,10 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 
+theorem HasEval.pow (x : σ → S) (ha : HasEval x) {p : ℕ} (hp : 0 < p) :
+    HasEval (x ^ p) :=
+  mem_hasEvalIdeal_iff.mp <| Ideal.pow_mem_of_mem hasEvalIdeal ha p hp
+
 end
 
 /- ## Construction of an evaluation morphism for power series -/

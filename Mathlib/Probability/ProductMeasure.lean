@@ -263,7 +263,7 @@ which allows to extend it to the `σ`-algebra by Carathéodory's theorem. -/
 theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n ∈ measurableCylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ piContent μ (A n)) atTop (𝓝 0) := by
-  have : ∀ i, Nonempty (X i) := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
+  have : ∀ i, Nonempty (X i) := fun i ↦ nonempty_of_isProbabilityMeasure (μ i)
   have A_cyl n : ∃ s S, MeasurableSet S ∧ A n = cylinder s S :=
     (mem_measurableCylinders _).1 (A_mem n)
   choose s S mS A_eq using A_cyl

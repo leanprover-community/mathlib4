@@ -131,7 +131,7 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
 
 @[to_additive]
 lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
-    mulInvariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
+    mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
   simp only [mulInvariantVectorField, mpullback, inverse_mfderiv_mul_left]
   congr

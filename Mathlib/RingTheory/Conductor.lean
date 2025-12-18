@@ -82,7 +82,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
 
 variable {I : Ideal R}
 
-/-- This technical lemma tell us that if `C` is the conductor of `R<x>` and `I` is an ideal of `R`
+/-- This technical lemma tells us that if `C` is the conductor of `R<x>` and `I` is an ideal of `R`
   then `p * (I * S) ⊆ I * R<x>` for any `p` in `C ∩ R` -/
 theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :

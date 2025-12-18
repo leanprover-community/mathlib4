@@ -147,7 +147,7 @@ noncomputable def algEquivToLimit : Gal(K/k) →* limit (asProfiniteGaloisGroupF
 
 theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
-  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
+  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
   intro N hN
   rw [map_one, krullTopology_mem_nhds_one_iff] at hN
   obtain ⟨L', _, hO⟩ := hN
@@ -296,7 +296,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
   simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
 
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
-  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
+  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
   simp only [map_one, krullTopology_mem_nhds_one_iff_of_isGalois, ← MulEquiv.coe_toEquiv_symm,
     ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage_symm]
   intro H ⟨L, le⟩

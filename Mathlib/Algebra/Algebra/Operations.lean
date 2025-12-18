@@ -35,7 +35,7 @@ It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A
 Additionally, in the `Pointwise` scope we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
-When `R` is not necessarily commutative, and `A` is merely a `R`-module with a ring structure
+When `R` is not necessarily commutative, and `A` is merely an `R`-module with a ring structure
 such that `IsScalarTower R A A` holds (equivalent to the data of a ring homomorphism `R →+* A`
 by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` and
 `Mul (Submodule R A)`, but `1` is only a left identity, not necessarily a right one.

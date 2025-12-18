@@ -509,6 +509,10 @@ theorem support_monomial [h : Decidable (a = 0)] :
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
 
+lemma support_C (c : R) [h : Decidable (c = 0)] :
+    (C (σ := σ) c).support = if c = 0 then ∅ else {0} :=
+  support_monomial
+
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
 
@@ -990,7 +994,7 @@ variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i 
   {n : ℕ}
 
 variable (σ M) in
-/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}

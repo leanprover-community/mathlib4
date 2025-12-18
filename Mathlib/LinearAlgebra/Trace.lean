@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 
 This file defines the trace of a linear map.
 
-See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
+See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 ## Tags
 
@@ -273,7 +273,7 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
 lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
     trace R M (f.smulRight x) = f x := by
   rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
-  simp [- Basis.sum_repr, dotProduct]
+  simp [-Basis.sum_repr, dotProduct]
 
 end
 

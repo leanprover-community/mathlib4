@@ -35,9 +35,6 @@ open Relation
 
 namespace Turing
 
--- TODO: revisit this after #13791 is merged
-set_option linter.flexible false
-
 /-!
 ## Simulating sequentialized partial recursive functions in TM2
 
@@ -214,6 +211,7 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
+set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
@@ -855,6 +853,7 @@ theorem trNormal_respects (c k v s) :
       exact ⟨_, h₁, h.trans h₂⟩
   | fix f IH => apply IH
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
@@ -927,7 +926,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
   rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
-    simp [stepNormal_eval] at hc₂
+    simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff] at hc₂
     obtain ⟨v', hv, rfl⟩ := hc₂
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
@@ -948,6 +947,7 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret _) => {Q}
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
@@ -956,7 +956,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
     repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
-  · simp
+  · simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, forall_exists_index]
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
     exact Or.inr ⟨_, q_ih s h h'⟩
@@ -972,7 +972,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
-  induction q <;> · first |apply Finset.mem_singleton_self|apply Finset.mem_insert_self
+  induction q <;> · first | apply Finset.mem_singleton_self|apply Finset.mem_insert_self
 
 /-- The (finite!) set of machine states visited during the course of evaluation of `c`,
 including the state `ret k` but not any states after that (that is, the states visited while
@@ -1143,6 +1143,8 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
+-- simp acts on multiple goals at the same time
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
@@ -1175,6 +1177,7 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
   simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k with simp [Λ'.Supports, head]
   | zero' => exact Finset.union_subset_right Hk

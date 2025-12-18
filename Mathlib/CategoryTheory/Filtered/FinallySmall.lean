@@ -54,15 +54,16 @@ lemma exists_of_isFiltered :
         cocone_objs := by
           rintro ⟨X, hX⟩ ⟨Y, hY⟩
           obtain ⟨Z, hZ, ⟨f⟩⟩ := hP (max X Y)
-          exact ⟨⟨Z, hZ⟩, (leftToMax X Y ≫ f :),
-            (rightToMax X Y ≫ f :), by tauto⟩
+          exact ⟨⟨Z, hZ⟩, ObjectProperty.homMk (leftToMax X Y ≫ f),
+            ObjectProperty.homMk (rightToMax X Y ≫ f), by tauto⟩
         cocone_maps := by
-          rintro ⟨X, hX⟩ ⟨Y, hY⟩ (f₁ : X ⟶ Y) (f₂ : X ⟶ Y)
+          rintro ⟨X, hX⟩ ⟨Y, hY⟩ ⟨f₁ : X ⟶ Y⟩ ⟨f₂ : X ⟶ Y⟩
           obtain ⟨Z, hZ, ⟨g⟩⟩ := hP (coeq f₁ f₂)
-          exact ⟨⟨Z, hZ⟩, (coeqHom f₁ f₂ ≫ g :), coeq_condition_assoc _ _ _⟩ }
+          exact ⟨⟨Z, hZ⟩, ObjectProperty.homMk (coeqHom f₁ f₂ ≫ g),
+            ObjectProperty.hom_ext _ (coeq_condition_assoc _ _ _) ⟩ }
     let G : FinalModel.{w} C₀ ⥤ P.FullSubcategory :=
       { obj X := ⟨(fromFinalModel.{w} C₀).obj X, by tauto⟩
-        map f := (fromFinalModel.{w} C₀).map f }
+        map f := ObjectProperty.homMk ((fromFinalModel.{w} C₀).map f) }
     have : (G ⋙ P.ι).Final := inferInstanceAs (fromFinalModel.{w} C₀).Final
     exact ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
       (by rintro ⟨_, Y, _, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,

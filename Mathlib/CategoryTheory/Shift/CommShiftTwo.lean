@@ -22,7 +22,7 @@ differ by the sign `(-1) ^ (p + q)`.
 This is implemented using a structure `Functor.CommShift₂` which does not depend
 on the preadditive structure on `D`: instead of signs, elements in `(CatCenter D)ˣ`
 are used. These elements are part of a `CommShift₂Setup` structure which extends
-a `TwistShiftData` structure (see the file `CategoryTheory.Shift.Twist`).
+a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`).
 
 ## TODO (@joelriou)
 * Show that `G : C₁ ⥤ C₂ ⥤ D` satisfies `Functor.CommShift₂Int` iff the uncurried

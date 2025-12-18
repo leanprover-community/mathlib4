@@ -138,7 +138,7 @@ lemma coe_withValRingEquiv_symm :
       Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
   rfl
 
-/-- The `p`-adic numbers are isomophic as uniform spaces to the completion of the rationals at
+/-- The `p`-adic numbers are isomorphic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/
 noncomputable
 def withValUniformEquiv :
@@ -194,7 +194,7 @@ noncomputable def withValIntegersRingEquiv {p : ℕ} [Fact p.Prime] :
     𝒪[(Rat.padicValuation p).Completion] ≃+* ℤ_[p] :=
   withValRingEquiv.restrict _ (subring p) fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
 
-/-- The `p`-adic integers are isomophic as uniform spaces to the integers of the uniform completion
+/-- The `p`-adic integers are isomorphic as uniform spaces to the integers of the uniform completion
 of the rationals at the `p`-adic valuation. -/
 noncomputable def withValIntegersUniformEquiv : 𝒪[(Rat.padicValuation p).Completion] ≃ᵤ ℤ_[p] :=
   withValUniformEquiv.subtype fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm

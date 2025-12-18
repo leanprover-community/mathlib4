@@ -42,7 +42,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (�
   term in the quotient of the product of the setoids indexed by `l`. -/
 def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ i ∈ l, α i) piSetoid :=
   match l with
-  |     [] => ⟦nofun⟧
+  | [] => ⟦nofun⟧
   | i :: _ => Quotient.liftOn₂ (List.Pi.head (i := i) q)
     (listChoice (List.Pi.tail q))
     (⟦List.Pi.cons _ _ · ·⟧)
@@ -50,7 +50,7 @@ def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ 
 
 theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S) (⟦a · ·⟧) = ⟦a⟧ :=
   match l with
-  |     [] => Quotient.sound nofun
+  | [] => Quotient.sound nofun
   | i :: l => by
     unfold listChoice List.Pi.tail
     rw [listChoice_mk]
@@ -61,7 +61,7 @@ theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S
 lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i ∈ l, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ l, Quotient (S i)) : C q :=
   match l with
-  |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
+  | [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
     induction List.Pi.head q using Quotient.ind with | _ a

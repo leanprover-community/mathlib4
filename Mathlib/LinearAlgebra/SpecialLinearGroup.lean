@@ -132,11 +132,11 @@ theorem coe_mk (A : V ≃ₗ[R] V) (h : A.det = 1) : ↑(⟨A, h⟩ : SpecialLin
   rfl
 
 @[simp]
-theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B  : V ≃ₗ[R] V) :=
+theorem coe_mul : (A * B : SpecialLinearGroup R V) = (A * B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
-theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B  : V ≃ₗ[R] V) :=
+theorem coe_div : (A / B : SpecialLinearGroup R V) = (A / B : V ≃ₗ[R] V) :=
   rfl
 
 @[simp]
@@ -208,7 +208,7 @@ lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
     u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
 
 lemma toGeneralLinearGroup_injective :
-    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) :=  by
+    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
   simp [toGeneralLinearGroup, toLinearEquiv_injective]
 
 lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
@@ -460,14 +460,13 @@ noncomputable def centerEquivRootsOfUnity :
     set Hg := (mem_center_iff.mp g.prop)
     set Hh := (mem_center_iff.mp h.prop)
     set Hgh := (mem_center_iff.mp (g * h).prop)
-    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec,
-      Units.val_mul]
+    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec, Units.val_mul]
     change Hgh.choose = Hg.choose * Hh.choose
     suffices (Hgh.choose • LinearMap.id : V →ₗ[R] V)
       = (Hg.choose • LinearMap.id) * (Hh.choose • LinearMap.id) by
       apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
       intro x
-      simp  [mul_smul,
+      simp [mul_smul,
         ← mem_center_iff_spec (g * h).prop, ← mem_center_iff_spec h.prop,
         ← mem_center_iff_spec g.prop]
     simp [← Hgh.choose_spec.2, ← Hh.choose_spec.2, ← Hg.choose_spec.2]
@@ -516,7 +515,6 @@ open Subgroup Matrix Matrix.SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
 
--- variable [Nontrivial R]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 

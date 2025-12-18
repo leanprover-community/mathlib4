@@ -191,15 +191,15 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
     intro N N_open hN
     -- get $x \in A$ from nonempty open $G \cap \rho^{-1}(N)$
     rcases (G.mem_image ρ a).mp ha with ⟨e, he, rfl⟩
-    have nonempty : (G ∩ ρ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
-    have is_open : IsOpen <| G ∩ ρ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
-    have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ :=
+    have nonempty : (G ∩ ρ ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
+    have is_open : IsOpen <| G ∩ ρ ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
+    have ne_univ : ρ '' (G ∩ ρ ⁻¹' N)ᶜ ≠ univ :=
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
     have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_mono (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
-    have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
+    have hy : y ∈ G ∩ ρ ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
 
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:

@@ -395,8 +395,7 @@ def isubtree [DecidableEq F.A] [Inhabited (M F)] : Path F → M F → M F
       if h : a = a' then
         isubtree ps (f <| cast (by rw [h]) i)
       else
-        default (α := M F)
-    )
+        default (α := M F))
 
 /-- similar to `isubtree` but returns the data at the end of the path instead
 of the whole subtree -/

@@ -887,7 +887,7 @@ variable (σ) {f : 𝕜 → 𝕜} {f' : 𝕜}
 
 /-- If `f` has derivative `f'` at `x`, and `σ, σ'` are mutually inverse normed-ring automorphisms,
 then `σ ∘ f ∘ σ'` has derivative `σ f'` at `σ x`. -/
-lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ  f') (σ x) :=
+lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ f') (σ x) :=
   hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometry.continuous⟩
 
 /-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is

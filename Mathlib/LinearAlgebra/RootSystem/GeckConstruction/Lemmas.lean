@@ -138,20 +138,20 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     exact Submodule.subset_span (mem_range_self k)
   let s : Set ℤ := {-3, -1, 0, 1, 3}
   let A : ℤ := P.pairingIn ℤ j i
-  have hki  : P.root k ≠  P.root i := fun contra ↦ by
+  have hki : P.root k ≠ P.root i := fun contra ↦ by
     replace h₁ : 2 • P.root i = P.root l := by rwa [contra, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁.symm⟩
   have hki' : P.root k ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root l = 0 := by rwa [contra, neg_add_cancel, eq_comm] at h₁
     exact P.ne_zero _ h₁
-  have hli  : P.root l ≠  P.root i := fun contra ↦ by
+  have hli : P.root l ≠ P.root i := fun contra ↦ by
     replace h₁ : P.root k = 0 := by rwa [contra, add_eq_right] at h₁
     exact P.ne_zero _ h₁
   have hli' : P.root l ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root k = 2 • P.root l := by
       rwa [← neg_eq_iff_eq_neg.mpr contra, ← sub_eq_add_neg, sub_eq_iff_eq_add, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁⟩
-  have hmi  : P.root m ≠  P.root i := fun contra ↦ by
+  have hmi : P.root m ≠ P.root i := fun contra ↦ by
     replace h₂ : P.root k = P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 2 • P.root i := by rw [h₃, h₂]; abel
     exact P.nsmul_notMem_range_root ⟨_, h₃⟩
@@ -159,7 +159,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     replace h₂ : P.root k = -P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 0 := by rw [h₃, h₂]; abel
     exact P.ne_zero _ h₃
-  have hni  : P.root n ≠  P.root i := fun contra ↦ by
+  have hni : P.root n ≠ P.root i := fun contra ↦ by
     replace h₃ : P.root k = P.root j := by
       rwa [contra, add_comm, add_sub_assoc, left_eq_add, sub_eq_zero] at h₃
     replace h₂ : P.root m = 0 := by rw [← h₂, h₃, sub_self]

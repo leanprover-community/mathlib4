@@ -22,7 +22,7 @@ public import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 - `Presheaf.isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
 - `Sheaf.isLocallySurjective_iff_epi`: a morphism of sheaves of types is locally
-  surjective iff it is epi
+  surjective iff it is epi.
 
 -/
 

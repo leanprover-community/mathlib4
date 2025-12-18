@@ -88,7 +88,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory
 
 @[simp, reassoc]
 theorem braiding_tensor_left_hom (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).hom  =
+    (β_ (X ⊗ Y) Z).hom =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
         (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom := by
   apply (cancel_epi (α_ X Y Z).inv).1
@@ -99,7 +99,7 @@ theorem braiding_tensor_left_hom (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_right_hom (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).hom  =
+    (β_ X (Y ⊗ Z)).hom =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
         Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv := by
   apply (cancel_epi (α_ X Y Z).hom).1
@@ -110,7 +110,7 @@ theorem braiding_tensor_right_hom (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_left_inv (X Y Z : C) :
-    (β_ (X ⊗ Y) Z).inv  =
+    (β_ (X ⊗ Y) Z).inv =
       (α_ Z X Y).inv ≫ (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
@@ -119,7 +119,7 @@ theorem braiding_tensor_left_inv (X Y Z : C) :
 
 @[simp, reassoc]
 theorem braiding_tensor_right_inv (X Y Z : C) :
-    (β_ X (Y ⊗ Z)).inv  =
+    (β_ X (Y ⊗ Z)).inv =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
         (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
@@ -449,18 +449,20 @@ def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D wh
   toFunctor := F.toFunctor
 
 instance : Category (LaxBraidedFunctor C D) :=
-  InducedCategory.category (toLaxMonoidalFunctor)
+  inferInstanceAs (Category (InducedCategory _ toLaxMonoidalFunctor))
 
 @[simp]
-lemma id_hom (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor.Hom.hom (𝟙 F) = 𝟙 _ := rfl
+lemma id_hom (F : LaxBraidedFunctor C D) :
+    LaxMonoidalFunctor.Hom.hom (InducedCategory.Hom.hom (𝟙 F)) = 𝟙 _ := rfl
 
 @[reassoc, simp]
 lemma comp_hom {F G H : LaxBraidedFunctor C D} (α : F ⟶ G) (β : G ⟶ H) :
     (α ≫ β).hom = α.hom ≫ β.hom := rfl
 
 @[ext]
-lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom = β.hom) : α = β :=
-  LaxMonoidalFunctor.hom_ext h
+lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = β.hom.hom) :
+    α = β :=
+  InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
 /-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
 @[simps]
@@ -501,12 +503,18 @@ def isoOfComponents :
     (LaxMonoidalFunctor.isoOfComponents e naturality unit tensor)
 
 @[simp]
-lemma isoOfComponents_hom_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).hom.hom.app X = (e X).hom := rfl
+lemma isoOfComponents_hom_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).hom.hom.hom.app X = (e X).hom := rfl
 
 @[simp]
-lemma isoOfComponents_inv_hom_app (X : C) :
-    (isoOfComponents e naturality unit tensor).inv.hom.app X = (e X).inv := rfl
+lemma isoOfComponents_inv_hom_hom_app (X : C) :
+    (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias isoOfComponents_hom_hom_app :=
+  isoOfComponents_hom_hom_hom_app
+
+@[deprecated (since := "2025-12-18")] alias isoOfComponents_inv_hom_app :=
+  isoOfComponents_inv_hom_hom_app
 
 end
 

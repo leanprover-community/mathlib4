@@ -318,8 +318,8 @@ lemma universalFactorizationMapPresentation_jacobian :
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [- algebraMap_apply, ← algebraMap_eq]
-  · ext <;> simp [- algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 

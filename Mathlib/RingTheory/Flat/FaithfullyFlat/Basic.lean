@@ -295,7 +295,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
-    let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
+    let r : ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
       Submodule.mem_span_singleton.1 (b ha).2 |>.choose
     have hr : ∀ ⦃i : E ⊗[R] M⦄ (hi : i ∈ c.support), b hi =
         r hi • ⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩ := fun a ha =>

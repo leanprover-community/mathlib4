@@ -208,12 +208,21 @@ Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 library_note2 «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. When they can be inferred from these other
-arguments, it is faster to use this method than to use type class inference.
+arguments to the type of one of the other arguments. There are several reasons for doing so.
 
+When they can be inferred from these other arguments,
+it is faster to use this method than to use type class inference.
 For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
 and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
 `[Semiring α] [Semiring β]`.
+
+When handling non-canonical instances, it is necessary that the relevant declarations take these
+instance arguments implicitly, otherwise Lean will refuse to apply them.
+For example, in measure theory a space `X` will often come equipped with a canonical base
+sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
+`MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
+abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
+one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
 library_note2 «lower instance priority» /--

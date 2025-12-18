@@ -141,7 +141,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
   -- for `exp` and numbers `log (z i)` with weights `w i`.
   · have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
-    convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
+    convert this using 1 <;> [apply prod_congr rfl; apply sum_congr rfl] <;> intro i hi
     · rcases eq_or_lt_of_le (hz i hi) with hz | hz
       · simp [A i hi hz.symm]
       · exact rpow_def_of_pos hz _
@@ -152,7 +152,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
 /-- **AM-GM inequality**: The **geometric mean is less than or equal to the arithmetic mean. -/
 theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹  ≤  (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
+    (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ ≤ (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
   convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz using 2
   · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg (hz _ hi) _) _]
     refine Finset.prod_congr rfl (fun _ ih => ?_)
@@ -253,7 +253,7 @@ condition for the *positive* weighted version of the AM-GM inequality for real-v
 functions. -/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
-    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k:= by
+    ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k := by
   constructor
   · intro h
     by_contra! h_contra
@@ -342,7 +342,7 @@ namespace Real
 version for real-valued nonnegative functions. -/
 theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 < z i) :
-    (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i  := by
+    (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i := by
     have : ∏ i ∈ s, (1 / z) i ^ w i ≤ ∑ i ∈ s, w i * (1 / z) i :=
       geom_mean_le_arith_mean_weighted s w (1/z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
       (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
@@ -354,7 +354,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     rw [← inv_le_inv₀ s_pos p_pos] at this
     apply le_trans this
     have p_pos₂ : 0 < (∏ i ∈ s, (z i) ^ w i)⁻¹ :=
-      inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _ )
+      inv_pos.2 (prod_pos fun i hi => rpow_pos_of_pos ((hz i hi)) _)
     rw [← inv_inv (∏ i ∈ s, z i ^ w i), inv_le_inv₀ p_pos p_pos₂, ← Finset.prod_inv_distrib]
     gcongr
     · exact fun i hi ↦ inv_nonneg.mpr (Real.rpow_nonneg (le_of_lt (hz i hi)) _)
@@ -810,7 +810,7 @@ functions. -/
 theorem Lp_add_le_of_nonneg (hp : 1 ≤ p) (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
-  convert Lp_add_le s f g hp using 2 <;> [skip;congr 1;congr 1] <;> apply sum_congr rfl <;>
+  convert Lp_add_le s f g hp using 2 <;> [skip; congr 1; congr 1] <;> apply sum_congr rfl <;>
       intro i hi <;>
     simp only [abs_of_nonneg, hf i hi, hg i hi, add_nonneg]
 
@@ -908,7 +908,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   by_cases H' : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = ⊤ ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = ⊤
   · rcases H' with H' | H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
   replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤ := by
-    simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_gt, hp₁.not_gt, sum_eq_top, not_or] using H'
+    simpa [rpow_eq_top_iff, hp₀, hp₁, hp₀.not_gt, hp₁.not_gt, sum_eq_top, not_or] using H'
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this

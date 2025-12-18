@@ -584,7 +584,7 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
     (h prodMap).choose_spec.choose_spec.choose_spec.isLimit'.some.conePointUniqueUpToIso <|
     pasteHorizIsPullback rfl (IsPullback.of_vert_isIso_mono (snd := pullback.congrHom
       (terminal.comp_from g) (terminal.comp_from g') ≪≫ (prodIsoPullback _ _).symm ≪≫
-      (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm|>.hom)
+      (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm |>.hom)
     ⟨by cat_disch⟩).isLimit'.some left
   exact ⟨_, ⟨_, ⟨_, IsPullback.of_iso_pullback (fst := pbRepr.hom ≫ pullback.fst g g')
     (snd := F.map (Functor.preimage F (pbRepr.hom ≫ pullback.snd g g')))

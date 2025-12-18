@@ -102,4 +102,14 @@ lemma span_leadingTerm_eq_span_monomial' {k : Type*} [Field k] {B : Set (MvPolyn
   apply span_leadingTerm_eq_span_monomial₀
   simp [em']
 
+lemma sPolynomial_mem_sup_ideal {R : Type*} [CommRing R]
+    {I J : Ideal <| MvPolynomial σ R} {p q : MvPolynomial σ R}
+    (hp : p ∈ I) (hq : q ∈ J) : m.sPolynomial p q ∈ I ⊔ J :=
+  sub_mem (mul_mem_left _ _ (mem_sup_left hp)) (mul_mem_left _ _ (mem_sup_right hq))
+
+lemma sPolynomial_mem_ideal {R : Type*} [CommRing R]
+    {I : Ideal <| MvPolynomial σ R} {p q : MvPolynomial σ R}
+    (hp : p ∈ I) (hq : q ∈ I) : m.sPolynomial p q ∈ I :=
+  sub_mem (mul_mem_left I _ hp) (mul_mem_left I _ hq)
+
 end MonomialOrder

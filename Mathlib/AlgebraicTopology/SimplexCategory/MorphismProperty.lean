@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -29,11 +29,9 @@ namespace SimplexCategory
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
     (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
-    W (SimplexCategory.δ (n := n) i : ⟨.mk n, by dsimp; lia⟩ ⟶
-      ⟨.mk (n + 1), by dsimp; lia⟩))
+      W (Truncated.δ d i (by dsimp; lia) (by dsimp; lia)))
     (σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
-    W (SimplexCategory.σ (n := n) i : ⟨.mk (n + 1), by dsimp; lia⟩ ⟶
-      ⟨.mk n, by dsimp; lia⟩)) :
+      W (Truncated.σ d i (by dsimp; lia) (by dsimp; lia))) :
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]
@@ -50,25 +48,27 @@ lemma Truncated.morphismProperty_eq_top
       apply Subsingleton.elim (α := Fin 1)
     apply MorphismProperty.id_mem
   | succ c hc =>
-    let f' : mk a ⟶ mk b := f
-    by_cases h₁ : Function.Surjective f'.toOrderHom; swap
+    by_cases h₁ : Function.Surjective f.hom.toOrderHom; swap
     · obtain _ | b := b
       · exact (h₁ (fun _ ↦ ⟨0, Subsingleton.elim (α := Fin 1) _ _⟩)).elim
       · obtain ⟨i, g', hf'⟩ := eq_comp_δ_of_not_surjective _ h₁
-        obtain rfl : f = (g' : _ ⟶ ⟨mk b, by dsimp; lia⟩) ≫ δ i := hf'
+        replace hf' : f = Hom.tr g' ≫ Hom.tr (SimplexCategory.δ i) :=
+          InducedCategory.hom_ext hf'
+        rw [hf']
         exact W.comp_mem _ _ (hc _ _ _ _ _ (by lia))
           (δ_mem _ (by lia) _)
-    by_cases h₂ : Function.Injective f'.toOrderHom; swap
+    by_cases h₂ : Function.Injective f.hom.toOrderHom; swap
     · obtain _ | a := a
       · exact (h₂ (Function.injective_of_subsingleton (α := Fin 1) _)).elim
       · obtain ⟨i, g', hf'⟩ := eq_σ_comp_of_not_injective _ h₂
-        obtain rfl : f = (by exact σ i) ≫ (g' : ⟨mk a, by dsimp; lia⟩ ⟶ _) := hf'
+        replace hf' : f = Hom.tr (SimplexCategory.σ i) ≫ Hom.tr g' :=
+          InducedCategory.hom_ext hf'
+        rw [hf']
         exact W.comp_mem _ _ (σ_mem _ (by lia) _) (hc _ _ _ _ _ (by lia))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
-    have := isIso_of_mono_of_epi f'
-    obtain rfl : a = b := len_eq_of_isIso f'
-    obtain rfl : f = 𝟙 _ := eq_id_of_mono f'
+    obtain rfl : a = b := le_antisymm (len_le_of_mono f.hom) (len_le_of_epi f.hom)
+    obtain rfl : f = 𝟙 _ := ObjectProperty.hom_ext _ (SimplexCategory.eq_id_of_epi _)
     apply W.id_mem
 
 lemma morphismProperty_eq_top
@@ -81,8 +81,8 @@ lemma morphismProperty_eq_top
       (fun _ _ i ↦ σ_mem i)
   ext a b f
   simp only [MorphismProperty.top_apply, iff_true]
-  change W.inverseImage (Truncated.inclusion _)
-    (f : ⟨a, Nat.le_max_left _ _⟩ ⟶ ⟨b, Nat.le_max_right _ _⟩)
+  change W.inverseImage (Truncated.inclusion (max a.len b.len))
+    (Truncated.Hom.tr f (ha := by simp) (hb := by simp))
   simp only [hW, MorphismProperty.top_apply]
 
 end SimplexCategory

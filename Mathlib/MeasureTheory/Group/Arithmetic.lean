@@ -531,13 +531,9 @@ lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Meas
     (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
   (hg.comp <| measurable_id.prodMk hh).const_smul _
 
-@[deprecated (since := "2025-04-23")] alias Measurable.const_smul' := Measurable.fun_const_smul
-
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
-
-@[deprecated (since := "2025-04-23")] alias AEMeasurable.const_smul' := AEMeasurable.fun_const_smul
 
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=

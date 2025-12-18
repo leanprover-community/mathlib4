@@ -27,7 +27,7 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
 - `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
 - `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `psi` to `theta`.
-- `Chevyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
+- `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
 
 ## Notation
 
@@ -201,7 +201,7 @@ theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
   exact sum_nonneg fun _ _ ↦ theta_nonneg _
 
 --Note that a more careful argument could remove the log x in the following with a worse constant.
-/-- `|ψ x - θ x| ≤ c x √ x` with an explicit constant c. -/
+/-- `|ψ x - θ x| ≤ c √ x log x` with an explicit constant c. -/
 theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
     |ψ x - θ x| ≤ 2 * x.sqrt * x.log := by
   by_cases! hx : x < 2
@@ -243,7 +243,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
-/- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
+/-- Chebyshev's bound `ψ x ≤ c x` with an explicit constant.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
     ψ x ≤ (log 4 + 4) * x := by

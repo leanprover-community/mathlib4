@@ -185,14 +185,14 @@ theorem card_iUnion_lt_iff_forall_of_isRegular {ι : Type u} {α : Type u} {t : 
   simpa
 
 theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β} {c : Cardinal}
-    (h : #(⋃ a ∈ s, t a ‹_›) < c) (a : α) (ha : a ∈ s) : # (t a ha) < c := by
+    (h : #(⋃ a ∈ s, t a ‹_›) < c) (a : α) (ha : a ∈ s) : #(t a ha) < c := by
   rw [biUnion_eq_iUnion] at h
   have := card_lt_of_card_iUnion_lt h
   simp_all only [iUnion_coe_set, Subtype.forall]
 
 theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β}
     {c : Cardinal} (hc : c.IsRegular) (hs : #s < c) :
-    #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), # (t a ha) < c := by
+    #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), #(t a ha) < c := by
   rw [biUnion_eq_iUnion, card_iUnion_lt_iff_forall_of_isRegular hc hs, SetCoe.forall']
 
 theorem nfpFamily_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)

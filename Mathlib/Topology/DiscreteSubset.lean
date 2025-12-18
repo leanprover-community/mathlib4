@@ -150,7 +150,7 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
   refine discreteTopology_iff_isOpen_singleton.mpr (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
-  have hU₄ : Set.Finite (f⁻¹' U) :=
+  have hU₄ : Set.Finite (f ⁻¹' U) :=
     Finite.subset (tendsto_cofinite_cocompact_iff.mp hf K hK) (preimage_mono hU₁)
   exact isOpen_singleton_of_finite_mem_nhds _ ((hU₂.preimage hf').mem_nhds hU₃) hU₄
 

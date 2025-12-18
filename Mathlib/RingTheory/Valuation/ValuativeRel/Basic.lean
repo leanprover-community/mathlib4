@@ -92,7 +92,7 @@ variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
   (v : Valuation R Γ)
 
 /-- We say that a valuation `v` is `Compatible` if the relation `x ≤ᵥ y`
-is equivalent to `v x ≤ x y`. -/
+is equivalent to `v x ≤ v y`. -/
 class Compatible [ValuativeRel R] where
   rel_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
 

@@ -163,7 +163,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMul
     · exact False.elim <| h₂ <| (smul_eq_zero_iff_left <| P.ne_zero i).mp <| by simpa using h₁
     · assumption
   replace h₁ : s • P.root i = -t • P.root j := by rwa [← eq_neg_iff_add_eq_zero, ← neg_smul] at h₁
-  have h₄ : s * 2 = - (t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
+  have h₄ : s * 2 = -(t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
   replace h₁ : (2 : R) • (s • P.root i) = (2 : R) • (-t • P.root j) := by rw [h₁]
   rw [smul_smul, mul_comm, h₄, smul_comm, ← neg_mul, ← smul_smul] at h₁
   exact smul_right_injective M (neg_ne_zero.mpr h₃) h₁

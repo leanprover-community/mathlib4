@@ -884,6 +884,20 @@ theorem _root_.MvPowerSeries.monomial_one_eq
   simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
   simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
 
+theorem _root_.MvPowerSeries.monomial_eq' (e : σ →₀ ℕ) (r : R) :
+    MvPowerSeries.monomial e r
+      = MvPowerSeries.C r * e.prod fun s e => (MvPowerSeries.X s) ^ e := by
+  conv_lhs => rw [← mul_one r]
+  rw [← smul_eq_mul, ← MvPowerSeries.smul_eq_C_mul, LinearMap.CompatibleSMul.map_smul,
+    MvPowerSeries.monomial_one_eq]
+
+theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r : R) :
+    MvPowerSeries.monomial (p • e) r
+      = MvPowerSeries.C r * e.prod fun s e => ((MvPowerSeries.X s) ^ p) ^ e := by
+  rw [MvPowerSeries.monomial_eq',  Finsupp.prod_of_support_subset _ Finsupp.support_smul _
+    (by simp), Finsupp.prod]
+  simp [pow_mul]
+
 section Algebra
 
 variable (A : Type*) [CommSemiring A] [Algebra R A]

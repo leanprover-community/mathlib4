@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Baire.Lemmas
 
 /-!

@@ -266,7 +266,7 @@ lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) 
 
 end Topology
 
--- lemmas about functions in `Data/Matrix/Block.lean`
+-- lemmas about functions in `Mathlib/Data/Matrix/Block.lean`
 section BlockMatrices
 
 @[continuity, fun_prop]

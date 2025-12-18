@@ -44,7 +44,7 @@ lemma essentiallyLarge_top :
   let G : J ⥤ P.FullSubcategory := P.lift p.diag p.prop_diag_obj
   let iso : (G ⋙ e.functor) ⋙ e.inverse ⋙ P.ι ≅ p.diag :=
     Functor.associator _ _ _ ≪≫
-    G.isoWhiskerLeft ((Functor.associator _ _ _ ).symm ≪≫
+    G.isoWhiskerLeft ((Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight e.unitIso.symm P.ι) ≪≫
     (Functor.associator _ _ _).symm ≪≫
     Functor.isoWhiskerRight (Functor.rightUnitor _) _

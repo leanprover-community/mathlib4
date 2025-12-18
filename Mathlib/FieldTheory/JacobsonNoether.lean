@@ -88,7 +88,7 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
-    {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
+    {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) :
     ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
@@ -132,7 +132,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     by_cases! h_pos : 0 < t
     · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
-    · suffices h_find: Nat.find h_exist = 1 by
+    · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]
       rw [Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
@@ -148,7 +148,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     rw [← Function.iterate_succ_apply' (ad k D a) n b, hb.2]
   -- We now make some computation to obtain the final equation.
   set d := c⁻¹ * a * (ad k D a)^[n - 1] b with hd_def
-  have hc': c⁻¹ * a = a * c⁻¹ := by
+  have hc' : c⁻¹ * a = a * c⁻¹ := by
     apply_fun (c⁻¹ * · * c⁻¹) at hc
     rw [mul_assoc, mul_assoc, mul_inv_cancel₀ hb.1, mul_one, ← mul_assoc,
       inv_mul_cancel₀ hb.1, one_mul] at hc
@@ -163,7 +163,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     rw [hd_def, ← eq1, mul_sub, mul_assoc _ _ a, sub_right_inj, hc',
       ← mul_assoc, ← mul_assoc, ← mul_assoc]
   -- This then yields a contradiction.
-  apply_fun (a⁻¹ * · ) at deq
+  apply_fun (a⁻¹ * ·) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq

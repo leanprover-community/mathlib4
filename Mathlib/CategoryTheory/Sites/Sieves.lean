@@ -408,6 +408,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     rw [heq_iff_eq] at h; subst h
     exact ⟨Y, u, hu⟩
 
+set_option backward.proofsInPublic true in
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
       Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
@@ -729,7 +730,7 @@ lemma pullback_ofObjects_eq_top
     ofObjects Y X = ⊤ := by
   ext Z h
   simp only [top_apply, iff_true]
-  rw [mem_ofObjects_iff ]
+  rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`

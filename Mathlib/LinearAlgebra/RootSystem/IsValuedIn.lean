@@ -6,6 +6,7 @@ Authors: Scott Carnahan, Oliver Nash
 module
 
 public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
@@ -132,6 +133,16 @@ lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsS
   exists_value i j := by
     use algebraMap T S (P.pairingIn T i j)
     simp [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq T S R]
+
+instance [P.IsCrystallographic] [Algebra ℚ R] : P.IsValuedIn ℚ :=
+  IsValuedIn.trans P (T := ℤ) (S := ℚ)
+
+@[simp] lemma pairingIn_rat [Nontrivial R] [P.IsCrystallographic] [Algebra ℚ R] (i j : ι) :
+    P.pairingIn ℚ i j = P.pairingIn ℤ i j := by
+  apply FaithfulSMul.algebraMap_injective ℚ R
+  have : algebraMap ℤ R = algebraMap ℚ R ∘ algebraMap ℤ ℚ := by simp
+  rw [← eq_intCast (algebraMap ℤ ℚ), ← comp_apply (f := algebraMap ℚ R) (g := algebraMap ℤ ℚ),
+    ← this, algebraMap_pairingIn, algebraMap_pairingIn]
 
 lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
     {x : M} (hx : x ∈ span S (range P.root)) (i : ι) :
@@ -286,11 +297,11 @@ lemma iInf_ker_coroot'_eq :
     (P.corootSpan R).map P.toLinearMap.flip.toPerfPair = span R (range P.coroot') :=
   P.flip.rootSpan_map_toPerfPair
 
-@[simp] lemma span_root'_eq_top (P : RootSystem ι R M N) :
+@[simp] lemma span_root'_eq_top [P.IsRootSystem] :
     span R (range P.root') = ⊤ := by
   simp [← rootSpan_map_toPerfPair]
 
-@[simp] lemma span_coroot'_eq_top (P : RootSystem ι R M N) :
+@[simp] lemma span_coroot'_eq_top [P.IsRootSystem] :
     span R (range P.coroot') = ⊤ :=
   span_root'_eq_top P.flip
 
@@ -318,5 +329,35 @@ def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j
     (i j : ι) :
     algebraMap S R (P.coxeterWeightIn S i j) = P.coxeterWeight i j := by
   simp [coxeterWeightIn, coxeterWeight]
+
+lemma toLinearMap_apply_apply_mem_range_algebraMap [P.IsValuedIn S]
+    [Module S M] [Module S N] [IsScalarTower S R M] [IsScalarTower S R N]
+    (x : M) (hx : x ∈ P.rootSpan S) (y : N) (hy : y ∈ P.corootSpan S) :
+    P.toLinearMap x y ∈ (algebraMap S R).range :=
+  LinearMap.BilinMap.apply_apply_mem_of_mem_span
+    (LinearMap.range (Algebra.linearMap S R)) (range P.root) (range P.coroot)
+    (LinearMap.restrictScalarsₗ S R _ _ _ ∘ₗ P.toLinearMap.restrictScalars S)
+    (by simpa using RootPairing.exists_value) x y hx hy
+
+section Field
+
+variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
+  [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
+  (Q : RootPairing ι L M N) [Q.IsRootSystem] [Q.IsValuedIn K]
+
+@[simp]
+lemma finrank_rootSpanIn :
+    finrank K (Q.rootSpan K) = finrank L M := by
+  rw [LinearMap.finrank_eq_of_isPerfPair Q.toLinearMap (Q.rootSpan K) (Q.corootSpan K)]
+  · simp
+  · simp
+  · exact Q.toLinearMap_apply_apply_mem_range_algebraMap K
+
+@[simp]
+lemma finrank_corootSpanIn :
+    finrank K (Q.corootSpan K) = finrank L N :=
+  finrank_rootSpanIn K Q.flip
+
+end Field
 
 end RootPairing

@@ -45,9 +45,6 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
--- TODO: revisit this after #13791 is merged
-set_option linter.flexible false
-
 open List (Vector)
 open Denumerable Encodable Function
 
@@ -833,6 +830,7 @@ instance sum : Primcodable (α ⊕ β) :=
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 instance list : Primcodable (List α) :=
   ⟨letI H := Primcodable.prim (List ℕ)
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
@@ -1031,6 +1029,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
       | zero => rfl
       | succ n IH => simp [IH, H, List.range_succ]
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
   (to₂ <| list_rec snd (const none) <|
     to₂ <|
@@ -1041,6 +1040,7 @@ theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α 
   induction ps with simp [List.lookup, *]
   | cons p ps ih => cases ha : a == p.1 <;> simp
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
@@ -1450,6 +1450,7 @@ theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
   (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
     simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]

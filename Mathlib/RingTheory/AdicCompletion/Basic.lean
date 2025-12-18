@@ -720,7 +720,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -731,7 +731,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \

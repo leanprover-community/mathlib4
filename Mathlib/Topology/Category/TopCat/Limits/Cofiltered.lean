@@ -87,7 +87,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j) ⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e

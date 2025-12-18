@@ -154,6 +154,20 @@ theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x �
     mk (f x) = 0 := by
   simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
 
+theorem mk_le_mk_add_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk (f y) + mk x := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · rw [mk_map_of_archimedean' f hy, zero_add]
+
+theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk x + mk (f y) := by
+  rw [add_comm]
+  exact mk_le_mk_add_of_archimedean f x y
+
+theorem mk_map_nonneg_of_archimedean [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
+  simpa using mk_le_mk_add_of_archimedean f 1 y
+
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S
@@ -238,7 +252,7 @@ private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
 
 noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) where
   neg_top := by simp [← mk_zero, ← mk_inv]
-  add_neg_cancel x h := by
+  add_neg_cancel_of_ne_top x h := by
     induction x with | mk x
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
   zsmul n x := n • x

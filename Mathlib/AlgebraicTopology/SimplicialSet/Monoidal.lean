@@ -104,6 +104,11 @@ def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
 lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
   isTerminalObj₀.hom_ext _ _
 
+instance (X Y : SSet.{u}) (n : SimplexCategoryᵒᵖ)
+    [Finite (X.obj n)] [Finite (Y.obj n)] :
+    Finite ((X ⊗ Y).obj n) :=
+  inferInstanceAs (Finite (X.obj n × Y.obj n))
+
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `0` on the second factor. -/
 noncomputable def ι₀ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
   lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 0))

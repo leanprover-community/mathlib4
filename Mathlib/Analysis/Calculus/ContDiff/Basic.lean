@@ -60,7 +60,7 @@ section constants
 
 theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s = 0 := by
-  induction n  with
+  induction n with
   | zero =>
     ext1
     simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
@@ -559,6 +559,22 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
 
+theorem iteratedFDerivWithin_prodMk {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
+    (hg : ContDiffWithinAt 𝕜 n g s x) (hs : UniqueDiffOn 𝕜 s) (ha : x ∈ s) {i : ℕ} (hi : i ≤ n) :
+    iteratedFDerivWithin 𝕜 i (fun x ↦ (f x, g x)) s x =
+      (iteratedFDerivWithin 𝕜 i f s x).prod (iteratedFDerivWithin 𝕜 i g s x) := by
+  ext <;>
+  · rw [← ContinuousLinearMap.iteratedFDerivWithin_comp_left _ (hf.prodMk hg) hs ha hi]
+    simp [Function.comp_def]
+
+theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
+    (hg : ContDiffAt 𝕜 n g x) {i : ℕ} (hi : i ≤ n) :
+    iteratedFDeriv 𝕜 i (fun x ↦ (f x, g x)) x =
+      (iteratedFDeriv 𝕜 i f x).prod (iteratedFDeriv 𝕜 i g x) := by
+  simp only [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_prodMk hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ
+    (Set.mem_univ _) hi
+
 end prod
 
 /-! ### Being `C^k` on a union of open sets can be tested on each set -/
@@ -659,10 +675,10 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
       exact image_subset_iff.mpr st
     · have : AnalyticOn 𝕜 f w := by
         have : AnalyticOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F).symm (f y)) w :=
-          ((h'p 0).mono wu).congr  fun y hy ↦ (hp.zero_eq' (wu hy)).symm
+          ((h'p 0).mono wu).congr fun y hy ↦ (hp.zero_eq' (wu hy)).symm
         have : AnalyticOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F)
             ((continuousMultilinearCurryFin0 𝕜 E F).symm (f y))) w :=
-          AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _ ) this
+          AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _) this
           (mapsTo_univ _ _)
         simpa using this
       exact analyticOn_taylorComp h'q (fun n ↦ (h'p n).mono wu) this wv
@@ -1480,13 +1496,15 @@ theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f₂) : ContDiff 𝕜 n (deri
 @[fun_prop]
 theorem ContDiff.iterate_deriv :
     ∀ (n : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 ∞ f₂ → ContDiff 𝕜 ∞ (deriv^[n] f₂)
-  | 0,     _, hf => hf
+  | 0, _, hf => hf
   | n + 1, _, hf => ContDiff.iterate_deriv n (contDiff_infty_iff_deriv.mp hf).2
 
 @[fun_prop]
 theorem ContDiff.iterate_deriv' (n : ℕ) :
     ∀ (k : ℕ) {f₂ : 𝕜 → F}, ContDiff 𝕜 (n + k : ℕ) f₂ → ContDiff 𝕜 n (deriv^[k] f₂)
-  | 0,     _, hf => hf
+  | 0, _, hf => hf
   | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
 
 end deriv
+
+set_option linter.style.longFile 1700

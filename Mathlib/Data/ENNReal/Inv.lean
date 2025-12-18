@@ -46,6 +46,9 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 protected theorem div_eq_inv_mul : a / b = b⁻¹ * a := by rw [div_eq_mul_inv, mul_comm]
 
+protected theorem div_right_comm : a / b / c = a / c / b := by
+  simp only [div_eq_mul_inv, mul_right_comm]
+
 @[simp] theorem inv_zero : (0 : ℝ≥0∞)⁻¹ = ∞ :=
   show sInf { b : ℝ≥0∞ | 1 ≤ 0 * b } = ∞ by simp
 
@@ -832,7 +835,7 @@ lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ :
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ | hf := em (∃ i, f i = 0)
     · rw [(iInf_eq_bot _).2, (iInf_eq_bot _).2, bot_eq_zero, mul_zero] <;>
-        exact fun _ _↦ ⟨i, by simpa [hi]⟩
+        exact fun _ _ ↦ ⟨i, by simpa [hi]⟩
     · rw [top_mul (mt (hinfty rfl) hf), eq_comm, iInf_eq_top]
       exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iInf _
