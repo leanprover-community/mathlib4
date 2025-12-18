@@ -314,6 +314,10 @@ lemma add_modEq_left : n + a ≡ a [MOD n] := by simp
 
 lemma add_modEq_right : a + n ≡ a [MOD n] := by simp
 
+theorem modEq_iff_exists_eq_add (h : a ≤ b) : a ≡ b [MOD n] ↔ ∃ (t : ℕ), b = a + n * t := by
+  rw [modEq_iff_dvd' h, dvd_def]
+  exact exists_congr (fun _ => Nat.sub_eq_iff_eq_add' h)
+
 namespace ModEq
 
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
@@ -345,7 +349,7 @@ lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
   h.eq_of_abs_lt <| Int.abs_sub_lt_of_lt_lt ha hb
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
-lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b [MOD m / gcd m c] := by
+lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m / gcd m c] := by
   let d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
