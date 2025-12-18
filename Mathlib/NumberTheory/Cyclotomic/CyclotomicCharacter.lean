@@ -363,4 +363,3 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
     · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
-
