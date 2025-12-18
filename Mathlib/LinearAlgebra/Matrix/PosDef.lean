@@ -148,7 +148,7 @@ theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
   refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
-  simp[sum_apply, Finset.mul_sum,Finset.sum_mul, Finsupp.sum_finsetSum_comm,
+  simp [sum_apply, Finset.mul_sum,Finset.sum_mul, Finsupp.sum_finsetSum_comm,
     Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
 
 /-!

@@ -210,7 +210,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
       (by rwa [hι.coe_toFinset, Set.sUnion_eq_iUnion])
     rw [Set.Finite.mem_toFinset] at hZ'
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
-  have hU1 : U = (⋃ x : ι, x) ᶜ := by
+  have hU1 : U = (⋃ x : ι, x)ᶜ := by
     rw [Set.compl_eq_univ_diff]
     refine le_antisymm (Set.diff_subset_diff le_top subset_rfl) ?_
     rw [← Set.compl_eq_univ_diff]

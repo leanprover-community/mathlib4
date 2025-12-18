@@ -18,7 +18,7 @@ to construct `Option α →₀ M` from a map α →₀ M, and vice versa.
 
 As functions, these behave as `Option.elim'`, and as an application of `some` hence the names.
 
-We prove a variety of API lemmas, see `Data/Finsupp/Fin.lean` for comparison.
+We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for comparison.
 
 ## Main declarations
 

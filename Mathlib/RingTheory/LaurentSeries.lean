@@ -657,7 +657,7 @@ theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : �
   le_of_eq <| DiscreteUniformity.eq_pure_cauchyConst
     (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
 
-/- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
+/- For every Cauchy filter of Laurent series, there is some `N` such that the `n`-th coefficient
 vanishes for all `n ≤ N` and almost all series in the filter. This is an auxiliary lemma used
 to construct the limit of the Cauchy filter as a Laurent series, ensuring that the support of the
 limit is `PWO`.
