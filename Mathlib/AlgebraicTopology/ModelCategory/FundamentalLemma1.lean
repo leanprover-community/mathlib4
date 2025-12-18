@@ -125,8 +125,7 @@ namespace CofibrantObject
 
 instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
   iff X Y f g h := by
-    rw [← weakEquivalence_iff, ← weakEquivalence_iff, weakEquivalence_iff_ι_map,
-      weakEquivalence_iff_ι_map]
+    simp only [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
     obtain ⟨P, ⟨h⟩⟩ := h
     apply h.weakEquivalence_iff
   compClosure_eq_self := compClosure_homRel C
@@ -159,9 +158,7 @@ lemma factorsThroughLocalization :
     simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
       show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp, this]
   have := Localization.inverts L (weakEquivalences _) (homMk P.ι) (by
-    rw [← weakEquivalence_iff]
-    rw [weakEquivalence_iff_ι_map]
-    change WeakEquivalence P.ι
+    simp only [← weakEquivalence_iff, weakEquivalence_homMk_iff]
     infer_instance)
   simp only [← cancel_epi (L.map (homMk P.ι)), ← L.map_comp, homMk_homMk, P.ι_p₀, P.ι_p₁]
 
@@ -276,7 +273,7 @@ noncomputable def π.ιCompResolutionNatTrans : ι ⋙ π.resolution (C := C) �
 instance π.weakEquivalence_ιCompResolutionNatTrans_app (X : CofibrantObject C) :
     WeakEquivalence (ιCompResolutionNatTrans.app X) := by
   dsimp
-  rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_ι_map]
+  rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_of_objectProperty]
   dsimp
   infer_instance
 

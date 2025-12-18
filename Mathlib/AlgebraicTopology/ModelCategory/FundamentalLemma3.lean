@@ -67,7 +67,7 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
   · obtain ⟨X', i, _, _, _⟩ : ∃ (X' : C) (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i ∧
       IsFibrant X' :=
       ⟨(CofibrantObject.bifibrantResolutionObj (.mk X)).obj,
-        CofibrantObject.ι.map (CofibrantObject.iBifibrantResolutionObj (.mk X)),
+        (CofibrantObject.iBifibrantResolutionObj (.mk X)).hom,
         inferInstance, inferInstance, inferInstance⟩
     have _ := isCofibrant_of_cofibration i
     have hX' := this X' inferInstance

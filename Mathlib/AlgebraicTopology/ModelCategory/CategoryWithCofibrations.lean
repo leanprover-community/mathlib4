@@ -267,14 +267,20 @@ instance [(weakEquivalences C).IsMultiplicative] :
     (weakEquivalences P.FullSubcategory).IsMultiplicative :=
   inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
 
-lemma weakEquivalence_iff_ι_map {X Y : P.FullSubcategory} (f : X ⟶ Y) :
-    WeakEquivalence f ↔ WeakEquivalence (P.ι.map f) := by
+lemma weakEquivalence_iff_of_objectProperty
+    {X Y : P.FullSubcategory} (f : X ⟶ Y) :
+    WeakEquivalence f ↔ WeakEquivalence f.hom := by
   simp only [weakEquivalence_iff]
   rfl
 
 instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence f.hom := by
+  rwa [← weakEquivalence_iff_of_objectProperty]
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
     WeakEquivalence (P.ι.map f) := by
-  rwa [← weakEquivalence_iff_ι_map]
+  dsimp
+  infer_instance
 
 end ObjectProperty
 
