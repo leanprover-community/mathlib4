@@ -258,11 +258,7 @@ variable {𝕜' 𝔸 : Type*} [NormedField 𝕜'] [NormedRing 𝔸] [NormedAlgeb
 
 theorem HasDerivWithinAt.fun_mul (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (fun y => c y * d y) (c' * d x + c x * d') s x := by
-  have := (HasFDerivWithinAt.mul' hc hd).hasDerivWithinAt
-  rwa [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, one_smul,
-    add_comm] at this
+  simpa [add_comm] using (HasFDerivWithinAt.mul' hc hd).hasDerivWithinAt
 
 theorem HasDerivWithinAt.mul (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (c * d) (c' * d x + c x * d') s x :=

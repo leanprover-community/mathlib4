@@ -704,8 +704,8 @@ theorem smulRight_id_eq_iff {f f' : M₂} :
 @[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := smulRight_id_eq_iff
 
 theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
-      smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
+    (smulRight (.id R₁ R₁) x).comp (smulRight (.id R₁ R₁) c) =
+      smulRight (.id R₁ R₁) (c • x) := by
   ext
   simp
 
@@ -882,11 +882,13 @@ instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
-theorem smulRight_one_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
+theorem smulRight_id_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
+    smulRight (.id R R) c ^ n = smulRight (.id R R) (c ^ n) := by
   induction n with
   | zero => ext; simp
   | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+
+@[deprecated (since := "2025-12-18")] alias smulRight_one_pow := smulRight_id_pow
 
 section
 
