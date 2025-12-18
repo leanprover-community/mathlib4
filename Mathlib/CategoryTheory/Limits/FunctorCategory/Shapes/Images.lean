@@ -28,9 +28,9 @@ attribute [local simp] FunctorToTypes.naturality in
 /-- The image of a natural transformation between type-valued functors is a `MonoFactorisation` -/
 @[simps]
 def NatTrans.monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
-  I := (Subpresheaf.range f).toPresheaf
-  m := (Subpresheaf.range f).ι
-  e := Subpresheaf.toRange f
+  I := (Subfunctor.range f).toFunctor
+  m := (Subfunctor.range f).ι
+  e := Subfunctor.toRange f
 
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
