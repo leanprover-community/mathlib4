@@ -175,7 +175,7 @@ theorem hasFDerivWithinAt_iff_hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
 
 /-- Expressing `HasDerivWithinAt f f' s x` in terms of `HasFDerivWithinAt` -/
 theorem hasDerivWithinAt_iff_hasFDerivWithinAt {f' : F} :
-    HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') s x :=
+    HasDerivWithinAt f f' s x ↔ HasFDerivWithinAt f (smulRight (.id 𝕜 𝕜) f') s x :=
   Iff.rfl
 
 theorem HasFDerivWithinAt.hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
@@ -183,7 +183,7 @@ theorem HasFDerivWithinAt.hasDerivWithinAt {f' : 𝕜 →L[𝕜] F} :
   hasFDerivWithinAt_iff_hasDerivWithinAt.mp
 
 theorem HasDerivWithinAt.hasFDerivWithinAt {f' : F} :
-    HasDerivWithinAt f f' s x → HasFDerivWithinAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') s x :=
+    HasDerivWithinAt f f' s x → HasFDerivWithinAt f (smulRight (.id 𝕜 𝕜) f') s x :=
   hasDerivWithinAt_iff_hasFDerivWithinAt.mp
 
 /-- Expressing `HasFDerivAt f f' x` in terms of `HasDerivAt` -/
@@ -202,14 +202,14 @@ protected theorem HasStrictFDerivAt.hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
   hasStrictFDerivAt_iff_hasStrictDerivAt.mp
 
 theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
-    HasStrictDerivAt f f' x ↔ HasStrictFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x :=
+    HasStrictDerivAt f f' x ↔ HasStrictFDerivAt f (smulRight (.id 𝕜 𝕜) f') x :=
   Iff.rfl
 
 alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
 theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
-    HasDerivAt f f' x ↔ HasFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x :=
+    HasDerivAt f f' x ↔ HasFDerivAt f (smulRight (.id 𝕜 𝕜) f') x :=
   Iff.rfl
 
 alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
