@@ -624,13 +624,7 @@ theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.l
   apply ext_getElem?
   grind
 
-theorem ext_get_iff {l₁ l₂ : List α} :
-    l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
-  constructor
-  · rintro rfl
-    exact ⟨rfl, fun _ _ _ ↦ rfl⟩
-  · intro ⟨h₁, h₂⟩
-    exact ext_get h₁ h₂
+@[deprecated (since := "2025-12-18")] alias ext_get_iff := ext_getElem_iff
 
 theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
