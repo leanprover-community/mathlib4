@@ -137,8 +137,6 @@ namespace algebraMap
 
 end algebraMap
 
-end algebraMap
-
 /-- Creating an algebra from a morphism to the center of a semiring.
 See note [reducible non-instances].
 
