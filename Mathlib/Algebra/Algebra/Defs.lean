@@ -111,59 +111,25 @@ theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semirin
     [Subsingleton R] : Subsingleton A :=
   (algebraMap R A).codomain_trivial
 
-@[deprecated (since := "2025-12-17")] alias Algebra.cast := algebraMap
+@[deprecated (since := "2025-12-18")] alias Algebra.cast := algebraMap
 
 namespace algebraMap
 
-/-- Coercion from a commutative semiring to an algebra over this semiring. -/
-scoped instance coeHTCT (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
-    CoeHTCT R A :=
-  ⟨algebraMap R A⟩
+@[deprecated (since := "2025-12-18")] alias coe_zero := map_zero (algebraMap R A)
 
-section CommSemiringSemiring
+@[deprecated (since := "2025-12-18")] alias coe_one := map_one (algebraMap R A)
 
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+@[deprecated (since := "2025-12-18")] alias coe_natCast := map_natCast (algebraMap R A)
 
-@[norm_cast]
-theorem coe_zero : (↑(0 : R) : A) = 0 :=
-  map_zero (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_add := map_add (algebraMap R A)
 
-@[norm_cast]
-theorem coe_one : (↑(1 : R) : A) = 1 :=
-  map_one (algebraMap R A)
+@[deprecated (since := "2025-12-18")] alias coe_mul := map_mul (algebraMap R A)
 
-@[norm_cast]
-theorem coe_natCast (a : ℕ) : (↑(a : R) : A) = a :=
-  map_natCast (algebraMap R A) a
+@[deprecated (since := "2025-12-18")] alias coe_pow := map_pow (algebraMap R A)
 
-@[norm_cast]
-theorem coe_add (a b : R) : (↑(a + b : R) : A) = ↑a + ↑b :=
-  map_add (algebraMap R A) a b
+@[deprecated (since := "2025-12-18")] alias coe_neg := map_neg (algebraMap R A)
 
-@[norm_cast]
-theorem coe_mul (a b : R) : (↑(a * b : R) : A) = ↑a * ↑b :=
-  map_mul (algebraMap R A) a b
-
-@[norm_cast]
-theorem coe_pow (a : R) (n : ℕ) : (↑(a ^ n : R) : A) = (a : A) ^ n :=
-  map_pow (algebraMap R A) _ _
-
-end CommSemiringSemiring
-
-section CommRingRing
-
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-
-@[norm_cast]
-theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
-  map_neg (algebraMap R A) x
-
-@[norm_cast]
-theorem coe_sub (a b : R) :
-    (↑(a - b : R) : A) = ↑a - ↑b :=
-  map_sub (algebraMap R A) a b
-
-end CommRingRing
+@[deprecated (since := "2025-12-18")] alias coe_sub := map_sub (algebraMap R A)
 
 end algebraMap
 
