@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Order.Module.Algebra
+public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
