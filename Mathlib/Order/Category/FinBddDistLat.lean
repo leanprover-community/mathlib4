@@ -159,7 +159,7 @@ instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
   forget₂.obj X := .of X
-  forget₂.map f := PartOrd.ofHom (OrderHomClass.toOrderHom f.hom)
+  forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/
