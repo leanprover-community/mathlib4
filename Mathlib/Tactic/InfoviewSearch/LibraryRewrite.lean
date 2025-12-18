@@ -6,16 +6,17 @@ Authors: Jovan Gerbscheid, Anand Rao
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.Widget.InteractiveUnfold
+public meta import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
 public meta import ProofWidgets.Component.FilterDetails
+public meta import ProofWidgets.Component.Panel.Basic
 
 /-!
-# Point & click library rewriting
+# Point & click library search
 
-This file defines `rw??`, an interactive tactic that suggests rewrites for any expression selected
-by the user.
+This file defines `#infoview_search`, an interactive tactic that suggests rewrites for any
+expression selected by the user.
 
-`rw??` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
+`#infoview_search` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
 It excludes lemmas that are automatically generated.
 Each lemma is then checked one by one to see whether it is applicable.
 For each lemma that works, the corresponding rewrite tactic is constructed
@@ -38,7 +39,7 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 ## TODO
 
-Ways to improve `rw??`:
+Ways to improve `#infoview_search`:
 - Improve the logic around `nth_rw` and occurrences,
   and about when to pass explicit arguments to the rewrite lemma.
   For example, we could only pass explicit arguments if that avoids using `nth_rw`.
@@ -50,7 +51,7 @@ Ways to improve `rw??`:
 - We could look for rewrites of partial applications of the selected expression.
   For example, when clicking on `(f + g) x`, there should still be an `add_comm` suggestion.
 
-Ways to extend `rw??`:
+Ways to extend `#infoview_search`:
 - Support generalized rewriting (`grw`)
 - Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
   just point & click.
@@ -61,7 +62,7 @@ public meta section
 
 /-! ### Caching -/
 
-namespace Mathlib.Tactic.LibraryRewrite
+namespace InfoviewSearch.LibraryRewrite
 
 open Lean Meta RefinedDiscrTree
 
@@ -211,20 +212,20 @@ structure Rewrite where
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
-  withTraceNodeBefore `rw?? (return m!
+  withTraceNodeBefore `infoview_search (return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
     throwError "Expected equation, not {indentExpr eqn}"
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+  let unifies ← withTraceNodeBefore `infoview_search (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
   -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments
   let lhs ← instantiateMVars lhs
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     return none
-  synthAppInstances `rw?? default mvars binderInfos false false
+  synthAppInstances `infoview_search default mvars binderInfos false false
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     unless ← mvar.mvarId!.isAssigned do
@@ -237,7 +238,7 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   return some { symm, proof, replacement, stringLength, extraGoals, makesNewMVars }
 
 initialize
-  registerTraceClass `rw??
+  registerTraceClass `infoview_search
 
 /-- Try to rewrite `e` with each of the rewrite lemmas, and sort the resulting rewrites. -/
 def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
@@ -333,11 +334,11 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
     if makesNewMVars rw then continue
     -- exclude a reflexive rewrite
     if ← isExplicitEq (replacement rw) e then
-      trace[rw??] "discarded reflexive rewrite {replacement rw}"
+      trace[infoview_search] "discarded reflexive rewrite {replacement rw}"
       continue
     -- exclude two identical looking rewrites
     if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then
-      trace[rw??] "discarded duplicate rewrite {replacement rw}"
+      trace[infoview_search] "discarded duplicate rewrite {replacement rw}"
       continue
     filtered := filtered.push rw
   return filtered
@@ -481,41 +482,72 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
-@[server_rpc_method_cancellable]
-private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+private def libraryRewrite (goals : Array InteractiveGoal)
+    (selectedLoc : SubExpr.GoalsLocation) (replaceRange : Lsp.Range) :
+    RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
-  let some loc := props.selectedLocations.back? |
-    return .text "rw??: Please shift-click an expression."
-  if loc.loc matches .hypValue .. then
-    return .text "rw??: cannot rewrite in the value of a let variable."
-  let some goal := props.goals[0]? | return .text "rw??: there is no goal to solve!"
-  if loc.mvarId != goal.mvarId then
-    return .text "rw??: the selected expression should be in the main goal."
+  if selectedLoc.loc matches .hypValue .. then
+    return .text "infoview_search: cannot rewrite in the value of a let variable."
+  let some goal := goals[0]? | return .text "infoview_search: there is no goal to solve!"
+  if selectedLoc.mvarId != goal.mvarId then
+    return .text "infoview_search: the selected expression should be in the main goal."
   goal.ctx.val.runMetaM {} do
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
 
-      let rootExpr ← loc.rootExpr
-      let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
-        return .text "rw??: expressions with bound variables are not yet supported"
-      unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "rw??: the selected expression cannot be rewritten, \
+      let rootExpr ← selectedLoc.rootExpr
+      let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr selectedLoc.pos |
+        return .text "infoview_search: expressions with bound variables are not yet supported"
+      unless ← kabstractIsTypeCorrect rootExpr subExpr selectedLoc.pos do
+        return .text <| "infoview_search: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
-      let location ← loc.fvarId?.mapM FVarId.getUserName
+      let location ← selectedLoc.fvarId?.mapM FVarId.getUserName
 
-      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
+      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location replaceRange doc
 
-      let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
-      let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
-      let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
+      let (filtered, all) ←
+        getRewriteInterfaces subExpr occ location selectedLoc.fvarId? replaceRange
+      let filtered ← renderRewrites subExpr filtered unfoldsHtml replaceRange doc false
+      let all      ← renderRewrites subExpr all      unfoldsHtml replaceRange doc true
       return <FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
         filtered={filtered}
         initiallyFiltered={true} />
+
+@[server_rpc_method]
+private def infoviewSearchRpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+  if let some selectedLoc := props.selectedLocations.back? then
+    libraryRewrite props.goals selectedLoc ⟨props.pos, props.pos⟩
+  else
+    return .pure <| .text "" -- If nothing is selected, return an empty HTML
+
+/-- The component that is diplayed when writing `#infoview_search`. -/
+@[widget_module]
+def InfoviewSearchComponent : Component PanelWidgetProps :=
+  mk_rpc_widget% infoviewSearchRpc
+
+/--
+The `#infoview_search` command enables an interactive search tool that will display rewrite
+suggestions whenever you select an expression in a tactic state using shift-click.
+Each of these suggestions has an insert button to paste the relevant tactic into the editor.
+
+The suggestions are grouped and sorted by the pattern that the rewrite lemmas match with.
+Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
+are filtered out, as well as rewrites that have new metavariables in the replacement expression.
+To see all suggestions, click on the filter button (▼) in the top right.
+-/
+macro "#infoview_search" : command => `(command| show_panel_widgets [InfoviewSearchComponent])
+
+@[server_rpc_method_cancellable]
+private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+  if let some selectedLoc := props.selectedLocations.back? then
+    libraryRewrite props.goals selectedLoc props.replaceRange
+  else
+    return .pure <| .text "rw??: Please shift-click an expression."
 
 /-- The component called by the `rw??` tactic -/
 @[widget_module]
@@ -523,6 +555,8 @@ def LibraryRewriteComponent : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
+Prefer the `#infoview_search` command over `rw??`.
+
 `rw??` is an interactive tactic that suggests rewrites for any expression selected by the user.
 To use it, shift-click an expression in the goal or a hypothesis that you want to rewrite.
 Clicking on one of the rewrite suggestions will paste the relevant rewrite tactic into the editor.
@@ -533,6 +567,10 @@ are filtered out, as well as rewrites that have new metavariables in the replace
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
+  logWarning "Consider using the `#infoview_search` command instead of `rw??`.\n\
+    To use it, simply write `#infoview_search` somewhere at the top of your file, and then \
+    shift-click in a tactic state below that in the file. It gives the same suggestions as \
+    `rw??`, but it saves you the hassle of typing `rw??` every time."
   let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
@@ -557,13 +595,14 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   let head ← pattern (← getConstInfo name).type rw.symm (addMessageContext m! "{·}")
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
-/-- `#rw?? e` gives all possible rewrites of `e`. It is a testing command for the `rw??` tactic -/
-syntax (name := rw??Command) "#rw??" (&"all")? term : command
+/-- `#infoview_search_test e` gives all possible rewrites of `e`.
+It is a testing command for `#infoview_search` -/
+syntax (name := infoviewSearchTest) "#infoview_search_test" (&"all")? term : command
 
 open Elab
-/-- Elaborate a `#rw??` command. -/
-@[command_elab rw??Command]
-def elabrw??Command : Command.CommandElab := fun stx =>
+/-- Elaborate a `#infoview_search_test` command. -/
+@[command_elab infoviewSearchTest]
+def elabInfoviewSearchTest : Command.CommandElab := fun stx =>
   withoutModifyingEnv <| Command.runTermElabM fun _ => do
   let e ← Term.elabTerm stx[2] none
   Term.synthesizeSyntheticMVarsNoPostponing
@@ -588,4 +627,4 @@ def elabrw??Command : Command.CommandElab := fun stx =>
   else
     logInfo (.joinSep sections.toList "\n\n")
 
-end Mathlib.Tactic.LibraryRewrite
+end InfoviewSearch.LibraryRewrite

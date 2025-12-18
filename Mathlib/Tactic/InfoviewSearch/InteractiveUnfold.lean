@@ -56,7 +56,7 @@ public meta section
 
 open Lean Meta Server Widget ProofWidgets Jsx
 
-namespace Mathlib.Tactic.InteractiveUnfold
+namespace InfoviewSearch.InteractiveUnfold
 
 /-- Unfold a class projection if the instance is tagged with `@[default_instance]`.
 This is used in the `unfold?` tactic in order to not show these unfolds to the user.
@@ -251,6 +251,4 @@ def elabUnfoldCommand : Command.CommandElab := fun stx =>
       logInfo (m! "Unfolds for {e}:\n"
         ++ .joinSep unfolds "\n")
 
-end InteractiveUnfold
-
-end Mathlib.Tactic
+end InfoviewSearch.InteractiveUnfold

@@ -6572,6 +6572,8 @@ public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
+public import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
+public import Mathlib.Tactic.InfoviewSearch.LibraryRewrite
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
@@ -6754,8 +6756,6 @@ public import Mathlib.Tactic.Widget.CommDiag
 public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Tactic.Widget.GCongr
-public import Mathlib.Tactic.Widget.InteractiveUnfold
-public import Mathlib.Tactic.Widget.LibraryRewrite
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import Mathlib.Tactic.Widget.StringDiagram
