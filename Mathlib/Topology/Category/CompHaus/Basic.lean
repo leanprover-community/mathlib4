@@ -172,7 +172,6 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { lift := fun S => InducedCategory.homMk
       ((TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S))
-    fac := fun S j => by aesop
     uniq := fun S m hm => InducedCategory.hom_ext
       ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _ (fun j ↦ by
         dsimp
