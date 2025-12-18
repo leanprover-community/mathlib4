@@ -307,9 +307,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
 
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
+-- There is no definition `writtenInExtend`, but we already use some made-up names in this file.
 
-/-- This is a smooth analogue of `continuousWithinAt_writtenInExtend_iff`. -/
+/-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
 theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
     (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
