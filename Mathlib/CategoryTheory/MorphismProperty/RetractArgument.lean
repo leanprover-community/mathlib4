@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
 # The retract argument
@@ -22,9 +24,11 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- If `i ≫ p = f`, and `f` has the left lifting property with respect to `p`,
 then `f` is a retract of `i`. -/

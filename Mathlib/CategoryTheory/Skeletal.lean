@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.IsomorphismClasses
-import Mathlib.CategoryTheory.Thin
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Skeleton of a category
@@ -22,6 +24,8 @@ separately is that lemmas and definitions about orderings can be used directly, 
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -266,7 +270,7 @@ def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F�
   app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
-from the original `map₂` proof. Lean needed an extensive amount explicit type
+from the original `map₂` proof. Lean needed an extensive amount of explicit type
 annotations to figure things out. This also translated into repeated deterministic
 timeouts. The extracted defs allow for explicit motives for the multiple
 descents to the quotients.

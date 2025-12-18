@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Projections
-import Mathlib.CategoryTheory.Idempotents.FunctorCategories
-import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Projections
+public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
 
@@ -21,6 +23,8 @@ projection on the normalized Moore subcomplex, with kernel the degenerate subcom
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject CategoryTheory.Idempotents Opposite Simplicial DoldKan
@@ -29,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _⦋n⦌ ⟶ _) = (P q).f n := by
@@ -146,7 +150,7 @@ noncomputable def natTransPInfty_f (n : ℕ) :=
 variable {C}
 
 @[simp]
-theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_PInfty_f {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by

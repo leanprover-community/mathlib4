@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ with zero `Γ`, and a submonoid `S` of `v.supp.primeCompl`, the valuation `v` ca
 extended to the localization `S⁻¹A`.
 
 -/
+
+@[expose] public section
 
 
 variable {A : Type*} [CommRing A] {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]

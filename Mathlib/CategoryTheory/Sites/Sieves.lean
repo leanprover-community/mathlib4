@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Theory of sieves
@@ -20,6 +22,8 @@ import Mathlib.Data.Set.BooleanAlgebra
 
 sieve, pullback
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -241,6 +245,19 @@ lemma ofArrows.hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S
     (hf : ofArrows X f g) : f hf.idx = eqToHom hf.obj_idx ≫ g := by
   simp [eq_eqToHom_comp_hom_idx hf]
 
+lemma ofArrows_comp_le {X : C} {ι σ : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) (a : σ → ι) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) ≤ ofArrows Y f := by
+  rintro - - ⟨i⟩
+  use a i
+
+lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
+    (f : ∀ i, Y i ⟶ X) {a : σ → ι} (ha : a.Surjective) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) = ofArrows Y f := by
+  refine le_antisymm (ofArrows_comp_le f a) ?_
+  rintro - - ⟨i⟩
+  obtain ⟨j, rfl⟩ := ha i
+  use j
+
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
 `Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
@@ -391,6 +408,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     rw [heq_iff_eq] at h; subst h
     exact ⟨Y, u, hu⟩
 
+set_option backward.proofsInPublic true in
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
       Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
@@ -712,7 +730,7 @@ lemma pullback_ofObjects_eq_top
     ofObjects Y X = ⊤ := by
   ext Z h
   simp only [top_apply, iff_true]
-  rw [mem_ofObjects_iff ]
+  rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`

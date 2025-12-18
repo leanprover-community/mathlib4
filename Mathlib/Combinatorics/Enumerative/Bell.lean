@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
+Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Beibei Xiong, Weijie Jiang
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -21,13 +22,18 @@ The definition presents it as a natural number.
 * `Nat.uniformBell m n` : short name for `Multiset.bell (replicate m n)`
 
 * `Multiset.bell_mul_eq` shows that
-    `m.bell * (m.map (fun j ↦ j !)).prod *
-      Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
+  `m.bell * (m.map (fun j ↦ j !)).prod * Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
 
 * `Nat.uniformBell_mul_eq`  shows that
-    `uniformBell m n * n ! ^ m * m ! = (m * n)!`
+  `uniformBell m n * n ! ^ m * m ! = (m * n) !`
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
+
+* `Nat.bell n`: the `n`th standard Bell number,
+  which counts the number of partitions of a set of cardinality `n`
+
+* `Nat.bell_succ n` shows that
+  `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)`
 
 ## TODO
 
@@ -35,6 +41,8 @@ Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
 
 -/
+
+@[expose] public section
 
 open Multiset Nat
 
@@ -167,5 +175,41 @@ theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos
   · rw [← mul_assoc, ← uniformBell_mul_eq _ hn]
+
+/--
+The `n`th standard Bell number,
+which counts the number of partitions of a set of cardinality `n`.
+
+## TODO
+
+Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
+over all multisets `m : Multiset ℕ` such that `m.sum = n`.
+-/
+protected def bell : ℕ → ℕ
+  | 0 => 1
+  | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)
+
+theorem bell_succ (n : ℕ) :
+    Nat.bell (n + 1) = ∑ i : Fin n.succ, Nat.choose n i * Nat.bell (n - i) := by
+  rw [Nat.bell]
+
+theorem bell_succ' (n : ℕ) :
+    Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 * Nat.bell ij.2 := by
+  rw [Nat.bell_succ,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => Nat.choose n x * Nat.bell y) n,
+    Finset.sum_range]
+
+
+@[simp]
+theorem bell_zero : Nat.bell 0 = 1 := by
+  simp [Nat.bell]
+
+@[simp]
+theorem bell_one : Nat.bell 1 = 1 := by
+  simp [Nat.bell]
+
+@[simp]
+theorem bell_two : Nat.bell 2 = 2 := by
+  simp [Nat.bell]
 
 end Nat

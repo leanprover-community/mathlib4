@@ -3,11 +3,13 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Endomorphisms
@@ -17,6 +19,8 @@ Definition and basic properties of endomorphisms and automorphisms of an object 
 For each `X : C`, we provide `CategoryTheory.End X := X ⟶ X` with a monoid structure,
 and `CategoryTheory.Aut X := X ≅ X` with a group structure.
 -/
+
+@[expose] public section
 
 
 universe v v' u u'

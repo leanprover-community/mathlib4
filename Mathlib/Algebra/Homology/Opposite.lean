@@ -3,11 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ImageToKernel
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
@@ -27,6 +29,8 @@ It is convenient to define both `op` and `opSymm`; this is because given a compl
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -34,7 +38,7 @@ open Opposite CategoryTheory CategoryTheory.Limits
 
 section
 
-variable {V : Type*} [Category V] [Abelian V]
+variable {V : Type*} [Category* V] [Abelian V]
 
 theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.op f.op (by rw [← op_comp, w, op_zero]) =
@@ -64,7 +68,7 @@ end
 
 namespace HomologicalComplex
 
-variable {ι V : Type*} [Category V] {c : ComplexShape ι}
+variable {ι V : Type*} [Category* V] {c : ComplexShape ι}
 
 section
 

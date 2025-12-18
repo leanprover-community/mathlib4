@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+module
 
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.Order.Filter.AtTopBot.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.Order.Filter.AtTopBot.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -16,6 +17,8 @@ applied to the important special cases where the domain is `ℕ` or `ℤ`. For i
 formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add_tsum_nat_add`, as well as
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -185,10 +188,6 @@ protected theorem Multipliable.prod_mul_tprod_nat_mul'
     ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add' := Summable.sum_add_tsum_nat_add'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_mul' :=
-  Multipliable.prod_mul_tprod_nat_mul'
-
 @[to_additive]
 theorem tprod_eq_zero_mul'
     {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
@@ -234,19 +233,10 @@ protected theorem Multipliable.prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G
     (h : Multipliable f) : ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   Multipliable.prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add :=
-  Summable.sum_add_tsum_nat_add
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_add :=
-  Multipliable.prod_mul_tprod_nat_add
-
 @[to_additive]
 protected theorem Multipliable.tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
   tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
-
-@[deprecated (since := "2025-04-12")] alias tsum_eq_zero_add := Summable.tsum_eq_zero_add
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_zero_mul :=
-  Multipliable.tprod_eq_zero_mul
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
 multipliability assumption on `f`, as otherwise all such products are one. -/
@@ -300,7 +290,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 @[to_additive]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -436,12 +426,11 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
-          or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
+        simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
         suffices x = 0 by simp only [this, if_true]
-        cutsat
+        lia
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
@@ -498,11 +487,6 @@ protected lemma Multipliable.tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_of_nat_of_neg :=
-  Summable.tsum_of_nat_of_neg
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_of_nat_of_neg :=
-  Multipliable.tprod_of_nat_of_neg
 
 end IsTopologicalGroup
 

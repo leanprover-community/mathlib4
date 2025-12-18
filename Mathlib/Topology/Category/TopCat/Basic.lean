@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
@@ -16,6 +18,8 @@ resp. right adjoint to the forgetful functor, see
 `Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
 
+@[expose] public section
+
 assert_not_exists Module
 
 open CategoryTheory TopologicalSpace Topology
@@ -24,7 +28,9 @@ universe u
 
 /-- The category of topological spaces. -/
 structure TopCat where
-  private mk ::
+  /-- The object in `TopCat` associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : TopologicalSpace carrier]
@@ -40,11 +46,6 @@ instance : CoeSort (TopCat) (Type u) :=
 
 attribute [coe] TopCat.carrier
 
-/-- The object in `TopCat` associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `TopCat`. -/
-abbrev of (X : Type u) [TopologicalSpace X] : TopCat :=
-  ⟨X⟩
-
 lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
   rfl
 
@@ -54,7 +55,7 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  private mk ::
+  --private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
@@ -154,11 +155,6 @@ equal function coercion for a continuous map `C(X, Y)`.
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
-
-@[deprecated
-  "Simply remove this from the `simp`/`rw` set: the LHS and RHS are now identical."
-  (since := "2025-01-30")]
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f.hom x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

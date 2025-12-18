@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -29,6 +31,8 @@ reason about them using the existing `Setoid` and its infrastructure.
 
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
+
+@[expose] public section
 
 attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
@@ -77,6 +81,7 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
+@[simp]
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
@@ -105,7 +110,7 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
   toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
   invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
-    fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
+    fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
@@ -121,7 +126,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
   toFun x := Quotient.mk'' fun i ↦ (x i).out
   invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
-    simpa using hxy i
+    simpa [Quotient.eq] using hxy i
   left_inv q := by
     ext i
     simp
@@ -163,7 +168,6 @@ theorem sInf_def {s : Set (Setoid α)} : ⇑(sInf s) = sInf ((⇑) '' s) := by
   rfl
 
 instance : PartialOrder (Setoid α) where
-  le := (· ≤ ·)
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
@@ -192,6 +196,12 @@ theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
+@[simp] lemma mk_eq_top {r : α → α → Prop} (iseqv) : mk r iseqv = ⊤ ↔ r = ⊤ := by
+  simp [eq_iff_rel_eq]
+
+@[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
+  simp [eq_iff_rel_eq]
+
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
@@ -205,7 +215,7 @@ lemma sInf_iff {S : Set (Setoid α)} {x y : α} :
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s x y := by
-  simp [sInf_iff]
+  simp [sInf_iff, Quotient.eq]
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
@@ -314,38 +324,56 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
   ext ⟨x⟩
   rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
+/-- Given a function `f`, lift it to the quotient by its kernel. -/
+def kerLift (f : α → β) : Quotient (ker f) → β :=
+  Quotient.lift f fun _ _ ↦ id
+
+@[simp]
+theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
+  rfl
+
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
-theorem ker_lift_injective (f : α → β) : Injective (@Quotient.lift _ _ (ker f) f fun _ _ h => h) :=
+theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+
+@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
-theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : ∀ x y, r x y → f x = f y)
+theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)
     (h : Injective (Quotient.lift f H)) : ker f = r :=
   le_antisymm
     (fun x y hk =>
       Quotient.exact <| h <| show Quotient.lift f H ⟦x⟧ = Quotient.lift f H ⟦y⟧ from hk)
     H
 
+theorem lift_injective_iff_ker_eq_of_le {r : Setoid α} {f : α → β}
+    (hle : r ≤ ker f) : Injective (Quotient.lift f hle) ↔ ker f = r :=
+  ⟨ker_eq_lift_of_injective f hle, fun h ↦ h ▸ kerLift_injective _⟩
+
 variable (r : Setoid α) (f : α → β)
+
+/-- The image of `f` lifted to the quotient by its kernel is equal to the image of `f` itself. -/
+@[simp] theorem range_kerLift_eq_range : Set.range (kerLift f) = Set.range f :=
+  Set.range_quotient_lift (s := ker f) _
+
+/-- The quotient of `α` by the kernel of a function `f`
+bijects with the image of `f` lifted to the quotient. -/
+noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
+  .ofInjective _ <| kerLift_injective _
 
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  Equiv.ofBijective
-    ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
-      Subtype.ext h)
-    ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
-      fun ⟨_, z, hz⟩ =>
-      ⟨@Quotient.mk'' _ (ker f) z, Subtype.ext_iff.2 hz⟩⟩
+  quotientKerEquivRangeKerLift _ |>.trans <| .setCongr <| range_kerLift_eq_range _
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
 @[simps]
 def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g f) :
     Quotient (ker f) ≃ β where
-  toFun a := (Quotient.liftOn' a f) fun _ _ => id
+  toFun := kerLift f
   invFun b := Quotient.mk'' (g b)
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf

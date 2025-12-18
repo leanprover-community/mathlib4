@@ -3,14 +3,18 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.AtTopBot.Monoid
+module
+
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.AtTopBot.Monoid
 
 /-!
 # Convergence to ±infinity in ordered commutative groups
 -/
+
+@[expose] public section
 
 variable {α G : Type*}
 open Set

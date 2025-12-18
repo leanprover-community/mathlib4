@@ -3,14 +3,16 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.WithTerminal.Cone
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,6 +38,8 @@ This development originally appeared in Bhavik Mehta's "Topos theory for Lean" r
 and was ported to mathlib by Kim Morrison.
 
 -/
+
+@[expose] public section
 
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃

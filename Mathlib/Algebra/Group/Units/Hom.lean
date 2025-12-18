@@ -3,9 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Units.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Monoid homomorphisms and units
@@ -33,6 +35,8 @@ used to golf the basic `Group` lemmas.
 
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -81,6 +85,7 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 @[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
+set_option backward.proofsInPublic true in
 @[to_additive (attr := simp)]
 lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
     map f (mk val inv val_inv inv_val) = mk (f val) (f inv)

@@ -3,12 +3,14 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Bhavik Mehta
 -/
-import Mathlib.Analysis.Calculus.Deriv.Support
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.MeasureTheory.Function.JacobianOneDim
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Support
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Links between an integral and its "improper" version
@@ -74,6 +76,8 @@ in analysis. In particular,
 Versions of these results are also given on the intervals `(-∞, a]` and `(-∞, +∞)`, as well as
 the corresponding versions of integration by parts.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Set TopologicalSpace Topology
 open scoped ENNReal NNReal
@@ -351,8 +355,8 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) :=
   let F n := (φ n).indicator f
   have key₁ : ∀ n, AEMeasurable (F n) μ := fun n => hfm.indicator (hφ.measurableSet n)
-  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij =>
-    indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
+  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij => by
+    dsimp [F]; grw [(hmono hij).subset]
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
     lintegral_indicator (hφ.measurableSet n) _

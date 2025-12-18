@@ -3,10 +3,12 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Order.Filter.Ring
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Order.Filter.Ring
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts
@@ -19,6 +21,8 @@ ultrafilter. Definitions and properties that work for any filter should go to `O
 
 ultrafilter, ultraproduct
 -/
+
+@[expose] public section
 
 
 universe u v

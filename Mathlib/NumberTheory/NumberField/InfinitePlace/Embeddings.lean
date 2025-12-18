@@ -3,9 +3,11 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
-import Mathlib.Algebra.Algebra.Hom.Rat
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.NumberField.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Embeddings of number fields
@@ -26,6 +28,8 @@ the field of complex numbers.
 number field, embeddings
 -/
 
+@[expose] public section
+
 open scoped Finset
 
 namespace NumberField.Embeddings
@@ -34,8 +38,16 @@ section Fintype
 
 open Module
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 variable (A : Type*) [Field A] [CharZero A]
+
+instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
+  obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
+    apply IntermediateField.nonempty_algHom_of_splits
+    exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
+  exact ⟨f.toRingHom⟩
+
+variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
@@ -82,7 +94,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := Algebra.IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
+      (IsAlgClosed.splits _) (minpoly.natDegree_le x) (fun z hz => ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
@@ -172,6 +184,11 @@ abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) :=
   rfl
+
+variable (K) in
+theorem involutive_conjugate :
+    Function.Involutive (conjugate : (K →+* ℂ) → (K →+* ℂ)) := by
+  intro; simp
 
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl

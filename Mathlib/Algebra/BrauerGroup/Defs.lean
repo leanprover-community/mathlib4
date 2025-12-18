@@ -3,10 +3,12 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Central.Defs
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Matrix.Reindex
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
 # Definition of Brauer group of a field K
@@ -16,23 +18,25 @@ all finite-dimensional central simple algebras over K modulo the Brauer Equivale
 central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m ∈ ℕ+` such
 that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 
-# TODOs
+## TODOs
 1. Prove that the Brauer group is an abelian group where multiplication is defined as tensor
    product.
 2. Prove that the Brauer group is a functor from the category of fields to the category of groups.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
-# References
+## References
 * [Algebraic Number Theory, *J.W.S Cassels*][cassels1967algebraic]
 
 ## Tags
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 
+@[expose] public section
+
 universe u v
 
-/-- `CSA` is the set of all finite-dimensional central simple algebras over field `K`, for its
-generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib/Algebra/Azumaya/Defs.lean`. -/
+/-- `CSA` is the set of all finite-dimensional central simple algebras over a field `K`. For the
+generalization to a `CommRing`, see `IsAzumaya` in `Mathlib/Algebra/Azumaya/Defs.lean`. -/
 structure CSA (K : Type u) [Field K] extends AlgCat.{v} K where
   /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
@@ -47,8 +51,8 @@ instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
-/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer Equivalent
-  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
+/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer equivalent
+  if there exist `n, m ∈ ℕ+` such that `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
 abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
   ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 

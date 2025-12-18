@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # The standard basis
@@ -30,6 +32,8 @@ this is a basis over `Fin 3 → R`.
   `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
 
 -/
+
+@[expose] public section
 
 open Function Module Set Submodule
 
@@ -62,11 +66,6 @@ lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGrou
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
     simp +contextual [Fintype.linearIndependent_iff, hv]
-
-@[deprecated linearIndependent_single_of_ne_zero (since := "2025-04-14")]
-theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
-    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) :=
-  linearIndependent_single_of_ne_zero hv
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -102,7 +101,7 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
     LinearEquiv.piCongrRight]
   dsimp
-  rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
+  rw [Pi.single_eq_of_ne (Ne.symm hj), map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
   rintro ⟨⟩
   contradiction
@@ -168,8 +167,6 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   use s
   refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
   by_cases t = s <;> simp_all
-
-@[deprecated (since := "2025-04-15")] alias eval_of_algHom := AlgHom.eq_piEvalAlgHom
 
 namespace Module
 
