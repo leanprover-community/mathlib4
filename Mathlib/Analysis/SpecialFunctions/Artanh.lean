@@ -64,13 +64,13 @@ theorem artanh_zero : artanh 0 = 0 := by simp [artanh]
 
 theorem sinh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : sinh (artanh x) = x / √(1 - x ^ 2) := by
   have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
-  have := sq_sub_sq 1 x
-  grind [artanh, sinh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
+  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul]
+    <;> grind [artanh, sinh_eq, exp_neg, exp_log, sqrt_div]
 
 theorem cosh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : cosh (artanh x) = 1 / √(1 - x ^ 2) := by
   have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
-  have := sq_sub_sq 1 x
-  grind [artanh, cosh_eq, exp_neg, exp_log, sqrt_div, sqrt_mul]
+  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul]
+    <;> grind [artanh, cosh_eq, exp_neg, exp_log, sqrt_div]
 
 /-- `artanh` is the right inverse of `tanh` over (-1, 1). -/
 theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : tanh (artanh x) = x := by
