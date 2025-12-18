@@ -10,10 +10,10 @@ public import Mathlib.Probability.Martingale.Basic
 /-!
 # Centering lemma for stochastic processes
 
-Any `ℕ`-indexed stochastic process which is adapted and integrable can be written as the sum of a
-martingale and a predictable process. This result is also known as **Doob's decomposition theorem**.
-From a process `f`, a filtration `ℱ` and a measure `μ`, we define two processes
-`martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
+Any `ℕ`-indexed stochastic process which is strongly adapted and integrable can be written as the
+sum of a martingale and a predictable process. This result is also known as
+**Doob's decomposition theorem**. From a process `f`, a filtration `ℱ` and a measure `μ`, we define
+two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 
 ## Main definitions
 
@@ -24,7 +24,8 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 
 ## Main statements
 
-* `MeasureTheory.adapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n+1))` is adapted.
+* `MeasureTheory.stronglyAdapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n+1))`
+  is strongly adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
 
@@ -51,11 +52,12 @@ noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → 
 theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 
-theorem adapted_predictablePart : StronglyAdapted ℱ fun n => predictablePart f ℱ μ (n + 1) :=
+theorem stronglyAdapted_predictablePart :
+    StronglyAdapted ℱ fun n => predictablePart f ℱ μ (n + 1) :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
-theorem adapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
+theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_le hin))
 
@@ -74,8 +76,8 @@ theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
   ext1 n
   rw [Finset.eq_sum_range_sub f n, ← add_sub, ← Finset.sum_sub_distrib]
 
-theorem adapted_martingalePart (hf : StronglyAdapted ℱ f) :
-  StronglyAdapted ℱ (martingalePart f ℱ μ) := hf.sub adapted_predictablePart'
+theorem stronglyAdapted_martingalePart (hf : StronglyAdapted ℱ f) :
+  StronglyAdapted ℱ (martingalePart f ℱ μ) := hf.sub stronglyAdapted_predictablePart'
 
 theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ) :
     Integrable (martingalePart f ℱ μ n) μ := by
@@ -84,7 +86,7 @@ theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ
 
 theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, Integrable (f n) μ)
     [SigmaFiniteFiltration μ ℱ] : Martingale (martingalePart f ℱ μ) ℱ μ := by
-  refine ⟨adapted_martingalePart hf, fun i j hij => ?_⟩
+  refine ⟨stronglyAdapted_martingalePart hf, fun i j hij => ?_⟩
   -- ⊢ μ[martingalePart f ℱ μ j | ℱ i] =ᵐ[μ] martingalePart f ℱ μ i
   have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
       f 0 + ∑ k ∈ Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
@@ -130,9 +132,9 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
       martingalePart_add_predictablePart]
   have hhpred : StronglyAdapted ℱ fun n => h (n + 1) := by
     rw [hh]
-    exact adapted_predictablePart.sub hg
+    exact stronglyAdapted_predictablePart.sub hg
   have hhmgle : Martingale h ℱ μ := hf.sub (martingale_martingalePart
-    (hf.adapted.add <| Predictable.stronglyAdapted hg <| hg0.symm ▸ stronglyMeasurable_zero)
+    (hf.stronglyAdapted.add <| Predictable.stronglyAdapted hg <| hg0.symm ▸ stronglyMeasurable_zero)
     fun n => (hf.integrable n).add <| hgint n)
   refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω

@@ -13,8 +13,8 @@ public import Mathlib.Tactic.AdaptationNote
 
 Given a stochastic process, the hitting time provides the first time the process "hits" some
 subset of the state space. The hitting time is a stopping time in the case that the time index is
-discrete and the process is adapted (this is true in a far more general setting however we have
-only proved it for the discrete case so far).
+discrete and the process is strongly adapted (this is true in a far more general setting however
+we have only proved it for the discrete case so far).
 
 ## Main definition
 
@@ -25,10 +25,10 @@ only proved it for the discrete case so far).
 
 ## Main results
 
-* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
-* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
+* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of a strongly adapted process
+is a stopping time
+* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of a strongly adapted process
+is a stopping time
 
 -/
 
@@ -52,7 +52,7 @@ open scoped Classical in
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
-The hitting time is a stopping time if the process is adapted and discrete. -/
+The hitting time is a stopping time if the process is strongly adapted and discrete. -/
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s

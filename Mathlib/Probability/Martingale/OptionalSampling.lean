@@ -182,7 +182,7 @@ theorem condExp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       exact ht.2
     · refine StronglyMeasurable.indicator ?_ (hτ.measurableSet_le_stopping_time hσ)
       refine Measurable.stronglyMeasurable ?_
-      exact measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
+      exact measurable_stoppedValue h.stronglyAdapted.progMeasurable_of_discrete hτ
     · intro x hx
       simp only [hx, Set.indicator_of_notMem, not_false_iff]
   exact condExp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
@@ -214,7 +214,7 @@ theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Marti
     · have h1 : μ[stoppedValue f τ|hτ.measurableSpace] = stoppedValue f τ := by
         apply condExp_of_stronglyMeasurable hτ.measurableSpace_le
         · exact Measurable.stronglyMeasurable <|
-            measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
+            measurable_stoppedValue h.stronglyAdapted.progMeasurable_of_discrete hτ
         · exact integrable_stoppedValue ι hτ h.integrable hτ_le
       rw [h1]
       exact (condExp_stoppedValue_stopping_time_ae_eq_restrict_le h hτ hσ hτ_le).symm

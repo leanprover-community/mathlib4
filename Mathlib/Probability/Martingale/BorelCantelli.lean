@@ -243,7 +243,8 @@ variable {s : ℕ → Set Ω}
 
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 
-theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : StronglyAdapted ℱ (process s) :=
+theorem stronglyAdapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) :
+    StronglyAdapted ℱ (process s) :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
 
@@ -278,8 +279,8 @@ end BorelCantelli
 
 open BorelCantelli
 
-/-- An a.e. monotone adapted process `f` with uniformly bounded differences converges to `+∞` if
-and only if its predictable part also converges to `+∞`. -/
+/-- An a.e. monotone strongly adapted process `f` with uniformly bounded differences converges to
+`+∞` if and only if its predictable part also converges to `+∞`. -/
 theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     (hfmono : ∀ᵐ ω ∂μ, ∀ n, f n ω ≤ f (n + 1) ω) (hf : StronglyAdapted ℱ f)
     (hint : ∀ n, Integrable (f n) μ) (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
@@ -316,8 +317,9 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_)
+    (stronglyAdapted_process hs) (integrable_process μ hs)
+    (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]

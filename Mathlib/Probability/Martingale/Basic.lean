@@ -13,14 +13,12 @@ public import Mathlib.Probability.Process.Stopping
 # Martingales
 
 A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if every
-`f i` is integrable, `f` is adapted with respect to `ℱ` and for all `i ≤ j`,
+`f i` is integrable, `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
 `μ[f j | ℱ i] =ᵐ[μ] f i`. On the other hand, `f : ι → Ω → E` is said to be a supermartingale
-with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with respect to `ℱ`
-and for all `i ≤ j`, `μ[f j | ℱ i] ≤ᵐ[μ] f i`. Finally, `f : ι → Ω → E` is said to be a
-submartingale with respect to the filtration `ℱ` if `f i` is integrable, `f` is adapted with
-respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
-
-The definitions of filtration and adapted can be found in `Probability.Process.Stopping`.
+with respect to the filtration `ℱ` if `f i` is integrable, `f` is strongly adapted with respect to
+`ℱ` and for all `i ≤ j`, `μ[f j | ℱ i] ≤ᵐ[μ] f i`. Finally, `f : ι → Ω → E` is said to be a
+submartingale with respect to the filtration `ℱ` if `f i` is integrable, `f` is strongly adapted
+with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 ### Definitions
 
@@ -84,12 +82,12 @@ theorem martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale 
 
 namespace Martingale
 
-protected theorem adapted (hf : Martingale f ℱ μ) : StronglyAdapted ℱ f :=
+protected theorem stronglyAdapted (hf : Martingale f ℱ μ) : StronglyAdapted ℱ f :=
   hf.1
 
 protected theorem stronglyMeasurable (hf : Martingale f ℱ μ) (i : ι) :
     StronglyMeasurable[ℱ i] (f i) :=
-  hf.adapted i
+  hf.stronglyAdapted i
 
 theorem condExp_ae_eq (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j) : μ[f j|ℱ i] =ᵐ[μ] f i :=
   hf.2 i j hij
@@ -104,18 +102,18 @@ theorem setIntegral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ)
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
-  refine ⟨hf.adapted.add hg.adapted, fun i j hij => ?_⟩
+  refine ⟨hf.stronglyAdapted.add hg.stronglyAdapted, fun i j hij => ?_⟩
   exact (condExp_add (hf.integrable j) (hg.integrable j) _).trans
     ((hf.2 i j hij).add (hg.2 i j hij))
 
 theorem neg (hf : Martingale f ℱ μ) : Martingale (-f) ℱ μ :=
-  ⟨hf.adapted.neg, fun i j hij => (condExp_neg ..).trans (hf.2 i j hij).neg⟩
+  ⟨hf.stronglyAdapted.neg, fun i j hij => (condExp_neg ..).trans (hf.2 i j hij).neg⟩
 
 theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
 theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
-  refine ⟨hf.adapted.smul c, fun i j hij => ?_⟩
+  refine ⟨hf.stronglyAdapted.smul c, fun i j hij => ?_⟩
   refine (condExp_smul ..).trans ((hf.2 i j hij).mono fun x hx => ?_)
   simp only [Pi.smul_apply, hx]
 

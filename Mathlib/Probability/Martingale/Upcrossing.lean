@@ -42,9 +42,9 @@ convergence theorems.
 
 ## Main results
 
-* `MeasureTheory.Adapted.isStoppingTime_upperCrossingTime`: `upperCrossingTime` is a
+* `MeasureTheory.StronglyAdapted.isStoppingTime_upperCrossingTime`: `upperCrossingTime` is a
   stopping time whenever the process it is associated to is adapted.
-* `MeasureTheory.Adapted.isStoppingTime_lowerCrossingTime`: `lowerCrossingTime` is a
+* `MeasureTheory.StronglyAdapted.isStoppingTime_lowerCrossingTime`: `lowerCrossingTime` is a
   stopping time whenever the process it is associated to is adapted.
 * `MeasureTheory.Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part`: Doob's
   upcrossing estimate.
@@ -95,8 +95,8 @@ $$
 This is `MeasureTheory.integral_mul_upcrossingsBefore_le_integral` in our formalization.
 
 To prove this, we use the fact that given a non-negative, bounded, predictable process $(C_n)$
-(i.e. $(C_{n + 1})$ is adapted), $(C \bullet f)_n := \sum_{k \le n} C_{k + 1}(f_{k + 1} - f_k)$ is
-a submartingale if $(f_n)$ is.
+(i.e. $(C_{n + 1})$ is strongly adapted),
+$(C \bullet f)_n := \sum_{k \le n} C_{k + 1}(f_{k + 1} - f_k)$ is a submartingale if $(f_n)$ is.
 
 Define $C_n := \sum_{k \le n} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)$. It is easy to see that
 $(1 - C_n)$ is non-negative, bounded and predictable, and hence, given a submartingale $(f_n)$,

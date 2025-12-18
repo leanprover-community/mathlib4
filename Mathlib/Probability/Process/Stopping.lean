@@ -863,14 +863,15 @@ theorem ProgMeasurable.stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasur
     · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
     · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
-theorem ProgMeasurable.adapted_stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
-    (hτ : IsStoppingTime f τ) : StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
+theorem ProgMeasurable.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
+    (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
+    StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
 
 theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : ProgMeasurable f u) (hτ : IsStoppingTime f τ) (i : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ i) :=
-  (hu.adapted_stoppedProcess hτ i).mono (f.le _)
+  (hu.stronglyAdapted_stoppedProcess hτ i).mono (f.le _)
 
 theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
     {n : ι} (hτ_le : ∀ ω, τ ω ≤ n) : StronglyMeasurable[f n] (stoppedValue u τ) := by
@@ -1107,36 +1108,36 @@ end StoppedProcess
 
 end StoppedValueOfMemFinset
 
-section AdaptedStoppedProcess
+section StronglyAdaptedStoppedProcess
 
 variable [TopologicalSpace β] [PseudoMetrizableSpace β] [Nonempty ι] [LinearOrder ι]
   [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
   [MeasurableSpace ι] [BorelSpace ι]
   {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
 
-/-- The stopped process of an adapted process with continuous paths is adapted. -/
-theorem Adapted.stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapted f u)
+/-- The stopped process of a strongly adapted process with continuous paths is strongly adapted. -/
+theorem StronglyAdapted.stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapted f u)
     (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (stoppedProcess u τ) :=
   ((hu.progMeasurable_of_continuous hu_cont).stoppedProcess hτ).stronglyAdapted
 
-/-- If the indexing order has the discrete topology, then the stopped process of an adapted process
-is adapted. -/
-theorem Adapted.stoppedProcess_of_discrete [DiscreteTopology ι] (hu : StronglyAdapted f u)
+/-- If the indexing order has the discrete topology, then the stopped process of a strongly adapted
+process is strongly adapted. -/
+theorem StronglyAdapted.stoppedProcess_of_discrete [DiscreteTopology ι] (hu : StronglyAdapted f u)
     (hτ : IsStoppingTime f τ) : StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (hu.progMeasurable_of_discrete.stoppedProcess hτ).stronglyAdapted
 
-theorem Adapted.stronglyMeasurable_stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapted f u)
-    (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ) (n : ι) :
-    StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
+theorem StronglyAdapted.stronglyMeasurable_stoppedProcess [MetrizableSpace ι]
+    (hu : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ)
+    (n : ι) : StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   (hu.progMeasurable_of_continuous hu_cont).stronglyMeasurable_stoppedProcess hτ n
 
-theorem Adapted.stronglyMeasurable_stoppedProcess_of_discrete [DiscreteTopology ι]
+theorem StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete [DiscreteTopology ι]
     (hu : StronglyAdapted f u) (hτ : IsStoppingTime f τ) (n : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   hu.progMeasurable_of_discrete.stronglyMeasurable_stoppedProcess hτ n
 
-end AdaptedStoppedProcess
+end StronglyAdaptedStoppedProcess
 
 section Nat
 
