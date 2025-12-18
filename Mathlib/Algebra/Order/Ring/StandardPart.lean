@@ -376,10 +376,10 @@ theorem stdPart_monotoneOn : MonotoneOn stdPart {x : K | 0 ≤ mk x} := by
   apply OrderRingHom.monotone'
   rwa [FiniteElement.mk_le_mk_iff]
 
-theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
-  aesop (add simp [lt_neg])
+private theorem neg_setOf_real_lt (f : ℝ →+*o K) : -{r | f r < x} = {r | -x < f r} := by
+  aesop
 
-theorem neg_setOf_real_lt (f : ℝ →+*o K) : -{r | f r < x} = {r | -x < f r} := by
+private theorem neg_setOf_lt_real (f : ℝ →+*o K) : -{r | x < f r} = {r | f r < -x} := by
   rw [neg_eq_iff_eq_neg, neg_setOf_lt_real, neg_neg]
 
 theorem nonempty_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | x < f r}.Nonempty := by
