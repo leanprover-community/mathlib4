@@ -661,16 +661,15 @@ theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
-    adjoint e.toContinuousLinearEquiv.toContinuousLinearMap = e.symm.toContinuousLinearEquiv :=
+    adjoint (e : H →L[𝕜] K) = e.symm :=
   calc
-    _ = adjoint e.toContinuousLinearEquiv.toContinuousLinearMap ∘L
-        e.toContinuousLinearEquiv ∘L e.symm.toContinuousLinearEquiv.toContinuousLinearMap := by simp
-    _ = e.symm.toContinuousLinearEquiv := by
+    _ = adjoint (e : H →L[𝕜] K) ∘L e ∘L (e.symm : K →L[𝕜] H) := by simp
+    _ = e.symm := by
       rw [← comp_assoc, norm_map_iff_adjoint_comp_self _ |>.mp e.norm_map, one_def, id_comp]
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
-    star e.toContinuousLinearEquiv.toContinuousLinearMap = e.symm.toContinuousLinearEquiv :=
+    star (e : H →L[𝕜] H) = e.symm :=
   e.adjoint_eq_symm
 
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
@@ -718,16 +717,16 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
   map_mul' u v := by ext; rfl
 
 @[simp]
-lemma toContinuousLinearMap_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
-    (linearIsometryEquiv u).toContinuousLinearEquiv = (u : H →L[𝕜] H) :=
+lemma coe_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
+    linearIsometryEquiv u = (u : H →L[𝕜] H) :=
   rfl
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
-  toContinuousLinearMap_linearIsometryEquiv_apply
+  coe_linearIsometryEquiv_apply
 
 @[simp]
 lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
-    linearIsometryEquiv.symm e = e.toContinuousLinearEquiv.toContinuousLinearMap :=
+    linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
