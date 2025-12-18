@@ -295,7 +295,8 @@ theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 end Equiv
 
 -- TODO: do we really need to preserve the def-eq between `LE` on `WithBot` and `WithTop`
--- moving forward?
+-- moving forward? See discussion here:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Order.20dual.20tactic/near/562584912
 
 section LE
 variable [LE α]
