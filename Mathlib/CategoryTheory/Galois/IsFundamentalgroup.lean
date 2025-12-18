@@ -69,7 +69,7 @@ class IsNaturalSMul : Prop where
   naturality (g : G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) : F.map f (g • x) = g • F.map f x
 
 variable {G} in
-@[simps!]
+@[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
   FintypeCat.equivEquivIso <| {
     toFun := fun x ↦ g • x

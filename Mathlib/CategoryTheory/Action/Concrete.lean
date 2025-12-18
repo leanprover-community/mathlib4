@@ -105,7 +105,7 @@ def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
 
 @[simp]
 theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
-    (g : G) (x : H) : ((FintypeCat.ofMulAction G H).ρ g).hom x = (g • x : H) :=
+    (g : G) (x : H) : ConcreteCategory.hom ((FintypeCat.ofMulAction G H).ρ g) x = (g • x : H) :=
   rfl
 
 section
