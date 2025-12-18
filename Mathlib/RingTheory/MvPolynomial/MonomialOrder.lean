@@ -59,11 +59,12 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.leadingCoeff_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
   is nonzero, then the leading coefficient is that product.
 
-* `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the equality when the leading coefficient of `f` or `g` is regular,
+* `m.degree_mul_of_left_mem_nonZeroDivisors`, `m.degree_mul_of_right_mem_nonZeroDivisors` and
+  `m.degree_mul` assert the equality when the leading coefficient of `f` or `g` isn't zero divisors,
   or when `R` is a domain and `f` and `g` are nonzero.
 
-* `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
+* `m.leadingCoeff_mul_of_left_mem_nonZeroDivisors`,
+  `m.leadingCoeff_mul_of_right_mem_nonZeroDivisors`
   and `m.leadingCoeff_mul` say that `m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g`
 
 * `m.degree_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
@@ -72,11 +73,11 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
   of `f` is nonzero, then the leading coefficient of `f ^ n` is that power.
 
-* `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
-  are regular is the sum of their degrees.
+* `m.degree_prod_of_mem_nonZeroDivisors` : the degree of a product of polynomials whose leading
+  coefficients aren't zero divisors is the sum of their degrees.
 
-* `m.leadingCoeff_prod_of_regular` : the leading coefficient of a product of polynomials
-  whose leading coefficients are regular is the product of their leading coefficients.
+* `m.leadingCoeff_prod_of_mem_nonZeroDivisors` : the leading coefficient of a product of polynomials
+  whose leading coefficients aren't zero divisors is the product of their leading coefficients.
 
 * `m.Monic.prod` : a product of monic polynomials is monic.
 
@@ -445,6 +446,28 @@ theorem leadingCoeff_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   rw [leadingCoeff, ← coeff_mul_of_degree_add, degree_mul_of_mul_leadingCoeff_ne_zero hfg]
 
+theorem degree_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    m.degree (f * g) = m.degree f + m.degree g := by
+  apply degree_mul_of_mul_leadingCoeff_ne_zero
+  apply not_imp_not.mpr (mem_nonZeroDivisors_iff.mp hf |>.1 _)
+  simp [hg]
+
+theorem degree_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    m.degree (f * g) = m.degree f + m.degree g :=
+  add_comm (m.degree f) (m.degree g) ▸ mul_comm f g ▸ degree_mul_of_left_mem_nonZeroDivisors hg hf
+
+theorem leadingCoeff_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  simp only [leadingCoeff, degree_mul_of_left_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+
+theorem leadingCoeff_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  simp only [leadingCoeff, degree_mul_of_right_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.leadingCoeff f)) (hg : g ≠ 0) :
@@ -561,7 +584,8 @@ theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
   apply le_of_le_of_eq degree_mul_le
   simp
 
-theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
+theorem degree_smul_of_mem_nonZeroDivisors {r : R} (hr : r ∈ nonZeroDivisors _)
+    {f : MvPolynomial σ R} :
     m.degree (r • f) = m.degree f := by
   by_cases hf : f = 0
   · simp [hf]
@@ -570,7 +594,13 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   apply le_degree
   simp only [mem_support_iff, smul_eq_C_mul]
   rw [← zero_add (degree m f), ← degree_C r, coeff_mul_of_degree_add]
-  simp [leadingCoeff, hr.left.mul_left_eq_zero_iff, hf]
+  simp [not_imp_not.mpr ((mem_nonZeroDivisors_iff.mp hr).1 _) <| m.leadingCoeff_ne_zero_iff.mpr hf]
+
+theorem degree_smul_of_isRegular {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
+    m.degree (r • f) = m.degree f :=
+  m.degree_smul_of_mem_nonZeroDivisors hr.mem_nonZeroDivisors
+
+@[deprecated (since := "2025-12-12")] alias degree_smul := degree_smul_of_isRegular
 
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
     m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
@@ -594,6 +624,18 @@ theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : F
     rw [coeff_mul_of_add_of_degree_le (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec
 
+theorem degree_prod_of_mem_nonZeroDivisors {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ nonZeroDivisors _) :
+    m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
+  cases subsingleton_or_nontrivial R with
+  | inl _ => simp [Subsingleton.elim _ (0 : MvPolynomial σ R)]
+  | inr _ =>
+    apply m.toSyn.injective
+    refine le_antisymm degree_prod_le (m.le_degree ?_)
+    rw [mem_support_iff, m.coeff_prod_sum_degree]
+    exact nonZeroDivisors.ne_zero (prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors H)
+
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
@@ -614,9 +656,7 @@ theorem degree_prod [NoZeroDivisors R] {ι : Type*} {P : ι → MvPolynomial σ 
   | inr _ =>
     apply m.toSyn.injective
     refine le_antisymm degree_prod_le (m.le_degree ?_)
-    rw [mem_support_iff, m.coeff_prod_sum_degree]
-    simp only [ne_eq, Finset.prod_eq_zero_iff, leadingCoeff_eq_zero_iff, not_exists, not_and]
-    exact H
+    simpa [m.coeff_prod_sum_degree, Finset.prod_eq_zero_iff]
 
 lemma degree_mul' [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
@@ -626,6 +666,12 @@ lemma degree_mul' [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0
 lemma notMem_support_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree g ∉ f.support := by
   simp [coeff_eq_zero_of_lt h]
+
+theorem leadingCoeff_prod_of_mem_nonZeroDivisors {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ nonZeroDivisors _) :
+    m.leadingCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
+  simp only [leadingCoeff, degree_prod_of_mem_nonZeroDivisors H, coeff_prod_sum_degree]
 
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem leadingCoeff_prod_of_regular {ι : Type*}
