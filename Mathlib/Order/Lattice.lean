@@ -783,6 +783,7 @@ theorem le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β} (h : 
     f x ⊔ f y ≤ f (x ⊔ y) :=
   sup_le (h le_sup_left) (h le_sup_right)
 
+@[to_dual existing le_map_sup]
 theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : Monotone f) (x y : α) :
     f (x ⊓ y) ≤ f x ⊓ f y :=
   le_inf (h inf_le_left) (h inf_le_right)
