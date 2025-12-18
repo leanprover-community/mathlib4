@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
 # Conditional cumulative distribution function
@@ -18,16 +20,16 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 `condCDF` is build from the more general tools about kernel CDFs developed in the file
-`Probability.Kernel.Disintegration.CDFToKernel`. In that file, we build a function
-`α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
+`Mathlib/Probability/Kernel/Disintegration/CDFToKernel.lean`. In that file, we build a function
+`α × β → StieltjesFunction ℝ` (which is `α × β → ℝ → ℝ` with additional properties) from a function
 `α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
 easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
-`condCDF : α → StieltjesFunction`.
+`condCDF : α → StieltjesFunction ℝ`.
 
 ## Main definitions
 
-* `ProbabilityTheory.condCDF ρ : α → StieltjesFunction`: the conditional cdf of
-  `ρ : Measure (α × ℝ)`. A `StieltjesFunction` is a function `ℝ → ℝ` which is monotone and
+* `ProbabilityTheory.condCDF ρ : α → StieltjesFunction ℝ`: the conditional cdf of
+  `ρ : Measure (α × ℝ)`. A `StieltjesFunction ℝ` is a function `ℝ → ℝ` which is monotone and
   right-continuous.
 
 ## Main statements
@@ -36,6 +38,8 @@ easily. Here we apply that construction to the case `β = Unit` and then drop `�
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -236,7 +240,7 @@ lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] 
 /-! ### Conditional cdf -/
 
 /-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
-noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction :=
+noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction ℝ :=
   stieltjesOfMeasurableRat (fun a r ↦ (preCDF ρ r a).toReal) measurable_preCDF' a
 
 lemma condCDF_eq_stieltjesOfMeasurableRat_unit_prod (ρ : Measure (α × ℝ)) (a : α) :

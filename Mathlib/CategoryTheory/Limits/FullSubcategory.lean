@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Limits in full subcategories
@@ -14,6 +16,8 @@ then limits in `FullSubcategory P` can be constructed from limits in `C`.
 More precisely, the inclusion creates such limits.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

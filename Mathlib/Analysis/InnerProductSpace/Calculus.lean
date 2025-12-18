@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-import Mathlib.Analysis.Calculus.ContDiff.WithLp
-import Mathlib.Analysis.Calculus.FDeriv.WithLp
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
 /-!
 # Calculus in inner product spaces
@@ -25,6 +27,8 @@ and from the equivalence of norms in finite dimensions.
 
 The last part of the file should be generalized to `PiLp`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -196,6 +200,13 @@ theorem hasStrictFDerivAt_norm_sq (x : F) :
   convert (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
   ext y
   simp [two_smul, real_inner_comm]
+
+@[simp]
+theorem fderiv_norm_sq_apply (x : F) : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) x = 2 • innerSL ℝ x :=
+  (hasStrictFDerivAt_norm_sq x).hasFDerivAt.fderiv
+
+theorem fderiv_norm_sq : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) = 2 • (innerSL ℝ (E := F)) := by
+  ext1; simp
 
 theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=

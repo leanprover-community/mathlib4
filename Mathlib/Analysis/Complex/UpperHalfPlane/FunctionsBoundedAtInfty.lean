@@ -3,9 +3,11 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Bounded at infinity
@@ -14,6 +16,8 @@ For complex-valued functions on the upper half plane, this file defines the filt
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter
 
@@ -26,6 +30,11 @@ namespace UpperHalfPlane
 /-- Filter for approaching `i∞`. -/
 def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
+
+instance : atImInfty.NeBot := by
+  refine comap_neBot_iff_frequently.mpr (Eventually.frequently ?_)
+  filter_upwards [eventually_gt_atTop 0] with t ht
+    using ⟨⟨I * t, by simp [ht]⟩, by simp [← coe_im]⟩
 
 theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis

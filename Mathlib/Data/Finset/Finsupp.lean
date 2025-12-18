@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Data.Finsupp.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finitely supported product of finsets
@@ -25,6 +27,8 @@ This file defines the finitely supported product of finsets as a `Finset (ι →
 We make heavy use of the fact that `0 : Finset α` is `{0}`. This scalar actions convention turns out
 to be precisely what we want here too.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,12 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.PolynomialAlgebra
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Localization of algebra maps
@@ -22,6 +24,8 @@ The proof that localization commutes with taking kernels does not use the result
 as the translation is currently tedious and can be unified easily after the localization refactor.
 
 -/
+
+@[expose] public section
 
 variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
   [CommSemiring Q]
@@ -49,7 +53,7 @@ lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
       (RingHom.ker g).map (algebraMap R S) := by
   ext x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp [RingHom.mem_ker, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     IsLocalization.mk'_mem_map_algebraMap_iff, ← hT]
 
@@ -103,12 +107,12 @@ instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
   ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
-    obtain ⟨a, m, rfl⟩ := IsLocalization.mk'_surjective M r
+    obtain ⟨a, m, rfl⟩ := IsLocalization.exists_mk'_eq M r
     simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :
-    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)  :=
+    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) :=
   rfl
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :

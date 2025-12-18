@@ -3,10 +3,12 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Gaussian distributions over ℝ
@@ -31,6 +33,8 @@ We define a Gaussian measure over the reals.
   variance `v`, then `c * X` is Gaussian with mean `c * μ` and variance `c^2 * v`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Real Complex
 
@@ -94,7 +98,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       false_or]
     rw [mul_comm]
     left
-    field_simp
+    field
   exact Integrable.comp_sub_right hg μ
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -140,7 +144,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
   · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
   · congr 1
-    field_simp
+    field
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
@@ -178,7 +182,7 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   simp only [Set.mem_univ, iff_true]
   exact (gaussianPDF_pos _ hv x).ne'
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
   (measurable_gaussianPDFReal _ _).ennreal_ofReal
 

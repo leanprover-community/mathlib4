@@ -3,8 +3,10 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.RingTheory.Invariant.Defs
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+module
+
+public import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 # Invariant Extensions of Rings
@@ -36,6 +38,8 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
   an automorphism of `B/Q`.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 section Galois
@@ -49,6 +53,13 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
     MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
+
+instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction A K L B
+    SMulDistribClass Gal(L/K) B L :=
+  let := IsIntegralClosure.MulSemiringAction A K L B
+  ⟨fun g b l ↦ by
+    simp only [Algebra.smul_def, smul_mul', mul_eq_mul_right_iff]
+    exact Or.inl (algebraMap_galRestrictHom_apply A K L B g b).symm⟩
 
 /-- In the AKLB setup, every fixed point of `B` lies in the image of `A`. -/
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
@@ -480,11 +491,11 @@ lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     rw [Polynomial.aeval_def, ← Polynomial.eval_map, hp, MulSemiringAction.eval_charpoly]
   have := minpoly.dvd _ (algebraMap _ (B ⧸ Q) x) (p := p.map (algebraMap _ (A ⧸ P)))
     (by rw [Polynomial.aeval_map_algebraMap, Polynomial.aeval_algebraMap_apply, H, map_zero])
-  refine Polynomial.splits_of_splits_of_dvd (algebraMap (A ⧸ P) (B ⧸ Q)) ?_ ?_ this
-  · exact (h₂.map (algebraMap A (A ⧸ P))).ne_zero
-  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
-      ← Polynomial.splits_map_iff, hp, MulSemiringAction.charpoly_eq]
-    exact Polynomial.splits_prod _ (fun _ _ ↦ Polynomial.splits_X_sub_C _)
+  refine Polynomial.Splits.of_dvd ?_ ?_ ((Polynomial.map_dvd_map' _).mpr this)
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
+      ← Polynomial.map_map, hp, MulSemiringAction.charpoly_eq, Polynomial.map_prod]
+    exact Polynomial.Splits.prod (fun _ _ ↦ (Polynomial.Splits.X_sub_C _).map _)
+  · exact ((h₂.map _).map _).ne_zero
 
 attribute [local instance] Ideal.Quotient.field in
 include G in

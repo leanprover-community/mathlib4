@@ -3,12 +3,14 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Instances.ZMultiples
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -37,7 +39,7 @@ Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`:
 If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`:
 `eq_smul_self_of_mem_fdo_mem_fdo {z : ℍ} {g : SL(2,ℤ)} (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z`
 
-# Discussion
+## Discussion
 
 Standard proofs make use of the identity
 
@@ -58,6 +60,8 @@ instead using abstract theory on the properness of certain maps (phrased in term
 existence of `g` maximizing `(g•z).im` (see `ModularGroup.exists_max_im`), and then among
 those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_re`).
 -/
+
+@[expose] public section
 
 
 open Complex
@@ -141,7 +145,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
     · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
-      rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
+      rw [f_def, map_add, map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
@@ -322,7 +326,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; omega
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; lia
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use g 0 1
     suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
@@ -336,7 +340,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; omega
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; lia
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
   simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
@@ -447,7 +451,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
-    replace this : c' ^ 2 ≤ 1 ^ 2 := by omega
+    replace this : c' ^ 2 ≤ 1 ^ 2 := by lia
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)

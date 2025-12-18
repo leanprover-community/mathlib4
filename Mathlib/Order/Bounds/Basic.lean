@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Directed
-import Mathlib.Order.BoundedOrder.Monotone
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds
@@ -15,6 +17,8 @@ In this file we prove various lemmas about upper/lower bounds of a set:
 monotonicity, behaviour under `∪`, `∩`, `insert`,
 and provide formulas for `∅`, `univ`, and intervals.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -352,7 +356,7 @@ theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
   h.mono inter_subset_right
 
 /-- In a directed order, the union of bounded above sets is bounded above. -/
-theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
+theorem BddAbove.union [IsDirectedOrder α] {s t : Set α} :
     BddAbove s → BddAbove t → BddAbove (s ∪ t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hca, hcb⟩ := exists_ge_ge a b
@@ -360,18 +364,18 @@ theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
   exact ⟨c, upperBounds_mono_mem hca ha, upperBounds_mono_mem hcb hb⟩
 
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
-theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
+theorem bddAbove_union [IsDirectedOrder α] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
   ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
 /-- In a codirected order, the union of bounded below sets is bounded below. -/
-theorem BddBelow.union [IsDirected α (· ≥ ·)] {s t : Set α} :
+theorem BddBelow.union [IsCodirectedOrder α] {s t : Set α} :
     BddBelow s → BddBelow t → BddBelow (s ∪ t) :=
   @BddAbove.union αᵒᵈ _ _ _ _
 
 /-- In a codirected order, the union of two sets is bounded below if and only if both sets are. -/
-theorem bddBelow_union [IsDirected α (· ≥ ·)] {s t : Set α} :
+theorem bddBelow_union [IsCodirectedOrder α] {s t : Set α} :
     BddBelow (s ∪ t) ↔ BddBelow s ∧ BddBelow t :=
   @bddAbove_union αᵒᵈ _ _ _ _
 
@@ -487,15 +491,12 @@ section
 variable [LinearOrder γ]
 
 theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
-  by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
+  by_cases! h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
   · refine ⟨i, fun j hj => le_of_lt hj, ?_⟩
     rw [mem_lowerBounds]
-    by_contra h
-    refine h_exists_lt ?_
-    push_neg at h
-    exact h
+    exact h_exists_lt
 
 theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
   @exists_lub_Iio γᵒᵈ _ i
@@ -683,15 +684,9 @@ theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α
   eq_empty_of_subset_empty fun b hb =>
     not_isTop b fun x => hb (mem_univ x)
 
-@[deprecated (since := "2025-04-18")]
-alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
-
 @[simp]
 theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
   @NoTopOrder.upperBounds_univ αᵒᵈ _ _
-
-@[deprecated (since := "2025-04-18")]
-alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
 theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
@@ -753,21 +748,21 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 
 /-- Adding a point to a set preserves its boundedness above. -/
 @[simp]
-theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
+theorem bddAbove_insert [IsDirectedOrder α] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
   simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
-protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
+protected theorem BddAbove.insert [IsDirectedOrder α] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
   bddAbove_insert.2
 
 /-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
-theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
+theorem bddBelow_insert [IsCodirectedOrder α] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
   simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
 
-protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
+protected theorem BddBelow.insert [IsCodirectedOrder α] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
   bddBelow_insert.2
 

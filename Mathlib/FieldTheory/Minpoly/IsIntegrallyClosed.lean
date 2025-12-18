@@ -3,9 +3,11 @@ Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -25,6 +27,8 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Set Function minpoly
 
@@ -87,7 +91,7 @@ theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
   ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
-      Function.comp_apply, eval_map, ← aeval_def] using
+      Function.comp_apply, eval_map_algebraMap] using
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
 
 theorem ker_eval {s : S} (hs : IsIntegral R s) :
@@ -100,11 +104,25 @@ theorem ker_eval {s : S} (hs : IsIntegral R s) :
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
 degree of the minimal polynomial of `x`. See also `minpoly.degree_le_of_ne_zero` which relaxes the
 assumptions on `S` in exchange for stronger assumptions on `R`. -/
-theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p : R[X]}
+theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
     (hp0 : p ≠ 0) (hp : Polynomial.aeval s p = 0) : degree (minpoly R s) ≤ degree p := by
+  by_cases! hs : ¬IsIntegral R s
+  · simp [minpoly, hs]
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is a unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
+    obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
+  mpr isUnit := by
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
@@ -117,10 +135,37 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_gt ?_
+  refine IsIntegrallyClosed.degree_le_of_ne_zero (s := s) hnz (by simp [hP]) |>.not_gt ?_
   refine degree_sub_lt ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
+
+theorem IsIntegrallyClosed.unique_of_degree_le_degree_minpoly {s : S} {p : R[X]} (hmo : p.Monic)
+    (hp : p.aeval s = 0) (pmin : p.degree ≤ (minpoly R s).degree) : p = minpoly R s :=
+  IsIntegrallyClosed.minpoly.unique hmo hp fun _ qm hq ↦ pmin.trans <| min _ _ qm hq
+
+theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (hp : p.aeval s = 0)
+    (h₀ : p ≠ 0) (pmin : ∀ q : R[X], q.Monic → q.aeval s = 0 → p.degree ≤ q.degree) :
+    IsIntegral R s ↔ C p.leadingCoeff ∣ p := by
+  refine ⟨fun hInt ↦ ?_, fun ⟨q, hMul⟩ ↦ minpoly.ne_zero_iff.mp ?_⟩
+  · use minpoly R s
+    have ⟨q, hMul⟩ := isIntegrallyClosed_dvd hInt hp
+    suffices q.degree ≤ 0 by simp [degree_le_zero_iff.mp this ▸ hMul, minpoly.monic hInt, mul_comm]
+    apply WithBot.le_of_add_le_add_left <| Polynomial.degree_ne_bot.mpr <| minpoly.ne_zero hInt
+    convert pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
+    · rw [hMul, degree_mul]
+    · rw [add_zero]
+  · convert right_ne_zero_of_mul <| hMul ▸ h₀
+    refine IsIntegrallyClosed.minpoly.unique ?_ ?_ ?_ |>.symm
+    · have := hMul ▸ leadingCoeff_mul .. |>.symm
+      simp only [leadingCoeff_C, ne_eq, leadingCoeff_eq_zero, h₀, not_false_eq_true, mul_eq_left₀]
+        at this
+      exact this
+    · have := congrArg (Polynomial.aeval s) hMul
+      simp only [hp, h₀, map_mul, aeval_C, zero_eq_mul, FaithfulSMul.algebraMap_eq_zero_iff,
+        leadingCoeff_eq_zero, false_or] at this
+      exact this
+    · exact (hMul ▸ degree_C_mul <| by simp [h₀]) ▸ pmin
 
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine
@@ -130,6 +175,30 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
+
+lemma _root_.IsIntegrallyClosed.minpoly_smul {r : R} (hr : r ≠ 0) {s : S} (hs : IsIntegral R s) :
+    minpoly R (r • s) = (minpoly R s).scaleRoots r := by
+  let K := FractionRing R
+  let L := FractionRing S
+  let : Algebra K L := FractionRing.liftAlgebra _ _
+  apply map_injective _ (FaithfulSMul.algebraMap_injective R K)
+  rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (hs.smul r),
+    map_scaleRoots _ _ _ (by simpa [minpoly.ne_zero_iff]),
+    ← minpoly.isIntegrallyClosed_eq_field_fractions K L hs]
+  simp_rw [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply R K L]
+  refine eq_of_monic_of_associated (minpoly.monic ?_) ?_
+    (associated_of_dvd_dvd (minpoly.dvd _ _ ?_) ?_)
+  · refine isIntegral_algebraMap.mul (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · simpa [monic_scaleRoots_iff] using minpoly.monic
+      (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
+  · rw [← Polynomial.scaleRoots_dvd_iff _ _ (r := (algebraMap R K r)⁻¹) (IsUnit.mk0 _ (by simpa)),
+      ← scaleRoots_mul, mul_inv_cancel₀ (by simpa), scaleRoots_one]
+    refine minpoly.dvd _ _ ?_
+    nth_rw 1 [← inv_mul_cancel_left₀ (b := algebraMap S L s)
+      (a := algebraMap K L (algebraMap R K r)) (by simpa), ← map_inv₀]
+    exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
 
 noncomputable section AdjoinRoot
 

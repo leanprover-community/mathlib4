@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.AlgebraicGeometry.Morphisms.Finite
-import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.RingTheory.Spectrum.Prime.Polynomial
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Affine space
@@ -23,6 +25,8 @@ import Mathlib.AlgebraicGeometry.PullbackCarrier
 - `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits MvPolynomial
 
