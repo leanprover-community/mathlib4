@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets in uniform spaces
@@ -13,6 +15,8 @@ import Mathlib.Topology.Compactness.Compact
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
 
 -/
+
+@[expose] public section
 
 universe u v ua ub uc ud
 

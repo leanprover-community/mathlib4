@@ -3,10 +3,12 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Reflective
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Adjunction between `Γ` and `Spec`
@@ -30,6 +32,8 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `Scheme`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -217,7 +221,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     apply (notMem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
     erw [← he]
-    rw [RingHom.map_mul]
+    rw [map_mul]
     exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
@@ -278,7 +282,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       rw [← IsLocalRing.comap_closedPoint (f.stalkMap x).hom, ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
         ← CommRingCat.hom_comp, ← CommRingCat.hom_comp]
-      congr 3
+      congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
     · intro r
       rw [LocallyRingedSpace.comp_c_app, ← Category.assoc]
