@@ -46,18 +46,18 @@ satisfying the following predicate: `u` is a thickening of `c` by some entourage
 in the sense that `c` is the closure of the ball centered at `x`
 associated to some open entourage `uc`, and `u` contains the ball centered at `x`
 associated to the composition `s ○ uc ○ s`. -/
-def P (c u : Set X) :=
+def IsThickening (c u : Set X) :=
   ∃ (x : X) (uc s : SetRel X X),
     IsOpen uc ∧ uc ∈ 𝓤 X ∧ c = closure (ball x uc) ∧
     ball x (s ○ uc ○ s) ⊆ u ∧ s ∈ 𝓤 X
 
 /-- Given a pair consisting of a closed set `c` contained in an open set `u` satisfying the
-predicate `P`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
-satisfying `P`. We can then use the general `Urysohns.CU` construction to obtain the
+predicate `IsThickening`, it is always possible to refine it to two pairs `c ⊆ v` and `closure v ⊆ u`
+satisfying `IsThickening`. We can then use the general `Urysohns.CU` construction to obtain the
 desired real-valued function. -/
-theorem urysohns_main {c u : Set X} (Pcu : P c u) :
-    ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
-  obtain ⟨x, uc, s, huc, ucu, rfl, hn, hs⟩ := Pcu
+theorem urysohns_main {c u : Set X} (IsThickeningcu : IsThickening c u) :
+    ∃ (v : Set X), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ IsThickening c v ∧ IsThickening (closure v) u := by
+  obtain ⟨x, uc, s, huc, ucu, rfl, hn, hs⟩ := IsThickeningcu
   obtain ⟨(ds : SetRel X X), hdsu, hdso, -, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
   have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
   have hsub := calc ds ○ (ds ○ uc ○ ds) ○ ds
@@ -78,7 +78,7 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
     have ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have ⟨(u3 : SetRel X X), hu3u, _, hu3O⟩ := comp_comp_symm_mem_uniformity_sets hOu
     have hu3O := ((comp_subset_comp_left (comp_subset_comp_right interior_subset))).trans hu3O
-    let c : Urysohns.CU P := {
+    let c : Urysohns.CU IsThickening := {
       C := closure (ball x (interior u3))
       U := ball x O
       closed_C := isClosed_closure
@@ -86,7 +86,7 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace X
       subset := closure_ball_subset.trans <| (ball_mono · x) <| by
         simp_rw [closure_eq_inter_uniformity, ← comp_assoc]
         exact (iInter₂_subset u3 hu3u).trans hu3O
-      hP _ Pcu _ _ := urysohns_main Pcu
+      hP _ IsThickeningcu _ _ := urysohns_main IsThickeningcu
       P_C_U := ⟨x, interior u3, u3,
         isOpen_interior, interior_mem_uniformity hu3u, rfl, ball_mono hu3O x, hu3u⟩
     }
