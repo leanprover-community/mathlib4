@@ -690,9 +690,8 @@ end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
-theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (smulRight (1 : R₁ →L[R₁] R₁) x).comp (smulRight (1 : R₁ →L[R₁] R₁) c) =
-      smulRight (1 : R₁ →L[R₁] R₁) (c • x) := by
+theorem smulRight_comp [ContinuousSMul R₁ M₁] (f : M₁ →L[R₁] R₁) {x : M₂} {y : M₁} :
+    (smulRight f x).comp (smulRight f y) = smulRight f (f y • x) := by
   ext
   simp
 
@@ -769,7 +768,7 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
     (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
-      toSpanSingleton R₁ (c • x) := smulRight_comp
+      toSpanSingleton R₁ (c • x) := smulRight_comp 1
 
 end ToSpanSingleton
 
@@ -887,15 +886,14 @@ instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
-theorem smulRight_one_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
+theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
+    toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
   induction n with
   | zero => ext; simp
-  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  | succ n ihn =>
+    rw [pow_succ, ihn, mul_def, toSpanSingleton_comp_toSpanSingleton, smul_eq_mul, pow_succ']
 
-theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
-    toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) :=
-  smulRight_one_pow _ _
+@[deprecated (since := "2025-12-18")] alias smulRight_one_pow := toSpanSingleton_pow
 
 section
 
