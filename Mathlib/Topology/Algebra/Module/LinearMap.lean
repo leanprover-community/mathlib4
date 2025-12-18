@@ -325,7 +325,7 @@ end
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
-@[simp] theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
 
@@ -345,7 +345,7 @@ theorem toContinuousAddMonoidHom_id :
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
-theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x := rfl
+@[simp] theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x := rfl
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
@@ -752,14 +752,12 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
 
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
-theorem smulRight_id_eq_toSpanSingleton (x : M₁) :
-    (.id R₁ R₁ : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
+theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
+    (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
 
-@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_toSpanSingleton :=
-  smulRight_id_eq_toSpanSingleton
 @[deprecated (since := "2025-12-05")] alias one_smulRight_eq_toSpanSingleton :=
-  smulRight_id_eq_toSpanSingleton
+  smulRight_one_eq_toSpanSingleton
 
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
