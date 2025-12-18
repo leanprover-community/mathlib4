@@ -41,8 +41,6 @@ universe u v
 
 namespace CategoryTheory
 
-section
-
 variable (C : Type u) [Category.{v} C]
 
 /--
@@ -54,10 +52,19 @@ class Regular extends HasFiniteLimits C where
     IsKernelPair f g1 g2 → HasCoequalizer g1 g2
   regularEpiIsStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange (.regularEpi C)
 
-end
+variable {C} [Regular C]
 
-variable {C : Type u} [Category.{v} C] [Regular C]
-variable {X Y : C} (f : X ⟶ Y)
+instance {X Y B : C} (f : X ⟶ B) (g : Y ⟶ B) [HasPullback f g] [IsRegularEpi f] :
+    IsRegularEpi (pullback.snd f g) := by
+  apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback (IsPullback.of_hasPullback f g)
+  dsimp [MorphismProperty.regularEpi]
+  infer_instance
+
+instance {X Y B : C} (f : X ⟶ B) (g : Y ⟶ B) [HasPullback f g] [IsRegularEpi g] :
+    IsRegularEpi (pullback.fst f g) := by
+  apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback (IsPullback.of_hasPullback f g).flip
+  dsimp [MorphismProperty.regularEpi]
+  infer_instance
 
 instance : Preregular C where
   exists_fac f g :=
@@ -67,104 +74,94 @@ instance : Preregular C where
       simpa using this
     ⟨pullback g f, pullback.snd g f, inferInstance, pullback.fst g f, pullback.condition⟩
 
-noncomputable section
+variable {X Y : C} (f : X ⟶ Y)
+
 namespace Regular.StrongEpiMonoFactorisation
 
 local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
 
-/--
-The midpoint of the chosen mono factorisation associated to any regular category.
-It is defined to be the coequalizer of the kernel pair of an arrow `f`.
-See `monoFactorisation` for the actual mono factorisation.
--/
-def I : C :=
-  coequalizer (pullback.fst f f) (pullback.snd f f)
-
-/--
-The `e` component of the chosen mono factorisation associated to any regular category.
-It is defined to be the projection from the coequalizer of the kernel pair of an arrow `f`.
-See `monoFactorisation` for the actual mono factorisation.
--/
-def e : X ⟶ (I f) :=
-  coequalizer.π (pullback.fst f f) (pullback.snd f f)
-
-instance e_isRegularEpi : IsRegularEpi (e f) := by
-  dsimp [e]
-  infer_instance
-
-/--
-The `mono` component of the chosen mono factorisation associated to any regular category.
-It is induced by the coequalizer of the kernel pair of an arrow `f`.
-See `monoFactorisation` for the actual mono factorisation.
--/
-def m : (I f) ⟶ Y :=
-  coequalizer.desc f pullback.condition
-
-@[reassoc (attr := simp)]
-lemma fac : (e f) ≫ (m f) = f :=
-  coequalizer.π_desc f _
-
-instance m_mono : Mono (m f) := by
-  apply (IsKernelPair.of_hasPullback (m f)).mono_of_eq_fst_snd
-  let k₁ := pullback.fst (m f) (m f)
-  let k₂ := pullback.snd (m f) (m f)
-  let d : _ ⟶ (pullback (m f) (m f)) :=
-    pullback.lift (pullback.fst f f ≫ e f) (pullback.snd f f ≫ e f)
-      (by simp [pullback.condition])
-  let g₁ : _ ⟶ (pullback (e f) k₁) := pullback.lift (pullback.fst f f) d (by simp [d, k₁])
-  let g₂ : _ ⟶ (pullback k₂ (e f)) := pullback.lift d (pullback.snd f f) (by simp [d, k₂])
-  let sq₁ := IsPullback.of_hasPullback (e f) k₁
-  let sq₂ := IsPullback.of_hasPullback k₂ (e f)
-  have ispbsq : IsPullback (g₁ ≫ pullback.fst (e f) k₁) (g₂ ≫ pullback.snd k₂ (e f))
-      (e f ≫ m f) (e f ≫ m f) := by
-    rw [fac, pullback.lift_fst, pullback.lift_snd]
-    simpa [g₁, g₂] using IsPullback.of_hasPullback f f
-  have sq₃ : IsPullback g₁ g₂ (pullback.snd (e f) k₁) (pullback.fst k₂ (e f)) := by
-    apply IsPullback.of_right ?_ (by simp [g₂, g₁]) sq₁
-    apply IsPullback.of_bot ispbsq (by simp [g₂, g₁, k₁, d])
-    exact IsPullback.paste_horiz sq₂ (IsPullback.of_hasPullback (m f) (m f))
-  have : IsRegularEpi (pullback.snd (e f) k₁) := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₁ (e_isRegularEpi f)
-  have : IsRegularEpi (pullback.fst k₂ (e f)) := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₂.flip (e_isRegularEpi f)
+instance : Mono (coequalizer.desc f pullback.condition) := by
+  -- It suffices to show that the two projections from the kernel pair are equal:
+  apply (IsKernelPair.of_hasPullback _).mono_of_eq_fst_snd
+  /- We fill in the kernel pair square of `f` as follows:
+  ```
+                  g₁                   fst
+  pullback f f------->pullback e k₁----------> X
+        |                 |                    |
+      g₂|                 |snd                 |e
+        v        fst      v            k₁      v
+  pullback k₂ e------>pullback m m---------->coeq
+        |                                      |
+     snd|                                      |m
+        v              e ≫ m = f               v
+        X------------------------------------->Y
+  ```
+  Where `m`, `e`, `k₁`, `k₂`, `g₁`, `g₂` are defined below, `fst` and `snd` denote the projections
+  in the pullbacks indicated as the source of those morphisms, and `coeq` is the coequalizer of the
+  two projections in from the kernel pair of `f`.
+  -/
+  let m := (coequalizer.desc f pullback.condition)
+  let e := coequalizer.π (pullback.fst f f) (pullback.snd f f)
+  let k₁ := pullback.fst m m
+  let k₂ := pullback.snd m m
+  let d : pullback f f ⟶ (pullback m m) :=
+    pullback.lift (pullback.fst f f ≫ e) (pullback.snd f f ≫ e) (by simp [m, e, pullback.condition])
+  let g₁ : pullback f f ⟶ (pullback e k₁) := pullback.lift (pullback.fst f f) d (by simp [d, k₁])
+  let g₂ : pullback f f ⟶ (pullback k₂ e) := pullback.lift d (pullback.snd f f) (by simp [d, k₂])
+  /-
+  Since the big square, the bottom square, and the top right square above are pullback squares,
+  the top left square is also a pullback square.
+  -/
+  have h : IsPullback g₁ g₂ (pullback.snd e k₁) (pullback.fst k₂ e) := by
+    refine .of_right ?_ (by simp [g₁, g₂]) (.of_hasPullback e k₁)
+    refine .of_bot ?_ ?_ (.paste_horiz (.of_hasPullback k₂ e) (.of_hasPullback m m))
+    · simpa [g₁, g₂, e, m, pullback.lift_fst, pullback.lift_snd] using .of_hasPullback f f
+    · simp [g₁, g₂, k₁, d]
+  /-
+  Since `g₁` is the base change of a regular epi (the map `fst` in the middle row of the diagram
+  above, which itself is a regular epi because it is a base change of the regular epi `e`),
+  it is a regular epi.
+  -/
   have : IsRegularEpi g₁ := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₃.flip this
-  rw [← cancel_epi (g₁ ≫ pullback.snd (e f) k₁)]
+    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback h.flip
+    dsimp [MorphismProperty.regularEpi]
+    infer_instance
+  -- We precompose with the epimorphism `g₁ ≫ pullback.snd e k₁`, and finish
+  rw [← cancel_epi (g₁ ≫ pullback.snd e k₁)]
   convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
-  · rw [Category.assoc, sq₁.w.symm, pullback.lift_fst_assoc, e]
-  · rw [sq₃.w, Category.assoc, sq₂.w, pullback.lift_snd_assoc, e]
+  all_goals cat_disch
 
 /-- In a regular category, every morphism `f` factors as `e f ≫ m f`, with `m f` monic. -/
-def monoFactorisation : MonoFactorisation f where
-  I := I f
-  m := m f
-  e := e f
-  fac := fac f
+noncomputable def monoFactorisation : MonoFactorisation f where
+  I := coequalizer (pullback.fst f f) (pullback.snd f f)
+  m := coequalizer.desc f pullback.condition
+  e := coequalizer.π (pullback.fst f f) (pullback.snd f f)
+  fac := coequalizer.π_desc f _
+
+instance : IsRegularEpi (monoFactorisation f).e := by
+  dsimp [monoFactorisation]
+  infer_instance
 
 /--
 In a regular category, every morphism `f` factors as `e f ≫ m f`, with `e f` a strong epimorphism
 and `m f` a monomorphism.
 -/
-def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
+noncomputable def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   __ := monoFactorisation f
-  e_strong_epi := by
-    dsimp [monoFactorisation]
-    infer_instance
 
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
-def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
-  have := h.isIso (e f) (m f) (by simp)
-  RegularEpi.ofArrowIso (Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f)))
-    (IsRegularEpi.getStruct _)
+noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
+  have := h.isIso (monoFactorisation f).e (monoFactorisation f).m (by simp)
+  RegularEpi.ofArrowIso (Arrow.isoMk (f := .mk (monoFactorisation f).e) (Iso.refl _)
+    (asIso (monoFactorisation f).m)) (IsRegularEpi.getStruct _)
 
 instance isRegularEpi_of_extremalEpi (f : X ⟶ Y) [ExtremalEpi f] : IsRegularEpi f :=
   ⟨⟨regularEpiOfExtremalEpi f⟩⟩
 
 end Regular.StrongEpiMonoFactorisation
-end
 
 end CategoryTheory
