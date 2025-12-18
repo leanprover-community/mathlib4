@@ -157,9 +157,11 @@ def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitOfPreserves F P.isColimit)
-    · exact (NatIso.ofComponents
-        (by rintro (_ | _); exacts [mapFree F η _, mapFree F η _])
-        (by rintro _ _ (_ | _ | _) <;> simp [Presentation.mapRelations]))
+    · refine parallelPairIsoMk ?_ ?_ ?_ ?_
+      · exacts [mapFree F η P.relations.I]
+      · exacts [mapFree F η P.generators.I]
+      · simp [Presentation.mapRelations]
+      · simp
     · exact (Cocones.ext (Iso.refl _) <| by rintro (_ | _)
         <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
