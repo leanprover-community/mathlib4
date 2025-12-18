@@ -51,18 +51,18 @@ variable {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f g : ι → Ω → E} {ℱ : Filtration ι m0}
 
 /-- A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if `f`
-is adapted with respect to `ℱ` and for all `i ≤ j`, `μ[f j | ℱ i] =ᵐ[μ] f i`. -/
+is strongly adapted with respect to `ℱ` and for all `i ≤ j`, `μ[f j | ℱ i] =ᵐ[μ] f i`. -/
 def Martingale (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
   StronglyAdapted ℱ f ∧ ∀ i j, i ≤ j → μ[f j|ℱ i] =ᵐ[μ] f i
 
 /-- A family of integrable functions `f : ι → Ω → E` is a supermartingale with respect to a
-filtration `ℱ` if `f` is adapted with respect to `ℱ` and for all `i ≤ j`,
+filtration `ℱ` if `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
 `μ[f j | ℱ.le i] ≤ᵐ[μ] f i`. -/
 def Supermartingale [LE E] (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
   StronglyAdapted ℱ f ∧ (∀ i j, i ≤ j → μ[f j|ℱ i] ≤ᵐ[μ] f i) ∧ ∀ i, Integrable (f i) μ
 
 /-- A family of integrable functions `f : ι → Ω → E` is a submartingale with respect to a
-filtration `ℱ` if `f` is adapted with respect to `ℱ` and for all `i ≤ j`,
+filtration `ℱ` if `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
 `f i ≤ᵐ[μ] μ[f j | ℱ.le i]`. -/
 def Submartingale [LE E] (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
   StronglyAdapted ℱ f ∧ (∀ i j, i ≤ j → f i ≤ᵐ[μ] μ[f j|ℱ i]) ∧ ∀ i, Integrable (f i) μ
@@ -499,8 +499,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- A predictable submartingale is a.e. greater than or equal to its initial state.
 
-In contrast to the non-primed version, this result requires second countability as `Adapted` is
-defined using strong measurability while `IsPredictable` only provides measurable. -/
+In contrast to the non-primed version, this result requires second countability as
+`StronglyAdapted` is defined using strong measurability while `IsPredictable` only provides
+measurable. -/
 theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
     {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsPredictable 𝒢 f) (n : ℕ) :
     f 0 ≤ᵐ[μ] f n :=
@@ -508,8 +509,8 @@ theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltratio
 
 /-- A predictable supermartingale is a.e. less than or equal to its initial state.
 
-In contrast to the non-primed version, this result requires second countability as `Adapted` is
-defined using strong measurability while `IsPredictable` only provides measurable. -/
+In contrast to the non-primed version, this result requires second countability as `StronglyAdapted`
+is defined using strong measurability while `IsPredictable` only provides measurable. -/
 theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
     {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f)
     (n : ℕ) : f n ≤ᵐ[μ] f 0 :=
@@ -517,8 +518,8 @@ theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltrat
 
 /-- A predictable martingale is a.e. equal to its initial state.
 
-In contrast to the non-primed version, this result requires second countability as `Adapted` is
-defined using strong measurability while `IsPredictable` only provides measurable. -/
+In contrast to the non-primed version, this result requires second countability as `StronglyAdapted`
+is defined using strong measurability while `IsPredictable` only provides measurable. -/
 theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
     (hfmgle : Martingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
   eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
@@ -569,9 +570,9 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
   · exact hnonneg i ω
   · simp
 
-/-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
-the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
-submartingale. -/
+/-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is strongly
+adapted) the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is
+also a submartingale. -/
 theorem Submartingale.sum_smul_sub' [IsFiniteMeasure μ] {R : ℝ} {ξ : ℕ → Ω → ℝ} {f : ℕ → Ω → E}
     (hf : Submartingale f 𝒢 μ) (hξ : StronglyAdapted 𝒢 fun n => ξ (n + 1)) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
@@ -584,9 +585,9 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ :=
   hf.sum_smul_sub hξ hbdd hnonneg
 
-/-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
-the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
-submartingale. -/
+/-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is strongly
+adapted) the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is
+also a submartingale. -/
 theorem Submartingale.sum_mul_sub' [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
     (hf : Submartingale f 𝒢 μ) (hξ : StronglyAdapted 𝒢 fun n => ξ (n + 1)) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
