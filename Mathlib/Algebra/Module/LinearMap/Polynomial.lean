@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -61,6 +63,8 @@ The proof concludes because characteristic polynomials are independent of the ch
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
 
 open Module MvPolynomial
 open scoped Matrix

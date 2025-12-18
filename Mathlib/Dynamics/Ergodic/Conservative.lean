@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Combinatorics.Pigeonhole
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems
@@ -34,6 +36,8 @@ infinitely many times.
 
 conservative dynamical system, Poincare recurrence theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -157,8 +161,8 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [
-    measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
+  filter_upwards
+    [measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :

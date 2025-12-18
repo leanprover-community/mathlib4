@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups
@@ -19,7 +21,9 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 open Function
 

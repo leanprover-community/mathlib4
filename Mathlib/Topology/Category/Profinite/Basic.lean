@@ -3,10 +3,12 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Profinite
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -37,6 +39,8 @@ profinite
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Topology CompHausLike
@@ -48,7 +52,7 @@ abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 namespace Profinite
 
 instance (X : Type*) [TopologicalSpace X]
-    [TotallyDisconnectedSpace X] :  HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
+    [TotallyDisconnectedSpace X] : HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
   ⟨(inferInstance : TotallyDisconnectedSpace X)⟩
 
 /-- Construct a term of `Profinite` from a type endowed with the structure of a

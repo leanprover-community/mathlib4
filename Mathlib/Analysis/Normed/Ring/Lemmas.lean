@@ -3,18 +3,22 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Topology.MetricSpace.Dilation
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Normed rings
 
 In this file we continue building the theory of (semi)normed rings.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -70,6 +74,12 @@ lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [S
     (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
     RingHomIsometric σ' :=
   ⟨fun {x} ↦ by rw [← RingHomIsometric.norm_map (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+
+lemma tendsto_pow_cobounded_cobounded
+    [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
+    Tendsto (· ^ m) (cobounded α) (cobounded α) := by
+  simpa [← tendsto_norm_atTop_iff_cobounded] using
+    (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
 

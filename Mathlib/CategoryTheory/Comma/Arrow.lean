@@ -3,7 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Basic
 
 /-!
 # The category of arrows
@@ -16,6 +18,8 @@ where `L` and `R` are both the identity functor.
 
 comma, arrow
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -360,7 +364,7 @@ instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
 
 end Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/

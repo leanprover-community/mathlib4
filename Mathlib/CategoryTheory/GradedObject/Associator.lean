@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-!
 # The associator for actions of bifunctors on graded objects
@@ -26,6 +28,8 @@ on graded objects indexed by an additive monoid.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
@@ -33,7 +37,7 @@ open Category
 namespace GradedObject
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
   {F : C₁ ⥤ C₂₃ ⥤ C₄} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)

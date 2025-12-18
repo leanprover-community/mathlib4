@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 /-!
 # Measurable spaces and measurable functions
@@ -39,6 +41,8 @@ Galois connection induced by `f`.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 
@@ -179,6 +183,10 @@ alias ⟨Measurable.comap_le, Measurable.of_comap_le⟩ := measurable_iff_comap_
 theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m.comap f] f :=
   fun s hs => ⟨s, hs, rfl⟩
 
+lemma measurable_comap_iff {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
+    {f : α → β} {g : β → γ} : Measurable[mα, mγ.comap g] f ↔ Measurable (g ∘ f) := by
+  simp [measurable_iff_comap_le]
+
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
   fun _t ht => ha _ <| hf <| hb _ ht
@@ -222,7 +230,7 @@ theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 
@@ -240,11 +248,11 @@ theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable
   convert @measurable_const α β _ _ (f default) using 2
   apply hf
 
-@[measurability]
+@[fun_prop]
 theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 
-@[measurability]
+@[fun_prop]
 theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 
@@ -259,7 +267,7 @@ end TypeclassMeasurableSpace
 
 variable {m : MeasurableSpace α}
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable f^[n]
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
@@ -275,7 +283,7 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
     MeasurableSet (f ⁻¹' t) :=
   hf ht
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
     (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
   intro t ht
@@ -290,7 +298,7 @@ theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableS
     (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.indicator [Zero β] (hf : Measurable f) (hs : MeasurableSet s) :
     Measurable (s.indicator f) :=
   hf.piecewise hs measurable_const

@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of monoids has all colimits.
@@ -45,6 +47,8 @@ Monoid.mk : {M : Type u} →
               autoParam (∀ (n : ℕ) (x : M), npow (n + 1) x = x * npow n x) _auto✝¹ → Monoid M
 ```
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

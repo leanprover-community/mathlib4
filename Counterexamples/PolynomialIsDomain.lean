@@ -39,7 +39,7 @@ instance : AddCommSemigroup NatMaxAdd where
 
 instance : AddZeroClass NatMaxAdd where
   zero := mk 0
-  zero_add _ := mk.symm.injective (bot_sup_eq _)
+  zero_add _ := rfl
   add_zero _ := mk.symm.injective (sup_bot_eq _)
 
 instance : CommMonoidWithZero NatMaxAdd := mk.symm.commMonoidWithZero

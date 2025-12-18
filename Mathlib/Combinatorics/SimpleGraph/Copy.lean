@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Containment of graphs
@@ -57,6 +59,8 @@ The following notation is declared in scope `SimpleGraph`:
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
 
+@[expose] public section
+
 open Finset Function
 open Fintype (card)
 
@@ -106,8 +110,6 @@ lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 @[simp] lemma toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
 
 @[simp] lemma coe_mk (f : A →g B) (hf) : ⇑(.mk f hf : Copy A B) = f := rfl
-
-@[deprecated (since := "2025-03-19")] alias coe_toHom_apply := toHom_apply
 
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
@@ -287,8 +289,6 @@ protected alias IsContained.bot := bot_isContained_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
-
-@[deprecated (since := "2025-03-19")] alias Subgraph.Copy.map := Copy.isoSubgraphMap
 
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isContained_iff_exists_iso_subgraph :

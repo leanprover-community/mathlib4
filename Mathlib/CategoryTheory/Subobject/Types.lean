@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `Type u` is well-powered
@@ -20,6 +22,8 @@ with the "hand-rolled" definition of subobjects.
 This may be possible using Lawvere theories,
 but it remains to be seen whether this just pushes lumps around in the carpet.
 -/
+
+@[expose] public section
 
 
 universe u
