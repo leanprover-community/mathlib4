@@ -44,11 +44,11 @@ variable.
   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
   from `x` near `x₀`.
 
-* `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H × α → E` is
+* `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H → α → E` is
   continuously differentiable in the first argument near `x₀` in the sense that:
-  - `F` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
-  - `fun x ↦ F (x, t)` is differentiable on `u` for each parameter `t ∈ k`,
-  - `fun (x, t) ↦ fderiv 𝕜 (fun y ↦ F (y, t)) x` is continuous on `u ×ˢ k`.
+  - `F.uncurry : H × α → E` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
+  - `fun x ↦ F x a` is differentiable on `u` for each parameter `a ∈ k`,
+  - `fun (x, a) ↦ fderiv 𝕜 (fun y ↦ F y a) x` is continuous on `u ×ˢ k`.
 
   Here `k : Set α` is the domain of integration and is required to be compact, regarding some
   sufficiently compatible topology on `α`.
@@ -259,24 +259,24 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
         bound_integrable.2 h_diff.2)
 
 /-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
-if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `f.uncurry : H × α → E`
+if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
 is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
-of `fun x => ∫ t in k, f x t ∂μ` in `x₀` can be computed as
-`∫ t in k, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ`. -/
+of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
+`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
 theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
-    [OpensMeasurableSpace α] {f : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
-    (hk : IsCompact k) (hk' : μ k < ⊤) (hF₁ : ContinuousOn f.uncurry (u ×ˢ k))
-    (hF₂ : ∀ t ∈ k, DifferentiableOn 𝕜 (fun x ↦ f x t) u)
-    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1) (u ×ˢ k)) :
-    HasFDerivAt (fun x => ∫ t in k, f x t ∂μ)
-      (∫ t in k, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ) x₀ := by
+    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
+    (hk : IsCompact k) (hk' : μ k < ⊤) (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
+    (hF₂ : ∀ a ∈ k, DifferentiableOn 𝕜 (fun x ↦ F x a) u)
+    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in k, F x a ∂μ)
+      (∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
   -- wlog shrink u to an open neighbourhood
   wlog hu' : IsOpen u with h
   · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
     exact h (hu'.2.1.mem_nhds hu'.2.2) hk hk' (hF₁.mono <| prod_mono_left hu'.1)
-      (fun t ht ↦ (hF₂ t ht).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
+      (fun a ha ↦ (hF₂ a ha).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
   have hxu := mem_of_mem_nhds hu
-  let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ f y x.2) x.1‖
+  let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ F y x.2) x.1‖
   have hF' : ContinuousOn F' _ := continuous_norm.comp_continuousOn hF₃
   -- via a compactness argument, find an ε > 0 such that F' is bounded on `ball x₀ ε × k`
   let ⟨ε, hε, hε', B, hB⟩ :
@@ -296,25 +296,22 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Spa
   -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained ε and bound
   have hk'' : MeasurableSet k := hk.measurableSet
   have := isCompact_iff_compactSpace.1 hk
+  have : IsFiniteMeasure (Measure.comap ((↑) : k → α) μ) :=
+    ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
   simp_rw [← integral_subtype_comap hk'']
   refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
-    (F' := fun x (t : k) ↦ fderiv 𝕜 (fun x ↦ f x t) x) hε ?_ ?_ ?_ ?_ ?_ ?_
+    (F' := fun x (a : k) ↦ fderiv 𝕜 (fun x ↦ F x a) x) hε ?_ ?_ ?_ ?_ ?_ ?_
   · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
     refine Continuous.aestronglyMeasurable_of_compactSpace ?_
     exact (hF₁.uncurry_left x hx).comp_continuous (by fun_prop) (by simp)
-  · have : IsFiniteMeasure (Measure.comap ((↑) : k → α) μ) :=
-      ⟨by simp [(MeasurableEmbedding.subtype_coe hk'').comap_apply, hk']⟩
-    refine integrableOn_univ.1 <| ContinuousOn.integrableOn_compact isCompact_univ <|
+  · refine integrableOn_univ.1 <| ContinuousOn.integrableOn_compact isCompact_univ <|
       continuousOn_univ.2 <| (hF₁.uncurry_left _ hxu).comp_continuous (by fun_prop) (by simp)
   · refine Continuous.aestronglyMeasurable_of_compactSpace ?_
-    exact hF₃.comp_continuous (f := fun t : k ↦ (x₀, ↑t)) (by fun_prop) fun t ↦ ⟨hxu, t.2⟩
-  · refine .of_forall fun t x hx ↦ (hB (x, t) ⟨hx, t.2⟩).le
-  · have : IsFiniteMeasure (μ.comap ((↑) : k → _)) := ⟨by
-      rw [μ.comap_apply _ Subtype.val_injective (fun s hs ↦ hk''.subtype_image hs) .univ]
-      simpa using hk'⟩
-    exact integrable_const _
-  · refine .of_forall fun t x hx ↦ ?_
-    exact (DifferentiableOn.differentiableAt (hF₂ t <| t.2) (hu'.mem_nhds <| hε' hx)).hasFDerivAt
+    exact hF₃.comp_continuous (f := fun a : k ↦ (x₀, ↑a)) (by fun_prop) fun a ↦ ⟨hxu, a.2⟩
+  · refine .of_forall fun a x hx ↦ (hB (x, a) ⟨hx, a.2⟩).le
+  · exact integrable_const _
+  · refine .of_forall fun a x hx ↦ ?_
+    exact (DifferentiableOn.differentiableAt (hF₂ a <| a.2) (hu'.mem_nhds <| hε' hx)).hasFDerivAt
 
 section
 
