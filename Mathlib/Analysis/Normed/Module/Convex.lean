@@ -162,7 +162,6 @@ end Filter
 end SeminormedAddCommGroup
 
 section NormedAddCommGroup
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [Nontrivial F]
 
 open Pointwise in
