@@ -1234,10 +1234,8 @@ protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
 
 protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
   by_contra H
-  rw [inverse, dif_neg H, isInvertible_zero_iff] at hf
-  cases hf
-  obtain rfl : f = 0 := Subsingleton.elim _ _
-  simp_all [isInvertible_zero_iff]
+  obtain ⟨_, _⟩ : Subsingleton M ∧ Subsingleton M₂ := by simpa [inverse, H] using hf
+  simp_all [Subsingleton.elim f 0]
 
 @[simp]
 theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
