@@ -737,6 +737,9 @@ theorem toSpanSingleton_apply_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
 
 @[deprecated (since := "2025-12-05")] alias toSpanSingleton_one := toSpanSingleton_apply_one
 
+@[simp] theorem toSpanSingleton_apply_map_one (c : R₁ →L[R₁] M₂) : toSpanSingleton R₁ (c 1) = c :=
+  smulRight_id_map_one _
+
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
   coe_inj.mp <| LinearMap.toSpanSingleton_add _ _
@@ -750,12 +753,14 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
 
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
-theorem smulRight_one_eq_toSpanSingleton (x : M₁) :
-    (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
+@[simp] theorem smulRight_id_eq_toSpanSingleton (x : M₁) :
+    (.id R₁ R₁ : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
 
+@[deprecated (since := "2025-12-18")] alias smulRight_one_eq_toSpanSingleton :=
+  smulRight_id_eq_toSpanSingleton
 @[deprecated (since := "2025-12-05")] alias one_smulRight_eq_toSpanSingleton :=
-  smulRight_one_eq_toSpanSingleton
+  smulRight_id_eq_toSpanSingleton
 
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
