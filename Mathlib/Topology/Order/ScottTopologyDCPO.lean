@@ -22,11 +22,11 @@ Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algbe
 
 ## Main Statements
 - `specialization_iff_ge`: The original order and the specialization order induced by the Scott
-topology, correspond. Prop 3.5.2 in [reneta2025]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]
+  topology, correspond. Prop 3.5.2 in [reneta2025]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]
 - `isTopologicalBasis_of_Ici_compact`: The upward closures of compact elements form a topological
-basis under the Scott Topology. Prop 3.5.2 in [reneta2025]
+  basis under the Scott Topology. Prop 3.5.2 in [reneta2025]
 - `open_eq_of_open_basis'`: Explicit construction an Open set from the basis mentioned above.
-Prop 2.3.6(2) [abramsky_gabbay_maibaum_1994]
+  Prop 2.3.6(2) [abramsky_gabbay_maibaum_1994]
 
 ## Notation
 * `e` `c` : elements in the a set, usually of an open set, often compact.
