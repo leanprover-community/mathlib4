@@ -427,6 +427,7 @@ private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤
     apply div_le_one_of_le₀ <;> grind
 
 set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A point between two points in a closed interval
 can be expressed as a convex combination of them.

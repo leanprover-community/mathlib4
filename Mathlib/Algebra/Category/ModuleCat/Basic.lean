@@ -49,13 +49,13 @@ universe v u
 
 variable (R : Type u) [Ring R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℤ`, we cannot
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
-set_option backward.privateInPublic true in
 structure ModuleCat where
   private mk ::
   /-- the underlying type of an object in `ModuleCat R` -/
@@ -72,10 +72,10 @@ instance : CoeSort (ModuleCat.{v} R) (Type v) :=
 
 attribute [coe] ModuleCat.carrier
 
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- The object in the category of R-algebras associated to a type equipped with the appropriate
+typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
@@ -86,10 +86,10 @@ lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
 example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `ModuleCat R`. -/
 @[ext]
-set_option backward.privateInPublic true in
 structure Hom (M N : ModuleCat.{v} R) where
   private mk ::
   /-- The underlying linear map. -/
@@ -197,12 +197,12 @@ def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The categorical equivalence between `ModuleCat` and `SemimoduleCat`.
 
 In the inverse direction, data (such as the negation operation) is created which may lead to
 diamonds when applied to semi-modules that already have an existing additive group structure. -/
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
   functor :=
   { obj M := .of R M
@@ -567,6 +567,8 @@ variable {M N}
       (forget₂ (ModuleCat R) AddCommGrpCat).obj N)
   (hφ : ∀ (r : R), φ ≫ N.smul r = M.smul r ≫ φ)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructor for morphisms in `ModuleCat R` which takes as inputs
 a morphism between the underlying objects in `AddCommGrpCat` and the compatibility
 with the scalar multiplication. -/

@@ -61,12 +61,12 @@ def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
 @[simps]
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
   obj t := {
     pt := t.pt.left

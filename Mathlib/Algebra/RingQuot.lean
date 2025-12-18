@@ -157,28 +157,36 @@ namespace RingQuot
 variable (r : R → R → Prop)
 
 -- can't be irreducible, causes diamonds in ℕ-algebras
+set_option backward.privateInPublic true in
 private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def zero : RingQuot r :=
   ⟨Quot.mk _ 0⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def one : RingQuot r :=
   ⟨Quot.mk _ 1⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def add : RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· + ·) Rel.add_right Rel.add_left a b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def mul : RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def neg {R : Type uR} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ -a) Rel.neg a⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def sub {R : Type uR} [Ring R] (r : R → R → Prop) :
   RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ Sub.sub Rel.sub_right Rel.sub_left a b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
   | ⟨a⟩ =>
     ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
@@ -193,33 +201,52 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
         a⟩
 
 -- note: this cannot be irreducible, as otherwise diamonds don't commute.
+set_option backward.privateInPublic true in
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : NatCast (RingQuot r) :=
   ⟨natCast r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Zero (RingQuot r) :=
   ⟨zero r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : One (RingQuot r) :=
   ⟨one r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Add (RingQuot r) :=
   ⟨add r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Mul (RingQuot r) :=
   ⟨mul r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
   ⟨neg r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
   ⟨sub r⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
@@ -313,6 +340,8 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast := natCast r
   natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
@@ -335,9 +364,12 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instMonoidWithZero r
 
 -- can't be irreducible, causes diamonds in ℤ-algebras
+set_option backward.privateInPublic true in
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg_add_cancel := by

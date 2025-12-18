@@ -110,12 +110,15 @@ they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 
 section AddMonoidAlgebra
 
+set_option backward.privateInPublic true in
 private irreducible_def add : R[X] → R[X] → R[X]
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
   | ⟨a⟩ => ⟨-a⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def mul : R[X] → R[X] → R[X]
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
@@ -125,20 +128,31 @@ instance zero : Zero R[X] :=
 instance one : One R[X] :=
   ⟨⟨1⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance add' : Add R[X] :=
   ⟨add⟩
+set_option backward.privateInPublic.warn false in
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance neg' {R : Type u} [Ring R] : Neg R[X] :=
   ⟨neg⟩
 
 instance sub {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance mul' : Mul R[X] :=
   ⟨mul⟩
 
 -- If the private definitions are accidentally exposed, simplify them away.
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp] theorem add_eq_add : add p q = p + q := rfl
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
 instance instNSMul : SMul ℕ R[X] where

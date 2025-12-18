@@ -225,10 +225,13 @@ section OnFinset
 
 variable [Zero M]
 
+set_option backward.privateInPublic true in
 private irreducible_def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Finsupp.onFinset s f hf` is the finsupp function representing `f` restricted to the finset `s`.
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/

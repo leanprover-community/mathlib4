@@ -78,6 +78,7 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
+set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot. -/
 def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
@@ -267,6 +268,8 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 /-! ### The outer measure associated to a Stieltjes function -/
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
@@ -277,6 +280,8 @@ def length (s : Set R) : ℝ≥0∞ :=
   -- when measuring the size of a set (the set `{x}` will have measure `0` in our construction).
   else ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma length_eq [Nonempty R] (s : Set R) :
     f.length s = ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a) := by
   simp [length]
@@ -312,6 +317,8 @@ theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ 
   simp only [length_eq]
   exact iInf_mono fun a => biInf_mono fun b h' => (diff_subset_diff_left h).trans h'
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem length_diff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
@@ -328,6 +335,8 @@ theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
 
 variable [OrderTopology R]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use

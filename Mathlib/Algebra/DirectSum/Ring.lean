@@ -251,9 +251,9 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
 instance instNatCast : NatCast (⨁ i, A i) where
   natCast := fun n => of _ _ (GSemiring.natCast n)
 
-/-- The `Semiring` structure derived from `GSemiring A`. -/
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring _) with
     one_mul := one_mul A
@@ -325,9 +325,9 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   rw [AddMonoidHom.flip_apply, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (GCommSemiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 
-/-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+/-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
   { DirectSum.semiring A with
     mul_comm := mul_comm A }

@@ -125,6 +125,7 @@ private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
 set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : UniformSpace (CauchyFilter α) :=
   UniformSpace.ofCore
     { uniformity := (𝓤 α).lift' gen

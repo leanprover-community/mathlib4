@@ -243,6 +243,7 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
   exact disj''.ne_of_mem hx₁' hx₂' hρx
 
 set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
 satisfying the "Zorn subset condition" is a homeomorphism. -/
