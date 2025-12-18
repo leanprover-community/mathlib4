@@ -44,16 +44,21 @@ attribute [coe] LinOrd.carrier
 
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
+set_option backward.privateInPublic true in
 structure Hom (X Y : LinOrd.{u}) where
   private mk ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category LinOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory LinOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
