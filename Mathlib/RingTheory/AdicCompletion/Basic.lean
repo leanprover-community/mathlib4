@@ -71,6 +71,32 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
 
+theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Algebra R S] :
+    IsHausdorff (I.map (algebraMap R S)) S ↔ IsHausdorff I S := by
+  simp only [isHausdorff_iff, smul_eq_mul, Ideal.mul_top, Ideal.smul_top_eq_map]
+  congr!
+  simp only [← Ideal.map_pow]
+  rfl
+
+theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
+    [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
+    IsHausdorff I M := by
+  refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩
+  apply SModEq.of_toAddSubgroup_le
+      (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
+  · rw [← AddSubgroup.toAddSubmonoid_le]
+    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
+      Submodule.top_toAddSubmonoid]
+    rw [AddSubmonoid.smul_le]
+    intro r hr m _
+    rw [← algebraMap_smul S r m]
+    apply AddSubmonoid.smul_mem_smul
+    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
+      simp only [Ideal.map_pow] at this
+      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
+    · trivial
+  · exact h n
+
 variable (I) in
 theorem IsHausdorff.funext {M : Type*} [IsHausdorff I N] {f g : M → N}
     (h : ∀ n m, Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f m) =
@@ -694,7 +720,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -705,7 +731,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \
