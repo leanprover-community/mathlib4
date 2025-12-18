@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 
@@ -540,6 +541,51 @@ lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
 end Field
 
 end IsNontrivial
+
+section IsTrivialOnConstants
+
+variable [LinearOrderedCommGroupWithZero Γ₀]
+
+/-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
+  base ring `A` are mapped to `1`.
+
+  This is true, for example, when `A` is a finite field.
+  See `Valuation.FiniteField.instIsTrivialOnConstants`. -/
+class IsTrivialOnConstants {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+  (v : Valuation B Γ₀) where trivial : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
+
+attribute [grind =>] IsTrivialOnConstants.trivial
+
+section IsTrivialOnConstants
+
+variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
+  [IsTrivialOnConstants A v]
+
+@[simp]
+theorem IsTrivialOnConstants.integer : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
+  intro a
+  by_cases a = 0 <;> grind [zero_le']
+
+end IsTrivialOnConstants
+
+namespace FiniteField
+
+variable {Fq A : Type*} [Field Fq] [Fintype Fq] [Ring A] [Algebra Fq A] (v : Valuation A Γ₀)
+
+@[grind =>]
+lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 := by
+  have hpow : (v (algebraMap Fq A a)) ^ (Fintype.card Fq - 1) = 1 := by
+    simp [← map_pow, FiniteField.pow_card_sub_one_eq_one a ha]
+  grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
+
+lemma algebraMap_le_one (v : Valuation A Γ₀) (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
+  by_cases a = 0 <;> grind [zero_le']
+
+instance : IsTrivialOnConstants Fq v where trivial a ha := FiniteField.algebraMap_eq_one v a ha
+
+end FiniteField
+
+end IsTrivialOnConstants
 
 namespace IsEquiv
 
