@@ -752,6 +752,13 @@ lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ I
   simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.isClosed_iff_image_isClosed]
 
+protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f)) :
+    IsClosedEmbedding f where
+  __ := hg.of_comp_iff.mp hgf.isEmbedding
+  isClosed_range := by
+    convert hg.isClosed_preimage _ hgf.isClosed_range
+    rw [range_comp, hg.injective.preimage_image]
+
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=
   hf.isClosedMap.closure_image_eq_of_continuous hf.continuous s
