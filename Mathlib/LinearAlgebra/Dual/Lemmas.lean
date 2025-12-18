@@ -1054,9 +1054,9 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
   rfl
 
 /-- Swapping ordering of both the applied duals and the tensor product preserves evaluation. -/
-lemma dualDistrib_swap (φ : Dual R M) (ψ : Dual R N) (z : M ⊗[R] N) :
-    dualDistrib R N M (ψ ⊗ₜ[R] φ) (TensorProduct.comm R M N z) =
-      dualDistrib R M N (φ ⊗ₜ[R] ψ) z := by
+lemma dualDistrib_swap (f : Dual R M) (g : Dual R N) (z : M ⊗[R] N) :
+    dualDistrib R N M (g ⊗ₜ[R] f) (TensorProduct.comm R M N z) =
+      dualDistrib R M N (f ⊗ₜ[R] g) z := by
   induction z <;> simp_all [mul_comm]
 
 end
