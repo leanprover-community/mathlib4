@@ -143,18 +143,13 @@ open scoped ComplexOrder in
 theorem IsPositive.isPositive_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsPositive) (hf' : f ≠ 0) {α : 𝕜} :
     (α • f).IsPositive ↔ 0 ≤ α := by
   refine ⟨fun h ↦ ?_, hf.smul_of_nonneg⟩
-  simp only [IsPositive, hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left,
-    IsSelfAdjoint, RCLike.star_def, RCLike.nonneg_iff (K := 𝕜)] at h ⊢
+  simp only [IsPositive, hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left] at h
   obtain ⟨h1, h2⟩ := h
-  rw [← RCLike.conj_eq_iff_re.mp h1] at h2 ⊢
-  simp only [RCLike.conj_ofReal, RCLike.mul_re, RCLike.ofReal_re, RCLike.ofReal_im, zero_mul,
-    sub_zero] at h2 ⊢
-  simp only [mul_nonneg_iff, hf.2, and_true, forall_or_left] at h2
-  have := by simpa only [RCLike.ext_iff (K := 𝕜)] using
+  simp only [im_eq_zero_iff_isSelfAdjoint.mpr h1, nonneg_iff (K := 𝕜), and_true]
+  rw [← conj_eq_iff_re.mp h1, conj_ofReal] at h2
+  have := by simpa [RCLike.ext_iff (K := 𝕜), hf.isSymmetric] using
     hf.isSymmetric.inner_map_self_eq_zero.not.mpr hf'
-  have := hf.isSymmetric.im_inner_apply_self
-  have := hf.2
-  grind
+  grind [hf.2, re_ofReal_mul, mul_nonneg_iff]
 
 theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
