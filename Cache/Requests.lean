@@ -331,19 +331,6 @@ def hashFromFileName (fn : String) : Option UInt64 := do
   -- Parse hex string as UInt64
   parseHexString stem.toString |>.map UInt64.ofNat
 
-/-- State for coordinating downloads and background decompression.
-Uses an append-only log to avoid race conditions between producer (downloads) and consumer (decompression). -/
-structure DecompressionState where
-  hashToMod : Std.HashMap UInt64 Lean.Name           -- filename hash → module name
-  allFiles : IO.Ref (Array (FilePath × Lean.Name))   -- append-only log of downloaded files
-  processedUpTo : IO.Ref Nat                    -- index of last file decompressed
-  decompressed : IO.Ref Nat                     -- total files decompressed so far
-  failed : IO.Ref Nat                           -- total decompression failures
-  isMathlibRoot : Bool
-  mathlibDepPath : String
-  force : Bool
-  downloadComplete : IO.Ref Bool                -- signal when curl finishes
-
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
     (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : String)
@@ -379,35 +366,12 @@ def decompressBatch (files : Array (FilePath × Lean.Name))
       s!"{preview}, ... and {files.size - 3} more"
     throw <| IO.userError s!"leantar exited with code {exitCode} on batch of {files.size} files: {firstFew}"
 
-/-- Background loop that continuously processes batches as files arrive.
-Uses a read pointer to track position in the append-only log. -/
-def decompressionLoop (state : DecompressionState) : IO Unit := do
-  repeat
-    -- Check how many files are available
-    let processed ← state.processedUpTo.get
-    let all ← state.allFiles.get
-
-    if processed < all.size then
-      -- Get new files since last batch (slice from processed to end)
-      let newFiles := Array.toSubarray all processed all.size |>.toArray
-
-      -- Decompress this batch
-      try
-        decompressBatch newFiles state.force state.isMathlibRoot state.mathlibDepPath
-        state.decompressed.modify (· + newFiles.size)
-      catch e =>
-        IO.eprintln s!"Batch decompression failed for {newFiles.size} files: {e}"
-        state.failed.modify (· + newFiles.size)
-
-      -- Advance read pointer
-      state.processedUpTo.set all.size
-    else
-      -- No new files, check if we should exit
-      if (← state.downloadComplete.get) then
-        break  -- Downloads done and all files processed, exit loop
-      else
-        -- Wait for more files to arrive
-        IO.sleep 100  -- 100ms
+/-- Configuration for decompression during download -/
+structure DecompConfig where
+  hashToMod : Std.HashMap UInt64 Lean.Name  -- filename hash → module name
+  force : Bool
+  isMathlibRoot : Bool
+  mathlibDepPath : String
 
 private structure TransferState where
   last : Nat
@@ -415,32 +379,51 @@ private structure TransferState where
   failed : Nat
   done : Nat
   speed : Nat
+  -- Decompression state (only used when decompConfig is set)
+  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
+  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
+  lastBatchSize : Nat                              -- size of the last dispatched batch
+  decompressed : Nat                               -- total files decompressed
+  decompFailed : Nat                               -- total decompression failures
+
+/-- Harvest the result of a completed decompression task, updating counters -/
+def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
+    (decompressed decompFailed : Nat) : Nat × Nat :=
+  match task.get with
+  | .ok () => (decompressed + batchSize, decompFailed)
+  | .error _ => (decompressed, decompFailed + batchSize)
+
+/-- Dispatch a new decompression batch if there are pending files -/
+def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : DecompConfig)
+    : IO (Option (Task (Except IO.Error Unit))) := do
+  if pending.isEmpty then return none
+  let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
+  return some task
 
 def monitorCurl (args : Array String) (size : Nat)
-    (caption : String) (speedVar : String) (removeOnError := false) (decompState : Option DecompressionState := none) : IO TransferState := do
+    (caption : String) (speedVar : String) (removeOnError := false)
+    (decompConfig : Option DecompConfig := none) : IO TransferState := do
   let useAnsi := (← IO.getEnv "TERM").isSome
-  let mkStatus (success failed done speed : Nat) : IO String := do
-    let speed :=
-      if speed != 0 then
-        s!", {speed / 1000} KB/s"
+  let mkStatus (s : TransferState) : String := Id.run do
+    let speedStr :=
+      if s.speed != 0 then
+        s!", {s.speed / 1000} KB/s"
       else ""
-    let mut msg := s!"\r{caption}: {success} file(s) [attempted {done}/{size} = {100*done/size}%{speed}]"
+    let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
     -- Add decompression progress if enabled
-    if let some (state : DecompressionState) := decompState then
-      let decompressed ← state.decompressed.get
-      let decompFailed ← state.failed.get
-      msg := msg ++ s!", Decompressed: {decompressed}"
-      if decompFailed != 0 then
-        msg := msg ++ s!" ({decompFailed} failed)"
-    if failed != 0 then
-      msg := msg ++ s!", {failed} download failed"
+    if decompConfig.isSome then
+      msg := msg ++ s!", Decompressed: {s.decompressed}"
+      if s.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decompFailed} failed)"
+    if s.failed != 0 then
+      msg := msg ++ s!", {s.failed} download failed"
     -- Clear to end of line to avoid remnants from longer previous messages
     if useAnsi then
       msg := msg ++ "\x1b[K"
     return msg
-  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
-  let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed} := a
+  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let s ← IO.runCurlStreaming args init fun a line => do
+    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
     -- output errors other than 404 and remove corresponding partial downloads
     let line := line.trimAscii
     if !line.isEmpty then
@@ -452,12 +435,29 @@ def monitorCurl (args : Array String) (size : Nat)
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               let finalPath := (fn.dropEnd 5).copy
               IO.FS.rename fn finalPath
-              -- Append to decompression log if enabled
-              if let some (state : DecompressionState) := decompState then
+              -- Add to decompression queue if enabled
+              if let some config := decompConfig then
                 match hashFromFileName fn with
                 | some hash =>
-                  match state.hashToMod[hash]? with
-                  | some mod => state.allFiles.modify (·.push (finalPath, mod))
+                  match config.hashToMod[hash]? with
+                  | some mod =>
+                    pending := pending.push (finalPath, mod)
+                    -- Check if we should dispatch a batch
+                    match currentTask with
+                    | some task =>
+                      if (← IO.hasFinished task) then
+                        -- Harvest completed task
+                        (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                        -- Dispatch new batch with all pending files
+                        lastBatchSize := pending.size
+                        currentTask ← dispatchDecompBatch pending config
+                        pending := #[]
+                      -- else: task still running, just accumulate
+                    | none =>
+                      -- No task running, dispatch immediately
+                      lastBatchSize := pending.size
+                      currentTask ← dispatchDecompBatch pending config
+                      pending := #[]
                   | none => IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
                 | none => IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
           success := success + 1
@@ -486,22 +486,19 @@ def monitorCurl (args : Array String) (size : Nat)
         if now - last ≥ 100 then -- max 10/s update rate
           speed := match result.getObjValAs? Nat speedVar with
             | .ok speed => speed | .error _ => speed
-          IO.eprint (← mkStatus success failed done speed)
+          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
           last := now
        | .error e =>
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
-    pure {last, success, failed, done, speed}
-  if done > 0 then
+    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+  if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
-    IO.eprintln (← mkStatus success failed done speed)
-  -- Signal download completion for decompression task
-  if let some (state : DecompressionState) := decompState then
-    state.downloadComplete.set true
+    IO.eprintln (mkStatus s)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download.
-If `decompress` is true, spawns a background task to decompress files as they're downloaded. -/
+If `decompress` is true, decompresses files as they're downloaded (pipelined). -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
@@ -513,82 +510,61 @@ def downloadFiles
     IO.FS.createDirAll IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
 
-    -- Set up decompression state and background task if enabled
-    let (decompState, decompTask) ← if decompress then
+    -- Set up decompression config if enabled
+    let decompConfig ← if decompress then
       -- Build hash → module name mapping
-      let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun (acc : Std.HashMap UInt64 Lean.Name) (mod : Lean.Name) (hash : UInt64) =>
+      let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
         acc.insert hash mod
-
-      -- Create decompression state
-      let allFilesRef ← IO.mkRef #[]
-      let processedUpToRef ← IO.mkRef 0
-      let decompressedRef ← IO.mkRef 0
-      let failedRef ← IO.mkRef 0
-      let downloadCompleteRef ← IO.mkRef false
-
-      let state : DecompressionState := {
-        hashToMod
-        allFiles := allFilesRef
-        processedUpTo := processedUpToRef
-        decompressed := decompressedRef
-        failed := failedRef
-        isMathlibRoot
-        mathlibDepPath
-        force := forceUnpack
-        downloadComplete := downloadCompleteRef
-      }
-
-      -- Spawn background decompression task
-      let task ← IO.asTask (decompressionLoop state)
-
-      pure (some state, some task)
+      pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
     else
-      pure (none, none)
+      pure none
 
-    let failed ← if parallel then
+    let (downloadFailed, finalState) ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
       let args := #["--request", "GET", "--parallel",
           -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
           "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let {success, failed, done, ..} ←
-        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true) decompState
+      let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true) decompConfig
       IO.FS.removeFile IO.CURLCFG
-      if warnOnMissing && success + failed < done then
+      if warnOnMissing && s.success + s.failed < s.done then
         IO.eprintln "Warning: some files were not found in the cache."
         IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
         IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
         IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-      pure failed
+      pure (s.failed, s)
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
         pure <| (← IO.asTask do downloadFile repo hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+      let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+      -- Non-parallel mode doesn't support pipelined decompression
+      let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+      pure (failed, emptyState)
 
-    -- Wait for decompression task to complete if enabled
-    if let some (state : DecompressionState) := decompState then
-      -- Downloads are complete, wait for background task to finish
-      if let some task := decompTask then
-        match task.get with
-        | .ok _ => pure ()
-        | .error e => throw e
+    -- Finalize decompression: wait for current task and process any remaining files
+    if let some config := decompConfig then
+      let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
 
-      let decompressed ← state.decompressed.get
-      let decompFailed ← state.failed.get
-      let totalQueued := (← state.allFiles.get).size
+      -- Wait for current task to complete if any
+      if let some task := currentTask then
+        (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
 
-      -- Verify all queued files were processed
-      if decompressed + decompFailed != totalQueued then
-        IO.eprintln s!"Warning: Queued {totalQueued} files for decompression but only processed {decompressed + decompFailed}"
+      -- Process any remaining pending files
+      if !pending.isEmpty then
+        try
+          decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+          decompressed := decompressed + pending.size
+        catch _ =>
+          decompFailed := decompFailed + pending.size
 
       IO.println s!"Decompressed {decompressed} file(s)"
       if decompFailed > 0 then
         IO.println s!"{decompFailed} decompression(s) failed"
         IO.Process.exit 1
 
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
+    if downloadFailed > 0 then
+      IO.println s!"{downloadFailed} download(s) failed"
       IO.Process.exit 1
   else IO.println "No files to download"
 
@@ -731,7 +707,7 @@ def putFiles
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false) (decompState := none)
+    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
