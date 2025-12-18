@@ -230,69 +230,69 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   | .app (.app rel lhs) rhs => if isLhs then mkApp2 rel e rhs else mkApp2 rel lhs e
   | _ => r
 
-/-- Construct the `GCongrLemma` data from a given lemma. -/
-def makeGCongrLemma (declName : Name) (target : Expr) (hyps : Array Expr) (prio : Nat) :
+/-- Try to cnstruct the `GCongrLemma` for a lemma with hypotheses `hyps` and conclusion `target`. -/
+def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
     MetaM GCongrLemma := do
-    let fail {α} (m : MessageData) : MetaM α := throwError "\
-      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
-      {m} in {target}"
-    -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
-    let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
-    let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
-    let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
-    let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
-    unless head == head' && lhsArgs.size == rhsArgs.size do
-      fail "LHS and RHS do not have the same head function and arity"
-    let mut pairs := #[]
-    -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
-    -- the conclusion of the lemma
-    for e1 in lhsArgs, e2 in rhsArgs do
-      -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
-      -- (and not proofs)
-      let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
-      if !isEq then
-        -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-        let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
-        let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
-        -- add such a pair to the `pairs` array
-        pairs := pairs.push (e1, e2)
-    let numVarying := pairs.size
-    if numVarying = 0 then
-      fail "LHS and RHS are the same"
-    let mut mainSubgoals := #[]
-    let mut i := 0
-    -- iterate over antecedents `hyp` to the lemma
-    for hyp in hyps do
-      mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
-        -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
-        -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
-        -- `rel` above)
-        let hypTy ← whnf hypTy
-        let findPair (lhs rhs : FVarId) : Option Bool :=
-          pairs.findSome? fun pair =>
-            if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
-        if let some (_, lhs₁, rhs₁) := getRel hypTy then
-          if let .fvar lhs₁ := lhs₁.getAppFn then
-          if let .fvar rhs₁ := rhs₁.getAppFn then
-          -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
-          -- the conclusion to the lemma
-          if let some isContra := findPair lhs₁ rhs₁ then
-            -- if yes, record the index of this antecedent as a "main subgoal", together with the
-            -- index of the "varying argument" pair it corresponds to
-            return mainSubgoals.push (i, args.size, isContra)
-        else
-          -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
-          -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
-          if let .fvar rhs₁ := hypTy.getAppFn then
-          if let some lastFVar := args.back? then
-          if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
-          if let some isContra := findPair lhs₁ rhs₁ then
-            return mainSubgoals.push (i, args.size - 1, isContra)
-        return mainSubgoals
-      i := i + 1
-    -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
-    let key := { relName, head, arity := lhsArgs.size }
-    return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
+  let fail {α} (m : MessageData) : MetaM α := throwError "\
+    @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
+    {m} in {target}"
+  -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
+  let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
+  let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
+  let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
+  let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
+  unless head == head' && lhsArgs.size == rhsArgs.size do
+    fail "LHS and RHS do not have the same head function and arity"
+  let mut pairs := #[]
+  -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
+  -- the conclusion of the lemma
+  for e1 in lhsArgs, e2 in rhsArgs do
+    -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
+    -- (and not proofs)
+    let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
+    if !isEq then
+      -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+      let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
+      let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
+      -- add such a pair to the `pairs` array
+      pairs := pairs.push (e1, e2)
+  let numVarying := pairs.size
+  if numVarying = 0 then
+    fail "LHS and RHS are the same"
+  let mut mainSubgoals := #[]
+  let mut i := 0
+  -- iterate over antecedents `hyp` to the lemma
+  for hyp in hyps do
+    mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
+      -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
+      -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
+      -- `rel` above)
+      let hypTy ← whnf hypTy
+      let findPair (lhs rhs : FVarId) : Option Bool :=
+        pairs.findSome? fun pair =>
+          if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
+      if let some (_, lhs₁, rhs₁) := getRel hypTy then
+        if let .fvar lhs₁ := lhs₁.getAppFn then
+        if let .fvar rhs₁ := rhs₁.getAppFn then
+        -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
+        -- the conclusion to the lemma
+        if let some isContra := findPair lhs₁ rhs₁ then
+          -- if yes, record the index of this antecedent as a "main subgoal", together with the
+          -- index of the "varying argument" pair it corresponds to
+          return mainSubgoals.push (i, args.size, isContra)
+      else
+        -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
+        -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
+        if let .fvar rhs₁ := hypTy.getAppFn then
+        if let some lastFVar := args.back? then
+        if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
+        if let some isContra := findPair lhs₁ rhs₁ then
+          return mainSubgoals.push (i, args.size - 1, isContra)
+      return mainSubgoals
+    i := i + 1
+  -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
+  let key := { relName, head, arity := lhsArgs.size }
+  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -321,38 +321,41 @@ initialize registerBuiltinAttribute {
     let type := cinfo.type
     let arity := type.getForallArity
     forallTelescope type fun xs type => do
-    -- Special case the unfolding of `Monotone`-like conclusions
+    -- Special case the unfolding of `Monotone`-like conclusions.
     if type.getAppFn.constName? matches
         `Monotone | `Antitone | `StrictMono | `StrictAnti |
         `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
       forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
-        gcongrExt.add (← makeGCongrLemma declName type (xs ++ xs') prio) kind
+        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio) kind
       return
-    -- If the conclusion is a free variable, the lemma must be `imp_imp_imp` or `forall_imp`
+    -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
+    -- so we revert the last two variables.
     if type.getAppFn.isFVar then
       let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-      gcongrExt.add (← makeGCongrLemma declName type xs.pop.pop prio) kind
+      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio) kind
       return
     try
       -- Add a `gcongr` lemma in the "normal" way.
-      gcongrExt.add (← makeGCongrLemma declName type xs prio) kind
+      gcongrExt.add (← makeGCongrLemma xs type declName prio) kind
     catch e => try
       match_expr type with
-      | Iff p q =>
+      | Iff lhs rhs =>
         -- When the goal is an `↔`, try to use either of the implications.
         try
-          withLocalDeclD `_a q fun x => do
-            let gcongrLemma ← makeGCongrLemma declName p (xs.push x) prio
-            let auxType ← mkForallFVars (xs.push x) p
-            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) p q <|
+          -- Try using the `←` implication.
+          withLocalDeclD `_a rhs fun x => do
+            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio
+            let auxType ← mkForallFVars (xs.push x) lhs
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
         catch _ =>
-          withLocalDeclD `_a p fun x => do
-            let gcongrLemma ← makeGCongrLemma declName q (xs.push x) prio
-            let auxType ← mkForallFVars (xs.push x) q
-            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) p q <|
+          -- Try using the `→` implication.
+          withLocalDeclD `_a lhs fun x => do
+            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio
+            let auxType ← mkForallFVars (xs.push x) rhs
+            let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
@@ -369,7 +372,7 @@ initialize registerBuiltinAttribute {
           unless hyp.getAppFn.isConstOf c do continue
           let type ← mkForallFVars #[x] type
           let xs' :=  xs.eraseIdx i (by grind)
-          let gcongrLemma ← makeGCongrLemma declName type xs' prio
+          let gcongrLemma ← makeGCongrLemma xs' type declName prio
           if i == xs.size - 1 then
             gcongrExt.add gcongrLemma kind
           else
