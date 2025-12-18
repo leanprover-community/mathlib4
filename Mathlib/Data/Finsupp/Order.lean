@@ -72,12 +72,10 @@ end IsOrderedCancelAddMonoid
 section Preorder
 variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 
-@[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
+@[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
 
 lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ single_le_single.2
-
-@[gcongr] protected alias ⟨_, GCongr.single_mono⟩ := single_le_single
 
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos

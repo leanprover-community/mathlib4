@@ -231,13 +231,13 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   | _ => r
 
 /-- Construct the `GCongrLemma` data from a given lemma. -/
-def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : MetaM GCongrLemma := do
-  withDefault <| forallBoundedTelescope declTy numHyps fun xs targetTy => withReducible do
+def makeGCongrLemma (declName : Name) (target : Expr) (hyps : Array Expr) (prio : Nat) :
+    MetaM GCongrLemma := do
     let fail {α} (m : MessageData) : MetaM α := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
-      {m} in {targetTy}"
+      {m} in {target}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
-    let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
+    let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
     let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
     let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
     let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
@@ -262,7 +262,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
     let mut mainSubgoals := #[]
     let mut i := 0
     -- iterate over antecedents `hyp` to the lemma
-    for hyp in xs do
+    for hyp in hyps do
       mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
         -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
         -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
@@ -292,7 +292,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       i := i + 1
     -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
     let key := { relName, head, arity := lhsArgs.size }
-    return { key, declName, mainSubgoals, numHyps, prio, numVarying }
+    return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -315,32 +315,72 @@ Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the relat
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
-  add := fun decl stx kind ↦ MetaM.run' do
+  add := fun declName stx kind ↦ MetaM.run' do withReducible do
     let prio ← getAttrParamOptPrio stx[1]
-    let declTy := (← getConstInfo decl).type
-    let arity := declTy.getForallArity
-    -- We have to determine how many of the hypotheses should be introduced for
-    -- processing the `gcongr` lemma. This is because of implication lemmas like `Or.imp`,
-    -- which we treat as having conclusion `a ∨ b → c ∨ d` instead of just `c ∨ d`.
-    -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
-    -- we simply attempt to process the lemmas at the different possible arities.
+    let cinfo ← getConstInfo declName
+    let type := cinfo.type
+    let arity := type.getForallArity
+    forallTelescope type fun xs type => do
+    -- Special case the unfolding of `Monotone`-like conclusions
+    if type.getAppFn.constName? matches
+        `Monotone | `Antitone | `StrictMono | `StrictAnti |
+        `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
+      forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
+        gcongrExt.add (← makeGCongrLemma declName type (xs ++ xs') prio) kind
+      return
+    -- If the conclusion is a free variable, the lemma must be `imp_imp_imp` or `forall_imp`
+    if type.getAppFn.isFVar then
+      let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
+      gcongrExt.add (← makeGCongrLemma declName type xs.pop.pop prio) kind
+      return
     try
-      -- If the head constant is a monotonicity constant, we want it to be unfolded.
-      -- We achieve this by increasing the arity
-      let arity' := match declTy.getForallBody.getAppFn.constName? with
-        | `Monotone | `Antitone | `StrictMono | `StrictAnti => arity + 3
-        | `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn => arity + 5
-        | _ => arity
-      gcongrExt.add (← makeGCongrLemma decl declTy arity' prio) kind
+      -- Add a `gcongr` lemma in the "normal" way.
+      gcongrExt.add (← makeGCongrLemma declName type xs prio) kind
     catch e => try
-      guard (1 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1) prio) kind
-    catch _ => try
-      -- We need to use `arity - 2` for lemmas such as `imp_imp_imp` and `forall_imp`.
-      guard (2 ≤ arity)
-      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 2) prio) kind
+      match_expr type with
+      | Iff p q =>
+        -- When the goal is an `↔`, try to use either of the implications.
+        try
+          withLocalDeclD `_a q fun x => do
+            let gcongrLemma ← makeGCongrLemma declName p (xs.push x) prio
+            let auxType ← mkForallFVars (xs.push x) p
+            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let auxValue ← mkLambdaFVars xs (mkApp3 (.const ``Iff.mpr []) p q val)
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+        catch _ =>
+          withLocalDeclD `_a p fun x => do
+            let gcongrLemma ← makeGCongrLemma declName q (xs.push x) prio
+            let auxType ← mkForallFVars (xs.push x) q
+            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let auxValue ← mkLambdaFVars xs (mkApp3 (.const ``Iff.mp []) p q val)
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+      | _ =>
+        -- Try to interpret the lemma as an implicational `gcongr` lemma,
+        -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
+        -- We want to support such lemmas even if the hypotheses are given in a different order.
+        -- So, we try this for each hypotheses that has the same head constant as the conclusion.
+        let .const c _ := type.getAppFn | failure
+        -- let mut i :=
+        for h : i in (Array.range xs.size).reverse do
+          let x := xs[i]'(by grind)
+          let hyp ← inferType x
+          unless hyp.getAppFn.isConstOf c do continue
+          let type ← mkForallFVars #[x] type
+          let gcongrLemma ← makeGCongrLemma declName type xs.pop prio
+          if i == xs.size - 1 then
+            gcongrExt.add gcongrLemma kind
+          else
+            let val := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let xs := xs.eraseIdx i (by grind)
+            let auxType ← mkForallFVars xs type
+            let auxValue ← mkLambdaFVars (xs.push x) type
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+          break
     catch _ =>
-      -- If none of the arities work, we throw the error of the first attempt.
+      -- If none of the methods work, we throw the error of the "normal" attempt.
       throw e
 }
 
