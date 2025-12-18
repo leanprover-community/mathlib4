@@ -524,6 +524,8 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 
 namespace Infinite
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
