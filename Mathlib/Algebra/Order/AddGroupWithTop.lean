@@ -77,9 +77,6 @@ lemma zero_ne_top : 0 ≠ (⊤ : α) :=
 
 @[simp] lemma top_pos : (0 : α) < ⊤ := lt_top_iff_ne_top.2 top_ne_zero.symm
 
-lemma add_neg_cancel_of_ne_top (h : a ≠ ⊤) : a + -a = 0 :=
-  LinearOrderedAddCommGroupWithTop.add_neg_cancel a h
-
 @[simp]
 lemma add_neg_cancel_iff_ne_top : a + -a = 0 ↔ a ≠ ⊤ where
   mp := by contrapose; simp +contextual
