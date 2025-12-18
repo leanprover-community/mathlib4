@@ -111,6 +111,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.pr_branch_ref }}
+          fetch-depth: 2 # we may fetch cache from the commit before this one (or earlier)
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -352,16 +353,34 @@ jobs:
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
-        shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
+        shell: bash # only runs git and `cache get` from `tools-branch`, so doesn't need to be inside landrun
+        env:
+          DEPTH: 10
+          COMMIT_HASH: ${{ github.event.before || (github.event.pull_request.base.sha || 'HEAD^') }}
+          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           cd pr-branch
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
+            # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
+            echo "Checking out commit pushed before this one and getting cache for those files"
+            # fetch $DEPTH commits at a time until we find the commit hash
+            while ! git cat-file -e "$COMMIT_HASH" 2>/dev/null; do
+              git fetch --no-tags --deepen="$DEPTH" origin
+            done
+            git checkout "$COMMIT_HASH"
+            ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+            # Run again with --repo, to ensure we actually get the oleans.
+            ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
+
+            echo "Switching back to branch head"
+            git checkout "${{ inputs.pr_branch_ref }}"
+
             echo "Fetching all remaining cache..."
 
             ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
 
             # Run again with --repo, to ensure we actually get the oleans.
-            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} --skip-proofwidgets get
+            ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
