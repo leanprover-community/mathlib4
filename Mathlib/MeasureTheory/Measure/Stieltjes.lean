@@ -56,6 +56,7 @@ section Prerequisites
 
 variable {R : Type*} [LinearOrder R]
 
+set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 This makes sure that any element which is not bot belongs to an interval `Iotop a b`, and also

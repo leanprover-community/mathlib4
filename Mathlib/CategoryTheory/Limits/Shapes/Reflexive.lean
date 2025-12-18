@@ -408,6 +408,7 @@ variable {F G : WalkingReflexivePair ⥤ C}
   (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by cat_disch)
   (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
   app := fun x ↦ match x with
@@ -420,9 +421,11 @@ def mkNatTrans : F ⟶ G where
       simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
         reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_one : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 
