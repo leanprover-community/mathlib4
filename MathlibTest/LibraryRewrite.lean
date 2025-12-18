@@ -187,6 +187,8 @@ Pattern m.gcd n
 #guard_msgs in
 #infoview_search_test Nat.gcd n n
 
+@[expose] public section
+
 def atZero (f : Int → Int) : Int := f 0
 
 theorem atZero_neg (f : Int → Int) : atZero (fun x => - f x) = - atZero f := rfl
