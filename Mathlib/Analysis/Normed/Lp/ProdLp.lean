@@ -748,7 +748,7 @@ theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
 
-theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
+theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
   ext
   norm_cast
 

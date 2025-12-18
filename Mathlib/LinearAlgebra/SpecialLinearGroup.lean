@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 If `R` is a commutative ring and `V` is an `R`-module,
 we define `SpecialLinearGroup R V` as the subtype of
 linear equivalences `V ≃ₗ[R] V` with determinant 1.
-When `V` doesn't have a finite basis, the determinant is defined by 1
+When `V` doesn't have a finite basis, the determinant is defined to be 1
 and the definition gives `V ≃ₗ[R] V`.
 The interest of this definition is that `SpecialLinearGroup R V`
 has a group structure. (Starting from linear maps wouldn't have worked.)
@@ -31,7 +31,7 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the mul equivalence
+We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the multiplicative equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
@@ -373,7 +373,7 @@ theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
 /- TODO : delete this auxiliary definition
 and put it in the definition of `centerEquivRootsOfUnity.
 How can one access to the definition of one already defined term in a structure
-while one is still definining it? -/
+while one is still defining it? -/
 /-- The inverse map for the equivalence `SpecialLinearGroup.centerEquivRootsOfUnity`. -/
 noncomputable def centerEquivRootsOfUnity_invFun
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
@@ -460,14 +460,13 @@ noncomputable def centerEquivRootsOfUnity :
     set Hg := (mem_center_iff.mp g.prop)
     set Hh := (mem_center_iff.mp h.prop)
     set Hgh := (mem_center_iff.mp (g * h).prop)
-    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec,
-      Units.val_mul]
+    simp only [← Subtype.val_inj, ← Units.val_inj, IsUnit.unit_spec, Units.val_mul]
     change Hgh.choose = Hg.choose * Hh.choose
     suffices (Hgh.choose • LinearMap.id : V →ₗ[R] V)
       = (Hg.choose • LinearMap.id) * (Hh.choose • LinearMap.id) by
       apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
       intro x
-      simp  [mul_smul,
+      simp [mul_smul,
         ← mem_center_iff_spec (g * h).prop, ← mem_center_iff_spec h.prop,
         ← mem_center_iff_spec g.prop]
     simp [← Hgh.choose_spec.2, ← Hh.choose_spec.2, ← Hg.choose_spec.2]
@@ -516,7 +515,6 @@ open Subgroup Matrix Matrix.SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
 
--- variable [Nontrivial R]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 
