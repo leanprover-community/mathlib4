@@ -325,6 +325,11 @@ theorem Monic.degree_mul (hq : Monic q) : degree (p * q) = degree p + degree q :
   if hp : p = 0 then by simp [hp]
   else degree_mul' <| by rwa [hq.leadingCoeff, mul_one, Ne, leadingCoeff_eq_zero]
 
+theorem Monic.mul_degree (hp : Monic p) : degree (p * q) = degree p + degree q :=
+  letI := Classical.decEq R
+  if hq : q = 0 then by simp [hq]
+  else degree_mul' <| by rwa [hp.leadingCoeff, one_mul, Ne, leadingCoeff_eq_zero]
+
 theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     natDegree (p * q) = natDegree p + natDegree q :=
   have hp : p ≠ 0 := mt leadingCoeff_eq_zero.2 fun h₁ => h <| by rw [h₁, zero_mul]
@@ -537,7 +542,14 @@ theorem not_isUnit_X : ¬IsUnit (X : R[X]) := fun ⟨⟨_, g, _hfg, hgf⟩, rfl�
 theorem degree_mul_X : degree (p * X) = degree p + 1 := by simp [monic_X.degree_mul]
 
 @[simp]
+theorem degree_X_mul : degree (X * p) = degree p + 1 := by simp [monic_X.mul_degree, add_comm]
+
+@[simp]
 theorem degree_mul_X_pow : degree (p * X ^ n) = degree p + n := by simp [(monic_X_pow n).degree_mul]
+
+@[simp]
+theorem degree_X_pow_mul : degree (X ^ n * p) = degree p + n := by
+  simp [(monic_X_pow n).mul_degree, add_comm]
 
 end NontrivialSemiring
 
