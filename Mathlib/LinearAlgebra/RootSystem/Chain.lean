@@ -190,7 +190,7 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
     P.root j - z • P.root i ∈ range P.root ↔
       z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
   rw [sub_eq_add_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc, mem_Icc]
-  omega
+  lia
 
 lemma setOf_root_add_zsmul_mem_eq_Icc :
     {k : ℤ | P.root j + k • P.root i ∈ range P.root} =
@@ -232,7 +232,7 @@ private lemma chainCoeff_reflectionPerm_left_aux :
     ext z
     rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflectionPerm, mem_Icc,
       reflection_apply_self, smul_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc]
-    omega
+    lia
   · have h' : ¬ LinearIndependent R ![P.root (-i), P.root j] := by simpa
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
@@ -428,7 +428,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
     rw [← root_reflectionPerm]
     exact mem_range_self _
   rw [h₁, root_add_zsmul_mem_range_iff h, mem_Icc] at h₂
-  omega
+  lia
 
 lemma chainTopCoeff_sub_chainBotCoeff :
     P.chainTopCoeff i j - P.chainBotCoeff i j = -P.pairingIn ℤ j i := by

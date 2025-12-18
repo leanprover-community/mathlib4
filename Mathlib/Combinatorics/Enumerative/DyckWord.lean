@@ -5,9 +5,10 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Batteries.Data.List.Count
 public import Mathlib.Combinatorics.Enumerative.Catalan
-public import Mathlib.Tactic.Positivity
+
+import Batteries.Data.List.Count
+import Mathlib.Tactic.Positivity
 import Mathlib.Data.Tree.Basic
 
 /-!
@@ -153,7 +154,7 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
   count_U_eq_count_D := by
     have := p.count_U_eq_count_D
     rw [← take_append_drop i p.toList, count_append, count_append] at this
-    omega
+    lia
   count_D_le_count_U k := by
     rw [show i = min i (i + k) by omega, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
@@ -215,9 +216,9 @@ def denest (hn : p.IsNested) : DyckWord where
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, head_eq_U] at eq
+      min_eq_left (by lia), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true] at eq
-    omega
+    lia
 
 variable (p) in
 lemma nest_denest (hn) : (p.denest hn).nest = p := by
