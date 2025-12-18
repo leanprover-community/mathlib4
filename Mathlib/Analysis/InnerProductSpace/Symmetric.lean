@@ -101,6 +101,14 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
   intro x y
   simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
 
+theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0) {α : 𝕜} :
+    (α • f).IsSymmetric ↔ IsSelfAdjoint α := by
+  refine ⟨fun h ↦ ?_, hf.smul⟩
+  simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
+    inner_zero_right] at hf'
+  simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
+    (forall_comm.eq ▸ hf')] using h
+
 theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
   simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
 
