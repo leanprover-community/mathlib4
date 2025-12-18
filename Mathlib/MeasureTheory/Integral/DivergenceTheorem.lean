@@ -82,7 +82,7 @@ section
 In this section we use the divergence theorem for a Henstock-Kurzweil-like integral
 `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` to prove the divergence
 theorem for Bochner integral. The divergence theorem for Bochner integral
-`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable` assumes that the function
+`MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable` assumes that the function
 itself is continuous on a closed box, differentiable at all but countably many points of its
 interior, and the divergence is integrable on the box.
 
@@ -94,16 +94,16 @@ in several aspects.
   of this change, we need to assume that the divergence is integrable.
 
 * We don't assume differentiability on the boundary of the box. This modification is done in
-  `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂`. To prove it, we
+  `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable_aux₂`. To prove it, we
   choose an increasing sequence of smaller boxes that cover the interior of the original box, then
   apply the previous lemma to these smaller boxes and take the limit of both sides of the equation.
 
 * We assume `a ≤ b` instead of `∀ i, a i < b i`. This is the last step of the proof, and it is done
-  in the main theorem `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`.
+  in the main theorem `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`.
 -/
 
 /-- An auxiliary lemma for
-`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. This is exactly
+`MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`. This is exactly
 `BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt` reformulated for the
 Bochner integral. -/
 private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (Fin (n + 1)))
@@ -137,7 +137,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
     exact (this.hasBoxIntegral ⊥ rfl).integral_eq
 
 /-- An auxiliary lemma for
-`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`. Compared to the previous
+`MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/
 private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box (Fin (n + 1)))
     (f : ℝⁿ⁺¹ → Eⁿ⁺¹)
@@ -292,7 +292,7 @@ theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)
     exact integral_divergence_of_hasFDerivAt_off_countable_aux₂ ⟨a, b, hlt⟩ f f' s hs Hc Hd Hi
 
 /-- **Divergence theorem** for a family of functions `f : Fin (n + 1) → ℝⁿ⁺¹ → E`. See also
-`MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'` for a version formulated
+`MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable'` for a version formulated
 in terms of a vector-valued function `f : ℝⁿ⁺¹ → Eⁿ⁺¹`. -/
 theorem integral_divergence_of_hasFDerivAt_off_countable' (hle : a ≤ b)
     (f : Fin (n + 1) → ℝⁿ⁺¹ → E)
