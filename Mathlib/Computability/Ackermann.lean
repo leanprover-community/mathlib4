@@ -230,18 +230,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction n with
   | zero => simp
-  | succ k hk =>
-    rcases k with - | k
-    · simp
-    · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
-          add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
-      · apply Nat.add_le_add hk
-        norm_num
-        apply succ_le_of_lt
-        rw [Nat.pow_succ, mul_comm _ 2, mul_lt_mul_iff_right₀ (zero_lt_two' ℕ)]
-        exact Nat.lt_two_pow_self
-      · rw [Nat.pow_succ, Nat.pow_succ]
-        linarith [one_le_pow k 2 zero_lt_two]
+  | succ k => cases k <;> lia
 
 theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 3) n
   | 0, n => by simpa using sq_le_two_pow_add_one_minus_three (n + 2)

@@ -255,6 +255,9 @@ theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
   · obtain ⟨V, hV, -, hV'⟩ := h x hx
     exact ⟨V, hV, hV'⟩
 
+theorem closure_ball_subset {x : α} {V : SetRel α α} : closure (ball x V) ⊆ ball x (closure V) :=
+  (Continuous.prodMk_right x).closure_preimage_subset V
+
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : SetRel α α} (hs : Dense s) (hU : U ∈ 𝓤 α) :
     ⋃ x ∈ s, ball x U = univ := by
@@ -736,7 +739,7 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
 /-- An entourage of the diagonal in `α` and an entourage in `β` yield an entourage in `α × β`
 once we permute coordinates. -/
 def entourageProd (u : SetRel α α) (v : SetRel β β) : SetRel (α × β) (α × β) :=
-  {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
+  {((a₁, b₁), (a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
 
 theorem mem_entourageProd {u : SetRel α α} {v : SetRel β β} {p : (α × β) × α × β} :
     p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := Iff.rfl
