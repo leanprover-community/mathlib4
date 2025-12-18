@@ -419,7 +419,7 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
       apply lt_of_lt_of_le hr
       simpa using f.monotone' hr'.le
     · rw [neg_sub, sub_lt_comm]
-      have : sInf {r | x < f r} - (n + 1 : ℝ)⁻¹/2 < sInf {r | x < f r} := by simp
+      have : sInf {r | x < f r} - (n + 1 : ℝ)⁻¹ / 2 < sInf {r | x < f r} := by simp
       have := notMem_of_lt_csInf this hb
       rw [Set.notMem_setOf_iff, not_lt] at this
       apply this.trans_lt'
@@ -427,10 +427,10 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
     obtain h | h := le_or_gt 0 x
-    · convert (Real.sInf_empty).symm
+    · convert Real.sInf_empty.symm
       rw [Set.eq_empty_iff_forall_notMem]
       exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
-    · convert (Real.sInf_univ).symm
+    · convert Real.sInf_univ.symm
       rw [Set.eq_univ_iff_forall]
       exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
 
