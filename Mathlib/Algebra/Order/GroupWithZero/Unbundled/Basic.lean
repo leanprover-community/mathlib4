@@ -1047,12 +1047,10 @@ section MulPosMono
 
 variable [MulPosMono G₀] {n : ℤ}
 
-lemma zpow_left_monoOn₀ (hn : 0 ≤ n) :
-    MonotoneOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+lemma zpow_left_monoOn₀ (hn : 0 ≤ n) : MonotoneOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
   lift n to ℕ using hn; simpa using pow_left_monotoneOn
 
-lemma zpow_left_strictMonoOn₀ (hn : 0 < n) :
-    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+lemma zpow_left_strictMonoOn₀ (hn : 0 < n) : StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
   lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by lia)
 
 lemma zpow_le_zpow_left₀ (hn : 0 ≤ n) (ha : 0 ≤ a) (h : a ≤ b) : a ^ n ≤ b ^ n :=
@@ -1338,12 +1336,10 @@ section MulPosMono
 
 variable [PosMulReflectLT G₀] [MulPosMono G₀]
 
-lemma zpow_le_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) :
-    a ^ n ≤ b ^ n ↔ a ≤ b :=
+lemma zpow_le_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
   (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).le_iff_le ha hb
 
-lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) :
-    a ^ n < b ^ n ↔ a < b :=
+lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
   (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).lt_iff_lt ha hb
 
 end MulPosMono
