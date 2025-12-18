@@ -48,6 +48,7 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+/-- A variant of `Preorder.mk` which allows `to_dual` to dualize a `Preorder` instance. -/
 @[to_dual existing mk]
 def Preorder.mk' [LE α] [LT α] (le_refl : ∀ a : α, a ≤ a)
     (ge_trans : ∀ a b c : α, b ≤ a → c ≤ b → c ≤ a)
@@ -188,6 +189,7 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+/-- A variant of `PartialOrder.mk` which allows `to_dual` to dualize a `PartialOrder` instance. -/
 @[to_dual existing mk]
 def PartialOrder.mk' [Preorder α] (le_antisymm : ∀ a b : α, b ≤ a → a ≤ b → a = b) :
     PartialOrder α where
