@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Josha Dekker, Arav Bhattacharyya
 module
 
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
@@ -147,11 +148,11 @@ lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace �
 end IsTightMeasureSet
 end Basic
 
-variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SeparableSpace 𝓧]
+variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
   (S : Set (ProbabilityMeasure 𝓧))
 
-lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ)
-    (hcomp : IsCompact (closure S))
+lemma exists_union_of_OpenCover_of_mass_precompact_Set_ProbabilityMeasure
+    (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
     (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1) :
     ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
   have εfin : ε ≠ ∞ := ne_top_of_le_ne_top (by simp) hεbound
@@ -200,16 +201,18 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U 
     simp_rw [← Set.accumulate_def, ProbabilityMeasure.tendsto_measure_iUnion_accumulate]
   rw [Cov, coeFn_univ, ← NNReal.tendsto_coe] at accumulation
   have exceeds_bound : ∀ᶠ n in atTop, (1 - ε / 2 : ℝ) ≤ μlim (⋃ i ≤ n, U i) :=
-      Tendsto.eventually_const_le (v := 1) (by simp; positivity) accumulation
+      Tendsto.eventually_const_le (v := 1) (by simp only [sub_lt_self_iff, Nat.ofNat_pos,
+                    div_pos_iff_of_pos_right]; positivity) accumulation
   suffices ∀ᶠ n : ℕ in atTop, False from this.exists.choose_spec
   filter_upwards [exceeds_bound] with n hn
   linarith [hn.trans <| Measurebound n]
 
 variable [CompleteSpace 𝓧]
 
+/-In a second countable complete metric space, a precompact set of probability measures is tight.-/
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     IsTightMeasureSet {((μ : ProbabilityMeasure 𝓧) : Measure 𝓧) | μ ∈ S} := by
-  rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le]
+  rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le]
   rcases isEmpty_or_nonempty 𝓧 with hempty | hnonempty
   · rw [← univ_eq_empty_iff] at hempty
     exact fun ε εpos ↦ ⟨∅, isCompact_empty, by simp [hempty]⟩
@@ -229,8 +232,8 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     exact le_of_lt hεbound
   have byclaim (m : ℕ) : ∃ k, ∀ μ ∈ S, 1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) <
       μ (⋃ i ≤ k, ball (D i) (u m)) := by
-    refine MeasOpenCoverTendstoMeasUniv (S := S) (fun i ↦ ball (D i) (u m))
-      (fun _ ↦ isOpen_ball) (hcov m) hcomp (ε * 2 ^ (-m : ℤ)) ?_ ?_
+    refine exists_union_of_OpenCover_of_mass_precompact_Set_ProbabilityMeasure (S := S)
+      (fun i ↦ ball (D i) (u m)) (fun _ ↦ isOpen_ball) (hcov m) hcomp (ε * 2 ^ (-m : ℤ)) ?_ ?_
     · simpa using ⟨εpos, (ENNReal.zpow_pos (by simp) (by simp) (-↑m))⟩
     · exact Left.mul_le_one hεbound <| zpow_le_one_of_nonpos (by linarith) (by simp)
   choose! km hbound using byclaim
@@ -249,7 +252,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
       simp_all only [neg_add_rev, Int.reduceNeg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one,
           ← coe_ofNat, ← ennreal_coeFn_eq_coeFn_toMeasure]
       grw [hbound]
-      gcongr with i hi -- TODO: works only if you put @[gcongr] on ProbabilityMeasure.apply_mono
+      gcongr with i hi
       grw [← subset_closure (s := ball (D i) (u m)), ball_subset_ball]
       exact hu_anti.antitone (by grind)
     _ = ε := by
