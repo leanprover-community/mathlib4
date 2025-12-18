@@ -118,7 +118,7 @@ theorem condLExp_bot' (X : Ω → ℝ≥0∞) :
 theorem condLExp_bot [IsProbabilityMeasure P] (X : Ω → ℝ≥0∞) :
     P⁻[X|⊥] = fun _ => ∫⁻ ω, X ω ∂P := by sorry
 
--- condLExp_mono
+-- condLExp_mono (test)
 
 -- condLExp_add
 
