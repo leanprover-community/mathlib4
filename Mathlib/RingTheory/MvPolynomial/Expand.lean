@@ -8,14 +8,14 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
-@[expose] public section
-
 /-!
 # Results on `MvPolynomial.expand`
 
 In this file we prove results about `MvPolynomial.expand` that require more than the basic API
 available in `Mathlib.Algebra.*`.
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
