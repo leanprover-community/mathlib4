@@ -44,6 +44,10 @@ public section konig_aux
 variable {V : Type*} {G : SimpleGraph V} {s t : Set V} {hbi : G.IsBipartiteWith s t}
 variable {C : Set V} {M : Subgraph G} (hM : M.IsMatching)
 
+/--
+`subgraph_upcast H'` views a subgraph `H'` of the coerced graph `G'.coe` as a subgraph of the
+ambient graph `G`.
+-/
 abbrev subgraph_upcast {G' : Subgraph G} (H' : Subgraph G'.coe) : Subgraph G :=
    H'.map ⟨Subtype.val, by intro v w h; exact G'.adj_sub h⟩
 
