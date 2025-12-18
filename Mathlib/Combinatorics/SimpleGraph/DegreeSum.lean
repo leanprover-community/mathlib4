@@ -122,7 +122,7 @@ theorem sum_degrees_support_eq_twice_card_edges :
 
 end DegreeSum
 
-section card
+@[expose] public section card
 
 open scoped Cardinal
 

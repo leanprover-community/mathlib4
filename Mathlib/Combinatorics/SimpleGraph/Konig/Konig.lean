@@ -61,7 +61,7 @@ theorem min_size_cover_exists (G : SimpleGraph V) : ∃ C : Set V, IsMinSizeCove
   have S_nonempty : S.Nonempty := ⟨#Set.univ, ⟨Set.univ, isVertexCover_univ, rfl⟩⟩
   obtain ⟨a, ⟨C, ⟨hC, hcard⟩⟩, hmin⟩ := WellFounded.has_min Cardinal.lt_wf S S_nonempty
   refine ⟨C, ⟨hC, fun C' hC' ↦ ?_⟩⟩
-  set b: S := ⟨#C', ⟨C', ⟨hC', rfl⟩⟩⟩ with hb
+  set b : S := ⟨#C', ⟨C', ⟨hC', rfl⟩⟩⟩ with hb
   have := hb ▸ hcard ▸ (hmin b b.prop)
   simpa using this
 
