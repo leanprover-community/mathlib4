@@ -114,9 +114,13 @@ protected lemma Connected.sup {H K : G.Subgraph}
     (H ⊔ K).Connected :=
   Subgraph.connected_sup hH.preconnected hK.preconnected hn
 
-lemma Connected.degree_pos_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected)
-    (v : H.verts) [Fintype (H.neighborSet v)] : 0 < H.degree v := by
-  simpa using h.coe.preconnected.degree_pos_of_nontrivial v
+lemma Connected.degree_zero_iff {H : G.Subgraph} (h : H.Connected) (v : H.verts)
+    [Fintype (H.neighborSet v)] : H.degree v = 0 ↔ H.verts.Subsingleton := by
+  refine ⟨?_, (degree_eq_zero_of_subsingleton H _ ·)⟩
+  intro hv
+  by_contra
+  have := (Set.not_subsingleton_iff.mp this).coe_sort
+  simpa [hv] using h.coe.preconnected.degree_pos_of_nontrivial v
 
 lemma Connected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected)
     (v : H.verts) : ∃ u, H.Adj v u := by
