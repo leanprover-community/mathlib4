@@ -270,7 +270,7 @@ def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F�
   app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
-from the original `map₂` proof. Lean needed an extensive amount explicit type
+from the original `map₂` proof. Lean needed an extensive amount of explicit type
 annotations to figure things out. This also translated into repeated deterministic
 timeouts. The extracted defs allow for explicit motives for the multiple
 descents to the quotients.
