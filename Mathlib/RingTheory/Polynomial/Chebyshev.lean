@@ -208,7 +208,7 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | one => simp
   | add_two n ih1 ih2 =>
     have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
-      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih1]
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, degree_X_mul, ih1]
       norm_cast
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
     · rw [this]; norm_cast
