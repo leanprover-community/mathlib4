@@ -139,7 +139,6 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
     rintro S ⟨V, i, hV⟩
     dsimp [forget, opensLeCoverCocone]
     ext ⟨_, x, f⟩
-    dsimp
     simp only [Category.assoc, limit.lift_π, lowerCone_pt, lowerCone_π_app, const_obj_obj,
       projSup_obj, StructuredArrow.map_obj_right, comp_obj, op_obj, pointwiseRightKanExtension_obj,
       StructuredArrow.proj_obj]
