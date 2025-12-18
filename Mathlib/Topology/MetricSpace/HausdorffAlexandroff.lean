@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Topology.Compactness.HilbertCubeEmbedding
 public import Mathlib.Topology.Instances.CantorSet
 public import Mathlib.Topology.MetricSpace.PiNat
 
@@ -79,19 +78,20 @@ of the Cantor set. -/
 theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X] [MetricSpace X]
     [CompactSpace X] : ∃ f : (ℕ → Bool) → X, Continuous f ∧ Function.Surjective f := by
   -- `X` is homeomorphic to a closed subset `KH` of the Hilbert cube.
-  obtain ⟨emb, h_emb⟩ := exists_closed_embedding_to_hilbert_cube X
+  let : TopologicalSpace.SeparableSpace X :=
+    TopologicalSpace.SecondCountableTopology.to_separableSpace
+  obtain ⟨emb, h_emb⟩ := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube (X := X)
   let KH : Set (ℕ → unitInterval) := Set.range emb
-  let g : X ≃ₜ KH := h_emb.toIsEmbedding.toHomeomorph
+  let g : X ≃ₜ KH := h_emb.toHomeomorph
   -- `KC` is the closed preimage of `KH` under the continuous surjection `cantorToHilbert`.
   let KC : Set (ℕ → Bool) := cantorToHilbert ⁻¹' KH
   have hKC_closed : IsClosed KC :=
-    IsClosed.preimage cantorToHilbert_continuous (Topology.IsClosedEmbedding.isClosed_range h_emb)
-  have hKC_nonempty : KC.Nonempty :=
-    Set.Nonempty.preimage (Set.range_nonempty emb) cantorToHilbert_surjective
+    IsClosed.preimage cantorToHilbert_continuous (Topology.IsClosedEmbedding.isClosed_range
+    <|Continuous.isClosedEmbedding (Topology.IsEmbedding.continuous h_emb) h_emb.injective)
   -- Take a retraction `f'` from the Cantor space to `KC`.
-  obtain ⟨f, hf_continuous, hf_surjective⟩ := exists_retractionCantorSet hKC_closed hKC_nonempty
+  obtain ⟨f, hf_continuous, hf_surjective⟩ := exists_retractionCantorSet hKC_closed
+    <| Set.Nonempty.preimage (Set.range_nonempty emb) cantorToHilbert_surjective
   let f' : (ℕ → Bool) → KC := Subtype.coind f (by simp [← hf_surjective])
-  have hf'_continuous : Continuous f' := Continuous.subtype_mk hf_continuous _
   have hf'_surjective : Function.Surjective f' := Subtype.coind_surjective _ (by grind [Set.SurjOn])
   -- Let `h` be the restriction of `cantorToHilbert` to `KC → KH`.
   let h : KC → KH := KH.restrictPreimage cantorToHilbert
