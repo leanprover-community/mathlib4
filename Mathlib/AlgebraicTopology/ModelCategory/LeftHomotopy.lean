@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-import Mathlib.CategoryTheory.Localization.Quotient
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Left homotopies in model categories
@@ -22,6 +24,8 @@ relation on `X ⟶ Y`.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+
+@[expose] public section
 
 universe v u
 

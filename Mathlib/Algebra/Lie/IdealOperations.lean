@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Ideal
+module
+
+public import Mathlib.Algebra.Lie.Ideal
 
 /-!
 # Ideal operations for Lie algebras
@@ -30,6 +32,8 @@ the action defined in this file.
 
 lie algebra, ideal operation
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -153,6 +157,7 @@ theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : 
   exact h x hx n hn
 
 variable {I J N N'} in
+@[gcongr]
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]

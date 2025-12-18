@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
-import Mathlib.Dynamics.BirkhoffSum.Basic
-import Mathlib.Algebra.Module.Basic
+module
+
+public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Algebra.Module.Basic
 
 /-!
 # Birkhoff average
@@ -22,6 +24,8 @@ the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -86,7 +90,7 @@ section AddCommGroup
 variable {R : Type*} {α M : Type*} [DivisionSemiring R] [AddCommGroup M] [Module R M]
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = - birkhoffAverage R f g := by
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
   funext _ x
   simp [birkhoffAverage, birkhoffSum]
 
@@ -95,13 +99,20 @@ lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
   funext _ x
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
-end AddCommGroup
-
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
-theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [DivisionRing R]
-    [AddCommGroup M] [Module R M] (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+theorem birkhoffAverage_apply_sub_birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by
   simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
+
+/-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
+average of `g` over `f` for `n` iterations is equal to `g`. Requires that `0 < n`. -/
+theorem birkhoffAverage_of_comp_eq [CharZero R] {f : α → α} {g : α → M} (h : g ∘ f = g)
+    {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n = g := by
+  funext x
+  suffices (n : R)⁻¹ • n • g x = g x by simpa [birkhoffAverage, birkhoffSum_of_comp_eq h]
+  rw [← Nat.cast_smul_eq_nsmul (R := R), ← mul_smul, inv_mul_cancel₀ (by norm_cast), one_smul]
+
+end AddCommGroup

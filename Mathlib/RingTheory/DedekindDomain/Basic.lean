@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Polynomial.RationalRoot
+module
+
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 # Dedekind rings and domains
@@ -42,6 +44,8 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
@@ -154,3 +158,12 @@ instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain
     IsDedekindDomain A :=
   { PrincipalIdealRing.isNoetherianRing, Ring.DimensionLEOne.principal_ideal_ring A,
     UniqueFactorizationMonoid.instIsIntegrallyClosed with }
+
+variable {R} in
+theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra R A]
+    [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by
+  refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, fun P hP ↦ ?_⟩
+  · obtain ⟨w', hmax, hover⟩ := exists_maximal_ideal_liesOver_of_isIntegral (S := A) p
+    exact ⟨w', hmax.isPrime, hover⟩
+  · exact IsLocalRing.eq_maximalIdeal <| hP.1.isMaximal (Ideal.ne_bot_of_mem_primesOver hp0 hP)

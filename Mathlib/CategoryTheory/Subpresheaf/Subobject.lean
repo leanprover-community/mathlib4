@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Subpresheaf.Image
-import Mathlib.CategoryTheory.Subobject.Basic
+module
+
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Comparison between `Subpresheaf`, `MonoOver` and `Subobject`
@@ -14,6 +16,8 @@ of categories `Subpresheaf.equivalenceMonoOver F : Subpresheaf F ≌ MonoOver F`
 and an order isomorphism `Subpresheaf.orderIsoSubject F : Subpresheaf F ≃o Subobject F`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -27,12 +31,11 @@ namespace Subpresheaf
 @[simps]
 noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
   functor :=
-    { obj A := MonoOver.mk' A.ι
+    { obj A := MonoOver.mk A.ι
       map {A B} f := MonoOver.homMk (Subpresheaf.homOfLe (leOfHom f)) }
   inverse :=
     { obj X := Subpresheaf.range X.arrow
       map {X Y} f := homOfLE (by
-        dsimp
         rw [← MonoOver.w f]
         apply range_comp_le ) }
   unitIso := NatIso.ofComponents (fun A ↦ eqToIso (by simp))

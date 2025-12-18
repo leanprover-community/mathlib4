@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.CompatiblePlus
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.CompatiblePlus
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 
@@ -12,6 +14,8 @@ In this file, we prove that sheafification is compatible with functors which
 preserve the correct limits and colimits.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.GrothendieckTopology
@@ -42,7 +46,7 @@ the sheafification of `P ⋙ F`.
 
 Use the lemmas `whisker_right_to_sheafify_sheafify_comp_iso_hom`,
 `to_sheafify_comp_sheafify_comp_iso_inv` and `sheafify_comp_iso_inv_eq_sheafify_lift` to reduce
-the components of this isomorphisms to a state that can be handled using the universal property
+the components of this isomorphism to a state that can be handled using the universal property
 of sheafification. -/
 noncomputable def sheafifyCompIso : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
   J.plusCompIso _ _ ≪≫ (J.plusFunctor _).mapIso (J.plusCompIso _ _)
