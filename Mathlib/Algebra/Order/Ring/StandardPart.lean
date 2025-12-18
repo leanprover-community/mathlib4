@@ -388,16 +388,16 @@ theorem nonempty_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r
   · simpa using hn
   · simp
 
+theorem nonempty_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | f r < x}.Nonempty := by
+  rw [← Set.nonempty_neg, neg_setOf_real_lt]
+  exact nonempty_setOf_lt_real f (by simpa)
+
 theorem bddBelow_setOf_lt_real (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddBelow {r | x < f r} := by
   obtain ⟨n, hn⟩ := hx
   refine ⟨-n, fun r hr ↦ ?_⟩
   by_contra! hr'
   apply (neg_le_of_abs_le hn).not_gt (hr.trans_le _)
   simpa using f.monotone' hr'.le
-
-theorem nonempty_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : {r | f r < x}.Nonempty := by
-  rw [← Set.nonempty_neg, neg_setOf_real_lt]
-  exact nonempty_setOf_lt_real f (by simpa)
 
 theorem bddAbove_setOf_real_lt (f : ℝ →+*o K) {x : K} (hx : 0 ≤ mk x) : BddAbove {r | f r < x} := by
   rw [← bddBelow_neg, neg_setOf_real_lt]
