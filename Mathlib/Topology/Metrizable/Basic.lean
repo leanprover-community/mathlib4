@@ -29,7 +29,7 @@ namespace TopologicalSpace
 variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
   [∀ i, TopologicalSpace (A i)]
 
-/-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
+/-- A topological space is *pseudometrizable* if there exists a pseudometric space structure
 compatible with the topology. To minimize imports, we implement this class in terms of the
 existence of a countably generated unifomity inducing the topology, which is mathematically
 equivalent.
@@ -41,7 +41,7 @@ class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_countably_generated :
     ∃ u : UniformSpace X, u.toTopologicalSpace = t ∧ (uniformity X).IsCountablyGenerated
 
-/-- A uniform space with countably generated `𝓤 X` is pseudo metrizable. -/
+/-- A uniform space with countably generated `𝓤 X` is pseudometrizable. -/
 instance (priority := 100) _root_.UniformSpace.pseudoMetrizableSpace {X : Type*}
     [u : UniformSpace X] [hu : IsCountablyGenerated (uniformity X)] : PseudoMetrizableSpace X :=
   ⟨⟨u, rfl, hu⟩⟩
@@ -75,8 +75,8 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
     pseudoMetrizableSpaceUniformity_countably_generated Y
   inferInstance
 
-/-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
-is also pseudo metrizable. -/
+/-- Given an inducing map of a topological space into a pseudometrizable space, the source space
+is also pseudometrizable. -/
 theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
     (hf : IsInducing f) : PseudoMetrizableSpace X :=
   let u : UniformSpace Y := pseudoMetrizableSpaceUniformity Y

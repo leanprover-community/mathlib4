@@ -27,7 +27,7 @@ open Category
 
 namespace SmallObject
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J] [SuccOrder J] {j : J} (hj : ¬IsMax j)
   (F : Set.Iic j ⥤ C) {X : C} (τ : F.obj ⟨j, by simp⟩ ⟶ X)
 
@@ -114,7 +114,7 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
       rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc,comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc

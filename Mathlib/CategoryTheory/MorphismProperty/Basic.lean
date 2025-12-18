@@ -108,7 +108,7 @@ end
 
 section
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
@@ -161,7 +161,7 @@ def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
 
 lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
-    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+    (⨆ i, W i).toSet = ⋃ i, (W i).toSet := by
   ext
   simp [mem_toSet_iff]
 
@@ -335,7 +335,8 @@ theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
   ⟨fun h => by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
 
-lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Category A] [Category B]
+lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso]
+    {A B : Type*} [Category* A] [Category* B]
     {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
     P f.hom ↔ P g.hom := by
   simp [← Comma.inv_left_hom_right e.hom, cancel_left_of_respectsIso, cancel_right_of_respectsIso]
@@ -380,7 +381,7 @@ lemma isoClosure_le_iff (P Q : MorphismProperty C) [Q.RespectsIso] :
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 instance map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
     (P.map F).RespectsIso := by
@@ -414,7 +415,7 @@ lemma map_id (P : MorphismProperty C) [RespectsIso P] :
   rw [map_id_eq_isoClosure, P.isoClosure_eq_self]
 
 @[simp]
-lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category E] (G : D ⥤ E) :
+lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category* E] (G : D ⥤ E) :
     (P.map F).map G = P.map (F ⋙ G) := by
   apply le_antisymm
   · rw [map_le_iff]
@@ -546,7 +547,7 @@ variable {C} [Category.{v} C]
 
 /-- The morphism property on `J ⥤ C` which is defined objectwise
 from `W : MorphismProperty C`. -/
-def functorCategory (W : MorphismProperty C) (J : Type*) [Category J] :
+def functorCategory (W : MorphismProperty C) (J : Type*) [Category* J] :
     MorphismProperty (J ⥤ C) :=
   fun _ _ f => ∀ (j : J), W (f.app j)
 
@@ -560,7 +561,7 @@ end MorphismProperty
 
 namespace NatTrans
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=

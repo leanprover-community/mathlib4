@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Subobject.Basic
 /-!
 # Comparison between `Subfunctor`, `MonoOver` and `Subobject`
 
-Given a presheaf of types `F : C ⥤ Type w`, we define an equivalence
+Given a type-valued functor `F : C ⥤ Type w`, we define an equivalence
 of categories `Subfunctor.equivalenceMonoOver F : Subfunctor F ≌ MonoOver F`
 and an order isomorphism `Subfunctor.orderIsoSubject F : Subfunctor F ≃o Subobject F`.
 
@@ -31,7 +31,7 @@ namespace Subfunctor
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
   functor :=
-    { obj A := MonoOver.mk' A.ι
+    { obj A := MonoOver.mk A.ι
       map {A B} f := MonoOver.homMk (Subfunctor.homOfLe (leOfHom f)) }
   inverse :=
     { obj X := Subfunctor.range X.arrow

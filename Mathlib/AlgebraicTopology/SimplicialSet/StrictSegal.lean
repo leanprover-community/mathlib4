@@ -434,7 +434,7 @@ end StrictSegal
 
 /-- Helper structure in order to show that a simplicial set is strict Segal. -/
 structure StrictSegalCore (n : ℕ) where
-  /-- Map which produces a `n + 1`-simplex from a `1`-simplex and a `n`-simplex when
+  /-- Map which produces an `n + 1`-simplex from a `1`-simplex and an `n`-simplex when
   the target vertex of the `1`-simplex equals the zeroth simplex of the `n`-simplex. -/
   concat (x : X _⦋1⦌) (s : X _⦋n⦌) (h : X.δ 0 x = X.map (SimplexCategory.const _ _ 0).op s) :
     X _⦋n + 1⦌
@@ -461,7 +461,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
         rw [map_mkOfSucc_zero_concat]
       · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
           op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
-          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind)] using
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/

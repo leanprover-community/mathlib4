@@ -274,8 +274,8 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
   · rintro h ⟨n⟩ x hx
     induction n using SimplexCategory.rec with | _ n =>
     obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
-    simp only [Subfunctor.toPresheaf_obj, Subtype.ext_iff,
-      Subfunctor.toPresheaf_map_coe] at ha'
+    simp only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
+      Subfunctor.toFunctor_map_coe] at ha'
     subst ha'
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
@@ -318,11 +318,11 @@ lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n
   exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
-    X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
+    X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
   fun _ hx ↦ degenerate_app_apply hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
-    (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
+    (f.app _) '' (X.degenerate n) ⊆ Y.degenerate n := by
   simpa using degenerate_le_preimage f n
 
 lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :

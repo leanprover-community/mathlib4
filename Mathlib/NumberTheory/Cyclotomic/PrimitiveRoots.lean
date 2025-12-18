@@ -23,7 +23,7 @@ more general assumption of just being a primitive root, for reasons described in
 details section.
 
 ## Main definitions
-* `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, than `zeta n A B`
+* `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, then `zeta n A B`
   is a primitive `n`-th root of unity in `B`.
 * `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
   `IsCyclotomicExtension {n} K L`, then `IsPrimitiveRoot.powerBasis`
@@ -214,7 +214,7 @@ section Field
 variable {K} [Field K] [NumberField K]
 
 variable (n) in
-/-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
+/-- If an `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
 theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
     {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by

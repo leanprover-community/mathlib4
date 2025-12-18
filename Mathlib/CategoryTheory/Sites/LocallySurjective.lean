@@ -22,7 +22,7 @@ public import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 - `Presheaf.isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
 - `Sheaf.isLocallySurjective_iff_epi`: a morphism of sheaves of types is locally
-  surjective iff it is epi
+  surjective iff it is epi.
 
 -/
 
@@ -266,7 +266,7 @@ instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
 noncomputable def sheafificationIsoImagePresheaf (F : Cᵒᵖ ⥤ Type max u v) :
-    J.sheafify F ≅ ((Subfunctor.range (J.toSheafify F)).sheafify J).toPresheaf where
+    J.sheafify F ≅ ((Subfunctor.range (J.toSheafify F)).sheafify J).toFunctor where
   hom :=
     J.sheafifyLift (Subfunctor.toRangeSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
@@ -305,7 +305,7 @@ instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
   infer_instance
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance isLocallySurjective_toSheafify' {D : Type*} [Category D] {FD : D → D → Type*}
+instance isLocallySurjective_toSheafify' {D : Type*} [Category* D] {FD : D → D → Type*}
     {CD : D → Type (max u v)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{max u v} D FD]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
