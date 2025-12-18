@@ -396,7 +396,7 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 instance instOrderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
 @[to_dual]
-instance instOrderTop [OrderTop α] : OrderTop (WithBot α) where 
+instance instOrderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top x := by cases x <;> simp [le_def]
 
 @[to_dual]
