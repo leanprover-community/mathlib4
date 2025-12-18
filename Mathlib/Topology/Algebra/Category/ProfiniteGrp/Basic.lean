@@ -227,7 +227,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f.hom, by continuity⟩ }
+    map f := ⟨f.hom.hom, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp GrpCat where
@@ -336,7 +336,7 @@ abbrev limitCone : Limits.Cone F where
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := ofHom
     { ((Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).lift
-        ((forget₂ ProfiniteGrp Profinite).mapCone cone)).hom with
+        ((forget₂ ProfiniteGrp Profinite).mapCone cone)).hom.hom with
       map_one' := Subtype.ext (funext fun j ↦ map_one (cone.π.app j).hom)
       -- TODO: investigate whether it's possible to set up `ext` lemmas for the `TopCat`-related
       -- categories so that `by ext j; exact map_one (cone.π.app j)` works here, similarly below.
