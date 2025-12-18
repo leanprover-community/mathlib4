@@ -64,7 +64,7 @@ def Factors {X Y : C} (P : Subobject Y) (f : X ⟶ Y) : Prop :=
       apply propext
       constructor
       · rintro ⟨i, w⟩
-        exact ⟨i ≫ h.hom.hom.left, by erw [Category.assoc, Over.w h.hom.hom, w]⟩
+        exact ⟨i ≫ h.hom.hom.left, by rw [Category.assoc, Over.w h.hom.hom, w]⟩
       · rintro ⟨i, w⟩
         exact ⟨i ≫ h.inv.hom.left, by erw [Category.assoc, Over.w h.inv.hom, w]⟩)
 
