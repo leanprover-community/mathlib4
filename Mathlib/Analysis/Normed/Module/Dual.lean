@@ -6,15 +6,17 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # The strong dual of a normed space
-
+**CHANGE?**
 In this file we consider the strong dual `StrongDual` of a normed space, and the continuous linear
 map `NormedSpace.inclusionInDoubleDual` from a normed space into its double StrongDual.
 
@@ -36,6 +38,7 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 ## References
 
 * [Conway, John B., A course in functional analysis][conway1990]
+* **add Yosida**
 
 ## Tags
 
@@ -120,6 +123,64 @@ def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜
       refine le_csInf ContinuousLinearMap.bounds_nonempty ?_
       rintro c ⟨hc1, hc2⟩
       exact norm_le_dual_bound 𝕜 x hc1 hc2 }
+
+open NormedSpace Metric
+open scoped BigOperators
+
+theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) (r : ℝ) :
+    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E, ‖x‖ ≤ r + ε ∧ ∀ i, f i x = α i) ↔
+    (∀ β : I → 𝕜, ‖∑ i : I, β i * α i‖ ≤ r * ‖∑ i : I, β i • f i‖) := sorry
+
+-- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
+theorem three (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
+    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ ‖φ‖ + ε ∧ ∀ i, f i (x) = φ (f i) := by
+  apply (Helly 𝕜 f (fun i ↦ φ (f i)) ‖φ‖).mpr _ hε
+  intro β
+  calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
+                          _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
+
+/-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
+the unit sphere of the double dual.
+See [K. Yosida, "Functional Analysis", Chap IV, 8, Corollary to Theorem 3]. -/
+theorem goldstine : closure (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)
+    = closedBall (0 : StrongDual 𝕜 (StrongDual 𝕜 E)) 1 := by
+  -- have uno := @LinearMap.weakBilin_withSeminorms 𝕜 (StrongDual 𝕜 E) E _ _ _ _ _
+  --   (topDualPairing 𝕜 E)
+  -- let F := (topDualPairing 𝕜 (StrongDual 𝕜 E)).toSeminormFamily
+  -- let f := F 0
+  let B' := topDualPairing 𝕜 (StrongDual 𝕜 E)
+  let F' := LinearMap.toSeminormFamily B'
+  -- let B := (topDualPairing 𝕜 E) This, I don't care
+  -- let Estar' := WeakBilin B'
+  -- let f : Estar' → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
+  -- let Estar'₀ := WeakDual 𝕜 (StrongDual 𝕜 E)
+  -- let Estar'₁ := WeakDual 𝕜 E This is the weak top on E* not on E**
+  -- let g₀ : Estar'₀ → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
+  have uno : WithSeminorms (𝕜 := 𝕜) (E := WeakDual 𝕜 (StrongDual 𝕜 E)) F' := by
+    apply LinearMap.weakBilin_withSeminorms
+  have due := uno.hasBasis_zero_ball
+  have due' := uno.mem_nhds_iff
+  ext ξ
+  have due'' := uno.hasBasis_ball (x := ξ)
+  have tre := mem_closure_iff_nhds_basis (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due --ci siamo quasi
+  -- above, use mem_closure_iff_nhds_basis nhds_basis_ball
+  have tre' := mem_closure_iff_nhds_basis (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due'' --ci siamo quasi
+  rw [tre']
+  refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε↦ ?_⟩
+  · sorry
+  · simp at hε
+    let f : I → StrongDual 𝕜 E := fun x ↦ x--remove!
+    obtain ⟨y, hy⟩ := three 𝕜 I ξ hε f
+    refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ?_⟩
+    · simp
+      refine ⟨y, ?_, rfl⟩
+      sorry -- use somewhere hy.1
+    · simp
+      sorry -- use somewhere hy.2
+
 
 end BidualIsometry
 
