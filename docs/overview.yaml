@@ -373,7 +373,10 @@ Analysis:
     First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
+    Test functions: 'TestFunction'
     Schwartz space: 'SchwartzMap'
+    Distributions: 'Distribution'
+    tempered distributions: 'TemperedDistribution'
 
   Fourier analysis:
     Fourier transform as an integral: 'Real.fourier_eq'
@@ -424,6 +427,8 @@ Geometry:
   Differentiable manifolds:
     smooth or analytic manifold (with boundary and corners): 'IsManifold'
     smooth map between manifolds: 'ContMDiff'
+    smooth immersion: 'Manifold.IsImmersion'
+    smooth embedding: 'Manifold.IsSmoothEmbedding'
     product of manifolds: 'IsManifold.prod'
     disjoint union of manifolds: 'IsManifold.disjointUnion'
     interior of a manifold: 'ModelWithCorners.interior'

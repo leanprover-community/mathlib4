@@ -165,7 +165,7 @@ lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X whe
 
 end EssSurj
 
-variable {J C D : Type*} [Category J] [Category C] [Category D]
+variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
 
 /-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
