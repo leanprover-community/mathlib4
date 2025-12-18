@@ -134,6 +134,10 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  -- Exempt Mathlib.lean since it's auto-generated and imports all modules
+  -- for backwards compatibility
+  if (← getFileName).endsWith "Mathlib.lean" then
+    return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
   -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
