@@ -150,6 +150,10 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
     HasSubst a :=
   hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
 
+protected theorem HasSubst.X_pow [Finite σ] {n : ℕ} (hn : n ≠ 0) :
+    HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S) ^ n) :=
+  hasSubst_of_constantCoeff_zero (by simp [hn])
+
 /-- Substitution of power series into a power series
 
 It coincides with evaluation when `f` is a polynomial, or under `HasSubst a`.
@@ -287,6 +291,19 @@ theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
       algebra_compatible_smul S, smul_eq_mul, mul_one]
   · intro d hd
     rw [← MvPowerSeries.monomial_one_eq, coeff_monomial_ne hd.symm, smul_zero]
+
+omit [Algebra R S] in
+theorem map_subst [Finite σ] {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S}
+    (f : MvPowerSeries σ R) :
+    (f.subst a).map h = (f.map h).subst (fun i => (a i).map h) := by
+  ext n
+  have {r : R} : h r = h.toAddMonoidHom r := rfl
+  rw [coeff_subst <| hasSubst_of_constantCoeff_nilpotent fun s => (ha.const_coeff s).map h,
+    coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _),
+      finsum_congr]
+  intro d
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+    ← coeff_map, Finsupp.prod]
 
 variable
     {T : Type*} [CommRing T]
