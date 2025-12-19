@@ -125,6 +125,7 @@ section DecidableEq
 
 variable [DecidableEq (K →+* ℂ)]
 
+set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
 private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
@@ -133,6 +134,8 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
       (c K) * house (algebraMap (𝓞 K) K α) := by
@@ -172,6 +175,9 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
   expansion of the product of an algebraic integer and a basis vectors. -/
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
+
+
+set_option backward.privateInPublic true
 
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
@@ -327,6 +333,8 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/

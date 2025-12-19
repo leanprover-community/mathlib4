@@ -145,7 +145,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
   trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
-    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
+    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f (p ^ k)
   · refine (sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k) ?_ ?_ ?_ ?_).symm
     · simp +contextual [hx, rpow_nonneg, le_floor_iff, ← Nat.pos_iff_ne_zero, Prime.isPrimePow,
         one_le_iff_ne_zero, le_rpow_inv_iff_of_pos, isPrimePow_pow_iff, Nat.prime_iff]
@@ -174,7 +174,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     simp_all only [mem_Icc, one_div, true_and, and_true]
     grw [h.1.2, floor_le_floor]
     apply rpow_le_self_of_one_le _ (by bound)
-    have := one_le_floor_iff _|>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
+    have := one_le_floor_iff _ |>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
     contrapose! this
     apply rpow_lt_one hx this (by bound)
 
@@ -225,7 +225,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
       · exact floor_le (by bound)
     apply le_floor
     norm_cast
-    apply one_le_div _|>.mpr <;> bound
+    apply one_le_div _ |>.mpr <;> bound
   _ = (log 4 / log 2) * x.sqrt * x.log := by field
   _ = _ := by
     congr
