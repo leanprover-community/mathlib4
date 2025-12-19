@@ -93,17 +93,16 @@ public theorem StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate
 
 section
 open Matrix
-variable {n : Type*} [Fintype n]
+variable {m n : Type*} [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
 
 -- TODO: wait for other PR
-proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {m : Type*} [Fintype m] [DecidableEq m]
-    [DecidableEq n] {K : Type*} [Field K] (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
+proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {K : Type*} [Field K] (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
     ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V
 
 -- TODO: change `Matrix` to any central and simple finite algebra
 -- and then also add the `AlgHom` version of this
 -- and then also move this file outside of the `Matrix` folder
-public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct [DecidableEq n] {K : Type*} [Field K]
+public theorem AlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct {K : Type*} [Field K]
     (f : Matrix n n K ≃ₐ[K] Matrix n n K) :
     ∃ U : GL n K, f = MulSemiringAction.toAlgEquiv K (G := ConjAct (GL n K)) _ U := by
   obtain ⟨U, hU⟩ := ((toLinAlgEquiv'.symm.trans f).trans toLinAlgEquiv').eq_linearEquivConjAlgEquiv
@@ -123,23 +122,15 @@ open ComplexOrder MatrixOrder
 
 -- TODO: change `Matrix` to any central, simple and star-ordered finite algebra
 -- and then also add the `StarAlgHom` version of this
-public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut [DecidableEq n]
-    (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
+public theorem StarAlgEquiv.eq_unitaryConjStarAlgAut (f : Matrix n n 𝕜 ≃⋆ₐ[𝕜] Matrix n n 𝕜) :
     ∃ U : unitaryGroup n 𝕜, f = Unitary.conjStarAlgAut 𝕜 _ U := by
   obtain ⟨g, hg⟩ := f.toAlgEquiv.eq_mulSemiringActionToAlgEquiv_conjAct
   have := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := 𝕜) 1 f (by simp)
   obtain ⟨U, hU⟩ := this.mp ⟨g, congr($hg)⟩
   exact ⟨U, StarAlgEquiv.ext <| congrFun hU⟩
 
-end
+-- TODO: wait for other PR
+proof_wanted Matrix.StarAlgEquiv.coe_eq_conjugate (f : Matrix m m 𝕜 ≃ₐ[𝕜] Matrix n n 𝕜) :
+    ∃ (U : Matrix n m 𝕜) (hUV : U * Uᴴ = 1), ⇑f = fun x ↦ U * x * Uᴴ
 
--- open ContinuousLinearMap in
--- theorem StarAlgEquiv.eq_unitaryConjStarAlgAut_symm_unitaryLinearIsometryEquiv
---     {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V] [CompleteSpace V]
---     (f : (V →L[ℂ] V) ≃⋆ₐ[ℂ] (V →L[ℂ] V)) (hf : Continuous f) (hf' : Continuous f.symm) :
---     ∃ U : V ≃ₗᵢ[ℂ] V, f = Unitary.conjStarAlgAut ℂ _
---       ((Unitary.linearIsometryEquiv (𝕜 := ℂ)).symm U) := by
---   obtain ⟨g, hg⟩ := f.toContinuousAlgEquiv hf hf' |>.coe_eq_conjugate
---   obtain ⟨U, hU⟩ := StarHom.coe_eq_units_conjugate_iff_coe_eq_unitary_conjugate (𝕜 := ℂ)
---     1 f (by simp) |>.mp ⟨g.toUnit, congr($hg)⟩
---   exact ⟨Unitary.linearIsometryEquiv U, StarAlgEquiv.ext <| congrFun hU⟩
+end
