@@ -1,5 +1,3 @@
-import Mathlib.Util.AssertExists
-
 /-- info: No assertions made. -/
 #guard_msgs in
 #check_assertions

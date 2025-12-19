@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Init
 import Qq
-import Mathlib.Util.AssertExists
 
 /--
 warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib.Util.AssertExists,
