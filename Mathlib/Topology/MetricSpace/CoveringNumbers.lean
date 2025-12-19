@@ -124,8 +124,8 @@ lemma IsCover.coveringNumber_le_encard (h_subset : C ⊆ A) (hC : IsCover ε A C
 lemma externalCoveringNumber_le_encard_self (A : Set X) : externalCoveringNumber ε A ≤ A.encard :=
   IsCover.externalCoveringNumber_le_encard (by simp)
 
-lemma coveringNumber_le_encard_self (h_subset : A ⊆ A) : coveringNumber ε A ≤ A.encard :=
-  IsCover.coveringNumber_le_encard h_subset (by simp)
+lemma coveringNumber_le_encard_self (A : Set X) : coveringNumber ε A ≤ A.encard :=
+  IsCover.coveringNumber_le_encard (by simp) (by simp)
 
 lemma packingNumber_le_encard_self (A : Set X) : packingNumber ε A ≤ A.encard := by
   simp only [packingNumber, iSup_le_iff]
@@ -150,7 +150,7 @@ lemma externalCoveringNumber_mono_set (h : A ⊆ B) :
 @[simp]
 lemma externalCoveringNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     externalCoveringNumber 0 A = A.encard := by
-  refine le_antisymm (IsCover.externalCoveringNumber_le_encard (by simp)) ?_
+  refine le_antisymm (externalCoveringNumber_le_encard_self A) ?_
   refine le_iInf fun C ↦ le_iInf fun hC₁ ↦ ?_
   rw [isCover_zero] at hC₁
   exact encard_le_encard hC₁
@@ -158,7 +158,7 @@ lemma externalCoveringNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
 @[simp]
 lemma coveringNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     coveringNumber 0 A = A.encard := by
-  refine le_antisymm (IsCover.coveringNumber_le_encard subset_rfl (by simp)) ?_
+  refine le_antisymm (coveringNumber_le_encard_self A) ?_
   rw [← externalCoveringNumber_zero]
   exact externalCoveringNumber_le_coveringNumber 0 A
 
