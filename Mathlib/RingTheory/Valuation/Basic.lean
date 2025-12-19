@@ -499,7 +499,14 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
 
-instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀}
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  refine (Submonoid.nontrivial_iff_exists_ne_one (MonoidWithZeroHom.valueMonoid v)).mpr ?_
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
     [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
   obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
   refine (Subgroup.nontrivial_iff_exists_ne_one (MonoidWithZeroHom.valueGroup v)).mpr ?_
