@@ -24,6 +24,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Values of x such that |T_n(x)| = 1: `abs_eval_T_real_eq_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
+* Local extrema of T: `isLocalExtr_T_real`
 -/
 
 @[expose] public section
@@ -225,5 +226,44 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
     (U ℝ n).rootMultiplicity (cos ((k + 1) * π / (n + 1))) = 1 := by
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
+
+theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
+    IsLocalMax (T ℝ n).eval (cos (k * π / n)) := by
+  have zero_lt : 0 < k * π / n := by positivity
+  have lt_pi : k * π / n < π := calc
+    k * π / n < n * π / n := by gcongr
+    _ = π := mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr hn)
+  refine eventually_nhds_iff.mpr ⟨Set.Ioo (-1) 1, ?_, isOpen_Ioo, ?_, ?_⟩
+  · intro x hx
+    dsimp
+    rw [(eval_T_real_eq_one_iff hn _).mpr ⟨k, le_of_lt hk₁, hk₂, rfl⟩]
+    exact (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
+  · rw [← cos_pi]
+    exact cos_lt_cos_of_nonneg_of_le_pi (le_of_lt zero_lt) (le_refl π) lt_pi
+  · rw [← cos_zero]
+    exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
+
+theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Odd k) :
+    IsLocalMin (T ℝ n).eval (cos (k * π / n)) := by
+  have k_pos : 0 < k := hk₂.pos
+  have zero_lt : 0 < k * π / n := by positivity
+  have lt_pi : k * π / n < π := calc
+    k * π / n < n * π / n := by gcongr
+    _ = π := mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr hn)
+  refine eventually_nhds_iff.mpr ⟨Set.Ioo (-1) 1, ?_, isOpen_Ioo, ?_, ?_⟩
+  · intro x hx
+    dsimp
+    rw [(eval_T_real_eq_neg_one_iff hn _).mpr ⟨k, le_of_lt hk₁, hk₂, rfl⟩]
+    refine (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1
+  · rw [← cos_pi]
+    exact cos_lt_cos_of_nonneg_of_le_pi (le_of_lt zero_lt) (le_refl π) lt_pi
+  · rw [← cos_zero]
+    exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
+
+theorem isLocalExtr_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) :
+    IsLocalExtr (T ℝ n).eval (cos (k * π / n)) := by
+  cases k.even_or_odd
+  case inl hk₂ => exact .inr (isLocalMax_T_real hn hk₀ hk₁ hk₂)
+  case inr hk₂ => exact .inl (isLocalMin_T_real hn hk₁ hk₂)
 
 end Polynomial.Chebyshev
