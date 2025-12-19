@@ -244,6 +244,11 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
+@[simp]
+theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+    (⊥ : Subalgebra R A).toSubring = R := by
+  aesop (add norm Subalgebra.mem_carrier.symm)
+
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
     ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
