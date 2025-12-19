@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
-public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 /-!
 # The section functor as a right adjoint to the star functor
@@ -21,6 +21,8 @@ In particular, if `C` is cartesian closed, then for all objects `I` in `C`, `toO
 has a right adjoint.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -109,7 +111,8 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     simp [v₂, condition]
   dsimp [curryId] at comm
   have w' := (exp.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
-  simp [curry] at w'
+  simp only [curriedTensor_obj_obj, curriedTensor_obj_map, curry,
+    Equiv.symm_apply_apply] at w'
   exact Over.homMk ((β_ A I).hom ≫ uncurry v₂) (by
     dsimp [CartesianClosed.uncurry] at *
     simp only [assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
