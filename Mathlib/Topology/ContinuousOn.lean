@@ -296,8 +296,9 @@ theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
   continuousWithinAt_singleton.diff_iff
 
-/-- A function is continuous within at a . -/
-lemma Continuous_at_isolated_point (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
+/-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulated point of
+`s`. -/
+lemma ContinuousWithinAt.of_isolated (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
   rw [← continuousWithinAt_diff_self]
   simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.diff_eq, Set.inter_comm]
 
