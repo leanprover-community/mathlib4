@@ -381,6 +381,9 @@ instance isRefl_univ : SetRel.IsRefl (.univ : SetRel α α) where
 instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
   refl _ := ⟨R₁.rfl, R₂.rfl⟩
 
+instance IsRefl.comp [R₁.IsRefl] [R₂.IsRefl] : (R₁.comp R₂).IsRefl where
+  refl _ := ⟨_, R₁.rfl, R₂.rfl⟩
+
 protected lemma IsRefl.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ, R.IsRefl) :
     SetRel.IsRefl (⋂₀ ℛ) where
   refl _a R hR := (hℛ R hR).refl _
