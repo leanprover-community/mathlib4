@@ -2480,9 +2480,13 @@ Q3527215:
 
 Q3527217:
   title: M. Riesz extension theorem
+  decl: riesz_extension
 
 Q3527219:
   title: Weierstrass preparation theorem
+  decl: PowerSeries.exists_isWeierstrassFactorization
+  authors: Jz Pan
+  date: 2025
 
 Q3527223:
   title: Crystallographic restriction theorem
