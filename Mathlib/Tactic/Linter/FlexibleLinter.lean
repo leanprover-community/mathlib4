@@ -11,7 +11,7 @@ public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.EmptyLine
 public meta import Mathlib.Tactic.Linter.Header
-public meta import Mathlib.adomaniLeanUtils.Inspect
+--public meta import Mathlib.adomaniLeanUtils.Inspect
 
 
 /-!
@@ -478,7 +478,6 @@ example (h : False) : False ∧ True := by
 
 
 ff
-inspect_syntax
 example (h : False) : True ∧ False := by
   constructor
   · exact by refine ?_; simp
