@@ -149,9 +149,9 @@ end IsTightMeasureSet
 end Basic
 
 variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
-  (S : Set (ProbabilityMeasure 𝓧))
+  {S : Set (ProbabilityMeasure 𝓧)}
 
-lemma exists_union_of_OpenCover_of_mass_precompact_Set_ProbabilityMeasure
+lemma exists_measure_iUnion_gt_of_isCompact_closure
     (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
     (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1) :
     ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
@@ -209,7 +209,8 @@ lemma exists_union_of_OpenCover_of_mass_precompact_Set_ProbabilityMeasure
 
 variable [CompleteSpace 𝓧]
 
-/-In a second countable complete metric space, a precompact set of probability measures is tight.-/
+/-- In a second countable complete metric space, a set of probability measures with compact closure
+is tight. -/
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     IsTightMeasureSet {((μ : ProbabilityMeasure 𝓧) : Measure 𝓧) | μ ∈ S} := by
   rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le]
