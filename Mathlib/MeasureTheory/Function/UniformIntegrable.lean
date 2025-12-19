@@ -16,7 +16,7 @@ as well as the probability theory sense). This file also contains the Vitali con
 which establishes a relation between uniform integrability, convergence in measure and
 Lp convergence.
 
-Uniform integrability plays a vital role in the theory of martingales most notably is used to
+Uniform integrability plays a vital role in the theory of martingales and most notably is used to
 formulate the martingale convergence theorem.
 
 ## Main definitions
@@ -24,7 +24,7 @@ formulate the martingale convergence theorem.
 * `MeasureTheory.UnifIntegrable`: uniform integrability in the measure theory sense.
   In particular, a sequence of functions `f` is uniformly integrable if for all `ε > 0`, there
   exists some `δ > 0` such that for all sets `s` of smaller measure than `δ`, the Lp-norm of
-  `f i` restricted `s` is smaller than `ε` for all `i`.
+  `f i` restricted to `s` is smaller than `ε` for all `i`.
 * `MeasureTheory.UniformIntegrable`: uniform integrability in the probability theory sense.
   In particular, a sequence of measurable functions `f` is uniformly integrable in the
   probability theory sense if it is uniformly integrable in the measure theory sense and
@@ -41,7 +41,7 @@ formulate the martingale convergence theorem.
   and converges in measure.
 
 ## Tags
-uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
+uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 
 @[expose] public section
@@ -61,7 +61,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 
 A sequence of functions `f` is said to be uniformly integrable if for all `ε > 0`, there exists
 some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-norm of `f i`
-restricted on `s` is less than `ε`.
+restricted to `s` is less than `ε`.
 
 Uniform integrability is also known as uniformly absolutely continuous integrals. -/
 def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
