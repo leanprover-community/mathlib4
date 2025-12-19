@@ -17,8 +17,8 @@ public meta section
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
 
-to_dual_insert_cast_fun DecidableLE := fun a b ↦ this b a, fun a b ↦ this b a
-to_dual_insert_cast_fun DecidableLT := fun a b ↦ this b a, fun a b ↦ this b a
+to_dual_insert_cast_fun DecidableLE := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
+to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
 

@@ -540,7 +540,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let translateValue (v : Expr) : MetaM Expr := do
     let mut v := v
     if let some b := t.unfoldBoundaries then
-      v ← b.cast (← b.insertBoundaries v) decl.type
+      v ← b.cast (← b.insertBoundaries v t.attrName) decl.type t.attrName
     v ← reorderLambda reorder <| ← applyReplacementLambda t dont v
     if let some b := t.unfoldBoundaries then
       v ← b.unfoldInsertions v
@@ -548,7 +548,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
 
   let mut type := decl.type
   if let some b := t.unfoldBoundaries then
-    type ← b.insertBoundaries decl.type
+    type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
   if let some b := t.unfoldBoundaries then
     type ← b.unfoldInsertions type
@@ -882,7 +882,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   let mut srcType := srcDecl.type
   if let some b := t.unfoldBoundaries then
-    srcType ← b.insertBoundaries srcType
+    srcType ← b.insertBoundaries srcType t.attrName
   srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"

@@ -42,15 +42,15 @@ structure UnfoldBoundaries where
   /-- The functions that we want to unfold again after the translation has happened. -/
   insertionFuns : NameMap Unit
 
-/-- Modify the `MetaM` context to not allow unfolding the constants for which we would like
-to insert explicit casts. -/
-def withBlockUnfolding {α} (b : UnfoldBoundaries) (x : MetaM α) : MetaM α := do
-  withCanUnfoldPred (fun _ cinfo =>
-    return !b.unfolds.contains cinfo.name
-      && !b.casts.contains cinfo.name) x
-
+/--
+Set up the monadic context:
+- Set the transparency to `.all`, just like is done in `Meta.check`.
+- Use `withCanUnfoldPred` to not allow unfolding the constants for which we want to insert casts.
+- Set up the `SimpM` context so that `Simp.simp` will unfold constants fro `b.unfolds`.
+-/
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
-  withBlockUnfolding b do withTransparency TransparencyMode.all do
+  withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
+  withTransparency TransparencyMode.all do
   let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
@@ -102,11 +102,11 @@ where
       if ← isDefEq (← goal.getType) (← inferType e) then
         goal.assign e
       else
-        throwError "Failed to insert casts to make {e} have type {← goal.getType}."
+        throwError "{e} : {← inferType e} does not have type {← goal.getType}."
 
 /-- Given an expression `e` with expected type `type`, if `e` doesn't have that type,
 use a cast to turn `e` into that type. -/
-def mkAppWithCast (f a : Expr) (b : UnfoldBoundaries) : SimpM Expr :=
+def mkAppWithCast (b : UnfoldBoundaries) (f a : Expr) : SimpM Expr :=
   try
     checkApp f a
     return f.app a
@@ -117,7 +117,7 @@ def mkAppWithCast (f a : Expr) (b : UnfoldBoundaries) : SimpM Expr :=
     let a ← refoldConsts b a d
     return f.app a
 
-def mkCast (e expectedType : Expr) (b : UnfoldBoundaries) : SimpM Expr := do
+def mkCast (b : UnfoldBoundaries) (e expectedType : Expr) : SimpM Expr := do
   if ← isDefEq (← inferType e) expectedType then
     return e
   let e ← unfoldConsts b e
@@ -146,27 +146,30 @@ def UnfoldBoundaryExt.toUnfoldBoundaries (b : UnfoldBoundaryExt) :
     insertionFuns := b.insertionFuns.getState env }
 
 /-- Modify `e` so that it has type `expectedType`. -/
-public def UnfoldBoundaryExt.cast (e expectedType : Expr) (b : UnfoldBoundaryExt) : MetaM Expr := do
+public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr) (attr : Name) :
+    MetaM Expr := do
   let b ← b.toUnfoldBoundaries
-  run b do
-    mkCast e expectedType b
+  run b <|
+  try
+    mkCast b e expectedType
+  catch ex =>
+    throwError "@[{attr}] failed to insert a cast to make `{e}` \
+      have type `{expectedType}`\n\n{ex.toMessageData}"
 
 /-- Modify `e` so that it is well typed if the constants in `b` cannot be unfolded.
 
 Note: it may be that `e` contains some constant whose type is not well typed in this setting.
   We don't make an effort to replace such constants.
   It seems that this approximation works well enough. -/
-public def UnfoldBoundaryExt.insertBoundaries (e : Expr) (b : UnfoldBoundaryExt) : MetaM Expr := do
+public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr) (attr : Name) :
+    MetaM Expr := do
   let b ← b.toUnfoldBoundaries
-  run b do
-    transform e (post := fun e ↦ e.withApp fun f args => do
-      let mut f := f
-      for arg in args do
-        try
-          f ← mkAppWithCast f arg b
-        catch e =>
-          throwError "failed to deal with {f} applied to {arg}\n{e.toMessageData}"
-      return .done f)
+  run b <| transform e (post := fun e ↦ e.withApp fun f args =>
+    try
+      return .done <| ← args.foldlM (mkAppWithCast b) f
+    catch ex =>
+      throwError "@[{attr}] failed to insert a cast to make `{f}` applied to `{args.toList}` \
+        well typed\n\n{ex.toMessageData}")
 
 /-- Unfold all of the auxiliary functions that were insertedy as unfold boundaries. -/
 public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
