@@ -19,6 +19,8 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 
 @[expose] public section
 
+set_option backward.privateInPublic true
+
 universe u
 
 namespace CategoryTheory
