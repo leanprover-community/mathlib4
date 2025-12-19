@@ -31,19 +31,6 @@ assert_not_exists Monoid Finset
 
 open Fin Nat Function
 
-namespace Fin
-protected alias val_sub := Fin.coe_sub
-alias val_neg' := Fin.coe_neg
-alias val_castSucc := coe_castSucc
-alias val_castAdd := coe_castAdd
-alias val_cast := coe_cast
-alias val_castLT := coe_castLT
-alias val_castLE := coe_castLE
-alias val_natAdd := coe_natAdd
-alias val_pred := coe_pred
-alias val_subNat := coe_subNat
-end Fin
-
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
 
 theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
@@ -469,9 +456,6 @@ section AddGroup
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
 lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by lia
-
-@[deprecated (since := "2025-04-27")]
-alias eq_one_of_neq_zero := eq_one_of_ne_zero
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
