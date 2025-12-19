@@ -21,7 +21,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 ## Main statements
 
-* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `T_real_abs_le_one_iff_abs_le_one`
+* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `T_real_roots_eq`, `U_real_roots_eq`
 * Extrema of T: `T_real_eval_at_extremum`, `T_real_extrema_eq`
 
@@ -42,14 +42,13 @@ theorem eval_T_real_mem_Icc (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
   grind [T_real_cos, cos_mem_Icc]
 
 theorem abs_eval_T_real_le_one (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
-    |(T ℝ n).eval x| ≤ 1 := by
-  grind [T_real_eval_bounded_of_bounded]
+    |(T ℝ n).eval x| ≤ 1 := by grind [eval_T_real_mem_Icc]
 
-theorem T_real_one_le_eval_of_one_le (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).eval x := by
+theorem one_le_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).eval x := by
   rw [← cosh_arcosh hx]
   grind [T_real_cosh, one_le_cosh]
 
-theorem T_real_one_lt_eval_of_one_lt {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
+theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
     1 < (T ℝ n).eval x := by
   have : arcosh x ≠ 0 := by
     by_contra! h
@@ -57,49 +56,49 @@ theorem T_real_one_lt_eval_of_one_lt {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 
   rw [←cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
   exact ⟨by norm_cast, by assumption⟩
 
-theorem T_real_one_le_negOnePow_mul_eval_of_le_neg_one (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
+theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
     1 ≤ (-1) ^ n * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert T_real_one_le_eval_of_one_le n (le_neg_of_le_neg hx)
+  convert one_le_eval_T_real n (le_neg_of_le_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
-theorem T_real_one_lt_negOnePow_mul_eval_of_lt_neg_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
+theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
     1 < (-1) ^ n * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
-  convert T_real_one_lt_eval_of_one_lt hn (lt_neg_of_lt_neg hx)
+  convert one_lt_eval_T_real hn (lt_neg_of_lt_neg hx)
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
-theorem T_real_one_le_abs_eval_of_one_le_abs (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
+theorem one_le_abs_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
     1 ≤ |(T ℝ n).eval x| := by
   cases le_abs.mp hx with
-  | inl hx => exact T_real_one_le_eval_of_one_le n hx |> .inl |> le_abs.mpr
+  | inl hx => exact one_le_eval_T_real n hx |> .inl |> le_abs.mpr
   | inr hx =>
-    have := T_real_one_le_negOnePow_mul_eval_of_le_neg_one n (le_neg_of_le_neg hx)
+    have := one_le_negOnePow_mul_eval_T_real n (le_neg_of_le_neg hx)
     have : 1 ≤ |(-1) ^ n * (T ℝ n).eval x| := by grind
     convert this using 1
     simp [abs_mul, abs_zpow]
 
-theorem T_real_one_lt_abs_eval_of_one_lt_abs {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
+theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
     1 < |(T ℝ n).eval x| := by
   cases lt_abs.mp hx with
-  | inl hx => exact T_real_one_lt_eval_of_one_lt hn hx |> .inl |> lt_abs.mpr
+  | inl hx => exact one_lt_eval_T_real hn hx |> .inl |> lt_abs.mpr
   | inr hx =>
-    have := T_real_one_lt_negOnePow_mul_eval_of_lt_neg_one hn (lt_neg_of_lt_neg hx)
+    have := one_lt_negOnePow_mul_eval_T_real hn (lt_neg_of_lt_neg hx)
     have : 1 < |(-1) ^ n * (T ℝ n).eval x| := by grind
     convert this using 1
     simp [abs_mul, abs_zpow]
 
-theorem T_real_abs_eval_le_one_iff_abs_le_one {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
+theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
   constructor
-  · intro hx; exact T_real_abs_eval_le_one_of_abs_le_one n hx
-  · intro hx; contrapose! hx; exact T_real_one_lt_abs_eval_of_one_lt_abs hn hx
+  · intro hx; exact abs_eval_T_real_le_one n hx
+  · intro hx; contrapose! hx; exact one_lt_abs_eval_T_real hn hx
 
-theorem T_real_eval_eq_cos_of_abs_le_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |(T ℝ n).eval x| ≤ 1) :
+theorem eval_T_real_eq_cos {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |(T ℝ n).eval x| ≤ 1) :
     (T ℝ n).eval x = cos (n * arccos x) := by
-  have := (T_real_abs_eval_le_one_iff_abs_le_one hn x).mpr hx
+  have := (abs_eval_T_real_le_one_iff hn x).mpr hx
   rw [← T_real_cos, cos_arccos (by grind) (by grind)]
 
 
