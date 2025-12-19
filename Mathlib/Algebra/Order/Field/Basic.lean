@@ -24,28 +24,15 @@ open Function OrderDual
 
 variable {ι α β : Type*}
 
-section OrderedSemifield
-variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
-  {a b c d e : α} {m n : ℤ}
+section PartialOrderedSemifield
+
+variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] {a b c d e : α} {m n : ℤ}
 
 attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 
 /-!
 ### Relating one division and involving `1`
 -/
-
-
-@[bound]
-theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
-  simpa only [div_one] using div_le_div_of_nonneg_left ha zero_lt_one hb
-
-@[bound]
-theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
-  simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
-
-section noStrictOrderedRing
-variable {α : Type*} [Semifield α] [PartialOrder α] [PosMulReflectLT α]
-  {a b c d e : α}
 
 @[bound]
 theorem le_div_self (ha : 0 ≤ a) (hb₀ : 0 < b) (hb₁ : b ≤ 1) : a ≤ a / b := by
@@ -79,7 +66,6 @@ theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
 ### Relating two divisions, involving `1`
 -/
 
-
 theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
   simpa using inv_anti₀ ha h
 
@@ -92,7 +78,15 @@ theorem le_of_one_div_le_one_div (ha : 0 < a) (h : 1 / a ≤ 1 / b) : b ≤ a :=
 theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a := by
   simpa using one_div_lt_one_div_of_lt (by simpa) h
 
-end noStrictOrderedRing
+variable [IsStrictOrderedRing α]
+
+@[bound]
+theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
+  simpa only [div_one] using div_le_div_of_nonneg_left ha zero_lt_one hb
+
+@[bound]
+theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
+  simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
 
 /-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
   `le_of_one_div_le_one_div` -/
@@ -114,7 +108,6 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 ### Results about halving.
 The equalities also hold in semifields of characteristic `0`.
 -/
-
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
   div_pos h zero_lt_two
@@ -155,22 +148,21 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 ### Miscellaneous lemmas
 -/
 
-
 @[simp] lemma div_pos_iff_of_pos_left (ha : 0 < a) : 0 < a / b ↔ 0 < b := by
   simp only [div_eq_mul_inv, mul_pos_iff_of_pos_left ha, inv_pos]
 
 @[simp] lemma div_pos_iff_of_pos_right (hb : 0 < b) : 0 < a / b ↔ 0 < a := by
   simp only [div_eq_mul_inv, mul_pos_iff_of_pos_right (inv_pos.2 hb)]
 
-omit [IsStrictOrderedRing α] in
-theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
-  rw [← mul_div_assoc] at h
-  rwa [mul_comm b, ← div_le_iff₀ hc]
-
 theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
     a / (b * e) ≤ c / (d * e) := by
   rw [div_mul_eq_div_mul_one_div, div_mul_eq_div_mul_one_div]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 he)
+
+omit [IsStrictOrderedRing α] in
+theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
+  rw [← mul_div_assoc] at h
+  rwa [mul_comm b, ← div_le_iff₀ hc]
 
 omit [IsStrictOrderedRing α] in
 lemma monotone_div_right_of_nonneg (ha : 0 ≤ a) : Monotone (· / a) :=
@@ -286,7 +278,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
-end OrderedSemifield
+end PartialOrderedSemifield
 
 section LinearOrderedSemifield
 
