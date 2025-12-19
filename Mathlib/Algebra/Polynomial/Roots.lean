@@ -278,6 +278,17 @@ theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).
     rintro ⟨a, -, h⟩
     exact X_sub_C_ne_zero a h
 
+theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
+  simp
+
+variable (R) in
+theorem rightInverse_ofMultiset_roots : Function.RightInverse (α := R[X]) ofMultiset roots :=
+  roots_ofMultiset
+
+variable (R) in
+theorem ofMultiset_injective : Function.Injective (ofMultiset (R := R)) :=
+  rightInverse_ofMultiset_roots R |>.injective
+
 theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
     Multiset.card (roots ((X : R[X]) ^ n - C a)) ≤ n :=
   WithBot.coe_le_coe.1 <|
@@ -292,7 +303,7 @@ theorem roots_eq_of_degree_le_card_of_ne_zero {S : Finset R}
   · exact (Finset.val_le_iff_val_subset.mpr (fun x hx ↦ (p.mem_roots hp).mpr (hS x hx)))
   · simpa using (p.card_roots hp).trans hcard
 
-theorem roots_eq_of_degree_le_card {S : Finset R}
+theorem roots_eq_of_degree_eq_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
 

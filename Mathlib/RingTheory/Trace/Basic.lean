@@ -90,8 +90,8 @@ theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : ((minpoly K pb.gen).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, map_neg,
-    ← nextCoeff_map_eq, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
-      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) hf,
+    ← nextCoeff_map_eq, hf.nextCoeff_eq_neg_sum_roots_of_monic
+      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _),
     neg_neg]
 
 namespace IntermediateField.AdjoinSimple
