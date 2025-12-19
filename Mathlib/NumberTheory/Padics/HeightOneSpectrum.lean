@@ -53,28 +53,27 @@ open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
-namespace Rat.IsDedekindDomain
+variable (R : Type*) [CommRing R] [Algebra R ℚ]
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
-  [Module.Finite ℤ R]
+theorem Rat.int_algebraMap_injective : Function.Injective (algebraMap ℤ R) :=
+  .of_comp (IsScalarTower.algebraMap_eq ℤ R ℚ ▸ RingHom.injective_int (algebraMap ℤ ℚ))
 
-theorem algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
+variable [IsFractionRing R ℚ] [IsIntegralClosure R ℤ ℚ]
+
+theorem Rat.int_algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
   intro x
   obtain ⟨y, hy⟩ := IsIntegrallyClosed.isIntegral_iff.1 <|
     IsIntegral.algebraMap (B := ℚ) (IsIntegralClosure.isIntegral ℤ ℚ x)
   exact ⟨y, IsFractionRing.injective R ℚ <| by simp only [← IsScalarTower.algebraMap_apply, hy]⟩
 
-noncomputable def intEquiv [Module.Free ℤ R] : R ≃+* ℤ :=
-  RingEquiv.ofBijective _ ⟨FaithfulSMul.algebraMap_injective ℤ R, algebraMap_surjective R⟩ |>.symm
+/-- If `R : CommRing` has field of fractions `ℚ` then it is isomorphic to `ℤ`. -/
+noncomputable def Rat.intEquiv : R ≃+* ℤ :=
+  RingEquiv.ofBijective _ ⟨int_algebraMap_injective R, int_algebraMap_surjective R⟩ |>.symm
 
-end IsDedekindDomain
+namespace Rat.HeightOneSpectrum
 
-namespace HeightOneSpectrum
-
-open Rat.IsDedekindDomain
-
-variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
-  [Module.Finite ℤ R] [Module.Free ℤ R]
+variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsFractionRing R ℚ]
+  [IsIntegralClosure R ℤ ℚ]
 
 noncomputable def natGenerator (v : HeightOneSpectrum R) : ℕ :=
   Submodule.IsPrincipal.generator (v.asIdeal.map <| intEquiv R) |>.natAbs
@@ -91,6 +90,8 @@ theorem natGenerator_dvd_iff (v : HeightOneSpectrum R) {n : ℕ} :
 theorem prime_natGenerator (v : HeightOneSpectrum R) : Nat.Prime (natGenerator v) :=
   Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
     ((Ideal.map_eq_bot_iff_of_injective (intEquiv R).injective).not.2 v.ne_bot)
+
+variable [IsDedekindDomain R]
 
 /-- The equivalence between height-one prime ideals of `R` and primes in `ℕ`. -/
 noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
@@ -190,8 +191,8 @@ open Rat.HeightOneSpectrum
 
 namespace Padic
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R]
-  [Algebra R ℚ] [IsFractionRing R ℚ] [Module.Finite ℤ R]
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+  [IsIntegralClosure R ℤ ℚ]
 
 /-- The continuous `ℚ`-algebra isomorphism between `ℚ_[p]` and
 `(primesEquiv.symm p).adicCompletion ℚ`. -/
@@ -206,8 +207,8 @@ namespace PadicInt
 
 open Padic
 
-variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R]
-  [Algebra R ℚ] [IsFractionRing R ℚ] [Module.Finite ℤ R]
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+  [IsIntegralClosure R ℤ ℚ]
 
 /-- The continuous `ℤ`-algebra isomorphism between `ℤ_[p]` and
 `(primesEquiv.symm p).adicCompletionIntegers ℚ`. -/
