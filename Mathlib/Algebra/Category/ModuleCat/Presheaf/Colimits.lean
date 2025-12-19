@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-! # Colimits in categories of presheaves of modules
 
@@ -12,6 +14,8 @@ In this file, it is shown that under suitable assumptions,
 colimits exist in the category `PresheafOfModules R`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u u'
 
@@ -112,13 +116,13 @@ instance evaluation_preservesColimit (X : Cᵒᵖ) :
   preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 variable [∀ X, PreservesColimit F
-  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrp)]
+  (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrpCat)]
 
 instance toPresheaf_preservesColimit :
     PreservesColimit F (toPresheaf R) :=
   preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
-      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isColimitColimitCocone F)))
 
 end Colimits
@@ -127,7 +131,7 @@ variable (R J)
 
 section HasColimitsOfShape
 
-variable [HasColimitsOfShape J AddCommGrp.{v}]
+variable [HasColimitsOfShape J AddCommGrpCat.{v}]
 
 instance hasColimitsOfShape : HasColimitsOfShape J (PresheafOfModules.{v} R) where
 

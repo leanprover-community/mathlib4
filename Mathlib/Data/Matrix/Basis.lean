@@ -3,7 +3,9 @@ Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Matrices with a single non-zero element.
@@ -11,6 +13,8 @@ import Mathlib.Data.Matrix.Basic
 This file provides `Matrix.single`. The matrix `Matrix.single i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
+
+@[expose] public section
 
 assert_not_exists Matrix.trace
 
@@ -101,7 +105,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
-  simp [single, mulVec, dotProduct]
+  simp only [mulVec, dotProduct, single, of_apply, ite_mul, zero_mul]
   rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]

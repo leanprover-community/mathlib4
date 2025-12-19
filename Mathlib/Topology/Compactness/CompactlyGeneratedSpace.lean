@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Etienne Marion
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.OnePoint.Basic
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces
@@ -40,6 +42,8 @@ as well as a Hausdorff `WeaklyLocallyCompactSpace`.
 
 compactly generated space
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -207,8 +211,7 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
   apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
   · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ)))
-      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uliftDown⟩
+  · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ))) ⟨g, by fun_prop⟩
 
 end UCompactlyGeneratedSpace
 

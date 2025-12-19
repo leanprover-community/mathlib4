@@ -3,11 +3,13 @@ Copyright (c) 2022 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals
@@ -34,6 +36,8 @@ The strongest typeclass provided on each interval is:
 * prove versions of the lemmas in `Topology/UnitInterval` with `ℝ` generalized to
   some arbitrary ordered semiring
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -64,11 +68,11 @@ theorem coe_zero : ↑(0 : Icc (0 : R) 1) = (0 : R) :=
 theorem coe_one : ↑(1 : Icc (0 : R) 1) = (1 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_zero (h : (0 : R) ∈ Icc (0 : R) 1) : (⟨0, h⟩ : Icc (0 : R) 1) = 0 :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_one (h : (1 : R) ∈ Icc (0 : R) 1) : (⟨1, h⟩ : Icc (0 : R) 1) = 1 :=
   rfl
 
@@ -169,7 +173,7 @@ instance instZero [Nontrivial R] : Zero (Ico (0 : R) 1) where zero := ⟨0, by s
 theorem coe_zero [Nontrivial R] : ↑(0 : Ico (0 : R) 1) = (0 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_zero [Nontrivial R] (h : (0 : R) ∈ Ico (0 : R) 1) : (⟨0, h⟩ : Ico (0 : R) 1) = 0 :=
   rfl
 
@@ -225,7 +229,7 @@ instance instOne : One (Ioc (0 : R) 1) where one := ⟨1, ⟨zero_lt_one, le_ref
 theorem coe_one : ↑(1 : Ioc (0 : R) 1) = (1 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_one (h : (1 : R) ∈ Ioc (0 : R) 1) : (⟨1, h⟩ : Ioc (0 : R) 1) = 1 :=
   rfl
 

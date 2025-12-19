@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Topology.VectorBundle.Riemannian
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Topology.VectorBundle.Riemannian
 
 /-! # Riemannian vector bundles
 
@@ -38,6 +40,8 @@ variable
 ```
 -/
 
+@[expose] public section
+
 open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology
 
@@ -56,7 +60,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (IB n F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We that the bundle is Riemannian if the scalar product depends smoothly on the base point.
+We say that the bundle is Riemannian if the scalar product depends smoothly on the base point.
 This assumption is spelled `IsContMDiffRiemannianBundle IB n F E` where `IB` is the model space of
 the base, `n` is the smoothness, `F` is the model fiber, and `E : B → Type*` is the bundle. -/
 class IsContMDiffRiemannianBundle : Prop where

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Limits.Shapes.End
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Limits.Shapes.End
 
 /-!
 # Functor categories are enriched
@@ -25,6 +27,8 @@ The definition `isLimitConeFunctorEnrichedHom` shows that
 `enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -69,7 +73,7 @@ lemma enrichedHom_condition {i j : J} (f : i ⟶ j) :
 @[reassoc]
 lemma enrichedHom_condition' {i j : J} (f : i ⟶ j) :
     enrichedHomπ V F₁ F₂ i ≫ (ρ_ _).inv ≫
-      _ ◁ (eHomEquiv V) (F₂.map f) ≫ eComp V _ _ _  =
+      _ ◁ (eHomEquiv V) (F₂.map f) ≫ eComp V _ _ _ =
     enrichedHomπ V F₁ F₂ j ≫ (λ_ _).inv ≫
       (eHomEquiv V) (F₁.map f) ▷ _ ≫ eComp V _ _ _ :=
   end_.condition (diagram V F₁ F₂) f
@@ -172,7 +176,7 @@ lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     enrichedComp V F₁ F₂ F₃ := by
   ext j
   simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
-    enrichedComp_π, Functor.op_obj, ← tensor_comp_assoc]
+    enrichedComp_π, Functor.op_obj, tensorHom_comp_tensorHom_assoc]
 
 end
 
@@ -258,7 +262,7 @@ noncomputable abbrev precompEnrichedHom' {F₁' F₂' : K ⥤ C}
       rw [enrichedHom_condition_assoc, eHom_whisker_exchange,
         eHom_whisker_exchange, ← eHomWhiskerRight_comp_assoc,
         ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
-      dsimp )
+      dsimp)
 
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,
 then this is the induced morphism
@@ -386,7 +390,7 @@ noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
     dsimp
     rw [assoc, assoc, enrichedComp_π]
     dsimp
-    rw [← tensor_comp_assoc]
+    rw [tensorHom_comp_tensorHom_assoc]
     simp
 
 @[reassoc (attr := simp)]
@@ -446,7 +450,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
   dsimp
   ext k
   rw [homEquiv_comp, assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π]
-  simp [← tensor_comp_assoc]
+  simp [tensorHom_comp_tensorHom_assoc]
 
 attribute [local instance] functorEnrichedCategory
 

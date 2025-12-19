@@ -3,8 +3,10 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Adjunction.Triple
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Triple
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Adjoint quadruples
@@ -28,6 +30,8 @@ some of the functors are fully faithful. We opt to include only those typeclass 
 needed for the theorem statements, so some lemmas require only e.g. `F` to be fully faithful when
 really this means `F` and `R` both must be.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Functor Adjunction Triple
 

@@ -3,9 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Rank
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Rank
 
 /-!
 # Existence of Cartan subalgebras
@@ -26,6 +27,8 @@ following [barnes1967].
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 
@@ -68,7 +71,8 @@ open LieModule LinearMap
 
 local notation "φ" => LieModule.toEnd R L M
 
-/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
+set_option backward.privateInPublic true in
+/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `L`.
 Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
 have coefficients that are polynomial in `r : R`.
 In other words, we obtain a polynomial over `R[X]`
@@ -80,12 +84,18 @@ def lieCharpoly : Polynomial R[X] :=
   (polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
   (polyCharpoly_monic _ _).map _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly R M x y).natDegree = finrank R M := by
   rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable {R} in
 lemma lieCharpoly_map_eval (r : R) :
     (lieCharpoly R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
@@ -95,8 +105,10 @@ lemma lieCharpoly_map_eval (r : R) :
     ext i; simp [mul_comm r]
   simp_rw [← coe_aeval_eq_evalRingHom, ← AlgHom.comp_toRingHom, MvPolynomial.comp_aeval,
     map_add, map_mul, aeval_C, Algebra.algebraMap_self, RingHom.id_apply, aeval_X, aux,
-    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
+    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap, map_add]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
   classical
@@ -210,7 +222,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
-        simp only [hz₀, LieHom.map_zero, LinearMap.zero_apply]
+        simp only [hz₀, map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
@@ -272,7 +284,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      omega
+      lia
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
@@ -283,7 +295,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · omega
+    · lia
     · dsimp only [r] at hi ⊢
       rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
@@ -314,7 +326,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain ⟨n, hn⟩ := hz
     use n
     apply_fun LieSubmodule.Quotient.mk' E at hn
-    rw [LieModuleHom.map_zero] at hn
+    rw [map_zero] at hn
     rw [← hn]
     clear hn
     induction n with
@@ -339,7 +351,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
-    apply Nat.find_min hz'; omega
+    apply Nat.find_min hz'; lia
   · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)

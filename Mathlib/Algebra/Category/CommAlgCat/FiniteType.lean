@@ -3,16 +3,20 @@ Copyright (c) 2025 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.RingHomProperties
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # The category of finitely generated `R`-algebras
 
 We define the category of finitely generated `R`-algebras and show it is essentially small.
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -46,13 +50,14 @@ lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Alge
 /-- Universe lift functor for finitely generated algebras. -/
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
   obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩
-  map {A B} f := CommAlgCat.ofHom <|
-    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
+  map {A B} f := ConcreteCategory.ofHom <|
+    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.hom.comp ULift.algEquiv.toAlgHom
 
 /-- The universe lift functor for finitely generated algebras is fully faithful. -/
 def FGAlgCat.fullyFaithfulUliftFunctor : (FGAlgCat.uliftFunctor R).FullyFaithful where
   preimage {A B} f :=
-    CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
+    ConcreteCategory.ofHom <| ULift.algEquiv.toAlgHom.comp <|
+      f.hom.hom.comp ULift.algEquiv.symm.toAlgHom
 
 instance : (FGAlgCat.uliftFunctor R).Full :=
   (FGAlgCat.fullyFaithfulUliftFunctor R).full
@@ -91,9 +96,9 @@ def FGAlgCat.equivUnder (R : CommRingCat.{u}) :
     FGAlgCat R ≌ MorphismProperty.Under (toMorphismProperty FiniteType) ⊤ R where
   functor.obj A := ⟨(commAlgCatEquivUnder R).functor.obj A.obj,
     (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.2⟩
-  functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f, trivial, trivial⟩
+  functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f.hom, trivial, trivial⟩
   inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.1, A.2⟩
-  inverse.map {A B} f := (commAlgCatEquivUnder R).inverse.map f.hom
+  inverse.map {A B} f := ObjectProperty.homMk ((commAlgCatEquivUnder R).inverse.map f.hom)
   unitIso := NatIso.ofComponents fun A ↦
     ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.1, commutes' _ := rfl })
   counitIso := .refl _

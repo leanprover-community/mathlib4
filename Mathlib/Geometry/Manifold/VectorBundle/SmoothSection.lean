@@ -3,10 +3,12 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # `C^n` sections
@@ -18,6 +20,8 @@ In passing, we prove that binary and finite sums, differences and scalar product
 sections are `C^n`.
 
 -/
+
+@[expose] public section
 
 
 open Bundle Filter Function
@@ -80,7 +84,7 @@ lemma ContMDiff.add_section
 
 lemma ContMDiffWithinAt.neg_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) u x₀ := by
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
@@ -93,7 +97,7 @@ lemma ContMDiffWithinAt.neg_section
 
 lemma ContMDiffAt.neg_section
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) x₀ := by
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact hs.neg_section
 
@@ -291,7 +295,7 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
-  rw [← tsum_eq_finsum]
+  rw [← tsum_eq_finsum (L := SummationFilter.unconditional ι)]
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
@@ -410,7 +414,7 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
-    simp only [Int.ofNat_eq_coe, natCast_zsmul]
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 

@@ -3,11 +3,13 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle, Jake Levinson
 -/
-import Mathlib.RingTheory.Polynomial.Hermite.Basic
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.RingTheory.Polynomial.Hermite.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Hermite polynomials and Gaussians
@@ -26,6 +28,8 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -46,7 +50,8 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
     have deriv_gaussian :
       deriv (fun y => Real.exp (-(y ^ 2 / 2))) x = -x * Real.exp (-(x ^ 2 / 2)) := by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [mul_comm, ← neg_mul]`
-      rw [deriv_exp (by simp)]; simp; ring
+      rw [deriv_exp (by simp)]
+      simp [mul_comm]
     rw [Function.iterate_succ_apply', ih, deriv_const_mul_field, deriv_fun_mul, pow_succ (-1 : ℝ),
       deriv_gaussian, hermite_succ, map_sub, map_mul, aeval_X, Polynomial.deriv_aeval]
     · ring
@@ -63,6 +68,6 @@ theorem hermite_eq_deriv_gaussian (n : ℕ) (x : ℝ) : aeval x (hermite n) =
 theorem hermite_eq_deriv_gaussian' (n : ℕ) (x : ℝ) : aeval x (hermite n) =
     (-1 : ℝ) ^ n * deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x * Real.exp (x ^ 2 / 2) := by
   rw [hermite_eq_deriv_gaussian, Real.exp_neg]
-  field_simp
+  field
 
 end Polynomial

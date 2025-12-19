@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
-import Mathlib.Analysis.Meromorphic.IsolatedZeros
-import Mathlib.Analysis.Meromorphic.NormalForm
-import Mathlib.Analysis.Meromorphic.TrailingCoefficient
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
+public import Mathlib.Analysis.Meromorphic.IsolatedZeros
+public import Mathlib.Analysis.Meromorphic.NormalForm
+public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Factorized Rational Functions
@@ -27,6 +29,8 @@ is finite, then evaluation of functions commutes with finprod, and the helper le
 There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` is constant one, while
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
+
+@[expose] public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -162,12 +166,11 @@ Factorized rational functions are nowhere locally constant zero.
 -/
 theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
     meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z ≠ ⊤ := by
+  classical
   by_cases hd : d.support.Finite
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
-    have : AnalyticAt 𝕜 (1 : 𝕜 → 𝕜) z := analyticAt_const
-    simp [finprod_of_infinite_mulSupport hd, this.meromorphicOrderAt_eq,
-      this.analyticOrderAt_eq_zero.2 (by simp)]
+    simp [finprod_of_infinite_mulSupport hd]
 
 @[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
@@ -196,7 +199,6 @@ open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
-
 /-
 Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems
@@ -214,7 +216,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
   by_cases hxy : x = y
   · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
     simp_all
-  · grind [Function.update_of_ne, meromorphicTrailingCoeffAt_id_sub_const]
+  · grind [meromorphicTrailingCoeffAt_id_sub_const]
 
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the
@@ -253,7 +255,7 @@ theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d
     · rw [h]
       simp_all
     · simp_all [zpow_ne_zero, sub_ne_zero]
-  rw [norm_prod, log_prod _ _ this]
+  rw [norm_prod, log_prod this]
   have : (fun u ↦ (d u) * log ‖x - u‖).support ⊆ h.toFinset := by
     intro u
     contrapose
@@ -373,7 +375,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     apply ne_of_apply_ne D
     rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
-  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod _ _ this]
+  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod this]
   simp [log_zpow]
 
 open Classical in
