@@ -67,7 +67,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [Nor
 omit [NormSMulClass ℤ 𝕜] in
 lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
-  simp only [div_eq_mul_one_div ( _ * _ ^ _)]
+  simp only [div_eq_mul_one_div (_ * _ ^ _)]
   apply Summable.mul_tendsto_const (c := 1 / (1 - 0))
     (by simpa using summable_norm_pow_mul_geometric_of_norm_lt_one k hr)
   simpa only [Nat.cofinite_eq_atTop] using
@@ -89,7 +89,7 @@ private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r�
           sum_divisorsAntidiagonal ((fun x y ↦ ‖(y : 𝕜)‖ ^ k * _ ^ (x * y)))]
       gcongr with i hi
       · simpa using le_of_dvd b.2 (div_dvd_of_dvd (dvd_of_mem_divisors hi))
-      · rw [norm_pow, mul_comm,  Nat.div_mul_cancel (dvd_of_mem_divisors hi)]
+      · rw [norm_pow, mul_comm, Nat.div_mul_cancel (dvd_of_mem_divisors hi)]
     · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
         pow_one, norm_mul]
       gcongr
