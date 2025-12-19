@@ -121,7 +121,13 @@ lemma IsCover.externalCoveringNumber_le_encard (hC : IsCover ε A C) :
 lemma IsCover.coveringNumber_le_encard (h_subset : C ⊆ A) (hC : IsCover ε A C) :
     coveringNumber ε A ≤ C.encard := (iInf₂_le C h_subset).trans (iInf_le _ hC)
 
-lemma packingNumber_le_encard (A : Set X) : packingNumber ε A ≤ A.encard := by
+lemma externalCoveringNumber_le_encard_self (A : Set X) : externalCoveringNumber ε A ≤ A.encard :=
+  IsCover.externalCoveringNumber_le_encard (by simp)
+
+lemma coveringNumber_le_encard_self (h_subset : A ⊆ A) : coveringNumber ε A ≤ A.encard :=
+  IsCover.coveringNumber_le_encard h_subset (by simp)
+
+lemma packingNumber_le_encard_self (A : Set X) : packingNumber ε A ≤ A.encard := by
   simp only [packingNumber, iSup_le_iff]
   exact fun _ hC _ ↦ encard_le_encard hC
 
@@ -159,7 +165,7 @@ lemma coveringNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
 @[simp]
 lemma packingNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     packingNumber 0 A = A.encard :=
-  le_antisymm (packingNumber_le_encard A) (le_iSup_of_le A (by simp))
+  le_antisymm (packingNumber_le_encard_self A) (le_iSup_of_le A (by simp))
 
 lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
     coveringNumber ε A = 1 := by
@@ -204,7 +210,7 @@ lemma externalCoveringNumber_singleton (ε : ℝ≥0) (x : X) : externalCovering
 
 @[simp]
 lemma packingNumber_singleton (ε : ℝ≥0) (x : X) : packingNumber ε {x} = 1 :=
-  le_antisymm ((packingNumber_le_encard {x}).trans_eq (by simp)) <|
+  le_antisymm ((packingNumber_le_encard_self {x}).trans_eq (by simp)) <|
     le_iSup_of_le {x} <| le_iSup_of_le (by simp) <| le_iSup_of_le (by simp) (by simp)
 
 /-- The packing number of a set `A` for radius `2 * ε` is at most the external covering number
