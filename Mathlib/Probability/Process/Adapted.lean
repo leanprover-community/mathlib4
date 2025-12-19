@@ -48,6 +48,7 @@ section StronglyAdapted
 
 variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] {u v : (i : ι) → Ω → β i}
 
+
 /-- A sequence of functions `u` is strongly adapted to a filtration `f` if for all `i`,
 `u i` is `f i`-strongly measurable. -/
 def StronglyAdapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
@@ -216,5 +217,11 @@ theorem Predictable.stronglyAdapted {f : Filtration ℕ m} {u : ℕ → Ω → �
   match n with
   | 0 => hu0
   | n + 1 => (hu n).mono (f.mono n.le_succ)
+
+section Deprications
+
+@[deprecated (since := "2025-12-19")] alias Adapted := StronglyAdapted
+
+end Deprications
 
 end MeasureTheory
