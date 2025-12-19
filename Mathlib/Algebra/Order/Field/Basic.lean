@@ -674,6 +674,9 @@ lemma two_mul_le_add_mul_sq {ε : α} (hε : 0 < ε) :
 
 end
 
+theorem inv_neg' [DivisionRing β] [PartialOrder β] [AddLeftStrictMono β] [PosMulReflectLT β] {a : β}
+    (ha : a < 0) : a⁻¹ < 0 := by rwa [← neg_pos, ← inv_neg, inv_pos, neg_pos]
+
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
