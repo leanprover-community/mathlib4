@@ -248,7 +248,10 @@ lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
 
 section kronecker
-variable {m : Type*} [Fintype m]
+
+omit [Fintype n]
+
+variable [Finite n] {m : Type*} [Finite m]
 
 open scoped Kronecker
 
@@ -256,6 +259,7 @@ open scoped Kronecker
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   classical
+  have := Fintype.ofFinite n; have := Fintype.ofFinite m
   obtain ⟨a, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   obtain ⟨b, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hy.nonneg
   simpa [mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
@@ -266,6 +270,7 @@ open Matrix in
 theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   classical
+  have := Fintype.ofFinite n; have := Fintype.ofFinite m
   exact hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit.mpr <|
     hx.isUnit.kronecker hy.isUnit
 

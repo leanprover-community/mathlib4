@@ -1223,7 +1223,8 @@ theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
   minimalPeriod_single_dvd_minimalPeriod_piMap
 
 @[to_additive]
-protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+protected theorem IsOfFinOrder.pi [Finite ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+  have := Fintype.ofFinite ι
   simp only [← orderOf_ne_zero_iff, Pi.orderOf]
   simp [Finset.lcm_eq_zero_iff]
 

@@ -605,8 +605,10 @@ theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} :
   · intro h
     simp [← card_support_eq_two, ← sum_cycleType, h]
 
+omit [Fintype α] in variable [Finite α] in
 theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
     orderOf σ = 2 := by
+  have := Fintype.ofFinite α
   rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
 
 end IsSwap

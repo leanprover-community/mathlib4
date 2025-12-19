@@ -62,7 +62,7 @@ section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
 
-variable {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+variable {ι : Type*} [Finite ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
 
 @[simp]
@@ -84,12 +84,14 @@ theorem hasDerivWithinAt_pi :
 
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x) :
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
+  have := Fintype.ofFinite ι
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hsx
   · simp only [derivWithin_zero_of_not_uniqueDiffWithinAt hsx, Pi.zero_def]
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
     deriv φ x = fun i => deriv (fun x => φ x i) x :=
+  have := Fintype.ofFinite ι
   (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
 
 end Pi

@@ -378,12 +378,14 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
 theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
+  have := Fintype.ofFinite α
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
   · -- trivial case : Nat.card α ≤ 2
     rw [Nat.lt_succ_iff] at hα3
