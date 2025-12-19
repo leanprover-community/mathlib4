@@ -933,7 +933,7 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
       (Eventually.of_forall fun n => hC (s n)) hs (fun n => hUI.1 (s n))⟩
 
 /-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
-`UniformIntegrable`, then `g` is in `L1`. -/
+`UniformIntegrable`, then `g` is in `Lp`. -/
 lemma UniformIntegrable.memLp_of_tendstoInMeasure {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β}
     (hUI : UniformIntegrable f p μ) (htends : TendstoInMeasure μ f u g) :
@@ -962,13 +962,12 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
       (Eventually.of_forall fun n => hC (s n)) (fun n => hUI.1 (s n)) hs⟩
 
 /-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
-`UniformIntegrable`, then `g` is in `L1`. -/
+`UniformIntegrable`, then `g` is in `Lp`. -/
 lemma UniformIntegrable.memLp_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f p μ)
     (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
     MemLp g p μ := by
-  simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp
-    ⟨g, ⟨fun n => n, htends⟩⟩
+  simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp ⟨g, ⟨fun n => n, htends⟩⟩
 
 /-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
 `UniformIntegrable`, then `g` is integrable. -/
