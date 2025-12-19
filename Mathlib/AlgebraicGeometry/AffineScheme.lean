@@ -81,7 +81,7 @@ theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (
 
 @[reassoc (attr := simp)]
 lemma Scheme.toSpecΓ_isoSpec_inv (X : Scheme.{u}) [IsAffine X] :
-    X.toSpecΓ ≫ X.isoSpec.inv  = 𝟙 _ :=
+    X.toSpecΓ ≫ X.isoSpec.inv = 𝟙 _ :=
   X.isoSpec.hom_inv_id
 
 @[reassoc (attr := simp)]
