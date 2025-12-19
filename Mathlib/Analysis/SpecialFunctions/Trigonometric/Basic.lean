@@ -828,51 +828,51 @@ lemma sin_pi_div_twelve : sin (π / 12) = (√6 - √2) / 4 := by
   rw [pi_div_twelve, sin_sub, sin_pi_div_four, cos_pi_div_six, cos_pi_div_four, sin_pi_div_six]
   grind
 
-lemma cos_five_pi_div_twelve : cos (π * 5 / 12) = (√6 - √2) / 4 := by
+lemma cos_five_mul_pi_div_twelve : cos (5 * π / 12) = (√6 - √2) / 4 := by
   rw [← sin_pi_div_twelve, ← cos_pi_div_two_sub]
   ring_nf
 
-lemma sin_five_pi_div_twelve : sin (π * 5 / 12) = (√6 + √2) / 4 := by
+lemma sin_five_mul_pi_div_twelve : sin (5 * π / 12) = (√6 + √2) / 4 := by
   rw [← cos_pi_div_twelve, ← cos_pi_div_two_sub]
   ring_nf
 
-lemma cos_seven_pi_div_twelve : cos (π * 7 / 12) = (√2 - √6) / 4 := by
-  rw [← neg_sub, neg_div, ← cos_five_pi_div_twelve, ← cos_pi_sub]
+lemma cos_seven_mul_pi_div_twelve : cos (7 * π / 12) = (√2 - √6) / 4 := by
+  rw [← neg_sub, neg_div, ← cos_five_mul_pi_div_twelve, ← cos_pi_sub]
   ring_nf
 
-lemma sin_seven_pi_div_twelve : sin (π * 7 / 12) = (√6 + √2) / 4 := by
-  rw [← sin_five_pi_div_twelve, ← sin_pi_sub]
+lemma sin_seven_mul_pi_div_twelve : sin (7 * π / 12) = (√6 + √2) / 4 := by
+  rw [← sin_five_mul_pi_div_twelve, ← sin_pi_sub]
   ring_nf
 
-lemma cos_two_pi_div_three : cos (π * 2 / 3) = -1 / 2 := by
+lemma cos_two_mul_pi_div_three : cos (2 * π / 3) = -1 / 2 := by
   rw [neg_div, ← cos_pi_div_three, ← cos_pi_sub]
   ring_nf
 
-lemma sin_two_pi_div_three : sin (π * 2 / 3) = √3 / 2 := by
+lemma sin_two_mul_pi_div_three : sin (2 * π / 3) = √3 / 2 := by
   rw [← sin_pi_div_three, ← sin_pi_sub]
   ring_nf
 
-lemma cos_three_pi_div_four : cos (π * 3 / 4) = -√2 / 2 := by
+lemma cos_three_mul_pi_div_four : cos (3 * π / 4) = -√2 / 2 := by
   rw [neg_div, ← cos_pi_div_four, ← cos_pi_sub]
   ring_nf
 
-lemma sin_three_pi_div_four : sin (π * 3 / 4) = √2 / 2 := by
+lemma sin_three_mul_pi_div_four : sin (3 * π / 4) = √2 / 2 := by
   rw [← sin_pi_div_four, ← sin_pi_sub]
   ring_nf
 
-lemma cos_five_pi_div_six : cos (π * 5 / 6) = -√3 / 2 := by
+lemma cos_five_mul_pi_div_six : cos (5 * π / 6) = -√3 / 2 := by
   rw [neg_div, ← cos_pi_div_six, ← cos_pi_sub]
   ring_nf
 
-lemma sin_five_pi_div_six : sin (π * 5 / 6) = 1 / 2 := by
+lemma sin_five_mul_pi_div_six : sin (5 * π / 6) = 1 / 2 := by
   rw [← sin_pi_div_six, ← sin_pi_sub]
   ring_nf
 
-lemma cos_eleven_pi_div_twelve : cos (π * 11 / 12) = (-√2 - √6) / 4 := by
+lemma cos_eleven_mul_pi_div_twelve : cos (11 * π / 12) = (-√2 - √6) / 4 := by
   rw [← neg_sub, neg_div, sub_neg_eq_add, ← cos_pi_div_twelve, ← cos_pi_sub]
   ring_nf
 
-lemma sin_eleven_pi_div_twelve : sin (π * 11 / 12) = (√6 - √2) / 4 := by
+lemma sin_eleven_mul_pi_div_twelve : sin (11 * π / 12) = (√6 - √2) / 4 := by
   rw [← sin_pi_div_twelve, ← sin_pi_sub]
   ring_nf
 
@@ -1242,41 +1242,41 @@ lemma cos_pi_div_three : cos (π / 3) = 1 / 2 := by
 lemma sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   simpa [-Real.sin_pi_div_three] using congr(($Real.sin_pi_div_three : ℂ))
 
-lemma cos_five_pi_div_twelve : cos (π * 5 / 12) = (√6 - √2) / 4 := by
-  simpa using congr(($Real.cos_five_pi_div_twelve : ℂ))
+lemma cos_five_mul_pi_div_twelve : cos (5 * π / 12) = (√6 - √2) / 4 := by
+  simpa using congr(($Real.cos_five_mul_pi_div_twelve : ℂ))
 
-lemma sin_five_pi_div_twelve : sin (π * 5 / 12) = (√6 + √2) / 4 := by
-  simpa using congr(($Real.sin_five_pi_div_twelve : ℂ))
+lemma sin_five_mul_pi_div_twelve : sin (5 * π / 12) = (√6 + √2) / 4 := by
+  simpa using congr(($Real.sin_five_mul_pi_div_twelve : ℂ))
 
-lemma cos_seven_pi_div_twelve : cos (π * 7 / 12) = (√2 - √6) / 4 := by
-  simpa using congr(($Real.cos_seven_pi_div_twelve : ℂ))
+lemma cos_seven_mul_pi_div_twelve : cos (7 * π / 12) = (√2 - √6) / 4 := by
+  simpa using congr(($Real.cos_seven_mul_pi_div_twelve : ℂ))
 
-lemma sin_seven_pi_div_twelve : sin (π * 7 / 12) = (√6 + √2) / 4 := by
-  simpa using congr(($Real.sin_seven_pi_div_twelve : ℂ))
+lemma sin_seven_mul_pi_div_twelve : sin (7 * π / 12) = (√6 + √2) / 4 := by
+  simpa using congr(($Real.sin_seven_mul_pi_div_twelve : ℂ))
 
-lemma cos_two_pi_div_three : cos (π * 2 / 3) = -1 / 2 := by
-  simpa using congr(($Real.cos_two_pi_div_three : ℂ))
+lemma cos_two_mul_pi_div_three : cos (2 * π / 3) = -1 / 2 := by
+  simpa using congr(($Real.cos_two_mul_pi_div_three : ℂ))
 
-lemma sin_two_pi_div_three : sin (π * 2 / 3) = √3 / 2 := by
-  simpa using congr(($Real.sin_two_pi_div_three : ℂ))
+lemma sin_two_mul_pi_div_three : sin (2 * π / 3) = √3 / 2 := by
+  simpa using congr(($Real.sin_two_mul_pi_div_three : ℂ))
 
-lemma cos_three_pi_div_four : cos (π * 3 / 4) = -√2 / 2 := by
-  simpa using congr(($Real.cos_three_pi_div_four : ℂ))
+lemma cos_three_mul_pi_div_four : cos (3 * π / 4) = -√2 / 2 := by
+  simpa using congr(($Real.cos_three_mul_pi_div_four : ℂ))
 
-lemma sin_three_pi_div_four : sin (π * 3 / 4) = √2 / 2 := by
-  simpa using congr(($Real.sin_three_pi_div_four : ℂ))
+lemma sin_three_mul_pi_div_four : sin (3 * π / 4) = √2 / 2 := by
+  simpa using congr(($Real.sin_three_mul_pi_div_four : ℂ))
 
-lemma cos_five_pi_div_six : cos (π * 5 / 6) = -√3 / 2 := by
-  simpa using congr(($Real.cos_five_pi_div_six : ℂ))
+lemma cos_five_mul_pi_div_six : cos (5 * π / 6) = -√3 / 2 := by
+  simpa using congr(($Real.cos_five_mul_pi_div_six : ℂ))
 
-lemma sin_five_pi_div_six : sin (π * 5 / 6) = 1 / 2 := by
-  simpa using congr(($Real.sin_five_pi_div_six : ℂ))
+lemma sin_five_mul_pi_div_six : sin (5 * π / 6) = 1 / 2 := by
+  simpa using congr(($Real.sin_five_mul_pi_div_six : ℂ))
 
-lemma cos_eleven_pi_div_twelve : cos (π * 11 / 12) = (-√2 - √6) / 4 := by
-  simpa using congr(($Real.cos_eleven_pi_div_twelve : ℂ))
+lemma cos_eleven_mul_pi_div_twelve : cos (11 * π / 12) = (-√2 - √6) / 4 := by
+  simpa using congr(($Real.cos_eleven_mul_pi_div_twelve : ℂ))
 
-lemma sin_eleven_pi_div_twelve : sin (π * 11 / 12) = (√6 - √2) / 4 := by
-  simpa using congr(($Real.sin_eleven_pi_div_twelve : ℂ))
+lemma sin_eleven_mul_pi_div_twelve : sin (11 * π / 12) = (√6 - √2) / 4 := by
+  simpa using congr(($Real.sin_eleven_mul_pi_div_twelve : ℂ))
 
 theorem tan_periodic : Function.Periodic tan π := by
   simpa only [tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
