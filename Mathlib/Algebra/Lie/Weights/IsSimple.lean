@@ -260,9 +260,28 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
 
-private theorem eq_top_of_iSup_sl2Submodule_eq_top_aux (q : Submodule K (Dual K H))
-    (h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤) :
-    q = ⊤ := by
+@[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    (invtSubmoduleToLieIdeal q (by exact hq) : Submodule K L) =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+  rfl
+
+@[simp] lemma invtSubmoduleToLieIdeal_top :
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Dual K H)) (by simp) = ⊤ := by
+  rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
+    LieSubmodule.top_toSubmodule]
+  sorry
+
+@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_top_iff (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    invtSubmoduleToLieIdeal q (by exact hq) = ⊤ ↔ q = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  have h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤ := by
+    rw [← LieSubmodule.toSubmodule_inj] at h
+    have := coe_invtSubmoduleToLieIdeal_eq_iSup q hq
+    simpa only [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal,
+      LieSubmodule.iSup_toSubmodule] using h
+  -- From here I've just pasted your proof
   by_contra hq_ne_top
   have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
     contrapose! hq_ne_top
@@ -295,38 +314,15 @@ private theorem eq_top_of_iSup_sl2Submodule_eq_top_aux (q : Submodule K (Dual K 
   simp only [center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
   exact hy_ne_zero h_y_center
 
-section IsSimple
+@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+    invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
+  sorry
 
-variable [IsSimple K L]
-
-lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
-    (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-    (h₁ : q ≠ ⊥) : q = ⊤ := by
-  let J := (invtSubmoduleToLieIdeal q h₀)
-  have : IsSimple K L := inferInstance
-  have : J = ⊥ ∨ J = ⊤ := this.eq_bot_or_eq_top J
-  have c₁ : J ≠ ⊥ := by
-    unfold J invtSubmoduleToLieIdeal
-    simp only [ne_eq, ← LieSubmodule.toSubmodule_eq_bot, LieSubmodule.iSup_toSubmodule,
-               iSup_eq_bot, not_forall]
-    have hq' : ⟨q, (RootPairing.mem_invtRootSubmodule_iff _).mpr h₀⟩ ≠
-        (⊥ : (rootSystem H).invtRootSubmodule) := Subtype.coe_ne_coe.mp h₁
-    simp only [ne_eq, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall, not_not] at hq'
-    obtain ⟨i, hi⟩ := hq'
-    refine ⟨⟨i.val, hi, by grind⟩, fun h_eq_bot => ?_⟩
-    obtain ⟨x, hx, hx₀⟩ := i.val.exists_ne_zero
-    simp only [Submodule.eq_bot_iff, sl2SubmoduleOfRoot_eq_sup] at h_eq_bot
-    exact hx₀ (h_eq_bot x (Submodule.mem_sup_left (Submodule.mem_sup_left hx)))
-  have c₂ : J = ⊤ := by grind
-  apply eq_top_of_iSup_sl2Submodule_eq_top_aux q
-  show (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤
-  unfold J invtSubmoduleToLieIdeal at c₂
-  simpa using c₂
-
-instance : (rootSystem H).IsIrreducible := by
+instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| eq_top_of_invtSubmodule_ne_bot
-
-end IsSimple
+  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| fun q h₀ h₁ ↦ by
+    have := IsSimple.eq_bot_or_eq_top (invtSubmoduleToLieIdeal q h₀)
+    aesop
 
 end LieAlgebra.IsKilling
