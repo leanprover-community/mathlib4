@@ -11,8 +11,8 @@ import Mathlib.Tactic.Simproc.Factors
 # IMO 2025 Q3
 
 Let `ℕ+` denote the set of positive integers. A function `f: ℕ+ → ℕ+` is said to be bonza if
-`f(a) ∣ b ^ a - (f b)^ (f a)` for all positive integers `a` and `b`.
-Determine the smallest real constant `c` such that `f(n) ≤ c * n` for all bonza functions `f` and
+`f a ∣ b ^ a - (f b) ^ (f a)` for all positive integers `a` and `b`.
+Determine the smallest real constant `c` such that `f n ≤ c * n` for all bonza functions `f` and
 all positive integers `n`.
 
 ## Solution
@@ -20,14 +20,14 @@ all positive integers `n`.
 We follow solution from https://web.evanchen.cc/exams/IMO-2025-notes.pdf.
 
 We first plug in `a = b = n` to get the basic constraint `∀ n, f n ∣ n ^ n`. Next, one shows that
-unless `f` is the identity, every odd prime must satisfy `f(p)=1`. From here, any odd prime divisor
-of `f(n)` is ruled out by taking `a = n, b = p`, so `f(n)` is always a power of `2`.
+unless `f` is the identity, every odd prime must satisfy `f p = 1`. From here, any odd prime divisor
+of `f n` is ruled out by taking `a = n, b = p`, so `f n` is always a power of `2`.
 Finally, evaluating `a = n, b = 3` gives `f n ∣ 3 ^ n - 1`, and according to the LTE lemma, we have
 `padicValNat 2 (3 ^ n - 1) = padicValNat 2 n + 2` for `Even n`. Therefore,
 `f(n) ≤ 2 ^ (padicValNat 2 n + 2) ≤ 4 * n`, so `c=4` works.
 
-A matching construction is `f(n)=1` for `Odd n`, `f(4)=16`, and `f(n)=2` for other `Even n`, which
-attains the bound, showing the optimal answer is `c=4`.
+A matching construction is `f n = 1` for `Odd n`, `f 4 = 16`, and `f n = 2` for other `Even n`,
+which attains the bound, showing the optimal answer is `c = 4`.
 -/
 
 open Nat Int
@@ -35,20 +35,20 @@ open Nat Int
 namespace Imo2025Q3
 
 /-- Define bonza functions -/
-def bonza : (ℕ → ℕ) → Prop := fun (f : ℕ → ℕ) ↦
+def IsBonza : (ℕ → ℕ) → Prop := fun (f : ℕ → ℕ) ↦
   (∀ a b : ℕ, 0 < a → 0 < b → (f a : ℤ) ∣ (b : ℤ) ^ a - (f b : ℤ) ^ (f a)) ∧ ∀ n, 0 < n → 0 < f n
 
-namespace bonza
+namespace IsBonza
 
 variable {f : ℕ → ℕ}
 
 /-- For each bonza function `f`, we have `f n ∣ n ^ n` -/
-lemma apply_dvd_pow (hf : bonza f) {n : ℕ} (hn : 0 < n) : f n ∣ n ^ n := by
+lemma apply_dvd_pow (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n := (f n : ℤ).dvd_refl.pow (ne_zero_of_lt (hf.2 n hn))
   have : (f n : ℤ) ∣ (n : ℤ) ^ n := (dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
   rwa [← natCast_pow n n, ofNat_dvd] at this
 
-lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : bonza f) {p : ℕ} (hp : p.Prime) :
+lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : IsBonza f) {p : ℕ} (hp : p.Prime) :
     f p = 1 ∨ (∀ b > (0 : ℕ), (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
   have : f p ∣ p ^ p := apply_dvd_pow hf hp.pos
   obtain ⟨k, _, eq⟩ : ∃ k, k ≤ p ∧ f p = p ^ k := (Nat.dvd_prime_pow hp).mp this
@@ -71,7 +71,7 @@ lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : bonza f) {p : ℕ} (hp : p.
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
 /-- For each bonza function `f`, then `f p = 1` for sufficient big prime `p` -/
-theorem not_id_apply_prime_of_gt_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
+theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∃ N, ∀ p > N, p.Prime → f p = 1 := by
   obtain ⟨b, hb, neq⟩ : ∃ b, 0 < b ∧ f b ≠ b := Set.not_subset.mp hnf
   use ((b : ℤ) - (f b : ℤ)).natAbs
@@ -83,7 +83,7 @@ theorem not_id_apply_prime_of_gt_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : �
   · have : p ≤ ((b : ℤ) - (f b : ℤ)).natAbs := natAbs_le_of_dvd_ne_zero ch (by grind)
     linarith
 
-theorem apply_prime_gt_two_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
+theorem apply_prime_gt_two_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∀ p > 2, p.Prime → f p = 1 := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, p.Prime → f p = 1 :=
     not_id_apply_prime_of_gt_eq_one hf hnf
@@ -109,9 +109,9 @@ theorem apply_prime_gt_two_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f 
     lia
 
 /-- Therefore, if a bonza function is not identity, then every `f x` is a pow of two -/
-lemma not_id_two_pow (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
+lemma not_id_two_pow (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∀ n, 0 < n → ∃ a, f n = 2 ^ a := fun n hn ↦
-  have : ∀ {p}, p.Prime → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
+  have {p} (pp : p.Prime) (hp : p ∣ f n) : p = 2 := by
     by_contra nh
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
       _ ∣ (f n : ℤ) := ofNat_dvd.mpr hp
@@ -123,7 +123,7 @@ lemma not_id_two_pow (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     exact (pp.not_dvd_one) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
   ⟨(f n).primeFactorsList.length, eq_prime_pow_of_unique_prime_dvd (ne_zero_of_lt (hf.2 n hn)) this⟩
 
-end bonza
+end IsBonza
 
 /-- An example of a bonza function achieving the maximum number of values of `c`. -/
 def fExample : ℕ → ℕ := fun x ↦
@@ -147,7 +147,7 @@ lemma dvd_pow_sub {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 �
     _ ∣ _ := pow_dvd_pow_of_dvd hx (2 ^ (padicValNat 2 a + 2))
 
 /-- To verify the example is a bonza function -/
-lemma IsBonza : bonza fExample := by
+lemma isBonza : IsBonza fExample := by
   constructor
   · intro a b ha hb
     by_cases ch1 : ¬ 2 ∣ a
@@ -177,13 +177,13 @@ lemma IsBonza : bonza fExample := by
       · grind [dvd_pow_sub]
   · grind [fExample, Nat.two_pow_pos]
 
-theorem apply_le {f : ℕ → ℕ} (hf : bonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
+theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x > (0 : ℕ), f x = x
   · simpa [hnf n hn] using by lia
-  · obtain ⟨k, hk⟩ := bonza.not_id_two_pow hf hnf n hn
+  · obtain ⟨k, hk⟩ := IsBonza.not_id_two_pow hf hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
-        have eq1 : f 3 = 1 := bonza.apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
+        have eq1 : f 3 = 1 := IsBonza.apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
         have eq2 : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
           grind [natCast_pred_of_pos, pos_of_neZero]
         have := hf.1 n 3 hn (by norm_num)
@@ -202,14 +202,14 @@ theorem apply_le {f : ℕ → ℕ} (hf : bonza f) {n : ℕ} (hn : 0 < n) : f n �
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
     · have : k = 0 := by
         by_contra! nh
-        have : Odd (f n) := ch.pow.of_dvd_nat (bonza.apply_dvd_pow hf hn)
+        have : Odd (f n) := ch.pow.of_dvd_nat (IsBonza.apply_dvd_pow hf hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
       simpa [hk, this] using by lia
 
 end fExample
 
-theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, bonza f → ∀ n, 0 < n → f n ≤ c * n} 4 := by
+theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, IsBonza f → ∀ n, 0 < n → f n ≤ c * n} 4 := by
   constructor
   · intro f hf n hn
     have : 4 * (n : ℝ) = (4 * n : ℕ) := by simp
@@ -218,7 +218,7 @@ theorem result : IsLeast {c : ℝ | ∀ f : ℕ → ℕ, bonza f → ∀ n, 0 < 
   · intro c hc
     have : 16 ≤ c * 4 := by
       simpa [fExample, ← factorization_def _ prime_two, ← primeFactorsList_count_eq] using
-        hc fExample fExample.IsBonza 4
+        hc fExample fExample.isBonza 4
     linarith
 
 end Imo2025Q3
