@@ -109,7 +109,7 @@ lemma decompose_point (p : Plane) : p = !₂[p.proj 0, p.proj 1] := by
 /-- `udMap` is injective on indices `[0, 7, 10, 5, 2, 9]` because their x-coordinates
 strictly increase in that order. -/
 lemma injOn_udMap_sextet : Set.InjOn udMap ({0, 7, 10, 5, 2, 9} : Finset (Fin 14)) := by
-  let f : Fin 6 → Fin 14 := fun | 0 => 0 | 1 => 7 | 2 => 10 | 3 => 5 | 4 => 2 | 5 => 9
+  let f : Fin 6 → Fin 14 := ![0, 7, 10, 5, 2, 9]
   have frange : Set.range f = ({0, 7, 10, 5, 2, 9} : Finset (Fin 14)) := by
     rw [Set.range_eq_iff]; decide
   suffices StrictMono fun n ↦ (udMap (f n)).proj 0 by
