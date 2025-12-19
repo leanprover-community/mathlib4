@@ -63,8 +63,8 @@ variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSp
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
 /-- can't do this inline, it times out -/
-noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+noncomputable abbrev auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
+    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
     V ≃L[𝕜] W where
   toFun := (α' • e.toContinuousLinearMap).toLinearMap
@@ -84,50 +84,51 @@ noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α 
   continuous_toFun := (α' • e.toContinuousLinearMap).continuous
   continuous_invFun := (α' • e.toContinuousLinearMap.adjoint).continuous
 
-theorem coe_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+theorem coe_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W) :
-    (auxIsometry e hα hα2 he he').toContinuousLinearMap =
+    (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-theorem adjoint_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
-    (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
+theorem adjoint_auxContinuousLinearEquiv (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0)
+    (hα2 : α' * α' = α⁻¹) (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
-    adjoint (auxIsometry e hα hα2 he he').toContinuousLinearMap =
+    adjoint (auxContinuousLinearEquiv e hα hα2 he he').toContinuousLinearMap =
       α' • e.toContinuousLinearMap.adjoint := by
   ext x
   apply ext_inner_left 𝕜 fun y ↦ ?_
-  simp [auxIsometry, adjoint_inner_right, inner_smul_left, inner_smul_right, hαa]
+  simp [auxContinuousLinearEquiv, adjoint_inner_right, inner_smul_left, inner_smul_right, hαa]
 
 /-- can't do this inline either, it times out -/
-noncomputable abbrev auxIsometry' (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+noncomputable abbrev auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
     V ≃ₗᵢ[𝕜] W where
-  __ := auxIsometry e hα hα2 he he' |>.toLinearEquiv
+  __ := auxContinuousLinearEquiv e hα hα2 he he' |>.toLinearEquiv
   norm_map' := by
     rw [ContinuousLinearEquiv.coe_toLinearEquiv, ← ContinuousLinearEquiv.coe_coe,
-      norm_map_iff_adjoint_comp_self, adjoint_auxIsometry _ _ _ _ _ hαa, coe_auxIsometry]
+      norm_map_iff_adjoint_comp_self, adjoint_auxContinuousLinearEquiv _ _ _ _ _ hαa,
+      coe_auxContinuousLinearEquiv]
     simp only [comp_smulₛₗ, RingHom.id_apply, smul_comp, smul_smul, hα2]
     simp [he, smul_smul, hα, one_def]
 
-theorem coe_auxIsometry' (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+theorem coe_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
-    (auxIsometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.toContinuousLinearMap =
+    (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.toContinuousLinearMap =
       α' • e.toContinuousLinearMap := rfl
 
-theorem coe_symm_auxIsometry' (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
+theorem coe_symm_auxIsometry (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠ 0) (hα2 : α' * α' = α⁻¹)
     (he : e.toContinuousLinearMap.adjoint ∘L e = α • .id 𝕜 V)
     (he' : e ∘L e.toContinuousLinearMap.adjoint = α • .id 𝕜 W)
     (hαa : starRingEnd 𝕜 α' = α') :
-    (auxIsometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.symm.toContinuousLinearMap =
+    (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.symm.toContinuousLinearMap =
       α'⁻¹ • e.symm.toContinuousLinearMap := by
   ext y
-  apply (auxIsometry' e hα hα2 he he' hαa).toContinuousLinearEquiv.injective
+  apply (auxIsometry e hα hα2 he he' hαa).toContinuousLinearEquiv.injective
   simp [smul_smul, inv_mul_cancel₀ (a := α') (by grind)]
 
 open ComplexOrder
@@ -136,13 +137,13 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W,
       ⇑f = fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv := by
-  obtain ⟨y, hy⟩ := ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
-    (f.toAlgEquiv.toLinearEquiv.continuous_symm hf) |>.coe_eq_continuousLinearEquiv_conjugate
   by_cases! hV : Subsingleton V
   · by_cases! hV : Subsingleton W
     · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
       exact Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
+  obtain ⟨y, hy⟩ := ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
+    (f.toAlgEquiv.toLinearEquiv.continuous_symm hf) |>.coe_eq_continuousLinearEquiv_conjugate
   have (x : V →L[𝕜] V) : adjoint (f x) = f (adjoint x) := map_star _ _ |>.symm
   simp_rw [← StarAlgEquiv.coe_toAlgEquiv,
     (ContinuousAlgEquiv.coe_ofAlgEquiv f.toAlgEquiv hf _ ▸ hy), adjoint_comp] at this
@@ -191,7 +192,7 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
     rw [thisα]
     norm_num
     simp [Real.rpow_neg_one]
-  set U := auxIsometry' y thisα' αa2 hα.symm thisU (by simp [αa])
+  set U := auxIsometry y thisα' αa2 hα.symm thisU (by simp [αa])
   use U
   have la : αa⁻¹ * αa = 1 := by
     simp only [one_div, αa]
@@ -199,4 +200,4 @@ public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
       simp only [ne_eq, map_eq_zero]
       rw [Real.rpow_eq_zero this2.le (by simp)]
       exact ne_of_gt this2)
-  simp [U, coe_auxIsometry', coe_symm_auxIsometry', smul_smul, la, ← hy]
+  simp [U, coe_auxIsometry, coe_symm_auxIsometry, smul_smul, la, ← hy]
