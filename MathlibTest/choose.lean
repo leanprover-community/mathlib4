@@ -121,7 +121,7 @@ example (h : ∀ i : Nat, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
 error: type mismatch for 'n'
 has type
   ℕ
-but expected
+but is expected to have type
   ℤ
 -/
 #guard_msgs in
@@ -133,10 +133,19 @@ example (h : ∃ n : Nat, n > 0) : True := by
 error: type mismatch for 'hn'
 has type
   n > 0
-but expected
+but is expected to have type
   n < 0
 -/
 #guard_msgs in
 example (h : ∃ n : Nat, n > 0) : True := by
   choose n (hn : n < 0) using h
+  trivial
+
+-- Binder predicates are not supported
+/--
+error: binder predicates like '< n' are not supported by choose; use a type annotation like '(h : x < n)' instead
+-/
+#guard_msgs in
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n > 0) using h
   trivial

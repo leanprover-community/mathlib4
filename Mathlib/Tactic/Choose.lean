@@ -87,15 +87,15 @@ open Batteries.ExtendedBinder in
 - `_` - anonymous
 - `(x : T)` - identifier with type annotation
 - `(_ : T)` - anonymous with type annotation -/
-def parseChooseArg (stx : TSyntax ``chooseBinder) : ChooseArg :=
+def parseChooseArg (stx : TSyntax ``chooseBinder) : MetaM ChooseArg := do
   match stx with
-  | `(chooseBinder| $id:binderIdent) => parseBinderIdent id
+  | `(chooseBinder| $id:binderIdent) => return parseBinderIdent id
   | `(chooseBinder| ($id:binderIdent : $ty:term)) =>
-    { parseBinderIdent id with expectedType? := some ty }
-  | `(chooseBinder| ($id:binderIdent $_:binderPred)) =>
-    -- binderPred not supported; treat as just the identifier
-    parseBinderIdent id
-  | _ => ⟨stx, `_, none⟩
+    return { parseBinderIdent id with expectedType? := some ty }
+  | `(chooseBinder| ($_id:binderIdent $bp:binderPred)) =>
+    throwErrorAt bp "binder predicates like '< n' are not supported by choose; \
+      use a type annotation like '(h : x < n)' instead"
+  | _ => return ⟨stx, `_, none⟩
 where
   parseBinderIdent (id : TSyntax ``Lean.binderIdent) : ChooseArg :=
     match id with
@@ -192,7 +192,7 @@ def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (arg : Choose
       let expectedType ← Term.elabType expectedTypeStx
       unless ← isDefEq actualType expectedType do
         throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
-          has type{indentExpr actualType}\nbut expected{indentExpr expectedType}"
+          {← mkHasTypeButIsExpectedMsg actualType expectedType}"
   pure (status, g)
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
@@ -216,7 +216,7 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
           let expectedType ← Term.elabType expectedTypeStx
           unless ← isDefEq actualType expectedType do
             throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
-              has type{indentExpr actualType}\nbut expected{indentExpr expectedType}"
+              {← mkHasTypeButIsExpectedMsg actualType expectedType}"
       return g
   | arg::args, status, g => do
     let (status', g) ← choose1WithInfo g nondep h arg
@@ -274,7 +274,7 @@ syntax (name := choose) "choose" "!"? (ppSpace colGt chooseBinder)+ (" using " t
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids:chooseBinder]* $[using $h]?) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
-  let args := ids.toList.map parseChooseArg
+  let args ← ids.toList.mapM (liftM <| parseChooseArg ·)
   Term.withoutErrToSorry do
     let g ← elabChoose b.isSome h args (.failure []) (← getMainGoal)
     replaceMainGoal [g]
