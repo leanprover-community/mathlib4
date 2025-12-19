@@ -169,8 +169,8 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
-theorem measurable_bot_eq_const {β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    [Nonempty β] [hs : SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
+theorem measurable_bot_eq_const {β : Type*} [MeasurableSpace β] [Nonempty β]
+    [hs : SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
     ∃ c, f = fun _ ↦ c := by
   have h (a₁ : α) (a₂ : α) : f a₁ = f a₂ := by
     by_contra! h
