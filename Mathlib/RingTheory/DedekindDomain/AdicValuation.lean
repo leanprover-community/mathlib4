@@ -462,7 +462,7 @@ instance : IsDedekindDomain (ofAtPrime K v) :=
   (subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors)
 
 open scoped WithZero algebraMap in
-theorem IdealOfLE_ofAtPrime_valuationSubring_eq :
+theorem idealOfLE_ofAtPrime_valuationSubring_eq :
     (ofAtPrime K v).idealOfLE (v.valuation K).valuationSubring
     (ofAtPrime_le_valuationValuationSubring ..) = IsLocalRing.maximalIdeal (ofAtPrime K v) := by
   let π : IsDedekindDomain.HeightOneSpectrum (ofAtPrime K v) := {
@@ -493,7 +493,7 @@ theorem ofAtPrime_eq_valuationSubring : ofAtPrime K v = (v.valuation K).valuatio
   simp only [(IsLocalRing.local_hom_TFAE
     (ValuationSubring.inclusion _ _ (ofAtPrime_le_valuationValuationSubring v))).out 0 3]
   convert le_rfl
-  simpa [ValuationSubring.idealOfLE] using IdealOfLE_ofAtPrime_valuationSubring_eq v
+  simpa [ValuationSubring.idealOfLE] using idealOfLE_ofAtPrime_valuationSubring_eq v
 
 end Localization
 
