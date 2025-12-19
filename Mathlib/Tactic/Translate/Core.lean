@@ -522,12 +522,10 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
   decl := decl.updateType <| ← unfoldAuxLemmas decl.type
-  if let some v := decl.value? then
+  if let some v := decl.value? (allowOpaque := true) then
     trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfoldAuxLemmas v
     trace[translate] "value after unfold:{indentExpr decl.value!}"
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
-    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
   return decl
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
@@ -536,30 +534,21 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-
-  let translateValue (v : Expr) : MetaM Expr := do
-    let mut v := v
+  if let some value := decl.value? (allowOpaque := true) then
+    let mut value := value
     if let some b := t.unfoldBoundaries then
-      v ← b.cast (← b.insertBoundaries v t.attrName) decl.type t.attrName
-    v ← reorderLambda reorder <| ← applyReplacementLambda t dont v
+      value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+    value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
     if let some b := t.unfoldBoundaries then
-      v ← b.unfoldInsertions v
-    return v
-
+      value ← b.unfoldInsertions value
+    decl := decl.updateValue value
   let mut type := decl.type
   if let some b := t.unfoldBoundaries then
     type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
   if let some b := t.unfoldBoundaries then
     type ← b.unfoldInsertions type
-  decl := decl.updateType type
-
-  if let some v := decl.value? then
-    decl := decl.updateValue <| ← translateValue v
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
-    decl := .opaqueInfo { info with
-      value :=  ← translateValue info.value }
-  return decl
+  return decl.updateType type
 
 /--
 Find the argument of `nm` that appears in the first translatable (type-class) argument.
@@ -667,10 +656,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclRec t ref pre tgt_pre n
-  if let some value := srcDecl.value? then
-    for n in findAuxDecls value pre do
-      transformDeclRec t ref pre tgt_pre n
-  if let .opaqueInfo {value, ..} := srcDecl then
+  if let some value := srcDecl.value? (allowOpaque := true) then
     for n in findAuxDecls value pre do
       transformDeclRec t ref pre tgt_pre n
   -- expose target body when source body is exposed

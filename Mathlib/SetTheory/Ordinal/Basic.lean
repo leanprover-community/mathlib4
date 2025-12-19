@@ -329,13 +329,18 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 
+set_option backward.privateInPublic true in
 private protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : OrderBot Ordinal where
   bot := 0
   bot_le := zero_le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
@@ -343,16 +348,24 @@ theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
 instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
   simp [← bot_eq_zero]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 := bot_lt_iff_ne_bot
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated not_neg (since := "2025-11-21")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated eq_zero_or_pos (since := "2025-11-21")]
 protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
 
@@ -859,6 +872,7 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
 
 /-! ### Successor order properties -/
 
+set_option backward.privateInPublic true in
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
   refine inductionOn₂ a b fun α r _ β s _ ↦ ⟨?_, ?_⟩ <;> rintro ⟨f⟩
   · refine ⟨((InitialSeg.leAdd _ _).trans f).toPrincipalSeg fun h ↦ ?_⟩
@@ -869,6 +883,8 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
 instance : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
