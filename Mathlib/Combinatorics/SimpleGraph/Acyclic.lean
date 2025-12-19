@@ -284,7 +284,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
       by_contra hhh
       refine hcc.1 s(u', v') ?_ rfl
       rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
-      have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
+      have := IsPath.mk' this |>.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
 theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
@@ -454,33 +454,61 @@ lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
   obtain ⟨v, hv⟩ := hconn.exists_connected_induce_compl_singleton_of_finite_nontrivial
   exact ⟨v, hv.preconnected⟩
 
-lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
-    G.dist u v ≠ G.dist u w := by
-  obtain ⟨p, hp, hp'⟩ := hG.isConnected.exists_path_of_dist u v
-  obtain ⟨q, hq, hq'⟩ := hG.isConnected.exists_path_of_dist u w
+lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
+    (hreach : G.Reachable u v) : G.dist u v ≠ G.dist u w := by
+  obtain ⟨p, hp, hp'⟩ := hreach.exists_path_of_dist
+  obtain ⟨q, hq, hq'⟩ := hreach.trans hadj.reachable |>.exists_path_of_dist
   rw [← hp', ← hq']
   by_cases hw : w ∈ p.support
-  · rw [hG.IsAcyclic.path_concat hq hp hadj.symm hw, q.length_concat]
+  · rw [hG.path_concat hq hp hadj.symm hw, q.length_concat]
     exact q.length.ne_add_one.symm
-  · have hv : v ∈ q.support := hG.IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
+  · have hv : v ∈ q.support := hG.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
       hadj.symm hw
-    rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
+    rw [hG.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
 
-lemma IsTree.diff_dist_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : SimpleGraph.Adj G v w) :
-    G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
-  grind [dist_ne_of_adj, Connected.diff_dist_adj, IsTree]
+lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
+    G.dist u v ≠ G.dist u w :=
+  hG.IsAcyclic.dist_ne_of_adj hadj <| hG.isConnected u v
+
+lemma IsAcyclic.dist_eq_dist_add_one_of_adj_of_reachable
+    (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w) (hreach : G.Reachable u v) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u w = G.dist u v + 1 := by
+  grind [dist_ne_of_adj, Adj.diff_dist_adj]
+
+lemma IsTree.dist_eq_dist_add_one_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u w = G.dist u v + 1 := by
+  grind [dist_ne_of_adj, Adj.diff_dist_adj]
 
 /-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
   Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
-    grind [diff_dist_adj]
+    grind [dist_eq_dist_add_one_of_adj]
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
   hG.coloringTwoOfVert hG.isConnected.nonempty.some
 
 lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
+  ⟨hG.coloringTwo⟩
+
+/-- The unique two-coloring of a forest that colors the given vertices with zero -/
+noncomputable def IsAcyclic.coloringTwoOfVerts (hG : G.IsAcyclic) (verts : G.ConnectedComponent → V)
+    (h : ∀ C, verts C ∈ C) : G.Coloring (Fin 2) where
+  toFun v :=
+    let u := verts <| G.connectedComponentMk v
+    ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩
+  map_rel' := by
+    intro u v hadj
+    have := ConnectedComponent.sound hadj.reachable
+    have := hG.dist_eq_dist_add_one_of_adj_of_reachable _ hadj <| ConnectedComponent.exact <| h _
+    grind [top_adj]
+
+/-- Arbitrary coloring with two colors for a forest -/
+noncomputable def IsAcyclic.coloringTwo (hG : G.IsAcyclic) : G.Coloring (Fin 2) :=
+  hG.coloringTwoOfVerts (·.nonempty_supp.some) (·.nonempty_supp.some_mem)
+
+lemma IsAcyclic.isBipartite (hG : G.IsAcyclic) : G.IsBipartite :=
   ⟨hG.coloringTwo⟩
 
 end SimpleGraph

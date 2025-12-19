@@ -295,7 +295,8 @@ theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 end Equiv
 
 -- TODO: do we really need to preserve the def-eq between `LE` on `WithBot` and `WithTop`
--- moving forward?
+-- moving forward? See discussion here:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Order.20dual.20tactic/near/562584912
 
 section LE
 variable [LE α]
@@ -396,8 +397,11 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 instance instOrderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
 @[to_dual]
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) where
+instance instOrderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top x := by cases x <;> simp [le_def]
+
+@[to_dual]
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) where
 
 /-- There is a general version `le_bot_iff`, but this lemma does not require a `PartialOrder`. -/
 @[to_dual (attr := simp) top_le_iff
@@ -419,19 +423,16 @@ theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
   fun x ↦ by cases x <;> simp; simpa using @h _
 
-@[to_dual untop_le_iff]
+@[to_dual (attr := simp) untop_le_iff]
 lemma le_unbot_iff (hx : x ≠ ⊥) : a ≤ unbot x hx ↔ a ≤ x := by lift x to α using hx; simp
-@[to_dual le_untop_iff]
+@[to_dual (attr := simp) le_untop_iff]
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ a ↔ x ≤ a := by lift x to α using hx; simp
 
 @[to_dual (reorder := hx hy)]
-lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x ≤ y ↔ x.unbot hx ≤ y.unbot hy := by
-  lift x to α using hx
-  lift y to α using hy
-  simp
+lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.unbot hy ↔ x ≤ y := by simp
 
 @[to_dual]
-alias ⟨unbot_mono, _⟩ := unbot_le_unbot_iff
+alias ⟨_, unbot_mono⟩ := unbot_le_unbot_iff
 
 @[deprecated (since := "2025-12-05")]
 alias unbot_le_unbot := unbot_le_unbot_iff
@@ -455,11 +456,16 @@ lemma unbotA_le_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA ≤ a ↔ x ≤ a 
 @[to_dual]
 lemma unbotA_mono [Nonempty α] (hy : x ≠ ⊥) (h : x ≤ y) : x.unbotA ≤ y.unbotA := unbotD_mono hy h
 
-end LE
+@[to_dual]
+alias ⟨unbot_mono, _⟩ := unbot_le_unbot_iff
 
-section LT
+@[deprecated (since := "2025-12-05")]
+alias unbot_le_unbot := unbot_le_unbot_iff
 
-variable [LT α] {x y : WithBot α}
+@[to_dual untopD_le_iff]
+lemma le_unbotD_iff (hx : x ≠ ⊥) : b ≤ x.unbotD a ↔ b ≤ x := by lift x to α using hx; simp
+@[to_dual le_untopD_iff]
+lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
 
 @[to_dual]
 lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
@@ -485,16 +491,27 @@ lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exis
 `PartialOrder α`. -/]
 protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
-@[to_dual untop_lt_iff]
+@[to_dual (attr := simp) untop_lt_iff]
 lemma lt_unbot_iff (hx : x ≠ ⊥) : a < unbot x hx ↔ a < x := by lift x to α using hx; simp
-@[to_dual lt_untop_iff]
+@[to_dual (attr := simp) lt_untop_iff]
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using hx; simp
 
-@[to_dual (attr := simp) (reorder := hx hy)]
-lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by
-  lift x to α using hx
-  lift y to α using hy
-  simp
+@[to_dual (reorder := hx hy)]
+lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by simp
+
+@[deprecated (since := "2025-12-05")]
+alias unbot_lt_unbot := unbot_lt_unbot_iff
+
+@[to_dual untopD_lt_iff]
+lemma lt_unbotD_iff (hx : x ≠ ⊥) : b < x.unbotD a ↔ b < x := by lift x to α using hx; simp
+@[to_dual lt_untopD_iff]
+lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
+
+@[to_dual untopA_lt_iff]
+lemma lt_unbotA_iff [Nonempty α] (hx : x ≠ ⊥) : a < x.unbotA ↔ a < x := lt_unbotD_iff hx
+@[to_dual lt_untopA_iff]
+lemma unbotA_lt_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA < a ↔ x < a := by
+  lift x to α using hx; simp
 
 @[deprecated (since := "2025-12-05")]
 alias unbot_lt_unbot := unbot_lt_unbot_iff
@@ -512,27 +529,11 @@ lemma unbotA_lt_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA < a ↔ x < a := b
 
 end LT
 
-end WithBot
-
-instance WithBot.instPreorder [Preorder α] : Preorder (WithBot α) where
+@[to_dual]
+instance [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
   le_refl x := by cases x <;> simp [le_def]
   le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-@[to_dual existing]
-instance WithTop.instPreorder [Preorder α] : Preorder (WithTop α) where
-  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
-  le_refl x := by cases x <;> simp [le_def]
-  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-instance WithBot.instPartialOrder [PartialOrder α] : PartialOrder (WithBot α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
-@[to_dual existing]
-instance WithTop.instPartialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
-namespace WithBot
 
 section Preorder
 
@@ -607,6 +608,10 @@ lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
 end Preorder
+
+@[to_dual]
+instance [PartialOrder α] : PartialOrder (WithBot α) where
+  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
 
 section PartialOrder
 variable [PartialOrder α] {x y : WithBot α} {a b : α}
@@ -888,130 +893,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 
-section LE
-
-variable [LE α] {x y : WithTop α}
-
-/-- The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
-
-Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b`,
-see `le_iff_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
-instance (priority := 10) instLE : LE (WithTop α) where le a b := WithBot.LE (α := αᵒᵈ) b a
-
-lemma le_def : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
-  WithBot.le_def.trans <| or_congr_right <| exists_swap.trans <| exists₂_congr fun _ _ ↦
-    and_congr_right' and_comm
-
-lemma le_iff_forall : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b := by
-  cases x <;> cases y <;> simp [le_def]
-
-@[simp, norm_cast] lemma coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by simp [le_def]
-
-lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
-
-instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
-
-instance orderBot [OrderBot α] : OrderBot (WithTop α) where bot_le x := by cases x <;> simp [le_def]
-
-instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
-  { WithTop.orderTop, WithTop.orderBot with }
-
-/-- There is a general version `top_le_iff`, but this lemma does not require a `PartialOrder`. -/
-@[simp]
-protected theorem top_le_iff : ∀ {a : WithTop α}, ⊤ ≤ a ↔ a = ⊤
-  | (a : α) => by simp [not_top_le_coe _]
-  | ⊤ => by simp
-
-theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔ a ≤ b)
-  | _, rfl => coe_le_coe
-
-theorem le_coe_iff : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b := by simp [le_iff_forall]
-theorem coe_le_iff : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a ≤ b := by simp [le_iff_forall]
-
-protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
-  fun x ↦ by cases x <;> simp; simpa using @h _
-
-lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
-lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
-
-lemma untopD_le_iff (hy : y ≠ ⊤) : y.untopD a ≤ b ↔ y ≤ b := by lift y to α using id hy; simp
-lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
-
-lemma untopA_le_iff [Nonempty α] (hy : y ≠ ⊤) : y.untopA ≤ b ↔ y ≤ b := untopD_le_iff hy
-lemma le_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a ≤ y.untopA ↔ a ≤ y := by
-  lift y to α using id hy; simp
-
-lemma untop_mono (hx : x ≠ ⊤) (hy : y ≠ ⊤) (h : x ≤ y) :
-    x.untop hx ≤ y.untop hy := by
-  lift x to α using id hx
-  lift y to α using id hy
-  simp only [untop_coe]
-  exact mod_cast h
-
-lemma untopD_mono (hy : y ≠ ⊤) (h : x ≤ y) :
-    x.untopD a ≤ y.untopD a := by
-  lift y to α using hy
-  cases x with
-  | top => simp at h
-  | coe a => simp only [WithTop.untopD_coe]; exact mod_cast h
-
-lemma untopA_mono [Nonempty α] (hy : y ≠ ⊤) (h : x ≤ y) :
-    x.untopA ≤ y.untopA := untopD_mono hy h
-
-end LE
-
-section LT
-
-variable [LT α] {x y : WithTop α}
-
-/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
-
-Equivalently, `x < y` can be defined as `∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b`,
-see `le_if_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
-instance (priority := 10) instLT : LT (WithTop α) where lt a b := WithBot.LT (α := αᵒᵈ) b a
-
-lemma lt_def : x < y ↔ (∃ a : α, x = ↑a) ∧ y = ⊤ ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
-  WithBot.lt_def.trans <| or_congr and_comm <| exists_swap.trans <|
-    exists₂_congr fun _ _ ↦ and_congr_right' and_comm
-
-lemma lt_iff_exists : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
-  cases x <;> cases y <;> simp [lt_def]
-
-@[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
-@[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
-@[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
-
-lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
-
-lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_iff_exists]
-
-/-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
-`PartialOrder α`. -/
-protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
-
-@[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
-@[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
-
-lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
-lemma untopD_lt_iff (hx : x ≠ ⊤) : x.untopD a < b ↔ x < b := by
-  lift x to α using id hx; simp
-
-lemma lt_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a < y.untopA ↔ a < y := by
-  lift y to α using id hy; simp
-lemma untopA_lt_iff [Nonempty α] (hx : x ≠ ⊤) : x.untopA < b ↔ x < b := untopD_lt_iff hx
-
-end LT
-
-instance preorder [Preorder α] : Preorder (WithTop α) where
-  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
-  le_refl x := by cases x <;> simp [le_def]
-  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
-
-instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm x y := by cases x <;> cases y <;> simp [le_def]; simpa using le_antisymm
-
 section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithTop α}
@@ -1058,6 +939,77 @@ theorem strictMono_map_iff {f : α → β} : StrictMono (WithTop.map f) ↔ Stri
 alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 
 end Preorder
+
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
+  inf
+    -- note this is `Option.merge`, but with the right defeq when unfolding
+    | ⊤, ⊤ => ⊤
+    | (a : α), ⊤ => a
+    | ⊤, (b : α) => b
+    | (a : α), (b : α) => ↑(a ⊓ b)
+  inf_le_left x y := by cases x <;> cases y <;> simp
+  inf_le_right x y := by cases x <;> cases y <;> simp
+  le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
+
+theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) = (a : WithTop α) ⊓ b :=
+  rfl
+
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
+  sup := .map₂ (· ⊔ ·)
+  le_sup_left x y := by cases x <;> cases y <;> simp
+  le_sup_right x y := by cases x <;> cases y <;> simp
+  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
+
+theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithTop α) = (a : WithTop α) ⊔ b :=
+  rfl
+
+instance lattice [Lattice α] : Lattice (WithTop α) :=
+  { WithTop.semilatticeSup, WithTop.semilatticeInf with }
+
+instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
+  le_sup_inf x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
+    simpa [← coe_inf, ← coe_sup] using le_sup_inf
+
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
+  inferInstanceAs <| DecidableEq (Option α)
+
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
+  | _, ⊤ => isTrue <| by simp
+  | ⊤, (a : α) => isFalse <| by simp
+  | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
+
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
+  | ⊤, _ => isFalse <| by simp
+  | (a : α), ⊤ => isTrue <| by simp
+  | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
+
+instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+
+section LinearOrder
+variable [LinearOrder α] {x y : WithTop α}
+
+instance linearOrder [LinearOrder α] : LinearOrder (WithTop α) := Lattice.toLinearOrder _
+
+@[simp, norm_cast] lemma coe_min (a b : α) : ↑(min a b) = min (a : WithTop α) b := rfl
+@[simp, norm_cast] lemma coe_max (a b : α) : ↑(max a b) = max (a : WithTop α) b := rfl
+
+variable [DenselyOrdered α] [NoMaxOrder α]
+
+lemma le_of_forall_lt_iff_le : (∀ b : α, x < b → y ≤ b) ↔ y ≤ x := by
+  cases x <;> cases y <;> simp [exists_gt, forall_gt_imp_ge_iff_le_of_dense]
+
+lemma ge_of_forall_gt_iff_ge : (∀ a : α, a < x → a ≤ y) ↔ x ≤ y := by
+  cases x <;> cases y <;> simp [exists_gt, forall_lt_imp_le_iff_le_of_dense]
+
+end LinearOrder
+
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
+  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
+
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
+  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) where
