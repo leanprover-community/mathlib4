@@ -75,6 +75,8 @@ namespace Rat.HeightOneSpectrum
 variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsFractionRing R ℚ]
   [IsIntegralClosure R ℤ ℚ]
 
+/-- If `v : HeightOneSpectrum R` then `natGenerator v` is the generator in `ℕ` of the corresponding
+ideal in `ℤ`. -/
 noncomputable def natGenerator (v : HeightOneSpectrum R) : ℕ :=
   Submodule.IsPrincipal.generator (v.asIdeal.map <| intEquiv R) |>.natAbs
 
