@@ -693,7 +693,7 @@ lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
       ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
-  refine fun ε hε => ?_
+  intro ε hε
   obtain ⟨δ, hδ, hδ'⟩ := hUI hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
   refine Lp.eLpNorm_le_of_ae_tendsto
@@ -938,7 +938,7 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
     [IsCountablyGenerated u] {fn : ι → α → β}
     (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (nhds (g x))}) ↦ f.1) p μ := by
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
   refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_ae_tendsto u (fun i => hUI.1 i), ?_⟩
   · exact aestronglyMeasurable_of_tendsto_ae u (fun n => hUI.1 (s n)) hs
   · obtain ⟨C, hC⟩ := hUI.2.2
