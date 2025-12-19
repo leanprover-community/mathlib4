@@ -109,9 +109,9 @@ noncomputable section
 open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-- Smoothness exponent for analytic functions. -/
-scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+scoped[ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
-scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+scoped[ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
 
 open scoped ContDiff Pointwise
 
@@ -194,7 +194,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; cutsat)
+      apply (H m.succ).fderivWithin m (by norm_cast; lia)
     · intro m _
       apply (H m).cont m (by simp)
 

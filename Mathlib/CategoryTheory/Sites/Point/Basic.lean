@@ -60,7 +60,7 @@ variable (J : GrothendieckTopology C)
 
 /-- Given `J` a Grothendieck topology on a category `C`, a point of the site `(C, J)`
 consists of a functor `fiber : C ⥤ Type w` such that the category `fiber.Elements`
-is initally small (which allows defining the fiber functor on presheaves by
+is initially small (which allows defining the fiber functor on presheaves by
 taking colimits) and cofiltered (so that the fiber functor on presheaves is exact),
 and such that covering sieves induce jointly surjective maps on fibers (which
 allows to show that the fibers of a presheaf and its associated sheaf are isomorphic). -/
@@ -97,6 +97,13 @@ noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ 
     P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
   colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
 
+@[ext]
+lemma presheafFiber_hom_ext
+    {P : Cᵒᵖ ⥤ A} {T : A} {f g : Φ.presheafFiber.obj P ⟶ T}
+    (h : ∀ (X : C) (x : Φ.fiber.obj X), Φ.toPresheafFiber X x P ≫ f =
+      Φ.toPresheafFiber X x P ≫ g) : f = g :=
+  colimit.hom_ext (by rintro ⟨⟨X, x⟩⟩; exact h X x)
+
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as a natural transformation. -/
@@ -106,20 +113,38 @@ noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
   app := Φ.toPresheafFiber X x
   naturality _ _ f := by simp [presheafFiber, toPresheafFiber]
 
-@[elementwise (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
   colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
       (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
 
-@[reassoc (attr := elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
-attribute [simp] toPresheafFiber_naturality_apply
+section
+
+variable {P : Cᵒᵖ ⥤ A} {T : A}
+  (φ : ∀ (X : C) (_ : Φ.fiber.obj X), P.obj (op X) ⟶ T)
+  (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
+    P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
+
+/-- Constructor for morphisms from the fiber of a presheaf. -/
+noncomputable def presheafFiberDesc :
+    Φ.presheafFiber.obj P ⟶ T :=
+  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.1 x.unop.2 })
+
+@[reassoc (attr := simp)]
+lemma toPresheafFiber_presheafFiberDesc (X : C) (x : Φ.fiber.obj X) :
+    Φ.toPresheafFiber X x P ≫ Φ.presheafFiberDesc φ hφ = φ X x :=
+  colimit.ι_desc _ _
+
+end
+
 variable {FC : A → A → Type*} {CC : A → Type w'}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
   [ConcreteCategory.{w'} A FC]
