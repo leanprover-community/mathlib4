@@ -3,9 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Rat.Floor
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Rat.Floor
+public meta import Mathlib.Data.Rat.Floor
 
 /-!
 # Floor Function for Non-negative Rational Numbers
@@ -20,6 +23,8 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 
 nnrat, rationals, ℚ≥0, floor
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -92,3 +97,69 @@ theorem floor_natCast_div_natCast (n d : ℕ) : ⌊(↑n / ↑d : ℚ≥0)⌋₊
   Rat.natFloor_natCast_div_natCast n d
 
 end NNRat
+
+namespace Mathlib.Meta.NormNum
+
+open Qq
+
+/-!
+### `norm_num` extension for `Nat.ceil`
+-/
+
+theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌈r⌉₊) m := by
+  rintro ⟨⟨⟩⟩
+  exact ⟨by simp⟩
+
+theorem IsInt.natCeil {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
+    (r : R) (m : ℕ) : IsInt r (.negOfNat m) → IsNat (⌈r⌉₊) 0 := by
+  rintro ⟨⟨⟩⟩
+  exact ⟨by simp⟩
+
+theorem IsNNRat.natCeil {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsNNRat r n d) (res : ℕ)
+    (hres : ⌈(n / d : ℚ≥0)⌉₊ = res) : IsNat ⌈r⌉₊ res := by
+  constructor
+  rw [← hres, h.to_eq rfl rfl, ← @NNRat.ceil_cast R]
+  simp
+
+theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsRat r (.negOfNat n) d) : IsNat ⌈r⌉₊ 0 := by
+  constructor
+  simp [h.neg_to_eq, div_nonneg]
+
+open Lean in
+/-- `norm_num` extension for `Nat.ceil` -/
+@[norm_num ⌈_⌉₊]
+meta def evalNatCeil : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
+    match ← derive x with
+    | .isBool .. => failure
+    | .isNat sα nb pb => do
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) nb q(IsNat.natCeil $x _ $pb)
+    | .isNegNat sα nb pb => do
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) (mkRawNatLit 0) q(IsInt.natCeil _ _ $pb)
+    | .isNNRat _ q n d h => do
+      let instSemifield ← synthInstanceQ q(Semifield $α)
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have z : Q(ℕ) := mkRawNatLit (⌈q⌉₊)
+      letI : $z =Q ⌈($n / $d : NNRat)⌉₊ := ⟨⟩
+      return .isNat q(inferInstance) z q(IsNNRat.natCeil _ $n $d $h $z rfl)
+    | .isNegNNRat _ q n d h => do
+      let instField ← synthInstanceQ q(Field $α)
+      let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      return .isNat q(inferInstance) (mkRawNatLit 0) q(IsRat.natCeil _ _ _ $h)
+  | _, _, _ => failure
+
+end Mathlib.Meta.NormNum

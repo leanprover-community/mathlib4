@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Lie.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Lie algebras as non-unital, non-associative algebras
@@ -31,6 +33,8 @@ algebra and we provide some basic definitions for doing so here.
 
 lie algebra, non-unital, non-associative
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -77,7 +81,7 @@ regard a `LieHom` as a `NonUnitalAlgHom`. -/
 def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R] CommutatorRing L₂ :=
   { f with
     toFun := f
-    map_zero' := f.map_zero
+    map_zero' := f.toLinearMap.map_zero
     map_mul' := f.map_lie }
 
 theorem toNonUnitalAlgHom_injective :

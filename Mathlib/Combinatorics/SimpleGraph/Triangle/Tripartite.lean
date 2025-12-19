@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
 /-!
 # Construct a tripartite graph from its triangles
@@ -35,6 +37,8 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   corner-free.
 -/
 
+@[expose] public section
+
 open Finset Function Sum3
 
 variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
@@ -57,7 +61,7 @@ Two vertices are related iff there exists a triangle index containing them both.
 open Rel
 
 lemma rel_irrefl : ∀ x, ¬ Rel t x x := fun _x hx ↦ nomatch hx
-lemma rel_symm : Symmetric (Rel t) := fun x y h ↦  by cases h <;> constructor <;> assumption
+lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <;> assumption
 
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/

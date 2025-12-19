@@ -3,12 +3,14 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 # Derivative is measurable
@@ -78,6 +80,8 @@ is exactly the set of points where `f` is differentiable with a derivative in `K
 
 derivative, measurable function, Borel σ-algebra
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -275,7 +279,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
-      _ = ε := by field_simp
+      _ = ε := by field
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -312,7 +316,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_trans hk y_lt
       rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
-      omega
+      lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
@@ -329,7 +333,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       calc
         ‖f (x + y) - f x - L e (n e) m y‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
           simpa only [add_sub_cancel_left] using J1
-        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
+        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
     calc
@@ -339,7 +343,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         norm_add_le_of_le J2 <| (le_opNorm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
       _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
-      _ = ε * ‖y‖ := by field_simp
+      _ = ε * ‖y‖ := by field
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiableAt, f'K⟩
 
@@ -372,7 +376,7 @@ theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt
   convert measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
   simp
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
   refine measurable_of_isClosed fun s hs => ?_
   have :
@@ -385,14 +389,14 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
     (measurableSet_of_differentiableAt_of_isComplete _ _ hs.isComplete).union
       ((measurableSet_of_differentiableAt _ _).compl.inter (MeasurableSet.const _))
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E) :
     Measurable fun x => fderiv 𝕜 f x y :=
   (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv 𝕜 f)
 
 variable {𝕜}
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
@@ -587,8 +591,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       ‖L e p q - L e' p' q'‖ =
           ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
         congr 1; abel
-      _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
-        (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
+      _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ := by
+        grw [norm_add_le, norm_add_le]
       _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
       _ = 12 * (1 / 2) ^ e := by ring
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
@@ -604,7 +608,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
-      _ = ε := by field_simp
+      _ = ε := by ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -639,7 +643,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have k_gt : n e < k := by
       have : ((1 : ℝ) / 2) ^ (k + 1) < (1 / 2) ^ (n e + 1) := lt_of_lt_of_le hk y_le
       rw [pow_lt_pow_iff_right_of_lt_one₀ (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
-      omega
+      lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
@@ -654,7 +658,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
             simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
-        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
+        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
     calc
@@ -700,7 +704,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici :
   convert measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
   simp
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ici x) x := by
   refine measurable_of_isClosed fun s hs => ?_
@@ -748,7 +752,7 @@ theorem measurableSet_of_differentiableWithinAt_Ioi :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ioi x) x } := by
   simpa [differentiableWithinAt_Ioi_iff_Ici] using measurableSet_of_differentiableWithinAt_Ici f
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ioi x) x := by
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f

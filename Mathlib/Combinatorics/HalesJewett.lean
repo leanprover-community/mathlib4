@@ -3,11 +3,13 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Shrink
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -63,6 +65,8 @@ combinatorial line, Ramsey theory, arithmetic progression
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
 
 -/
+
+@[expose] public section
 
 open Function
 open scoped Finset
@@ -225,7 +229,7 @@ def toSubspace (l : Line (η → α) ι) : Subspace η α (ι × η) where
   cases h : l.idxFun ie.1 <;> simp [toSubspace, h, coe_apply, Subspace.coe_apply]
 
 @[simp] lemma toSubspace_isMono {l : Line (η → α) ι} {C : (ι × η → α) → κ} :
-    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α  ↦ C fun (i, e) ↦ x i e := by
+    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α ↦ C fun (i, e) ↦ x i e := by
   simp [Subspace.IsMono, IsMono, funext (toSubspace_apply _ _)]
 
 protected alias ⟨_, IsMono.toSubspace⟩ := toSubspace_isMono
@@ -433,7 +437,7 @@ private theorem exists_mono_in_high_dimension' :
       · simp only [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
     · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
-      exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
+      exact ⟨h, s.distinct_colors⟩
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 
@@ -442,7 +446,7 @@ such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochr
 line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
-  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
+  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u, v} α (ULift.{u, v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩

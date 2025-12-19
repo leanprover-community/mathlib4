@@ -3,13 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.SupIndep
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.SupIndep
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Finite partitions
@@ -58,6 +61,8 @@ the literature and turn the order around?
 
 The specialisation to `Finset α` could be generalised to atomistic orders.
 -/
+
+@[expose] public section
 
 
 open Finset Function
@@ -189,7 +194,7 @@ theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
 
 @[simp]
 theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
-  rw [nonempty_iff_ne_empty, not_iff_not, parts_eq_empty_iff]
+  contrapose!; exact parts_eq_empty_iff
 
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
@@ -526,7 +531,7 @@ lemma part_eq_empty : P.part a = ∅ ↔ a ∉ s :=
 
 @[simp]
 lemma part_nonempty : (P.part a).Nonempty ↔ a ∈ s := by
-  simpa only [nonempty_iff_ne_empty] using P.part_eq_empty.not_left
+  contrapose!; exact part_eq_empty P
 
 @[simp]
 lemma part_subset (a : α) : P.part a ⊆ s := by

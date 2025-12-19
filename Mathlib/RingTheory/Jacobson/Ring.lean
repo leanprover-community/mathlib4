@@ -3,10 +3,12 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Jacobson.Polynomial
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Jacobson.Polynomial
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -36,6 +38,8 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 ## Tags
 Jacobson, Jacobson Ring
 -/
+
+@[expose] public section
 
 universe u
 
@@ -122,17 +126,17 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
   intro P hP
   by_cases hP_top : comap (algebraMap R S) P = ⊤
   · simp [comap_eq_top_iff.1 hP_top]
-  · have : Nontrivial (R ⧸ comap (algebraMap R S) P) := Quotient.nontrivial hP_top
-    rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
-    refine eq_bot_of_comap_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
-    rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
-      ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
-      comap_jacobson]
-    refine sInf_le_sInf fun J hJ => ?_
-    simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
-    have : J.IsMaximal := by simpa using hJ
-    exact exists_ideal_over_maximal_of_isIntegral J
-      (comap_bot_le_of_injective _ algebraMap_quotient_injective)
+  have : Nontrivial (R ⧸ comap (algebraMap R S) P) := by rwa [Quotient.nontrivial_iff]
+  rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
+  refine eq_bot_of_comap_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
+  rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
+    ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
+    comap_jacobson]
+  refine sInf_le_sInf fun J hJ => ?_
+  simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
+  have : J.IsMaximal := by simpa using hJ
+  exact exists_ideal_over_maximal_of_isIntegral J
+    (comap_bot_le_of_injective _ algebraMap_quotient_injective)
 
 /-- A variant of `isJacobsonRing_of_isIntegral` that takes `RingHom.IsIntegral` instead. -/
 theorem isJacobsonRing_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) [IsJacobsonRing R] :
@@ -201,8 +205,8 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isMaximal_of_isMaximal_disjoint y p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.eq (map_comap (powers y) S J)
-  right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
+  left_inv J := Subtype.ext (map_comap (powers y) S J)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
     ((disjoint_powers_iff_notMem y I.2.1.isPrime.isRadical).2 I.2.2))
   map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,
@@ -447,7 +451,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
         fun x hx => by
           rwa [Quotient.eq_zero_iff_mem, (by rwa [eq_bot_iff] : (P.comap C : Ideal R) = ⊥)] at hx)
         (by simpa only [a, leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
-  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (pow_eq_zero hn)
+  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (eq_zero_of_pow_eq_zero hn)
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
     rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
@@ -483,7 +487,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
   let M : Submonoid (R ⧸ P') := Submonoid.powers a
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
   have hP'_prime : P'.IsPrime := comap_isPrime C P
-  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 <| leadingCoeff_eq_zero.mp (pow_eq_zero hn)
+  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ =>
+    hp0 <| leadingCoeff_eq_zero.mp (eq_zero_of_pow_eq_zero hn)
   let M' : Submonoid (R[X] ⧸ P) := M.map φ
   refine RingHom.IsIntegral.tower_bot φ (algebraMap _ (Localization M')) ?_ ?_
   · refine IsLocalization.injective (Localization M')

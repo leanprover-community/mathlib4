@@ -3,16 +3,20 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -128,16 +132,16 @@ instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R 
 end
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R S[ι] := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R (MonoidAlgebra S ι) := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end MonoidAlgebra
 

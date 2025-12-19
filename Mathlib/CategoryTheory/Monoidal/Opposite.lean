@@ -3,14 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Monoidal opposites
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -185,7 +189,7 @@ section OppositeLemmas
 @[simp] lemma op_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     (X ◁ f).op = op X ◁ f.op := rfl
 @[simp] lemma unop_whiskerLeft (X : Cᵒᵖ) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
-    (X ◁ f).unop =  unop X ◁ f.unop := rfl
+    (X ◁ f).unop = unop X ◁ f.unop := rfl
 
 @[simp] lemma op_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     (f ▷ Z).op = f.op ▷ op Z := rfl
@@ -350,9 +354,9 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
 
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by
-    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
+    simp [ε, η, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
   leftAdjoint_μ X Y := by
-    simp [μ, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
+    simp [μ, δ, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
@@ -434,7 +438,7 @@ instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
 @[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
 
 instance : (opOpEquivalence C).IsMonoidal where
-  leftAdjoint_ε := by simp [Adjunction.homEquiv, opOpEquivalence]
-  leftAdjoint_μ := by simp [Adjunction.homEquiv, opOpEquivalence]
+  leftAdjoint_ε := by simp [opOpEquivalence]
+  leftAdjoint_μ := by simp [opOpEquivalence]
 
 end CategoryTheory

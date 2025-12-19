@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 
@@ -22,6 +24,8 @@ After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` 
 can be unified.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommSemiring R] {S : Submonoid R} {M : Type*} [AddCommMonoid M]

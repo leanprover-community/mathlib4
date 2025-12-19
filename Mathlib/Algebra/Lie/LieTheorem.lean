@@ -3,8 +3,10 @@ Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
@@ -13,6 +15,8 @@ Lie's theorem asserts that Lie modules of solvable Lie algebras over fields of c
 have a common eigenvector for the action of all elements of the Lie algebra.
 This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 -/
+
+@[expose] public section
 
 namespace LieModule
 
@@ -45,6 +49,7 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
+set_option backward.privateInPublic true in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
     ⁅z, v⁆ ∈ weightSpace V χ := by
@@ -72,7 +77,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
         LinearMap.smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
-      obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by cutsat
+      obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by lia
       · exact U'.mono (Nat.le_succ n) (hn w m hm)
       have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
       rw [T, LinearMap.sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
@@ -140,6 +145,8 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [pow_zero, Module.End.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (R V) in
 /-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
 Lie submodule for `L`. -/
@@ -217,7 +224,6 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
 decreasing_by
-  simp_wf
   rw [← finrank_top k L]
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top

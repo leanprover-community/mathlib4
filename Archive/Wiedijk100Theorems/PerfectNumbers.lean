@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Tactic.NormNum.Prime
 
@@ -30,6 +30,9 @@ namespace Theorems100
 namespace Nat
 
 open ArithmeticFunction Finset
+
+-- access notation `σ`
+open scoped sigma
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, ← one_add_one_eq_two, ← geom_sum_mul_add 1 (k + 1)]

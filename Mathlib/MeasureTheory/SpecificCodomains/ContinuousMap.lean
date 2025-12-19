@@ -3,9 +3,11 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Specific results about `ContinuousMap`-valued integration
@@ -14,10 +16,10 @@ In this file, we collect a few results regarding integrability, on a measure spa
 of a `C(Y, E)`-valued function, where `Y` is a compact topological space and `E` is a normed group.
 
 These are all elementary from a mathematical point of view, but they require a bit of care in order
-to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` which
-such that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
-integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumption only mention `f` (so that
-user don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
+to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` such
+that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
+integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumptions only mention `f` (so that
+users don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
 
 ## Main results
 
@@ -47,6 +49,8 @@ to approach integration valued in a functional space `ℱ`. More precisely:
   and also avoids entering dependent-types hell.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

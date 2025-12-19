@@ -248,7 +248,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
 
 open Classical in
 instance : FiniteDimensional ℝ (V n) :=
-  FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
+  (dualBases_e_ε _).basis.finiteDimensional_of_finite
 
 theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
