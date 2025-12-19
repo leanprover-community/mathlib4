@@ -52,7 +52,7 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
       apply isCardinalPresentable_of_le _ hκ₀
     exact ⟨κ₀ ⊔ κ₁ ⊔ κ', inferInstance, hκ₀, hκ₁,
       isCardinalPresentable_of_isColimit _ hc _ (lt.of_le (by simp))⟩
-  obtain ⟨κ, _, h₀, h₁, hA⟩ := this
+  obtain ⟨κ, _, h₀, h₁, ⟨_⟩⟩ := this
   have hC : IsCardinalLocallyPresentable C κ := IsCardinalLocallyPresentable.of_le _ h₀
   obtain ⟨P, _, ⟨_, h⟩⟩ := hC.1
   obtain ⟨Q, _, hQP, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
@@ -61,16 +61,12 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
     fun X ↦ ((equivShrink _).symm X.fst).val, fun X ↦ X.snd, ?_⟩
   intro X f
   obtain ⟨J, _, _, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩  := h X
-  dsimp at hx
   have : IsCardinalFiltered J κ₁ := IsCardinalFiltered.of_le J h₁
-  let hc' := isColimitOfPreserves R hc
-  obtain ⟨_⟩ := hA
-  let hc'' := isColimitOfPreserves (coyoneda.obj ⟨A⟩) hc'
-  obtain ⟨j, hj, w⟩ := Types.jointly_surjective_of_isColimit hc'' f
+  replace hc := isColimitOfPreserves (coyoneda.obj ⟨A⟩) (isColimitOfPreserves R hc)
+  obtain ⟨j, hj, w⟩ := Types.jointly_surjective_of_isColimit hc f
   obtain ⟨d, hd, ⟨i⟩⟩ := hPQ _ (hx j)
-  refine ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
-    eqToHom (by simp) ≫ i.inv ≫ ι.app _, ?_⟩
-  simp [← w]
+  exact ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
+    eqToHom (by simp) ≫ i.inv ≫ ι.app _, by simp [← w]⟩
 
 
 end CategoryTheory.Adjunction
