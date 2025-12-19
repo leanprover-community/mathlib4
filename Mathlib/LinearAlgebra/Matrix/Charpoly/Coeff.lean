@@ -209,7 +209,7 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
-  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; lia
   ext i
   by_cases hi : i ∈ Finset.range 3
   · fin_cases hi

@@ -129,7 +129,7 @@ theorem image₂_empty_right : image₂ f s ∅ = ∅ :=
 
 @[simp]
 theorem image₂_eq_empty_iff : image₂ f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp_rw [← not_nonempty_iff_eq_empty, image₂_nonempty_iff, not_and_or]
+  contrapose!; exact image₂_nonempty_iff
 
 @[simp]
 theorem image₂_singleton_left : image₂ f {a} t = t.image fun b => f a b :=

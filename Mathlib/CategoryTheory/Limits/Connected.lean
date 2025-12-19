@@ -226,8 +226,7 @@ lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
             · simp
           uniq := fun s m L => by
             apply Limits.prod.hom_ext
-            · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
-              rfl
+            · simp [← L]
             · rw [limit.lift_π]
               apply l.uniq (forgetCone s)
               intro j

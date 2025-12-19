@@ -24,7 +24,7 @@ open Limits
 
 namespace GradedObject
 
-variable {J : Type*} {C : Type*} [Category C] [HasInitial C] [DecidableEq J]
+variable {J : Type*} {C : Type*} [Category* C] [HasInitial C] [DecidableEq J]
 
 /-- The functor which sends `X : C` to the graded object which is `X` in degree `j`
 and the initial object in other degrees. -/
