@@ -28,9 +28,7 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
     have : Fact (κ₀₁ ⊔ κ₀₂).IsRegular := ⟨iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out)⟩
     have h₀₁ : κ₀₁ ≤ κ₀₁ ⊔ κ₀₂ := by simp
     have h₀₂ : κ₀₂ ≤ κ₀₁ ⊔ κ₀₂ := by simp
-    refine ⟨κ₀₁ ⊔ κ₀₂, inferInstance, ?_, ?_⟩
-    · exact IsCardinalLocallyPresentable.of_le _ h₀₁
-    · exact IsCardinalLocallyPresentable.of_le _ h₀₂
+    refine ⟨κ₀₁ ⊔ κ₀₂, inferInstance, .of_le _ h₀₁, .of_le _ h₀₂⟩
   obtain ⟨P, _, ⟨le, h⟩⟩ := hD.1
   obtain ⟨J, _, cf, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h A
   obtain ⟨κ', hκ', lt⟩ := HasCardinalLT.exists_regular_cardinal (Arrow J)
