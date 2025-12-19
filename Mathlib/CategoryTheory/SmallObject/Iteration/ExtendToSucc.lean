@@ -19,8 +19,6 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 
 @[expose] public section
 
-set_option backward.privateInPublic true
-
 universe u
 
 namespace CategoryTheory
@@ -39,6 +37,7 @@ namespace extendToSucc
 
 variable (X)
 
+set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
