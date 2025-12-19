@@ -1232,6 +1232,10 @@ protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
   rcases hf with ⟨e, rfl⟩
   simp
 
+protected theorem inverse_inverse (hf : f.IsInvertible) : f.inverse.inverse = f := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
 protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
   by_contra H
   rw [inverse, dif_neg H, isInvertible_zero_iff] at hf
