@@ -96,7 +96,8 @@ open Matrix
 variable {m n : Type*} [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
 
 -- TODO: wait for other PR
-proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {K : Type*} [Field K] (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
+proof_wanted Matrix.AlgEquiv.coe_eq_conjugate {K : Type*} [Field K]
+    (f : Matrix m m K ≃ₐ[K] Matrix n n K) :
     ∃ (U : Matrix n m K) (V : Matrix m n K) (hUV : U * V = 1), ⇑f = fun x ↦ U * x * V
 
 -- TODO: change `Matrix` to any central and simple finite algebra
