@@ -553,7 +553,7 @@ variable [LinearOrderedCommGroupWithZero Γ₀]
 class IsTrivialOnConstants {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
   (v : Valuation B Γ₀) where eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
-attribute [grind =>] IsTrivialOnConstants.trivial
+attribute [grind =>] IsTrivialOnConstants.eq_one
 
 variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
   [IsTrivialOnConstants A v]
