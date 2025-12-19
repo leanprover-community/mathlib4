@@ -26,7 +26,7 @@ This file defines the related notions of a process `u` being `StronglyAdapted` o
 ## Main results
 
 * `StronglyAdapted.progMeasurable_of_continuous`: a continuous strongly adapted process is
-progressively measurable.
+  progressively measurable.
 
 ## Tags
 
