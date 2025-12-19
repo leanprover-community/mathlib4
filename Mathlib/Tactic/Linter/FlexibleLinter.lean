@@ -109,6 +109,12 @@ public register_option linter.flexible : Bool := {
   descr := "enable the flexible linter"
 }
 
+/-- Toggles whether to use a quicker syntax check, before running the flexible linter. -/
+public register_option linter.flexibleQuickCheck : Bool := {
+  defValue := true
+  descr := "enable the quickCheck option for the flexible linter"
+}
+
 /-- `flexible? stx` is `true` if `stx` is syntax for a tactic that takes a "wide" variety of
 inputs and modifies them in possibly unpredictable ways.
 
@@ -366,7 +372,7 @@ def syntaxArrayFlexNoNeed (as : Array Syntax) : Bool :=
   let isempty := as.isEmpty
   let lastContains := as.back!.filter isFlexible
   let lastContainsCondition := lastContains.isEmpty || lastContains == #[as.back!]
-  let middleContains := as.pop.filter fun s => !(s.filter isFlexible).isEmpty
+  let middleContains := as.pop.filter fun s => (isFlexible s)--.isEmpty
   --dbg_trace "\n* syntaxArrayFlexNoNeed:\n  isempty={isempty},\n  lastContains={lastContainsCondition}\n  {lastContains}\n  middleContains={middleContains.isEmpty}\n{middleContains}"
   isempty ||
   (lastContainsCondition && middleContains.isEmpty)
@@ -478,12 +484,14 @@ def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
   | _ => return none
 
 /-- The main implementation of the flexible linter. -/
-def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
+def flexibleLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
     return
-  if (← MonadState.get).messages.hasErrors then
+  if (← get).messages.hasErrors then
     return
-  if quickCheck _stx then return
+  if getLinterValue linter.flexibleQuickCheck (← getLinterOptions) then
+    if quickCheck stx then return
+  dbg_trace "Running full check"
   let trees ← getInfoTrees
   let tacticData := trees.foldl (init := #[]) fun acc tree => acc ++ extractTacticData tree
   -- `stains` records pairs `(location, mvar)`, where
