@@ -27,7 +27,7 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 * `StdSimplex.join`: Monadic join operation for standard simplices.
 * `ConvexSpace R M`: A typeclass for spaces `M` equipped with an operation
   `convexCombination : StdSimplex R M → M` satisfying monadic laws.
-* `convexCombo₂`: Binary convex combinations of two points.
+* `convexComboPair`: Binary convex combinations of two points.
 
 ## Design
 
@@ -39,7 +39,7 @@ universe issues with indexed families.
 
 * Complete the proofs for `StdSimplex.map` and `StdSimplex.join`.
 * Show that an `AffineSpace` is a `ConvexSpace`.
-* Show that `lineMap` agrees with `convexCombo₂` where defined.
+* Show that `lineMap` agrees with `convexComboPair` where defined.
 * Show the usual associativity law for binary convex combinations follows from the `assoc` axiom.
 -/
 
@@ -125,17 +125,17 @@ open ConvexSpace
 variable {R M} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] [ConvexSpace R M]
 
 /-- Take a convex combination of two points. -/
-def convexCombo₂ (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
+def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
   convexCombination (.duple x y hs ht h)
 
 /-- A binary convex combination with weight 0 on the first point returns the second point. -/
-proof_wanted convexCombo₂_zero {x y : M} :
-  convexCombo₂ (0 : R) 1 (by simp) (by simp) (by simp) x y = y
+proof_wanted convexComboPair_zero {x y : M} :
+  convexComboPair (0 : R) 1 (by simp) (by simp) (by simp) x y = y
 
 /-- A binary convex combination with weight 1 on the first point returns the first point. -/
-proof_wanted convexCombo₂_one {x y : M} :
-  convexCombo₂ (1 : R) 0 (by simp) (by simp) (by simp) x y = x
+proof_wanted convexComboPair_one {x y : M} :
+  convexComboPair (1 : R) 0 (by simp) (by simp) (by simp) x y = x
 
 /-- A convex combination of a point with itself is that point. -/
-proof_wanted convexCombo₂_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
-  convexCombo₂ s t hs ht h x x = x
+proof_wanted convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
+  convexComboPair s t hs ht h x x = x
