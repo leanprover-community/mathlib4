@@ -28,7 +28,7 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
     f (h +ᵥ τ) = f τ := by
   rw [← congr_fun (slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ]
-  suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ  by
+  suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ by
     simp_rw [slash_def, this]
     simp [σ, denom, GeneralLinearGroup.val_det_apply, denom]
   ext

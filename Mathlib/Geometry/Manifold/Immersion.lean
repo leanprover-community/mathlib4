@@ -49,7 +49,9 @@ This shortens the overall argument, as the definition of submersions has the sam
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
-* `IsImmersion.ofOpen`: the inclusion of an open subset `s → M` of a smooth manifold is an immersion
+* `IsImmersion.id`: the identity map is an immersion
+* `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
+  is a smooth immersion
 
 ## Implementation notes
 
@@ -80,6 +82,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
 * If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
   implies `f` is an immersion at `x`.
+* `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`:
+  a local diffeomorphism (at `x`) is an immersion (at `x`)
+* `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion
 
 ## References
 
@@ -100,9 +105,9 @@ namespace Manifold
 universe u
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E E' E''' : Type*} {E'' : Type u} {F F' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
@@ -278,7 +283,7 @@ is *slightly* weaker than `source_subset_preimage_source`: the latter implies th
 but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
-this is not a mathematically meaningful difference.`
+this is not a mathematically meaningful difference.
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
@@ -391,7 +396,8 @@ lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 open IsManifold in
-lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
+lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     IsImmersionAtOfComplement PUnit I I n (Subtype.val : s → M) y := by
   apply IsImmersionAtOfComplement.mk_of_continuousAt (by fun_prop) (.prodUnique 𝕜 E _)
     (chartAt H y) (chartAt H y.val) (mem_chart_source H y) (mem_chart_source H y.val)
@@ -519,7 +525,7 @@ is *slightly* weaker than `source_subset_preimage_source`: the latter implies th
 but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
-this is not a mathematically meaningful difference.`
+this is not a mathematically meaningful difference.
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
@@ -568,11 +574,12 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
     |>.isImmersionAt
 
-lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
+lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   rw [IsImmersionAt_def]
   use PUnit, by infer_instance, by infer_instance
-  apply Manifold.IsImmersionAtOfComplement.ofOpen
+  apply Manifold.IsImmersionAtOfComplement.of_opens
 
 end IsImmersionAt
 
@@ -650,9 +657,22 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
-lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) :
+open IsManifold in
+/-- The identity map is an immersion with complement `PUnit`. -/
+protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id M) := by
+  intro x
+  apply IsImmersionAtOfComplement.mk_of_continuousAt (continuousAt_id) (.prodUnique 𝕜 E _)
+    (chartAt H x) (chartAt H x) (mem_chart_source H x) (mem_chart_source H x)
+    (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x)
+  intro y hy
+  have : I ((chartAt H x) ((chartAt H x).symm (I.symm y))) = y := by
+    rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
+  simpa
+
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
+lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
-  fun y ↦ IsImmersionAtOfComplement.ofOpen s y
+  fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
 end IsImmersionOfComplement
 
@@ -683,7 +703,7 @@ The complement of `f` at `x` is isomorphic to the cokernel of `mfderiv I J f x`,
 of `f` at (even nearby) points `x` and `x'` are not directly related. They have the same rank
 (the dimension of `E`, as will follow from injectivity), but if `E''` is infinite-dimensional this
 is not conclusive. If `E''` is infinite-dimensional, this dimension can indeed change between
-different connected of `M`.
+different connected components of `M`.
 -/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
@@ -699,11 +719,17 @@ theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
-  (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
+  (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement).isImmersion
 
-lemma ofOpen [IsManifold I n M] (s : TopologicalSpace.Opens M) :
+open IsManifold in
+/-- The identity map is an immersion. -/
+protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
+  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
+
+/- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
+lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.ofOpen s⟩
+  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
 
 end IsImmersion
 
