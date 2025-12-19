@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.OrderOfElement
 /-!
 # Multiplicative characters of finite rings and fields
 
-Let `R` and `R'` be a commutative rings.
+Let `R` and `R'` be commutative rings.
 A *multiplicative character* of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.
@@ -501,7 +501,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H

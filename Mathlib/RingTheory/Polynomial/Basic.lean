@@ -236,7 +236,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
   intro s hs contra
-  rcases span_le_degreeLE_of_finite hs with ⟨n,hn⟩
+  rcases span_le_degreeLE_of_finite hs with ⟨n, hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
     rw [contra] at hn
     exact hn Submodule.mem_top
@@ -324,7 +324,7 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 @[simp]
 theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
     p.restriction.map (algebraMap _ _) = p :=
-  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubring_apply, coeff_restriction]
+  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
 
 @[simp]
 theorem degree_restriction {p : R[X]} : (restriction p).degree = p.degree := by simp [degree]
@@ -665,7 +665,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine ⟨m + n, ?_⟩
-        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
@@ -756,8 +756,9 @@ namespace MvPolynomial
 instance {ι R : Type*} [CommSemiring R] [IsEmpty ι] : Module.Finite R (MvPolynomial ι R) :=
   Module.Finite.equiv (MvPolynomial.isEmptyAlgEquiv R ι).toLinearEquiv.symm
 
-private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
+private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Finite σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
+  have := Fintype.ofFinite σ
   rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
   convert_to Prime (C r) ↔ _
   · congr!

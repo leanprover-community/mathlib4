@@ -77,6 +77,9 @@ protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) 
 protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
   h.toWalk.reachable
 
+theorem adj_le_reachable (G : SimpleGraph V) : G.Adj ≤ G.Reachable :=
+  fun _ _ ↦ Adj.reachable
+
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 
@@ -106,6 +109,21 @@ theorem reachable_iff_reflTransGen (u v : V) :
     | refl => rfl
     | tail _ ha hr => exact Reachable.trans hr ⟨Walk.cons ha Walk.nil⟩
 
+theorem reachable_eq_reflTransGen : G.Reachable = Relation.ReflTransGen G.Adj := by
+  ext
+  exact reachable_iff_reflTransGen ..
+
+theorem reachable_fromEdgeSet_eq_reflTransGen_toRel {s : Set (Sym2 V)} :
+    (fromEdgeSet s).Reachable = Relation.ReflTransGen (Sym2.ToRel s) := by
+  rw [reachable_eq_reflTransGen, ← Relation.transGen_reflGen, ← Relation.transGen_reflGen]
+  congr 1
+  ext
+  simpa [Relation.reflGen_iff] using by tauto
+
+theorem reachable_fromEdgeSet_fromRel_eq_reflTransGen {r : V → V → Prop} (sym : Symmetric r) :
+    (fromEdgeSet <| Sym2.fromRel sym).Reachable = Relation.ReflTransGen r :=
+  reachable_fromEdgeSet_eq_reflTransGen_toRel
+
 protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
@@ -113,6 +131,10 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 @[mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
     (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
+
+@[mono]
+theorem Reachable.mono' {G G' : SimpleGraph V} (h : G ≤ G') : G.Reachable ≤ G'.Reachable :=
+  fun _ _ ↦ Reachable.mono h
 
 theorem Reachable.exists_isPath {u v} (hr : G.Reachable u v) : ∃ p : G.Walk u v, p.IsPath := by
   classical
@@ -137,7 +159,7 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   termination_by p.length
   decreasing_by {
     rw [← Walk.length_tail_add_one hnp]
-    omega
+    lia
   }
   exact aux hu hr.some
 
@@ -624,6 +646,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
 @[deprecated (since := "2025-05-08")]
 alias adj_spanningCoe_induce_supp := adj_spanningCoe_toSimpleGraph
 
+set_option backward.privateInPublic true in
 /-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
 private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
@@ -634,8 +657,12 @@ private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {
     have h' : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
     exact Walk.cons h' (C.walk_toSimpleGraph' hw hv p)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-05-08")] alias reachable_induce_supp := walk_toSimpleGraph'
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- There is a walk between every pair of vertices in a connected component. -/
 noncomputable def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ :=
@@ -655,6 +682,7 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 end ConnectedComponent
 
+set_option backward.proofsInPublic true in
 /-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
 homomorphism from `G` to `H` -/
 @[simps]
@@ -808,7 +836,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
-/-- If `e` is an adge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
+/-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
     (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
   isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
