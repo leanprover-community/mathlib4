@@ -32,8 +32,8 @@ pullback squares.
 
 ### References
 
-The content here is based on our work on the formalization of polynomial functors project at the
-Trimester "Prospect of Formal Mathematics" at the Hausdorff Institute (HIM) in Bonn:
+This material is adapted from the polynomial functors project developed during the
+Trimester "Prospects of Formal Mathematics" at the Hausdorff Institute (HIM) in Bonn:
 
 https://github.com/sinhp/Poly
 
