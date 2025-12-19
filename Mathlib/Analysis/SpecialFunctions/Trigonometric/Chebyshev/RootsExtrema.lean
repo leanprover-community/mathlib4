@@ -22,12 +22,8 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 ## Main statements
 
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
+* Values of x such that |T_n(x)| = 1: `abs_eval_T_real_eq_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
-* Extrema of T: `T_real_eval_at_extremum`, `T_real_extrema_eq`
-
-## TODO
-
-* Prove orthogonality with respect to appropriate inner product.
 -/
 
 @[expose] public section
@@ -96,6 +92,44 @@ theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
   · intro hx; exact abs_eval_T_real_le_one n hx
   · intro hx; contrapose! hx; exact one_lt_abs_eval_T_real hn hx
 
+theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    |(T ℝ n).eval x| = 1 ↔ ∃ k ≤ n, x = cos (k * π / n) := by
+  constructor
+  · intro hTx
+    have hx := (abs_eval_T_real_le_one_iff (Nat.cast_ne_zero.mpr hn) x).mpr (le_of_eq hTx)
+    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), T_real_cos,
+      Int.cast_natCast] at hTx
+    have : ∃ (k : ℤ), k * π = n * arccos x := by
+      cases (abs_eq zero_le_one).mp hTx
+      case inl h =>
+        obtain ⟨k, hk⟩ := (cos_eq_one_iff _).mp h
+        use 2 * k
+        grind
+      case inr h =>
+        obtain ⟨k, hk⟩ := cos_eq_neg_one_iff.mp h
+        use 2 * k + 1
+        grind
+    obtain ⟨k, hk⟩ := this
+    replace hk : arccos x = (k * π) / n := by aesop
+    have k_nonneg : 0 ≤ k := by
+      suffices 0 ≤ (k : ℝ) by norm_cast at this
+      have : 0 ≤ k * π / n := by grind [arccos_nonneg]
+      linear_combination (norm := field_simp) (n / π) * this
+      grind
+    have k_le_n : k ≤ n := by
+      suffices (k : ℝ) ≤ n by norm_cast at this
+      have : k * π / n ≤ π := by grind [arccos_le_pi]
+      linear_combination (norm := field_simp) (n / π) * this
+      grind
+    use k.toNat
+    refine ⟨Int.toNat_le.mpr k_le_n, ?_⟩
+    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), hk]
+    congr
+    exact (Int.toNat_of_nonneg k_nonneg).symm
+  · rintro ⟨k, hk, hx⟩
+    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
+    rw [hx, T_real_cos, this, cos_int_mul_pi, abs_neg_one_zpow]
+
 theorem roots_T_real (n : ℕ) :
     (T ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))).val := by
@@ -159,71 +193,5 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
     (U ℝ n).rootMultiplicity (cos ((k + 1) * π / (n + 1))) = 1 := by
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
-
-/-- `T_real_extrema n` is the set of extremal points of `T ℝ n` in [-1, 1]. -/
-noncomputable def T_real_extrema (n : ℕ) : Finset ℝ :=
-  (Finset.range (n + 1)).image (fun (k : ℕ) => cos (k * π / n))
-
-@[simp]
-theorem card_T_real_extrema (n : ℕ) : (T_real_extrema n).card = n + 1 := by
-  by_cases n = 0
-  case pos hn => simp [T_real_extrema, hn]
-  case neg hn =>
-  rw [T_real_extrema, Finset.card_image_of_injOn, Finset.card_range]
-  apply injOn_cos.comp (by aesop)
-  intro k hk
-  apply Set.mem_Icc.mpr
-  constructor
-  · positivity
-  · field_simp
-    norm_cast
-    grind
-
-theorem T_real_eval_at_extremum {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
-    (T ℝ n).eval (cos (k * π / n)) = (-1) ^ k := by
-  rw [T_real_cos, ← cos_int_mul_pi]
-  congr 1
-  field_simp
-
-theorem T_real_extrema_eq {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
-    |(T ℝ n).eval x| = 1 ↔ x ∈ T_real_extrema n := by
-  have hnℤ : (n : ℤ) ≠ 0 := Nat.cast_ne_zero.mpr hn
-  have hnℝ : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hn
-  simp_rw [T_real_extrema, Finset.mem_image, Finset.mem_range, Nat.lt_succ_iff]
-  constructor
-  · intro hTx
-    have hx := (T_real_abs_eval_le_one_iff_abs_le_one hnℤ x).mpr (by grind)
-    rw [T_real_eval_eq_cos_of_abs_le_one hnℤ (le_of_eq hTx), Int.cast_natCast] at hTx
-    have : ∃ (k : ℤ), k * π = n * arccos x := by
-      cases (abs_eq zero_le_one).mp hTx
-      case inl h =>
-        obtain ⟨k, hk⟩ := (cos_eq_one_iff _).mp h
-        use 2 * k
-        grind
-      case inr h =>
-        obtain ⟨k, hk⟩ := cos_eq_neg_one_iff.mp h
-        use 2 * k + 1
-        grind
-    obtain ⟨k, hk⟩ := this
-    replace hk : arccos x = (k * π) / n := by aesop
-    have k_nonneg : 0 ≤ k := by
-      suffices 0 ≤ (k : ℝ) by norm_cast at this
-      have : 0 ≤ k * π / n := by grind [arccos_nonneg]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    have k_le_n : k ≤ n := by
-      suffices (k : ℝ) ≤ n by norm_cast at this
-      have : k * π / n ≤ π := by grind [arccos_le_pi]
-      linear_combination (norm := field_simp) (n / π) * this
-      grind
-    use k.toNat
-    refine ⟨by grind, ?_⟩
-    rw [← cos_arccos (x := x) (by grind) (by grind), hk]
-    congr
-    norm_cast
-    exact Int.toNat_of_nonneg k_nonneg
-  · rintro ⟨k, hk, hx⟩
-    have := T_real_eval_at_extremum hnℤ k
-    aesop
 
 end Polynomial.Chebyshev
