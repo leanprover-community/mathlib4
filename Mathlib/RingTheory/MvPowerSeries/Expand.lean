@@ -113,11 +113,10 @@ theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i
   classical
   contrapose! h
   simp only [expand, substAlgHom_apply, coeff_subst (HasSubst.X_pow hp)] at h
-  have : ∃ (d : σ →₀ ℕ), (coeff m) (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) ≠ 0 := by
+  obtain ⟨d, hd⟩ : ∃ (d : σ →₀ ℕ), (coeff m) (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) ≠ 0 := by
     by_contra! hc
     rw [finsum_eq_zero_of_forall_eq_zero fun d => by simp [hc d]] at h
     contradiction
-  obtain ⟨d, hd⟩ := this
   have : (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) = monomial (p • d) 1 := by
     simp [monomial_smul_eq]
   rw [this, coeff_monomial] at hd
@@ -152,25 +151,25 @@ section MvPolynomial
 
 /-- For any multivariate polynomial `φ`, then `MvPolynomial.expand p φ` and
 `MvPowerSeries.expand p hp ↑φ` coincide. -/
+@[simp]
 theorem expand_eq_expand {φ : MvPolynomial σ R} :
     (φ.expand p : MvPowerSeries σ R) = expand p hp (↑φ) := by
   ext n
   simp only [MvPolynomial.coeff_coe]
-  by_cases h : ∀ i, p ∣ n i
+  by_cases! h : ∀ i, p ∣ n i
   · obtain ⟨m, hm⟩ : ∃ m, n = p • m :=
       ⟨Finsupp.equivFunOnFinite.symm fun i => n i / p, by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
     rw [hm, coeff_expand_smul p hp _ _, φ.coeff_expand_smul _ hp, φ.coeff_coe]
-  · obtain ⟨i, hi⟩ := not_forall.mp h
+  · obtain ⟨i, hi⟩ := h
     rw [coeff_expand_of_not_dvd p hp _ hi, MvPolynomial.coeff_expand_of_not_dvd _ hi]
 
 theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     trunc' R (p • n) (expand p hp φ) = (trunc' R n φ).expand p := by
   ext d
-  by_cases h : ∀ i, p ∣ d i
-  · have : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
+  by_cases! h : ∀ i, p ∣ d i
+  · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
       by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
-    obtain ⟨m, hm⟩ := this
-    by_cases h_le : m ≤ n
+    by_cases! h_le : m ≤ n
     · rw [hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
         MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
     · have not_le : ¬ p • m ≤ p • n := by
@@ -182,9 +181,9 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
         exact Not.intro fun a ↦ aux' (a i)
       rw [coeff_trunc', hm, if_neg not_le, MvPolynomial.coeff_expand_smul _ hp, coeff_trunc',
         if_neg h_le]
-  · obtain ⟨i, hi⟩ := not_forall.mp h
+  · obtain ⟨i, hi⟩ := h
     rw [MvPolynomial.coeff_expand_of_not_dvd _ hi]
-    by_cases hd : d ≤ p • n
+    by_cases! hd : d ≤ p • n
     · rw [coeff_trunc', if_pos hd, coeff_expand_of_not_dvd _ hp _ hi]
     rw [coeff_trunc', if_neg hd]
 
