@@ -36,7 +36,7 @@ public theorem ContinuousAlgEquiv.coe_eq_continuousLinearEquiv_conjugate {𝕜 V
     rw [← not_forall, ← ContinuousLinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff,
       ContinuousLinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
-  set T := apply' _ (.id 𝕜) z ∘L f.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
+  set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
     simp only [hT, ← mul_apply, ← map_mul]

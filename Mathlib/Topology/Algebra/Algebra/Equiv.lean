@@ -302,9 +302,4 @@ theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E�
     continuous_toFun := h₁
     continuous_invFun := by dsimp; fun_prop }
 
-/-- Interpret a `ContinuousAlgEquiv` as a `ContinuousLinearMap`. -/
-def toContinuousLinearMap (e : A ≃A[R] B) : A →L[R] B := { e with map_smul' := by simp }
-
-@[simp] theorem coe_toContinuousLinearMap (e : A ≃A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
-
 end ContinuousAlgEquiv
