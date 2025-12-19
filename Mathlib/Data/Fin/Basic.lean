@@ -90,11 +90,7 @@ def equivSubtype : Fin n ≃ { i // i < n } where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
 
-lemma neZero {n : ℕ} (i : Fin n) : NeZero n := by
-  rw [neZero_iff]
-  intro h
-  rw [h] at i
-  exact i.elim0
+lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
 
 section coe
 
