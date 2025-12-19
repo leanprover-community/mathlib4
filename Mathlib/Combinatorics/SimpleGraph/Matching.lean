@@ -442,7 +442,7 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
 
-private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v w : V}
+private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Finite V] {v w : V}
     (hcyc : G.IsCycles) (p : G.Walk v w) (hp : p.IsPath) :
     (G \ p.toSubgraph.spanningCoe).Reachable w v := by
   classical
@@ -478,8 +478,9 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
     exact hnpvw' h.symm
   use (((hcyc.reachable_sdiff_toSubgraph_spanningCoe_aux
     (p.cons hw'2.symm) hp'p).some).mapLe hle).append this.toWalk
-termination_by Fintype.card V + 1 - p.length
+termination_by Nat.card V + 1 - p.length
 decreasing_by
+  have := Fintype.ofFinite V
   simp_wf
   have := Walk.IsPath.length_lt hp
   lia

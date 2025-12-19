@@ -590,8 +590,10 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
         dist_eq_norm, sub_apply]
 
-lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
+omit [Fintype ι] in
+lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
     IsUniformInducing (@toLp p (Π i, β i)) :=
+  have := Fintype.ofFinite ι
   (antilipschitzWith_toLp p β).isUniformInducing
     (lipschitzWith_toLp p β).uniformContinuous
 
