@@ -145,15 +145,13 @@ theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c 
   exact mul_nonneg ((re_nonneg_of_nonneg hc').mpr hc) (re_inner_nonneg_left hT x)
 
 open scoped ComplexOrder in
+attribute [local instance] PosMulReflectLE.toMulPosReflectLE in
 theorem IsPositive.isPositive_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsPositive) (hf' : f ≠ 0) {α : 𝕜} :
     (α • f).IsPositive ↔ 0 ≤ α := by
-  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, hf.smul_of_nonneg⟩
-  simp only [hf.isSymmetric.isSymmetric_smul_iff hf', smul_apply, inner_smul_left] at h1 h2
-  simp only [im_eq_zero_iff_isSelfAdjoint.mpr h1, nonneg_iff (K := 𝕜), and_true]
-  rw [← conj_eq_iff_re.mp h1, conj_ofReal] at h2
-  have := by simpa [RCLike.ext_iff (K := 𝕜), hf.isSymmetric] using
-    hf.isSymmetric.inner_map_self_eq_zero.not.mpr hf'
-  grind [hf.2, re_ofReal_mul, mul_nonneg_iff]
+  refine ⟨fun h ↦ ?_, hf.smul_of_nonneg⟩
+  obtain ⟨x, hx⟩ := by simpa only [hf.1 _] using hf.ne_zero_iff.mp hf'
+  have := by simpa [inner_smul_right] using h.inner_nonneg_right x
+  exact le_of_smul_le_smul_of_pos_right (by simpa) hx
 
 theorem IsPositive.nonneg_eigenvalues [FiniteDimensional 𝕜 E]
     {T : E →ₗ[𝕜] E} {n : ℕ} (hT : T.IsPositive)
