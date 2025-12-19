@@ -187,7 +187,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
     _ = #{t | G.Adj s t} := by
       simp [← card_neighborFinset_eq_degree, neighborFinset]
     _ = card V - #{t | ¬G.Adj s t} :=
-      eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
+      eq_tsub_of_add_eq (card_filter_add_card_filter_not _)
     _ = _ := by
       congr; ext; rw [mem_filter]
       convert Finpartition.mem_part_ofSetoid_iff_rel.symm
@@ -300,7 +300,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
   rcases r.eq_zero_or_pos with rfl | hr; · simp
   suffices #{i ∈ range r | c % r = (n + i) % r} = 1 by
     rw [← card_filter, ← this]; apply Nat.eq_sub_of_add_eq'
-    rw [filter_card_add_filter_neg_card_eq_card, card_range]
+    rw [card_filter_add_card_filter_not, card_range]
   apply le_antisymm
   · change #{i ∈ range r | _ ≡ _ [MOD r]} ≤ 1
     rw [card_le_one_iff]; intro w x mw mx
@@ -368,7 +368,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [ring₂, ← add_assoc]; congr 1
       rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
       rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
-        ← add_rotate, add_comm _ (_ *_)]; congr 1
+        ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
