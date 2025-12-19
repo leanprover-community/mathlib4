@@ -33,6 +33,7 @@ namespace EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
 
 open AffineSubspace
 
@@ -509,6 +510,32 @@ end PseudoMetricSpace
 section MetricSpace
 
 variable [MetricSpace P] [NormedAddTorsor V P]
+variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+
+@[simp] lemma orthogonalProjection_map (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (f : P →ᵃⁱ[𝕜] P₂)
+    [(s.map f.toAffineMap).direction.HasOrthogonalProjection] (p : P) :
+    orthogonalProjection (s.map f.toAffineMap) (f p) = f (orthogonalProjection s p) := by
+  rw [coe_orthogonalProjection_eq_iff_mem]
+  simp only [mem_map, AffineIsometry.coe_toAffineMap, AffineIsometry.map_eq_iff, exists_eq_right,
+    SetLike.coe_mem, map_direction, AffineIsometry.linear_eq_linearIsometry, true_and]
+  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linearMap_vsub, Submodule.mem_orthogonal]
+  intro u hu
+  rw [Submodule.mem_map] at hu
+  obtain ⟨v, hv, rfl⟩ := hu
+  rw [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap,
+    LinearIsometry.inner_map_map, Submodule.inner_right_of_mem_orthogonal hv
+      (vsub_orthogonalProjection_mem_direction_orthogonal _ _)]
+
+lemma orthogonalProjection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSubspace 𝕜 s)
+    [Nonempty s'] [s'.direction.HasOrthogonalProjection]
+    [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
+    (orthogonalProjection s' p : P) = orthogonalProjection (s'.map s.subtype) p := by
+  rw [eq_comm]
+  have : (s'.map s.subtypeₐᵢ.toAffineMap).direction.HasOrthogonalProjection := by
+    rw [subtypeₐᵢ_toAffineMap]
+    infer_instance
+  convert orthogonalProjection_map s' s.subtypeₐᵢ p
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace 𝕜 P} [Nonempty s]
@@ -526,6 +553,18 @@ theorem dist_orthogonalProjection_ne_zero_of_notMem {s : AffineSubspace 𝕜 P} 
 @[deprecated (since := "2025-05-23")]
 alias dist_orthogonalProjection_ne_zero_of_not_mem := dist_orthogonalProjection_ne_zero_of_notMem
 
+@[simp] lemma reflection_map (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (f : P →ᵃⁱ[𝕜] P₂)
+    [(s.map f.toAffineMap).direction.HasOrthogonalProjection] (p : P) :
+    reflection (s.map f.toAffineMap) (f p) = f (reflection s p) := by
+  simp [reflection_apply']
+
+lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSubspace 𝕜 s)
+    [Nonempty s'] [s'.direction.HasOrthogonalProjection]
+    [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
+    (reflection s' p : P) = reflection (s'.map s.subtype) p := by
+  simp [reflection_apply', orthogonalProjection_subtype]
+
 end MetricSpace
 
 end EuclideanGeometry
@@ -537,8 +576,12 @@ namespace Simplex
 open EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [PseudoMetricSpace P]
-variable [NormedAddTorsor V P]
+variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
+
+section PseudoMetricSpace
+
+variable [PseudoMetricSpace P] [NormedAddTorsor V P]
 
 /-- The orthogonal projection of a point `p` onto the hyperplane spanned by the simplex's points. -/
 def orthogonalProjectionSpan {n : ℕ} (s : Simplex 𝕜 P n) :
@@ -586,6 +629,29 @@ lemma orthogonalProjectionSpan_eq_point (s : Simplex 𝕜 P 0) (p : P) :
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex 𝕜 P 1) (i : Fin 2)
     (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
   simp [faceOpposite_point_eq_point_rev]
+
+end PseudoMetricSpace
+
+section MetricSpace
+
+variable [MetricSpace P] [NormedAddTorsor V P]
+variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+
+lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →ᵃⁱ[𝕜] P₂) (p : P) :
+    (s.map f.toAffineMap f.injective).orthogonalProjectionSpan (f p) =
+      f (s.orthogonalProjectionSpan p) := by
+  simp_rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_map (affineSpan 𝕜 (Set.range s.points)) f p
+  simp [AffineSubspace.map_span, Set.range_comp]
+
+@[simp] lemma orthogonalProjectionSpan_restrict {n : ℕ} (s : Simplex 𝕜 P n)
+    (S : AffineSubspace 𝕜 P) (hS : affineSpan 𝕜 (Set.range s.points) ≤ S) (p : S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    ((s.restrict S hS).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p := by
+  rw [eq_comm]
+  convert (s.restrict S hS).orthogonalProjectionSpan_map S.subtypeₐᵢ p
+
+end MetricSpace
 
 end Simplex
 
