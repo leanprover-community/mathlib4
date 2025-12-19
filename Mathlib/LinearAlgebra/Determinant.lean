@@ -656,7 +656,7 @@ theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
 
 theorem det_mul_det (b b' b'' : Basis ι A M) :
     b.det b' * b'.det b'' = b.det b'' := by
-  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
+  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b' := by
     ext; simp
   conv_rhs =>
     rw [this, Basis.det_comp, det_basis, mul_comm]

@@ -130,7 +130,7 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
   exact I.2.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
-defined by mapping `x` to `den I • x`, assuming scalar multiplication by `I.den` is injective. -/
+defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.den` is injective. -/
 noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
     (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
@@ -146,13 +146,13 @@ noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalI
     exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
-defined by mapping `x` to `den I • x`. -/
+defined by mapping `x` to `I.den • x`. -/
 noncomputable def equivNum [NoZeroSMulDivisors R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num :=
   equivNumOfIsSMulRegular (smul_right_injective P h_nz)
 
 /-- The linear equivalence between the fractional ideal `I` in a faithful localization
-and the integral ideal `I.num` -/
+and the integral ideal `I.num`. -/
 noncomputable def equivNumOfIsLocalization [FaithfulSMul R P] [IsLocalization S P]
     (I : FractionalIdeal S P) : I ≃ₗ[R] I.num :=
   equivNumOfIsSMulRegular (smul_bijective ..).1
