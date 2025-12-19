@@ -40,6 +40,10 @@ obtained by extending by zero the cochain complex `R.cocomplex` indexed by `ℕ`
 noncomputable def cochainComplex : CochainComplex C ℤ :=
   R.cocomplex.extend ComplexShape.embeddingUpNat
 
+instance : R.cochainComplex.IsStrictlyGE 0 := by
+  dsimp [cochainComplex]
+  infer_instance
+
 /-- If `R : InjectiveResolution X`, then `R.cochainComplex.X n` (with `n : ℕ`)
 is isomorphic to `R.cocomplex.X k` (with `k : ℕ`) when `k = n`. -/
 noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : k = n) :
@@ -82,6 +86,10 @@ end
 variable [Abelian C] {X : C} (R : InjectiveResolution X)
 
 instance : QuasiIso R.ι' := by dsimp [ι']; infer_instance
+
+instance : R.cochainComplex.IsLE 0 := by
+  simp only [← HomologicalComplex.isSupported_iff_of_quasiIso R.ι']
+  infer_instance
 
 end InjectiveResolution
 
