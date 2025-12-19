@@ -64,13 +64,13 @@ section ite
 
 variable [Top α] {p : Prop} [Decidable p]
 
-@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe apply)]
-theorem ite_eq_top {a b : α} (ha : a ≠ ⊤) (ha : b ≠ ⊤) :
+@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe 70% apply)]
+theorem ite_ne_top {a b : α} (ha : a ≠ ⊤) (ha : b ≠ ⊤) :
     (if p then a else b) ≠ ⊤ := by
   split <;> assumption
 
-@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe apply)]
-theorem dite_eq_top {a : p → α} {b : ¬p → α} (ha : ∀ h, a h ≠ ⊤) (hb : ∀ h, b h ≠ ⊤) :
+@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe 70% apply)]
+theorem dite_ne_top {a : p → α} {b : ¬p → α} (ha : ∀ h, a h ≠ ⊤) (hb : ∀ h, b h ≠ ⊤) :
     (if h : p then a h else b h) ≠ ⊤ := by
   split <;> solve_by_elim
 
