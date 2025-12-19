@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
@@ -128,22 +127,17 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ)
   rw [← h00]
   exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm c.val b.val, pow_mul]
 
-omit [NormSMulClass ℤ 𝕜] in
+omit [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜] in
 lemma tendsto_zero_geometric_tsum_pnat {r : 𝕜} (hr : ‖r‖ < 1) :
-    Tendsto (fun m : ℕ+ ↦ ∑' (n : ℕ+), r ^ (n * m : ℕ)) atTop (𝓝 0) := by
-  have := tendsto_tsum_of_dominated_convergence (𝓕 := atTop) (g := fun (n : ℕ+) ↦ 0)
-    (f := fun d n : ℕ+ ↦ r ^ (n * d : ℕ)) (bound := fun n : ℕ+ ↦ (‖r ^ (n : ℕ)‖))
-  simp only [tsum_zero] at this
-  apply this
-  · have hs : Summable fun n : ℕ ↦ ‖r ^ n‖ := by simp [hr]
-    apply hs.subtype
-  · intro k
-    have ht : Tendsto (fun x : ℕ ↦ r ^ (k * x)) atTop (𝓝 0) := by
-      rw [tendsto_zero_iff_norm_tendsto_zero]
-      simp [pow_mul, tendsto_pow_atTop_nhds_zero_iff, pow_lt_one_iff_of_nonneg, hr]
-    exact tendsto_comp_val_Ioi_atTop.mpr ht
-  · simp only [eventually_atTop, ge_iff_le, norm_pow]
-    exact ⟨1, fun b hb k ↦
-      pow_le_pow_of_le_one (norm_nonneg _) hr.le (Nat.le_mul_of_pos_right k hb)⟩
+    Tendsto (fun m : ℕ+ ↦ ∑' n : ℕ+, r ^ (n * m : ℕ)) atTop (𝓝 0) := by
+  have h1 (m : ℕ+) : ‖r ^ (m : ℕ)‖ < 1 := by
+    rwa [norm_pow, pow_lt_one_iff_of_nonneg (norm_nonneg _) (NeZero.ne _)]
+  have h2 (m : ℕ+) : ∑' n : ℕ+, r ^ (n * m : ℕ) = (1 - r ^ (m : ℕ))⁻¹ - 1 := by
+    have := tsum_geometric_of_norm_lt_one (h1 m)
+    rw [← tsum_zero_pnat_eq_tsum_nat (summable_geometric_of_norm_lt_one (h1 m))] at this
+    simp_rw [← this, pow_zero, add_sub_cancel_left, mul_comm, pow_mul]
+  rw [funext h2, (by simp : 𝓝 (0 : 𝕜) = 𝓝 ((1 - 0)⁻¹ - 1)), tendsto_sub_const_iff,
+    tendsto_inv_iff₀ (by simp), tendsto_const_sub_iff]
+  exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).comp <| tendsto_PNat_val_atTop_atTop
 
 end tsum

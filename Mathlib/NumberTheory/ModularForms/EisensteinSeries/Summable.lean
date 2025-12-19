@@ -178,6 +178,10 @@ lemma linear_inv_isBigO_right_add (c e : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d + e)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_right_add c e z).inv.isBigO
 
+lemma linear_inv_isBigO_right (c : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ := by
+  grind [add_zero, (linear_isTheta_right_add c 0 z).inv.isBigO]
+
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_left d hz).inv.isBigO
@@ -185,7 +189,7 @@ lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
 lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
     Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z + d)) atTop (𝓝 0) := by
   apply IsBigO.trans_tendsto ?_ tendsto_inv_atTop_nhds_zero_nat (F'' := ℝ)
-  have := (isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right_add b 0 z)).2
+  have := (isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b z)).2
   simpa [← Nat.map_cast_int_atTop, isBigO_map]
 
 lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
@@ -226,10 +230,9 @@ lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpa
 lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by lia)
-  simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
-  have := (linear_inv_isBigO_right_add c 0 z).abs_right.pow
-  aesop
+  lift k to ℕ using by lia
+  grind [(linear_inv_isBigO_right c z).abs_right.pow k,
+    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
@@ -242,13 +245,13 @@ lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
-  simpa [pow_two] using (linear_inv_isBigO_right_add c₂ 0 z).mul
-      (linear_inv_isBigO_right_add c₁ 0 z).comp_neg_int
+  simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
+      (linear_inv_isBigO_right c₁ z).comp_neg_int
 
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
-  simpa [pow_two] using (linear_inv_isBigO_right_add c₂ 0 z).mul
+  simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right_add c₁ 1 z)
 
 lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :

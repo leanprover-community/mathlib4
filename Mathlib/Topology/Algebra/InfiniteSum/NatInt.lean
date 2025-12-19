@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
@@ -539,8 +540,8 @@ theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
 alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
 @[to_additive]
-lemma multipliable_pnat_iff_multipliable_nat {M : Type u_1} [CommGroup M] [TopologicalSpace M]
-    [IsTopologicalGroup M] {f : ℕ → M} : Multipliable (fun n : ℕ+ ↦ f n) ↔ Multipliable f := by
+lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopologicalGroup G]
+    {f : ℕ → G} : Multipliable (fun n : ℕ+ ↦ f n) ↔ Multipliable f := by
   rw [multipliable_pnat_iff_multipliable_succ, multipliable_nat_add_iff]
 
 @[to_additive]
@@ -574,12 +575,8 @@ theorem tprod_int_eq_zero_mul_tprod_pnat [UniformSpace G] [IsUniformGroup G] [Co
 
 @[to_additive tsum_int_eq_zero_add_two_mul_tsum_pnat]
 theorem tprod_int_eq_zero_mul_tprod_pnat_sq [UniformSpace G] [IsUniformGroup G] [CompleteSpace G]
-    [T2Space G] {f : ℤ → G} (hf : ∀ n : ℤ, f (-n) = f n) (hf2 : Multipliable f) :
+    [T2Space G] {f : ℤ → G} (hf : f.Even) (hf2 : Multipliable f) :
     ∏' n, f n = f 0 * (∏' n : ℕ+, f n) ^ 2 := by
-    rw [sq, ← mul_assoc]
-    conv =>
-      enter [2,2,1, n]
-      rw [← hf]
-    exact tprod_int_eq_zero_mul_tprod_pnat hf2
+  simpa only [sq, ← mul_assoc, hf _] using tprod_int_eq_zero_mul_tprod_pnat hf2
 
 end PNat
