@@ -44,10 +44,13 @@ Arguments:
   We apply it to both declarations, to have the same behavior as `to_additive`, and to shorten some
   attribute commands. Note that `@[elementwise (attr := simp), reassoc (attr := simp)]` will try
   to apply `simp` twice to the current declaration, but that causes no issues.
+* `docstringPrefix` is prepended to the doc-string of `src` to form the doc-string of `tgt`.
+  If it is `none`, only the doc-string of `src` is used.
 -/
 def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
     (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
-    (construct : Expr → List Name → MetaM (Expr × List Name)) :
+    (construct : Expr → List Name → MetaM (Expr × List Name))
+    (docstringPrefix? : Option String := none) :
     MetaM Unit := do
   let tgt := match src with
     | Name.str n s => Name.mkStr n <| prefix_ ++ s ++ suffix
@@ -72,9 +75,13 @@ def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
   | _ => throwError "Constant {src} is not a theorem or definition."
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  match docstringPrefix?, ← findDocString? (← getEnv) src with
+  | none, none => pure ()
+  | some doc, none | none, some doc => addDocStringCore tgt doc
+  | some docPre, some docPost => addDocStringCore tgt s!"{docPre}\n\n---\n\n{docPost}"
   inferDefEqAttr tgt
   let attrs := match attrs? with | some attrs => attrs | none => #[]
-  _ ← Term.TermElabM.run' do
+  Term.TermElabM.run' do
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
