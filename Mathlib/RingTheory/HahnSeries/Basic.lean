@@ -422,7 +422,7 @@ theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
 
 theorem ne_zero_of_order_ne {x : HahnSeries Γ R} (hx : x.order ≠ 0) : x ≠ 0 := by
   by_cases h : x = 0
-  · simp_all only [order_zero, ne_eq, not_true_eq_false]
+  · simp [h] at hx
   · exact h
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by

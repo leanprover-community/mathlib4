@@ -42,7 +42,7 @@ theorem finite_vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero
     exact h
   · intro _ ⟨_, _, h13⟩ gh' ⟨_, _, h23⟩ h
     rw [h, ← h23] at h13
-    refine Prod.ext h (IsLeftCancelVAdd.left_cancel gh'.1 _ _ h13)
+    exact Prod.ext h (IsLeftCancelVAdd.left_cancel gh'.1 _ _ h13)
 
 /-- The finset of pairs that vector-add to a given element. -/
 def vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G →₀ R) (x : P → V)
@@ -51,7 +51,7 @@ def vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G 
 
 theorem mem_vaddAntidiagonal_iff [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G →₀ R)
     (x : P → V) (p : P) (gh : G × P) :
-    gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ (x gh.2) ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
+    gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
   simp [vaddAntidiagonal]
 
 theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [Zero V]
@@ -62,11 +62,11 @@ theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [
 /-- A convolution-type scalar multiplication of finitely supported functions on formal functions. -/
 scoped instance [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V] :
     SMul (G →₀ R) (P → V) where
-  smul f x p := ∑ (G ∈ f.vaddAntidiagonal x p), (f G.1) • x G.2
+  smul f x p := ∑ G ∈ f.vaddAntidiagonal x p, (f G.1) • x G.2
 
 theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V]
     (f : G →₀ R) (x : P → V) (p : P) :
-    (f • x) p = ∑ (G ∈ f.vaddAntidiagonal x p), (f G.1) • x G.2 := rfl
+    (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, (f G.1) • x G.2 := rfl
 
 /-- A convolution-type scalar multiplication of the monoid algebra on the function space. -/
 scoped instance [AddCancelMonoid G] [Semiring R] :

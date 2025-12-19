@@ -6,9 +6,10 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Lie.BaseChange
---import Mathlib.Algebra.Lie.InvariantForm
---import Mathlib.Algebra.Lie.Extension.Basic
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -53,9 +54,8 @@ namespace LieAlgebra
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-/-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`, seen
-as a Lie algebra over `R`. -/
-abbrev LoopAlgebra := RestrictScalars R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
+/-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`. -/
+abbrev LoopAlgebra := LaurentPolynomial R ⊗[R] L
 
 namespace LoopAlgebra
 
@@ -66,72 +66,46 @@ instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
   LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
 /-- The linear map taking `x` to `T ^ n ⊗ x`. -/
-def monomial (n : ℤ) : L →ₗ[R] LoopAlgebra R L where
-  toFun x := (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)).symm
-    (LaurentPolynomial.T n ⊗ₜ x)
-  map_add' x y := by
-    rw [AddEquiv.symm_apply_eq, map_add, AddEquiv.apply_symm_apply, AddEquiv.apply_symm_apply,
-      ← TensorProduct.tmul_add]
-  map_smul' r x := by
-    rw [AddEquiv.symm_apply_eq, RestrictScalars.addEquiv_map_smul, AddEquiv.apply_symm_apply,
-      IsScalarTower.algebraMap_smul, RingHom.id_apply, TensorProduct.tmul_smul]
+def monomial (n : ℤ) : L →ₗ[R] LoopAlgebra R L :=
+  TensorProduct.mk R (LaurentPolynomial R) L (LaurentPolynomial.T n)
 
 @[simp]
 lemma addEquiv_monomial (n : ℤ) (x : L) :
-    (RestrictScalars.addEquiv R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L))
-      (monomial R L n x) = (LaurentPolynomial.T n ⊗ₜ x) :=
+    monomial R L n x = (LaurentPolynomial.T n ⊗ₜ x) :=
   rfl
 
 lemma monomial_smul (r : R) (n : ℤ) (x : L) : monomial R L n (r • x) = r • (monomial R L n x) :=
-  LinearMap.CompatibleSMul.map_smul (monomial R L n) r x
+  LinearMap.map_smul (monomial R L n) r x
 
-/-!
-lemma monomial_eq_iff (n : ℤ) (x : L) : monomial R L n x = 0 ↔ x = 0 := by
-  simp only [monomial, LinearMap.coe_mk, AddHom.coe_mk, EmbeddingLike.map_eq_zero_iff]
-  constructor
-  · cases subsingleton_or_nontrivial R
-    · have : Subsingleton L := Module.subsingleton R L
-      exact fun a ↦ Subsingleton.eq_zero x
-    intro h
-    rw [LaurentPolynomial.T] at h
-    have : Finsupp.single n 1 ≠ 0 := by
-      intro h'
-      rw [Finsupp.single_eq_zero] at h'
-      apply Nat.one_ne_zero h'
-    --rw [← TensorProduct.zero_tmul (LaurentPolynomial R) x] at h
+/-- A basis of Laurent polynomials. -/
+@[simps]
+def basisMonomials : Module.Basis ℤ R (LaurentPolynomial R) :=
+  Module.Basis.ofRepr ((LinearEquiv.refl R (ℤ →₀ R)))
+--#find_home! basisMonomials --here. Move to Algebra.Polynomial.Laurent?
 
+lemma basisMonomials_eq (n : ℤ) : basisMonomials R n = LaurentPolynomial.T n := by
+  rfl
 
+/-- A linear isomorphism to finitely supported functions. -/
+def toFinsupp : LoopAlgebra R L ≃ₗ[R] ℤ →₀ L :=
+  TensorProduct.equivFinsuppOfBasisLeft (basisMonomials R)
 
-    sorry
-  · intro h
-    simp [h]
--/
-/-- Construct an element of the loop algebra from a finitely supported function. -/
-def ofFinsupp : Finsupp ℤ L →ₗ[R] LoopAlgebra R L where
-  toFun f := ∑ n ∈ f.support, monomial R L n (f n)
-  map_add' x y := by
-    simp only [Finsupp.coe_add, Pi.add_apply, map_add]
-    have hxy : x.support ⊆ x.support ∪ y.support := Finset.subset_union_left
-    have hyx : y.support ⊆ x.support ∪ y.support := Finset.subset_union_right
-    rw [Finset.sum_subset Finsupp.support_add, Finset.sum_add_distrib, Finset.sum_subset hxy,
-      Finset.sum_subset hyx]
-    · intro _ _ h
-      rw [Finsupp.notMem_support_iff] at h
-      simp [h]
-    · intro _ _ h
-      rw [Finsupp.notMem_support_iff] at h
-      simp [h]
-    · intro n hn h
-      rw [Finsupp.notMem_support_iff, Finsupp.add_apply, add_eq_zero_iff_eq_neg] at h
-      simp [h]
-  map_smul' r x := by
-    rw [Finset.sum_subset Finsupp.support_smul
-      (fun _ _ hs ↦ by rw [Finsupp.notMem_support_iff] at hs; simp [hs]),
-      Finset.smul_sum, RingHom.id_apply]
-    exact Finset.sum_congr rfl fun _ _ ↦ by simp
+@[simp]
+lemma toFinsupp_symm_single (n : ℤ) :
+    (toFinsupp R L).symm ∘ (Finsupp.single n) = monomial R L n := by
+  ext x
+  simp [toFinsupp, basisMonomials_eq]
 
--- I need a way to construct linear maps out of LoopAlgebra, by specifying the map on
--- `x ⊗ T ^ n` for `x ∈ L`.  Maybe first a lemma saying LoopAlgebra is spanned by such things.
+@[simp]
+lemma toFinsupp_comp_monomial (n : ℤ) : toFinsupp R L ∘ (monomial R L n) = Finsupp.single n := by
+  refine Eq.symm ?_
+  refine (LinearEquiv.symm_comp_eq (R₁ := R) (R₂ := R) (monomial R L n) (Finsupp.single n)).mp ?_
+  simp
+
+lemma monomial_injective (n : ℤ) : Function.Injective (monomial R L n) := by
+  rw [← toFinsupp_symm_single]
+  exact (EmbeddingLike.comp_injective _ (toFinsupp R L).symm).mpr (Finsupp.single_injective n)
+
 
 /-!
 /-- The evaluation representation, given by composing a representation with the evaluation map
@@ -146,31 +120,87 @@ def ofFinsupp : Finsupp ℤ L →ₗ[R] LoopAlgebra R L where
 -- define eval.LieModule
 -/
 
+open Pointwise in
+lemma finite_support_add {α A : Type*} [AddMonoid A] {f g : α → A} (hf : Finite f.support)
+    (hg : Finite g.support) :
+    Finite (f + g).support := by
+  refine Finite.Set.subset (f.support ∪ g.support) ?_
+  intro n hn
+  contrapose! hn
+  simp only [Set.mem_union, Function.mem_support, ne_eq, not_or, not_not] at hn
+  simp [hn.1, hn.2]
+--#find_home! ofSupportFiniteAdd --Mathlib.Data.Finsupp.Fintype
+
+lemma add_finsupp {α A : Type*} [AddMonoid A] {f g : α → A} (hf : Finite f.support)
+    (hg : Finite g.support) :
+    Finsupp.ofSupportFinite f hf + Finsupp.ofSupportFinite g hg =
+      Finsupp.ofSupportFinite (f + g) (finite_support_add hf hg) := by
+  ext; simp [Finsupp.add_apply, Finsupp.ofSupportFinite_coe]
+
 section CentralExt
-/-!
-/-- The residue pairing on a Loop algebra. -/
-def residuePairing (Φ : LinearMap.BilinForm R L)
-    (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
-    (LoopAlgebra R L) →ₗ[R] (LoopAlgebra R L) →ₗ[R] R where
+
+lemma residuePairing_finite_support (Φ : LinearMap.BilinForm R L) (f g : ℤ →₀ L) :
+    Finite (fun n ↦ n • (Φ (f (-n)) (g (n - 1)))).support := by
+  refine Finite.Set.subset ((fun (n : ℤ) ↦ (-n)) '' f.support) ?_
+  intro n hn
+  simp only [Set.image_neg_eq_neg, Set.mem_neg, SetLike.mem_coe, Finsupp.mem_support_iff, ne_eq]
+  contrapose! hn
+  simp [hn]
+
+/-- The residue pairing on finitely supported functions.  When the functions are viewed as Laurent
+polynomials with coefficients in `L`, the pairing is given by `(f, g) ↦ Res f dg`. -/
+@[simps]
+def residuePairingFinsupp (Φ : LinearMap.BilinForm R L) :
+    (ℤ →₀ L) →ₗ[R] (ℤ →₀ L) →ₗ[R] R where
   toFun f := {
-    toFun := fun g => by
+    toFun := fun g => ∑ᶠ (n : ℤ), n • (Φ (f (-n)) (g (n - 1)))
+    map_add' x y := by
+      rw [← finsum_add_distrib (residuePairing_finite_support R L Φ f x)
+        (residuePairing_finite_support R L Φ f y), finsum_congr]
+      intro n
+      simp
+    map_smul' r x := by
+      rw [RingHom.id_apply, smul_finsum' _ (residuePairing_finite_support R L Φ f x),
+        finsum_congr _]
+      intro n
+      simp [mul_left_comm] }
+  map_add' x y := by
+    ext n z
+    simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+      Finsupp.lsingle_apply, LinearMap.add_apply]
+    rw [← finsum_add_distrib (residuePairing_finite_support R L Φ x _)
+      (residuePairing_finite_support R L Φ y _), finsum_congr]
+    intro m
+    simp
+  map_smul' r x := by
+    ext n y
+    simp only [Finsupp.coe_smul, LinearMap.coe_comp, LinearMap.smul_apply, LinearMap.coe_mk,
+      AddHom.coe_mk, Function.comp_apply, RingHom.id_apply]
+    rw [smul_finsum' _ (residuePairing_finite_support R L Φ x _), finsum_congr]
+    intro k
+    simp [mul_left_comm]
 
-      sorry -- Res_{z = 0} f dg.
-    map_add' := sorry
-    map_smul' := sorry }
-  map_add' := sorry
-  map_smul' := sorry
+/-- The residue pairing on a Loop algebra, with values in a trivial module. -/
+def residuePairingLoop (Φ : LinearMap.BilinForm R L) :
+    (LoopAlgebra R L) →ₗ[R] (LoopAlgebra R L) →ₗ[R] (TrivialLieModule R (LoopAlgebra R L) R) :=
+  (((residuePairingFinsupp R L Φ).compr₂
+    ((TrivialLieModule.equiv R (LoopAlgebra R L) R).symm.toLinearMap)).compl₂
+    (toFinsupp R L).toLinearMap).comp (toFinsupp R L).toLinearMap
 
+/-
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 def twoCocycle_of_Bilinear (Φ : LinearMap.BilinForm R L)
     (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
-    LieExtension.twoCocycleTriv R (LoopAlgebra R L) R where
-  toFun := sorry -- residue pairing
-  map_eq_zero_of_eq' := sorry
-  cocycle := sorry
+    LieModule.Cohomology.twoCochain R (LoopAlgebra R L)
+      (TrivialLieModule R (LoopAlgebra R L) R) where
+  val := residuePairingLoop R L Φ
 
---⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
+  property :=
+
+    sorry
 -/
+--⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
+
 -- show that an invariant bilinear form on `L` produces a 2-cocycle for `LoopAlgebra R L`.
 -- define central extensions given by invariant bilinear forms
 -- extend central characters to reps of positive part

@@ -464,7 +464,7 @@ theorem single_add_single_ne {g g' : Γ} (hgg' : g < g') {a : R} (ha : a ≠ 0) 
 omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 theorem single_add_single_support {g g' : Γ} {a b : R} :
     (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
-  refine support_add_subset.trans ?_
+  refine (support_add_subset _ _).trans ?_
   simp_all only [Set.union_singleton, Set.union_subset_iff]
   refine { left := fun _ hk => Set.mem_insert_of_mem g' (support_single_subset hk), right := ?_ }
   rw [Set.pair_comm]
@@ -528,7 +528,7 @@ variable [LinearOrder Γ] [AddCommMonoid Γ] [CommRing R]
 theorem supp_one_sub_single {g : Γ} (r : R) :
     (1 - single g r).support ⊆ {0, g} := by
   rw [sub_eq_add_neg, ← single_neg]
-  refine support_add_subset.trans ?_
+  refine (support_add_subset _ _).trans ?_
   simp only [Set.union_subset_iff]
   constructor
   · by_cases h : Nontrivial R

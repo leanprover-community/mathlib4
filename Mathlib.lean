@@ -1249,6 +1249,7 @@ public import Mathlib.Algebra.Vertex.Affine
 public import Mathlib.Algebra.Vertex.Basic
 public import Mathlib.Algebra.Vertex.Defs
 public import Mathlib.Algebra.Vertex.HVertexOperator
+public import Mathlib.Algebra.Vertex.Lattice
 public import Mathlib.Algebra.Vertex.VertexOperator
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.AffineSpace
