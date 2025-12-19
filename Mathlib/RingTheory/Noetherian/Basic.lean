@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 module
 
 public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Finiteness.Cardinality
@@ -246,25 +247,31 @@ section
 
 variable {R M N P : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [IsNoetherian R M]
 
-lemma Submodule.finite_ne_bot_of_iSupIndep {ι : Type*} {N : ι → Submodule R M}
-    (h : iSupIndep N) :
+lemma Submodule.finite_ne_bot_of_iSupIndep {ι : Type*} {N : ι → Submodule R M} (h : iSupIndep N) :
     Set.Finite {i | N i ≠ ⊥} :=
   WellFoundedGT.finite_ne_bot_of_iSupIndep h
 
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
-    (hv : LinearIndependent R v) : Finite ι := by
-  refine WellFoundedGT.finite_of_iSupIndep
-    hv.iSupIndep_span_singleton
-    fun i contra => ?_
-  apply hv.ne_zero i
-  have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
-  rwa [contra, Submodule.mem_bot] at this
+    (hv : LinearIndependent R v) : Finite ι :=
+  WellFoundedGT.finite_of_iSupIndep hv.iSupIndep_span_singleton fun i _ ↦ hv.ne_zero i (by simp_all)
+
+variable [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [Nontrivial P]
+
+/-- If `P × N` embeds into `N` for some nontrivial module `P`, then `N` cannot be a Noetherian
+module. Lemma 1.36 of Chapter 1 in [lam_1999]. -/
+theorem IsNoetherian.subsingleton_of_injective {P : Type*} [AddCommMonoid P] [Module R P]
+    {f : P × M →ₗ[R] M} (inj : Injective f) : Subsingleton P :=
+  subsingleton_of_forall_eq 0 fun p ↦ by_contra fun _ ↦
+    have ⟨g, inj⟩ := LinearMap.exists_finsupp_nat_of_prod_injective inj
+    Infinite.not_finite <| WellFoundedGT.finite_of_iSupIndep
+      (g.iSupIndep_map inj (iSupIndep_range_lsingle ℕ R P))
+      fun i ↦ (Submodule.ne_bot_iff _).mpr ⟨_, ⟨_, ⟨p, rfl⟩, rfl⟩, by simpa [inj]⟩
 
 theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
-  @Set.toFinite _ _ hi.finite_of_isNoetherian
+  hi.finite_of_isNoetherian
 
 /-- A sequence `f` of submodules of a Noetherian module,
 with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
