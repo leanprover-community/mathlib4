@@ -28,7 +28,7 @@ we have only proved it for the discrete case so far).
 * `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of a strongly adapted process
   is a stopping time
 * `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of a strongly adapted process
-is a stopping time
+  is a stopping time
 
 -/
 
