@@ -267,12 +267,12 @@ variable [Fintype α] [Fintype β]
 theorem bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
   ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
-    ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
+    ⟨h.1, h.1.surjective_of_finite <| equivOfCardEq h.2⟩⟩
 
 theorem bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
   ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
-    ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
+    ⟨h.1.injective_of_finite <| equivOfCardEq h.2, h.1⟩⟩
 
 theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
     (hfg : LeftInverse f g) (hcard : card α ≤ card β) : RightInverse f g :=
@@ -395,7 +395,7 @@ theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α �
     (h : Function.Surjective f) (h' : ¬Function.Injective f) : card β < card α :=
   card_lt_of_injective_not_surjective _ (Function.injective_surjInv h) fun hg =>
     have w : Function.Bijective (Function.surjInv h) := ⟨Function.injective_surjInv h, hg⟩
-    h' <| h.injective_of_fintype (Equiv.ofBijective _ w).symm
+    h' <| h.injective_of_finite (Equiv.ofBijective _ w).symm
 
 end Fintype
 
