@@ -145,6 +145,4 @@ theorem condLExp_add (X Y : Ω → ℝ≥0∞) :
 
 -- Add docs
 
--- Good for first PR?
-
 end MeasureTheory
