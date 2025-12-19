@@ -47,9 +47,8 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
-noncomputable instance Prop.linearOrder : LinearOrder Prop := by
-  classical
-  exact Lattice.toLinearOrder Prop
+noncomputable scoped instance Classical.propLinearOrder : LinearOrder Prop :=
+  Lattice.toLinearOrder Prop
 
 @[simp]
 theorem sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
