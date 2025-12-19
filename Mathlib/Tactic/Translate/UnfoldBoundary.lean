@@ -52,13 +52,13 @@ def withBlockUnfolding {α} (b : UnfoldBoundaries) (x : MetaM α) : MetaM α := 
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withBlockUnfolding b do withTransparency TransparencyMode.all do
   let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
-  (·.1) <$> Simp.SimpM.run ctx {} (methods := { pre }) x
+  x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
   pre (e : Expr) : SimpM Simp.Step := do
     let .const c _ ← whnf e.getAppFn | return .continue
     let some thm := b.unfolds.find? c | return .continue
     let some r ← Simp.tryTheorem? e thm | return .continue
-    return .done r
+    return .visit r
 
 /-- Given a term `e`, add casts to it to unfold constants appearing in it. -/
 partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
