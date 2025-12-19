@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Morphisms of localizers
@@ -155,6 +156,13 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
     G.IsEquivalence := (by
   rw [Φ.isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
   exact h.isEquivalence)
+
+instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
+  let G := Φ.localizedFunctor W₁.Q W₂.Q
+  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+    ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
+  have := Φ.isEquivalence W₁.Q W₂.Q G
+  exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
