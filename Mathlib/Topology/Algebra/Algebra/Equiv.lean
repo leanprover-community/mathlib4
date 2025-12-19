@@ -308,6 +308,7 @@ def ofAlgEquiv (e : A ≃ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm)
 
 @[simp] theorem coe_ofAlgEquiv (e : A ≃ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm) :
     ⇑(ofAlgEquiv e he he') = e := rfl
+
 theorem surjective (e : A ≃A[R] B) : Function.Surjective e := e.toAlgEquiv.surjective
 
 /-- `Equiv.cast (congrArg _ h)` as a continuous algebra equiv.
