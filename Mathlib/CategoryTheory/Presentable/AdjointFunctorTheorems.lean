@@ -1,5 +1,8 @@
-import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+module
+
+public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 universe v u
 
@@ -18,16 +21,56 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
     [HasLimits C] : R.IsRightAdjoint := by
   apply isRightAdjoint_of_preservesLimits_of_solutionSetCondition
   intro A
-  obtain ⟨κ, _, ⟨h⟩⟩ := IsAccessible.exists_cardinal (F := R)
-  obtain ⟨κ₁, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
-  obtain ⟨ι, G, ⟨h₁, h₂⟩⟩ := h₁.toHasCardinalFilteredGenerators.exists_generators
-  refine ⟨(i : ι) × (A ⟶ R.obj (G i)), (fun i ↦ G i.fst), fun i ↦ i.snd, ?_⟩ -- ?
-  intro X h
-  obtain ⟨J, _, _, ⟨diag, incl, hc⟩, hp⟩ := h₂ X
-  dsimp only at hp
-  obtain ⟨κ₁D, _, h₁D⟩ := IsLocallyPresentable.exists_cardinal (C := D)
-  obtain ⟨ιD, GD, ⟨h₁D, h₂D⟩⟩ := h₁D.toHasCardinalFilteredGenerators.exists_generators
-  obtain ⟨JD, _, _, ⟨diagD, inclD, hcD⟩, hpD⟩ := h₂D A
-  sorry
+  obtain ⟨κ₁, _, ⟨h⟩⟩ := IsAccessible.exists_cardinal (F := R)
+  obtain ⟨κ₀₁, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
+  obtain ⟨κ₀₂, _, h₂⟩ := IsLocallyPresentable.exists_cardinal (C := D)
+  have hh : ∃ (κ₀ : Cardinal.{v}) (_ : Fact κ₀.IsRegular), IsCardinalLocallyPresentable C κ₀ ∧
+      IsCardinalLocallyPresentable D κ₀ := by
+    have : Fact (κ₀₁ ⊔ κ₀₂).IsRegular := ⟨iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out)⟩
+    have h₀₁ : κ₀₁ ≤ κ₀₁ ⊔ κ₀₂ := by simp
+    have h₀₂ : κ₀₂ ≤ κ₀₁ ⊔ κ₀₂ := by simp
+    refine ⟨κ₀₁ ⊔ κ₀₂, inferInstance, ?_, ?_⟩
+    · exact IsCardinalLocallyPresentable.of_le _ h₀₁
+    · exact IsCardinalLocallyPresentable.of_le _ h₀₂
+  obtain ⟨κ₀, _, hC, hD⟩ := hh
+  have : ∃ (κ : Cardinal.{v}) (_ : Fact κ.IsRegular), κ₀ ≤ κ ∧ κ₁ ≤ κ ∧
+      isCardinalPresentable D κ A := by
+    obtain ⟨P, _, ⟨le, h⟩⟩ := hD.1
+    obtain ⟨J, _, cf, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩  := h A
+    obtain ⟨κ', hκ', lt⟩ := HasCardinalLT.exists_regular_cardinal (Arrow J)
+    have : Fact (κ₀ ⊔ κ₁ ⊔ κ').IsRegular :=
+      ⟨iteInduction (fun a ↦ hκ') (fun a ↦ iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out))⟩
+    have hκ₀ : κ₀ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by
+      trans κ₀ ⊔ κ₁
+      all_goals simp
+    have hκ₁ : κ₁ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by
+      trans κ₀ ⊔ κ₁
+      all_goals simp
+    have (k : J) : IsCardinalPresentable (diag.obj k) (κ₀ ⊔ κ₁ ⊔ κ') := by
+      have := le _ (hx k)
+      dsimp [isCardinalPresentable] at this
+      apply isCardinalPresentable_of_le _ hκ₀
+    exact ⟨κ₀ ⊔ κ₁ ⊔ κ', inferInstance, hκ₀, hκ₁,
+      isCardinalPresentable_of_isColimit _ hc _ (lt.of_le (by simp))⟩
+  obtain ⟨κ, _, h₀, h₁, hA⟩ := this
+  have hC : IsCardinalLocallyPresentable C κ := IsCardinalLocallyPresentable.of_le _ h₀
+  obtain ⟨P, _, ⟨_, h⟩⟩ := hC.1
+  obtain ⟨Q, _, hQP, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
+  let ι : Type v := Shrink (Subtype Q)
+  refine ⟨(X : ι) × (A ⟶ R.obj ((equivShrink _).symm X).val),
+    fun X ↦ ((equivShrink _).symm X.fst).val, fun X ↦ X.snd, ?_⟩
+  intro X f
+  obtain ⟨J, _, _, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩  := h X
+  dsimp at hx
+  have : IsCardinalFiltered J κ₁ := IsCardinalFiltered.of_le J h₁
+  let hc' := isColimitOfPreserves R hc
+  obtain ⟨_⟩ := hA
+  let hc'' := isColimitOfPreserves (coyoneda.obj ⟨A⟩) hc'
+  obtain ⟨j, hj, w⟩ := Types.jointly_surjective_of_isColimit hc'' f
+  obtain ⟨d, hd, ⟨i⟩⟩ := hPQ _ (hx j)
+  refine ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
+    eqToHom (by simp) ≫ i.inv ≫ ι.app _, ?_⟩
+  simp [← w]
+
 
 end CategoryTheory.Adjunction
