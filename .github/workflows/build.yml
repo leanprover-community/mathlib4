@@ -108,6 +108,7 @@ jobs:
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
+          fetch-depth: 2 # we will get the cache from HEAD^ (or earlier)
 
       - name: Prepare DownstreamTest directory
         shell: bash
@@ -323,22 +324,27 @@ jobs:
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
-        shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        shell: bash # only runs git and `cache get` from `master-branch`, so doesn't need to be inside landrun
         env:
-          REF_NAME: ${{ github.head_ref || github.ref_name }}
+          DEPTH: 10
+          COMMIT_HASH: ${{ github.event.before || (github.event.pull_request.base.sha || 'HEAD^') }}
           CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
           cd pr-branch
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
             # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
-            echo "Checking out parent commit and getting cache for those files"
-            git checkout ${{ github.event.before || 'HEAD^' }}
+            echo "Checking out commit pushed before this one and getting cache for those files"
+            # fetch $DEPTH commits at a time until we find the commit hash
+            while ! git cat-file -e "$COMMIT_HASH"; do
+              git fetch --no-tags --deepen="$DEPTH" origin
+            done
+            git checkout "$COMMIT_HASH"
             ../master-branch/.lake/build/bin/cache get
             # Run again with --repo, to ensure we actually get the oleans.
             ../master-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
-            echo "Switching back to branch: $REF_NAME"
-            git checkout "$REF_NAME"
+            echo "Switching back to branch head"
+            git checkout "${{ github.sha }}"
 
             echo "Fetching all remaining cache..."
 
