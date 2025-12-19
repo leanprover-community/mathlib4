@@ -497,7 +497,6 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
         (e.linearEquiv R).bijective).injective
       simp [coalgebraStruct, e.tensorProductAssoc_def R, TensorProduct.congr,
         ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
-      simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _
-  }
+      simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _ }
 
 end Equiv
