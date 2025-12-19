@@ -617,13 +617,17 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
-theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
-    (e : β ≃ {x // p x})
-    (v : β → γ) (w : α → γ) (j : β) (x : γ) [DecidableEq β] [DecidableEq α]
-    [∀ j, Decidable (p j)] :
-    (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
-      Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
-  grind
+theorem dite_comp_equiv_update
+    {α E : Type*} {β γ : Sort*} {p : α → Prop} [EquivLike E {x // p x} β]
+    (e : E) (v : β → γ) (w : α → γ) (j : β) (x : γ)
+    [DecidableEq β] [DecidableEq α] [∀ j, Decidable (p j)] :
+    (fun i : α => if h : p i then (update v j x) (e ⟨i, h⟩) else w i) =
+      update (fun i : α => if h : p i then v (e ⟨i, h⟩) else w i) (EquivLike.inv e j) x := by
+  ext i
+  by_cases h : p i
+  · simp only [h, update_apply]
+    aesop
+  · grind
 
 section Swap
 
