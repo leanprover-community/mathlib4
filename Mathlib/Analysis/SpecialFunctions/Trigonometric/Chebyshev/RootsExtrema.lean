@@ -130,6 +130,38 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
     rw [hx, T_real_cos, this, cos_int_mul_pi, abs_neg_one_zpow]
 
+theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    (T ℝ n).eval x = 1 ↔ ∃ k ≤ n, Even k ∧ x = cos (k * π / n) := by
+  constructor
+  · intro hx
+    obtain ⟨k, hk₁, hk₂⟩ := (abs_eval_T_real_eq_one_iff hn x).mp
+      ((abs_eq_abs.mpr (.inl hx)).trans abs_one)
+    use k
+    refine ⟨hk₁, ?_, hk₂⟩
+    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
+    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
+    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mp hx
+  · rintro ⟨k, hk₁, hk₂, hx⟩
+    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
+    rw [hx, T_real_cos, this, cos_int_mul_pi]
+    exact (neg_one_pow_eq_one_iff_even (by norm_num)).mpr hk₂
+
+theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    (T ℝ n).eval x = -1 ↔ ∃ k ≤ n, Odd k ∧ x = cos (k * π / n) := by
+  constructor
+  · intro hx
+    obtain ⟨k, hk₁, hk₂⟩ := (abs_eval_T_real_eq_one_iff hn x).mp
+      ((abs_eq_abs.mpr (.inl hx)).trans ((abs_neg 1).trans abs_one))
+    use k
+    refine ⟨hk₁, ?_, hk₂⟩
+    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
+    rw [hk₂, T_real_cos, this, cos_int_mul_pi, zpow_natCast] at hx
+    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mp hx
+  · rintro ⟨k, hk₁, hk₂, hx⟩
+    have : ((n : ℤ) : ℝ) * (k * π / n) = (k : ℤ) * π := by norm_cast; field_simp
+    rw [hx, T_real_cos, this, cos_int_mul_pi]
+    exact (neg_one_pow_eq_neg_one_iff_odd (by norm_num)).mpr hk₂
+
 theorem roots_T_real (n : ℕ) :
     (T ℝ n).roots =
     ((Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))).val := by
