@@ -110,11 +110,9 @@ namespace FiniteResidueField
 noncomputable instance : Field (FiniteResidueField K) :=
   inferInstanceAs (Field (IsLocalRing.ResidueField _))
 
-#adaptation_note
-/--
+#adaptation_note /-- Removed `private':
 This had been private, but while disabling `set_option backward.privateInPublic` as a global option
-we have made it public again.
--/
+we have made it public again. -/
 theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩

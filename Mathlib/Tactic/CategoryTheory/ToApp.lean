@@ -93,11 +93,9 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   let value ← apprec 0 value
   return value
 
-#adaptation_note
-/--
+#adaptation_note /-- Removed `private`:
 `toNatTrans_congr` was marked `private` in #31807,
-but we have removed this when disabling `set_option backward.privateInPublic` as a global option.
--/
+but we have removed this when disabling `set_option backward.privateInPublic` as a global option. -/
 universe v u in
 def toNatTrans_congr {C D : Cat.{v, u}} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η = θ) :
   η.toNatTrans = θ.toNatTrans := congr(($h).toNatTrans)
