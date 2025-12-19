@@ -200,7 +200,7 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
-lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
@@ -751,6 +751,13 @@ theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
 lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
   simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.isClosed_iff_image_isClosed]
+
+protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f)) :
+    IsClosedEmbedding f where
+  __ := hg.of_comp_iff.mp hgf.isEmbedding
+  isClosed_range := by
+    convert hg.isClosed_preimage _ hgf.isClosed_range
+    rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=
