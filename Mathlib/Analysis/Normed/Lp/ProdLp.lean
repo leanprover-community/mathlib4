@@ -1083,3 +1083,159 @@ abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] 
 end toProd
 
 end WithLp
+
+variable (γ : Type*) {α' β' : Type*}
+
+section Isometry
+
+variable [hp : Fact (1 ≤ p)] [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
+  [PseudoEMetricSpace α'] [PseudoEMetricSpace β']
+
+variable {α β} in
+/-- The `L^p` product of two isometries is an isometry. -/
+theorem Isometry.withLpProdMap {f : α → α'} (hf : Isometry f) {g : β → β'} (hg : Isometry g) :
+    Isometry (WithLp.map p (Prod.map f g)) := by
+  intro _ _
+  rcases p.trichotomy with rfl | rfl | hp
+  · absurd hp.elim; simp
+  · simp [WithLp.prod_edist_eq_sup, hf.edist_eq, hg.edist_eq]
+  · simp [WithLp.prod_edist_eq_add hp, hf.edist_eq, hg.edist_eq]
+
+namespace IsometryEquiv
+
+variable {α β} in
+/-- The `L^p` product of two isometric equivalences. -/
+@[simps! apply symm_apply]
+def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β) ≃ᵢ WithLp p (α' × β') where
+  __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
+  isometry_toFun := f.isometry.withLpProdMap p g.isometry
+
+/-- Commutativity of the `L^p` product as an isometric equivalence. -/
+def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
+  __ := WithLp.congr p (Equiv.prodComm α β)
+  isometry_toFun _ _ := by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp [WithLp.prod_edist_eq_sup, max_comm]
+    · simp [WithLp.prod_edist_eq_add hp, add_comm]
+
+@[simp]
+theorem withLpProdComm_apply (x : WithLp p (α × β)) :
+    withLpProdComm p α β x = .toLp p (x.snd, x.fst) :=
+  rfl
+
+@[simp]
+theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
+  rfl
+
+/-- Associativity of the `L^p` product as an isometric equivalence. -/
+@[simps apply symm_apply]
+def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where
+  toFun x := .toLp p (x.fst.fst, .toLp p (x.fst.snd, x.snd))
+  invFun x := .toLp p (.toLp p (x.fst, x.snd.fst), x.snd.snd)
+  isometry_toFun _ _:= by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp [WithLp.prod_edist_eq_sup, max_assoc]
+    · simp [WithLp.prod_edist_eq_add hp, ENNReal.rpow_inv_rpow hp.ne', add_assoc]
+
+/-- Right identity of the `L^p` product as an isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
+  __ := (WithLp.equiv _ _).trans (Equiv.prodUnique _ _)
+  isometry_toFun x y : edist x.fst y.fst = edist x y := by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero_right]
+    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
+        ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
+
+theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
+  rfl
+
+/-- Left identity of the `L^p` product as an isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
+  (withLpProdComm p α β).trans (withLpProdUnique p β α)
+
+theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithLp.snd :=
+  rfl
+
+end IsometryEquiv
+
+end Isometry
+
+section Linear
+
+variable [hp : Fact (1 ≤ p)] [Semiring 𝕜]
+  [SeminormedAddCommGroup α] [Module 𝕜 α]
+  [SeminormedAddCommGroup β] [Module 𝕜 β]
+  [SeminormedAddCommGroup γ] [Module 𝕜 γ]
+  [SeminormedAddCommGroup α'] [Module 𝕜 α']
+  [SeminormedAddCommGroup β'] [Module 𝕜 β']
+
+namespace LinearIsometry
+
+variable {𝕜 α β}
+
+/-- The `L^p` product of two linear isometries. -/
+@[simps! apply]
+def withLpProdMap (f : α →ₗᵢ[𝕜] α') (g : β →ₗᵢ[𝕜] β') :
+    WithLp p (α × β) →ₗᵢ[𝕜] WithLp p (α' × β') where
+  __ := (f.toLinearMap.prodMap g.toLinearMap).withLpMap p
+  norm_map' := (f.isometry.withLpProdMap p g.isometry).norm_map_of_map_zero
+    ((f.toLinearMap.prodMap g.toLinearMap).withLpMap p).map_zero
+
+/-- The `L^p` product of two linear isometric equivalences. -/
+@[simps! apply symm_apply]
+def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
+    WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
+  __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
+  norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
+
+end LinearIsometry
+
+namespace LinearIsometryEquiv
+
+/-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
+def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where
+  __ := (LinearEquiv.prodComm 𝕜 α β).withLpCongr p
+  norm_map' := (IsometryEquiv.withLpProdComm p α β).isometry.norm_map_of_map_zero rfl
+
+@[simp]
+theorem withLpProdComm_apply (x : WithLp p (α × β)) :
+    withLpProdComm p 𝕜 α β x = WithLp.toLp p (x.snd, x.fst) :=
+  rfl
+
+@[simp]
+theorem withLpProdComm_symm : (withLpProdComm p 𝕜 α β).symm = withLpProdComm p 𝕜 β α :=
+  rfl
+
+/-- Associativity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ₗᵢ[𝕜] WithLp p (α × WithLp p (β × γ)) where
+  __ := (IsometryEquiv.withLpProdAssoc p α β γ).toEquiv
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  norm_map' := (IsometryEquiv.withLpProdAssoc p α β γ).isometry.norm_map_of_map_zero rfl
+
+/-- Right identity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
+  __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
+  norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
+
+theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
+  rfl
+
+/-- Left identity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
+  (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
+
+theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=
+  rfl
+
+end LinearIsometryEquiv
+
+end Linear
