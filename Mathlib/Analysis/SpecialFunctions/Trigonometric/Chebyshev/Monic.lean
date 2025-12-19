@@ -80,10 +80,9 @@ lemma leadingCoeff_formula {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree 
     rw [this]
     congr! 1 with i hi
     dsimp
-    have : (T ℝ n).eval (cos (i * π / n)) = (-1) ^ i := by
-      have := T_real_eval_at_extremum (Int.ofNat_ne_zero.mpr hn) i
-      aesop
-    rw [this, mul_inv, ← div_eq_mul_inv, ← inv_pow, inv_neg_one]
+    have : ((n : ℤ) : ℝ) * (i * π / n) = (i : ℤ) * π := by norm_cast; field_simp
+    rw [T_real_cos, this, cos_int_mul_pi, zpow_natCast, mul_inv, ← div_eq_mul_inv, ← inv_pow,
+      inv_neg_one]
   · rw [Lagrange.leadingCoeff_eq_sum cos_inj (deg hP)]
     congr! 1 with i hi
     field
@@ -134,18 +133,29 @@ theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
   constructor
   case mp =>
     intro hsSup
-    apply eq_of_degrees_lt_of_eval_finset_eq (T_real_extrema n)
-    · rw [Pdeg, card_T_real_extrema]; norm_cast; simp
-    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T, card_T_real_extrema]
+    let extrema := (Finset.range (n + 1)).image (fun (k : ℕ) => cos (k * π / n))
+    have card_extrema : extrema.card = n + 1 := by
+      rw [Finset.card_image_of_injOn, Finset.card_range]
+      apply injOn_cos.comp (by aesop)
+      intro k hk
+      apply Set.mem_Icc.mpr
+      constructor
+      · positivity
+      · field_simp
+        norm_cast
+        grind
+    apply eq_of_degrees_lt_of_eval_finset_eq extrema
+    · rw [Pdeg, card_extrema]; norm_cast; simp
+    · rw [smul_eq_C_mul, degree_C_mul (by positivity), degree_T, card_extrema]
       norm_cast; simp
     obtain ⟨c, hpos, hsum, hform⟩ := leadingCoeff_formula hn Pdeg
     rw [Pmonic] at hform
-    set T' := (1 / 2 ^ (n - 1) : ℝ) • (T ℝ n)
+    let T' := (1 / 2 ^ (n - 1) : ℝ) • (T ℝ n)
     have Tform (i : ℕ) :
         (-1) ^ i * T'.eval (cos (i * π / n)) = 1 / 2 ^ (n - 1) := by
-      have : (T ℝ n).eval (cos (i * π / n)) = (-1) ^ i := T_real_eval_at_extremum hnℤ i
-      rw [eval_smul, this, smul_eq_mul]
-      suffices ((-1) ^ i : ℝ) * (-1) ^ i = 1 by grind
+      have : ((n : ℤ) : ℝ) * (i * π / n) = (i : ℤ) * π := by norm_cast; field_simp
+      rw [eval_smul, smul_eq_mul, T_real_cos, this, cos_int_mul_pi]
+      suffices ((-1) ^ i : ℝ) * (-1) ^ (i : ℤ) = 1 by grind
       simp [← sq, ← pow_mul']
     replace hform :
       ∑ i ∈ Finset.range (n + 1), (c i) * ((-1) ^ i * P.eval (cos (i * π / n))) =
