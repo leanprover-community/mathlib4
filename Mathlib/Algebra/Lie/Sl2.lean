@@ -76,7 +76,7 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 variable {R}
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
-primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
+primitive if it is a simultaneous eigenvector for the action of both `h` and `e`, and the eigenvalue
 for `e` is zero. -/
 structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0
@@ -223,7 +223,7 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
   obtain ⟨m, hm⟩ := this.exists_nat
-  have : (n : ℤ) < m + 2 * (n + 1) := by omega
+  have : (n : ℤ) < m + 2 * (n + 1) := by lia
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith
