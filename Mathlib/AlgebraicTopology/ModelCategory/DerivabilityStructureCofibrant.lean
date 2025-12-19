@@ -5,19 +5,17 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
-# The fundamental lemma of homotopical algebra
-
-In this file, we show that if `C` is a model category, then
-the localization of the full subcategory of cofibrant objects in `C` with
-respect to weak equivalences identifies to the localization of `C` with
-respect to weak equivalences.
+# The left derivability structures attached to a model category
 
 -/
+
+universe v u
 
 @[expose] public section
 
@@ -25,16 +23,18 @@ open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable (C : Type*) [Category C] [ModelCategory C]
+variable {C : Type*} [Category C] [ModelCategory C]
 
 namespace CofibrantObject
 
+variable (C) in
 def homRel : HomRel (CofibrantObject C) :=
   fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
 
 lemma homRel_iff_rightHomotopyRel {X Y : CofibrantObject C} {f g : X ⟶ Y} :
     homRel C f g ↔ RightHomotopyRel f.hom g.hom := Iff.rfl
 
+variable (C) in
 lemma compClosure_homRel :
     Quotient.CompClosure (homRel C) = homRel C := by
   ext X Y f g
@@ -42,9 +42,8 @@ lemma compClosure_homRel :
   rintro ⟨i, f', g', p, h⟩
   exact (h.postcomp p.hom).precomp i.hom
 
+variable (C) in
 abbrev π := Quotient (CofibrantObject.homRel C)
-
-variable {C}
 
 def toπ : CofibrantObject C ⥤ π C := Quotient.functor _
 
@@ -72,57 +71,6 @@ lemma toπ_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.1] (f g : X ⟶ Y) 
   | symm _ _ _ h => exact .symm h
   | trans _ _ _ _ _ h h' => exact .trans h h'
 
-end CofibrantObject
-
-namespace FibrantObject
-
-def homRel : HomRel (FibrantObject C) :=
-  fun _ _ f g ↦ LeftHomotopyRel f.hom g.hom
-
-lemma homRel_iff_leftHomotopyRel {X Y : FibrantObject C} {f g : X ⟶ Y} :
-    homRel C f g ↔ LeftHomotopyRel f.hom g.hom := Iff.rfl
-
-lemma compClosure_homRel :
-    Quotient.CompClosure (homRel C) = homRel C := by
-  ext X Y f g
-  refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
-  rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p.hom).precomp i.hom
-
-abbrev π := Quotient (FibrantObject.homRel C)
-
-variable {C}
-
-def toπ : FibrantObject C ⥤ π C := Quotient.functor _
-
-lemma toπ_obj_surjective : Function.Surjective (toπ (C := C)).obj :=
-  fun ⟨_⟩ ↦ ⟨_, rfl⟩
-
-instance : Functor.Full (toπ (C := C)) := by dsimp [toπ]; infer_instance
-
-lemma toπ_map_eq {X Y : FibrantObject C} {f g : X ⟶ Y}
-    (h : homRel C f g) :
-    toπ.map f = toπ.map g :=
-  CategoryTheory.Quotient.sound _ h
-
-lemma toπ_map_eq_iff {X Y : FibrantObject C} [IsCofibrant X.1] (f g : X ⟶ Y) :
-    toπ.map f = toπ.map g ↔ homRel C f g := by
-  dsimp [toπ]
-  rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    compClosure_homRel]
-  refine ⟨?_, .rel _ _⟩
-  rw [homRel_iff_leftHomotopyRel]
-  intro h
-  induction h with
-  | rel _ _ h => exact h
-  | refl => exact .refl _
-  | symm _ _ _ h => exact .symm h
-  | trans _ _ _ _ _ h h' => exact .trans h h'
-
-end FibrantObject
-
-namespace CofibrantObject
-
 instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
   iff X Y f g h := by
     simp only [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
@@ -133,12 +81,12 @@ instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
 instance : CategoryWithWeakEquivalences (CofibrantObject.π C) where
   weakEquivalences := (weakEquivalences _).quotient _
 
-variable {C} in
 lemma weakEquivalence_toπ_map_iff {X Y : CofibrantObject C} (f : X ⟶ Y) :
     WeakEquivalence (toπ.map f) ↔ WeakEquivalence f := by
   simp only [weakEquivalence_iff]
   apply MorphismProperty.quotient_iff
 
+variable (C) in
 def toπLocalizerMorphism :
     LocalizerMorphism (weakEquivalences (CofibrantObject C))
       (weakEquivalences (CofibrantObject.π C)) where
@@ -148,6 +96,7 @@ def toπLocalizerMorphism :
     simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff,
       weakEquivalence_toπ_map_iff]
 
+variable (C) in
 lemma factorsThroughLocalization :
     (homRel C).FactorsThroughLocalization (weakEquivalences (CofibrantObject C)) := by
   rintro X Y f g h
@@ -171,18 +120,6 @@ instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
     (toπ ⋙ L).IsLocalization (weakEquivalences _) := by
   change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)
   infer_instance
-
-end CofibrantObject
-
-namespace FibrantObject
-
--- dualize
-
-end FibrantObject
-
-namespace CofibrantObject
-
-variable {C}
 
 def π.exists_resolution (X : C) :
     ∃ (X' : C) (_ : IsCofibrant X') (p : X' ⟶ X), Fibration p ∧ WeakEquivalence p := by
@@ -312,17 +249,7 @@ instance : IsIso (π.resolutionCompToLocalizationNatTrans L) := by
 
 end
 
-end CofibrantObject
-
-namespace FibrantObject
-
--- dualize
-
-end FibrantObject
-
-
-namespace CofibrantObject
-
+variable (C) in
 @[simps]
 def localizerMorphism : LocalizerMorphism (weakEquivalences (CofibrantObject C))
     (weakEquivalences C) where
@@ -367,12 +294,39 @@ instance {D : Type*} [Category D] (L : C ⥤ D)
   change ((localizerMorphism C).functor ⋙ L).IsLocalization _
   infer_instance
 
+instance (X : CofibrantObject C) : IsCofibrant ((localizerMorphism C).functor.obj X) := by
+  dsimp; infer_instance
+
+instance {X : C} (R : (localizerMorphism C).LeftResolution X) :
+    WeakEquivalence R.w := by
+  simpa only [weakEquivalence_iff] using R.hw
+
+instance (X : C) : IsConnected ((localizerMorphism C).LeftResolution X) := by
+  let R₀ : (localizerMorphism C).LeftResolution X :=
+    { X₁ := mk (π.resolutionObj X)
+      w := π.pResolutionObj X
+      hw := by simpa using mem_weakEquivalences (π.pResolutionObj X) }
+  have hR₀ (R) : Nonempty (Zigzag R R₀) := by
+    have sq : CommSq (initial.to _) (initial.to _) R₀.w R.w := ⟨by simp⟩
+    exact ⟨Zigzag.of_hom
+      { f := homMk (sq.lift) }⟩
+  have : Nonempty ((localizerMorphism C).LeftResolution X) := ⟨R₀⟩
+  exact zigzag_isConnected (fun R₁ R₂ ↦ (hR₀ R₁).some.trans (hR₀ R₂).some.symm)
+
+instance : (localizerMorphism C).arrow.HasLeftResolutions := by
+  intro f
+  exact
+   ⟨{ X₁ := Arrow.mk (homMk (π.resolutionMap f.hom))
+      w := Arrow.homMk (π.pResolutionObj f.left) (π.pResolutionObj f.right)
+        (π.resolutionMap_fac f.hom).symm
+      hw := ⟨mem_weakEquivalences (π.pResolutionObj f.left),
+        mem_weakEquivalences (π.pResolutionObj f.right)⟩}⟩
+
+/-instance : (localizerMorphism C).IsLeftDerivabilityStructure := by
+  -- needs the dual of `LocalizerMorphism.IsRightDerivabilityStructure.mk'`
+  sorry-/
+
+
 end CofibrantObject
-
-namespace FibrantObject
-
--- dualize
-
-end FibrantObject
 
 end HomotopicalAlgebra

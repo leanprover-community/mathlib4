@@ -1373,8 +1373,8 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructure
-public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureCofibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
 public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma3
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
