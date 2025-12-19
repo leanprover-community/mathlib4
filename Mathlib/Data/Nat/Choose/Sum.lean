@@ -152,14 +152,19 @@ lemma sum_range_add_choose (n k : ℕ) :
 
 end Nat
 
+theorem Int.alternating_sum_range_choose_eq_choose {n m : ℕ} :
+    (∑ k ∈ range (m + 1), ((-1) ^ k * (n + 1).choose k : ℤ)) = (-1) ^ m * n.choose m := by
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [sum_range_succ, hm, choose_succ_succ]
+    grind
+
 theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = if n = 0 then 1 else 0 := by
   cases n with
   | zero => simp
-  | succ n =>
-    have h := add_pow (-1 : ℤ) 1 n.succ
-    simp only [one_pow, mul_one, neg_add_cancel] at h
-    rw [← h, zero_pow n.succ_ne_zero, if_neg n.succ_ne_zero]
+  | succ n => simp [Int.alternating_sum_range_choose_eq_choose]
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by
