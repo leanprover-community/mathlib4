@@ -52,7 +52,7 @@ import Mathlib.Tactic.ComputeDegree
 
 * Cases of ranks 1 and 2 can be treated as well, but the answer depends
   on the terms of degree 0 and 1.
-  Eg, $X^2-Y$ is irreducible, but $X^2$, $X^2-1$, $X^2-Y^2$, $X^2-Y$ are not.
+  Eg, $X^2-Y$ is irreducible, but $X^2$, $X^2-1$, $X^2-Y^2$ are not.
   And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
 
 -/
@@ -205,7 +205,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   classical
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
-     fun i j ↦ by classical simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
+     fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
   -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
   have aux : sumSMulXSMulY c = c.embDomain ι := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]

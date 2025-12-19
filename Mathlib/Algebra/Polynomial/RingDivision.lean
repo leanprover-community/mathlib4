@@ -250,7 +250,7 @@ theorem irreducible_C_mul_X_add_C {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b
     Irreducible (C a * X + C b) := by
   apply irreducible_of_degree_eq_one_of_isRelPrime_coeff
   · compute_degree!
-  · symm; simpa using hab
+  · simpa using hab.symm
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by

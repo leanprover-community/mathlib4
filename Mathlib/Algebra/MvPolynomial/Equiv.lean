@@ -381,7 +381,8 @@ lemma optionEquivLeft_symm_C_X (x : S₁) :
 
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
-theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
+theorem optionEquivLeft_coeff_some_coeff_none
+    (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
     coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
   induction f using MvPolynomial.induction_on' generalizing n with
   | monomial j r =>
@@ -421,7 +422,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
 
 theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
-  simp [← optionEquivLeft_coeff_coeff]
+  simp [← optionEquivLeft_coeff_some_coeff_none]
 
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
@@ -465,7 +466,7 @@ lemma totalDegree_coeff_optionEquivLeft_add_le
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
 
 lemma totalDegree_coeff_optionEquivLeft_le
     (p : MvPolynomial (Option S₁) R) (i : ℕ) :
@@ -477,17 +478,13 @@ lemma totalDegree_coeff_optionEquivLeft_le
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
-  · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
+  · simpa [mem_support_iff, ← optionEquivLeft_coeff_some_coeff_none R S₁] using hσ
 
-theorem optionEquivLeft_coeff_coeff'
+theorem optionEquivLeft_coeff_coeff
     (p : MvPolynomial (Option σ) R) (m : ℕ) (d : σ →₀ ℕ) :
     coeff d (((optionEquivLeft R σ) p).coeff m) = p.coeff (d.optionElim m) := by
-  induction p using MvPolynomial.induction_on' generalizing d m with
-  | monomial j r =>
-    rw [optionEquivLeft_monomial]
-    classical
-    simp +contextual [Finsupp.ext_iff, Option.forall, Polynomial.coeff_monomial, apply_ite]
-  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  rw [← optionEquivLeft_coeff_some_coeff_none]
+  congr <;> simp
 
 end optionEquivLeft
 
