@@ -368,7 +368,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [ring₂, ← add_assoc]; congr 1
       rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
       rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
-        ← add_rotate, add_comm _ (_ *_)]; congr 1
+        ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in

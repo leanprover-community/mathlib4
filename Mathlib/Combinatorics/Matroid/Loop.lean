@@ -819,7 +819,7 @@ lemma loopless_iff_forall_isCircuit : M.Loopless ↔ ∀ C, M.IsCircuit C → C.
   exact ⟨e, (singleton_isCircuit.1 hC).mem_ground, singleton_isCircuit.1 hC⟩
 
 lemma Loopless.ground_eq (M : Matroid α) [Loopless M] : M.E = {e | M.IsNonloop e} :=
-  Set.ext fun _ ↦  ⟨fun he ↦ isNonloop_of_loopless he, IsNonloop.mem_ground⟩
+  Set.ext fun _ ↦ ⟨fun he ↦ isNonloop_of_loopless he, IsNonloop.mem_ground⟩
 
 lemma IsRestriction.loopless [M.Loopless] (hR : N ≤r M) : N.Loopless := by
   obtain ⟨R, hR, rfl⟩ := hR

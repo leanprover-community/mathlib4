@@ -225,7 +225,7 @@ open FinsetFamily
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/
 theorem mem_compression : s ∈ 𝓓 a 𝒜 ↔ s ∈ 𝒜 ∧ s.erase a ∈ 𝒜 ∨ s ∉ 𝒜 ∧ insert a s ∈ 𝒜 := by
-  simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := ( s ∉ 𝒜))]
+  simp_rw [compression, mem_disjUnion, mem_filter, mem_image, and_comm (a := (s ∉ 𝒜))]
   refine
     or_congr_right
       (and_congr_left fun hs =>
