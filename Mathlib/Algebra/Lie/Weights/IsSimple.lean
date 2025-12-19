@@ -281,7 +281,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     have := coe_invtSubmoduleToLieIdeal_eq_iSup q hq
     simpa only [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal,
       LieSubmodule.iSup_toSubmodule] using h
-  -- From here I've just pasted your proof
   by_contra hq_ne_top
   have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
     contrapose! hq_ne_top
