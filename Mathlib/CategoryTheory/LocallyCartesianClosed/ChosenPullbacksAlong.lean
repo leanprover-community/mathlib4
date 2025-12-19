@@ -268,11 +268,26 @@ end PullbackMap
 
 variable (f g)
 
+/-- The canonical pullback cone from the data of a chosen pullback of `f` along `g`. -/
+def pullbackCone : PullbackCone f g :=
+  PullbackCone.mk (fst f g) (snd f g) (by rw [condition])
+
+@[simp] lemma pullbackCone_fst : (pullbackCone f g).fst = fst f g := rfl
+
+@[simp] lemma pullbackCone_snd : (pullbackCone f g).snd = snd f g := rfl
+
+/-- The canonical pullback cone is a limit cone.
+Note: this limit cone is computable as lifts are constructed from the data contained in the
+`ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
+`CategoryTheory.Square.IsPullback` (a `Prop`). -/
+def isLimitPullbackCone :
+    IsLimit (pullbackCone f g) :=
+  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
+    (by cat_disch) (by cat_disch) (by cat_disch)
+
 theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
-  isLimit' :=
-    ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
-      (by simp) (by simp) (by cat_disch)⟩
+  isLimit' := ⟨isLimitPullbackCone f g⟩
 
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
