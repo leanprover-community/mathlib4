@@ -127,32 +127,32 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
   convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
-/-- In a regular category, every morphism `f` factors as `e f ≫ m f`, with `m f` monic. -/
-noncomputable def monoFactorisation : MonoFactorisation f where
+/--
+In a regular category, every morphism `f` factors as `e f ≫ m f`, with `e f` a strong epimorphism
+and `m f` a monomorphism.
+-/
+noncomputable def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := coequalizer (pullback.fst f f) (pullback.snd f f)
   m := coequalizer.desc f pullback.condition
   e := coequalizer.π (pullback.fst f f) (pullback.snd f f)
   fac := coequalizer.π_desc f _
 
-instance : IsRegularEpi (monoFactorisation f).e := by
-  dsimp [monoFactorisation]
+instance : IsRegularEpi (strongEpiMonoFactorisation f).e := by
+  dsimp [strongEpiMonoFactorisation]
   infer_instance
 
 /--
 In a regular category, every morphism `f` factors as `e f ≫ m f`, with `e f` a strong epimorphism
 and `m f` a monomorphism.
 -/
-noncomputable def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
-  __ := monoFactorisation f
-
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
-  have := h.isIso (monoFactorisation f).e (monoFactorisation f).m (by simp)
-  RegularEpi.ofArrowIso (Arrow.isoMk (f := .mk (monoFactorisation f).e) (Iso.refl _)
-    (asIso (monoFactorisation f).m)) (IsRegularEpi.getStruct _)
+  have := h.isIso (strongEpiMonoFactorisation f).e (strongEpiMonoFactorisation f).m (by simp)
+  RegularEpi.ofArrowIso (Arrow.isoMk (f := .mk (strongEpiMonoFactorisation f).e) (Iso.refl _)
+    (asIso (strongEpiMonoFactorisation f).m)) (IsRegularEpi.getStruct _)
 
 instance isRegularEpi_of_extremalEpi (f : X ⟶ Y) [ExtremalEpi f] : IsRegularEpi f :=
   ⟨⟨regularEpiOfExtremalEpi f⟩⟩
