@@ -31,26 +31,6 @@ This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with G
 
 @[expose] public section
 
--- PR #29688
-section GeneralGalois
-
-variable (G K L : Type*) [Group G] [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
-   (H H' : Subgroup G) (F F' : IntermediateField K L)
-
-namespace IsGaloisGroup
-
-variable [hGKL : IsGaloisGroup G K L]
-
--- #32611
-protected theorem finite [FiniteDimensional K L] : Finite G := by
-  apply Nat.finite_of_card_ne_zero
-  rw [hGKL.card_eq_finrank]
-  exact Module.finrank_pos.ne'
-
-end IsGaloisGroup
-
-end GeneralGalois
-
 section Inertia
 
 open scoped Pointwise
