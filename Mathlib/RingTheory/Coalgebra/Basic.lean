@@ -451,25 +451,6 @@ abbrev coalgebraStruct [AddCommMonoid B] [Module R B] [CoalgebraStruct R B] (e :
     counit := counit ∘ₗ (e.linearEquiv R).toLinearMap }
 
 variable (R) in
-open TensorProduct in
-lemma tensorProductAssoc_def [AddCommMonoid B] [Module R B] (e : A ≃ B) :
-    letI := e.addCommMonoid
-    letI := e.module R
-    TensorProduct.assoc R A A A = .trans
-      (congr (congr (e.linearEquiv R) (e.linearEquiv R)) (e.linearEquiv R)) (.trans
-      (TensorProduct.assoc R B B B) <| congr (e.linearEquiv R).symm <|
-        congr (e.linearEquiv R).symm (e.linearEquiv R).symm) := by
-  ext x
-  induction x with
-  | zero => simp
-  | add => simp [*]
-  | tmul x a =>
-  induction x with
-  | zero => simp
-  | add => simp [*, add_tmul]
-  | tmul a x => simp
-
-variable (R) in
 /-- Transfer `Coalgebra` across an `Equiv`. -/
 abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
     letI := e.addCommMonoid
