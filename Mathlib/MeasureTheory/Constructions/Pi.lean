@@ -458,12 +458,7 @@ lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Typ
     refine (e.forall_congr ?_).symm
     intro i
     rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
-  rw [this, pi_pi, Finset.prod_equiv e.symm]
-  · simp only [Finset.mem_univ, implies_true]
-  intro i _
-  simp only [s']
-  congr
-  all_goals rw [e.apply_symm_apply]
+  simpa [this] using Fintype.prod_equiv _ (fun _ ↦ (μ _) (s' _)) _ (congrFun rfl)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
