@@ -10,6 +10,8 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.Perm.MaximalSubgroups
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
 /-! # Combinations
 
@@ -56,7 +58,7 @@ namespace Nat.Combination
 
 open scoped Pointwise
 
-open MulAction Finset
+open MulAction Finset Equiv Equiv.Perm
 
 @[simp]
 theorem mem_iff {s : Finset α} :
@@ -77,11 +79,11 @@ theorem card_eq (s : Nat.Combination α n) : (s : Finset α).card = n :=
 theorem ncard_eq (s : Nat.Combination α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
 
-theorem nonempty_iff {s : Nat.Combination α n} :
+theorem coe_nonempty_iff {s : Nat.Combination α n} :
     (s : Set α).Nonempty ↔ 1 ≤ n := by
   rw [← Nat.Combination.coe_coe, Finset.coe_nonempty, ← one_le_card, s.prop]
 
-theorem nontrivial_iff {s : Nat.Combination α n} :
+theorem coe_nontrivial_iff {s : Nat.Combination α n} :
     (s : Set α).Nontrivial ↔ 2 ≤ n := by
   rw [← coe_coe, Finset.nontrivial_coe, ← one_lt_card_iff_nontrivial,
     card_eq, add_one_le_iff]
@@ -245,53 +247,28 @@ theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
   apply nontrivial h1
   simp [ENat.card_eq_coe_natCard α, h2]
 
+theorem eq_empty_iff [Finite α] :
+    n.Combination α = ∅ ↔ Nat.card α < n:= by
+  suffices n.Combination α = ∅ ↔ Nat.card (Combination α n) = 0 by
+    rw [this, Combination.card, Nat.choose_eq_zero_iff]
+  have : Fintype α := Fintype.ofFinite α
+  rw [card_coe_set_eq, ← Set.ncard_eq_zero (Set.toFinite _)]
+
+theorem nontrivial_iff [Finite α] :
+    Nontrivial (n.Combination α) ↔ 0 < n ∧ n < Nat.card α := by
+  have : Fintype α := Fintype.ofFinite α
+  constructor
+  · rw [← Finite.one_lt_card_iff_nontrivial, ← not_imp_not,
+    not_and_or]
+    simp only [not_lt, Combination.card, Nat.card_eq_fintype_card]
+    rintro (h | h)
+    · simp only [nonpos_iff_eq_zero] at h
+      simp [h]
+    · rcases eq_or_lt_of_le h with h | h
+      · simp [h]
+      · simp [Nat.choose_eq_zero_of_lt h]
+  · exact fun h ↦ nontrivial' h.1 h.2
 section
-
-variable [DecidableEq α]
-
-@[to_additive isPretransitive_of_isMultiplyPretransitive']
-theorem isPretransitive_of_isMultiplyPretransitive (h : IsMultiplyPretransitive G α n) :
-    IsPretransitive G (n.Combination α) :=
-  IsPretransitive.of_surjective_map (mulActionHom_of_embedding_surjective G α) h
-
-theorem isPretransitive : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
-  isPretransitive_of_isMultiplyPretransitive _ _
-    (Equiv.Perm.isMultiplyPretransitive α n)
-
-theorem isPretransitive_alternatingGroup [Fintype α] :
-    IsPretransitive (alternatingGroup α) (n.Combination α) := by
-  wlog hn : 2 * n ≤ Fintype.card α
-  · have : IsPretransitive (alternatingGroup α) (Combination α (Fintype.card α - n)) := by
-      rw [not_le] at hn
-      apply this
-      rw [Nat.mul_sub, Nat.sub_le_iff_le_add, two_mul]
-      simp only [add_le_add_iff_left]
-      exact hn.le
-    -- utiliser la bijection du passage au complémentaire
-    sorry
-  by_cases hn' : n = 0
-  · suffices Subsingleton (Nat.Combination α n) by
-      infer_instance
-    rw [← Finite.card_le_one_iff_subsingleton,
-      Nat.Combination.card, hn']
-    simp
-  by_cases hn' : n = 1
-  · -- utiliser la bijection avec α
-    sorry
-  · have hn' : 2 ≤ n := by grind
-    apply IsPretransitive.of_surjective_map
-      (mulActionHom_of_embedding_surjective (alternatingGroup α) α)
-    have : IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α -2) := by
-      exact alternatingGroup.isMultiplyPretransitive α
-    simp only [card_eq_fintype_card] at this
-    apply isMultiplyPretransitive_of_le (n := Fintype.card α - 2)
-    · rw [Nat.le_sub_iff_add_le]
-      · apply le_trans (by grind) hn
-      · grind
-    · simp
-
-
-
 
 end
 
@@ -344,5 +321,137 @@ theorem mulActionHom_singleton_bijective [DecidableEq α] :
   refine ⟨fun a b h ↦ Finset.singleton_injective congr($h.1), fun ⟨s, hs⟩ ↦ ?_⟩
   obtain ⟨a, rfl⟩ := Finset.card_eq_one.mp hs
   exact ⟨a, rfl⟩
+
+variable [DecidableEq α]
+
+@[to_additive isPretransitive_of_isMultiplyPretransitive']
+theorem isPretransitive_of_isMultiplyPretransitive (h : IsMultiplyPretransitive G α n) :
+    IsPretransitive G (n.Combination α) :=
+  IsPretransitive.of_surjective_map (mulActionHom_of_embedding_surjective G α) h
+
+theorem isPretransitive : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
+  isPretransitive_of_isMultiplyPretransitive _ _
+    (Equiv.Perm.isMultiplyPretransitive α n)
+
+/-- The action of `Equiv.Perm α` on `n.Combination α` is preprimitive
+provided 1 ≤ n < #α and #α ≠ 2*n -/
+theorem isPreprimitive_Perm
+    {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α)
+    (hα : Nat.card α ≠ 2 * n) :
+    IsPreprimitive (Perm α) (n.Combination α) := by
+  have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ by
+    simp [h] at hn)
+  have : Fintype α := Fintype.ofFinite α
+  rcases Nat.eq_or_lt_of_le h_one_le with h_one | h_one_lt
+  · -- n = 1 :
+    rw [← h_one]
+    have : IsPreprimitive (Perm α) α := inferInstance
+    apply IsPreprimitive.of_surjective
+      (Nat.Combination.mulActionHom_singleton_bijective (Perm α) α).surjective
+  -- 1 < n
+  have : Nontrivial α := by
+    rw [← Finite.one_lt_card_iff_nontrivial]
+    exact lt_trans h_one_lt hn
+  have : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
+    Combination.isPretransitive α
+    -- n.Combination_isPretransitive α
+  have : Nontrivial (n.Combination α) := by
+    apply Combination.nontrivial' h_one_le
+    simpa using hn
+  obtain ⟨s⟩ := this.to_nonempty
+  rw [← isCoatom_stabilizer_iff_preprimitive _ s]
+  suffices stabilizer (Perm α) s = stabilizer (Perm α) (s : Set α) by
+    rw [this]
+    apply isCoatom_stabilizer
+    · rwa [Combination.coe_nonempty_iff]
+    · simpa [← Nat.Combination.coe_coe, ← Finset.coe_compl, Finset.coe_nonempty,
+        ← Finset.card_compl_lt_iff_nonempty, Combination.card_eq,
+        ← Nat.card_eq_fintype_card]
+    · contrapose hα
+      rw [hα, Nat.mul_left_cancel_iff (by norm_num),
+        ← Nat.Combination.coe_coe, Set.ncard_coe_finset, Combination.card_eq]
+  ext g
+  simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
+
+/-- If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `n.Combination α`. -/
+/- If `Nat.card α ≤ 2`, then `alternatinGroup α` is trivial, and
+the result only holds in the trivial case where `n.Combination α` is a subsingleton,
+that is, when `n = 0` or `Nat.card α ≤ n`. -/
+theorem isPretransitive_alternatingGroup
+    {α : Type*} [DecidableEq α] [Fintype α] (hα : 3 ≤ Nat.card α) :
+    IsPretransitive (alternatingGroup α) (n.Combination α) := by
+  wlog hn : 2 * n ≤ Nat.card α
+  · have : IsPretransitive (alternatingGroup α) (Combination α (Nat.card α - n)) := by
+      rw [not_le] at hn
+      apply this hα
+      rw [Nat.mul_sub, Nat.sub_le_iff_le_add, two_mul]
+      simp only [add_le_add_iff_left]
+      exact hn.le
+    wlog hn' : n ≤ Nat.card α
+    · suffices Subsingleton (Combination α n) by infer_instance
+      rw [not_le] at hn'
+      rw [← Finite.card_le_one_iff_subsingleton, Combination.card,
+        Nat.choose_eq_zero_iff.mpr hn']
+      simp
+    apply IsPretransitive.of_surjective_map
+      (compl_bijective (alternatingGroup α) α _).surjective this
+    aesop
+  by_cases hn' : n = 0
+  · suffices Subsingleton (Nat.Combination α n) by
+      infer_instance
+    rw [← Finite.card_le_one_iff_subsingleton, Combination.card, hn']
+    simp
+  by_cases hn' : n = 1
+  · rw [hn']
+    apply IsPretransitive.of_surjective_map
+      (mulActionHom_singleton_bijective (alternatingGroup α) α).surjective
+    refine alternatingGroup.isPretransitive_of_three_le_card α hα
+  · have hn' : 2 ≤ n := by grind
+    apply IsPretransitive.of_surjective_map
+      (mulActionHom_of_embedding_surjective (alternatingGroup α) α)
+    have : IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α -2) :=
+      alternatingGroup.isMultiplyPretransitive α
+    apply isMultiplyPretransitive_of_le (n := Nat.card α - 2)
+    · rw [Nat.le_sub_iff_add_le]
+      · apply le_trans (by grind) hn
+      · grind
+    · simp
+
+/-- The action of `alternatingGroup α` on `n.Combination α` is preprimitive
+provided 1 ≤ n < #α and #α ≠ 2*n -/
+theorem isPreprimitive_alternatingGroup
+    {α : Type*} [DecidableEq α] [Fintype α]
+    {n : ℕ} (h_three_le : 3 ≤ n) (hn : n < Fintype.card α)
+    (hα : Fintype.card α ≠ 2 * n) :
+    IsPreprimitive (alternatingGroup α) (n.Combination α) := by
+  rcases subsingleton_or_nontrivial α with hα | hα_nontrivial
+  · suffices Subsingleton (Combination α n) by
+      exact IsPreprimitive.of_subsingleton
+    rw [← Nat.card_eq_fintype_card] at hn
+    replace hα : Nat.card α = 1 := by
+      apply le_antisymm ?_ (one_le_of_lt hn)
+      rwa [Finite.card_le_one_iff_subsingleton]
+    rw [← Finite.card_le_one_iff_subsingleton, Combination.card]
+    aesop
+  have : IsPretransitive (alternatingGroup α) (n.Combination α) :=
+    isPretransitive_alternatingGroup (le_trans h_three_le (by simp [hn.le]))
+  have : Nontrivial (n.Combination α) := by
+    apply Combination.nontrivial'
+    · grind
+    simpa using hn
+  obtain ⟨s⟩ := this.to_nonempty
+  rw [← isCoatom_stabilizer_iff_preprimitive _ s]
+  suffices stabilizer (alternatingGroup α) s = stabilizer (alternatingGroup α) (s : Set α) by
+    rw [this]
+    apply alternatingGroup.isCoatom_stabilizer
+    · rw [Combination.coe_nonempty_iff]
+      exact le_trans (by norm_num) h_three_le
+    · simpa [← Nat.Combination.coe_coe, ← Finset.coe_compl, Finset.coe_nonempty,
+        ← Finset.card_compl_lt_iff_nonempty, Combination.card_eq]
+    · contrapose hα
+      rw [← Nat.card_eq_fintype_card, hα, Nat.mul_left_cancel_iff (by norm_num),
+        ← Nat.Combination.coe_coe, Set.ncard_coe_finset, Combination.card_eq]
+  ext g
+  simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
 
 end Nat.Combination
