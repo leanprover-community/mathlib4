@@ -122,8 +122,10 @@ theorem fixedSubmodule_eq_top_iff {e : V ≃ₗ[R] V} :
 theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
     e ∈ stabilizer _ e.fixedSubmodule := by
   ext x
-  simp [fixedSubmodule]
-  sorry
+  simp [fixedSubmodule, Submodule.mem_smul_pointwise_iff_exists,
+    sub_eq_zero]
+  refine ⟨fun ⟨b, hb, hx⟩ ↦ ?_, fun h ↦ ⟨x, h, h⟩⟩
+  simp [← hx, hb]
 
 theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : V ≃ₗ[R] V) :
     e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
@@ -318,9 +320,12 @@ abbrev IsExceptional (e : V ≃ₗ[K] V) : Prop :=
 lemma _root_.Submodule.exists_dual_map_eq_bot_of_notMem'
     {p : Submodule K V} {x : V} (hx : x ∉ p) :
     ∃ f : Dual K V, f x ≠ 0 ∧ map f p = ⊥ := by
+
   rw [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply] at hx
   contrapose! hx
-  sorry
+  let b := Module.Basis.extend (K := K) (V := V) (s := {x}) ?_
+  · sorry
+  simp
 
 /-- If `e : V ≃ₗ[K] V` is such that `e.reduce' = 1`,
 then `e` is the product of at most `finrank K (V ⧸ e.fixedSubmodule)` dilatransvections.
