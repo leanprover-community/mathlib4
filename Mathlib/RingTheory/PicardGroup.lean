@@ -518,7 +518,7 @@ instance (R) [CommRing R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
     fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
 
-variable (R) (A : Type*) [CommSemiring A]
+variable (R) (A B : Type*) [CommSemiring A] [CommSemiring B] [Algebra R A]
 
 open AlgebraTensorModule in
 /-- Every `R`-algebra `A` gives rise to a homomorphism between Picard groups of `R` and `A`. -/
@@ -529,6 +529,55 @@ open AlgebraTensorModule in
     rw [← mk_tensor, mk_eq_mk_iff]
     refine ⟨congr (.refl ..) (.symm (mk_eq_iff.mp ?_).some) ≪≫ₗ distribBaseChange R A ..⟩
     simp_rw [mk_tensor, mk_eq_self]
+
+variable {R A B} [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+
+theorem mapAlgebra_mapAlgebra {M : Pic R} : mapAlgebra A B (mapAlgebra R A M) = mapAlgebra R B M :=
+  mk_eq_mk_iff.mpr ⟨AlgebraTensorModule.congr (.refl ..) (mk.linearEquiv ..) ≪≫ₗ
+    AlgebraTensorModule.cancelBaseChange ..⟩
+
+theorem mapAlgebra_comp_mapAlgebra : (mapAlgebra A B).comp (mapAlgebra R A) = mapAlgebra R B := by
+  ext; rw [MonoidHom.comp_apply, mapAlgebra_mapAlgebra]
+
+theorem mapAlgebra_self_apply {M : Pic R} : mapAlgebra R R M = M :=
+  mk_eq_iff.mpr ⟨TensorProduct.lid ..⟩
+
+theorem mapAlgebra_self : mapAlgebra R R = .id _ := by ext; exact mapAlgebra_self_apply
+
+variable {S T : Type*} [CommSemiring S] [CommSemiring T] (f : R →+* S) (g : S →+* T)
+
+/-- Every ring homomorphism between commutative semirings induces a homomorphism between
+Picard groups. -/
+noncomputable def mapRingHom : Pic R →* Pic S :=
+  let := f.toAlgebra; mapAlgebra R S
+
+theorem mapRingHom_algebraMap : mapRingHom (algebraMap R A) = mapAlgebra R A := by
+  rw [mapRingHom, toAlgebra_algebraMap]
+
+variable {f g}
+
+theorem mapRingHom_comp_mapRingHom :
+    (mapRingHom g).comp (mapRingHom f) = mapRingHom (g.comp f) := by
+  algebraize [f, g, g.comp f]
+  simp_rw [mapRingHom, mapAlgebra_comp_mapAlgebra]
+
+theorem mapRingHom_mapRingHom {M : Pic R} :
+    mapRingHom g (mapRingHom f M) = mapRingHom (g.comp f) M :=
+  congr($mapRingHom_comp_mapRingHom M)
+
+theorem mapRingHom_id : mapRingHom (.id R) = .id _ := by
+  rw [mapRingHom, mapAlgebra_self]
+
+theorem mapRingHom_id_apply {M : Pic R} : mapRingHom (.id R) M = M :=
+  congr($mapRingHom_id M)
+
+/-- Picard group as a functor from the category of commutative semirings to
+the category of abelian groups. -/
+noncomputable def functor : CommSemiRingCat.{u} ⥤ CommGrpCat.{u} where
+  obj R := .of (Pic R)
+  map f := CommGrpCat.ofHom (mapRingHom f.hom)
+  map_id _ := CommGrpCat.Hom.ext mapRingHom_id
+  map_comp _ _ := CommGrpCat.Hom.ext mapRingHom_comp_mapRingHom.symm
 
 end Pic
 
