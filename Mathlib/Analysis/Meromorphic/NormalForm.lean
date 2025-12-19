@@ -468,7 +468,7 @@ then its zero set equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) :
-    U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
+    U ∩ f ⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,

@@ -63,7 +63,7 @@ theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a 
     fun x y hx hy => by simp [hx, hy]
 
 variable (A) in
-/-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/
+/-- Given an `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by an `R`-basis of `M`. -/
 noncomputable def basis : Basis ι A (A ⊗[R] M) where
   repr := { basisAux A b with map_smul' := basisAux_map_smul b }
 

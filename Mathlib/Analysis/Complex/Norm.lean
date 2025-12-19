@@ -42,7 +42,7 @@ theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
 
-private theorem norm_add_le' (z w : ℂ) :  ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
+private theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
     (norm_nonneg w))).2 <| by
     rw [norm_mul_self_eq_normSq, add_mul_self_eq, norm_mul_self_eq_normSq, norm_mul_self_eq_normSq,
@@ -85,7 +85,7 @@ instance isAbsoluteValueNorm : IsAbsoluteValue (‖·‖ : ℂ → ℝ) where
 protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
   map_pow isAbsoluteValueNorm.abvHom _ _
 
-protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
+protected theorem norm_zpow (z : ℂ) (n : ℤ) : ‖z ^ n‖ = ‖z‖ ^ n :=
   map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
 protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
