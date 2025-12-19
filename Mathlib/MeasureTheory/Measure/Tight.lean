@@ -233,7 +233,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     exact le_of_lt hεbound
   have byclaim (m : ℕ) : ∃ k, ∀ μ ∈ S, 1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) <
       μ (⋃ i ≤ k, ball (D i) (u m)) := by
-    refine exists_union_of_OpenCover_of_mass_precompact_Set_ProbabilityMeasure (S := S)
+    refine exists_measure_iUnion_gt_of_isCompact_closure 
       (fun i ↦ ball (D i) (u m)) (fun _ ↦ isOpen_ball) (hcov m) hcomp (ε * 2 ^ (-m : ℤ)) ?_ ?_
     · simpa using ⟨εpos, (ENNReal.zpow_pos (by simp) (by simp) (-↑m))⟩
     · exact Left.mul_le_one hεbound <| zpow_le_one_of_nonpos (by linarith) (by simp)
