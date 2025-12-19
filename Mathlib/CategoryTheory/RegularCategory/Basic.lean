@@ -128,8 +128,9 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
   all_goals cat_disch
 
 /--
-In a regular category, every morphism `f` factors as `e f ≫ m f`, with `e f` a strong epimorphism
-and `m f` a monomorphism.
+In a regular category, every morphism `f : X ⟶ Y` factors as `e ≫ m`, where `e` is the projection
+map to the coequalizer of the kernel pair of `f`, and `m` is the canonical map from that
+coequalizer to `Y`. In particular, `f` factors as a strong epimorphism followed by a monomorphism.
 -/
 noncomputable def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   I := coequalizer (pullback.fst f f) (pullback.snd f f)
@@ -142,8 +143,8 @@ instance : IsRegularEpi (strongEpiMonoFactorisation f).e := by
   infer_instance
 
 /--
-In a regular category, every morphism `f` factors as `e f ≫ m f`, with `e f` a strong epimorphism
-and `m f` a monomorphism.
+In a regular category, every morphism `f` factors as `e ≫ m`, with `e` a strong epimorphism
+and `m` a monomorphism.
 -/
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
