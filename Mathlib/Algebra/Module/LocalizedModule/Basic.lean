@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -39,6 +41,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 @[expose] public section
 
+open Module
 
 namespace LocalizedModule
 
@@ -1374,6 +1377,30 @@ namespace IsLocalizedModule
 variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
   [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
   (f : M →ₗ[R] N)
+
+lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s ≠ 0 → IsRegular s)
+    [IsTorsionFree R M] [IsLocalization S A] [IsLocalizedModule S f] : IsTorsionFree A N where
+  isSMulRegular c hc x y hxy := by
+    by_cases hS₀ : 0 ∈ S
+    · have : Subsingleton N := (IsLocalizedModule.subsingleton_iff S f).2 fun _ ↦ ⟨0, hS₀, by simp⟩
+      exact Subsingleton.elim ..
+    obtain ⟨⟨a, s⟩, rfl⟩ := IsLocalization.mk'_surjective S c
+    obtain ⟨⟨m₁, t₁⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+    obtain ⟨⟨m₂, t₂⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
+    replace hS : ∀ s ∈ S, IsRegular s := fun s hs ↦ hS s hs <| ne_of_mem_of_not_mem hs hS₀
+    rw [IsLocalization.isRegular_mk' hS] at hc
+    have (s : S) (x y : M) : s • x = s • y ↔ x = y := (hS _ s.2).isSMulRegular.eq_iff
+    simp only [Function.uncurry_apply_pair, mk'_smul_mk', mk'_eq_mk'_iff, mul_smul, this,
+      exists_const] at hxy ⊢
+    simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy
+
+lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
+    [IsLocalization S A] [IsLocalizedModule S f] : Module.IsTorsionFree A N :=
+  isTorsionFree_of_forall_isRegular f S <| by simp [isRegular_iff_ne_zero]
+
+instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
+    IsTorsionFree (Localization S) (LocalizedModule S M) :=
+  isTorsionFree (LocalizedModule.mkLinearMap S M) S
 
 theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
