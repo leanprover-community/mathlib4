@@ -133,11 +133,11 @@ theorem coe_symm_auxIsometry' (e : V ≃L[𝕜] W) {α α' : 𝕜} (hα : α ≠
 open ComplexOrder
 
 public theorem StarAlgEquiv.coe_eq_linearIsometryEquiv_conjugate
-    (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) (hf' : Continuous f.symm) :
+    (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W,
       ⇑f = fun x ↦ U.toContinuousLinearEquiv ∘L x ∘L U.symm.toContinuousLinearEquiv := by
-  obtain ⟨y, hy⟩ := ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf hf'
-    |>.coe_eq_continuousLinearEquiv_conjugate
+  obtain ⟨y, hy⟩ := ContinuousAlgEquiv.ofAlgEquiv f.toAlgEquiv hf
+    (f.toAlgEquiv.toLinearEquiv.continuous_symm hf) |>.coe_eq_continuousLinearEquiv_conjugate
   by_cases! hV : Subsingleton V
   · by_cases! hV : Subsingleton W
     · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
