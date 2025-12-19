@@ -16,7 +16,7 @@ public import Mathlib.Geometry.Euclidean.Triangle
 
 This file proves the classical triangle congruence criteria for (possibly degenerate) triangles
 in real inner product spaces and Euclidean affine spaces.
-We prove SSS, SAS ASA, and AAS congruence.
+We prove SSS, SAS, ASA, and AAS congruence.
 
 ## Implementation notes
 

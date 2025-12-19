@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Module.Normalize
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
 
-This file defines the signed distance between two points, in the direction of a given a vector, and
+This file defines the signed distance between two points, in the direction of a given vector, and
 the signed distance between an affine subspace and a point, in the direction of a given
 reference point.
 

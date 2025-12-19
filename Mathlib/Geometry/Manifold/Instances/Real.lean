@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x, y}`
 whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
 has boundary `M × {x, y}`.
 
