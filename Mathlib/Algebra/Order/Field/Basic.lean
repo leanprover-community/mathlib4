@@ -24,14 +24,15 @@ open Function OrderDual
 
 variable {ι α β : Type*}
 
-section LinearOrderedSemifield
+attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
+section LinearOrderedSemifield
+variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
+  {a b c d e : α} {m n : ℤ}
 
 /-!
 ### Relating one division and involving `1`
 -/
-
 
 @[bound]
 theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
@@ -40,6 +41,10 @@ theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
 @[bound]
 theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
   simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
+
+section noStrictOrderedRing
+variable {α : Type*} [Semifield α] [PartialOrder α] [PosMulReflectLT α]
+  {a b c d e : α}
 
 @[bound]
 theorem le_div_self (ha : 0 ≤ a) (hb₀ : 0 < b) (hb₁ : b ≤ 1) : a ≤ a / b := by
@@ -73,18 +78,19 @@ theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
 ### Relating two divisions, involving `1`
 -/
 
-
 theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
   simpa using inv_anti₀ ha h
 
 theorem one_div_lt_one_div_of_lt (ha : 0 < a) (h : a < b) : 1 / b < 1 / a := by
   rwa [lt_div_iff₀' ha, ← div_eq_mul_one_div, div_lt_one (ha.trans h)]
 
-theorem le_of_one_div_le_one_div (ha : 0 < a) (h : 1 / a ≤ 1 / b) : b ≤ a :=
-  le_imp_le_of_lt_imp_lt (one_div_lt_one_div_of_lt ha) h
+theorem le_of_one_div_le_one_div (ha : 0 < a) (h : 1 / a ≤ 1 / b) : b ≤ a := by
+  simpa using one_div_le_one_div_of_le (by simpa) h
 
-theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a :=
-  lt_imp_lt_of_le_imp_le (one_div_le_one_div_of_le ha) h
+theorem lt_of_one_div_lt_one_div (ha : 0 < a) (h : 1 / a < 1 / b) : b < a := by
+  simpa using one_div_lt_one_div_of_lt (by simpa) h
+
+end noStrictOrderedRing
 
 /-- For the single implications with fewer assumptions, see `one_div_le_one_div_of_le` and
   `le_of_one_div_le_one_div` -/
@@ -137,6 +143,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
+omit [PosMulReflectLT α] in
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
   rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
@@ -151,6 +158,7 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 @[simp] lemma div_pos_iff_of_pos_right (hb : 0 < b) : 0 < a / b ↔ 0 < a := by
   simp only [div_eq_mul_inv, mul_pos_iff_of_pos_right (inv_pos.2 hb)]
 
+omit [IsStrictOrderedRing α] in
 theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
   rw [← mul_div_assoc] at h
   rwa [mul_comm b, ← div_le_iff₀ hc]
@@ -160,22 +168,15 @@ theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
   rw [div_mul_eq_div_mul_one_div, div_mul_eq_div_mul_one_div]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 he)
 
-theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
-  have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
-  refine ⟨a / max (b + 1) 1, this, ?_⟩
-  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
-  exact lt_max_iff.2 (Or.inl <| lt_add_one _)
-
-theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
-  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
-  ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff₀ hc₀]⟩
-
+omit [IsStrictOrderedRing α] in
 lemma monotone_div_right_of_nonneg (ha : 0 ≤ a) : Monotone (· / a) :=
   fun _b _c hbc ↦ div_le_div_of_nonneg_right hbc ha
 
+omit [IsStrictOrderedRing α] in
 lemma strictMono_div_right_of_pos (ha : 0 < a) : StrictMono (· / a) :=
   fun _b _c hbc ↦ div_lt_div_of_pos_right hbc ha
 
+omit [IsStrictOrderedRing α] in
 theorem Monotone.div_const {β : Type*} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := (monotone_div_right_of_nonneg hc).comp hf
 
@@ -195,11 +196,26 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
         _ = a₂ := add_self_div_two a₂
         ⟩
 
+section linearOrdered
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α}
+
+theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
+  have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
+  refine ⟨a / max (b + 1) 1, this, ?_⟩
+  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
+  exact lt_max_iff.2 (Or.inl <| lt_add_one _)
+
+theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
+  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
+  ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff₀ hc₀]⟩
+
 theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
   (monotone_div_right_of_nonneg hc).map_min.symm
 
 theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / c) = max a b / c :=
   (monotone_div_right_of_nonneg hc).map_max.symm
+
+end linearOrdered
 
 theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
   fun _ x1 _ y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
@@ -220,6 +236,7 @@ theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := f
 theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_lt_one_div_pow_of_lt a1
 
+omit [IsStrictOrderedRing α] in
 theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
   (inv_lt_inv₀ hy hx).2 xy
 
@@ -255,7 +272,6 @@ theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) :
 
 /-! ### Results about `IsGLB` -/
 
-
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
@@ -268,7 +284,6 @@ theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Results about `IsLUB` -/
-
 
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => a * b) '' s) (a * b) := by
@@ -289,11 +304,9 @@ theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
 end LinearOrderedSemifield
 
 section
-
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
-
 
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
