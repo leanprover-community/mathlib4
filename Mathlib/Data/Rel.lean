@@ -355,6 +355,21 @@ variable (R s) in
 /-- Restrict the domain of a relation to a subtype. -/
 def restrictDomain : SetRel s β := {(a, b) | ↑a ~[R] b}
 
+variable (R b) in
+/-- The ball of `b : β` with respect to a relation between `α` and `β` is the set of `a : α` related
+to `b`. -/
+def ball : Set α := {a | a ~[R] b}
+
+@[simp] lemma mem_ball : a ∈ R.ball b ↔ a ~[R] b := .rfl
+
+lemma ball_mono (h : R₁ ⊆ R₂) (b : β) : R₁.ball b ⊆ R₂.ball b := fun _a hab ↦ h hab
+
+variable (R₁ R₂ b) in
+lemma ball_inter : ball (R₁ ∩ R₂) b = ball R₁ b ∩ ball R₂ b := rfl
+
+lemma ball_iInter (R : ι → Set (α × β)) (b : β) : ball (⋂ i, R i) b = ⋂ i, ball (R i) b := by
+  ext; simp
+
 variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 /-! ### Reflexive relations -/
