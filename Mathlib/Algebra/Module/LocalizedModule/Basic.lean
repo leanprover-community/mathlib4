@@ -1360,7 +1360,7 @@ namespace IsLocalizedModule
 
 variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
   [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
-  (f : M →ₗ[R] N) {S : Submonoid R} [IsLocalization S A] [IsLocalizedModule S f] {r : R} {s : S}
+  (f : M →ₗ[R] N)
 
 lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s ≠ 0 → IsRegular s)
     [IsTorsionFree R M] [IsLocalization S A] [IsLocalizedModule S f] : IsTorsionFree A N where
