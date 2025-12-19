@@ -136,7 +136,7 @@ theorem martingale_condExp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure
 
 namespace Supermartingale
 
-protected theorem adapted [LE E] (hf : Supermartingale f ℱ μ) : StronglyAdapted ℱ f :=
+protected theorem stronglyAdapted [LE E] (hf : Supermartingale f ℱ μ) : StronglyAdapted ℱ f :=
   hf.1
 
 protected theorem stronglyMeasurable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) :
