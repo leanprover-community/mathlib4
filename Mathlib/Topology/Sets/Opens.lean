@@ -209,6 +209,10 @@ theorem coe_finset_sup (f : ι → Opens α) (s : Finset ι) : (↑(s.sup f) : S
 theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
 
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Opens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
+
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
 instance [IsEmpty α] : Unique (Opens α) where
