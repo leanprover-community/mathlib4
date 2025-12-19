@@ -258,7 +258,7 @@ def toOver (X : C) : C ⥤ Over X where
 @[simp]
 lemma toOver_map {X : C} {A A' : C} (f : A ⟶ A') :
     (toOver X).map f = Over.homMk (f ▷ X) := by
-  simp only [toOver]
+  simp [toOver]
 
 variable (C)
 
