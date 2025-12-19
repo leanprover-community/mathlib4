@@ -872,26 +872,26 @@ lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} :
   analyticOnNhd_inv.analyticOn
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
     (f0 : f x ≠ 0) :
     AnalyticWithinAt 𝕜 f⁻¹ s x :=
   (analyticAt_inv f0).comp_analyticWithinAt fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
     AnalyticAt 𝕜 f⁻¹ x :=
   (analyticAt_inv f0).comp fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 f⁻¹ s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
     (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOnNhd 𝕜 f⁻¹ s :=
@@ -899,7 +899,7 @@ theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (h₁f : AnalyticWithinAt 𝕜 f s z) (h₂f : f z ≠ 0) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
@@ -911,7 +911,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (f ^ n) z := by
   by_cases hn : 0 ≤ n
@@ -922,7 +922,7 @@ lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt �
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOn 𝕜 (f ^ n) s :=
@@ -930,7 +930,7 @@ lemma AnalyticOn.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOn
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
-@[to_fun] -- TODO: copy the doc-string to the generated declaration!
+@[to_fun]
 lemma AnalyticOnNhd.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : AnalyticOnNhd 𝕜 f s)
     (h₂f : ∀ z ∈ s, f z ≠ 0) :
     AnalyticOnNhd 𝕜 (f ^ n) s :=
