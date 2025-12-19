@@ -714,6 +714,11 @@ theorem mulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth)
     mulLeftCLM F hg f x = g x • f x := rfl
 
 @[simp]
+theorem mulLeftCLM_const_apply (f : 𝓢(E, F)) (c : 𝕜) :
+    mulLeftCLM F (Function.HasTemperateGrowth.const (E := E) c) f = c • f := by
+  ext; simp
+
+@[simp]
 theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
     mulLeftCLM F hg₁ (mulLeftCLM F hg₂ f) = mulLeftCLM F (hg₁.mul hg₂) f := by

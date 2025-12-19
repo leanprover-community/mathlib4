@@ -179,6 +179,12 @@ theorem mulLeftCLM_apply_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (f : 
   rfl
 
 @[simp]
+theorem mulLeftCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
+    mulLeftCLM F (Function.HasTemperateGrowth.const (E := E) c) f = c • f := by
+  ext g
+  simp
+
+@[simp]
 theorem mulLeftCLM_mulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
     mulLeftCLM F hg₂ (mulLeftCLM F hg₁ f) = mulLeftCLM F (hg₁.mul hg₂) f := by
@@ -239,5 +245,40 @@ instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
 end Fourier
+
+section FourierMultiplier
+
+section multiplier
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [InnerProductSpace ℝ E] [NormedSpace ℂ F]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+variable (F) in
+def fourierMultiplierCLM {g : E → ℂ} (hg : g.HasTemperateGrowth) :
+    𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  fourierTransformInvCLM E F ∘L (mulLeftCLM F hg) ∘L fourierTransformCLM E F
+
+theorem fourierMultiplierCLM_apply {g : E → ℂ} (hg : g.HasTemperateGrowth)
+    (f : 𝓢'(E, F)) : fourierMultiplierCLM F hg f = 𝓕⁻ (mulLeftCLM F hg (𝓕 f)) := by
+  rfl
+
+@[simp]
+theorem fourierMultiplierCLM_apply_apply {g : E → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(E, F))
+    (u : 𝓢(E, ℂ)) :
+    fourierMultiplierCLM F hg f u = f (𝓕 (SchwartzMap.mulLeftCLM ℂ hg (𝓕⁻ u))) := by
+  rfl
+
+@[simp]
+theorem fourierMultiplierCLM_const_apply (f : 𝓢'(E, F)) (c : ℂ) :
+    fourierMultiplierCLM F (Function.HasTemperateGrowth.const (E := E) c) f = c • f := by
+  ext
+  simp
+
+end multiplier
+
+end FourierMultiplier
 
 end TemperedDistribution
