@@ -643,24 +643,21 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
     intro h hadj
     exact ⟨v, h, w, hadj, rfl, (C.mem_supp_congr_adj hadj).mp h, rfl⟩
 
-/-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
-private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+/-- Get the walk between two vertices in a connected component from a walk in the original graph.
+This is used in `reachable_toSimpleGraph`. -/
+private def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
   cases p with
   | nil => exact Walk.nil
   | @cons v w u h p =>
     have hw : w ∈ C := C.mem_supp_of_adj_mem_supp hu h
     have h' : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
-    exact Walk.cons h' (C.walk_toSimpleGraph' hw hv p)
+    exact Walk.cons h' (C.walk_toSimpleGraph hw hv p)
 
 /-- There is a walk between every pair of vertices in a connected component. -/
-noncomputable def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ :=
-  C.walk_toSimpleGraph' hu hv (C.reachable_of_mem_supp hu hv).some
-
 lemma reachable_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Reachable ⟨u, hu⟩ ⟨v, hv⟩ :=
-  Walk.reachable (C.walk_toSimpleGraph hu hv)
+  Walk.reachable (C.walk_toSimpleGraph hu hv (C.reachable_of_mem_supp hu hv).some)
 
 lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Connected where
   preconnected := by

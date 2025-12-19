@@ -127,22 +127,33 @@ end Indexed
 
 section repr
 
+variable (ι R M) in
+theorem iSupIndep_range_lsingle :
+    iSupIndep fun i : ι ↦ LinearMap.range (Finsupp.lsingle (R := R) (M := M) i) := by
+  refine fun i ↦ disjoint_iff_inf_le.mpr ?_
+  rintro x ⟨⟨m, rfl⟩, hm⟩
+  suffices ⨆ j ≠ i, LinearMap.range (Finsupp.lsingle j) ≤ Finsupp.supported M R {i}ᶜ by
+    have := (Finsupp.mem_supported ..).mp (this hm); simp_all
+  refine iSup₂_le fun j ne ↦ ?_
+  rintro _ ⟨m, rfl⟩
+  simp [Finsupp.mem_supported, ne]
+
+theorem LinearMap.iSupIndep_map (f : M →ₗ[R] M') (inj : Injective f) {m : ι → Submodule R M}
+    (ind : iSupIndep m) : iSupIndep fun i ↦ (m i).map f := by
+  simp_rw [iSupIndep, disjoint_iff_inf_le] at ind ⊢
+  rintro i _ ⟨⟨x, hxi, rfl⟩, hx⟩
+  rw [ind i ⟨hxi, _⟩]; · simp
+  simp_rw [← Submodule.map_iSup] at hx
+  have ⟨y, hy, eq⟩ := hx
+  simpa [← inj eq]
+
 variable (hv : LinearIndependent R v)
 
 /-- See also `iSupIndep_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) :
     iSupIndep fun i => R ∙ v i := by
-  refine iSupIndep_def.mp fun i => ?_
-  rw [disjoint_iff_inf_le]
-  intro m hm
-  simp only [mem_inf, mem_span_singleton, iSup_subtype'] at hm
-  rw [← span_range_eq_iSup] at hm
-  obtain ⟨⟨r, rfl⟩, hm⟩ := hm
-  suffices r = 0 by simp [this]
-  apply hv.eq_zero_of_smul_mem_span i
-  convert hm
-  ext
-  simp
+  convert LinearMap.iSupIndep_map _ hv (iSupIndep_range_lsingle ι R R)
+  ext; simp [mem_span_singleton]
 
 end repr
 
@@ -302,7 +313,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       by_contra hs; exact h (_root_.smul_left_injective S hs ‹_›)
     calc (a * d) • s
         = d • a • s := by rw [mul_comm, mul_smul]
-      _ = - (d • c • t) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, h₁, smul_zero]
+      _ = -(d • c • t) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, h₁, smul_zero]
       _ = (b * c) • s := ?_
     · rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
         smul_zero]
@@ -310,7 +321,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       by_contra ht; exact h (_root_.smul_left_injective S ht ‹_›)
     calc (a * d) • t
         = a • d • t := by rw [mul_smul]
-      _ = - (a • b • s) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, add_comm, h₂, smul_zero]
+      _ = -(a • b • s) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, add_comm, h₂, smul_zero]
       _ = (b * c) • t := ?_
     · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
 

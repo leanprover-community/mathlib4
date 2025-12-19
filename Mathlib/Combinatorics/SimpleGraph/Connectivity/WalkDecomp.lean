@@ -55,17 +55,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 
 @[simp]
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
-    (p.takeUntil w hwp).Nil ↔ u = w := by
-  refine ⟨?_, fun h => by subst h; simp⟩
-  intro hnil
-  cases p with
-  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
-  | cons h q =>
-    simp only [support_cons, List.mem_cons] at hwp
-    obtain hl | hr := hwp
-    · exact hl.symm
-    · by_contra! hc
-      simp [takeUntil_cons hr hc] at hnil
+    (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
@@ -198,7 +188,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   exact Nat.le.intro this
 
 lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
-    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
   | @cons u _ _ _ _ ih =>

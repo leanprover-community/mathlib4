@@ -522,7 +522,7 @@ lemma LinearIndependent.notMem_span (hv : LinearIndependent R v) (i : ι) :
 
 lemma LinearIndepOn.notMem_span (hv : LinearIndepOn R v s) (hi : i ∈ s) :
     v i ∉ span R (v '' (s \ {i})) := fun hi' ↦
-  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by  simpa [Set.compl_eq_univ_diff] using hi'
+  one_ne_zero <| hv.eq_zero_of_smul_mem_span hi 1 <| by simpa [Set.compl_eq_univ_diff] using hi'
 
 lemma LinearIndepOn.notMem_span_of_insert (hv : LinearIndepOn R v (insert i s)) (hi : i ∉ s) :
     v i ∉ span R (v '' s) := by simpa [hi] using hv.notMem_span <| mem_insert ..
@@ -712,7 +712,7 @@ theorem linearIndependent_iff' :
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
   · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert h s (f - g) using 3 <;> simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/

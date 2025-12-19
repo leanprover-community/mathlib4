@@ -45,6 +45,7 @@ variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Modu
 
 include hi hj hij
 
+set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toPerfPair.symm := by
@@ -83,6 +84,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -106,6 +108,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
