@@ -78,18 +78,29 @@ structure ChooseArg where
   expectedType? : Option Term
   deriving Inhabited
 
-/-- Parse a `choose` argument from syntax. Accepts:
+/-- A `choose` argument is either a bare identifier or a parenthesized extended binder -/
+syntax chooseBinder := binderIdent <|> Batteries.ExtendedBinder.extBinderParenthesized
+
+open Batteries.ExtendedBinder in
+/-- Parse a `choose` argument from `chooseBinder` syntax. Accepts:
 - `x` - plain identifier
 - `_` - anonymous
 - `(x : T)` - identifier with type annotation
 - `(_ : T)` - anonymous with type annotation -/
-def parseChooseArg (stx : Term) : ChooseArg :=
+def parseChooseArg (stx : TSyntax ``chooseBinder) : ChooseArg :=
   match stx with
-  | `($h:ident) => ⟨h, h.getId, none⟩
-  | `(_%$h) => ⟨h, `_, none⟩
-  | `(($h:ident : $ty:term)) => ⟨h, h.getId, some ty⟩
-  | `((_%$h : $ty:term)) => ⟨h, `_, some ty⟩
+  | `(chooseBinder| $id:binderIdent) => parseBinderIdent id
+  | `(chooseBinder| ($id:binderIdent : $ty:term)) =>
+    { parseBinderIdent id with expectedType? := some ty }
+  | `(chooseBinder| ($id:binderIdent $_:binderPred)) =>
+    -- binderPred not supported; treat as just the identifier
+    parseBinderIdent id
   | _ => ⟨stx, `_, none⟩
+where
+  parseBinderIdent (id : TSyntax ``Lean.binderIdent) : ChooseArg :=
+    match id with
+    | `(binderIdent| $h:ident) => ⟨h, h.getId, none⟩
+    | _ => ⟨id, `_, none⟩
 
 /-- Changes `(h : ∀ xs, ∃ a:α, p a) ⊢ g` to `(d : ∀ xs, a) ⊢ (s : ∀ xs, p (d xs)) → g` and
 `(h : ∀ xs, p xs ∧ q xs) ⊢ g` to `(d : ∀ xs, p xs) ⊢ (s : ∀ xs, q xs) → g`.
@@ -258,9 +269,10 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (ppSpace colGt term:max)+ (" using " term)? : tactic
+syntax (name := choose) "choose" "!"? (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
+
 elab_rules : tactic
-| `(tactic| choose $[!%$b]? $[$ids:term]* $[using $h]?) => withMainContext do
+| `(tactic| choose $[!%$b]? $[$ids:chooseBinder]* $[using $h]?) => withMainContext do
   let h ← h.mapM (Elab.Tactic.elabTerm · none)
   let args := ids.toList.map parseChooseArg
   Term.withoutErrToSorry do
@@ -268,8 +280,10 @@ elab_rules : tactic
     replaceMainGoal [g]
 
 @[inherit_doc choose]
-syntax "choose!" (ppSpace colGt term:max)+ (" using " term)? : tactic
+syntax "choose!" (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
+
 macro_rules
-  | `(tactic| choose! $[$ids:term]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
+  | `(tactic| choose! $[$ids:chooseBinder]* $[using $h]?) =>
+    `(tactic| choose ! $[$ids]* $[using $h]?)
 
 end Mathlib.Tactic.Choose
