@@ -302,4 +302,11 @@ theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E�
     continuous_toFun := h₁
     continuous_invFun := by dsimp; fun_prop }
 
+/-- Interpret an algebra equivalence as a continuous algebra equivalence when it is continuous. -/
+def ofAlgEquiv (e : A ≃ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm) : A ≃A[R] B :=
+  { e with continuous_toFun := he, continuous_invFun := he' }
+
+@[simp] theorem coe_ofAlgEquiv (e : A ≃ₐ[R] B) (he : Continuous e) (he' : Continuous e.symm) :
+    ⇑(ofAlgEquiv e he he') = e := rfl
+
 end ContinuousAlgEquiv
