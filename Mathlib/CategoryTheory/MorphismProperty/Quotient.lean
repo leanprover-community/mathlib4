@@ -11,6 +11,14 @@ public import Mathlib.CategoryTheory.Quotient
 /-!
 # Classes of morphisms induced on quotient categories
 
+Let `W : MorphismProperty C` and `homRel : HomRel C`. We assume that
+`homRel` is stable under composition. We introduce a property
+`W.HasQuotient homRel` expressing that `W` induces a property of
+morphisms on the quotient category, i.e. `W f ↔ W g` when `homRel f g` holds.
+We denote `W.quotient homRel : MorphismProperty (Quotient homRel)` the
+induced property of morphisms: a morphism in `C` satisfies `W` iff
+`(Quotient.functor homRel).map f` does.
+
 -/
 
 @[expose] public section
@@ -21,6 +29,9 @@ namespace MorphismProperty
 
 variable {C : Type*} [Category C]
 
+/-- Let `W : MorphismProperty C` and `homRel : HomRel C`. We say that `W` induces
+a class of morphisms on the quotient category by `homRel` if `homRel` is stable under
+composition and if `W f ↔ W g` whenever `homRel f g` hold. -/
 class HasQuotient (W : MorphismProperty C) (homRel : HomRel C) : Prop where
   iff (W) : ∀ ⦃X Y : C⦄ ⦃f g : X ⟶ Y⦄, homRel f g → (W f ↔ W g)
   compClosure_eq_self (W homRel) : Quotient.CompClosure homRel = homRel
@@ -37,6 +48,8 @@ lemma HasQuotient.iff_of_eqvGen [W.HasQuotient homRel] {X Y : C} {f g : X ⟶ Y}
 
 variable (homRel)
 
+/-- The property of morphisms that is induced by `W : MorphismProperty C`
+on the quotient category by `homRel : HomRel C` when `W.HasQuotient homRel` holds. -/
 @[nolint unusedArguments]
 def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
   fun ⟨X⟩ ⟨Y⟩ f ↦ ∃ (f' : X ⟶ Y) (_ : W f'), f = (Quotient.functor _).map f'
