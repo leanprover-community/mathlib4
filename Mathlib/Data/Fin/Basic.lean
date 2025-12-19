@@ -341,7 +341,7 @@ lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
 
 lemma val_sub_one_of_ne_zero {i : Fin n} :
     haveI := i.neZero
-    i ≠ 0 → (i - 1).val = i - 1 := by
+    (hi : i ≠ 0) → (i - 1).val = i - 1 := by
   have := i.neZero
   intro hi
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
@@ -369,7 +369,7 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 /-- Converting the value of a `Fin n` to `Fin n` results in the same value. -/
 @[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} (a : Fin n) :
-    have := a.neZero
+    haveI := a.neZero
     (a.val : Fin n) = a :=
   have := a.neZero
   Fin.ext <| val_cast_of_lt a.isLt
