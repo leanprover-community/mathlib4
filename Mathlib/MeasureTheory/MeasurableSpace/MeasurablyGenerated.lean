@@ -77,7 +77,7 @@ namespace Filter
 
 variable [MeasurableSpace α]
 
-/-- A filter `f` is measurably generates if each `s ∈ f` includes a measurable `t ∈ f`. -/
+/-- A filter `f` is measurably generated if each `s ∈ f` includes a measurable `t ∈ f`. -/
 class IsMeasurablyGenerated (f : Filter α) : Prop where
   exists_measurable_subset : ∀ ⦃s⦄, s ∈ f → ∃ t ∈ f, MeasurableSet t ∧ t ⊆ s
 

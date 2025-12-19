@@ -85,7 +85,7 @@ integrable function.
 Another method is using the following steps.
 See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
 that `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
-function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
+function `f : α → ℝ`, and the second and third integral signs being integrals on `ℝ≥0∞`-valued
 functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part`
 is scattered in sections with the name `posPart`.
 

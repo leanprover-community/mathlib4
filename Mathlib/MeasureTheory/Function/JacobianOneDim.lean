@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Function.Jacobian
 # Change of variable formulas for integrals in dimension 1
 
 We record in this file versions of the general change of variables formula in integrals for
-functions from `R` to `ℝ`. This makes it possible to replace the determinant of the Fréchet
+functions from `ℝ` to `ℝ`. This makes it possible to replace the determinant of the Fréchet
 derivative with the one-dimensional derivative.
 
 We also give more specific versions of these theorems for monotone and antitone functions: this

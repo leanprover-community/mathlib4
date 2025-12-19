@@ -35,7 +35,7 @@ is also proved later in the file.
 
 ## Tags
 
-uniform integrable, uniformly tight, Vitali convergence theorem
+uniformly integrable, uniformly tight, Vitali convergence theorem
 -/
 
 @[expose] public section

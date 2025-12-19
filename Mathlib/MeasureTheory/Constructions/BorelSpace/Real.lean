@@ -111,7 +111,7 @@ theorem isPiSystem_Ici_rat : IsPiSystem (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   ext x
   simp only [iUnion_singleton_eq_range, mem_range, image_univ, mem_image, exists_exists_eq_and]
 
-/-- The intervals `(-(n + 1), (n + 1))` form a finite spanning sets in the set of open intervals
+/-- The intervals `(-(n + 1), (n + 1))` form a finite spanning set in the set of open intervals
 with rational endpoints for a locally finite measure `μ` on `ℝ`. -/
 def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) where

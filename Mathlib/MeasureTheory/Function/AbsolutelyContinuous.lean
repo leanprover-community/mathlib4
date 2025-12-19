@@ -32,7 +32,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.fun_smul`, `AbsolutelyContinuousOnInterval.smul`,
 `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
-and that absolutely continuous implies uniform continuous in
+and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
 We use the `ε`-`δ` definition to prove that
@@ -65,7 +65,7 @@ Details:
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
 is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
 `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
-2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, `G` convergence along `totalLengthFilter` means that
+2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
 the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
 tends to `0` as `j` tends to infinity.
 -/

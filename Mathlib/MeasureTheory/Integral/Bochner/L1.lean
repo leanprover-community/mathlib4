@@ -47,7 +47,7 @@ The Bochner integral is defined through the extension process described in the f
 We also define notations for integral on a set, which are described in the file
 `Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
 
-Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
+Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
 ## Tags
 
@@ -183,7 +183,7 @@ section Integral
 ### The Bochner integral of simple functions
 
 Define the Bochner integral of simple functions of the type `α →ₛ β` where `β` is a normed group,
-and prove basic property of this integral.
+and prove basic properties of this integral.
 -/
 
 
