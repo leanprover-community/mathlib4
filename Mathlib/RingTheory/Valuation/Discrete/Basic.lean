@@ -130,12 +130,6 @@ instance : IsCyclic <| valueGroup v := by
 instance : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
-instance [hv : v.IsNontrivial] : Nontrivial (valueGroup v) := by
-  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
-  refine (Subgroup.nontrivial_iff_exists_ne_one (MonoidWithZeroHom.valueGroup v)).mpr ?_
-  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
-  simpa [Units.ext_iff] using h1
-
 instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
   by_contra! H
   apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
