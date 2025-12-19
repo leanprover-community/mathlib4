@@ -341,3 +341,28 @@ lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
   simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
 
 end LinearMap
+
+namespace Equiv
+variable {R A B : Type*} [CommSemiring R]
+
+variable (R) in
+open TensorProduct in
+-- TODO: Is there a better place for this?
+lemma tensorProductAssoc_def [AddCommMonoid B] [Module R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    TensorProduct.assoc R A A A = .trans
+      (congr (congr (e.linearEquiv R) (e.linearEquiv R)) (e.linearEquiv R)) (.trans
+      (TensorProduct.assoc R B B B) <| congr (e.linearEquiv R).symm <|
+        congr (e.linearEquiv R).symm (e.linearEquiv R).symm) := by
+  ext x
+  induction x with
+  | zero => simp
+  | add => simp [*]
+  | tmul x a =>
+  induction x with
+  | zero => simp
+  | add => simp [*, add_tmul]
+  | tmul a x => simp
+
+end Equiv
