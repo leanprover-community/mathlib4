@@ -375,7 +375,7 @@ def quickCheck (stx : Syntax) : Bool :=
   let bys := stx.filter (·.isOfKind ``Parser.Tactic.tacticSeq1Indented)
   let tacticSequences := bys.map (·[0].getArgs.filter fun t => ((!t.isOfKind `null) && (t.getAtomVal != ";")))
   let filtered := tacticSequences.filter (!syntaxArrayFlexNoNeed ·)
-  dbg_trace filtered
+  --dbg_trace filtered
   filtered.isEmpty
 
 open Lean Elab Command in
@@ -590,6 +590,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
+  if quickCheck _stx then return
   let trees ← getInfoTrees
   let tacticData := trees.foldl (init := #[]) fun acc tree => acc ++ extractTacticData tree
   -- `stains` records pairs `(location, mvar)`, where
