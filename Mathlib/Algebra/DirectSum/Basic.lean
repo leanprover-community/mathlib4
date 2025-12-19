@@ -266,16 +266,15 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
-  {
-    DirectSum.toAddMonoid fun _ =>
-      AddMonoidHom.id
-        M with
+  { DirectSum.toAddMonoid fun _ => AddMonoidHom.id M with
     toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
     invFun := of (fun _ => M) default
-    left_inv := fun x =>
-      DirectSum.induction_on x (by rw [map_zero, map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by grind
-    right_inv := fun _ => toAddMonoid_of _ _ _ }
+    left_inv x :=
+      DirectSum.induction_on x
+        (by rw [map_zero, map_zero])
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of, AddMonoidHom.id_apply])
+        (fun x y ihx ihy => by grind)
+    right_inv _ := toAddMonoid_of _ _ _ }
 
 section CongrLeft
 

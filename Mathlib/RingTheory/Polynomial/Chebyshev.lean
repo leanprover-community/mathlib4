@@ -189,11 +189,10 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | one => simp
   | add_two n ih1 ih2 =>
     have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
-      change (C 2 * X * T R (n + 1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih1]
-      rfl
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih1]
+      norm_cast
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; rfl
+    · rw [this]; norm_cast
     · rw [ih2, this]; tauto
   | neg n ih => simp [ih]
 
@@ -214,8 +213,8 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     rw [T_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih1,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; simp [pow_add, mul_comm]
-    · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, degree_T, degree_T]
+    · rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, degree_T,
+        degree_T]
       tauto
   | neg n ih => simp [ih]
 
@@ -334,14 +333,11 @@ theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degre
   | zero => simp
   | one =>
     norm_cast
-    rw [U_one]
-    change (C (2:R) * X).degree = 1
-    exact degree_C_mul_X (NeZero.ne 2)
+    rw [U_one, ← C_ofNat, degree_C_mul_X two_ne_zero]
   | more n ih1 ih2 =>
     push_cast; push_cast at ih2
-    have : (2 * X * U R (n+1)).degree = ↑(n + 2) := by
-      change (C 2 * X * U R (n+1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih2]
+    have : (2 * X * U R (n + 1)).degree = ↑(n + 2) := by
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih2]
       norm_cast
     rw [U_add_two, degree_sub_eq_left_of_degree_lt]
     · rw [this]; norm_cast
@@ -381,8 +377,7 @@ theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     (U R n).leadingCoeff = 2 ^ n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
-    change leadingCoeff (C 2) = 2
-    rw [leadingCoeff_C]
+    rw [← C_ofNat, leadingCoeff_C]
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one => simp [this]
@@ -391,9 +386,8 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; rw [pow_add, pow_add]; ring_nf
-    · change (U R n).degree < (C 2 * X * U R (n + 1)).degree
-      norm_cast
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
+    · norm_cast
+      rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X,
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
 
@@ -487,11 +481,11 @@ theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 - h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 - h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := C_add_one R n
     have h₂ := C_sub_one R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ - h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ - h₂
 
 theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
   obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
@@ -599,11 +593,11 @@ theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
   | add_two n ih1 ih2 =>
     have h₁ := S_add_one R n
     have h₂ := S_sub_two R (-n - 1)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ + h₂
   | neg_add_one n ih1 ih2 =>
     have h₁ := S_eq R n
     have h₂ := S_sub_two R (-n)
-    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) (X : R[X]) * ih1 - ih2 + h₁ + h₂
 
 theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_neg_sub_one R (n - 1)
 
@@ -678,12 +672,12 @@ theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1)
     have h₁ := S_add_two R (n + 1)
     have h₂ := S_add_two R n
     have h₃ := C_add_two R (n + 1)
-    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + 2 * h₁ + (X:R[X]) * ih1 - ih2
+    linear_combination (norm := ring_nf) -h₃ - (X : R[X]) * h₂ + 2 * h₁ + (X : R[X]) * ih1 - ih2
   | neg_add_one n ih1 ih2 =>
     have h₁ := S_add_two R (-n - 1)
     have h₂ := S_add_two R (-n)
     have h₃ := C_add_two R (-n)
-    linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X:R[X]) * h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X : R[X]) * h₁ - ih2 + (X : R[X]) * ih1
 
 theorem C_eq_S_sub_X_mul_S (n : ℤ) : C R n = 2 * S R n - X * S R (n - 1) := by
   linear_combination (norm := ring_nf) - S_eq_X_mul_S_add_C R (n - 1)
@@ -836,12 +830,12 @@ theorem C_mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
     have h₁ := C_add_two R (m + k)
     have h₂ := C_sub_two R (m - k)
     have h₃ := C_add_two R k
-    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X : R[X]) * ih1
   | neg_add_one k ih1 ih2 =>
     have h₁ := C_add_two R (m + (-k - 1))
     have h₂ := C_sub_two R (m - (-k - 1))
     have h₃ := C_add_two R (-k - 1)
-    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X : R[X]) * ih1
 
 /-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
