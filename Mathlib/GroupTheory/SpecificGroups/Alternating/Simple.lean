@@ -24,14 +24,12 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
   If `α` has at least 5 elements, then a nontrivial normal subgroup
   of `Equiv.Perm α` contains the alternating group.
 
-
 * `alternatingGroup.iwasawaStructure_three`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Nat.Combination α 3`
 
   Its commutative subgroups consist of the permutations with support
   in a given element of `Nat.Combination α 2`.
   They are cyclic of order 3.
-
 
 * `alternatingGroup.iwasawaStructure_three`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Nat.Combination α 4`

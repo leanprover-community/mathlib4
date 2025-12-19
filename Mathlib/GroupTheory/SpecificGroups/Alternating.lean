@@ -211,7 +211,6 @@ theorem closure_three_cycles_eq_alternating :
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
 /-- The alternating group is the closure of the set of permutations with cycle type (2, 2). -/
-@[simp]
 theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
   apply le_antisymm
