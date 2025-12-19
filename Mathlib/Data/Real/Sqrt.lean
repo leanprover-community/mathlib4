@@ -327,9 +327,8 @@ namespace Real
 lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
 
 lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
-  suffices 2 * √2 < 3 by linarith
-  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
-  norm_num
+  rw [← sq_lt_sq₀ (by positivity) (by positivity)]
+  grind
 
 lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
   grind
