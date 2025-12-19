@@ -679,7 +679,7 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
       TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
-  refine fun ε hε => ?_
+  intro ε hε
   obtain ⟨δ, hδ, hδ'⟩ := hUI hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
   refine eLpNorm_le_of_tendstoInMeasure
@@ -692,8 +692,8 @@ lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (nhds (g x))}) ↦ f.1) p μ := by
-  refine fun ε hε => ?_
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+  intro ε hε
   obtain ⟨δ, hδ, hδ'⟩ := hUI hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
   refine Lp.eLpNorm_le_of_ae_tendsto
@@ -954,7 +954,7 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
     [IsCountablyGenerated u] {fn : ι → α → β}
     (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (nhds (g x))}) ↦ f.1) p μ := by
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
   refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_ae_tendsto u (fun i => hUI.1 i), ?_⟩
   · exact aestronglyMeasurable_of_tendsto_ae u (fun n => hUI.1 (s n)) hs
   · obtain ⟨C, hC⟩ := hUI.2.2
@@ -965,7 +965,7 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
 `UniformIntegrable`, then `g` is in `L1`. -/
 lemma UniformIntegrable.memLp_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f p μ)
-    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (nhds (g x))) :
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
     MemLp g p μ := by
   simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp
     ⟨g, ⟨fun n => n, htends⟩⟩
@@ -974,7 +974,7 @@ lemma UniformIntegrable.memLp_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot 
 `UniformIntegrable`, then `g` is integrable. -/
 lemma UniformIntegrable.integrable_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
     [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f 1 μ)
-    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (nhds (g x))) :
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
     Integrable g μ :=
   memLp_one_iff_integrable.mp (hUI.memLp_of_ae_tendsto htends)
 

@@ -164,8 +164,7 @@ theorem indicator {F : Type*} [PseudoEMetricSpace F] [Zero F] {f : ι → α →
   refine fun ε hε => tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (hg ε hε) ?_ ?_
   · intro; simp
   · refine fun n => measure_mono (fun x hx => ?_)
-    by_cases x ∈ s
-    repeat simp_all
+    by_cases x ∈ s <;> simp_all
 
 protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' := by
