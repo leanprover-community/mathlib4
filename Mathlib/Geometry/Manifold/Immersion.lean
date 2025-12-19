@@ -420,12 +420,12 @@ lemma isEmbedding_restr_domChart_source (h : IsImmersionAtOfComplement F I J n f
   set φ := h.domChart.extend I
   set ψ := h.codChart.extend J
   /- We write s.restrict rhs as the composition of three embeddings:
-  - ψ restricted to its target (TODO! is this true?)
+  - ψ restricted to its target
   - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
   - φ restricted to its source. -/
   have aux (x : s): ((h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ (s.restrict φ)) x ∈ ψ.target := by
     obtain ⟨x, hx⟩ := x
-    -- XXX: replace by the right rewrite!
+    -- TODO: replace by the right rewrite!
     change (h.equiv ∘ fun x ↦ (x, 0)) ((s.restrict φ) ⟨x, hx⟩) ∈ ψ.target
     have : (s.restrict φ) ⟨x, hx⟩ ∈ φ.target := by
       simp only [restrict_apply]
