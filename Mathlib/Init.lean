@@ -1,6 +1,7 @@
 module
 
 public import Lean.Linter.Sets -- for the definition of linter sets
+public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -10,8 +11,6 @@ public import Mathlib.Tactic.Linter.EmptyLine
 public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
--- This linter is disabled by default, but downstream projects may want to enable it:
--- to facilitate this, we import the linter here.
 public import Mathlib.Tactic.Linter.FlexibleLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 public import Mathlib.Tactic.Linter.Lint
@@ -66,12 +65,13 @@ All linters imported here have no bulk imports;
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
-Projects depending on mathlib can use `set_option linter.allMathlibLinters true` to enable
+Projects depending on mathlib can use `set_option linter.mathlibStandardSet true` to enable
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
 -/
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.flexible
   linter.hashCommand
   linter.oldObtain
   linter.privateModule
@@ -102,7 +102,7 @@ to catch any regressions.
 -/
 register_linter_set linter.nightlyRegressionSet :=
   linter.tacticAnalysis.regressions.linarithToGrind
-  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.omegaToLia
   linter.tacticAnalysis.regressions.ringToGrind
   linter.tacticAnalysis.regressions.tautoToGrind
 
