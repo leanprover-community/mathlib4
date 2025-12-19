@@ -274,8 +274,8 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
   · rintro h ⟨n⟩ x hx
     induction n using SimplexCategory.rec with | _ n =>
     obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
-    simp only [Subpresheaf.toPresheaf_obj, Subtype.ext_iff,
-      Subpresheaf.toPresheaf_map_coe] at ha'
+    simp only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
+      Subfunctor.toFunctor_map_coe] at ha'
     subst ha'
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
@@ -302,7 +302,7 @@ lemma iSup_ofSimplex_nonDegenerate_eq_top :
     ⨆ (x : Σ (p : ℕ), X.nonDegenerate p), ofSimplex x.2.val = ⊤ := by
   rw [eq_top_iff_contains_nonDegenerate]
   intro n x hx
-  simp only [Subpresheaf.iSup_obj, Set.mem_iUnion, Sigma.exists,
+  simp only [Subfunctor.iSup_obj, Set.mem_iUnion, Sigma.exists,
     Subtype.exists, exists_prop]
   exact ⟨n, x, hx, mem_ofSimplex_obj x⟩
 
