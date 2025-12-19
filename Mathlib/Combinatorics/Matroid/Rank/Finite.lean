@@ -89,7 +89,7 @@ lemma isRkFinite_inter_ground_iff : M.IsRkFinite (X ∩ M.E) ↔ M.IsRkFinite X 
 lemma IsRkFinite.inter_ground (h : M.IsRkFinite X) : M.IsRkFinite (X ∩ M.E) :=
   isRkFinite_inter_ground_iff.2 h
 
-lemma isRkFinite_iff (hX : X ⊆ M.E := by aesop_mat) :
+lemma isRkFinite_iff (hX : X ⊆ M.E := by ground) :
     M.IsRkFinite X ↔ ∃ I, M.IsBasis I X ∧ I.Finite := by
   simp_rw [isRkFinite_iff_exists_isBasis', M.isBasis'_iff_isBasis hX]
 
@@ -108,7 +108,7 @@ lemma Indep.subset_finite_isBasis'_of_subset_of_isRkFinite (hI : M.Indep I) (hIX
   (hI.subset_isBasis'_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
 lemma Indep.subset_finite_isBasis_of_subset_of_isRkFinite (hI : M.Indep I) (hIX : I ⊆ X)
-    (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by aesop_mat) : ∃ J, M.IsBasis J X ∧ I ⊆ J ∧ J.Finite :=
+    (hX : M.IsRkFinite X) (hXE : X ⊆ M.E := by ground) : ∃ J, M.IsBasis J X ∧ I ⊆ J ∧ J.Finite :=
   (hI.subset_isBasis_of_subset hIX).imp fun _ hJ => ⟨hJ.1, hJ.2, hJ.1.finite_of_isRkFinite hX⟩
 
 lemma isRkFinite_singleton : M.IsRkFinite {e} := by

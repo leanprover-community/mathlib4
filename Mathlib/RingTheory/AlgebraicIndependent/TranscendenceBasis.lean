@@ -288,7 +288,7 @@ def matroid : Matroid A := (indepMatroid R A).matroid.copyBase univ
 instance : (matroid R A).Finitary where
   indep_of_forall_finite := algebraicIndependent_of_finite
 
-@[simp] theorem matroid_e : (matroid R A).E = univ := rfl
+@[simp, ground_simps] theorem matroid_e : (matroid R A).E = univ := rfl
 
 theorem matroid_cRank_eq : (matroid R A).cRank = trdeg R A :=
   (trdeg_eq_iSup_cardinalMk_isTranscendenceBasis _).symm
