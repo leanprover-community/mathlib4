@@ -53,6 +53,7 @@ lemma LocalSubring.map_maximalIdeal_eq_top_of_isMax {R : LocalSubring K}
     refine ⟨hS.le.trans (LocalSubring.le_ofPrime ..), ((local_hom_TFAE _).out 2 0).mp ?_⟩
     conv_rhs => rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M]
     refine .trans ?_ (Ideal.map_mono h_incl)
+    -- TODO Ideal.map FunLike
     rw [Ideal.map_map]; rfl
   exact (hR.eq_of_le h_RleSₘ ▸ hS).not_ge (LocalSubring.le_ofPrime ..)
 
@@ -69,6 +70,7 @@ lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
     refine hR.eq_of_le ⟨hRS.trans (LocalSubring.le_ofPrime _ _), ((local_hom_TFAE _).out 2 0).mp ?_⟩
     conv_rhs => rw [← IsLocalization.AtPrime.map_eq_maximalIdeal Q]
     refine .trans ?_ (Ideal.map_mono <| Ideal.map_le_iff_le_comap.mpr e.ge)
+    -- TODO Ideal.map FunLike
     rw [Ideal.map_map]; rfl
   rw [this]
   exact LocalSubring.le_ofPrime _ _ (Algebra.self_mem_adjoin_singleton _ _)
