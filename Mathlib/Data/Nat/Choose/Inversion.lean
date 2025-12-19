@@ -61,14 +61,14 @@ theorem alternating_sum_choose_mul_of_alternating_sum_choose_mul {f g : ℕ → 
       rw [mul_comm n 2, Even.neg_one_pow (even_two_mul n), mul_one]
     _ = f m := by simp
 
-/-- **Binomial inversion**, symmetric version -/
+/-- **Binomial inversion**, symmetric version. -/
 theorem alternating_sum_choose_mul_eq_iff (f g : ℕ → G) :
     (∀ n, ∑ k ∈ Finset.range (n + 1), ((-1) ^ k * (↑(n.choose k) : ℤ)) • f k = g n) ↔
     ∀ n, ∑ k ∈ Finset.range (n + 1), ((-1) ^ k * (↑(n.choose k) : ℤ)) • g k = f n :=
   ⟨fun h _ ↦ alternating_sum_choose_mul_of_alternating_sum_choose_mul _ h,
   fun h _ ↦ alternating_sum_choose_mul_of_alternating_sum_choose_mul _ h⟩
 
-/-- **Binomial inversion**, asymmetric version -/
+/-- **Binomial inversion**, asymmetric version. -/
 theorem alternating_sum_choose_mul_eq_iff' (f g : ℕ → G) :
     (∀ n, ∑ k ∈ Finset.range (n + 1), (n.choose k) • f k = g n) ↔
     ∀ n, ∑ k ∈ Finset.range (n + 1), ((- 1) ^ (n + k) * (↑(n.choose k) : ℤ)) • g k = f n := by
