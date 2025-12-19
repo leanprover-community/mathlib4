@@ -54,6 +54,7 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
   -/
   Quotient (A) : B → Type max u v
 
+/-- A deprecated variant of `HasQuotient.Quotient` -/
 @[deprecated HasQuotient.Quotient (since := "2025-12-18")]
 abbrev HasQuotient.quotient' {A : outParam <| Type u} {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
