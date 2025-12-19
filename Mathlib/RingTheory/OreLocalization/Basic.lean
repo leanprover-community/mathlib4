@@ -28,9 +28,6 @@ localization, Ore, non-commutative
 
 @[expose] public section
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn true
-
 assert_not_exists RelIso
 
 universe u
@@ -81,6 +78,7 @@ section DistribMulAction
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
 variable [DistribMulAction R X]
 
+set_option backward.privateInPublic true in
 private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
@@ -105,6 +103,7 @@ private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) 
 
 attribute [local instance] OreLocalization.oreEqv
 
+set_option backward.privateInPublic true in
 private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
