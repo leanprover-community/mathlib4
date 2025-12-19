@@ -50,6 +50,7 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 variable (α β : Weight K H L)
 
+set_option backward.privateInPublic true in
 private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     ∃ n : ℕ, n • x = ⁅coroot α, x⁆ := by
   by_cases hx' : x = 0
@@ -63,6 +64,8 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
@@ -382,8 +385,8 @@ variable (H)
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
-    RootSystem H.root K (Dual K H) H :=
-  RootSystem.mk'
+    RootPairing H.root K (Dual K H) H :=
+  RootPairing.mk''
     .id
     { toFun := (↑)
       inj' := by
@@ -396,8 +399,10 @@ def rootSystem :
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
-    (fun α β ↦
-      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
+
+instance : (rootSystem H).IsRootSystem :=
+  RootPairing.isRootSystem_mk'' fun α β ↦
+    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
