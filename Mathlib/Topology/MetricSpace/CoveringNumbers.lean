@@ -29,14 +29,23 @@ We prove inequalities between these covering and packing numbers.
 * `packingNumber`: the packing number of a set `A` for radius `ε` is the maximal cardinality of
   an `ε`-separated set in `A`.
 
+We define sets achieving these minimal/maximal cardinalities when they exist:
+* `minimalCover`: a finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
+* `maximalSeparatedSet`: a finite `ε`-separated subset of a set `A` with maximal cardinality.
+
 ## Main statements
 
-* `externalCoveringNumber_le_coveringNumber`: the external covering number is less than or equal to
-  the covering number.
-* `packingNumber_two_mul_le_externalCoveringNumber`: the packing number with radius `2 * ε` is
-  less than or equal to the external covering number for `ε`.
+We have the following inequalities between covering and packing numbers:
+* `externalCoveringNumber_le_coveringNumber`: external covering number ≤ covering number.
+* `packingNumber_two_mul_le_externalCoveringNumber`: packing number for `2 * ε` ≤ external covering
+  number for `ε`.
+* `coveringNumber_le_packingNumber`: covering number ≤ packing number.
+* `coveringNumber_two_mul_le_externalCoveringNumber`: covering number for `2 * ε` ≤ external
+  covering number for `ε`.
 
-TODO: ADD THINGS HERE BEFORE REMOVING THE WIP TAG
+The covering number is not monotone for set inclusion (because the cover must be contained
+in the set), but we have the following inequality:
+* `coveringNumber_subset_le`: if `A ⊆ B`, then `coveringNumber ε A ≤ coveringNumber (ε / 2) B`.
 
 ## References
 
@@ -390,7 +399,7 @@ theorem coveringNumber_le_packingNumber (ε : ℝ≥0) (A : Set X) :
   · simp only [ne_eq, Decidable.not_not] at h_top
     simp [h_top]
 
-theorem coveringNumber_two_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
+theorem coveringNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
     coveringNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
   rcases Set.eq_empty_or_nonempty A with (h_empty | h_nonempty)
   · simp [h_empty]
