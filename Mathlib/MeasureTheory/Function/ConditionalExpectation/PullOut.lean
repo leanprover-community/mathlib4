@@ -20,7 +20,7 @@ expectation states that almost surely, `μ[B f g|m] = B f μ[g|m]`.
 
 We specialize this statement to the cases where `B` is scalar multiplication and multiplication.
 
-# Main statements
+## Main statements
 
 * `condExp_bilin_of_aestronglyMeasurable_left`: The pull-out property of the conditional
   expectation: almost surely, `μ[B f g|m] = B f μ[g|m]`.
@@ -29,7 +29,7 @@ We specialize this statement to the cases where `B` is scalar multiplication and
 * `condExp_mul_of_aestronglyMeasurable_left`: The pull-out property of the conditional
   expectation: almost surely, `μ[f * g|m] = f * μ[g|m]`.
 
-# Tags
+## Tags
 
 conditional expectation, pull-out, bilinear map
 -/

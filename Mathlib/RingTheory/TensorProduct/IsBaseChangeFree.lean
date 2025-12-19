@@ -44,7 +44,7 @@ theorem basis_apply (i) : ibc.basis b i = ε (b i) := by
   simp [this, IsBaseChange.equiv_tmul]
 
 theorem basis_repr_comp_apply (v i) :
-    (ibc.basis b).repr (ε v) i = algebraMap R S (b.repr v i):= by
+    (ibc.basis b).repr (ε v) i = algebraMap R S (b.repr v i) := by
   conv_lhs => rw [← b.linearCombination_repr v, Finsupp.linearCombination_apply,
     map_finsuppSum, map_finsuppSum]
   simp only [map_smul, Finsupp.sum_apply]

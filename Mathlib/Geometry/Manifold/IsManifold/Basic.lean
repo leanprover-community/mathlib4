@@ -806,9 +806,6 @@ instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
 
-@[deprecated (since := "2025-04-22")]
-alias intIsManifoldModelSpace := instIsManifoldModelSpace
-
 end IsManifold
 
 namespace IsManifold
@@ -834,6 +831,7 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 
 open ENat
 
+instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
   inferInstanceAs (LEInfty (n : WithTop ℕ∞))
