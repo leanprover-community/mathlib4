@@ -341,7 +341,7 @@ lemma isCover_maximalSeparatedSet (h : packingNumber ε A ≠ ⊤) :
   let C := {x} ∪ maximalSeparatedSet ε A
   have hC_subset : C ⊆ A := by
     simp [C, hxA, maximalSeparatedSet_subset, Set.insert_subset]
-  have hC_separated : IsSeparated ε (C : Set X) := by
+  have hC_separated : IsSeparated ε C := by
     intro a ha b hb hab
     by_cases hax : a = x
     · subst hax
