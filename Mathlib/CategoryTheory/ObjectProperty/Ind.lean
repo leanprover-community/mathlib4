@@ -62,7 +62,7 @@ lemma ind_ind (h : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
   exact ⟨_, inferInstance, inferInstance,
     (pres.bind pres').reindex (ShrinkHoms.equivalence _).inverse, fun k ↦ by simp [hp]⟩
 
-lemma of_essentiallySmall {X : C} {J : Type*} [Category* J] [EssentiallySmall.{w} J]
+lemma of_essentiallySmall_index {X : C} {J : Type*} [Category* J] [EssentiallySmall.{w} J]
     [IsFiltered J] (pres : ColimitPresentation J X) (h : ∀ i, P (pres.diag.obj i)) :
     ind.{w} P X :=
   ⟨SmallModel J, inferInstance, .of_equivalence (equivSmallModel _),
@@ -98,6 +98,6 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
     have : EssentiallySmall.{w} (CostructuredArrow P.ι X) :=
       essentiallySmall_of_fully_faithful (C := CostructuredArrow (incl ⋙ _) X)
         (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X)
-    exact of_essentiallySmall ⟨_, _, hc⟩ fun Y ↦ Y.left.2
+    exact of_essentiallySmall_index ⟨_, _, hc⟩ fun Y ↦ Y.left.2
 
 end CategoryTheory.ObjectProperty
