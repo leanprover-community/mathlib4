@@ -175,10 +175,9 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
     · rw [hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
         MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
     · have not_le : ¬ p • m ≤ p • n := by
-        have aux : ∃ i, m i > n i := by
+        obtain ⟨i, hi⟩ : ∃ i, m i > n i := by
           by_contra! hc
           exact h_le (Finsupp.coe_le_coe.mp hc)
-        obtain ⟨i, hi⟩ := aux
         have aux' : ¬ p • m i ≤ p • n i := by
           simpa using Nat.mul_lt_mul_of_pos_left hi (p.ne_zero_iff_zero_lt.mp hp)
         exact Not.intro fun a ↦ aux' (a i)
