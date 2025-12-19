@@ -290,6 +290,63 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
 
 end Version2
 
+section Symmetric_Operator_RayleighQuotient
+
+variable {n : ℕ} {x : E} {s : Finset (Fin n)}
+variable {T : E →L[𝕜] E} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+
+/-- For a symmetric operator `T`, the Rayleigh quotient of a vector `x` expressed in the
+orthonormal eigenbasis is a weighted average of the eigenvalues -/
+lemma rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues
+    {c : s → 𝕜} (hx : x = ∑ j, c j • hT.eigenvectorBasis hn j) :
+    T.rayleighQuotient x = (∑ j, ‖c j‖ ^ 2 * hT.eigenvalues hn j) / ‖x‖ ^ 2 := by
+  set v := fun j => hT.eigenvectorBasis hn j
+  have horth : Orthonormal 𝕜 v := OrthonormalBasis.orthonormal (hT.eigenvectorBasis hn)
+  have h_eigen : ∀ j, T (v j) = (hT.eigenvalues hn j : 𝕜) • v j :=
+    fun j => Module.End.mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn j).1
+  convert ContinuousLinearMap.rayleighQuotient_eq_sum_sqNorm_mul_eigenvalues
+     horth h_eigen hx
+
+
+/-- For a symmetric operator `T`, **the Rayleigh quotient of a unit vector** in the span of
+a subfamily of eigenvectors is bounded between the minimum and maximum eigenvalues
+corresponding to the chosen indices.
+The eigenvalues are assumed to be indexed in nonincreasing order with respect
+to the index `j : Fin n` (this monotonicity is provided by `eigenvalues_antitone`) -/
+theorem rayleighQuotient_mem_Icc_of_mem_span_eigenvectors
+    (hs : s.Nonempty) (h_norm : ‖x‖ = 1)
+    (h_in_span : x ∈ Submodule.span 𝕜 (Set.range fun j : s => hT.eigenvectorBasis hn j)) :
+    hT.eigenvalues hn (s.max' hs) ≤ T.rayleighQuotient x ∧
+    T.rayleighQuotient x ≤ hT.eigenvalues hn (s.min' hs) := by
+  have h_antitone := hT.eigenvalues_antitone hn
+  set v := fun j  => hT.eigenvectorBasis hn j
+  have horth : Orthonormal 𝕜 v := OrthonormalBasis.orthonormal (hT.eigenvectorBasis hn)
+  have h_eigen : ∀ j, T (v j) = (hT.eigenvalues hn j : 𝕜) • v j :=
+    fun j => Module.End.mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn j).1
+  exact ContinuousLinearMap.rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors
+      horth h_eigen  hs  h_norm h_in_span h_antitone
+
+
+/-- For a symmetric operator `T`, **the Rayleigh quotient of a nonzero vector** in the span of
+a subfamily of eigenvectors is bounded between the minimum and maximum eigenvalues
+corresponding to the chosen indices.
+The eigenvalues are assumed to be indexed in nonincreasing order with respect
+to the index `j : Fin n` (this monotonicity is provided by `eigenvalues_antitone`) -/
+theorem rayleighQuotient_mem_Icc_of_mem_span_eigenvectors_nonzero
+    (hs : s.Nonempty) (h_nz : x ≠ 0)
+    (h_in_span : x ∈ Submodule.span 𝕜 (Set.range fun j : s => hT.eigenvectorBasis hn j)) :
+    hT.eigenvalues hn (s.max' hs) ≤ T.rayleighQuotient x ∧
+    T.rayleighQuotient x ≤ hT.eigenvalues hn (s.min' hs) := by
+  have h_antitone := hT.eigenvalues_antitone hn
+  set v := fun j => hT.eigenvectorBasis hn j
+  have horth : Orthonormal 𝕜 v := OrthonormalBasis.orthonormal (hT.eigenvectorBasis hn)
+  have h_eigen : ∀ j, T (v j) = (hT.eigenvalues hn j : 𝕜) • v j :=
+    fun j => Module.End.mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn j).1
+  exact ContinuousLinearMap.rayleighQuotient_mem_Icc_of_mem_span_orthonormal_eigenvectors_nonzero
+     horth h_eigen hs h_nz h_in_span h_antitone
+
+end Symmetric_Operator_RayleighQuotient
+
 end IsSymmetric
 
 end LinearMap
