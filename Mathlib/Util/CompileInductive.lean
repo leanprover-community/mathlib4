@@ -254,6 +254,9 @@ compile_inductive% Option
 compile_def% False.recOn
 compile_def% Empty.recOn
 
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
+
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.
 -- Because `floatSpec.float` is an opaque type, the identity function is as good an implementation
