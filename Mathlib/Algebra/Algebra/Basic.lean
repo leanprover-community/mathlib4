@@ -325,6 +325,10 @@ lemma algebraMap_injective : Injective (algebraMap R A) :=
   (faithfulSMul_iff_algebraMap_injective R A).mp inferInstance
 
 @[simp]
+lemma algebraMap_eq_iff {r s : R} : algebraMap R A r = algebraMap R A s ↔ r = s :=
+  (algebraMap_injective R A).eq_iff
+
+@[simp]
 lemma algebraMap_eq_zero_iff {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
   map_eq_zero_iff (algebraMap R A) <| algebraMap_injective R A
 
@@ -336,17 +340,12 @@ end FaithfulSMul
 
 namespace algebraMap
 
-@[norm_cast, simp]
-theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
-  (FaithfulSMul.algebraMap_injective _ _).eq_iff
+@[deprecated (since := "2025-12-18")] alias coe_inj := FaithfulSMul.algebraMap_injective
 
-@[norm_cast]
-theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  FaithfulSMul.algebraMap_eq_zero_iff _ _
+@[deprecated (since := "2025-12-18")] alias coe_eq_zero_iff := FaithfulSMul.algebraMap_eq_zero_iff
 
-@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
-theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  coe_eq_zero_iff _ _ _
+@[deprecated (since := "2025-09-29")] alias lift_map_eq_zero_iff :=
+  FaithfulSMul.algebraMap_eq_zero_iff
 
 end algebraMap
 
@@ -572,18 +571,8 @@ end surjective
 
 namespace algebraMap
 
-section CommSemiringCommSemiring
+@[deprecated (since := "2025-12-18")] alias coe_prod := map_prod
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {ι : Type*} {s : Finset ι}
-
-@[norm_cast]
-theorem coe_prod (a : ι → R) : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
-  map_prod (algebraMap R A) a s
-
-@[norm_cast]
-theorem coe_sum (a : ι → R) : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
-  map_sum (algebraMap R A) a s
-
-end CommSemiringCommSemiring
+@[deprecated (since := "2025-12-18")] alias coe_sum := map_sum
 
 end algebraMap

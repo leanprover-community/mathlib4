@@ -8,41 +8,14 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Data.Rat.Cast.Defs
 
-/-!
-# Facts about `algebraMap` when the coefficient ring is a field.
--/
+deprecated_module (since := "2025-12-18")
 
 @[expose] public section
 
-namespace algebraMap
+@[deprecated (since := "2025-12-18")] alias algebraMap.coe_inv := map_inv₀
 
-universe u v w u₁ v₁
+@[deprecated (since := "2025-12-18")] alias algebraMap.coe_div := map_div₀
 
-section SemifieldSemidivisionRing
+@[deprecated (since := "2025-12-18")] alias algebraMap.coe_zpow := map_zpow₀
 
-variable {R : Type*} (A : Type*) [Semifield R] [DivisionSemiring A] [Algebra R A]
-
-@[norm_cast]
-theorem coe_inv (r : R) : ↑r⁻¹ = ((↑r)⁻¹ : A) :=
-  map_inv₀ (algebraMap R A) r
-
-@[norm_cast]
-theorem coe_div (r s : R) : ↑(r / s) = (↑r / ↑s : A) :=
-  map_div₀ (algebraMap R A) r s
-
-@[norm_cast]
-theorem coe_zpow (r : R) (z : ℤ) : ↑(r ^ z) = (r : A) ^ z :=
-  map_zpow₀ (algebraMap R A) r z
-
-end SemifieldSemidivisionRing
-
-section FieldDivisionRing
-
-variable (R A : Type*) [Field R] [DivisionRing A] [Algebra R A]
-
-@[norm_cast]
-theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) := map_ratCast (algebraMap R A) q
-
-end FieldDivisionRing
-
-end algebraMap
+@[deprecated (since := "2025-12-18")] alias algebraMap.coe_ratCast := map_ratCast
