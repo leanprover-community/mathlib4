@@ -62,8 +62,7 @@ theorem algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
   intro x
   obtain ⟨y, hy⟩ := IsIntegrallyClosed.isIntegral_iff.1 <|
     IsIntegral.algebraMap (B := ℚ) (IsIntegralClosure.isIntegral ℤ ℚ x)
-  exact ⟨y, IsFractionRing.injective R ℚ <|
-    by simp only [← IsScalarTower.algebraMap_apply ℤ R ℚ, hy]⟩
+  exact ⟨y, IsFractionRing.injective R ℚ <| by simp only [← IsScalarTower.algebraMap_apply, hy]⟩
 
 noncomputable def intEquiv [Module.Free ℤ R] : R ≃+* ℤ :=
   RingEquiv.ofBijective _ ⟨FaithfulSMul.algebraMap_injective ℤ R, algebraMap_surjective R⟩ |>.symm
