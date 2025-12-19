@@ -233,6 +233,7 @@ instance [SemigroupWithZero β] [ContinuousMul β] :
 
 section AddZeroClass
 variable [AddZeroClass β] [ContinuousAdd β]
+
 instance : Add C_c(α, β) where add f g := ⟨f + g, HasCompactSupport.add f.2 g.2⟩
 
 @[simp] lemma coe_add (f g : C_c(α, β)) : ⇑(f + g) = f + g := rfl

@@ -9,8 +9,8 @@ public import Mathlib.MeasureTheory.Measure.Portmanteau
 
 import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
+import Mathlib.Topology.ContinuousMap.SecondCountableSpace
 
 
 /-!
@@ -736,8 +736,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   have hAeq : A = toStrongDual ⁻¹' Metric.closedBall 0 1 := by ext x; simp [A]
   have hA1 : IsCompact A := by
     rw [hAeq]; exact isCompact_closedBall ℝ 0 1
-  let B := { φ : WeakDual ℝ C(X, ℝ) | φ ⟨(fun x => 1), continuous_const⟩ = 1 }
-  let C := { φ : WeakDual ℝ C(X, ℝ) | ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f}
+  let B := {φ : WeakDual ℝ C(X, ℝ) | φ ⟨fun x => 1, continuous_const⟩ = 1}
+  let C := {φ : WeakDual ℝ C(X, ℝ) | ∀ f, 0 ≤ f → 0 ≤ φ f}
   let Φ := A ∩ B ∩ C -- Note this is compact,but we only need closedness
   have hΦ1 : IsClosed Φ := by
     · refine IsClosed.inter (IsClosed.inter (IsCompact.isClosed hA1) ?_) ?_
