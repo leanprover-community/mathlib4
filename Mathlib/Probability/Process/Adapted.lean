@@ -222,6 +222,35 @@ section Deprications
 
 @[deprecated (since := "2025-12-19")] alias Adapted := StronglyAdapted
 
+@[deprecated (since := "2025-12-19")] alias Adapted.mul := StronglyAdapted.mul
+
+@[deprecated (since := "2025-12-19")] alias Adapted.div := StronglyAdapted.div
+
+@[deprecated (since := "2025-12-19")] alias Adapted.smul := StronglyAdapted.smul
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.stronglyMeasurable := StronglyAdapted.stronglyMeasurable
+
+@[deprecated (since := "2025-12-19")] alias adapted_const := stronglyAdapted_const
+
+@[deprecated (since := "2025-12-19")] alias adapted_zero' := stronglyAdapted_zero'
+
+@[deprecated (since := "2025-12-19")] alias adapted_zero := stronglyAdapted_zero
+
+@[deprecated (since := "2025-12-19")]
+alias Filtration.adapted_natural := Filtration.stronglyAdapted_natural
+
+@[deprecated (since := "2025-12-19")] alias ProgMeasurable.adapted := ProgMeasurable.stronglyAdapted
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.progMeasurable_of_continuous := StronglyAdapted.progMeasurable_of_continuous
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.progMeasurable_of_discrete := StronglyAdapted.progMeasurable_of_discrete
+
+@[deprecated (since := "2025-12-19")]
+alias Predictable.adapted := Predictable.stronglyAdapted
+
 end Deprications
 
 end MeasureTheory
