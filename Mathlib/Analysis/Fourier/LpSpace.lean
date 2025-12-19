@@ -10,18 +10,18 @@ public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 
-# The Fourier transform on L^p
+# The Fourier transform on $L^p$
 
-In this file we define the Fourier transform on `L2` as a linear isometry equivalence.
+In this file we define the Fourier transform on $L^2$ as a linear isometry equivalence.
 
 ## Main definitions
 
-* `Lp.fourierTransformLI`: The Fourier transform on `L2` as a linear isometry equivalence.
+* `Lp.fourierTransformₗᵢ`: The Fourier transform on $L^2$ as a linear isometry equivalence.
 
 ## Main statements
 
 * `SchwartzMap.toLp_fourierTransform_eq`: The Fourier transform on `𝓢(E, F)` agrees with the Fourier
-transform on `L2`.
+  transform on $L^2$.
 
 -/
 
@@ -41,33 +41,33 @@ variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
-def Lp.fourierTransformLI : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
+def Lp.fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
   (SchwartzMap.fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
-    (SchwartzMap.toLpCLM ℂ (E := E) F 2) (SchwartzMap.toLpCLM ℂ (E := E) F 2)
-    (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top)
-    (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top)
-    (by apply norm_fourier_toL2_eq) -- omitting `by apply` causes time-outs
+    (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume) (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume)
+    -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
+    (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top)
+    (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top) norm_fourier_toL2_eq
 
 instance Lp.instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
-  fourier := fourierTransformLI E F
+  fourier := fourierTransformₗᵢ E F
 
 instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
-  fourierInv := (fourierTransformLI E F).symm
+  fourierInv := (fourierTransformₗᵢ E F).symm
 
 instance Lp.instFourierPair : FourierPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
-  fourierInv_fourier_eq := (Lp.fourierTransformLI E F).symm_apply_apply
+  fourierInv_fourier_eq := (Lp.fourierTransformₗᵢ E F).symm_apply_apply
 
 instance Lp.instFourierPairInv : FourierInvPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
-  fourier_fourierInv_eq := (Lp.fourierTransformLI E F).apply_symm_apply
+  fourier_fourierInv_eq := (Lp.fourierTransformₗᵢ E F).apply_symm_apply
 
-/-- Plancherel's theorem for `L^2` functions. -/
+/-- Plancherel's theorem for `L2` functions. -/
 @[simp]
 theorem Lp.norm_fourier_eq (f : Lp (α := E) F 2) : ‖𝓕 f‖ = ‖f‖ :=
-  (Lp.fourierTransformLI E F).norm_map f
+  (Lp.fourierTransformₗᵢ E F).norm_map f
 
 @[simp]
 theorem Lp.inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
-  (Lp.fourierTransformLI E F).inner_map_map f g
+  (Lp.fourierTransformₗᵢ E F).inner_map_map f g
 
 @[simp]
 theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
