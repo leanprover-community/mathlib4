@@ -63,7 +63,7 @@ theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge (C : G) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _  C hf hg
+  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
