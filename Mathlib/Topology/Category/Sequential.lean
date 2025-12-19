@@ -42,7 +42,7 @@ instance : CoeSort Sequential Type* :=
 attribute [instance] is_sequential
 
 instance : Category.{u, u+1} Sequential.{u} :=
-  InducedCategory.category toTop
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -63,7 +63,7 @@ def sequentialToTop : Sequential.{u} ⥤ TopCat.{u} :=
 def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : sequentialToTop.{u}.Full  :=
+instance : sequentialToTop.{u}.Full :=
   inferInstanceAs (inducedFunctor _).Full
 
 instance : sequentialToTop.{u}.Faithful :=
@@ -72,8 +72,8 @@ instance : sequentialToTop.{u}.Faithful :=
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]
 def isoOfHomeo {X Y : Sequential.{u}} (f : X ≃ₜ Y) : X ≅ Y where
-  hom := TopCat.ofHom ⟨f, f.continuous⟩
-  inv := TopCat.ofHom ⟨f.symm, f.symm.continuous⟩
+  hom := InducedCategory.homMk (TopCat.ofHom ⟨f, f.continuous⟩)
+  inv := InducedCategory.homMk (TopCat.ofHom ⟨f.symm, f.symm.continuous⟩)
   hom_inv_id := by
     ext x
     exact f.symm_apply_apply x
@@ -88,8 +88,8 @@ def homeoOfIso {X Y : Sequential.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   invFun := f.inv
   left_inv := f.hom_inv_id_apply
   right_inv := f.inv_hom_id_apply
-  continuous_toFun := f.hom.hom.continuous
-  continuous_invFun := f.inv.hom.continuous
+  continuous_toFun := f.hom.hom.hom.continuous
+  continuous_invFun := f.inv.hom.hom.continuous
 
 /-- The equivalence between isomorphisms in `Sequential` and homeomorphisms
 of topological spaces. -/

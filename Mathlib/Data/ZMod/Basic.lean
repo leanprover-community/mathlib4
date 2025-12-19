@@ -63,6 +63,8 @@ theorem val_lt {n : ℕ} [NeZero n] (a : ZMod n) : a.val < n := by
   · cases NeZero.ne 0 rfl
   exact Fin.is_lt a
 
+grind_pattern val_lt => a.val
+
 theorem val_le {n : ℕ} [NeZero n] (a : ZMod n) : a.val ≤ n :=
   a.val_lt.le
 
@@ -146,6 +148,7 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 
+@[aesop unsafe 75%]
 lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
     (p ^ m : ZMod (p ^ n)) = 0 := by
   obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
@@ -732,7 +735,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · exact Subsingleton.elim _ _
   · simpa [ZMod.val_one'' hn] using mul_inv_eq_gcd (1 : ZMod n)
 
-@[simp]
+@[simp, grind =]
 theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a :=
   (CharP.cast_eq_mod (ZMod n) n a).symm
 
@@ -1022,7 +1025,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   rwa [Nat.le_zero, val_eq_zero] at h
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
-    (- a).val = n - a.val := by simp_all [neg_val a, na.out]
+    (-a).val = n - a.val := by simp_all [neg_val a, na.out]
 
 theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
     (a - b).val = a.val - b.val := by
