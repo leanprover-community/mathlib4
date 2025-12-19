@@ -126,7 +126,6 @@ instance commRing : CommRing ℝ where
   natCast_succ n := by apply ext_cauchy; simp
   intCast_negSucc z := by apply ext_cauchy; simp -- with `proofsInPublic false`, this is automatic
 
-set_option backward.proofsInPublic false in
 /-- `Real.equivCauchy` as a ring equivalence. -/
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with
