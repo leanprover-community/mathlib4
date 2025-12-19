@@ -100,4 +100,18 @@ theorem support_expand (φ : PowerSeries R) :
   classical
   erw [MvPowerSeries.support_expand]
 
+section ExpChar
+
+variable [ExpChar R p]
+
+theorem expand_char {f : PowerSeries R} :
+    (f.expand p hp).map (frobenius R p) = f ^ p := by
+  erw [expand, MvPowerSeries.expand_char]
+
+theorem map_expand_pow_char (f : PowerSeries R) (n : ℕ) :
+    map (frobenius R p ^ n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
+  erw [expand, MvPowerSeries.map_expand_pow_char p hp]
+
+end ExpChar
+
 end PowerSeries
