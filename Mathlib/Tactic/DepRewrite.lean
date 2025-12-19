@@ -495,7 +495,8 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
       | none =>
         cont heq heqType
 
-/-- Cleanup casts introduced by `rewrite!` in `e`. -/
+/-- Cleanup casts introduced by `rewrite!` in `e`. 
+The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
     withTraceNode traceClsClean (fun
