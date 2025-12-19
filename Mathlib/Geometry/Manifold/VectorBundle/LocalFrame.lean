@@ -164,13 +164,16 @@ lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
 
 /-- If `{sᵢ}` is a local frame on a vector bundle, `F` being finite-dimensional implies the
 indexing set being finite. -/
-def fintype_of_finiteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
+def fintypeOfFiniteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
     (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Fintype ι := by
   have : FiniteDimensional 𝕜 (V x) := by
     let phi := (trivializationAt F V x).linearEquivAt 𝕜 x
       (FiberBundle.mem_baseSet_trivializationAt' x)
     exact Finite.equiv phi.symm
   exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
+
+@[deprecated (since := "2025-12-19")]
+alias fintype_of_finiteDimensional := fintypeOfFiniteDimensional
 
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
