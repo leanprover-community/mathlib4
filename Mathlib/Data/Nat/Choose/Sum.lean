@@ -152,7 +152,7 @@ lemma sum_range_add_choose (n k : ℕ) :
 
 end Nat
 
-theorem Int.alternating_sum_choose {n m : ℕ} :
+theorem Int.alternating_sum_range_choose_eq_choose {n m : ℕ} :
     (∑ k ∈ range (m + 1), ((-1) ^ k * (n + 1).choose k : ℤ)) = (-1) ^ m * n.choose m := by
   induction m with
   | zero => simp
