@@ -204,6 +204,16 @@ theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁�
 theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 = g 1) : f = g :=
   coe_inj.1 <| LinearMap.ext_ring h
 
+@[simp]
+theorem ker_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (hf : Continuous f.toFun) :
+    LinearMap.ker (ContinuousLinearMap.mk f hf) = LinearMap.ker f := by
+  rfl
+
+@[simp]
+theorem range_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (hf : Continuous f.toFun) [RingHomSurjective σ₁₂] :
+    LinearMap.range (ContinuousLinearMap.mk f hf) = LinearMap.range f := by
+  rfl
+
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/
 theorem eqOn_closure_span [T2Space M₂] {s : Set M₁} {f g : M₁ →SL[σ₁₂] M₂} (h : Set.EqOn f g s) :
@@ -311,6 +321,14 @@ instance uniqueOfRight [Subsingleton M₂] : Unique (M₁ →SL[σ₁₂] M₂) 
 theorem exists_ne_zero {f : M₁ →SL[σ₁₂] M₂} (hf : f ≠ 0) : ∃ x, f x ≠ 0 := by
   by_contra! h
   exact hf (ContinuousLinearMap.ext h)
+
+@[simp]
+theorem range_zero [RingHomSurjective σ₁₂] : LinearMap.range (0 : M₁ →SL[σ₁₂] M₂) = ⊥ :=
+  LinearMap.range_zero
+
+@[simp]
+theorem ker_zero : LinearMap.ker (0 : M₁ →SL[σ₁₂] M₂) = ⊤ :=
+  LinearMap.ker_zero
 
 section
 
