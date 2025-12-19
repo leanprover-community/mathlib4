@@ -563,11 +563,11 @@ def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β �
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 
-@[simp]
+@[simp, to_dual self]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 
@@ -599,9 +599,11 @@ protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFounde
 
 /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/
+@[to_dual existing]
 protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFoundedGT α :=
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
+-- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
@@ -924,6 +926,7 @@ section LE
 
 variable [LE α] [LE β]
 
+@[to_dual self]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 
@@ -932,6 +935,7 @@ theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
 
+@[to_dual existing le_symm_apply]
 theorem symm_apply_le (e : α ≃o β) {x : α} {y : β} : e.symm y ≤ x ↔ y ≤ e x :=
   e.symm_apply_rel
 
@@ -945,7 +949,7 @@ protected theorem monotone (e : α ≃o β) : Monotone e :=
 protected theorem strictMono (e : α ≃o β) : StrictMono e :=
   e.toOrderEmbedding.strictMono
 
-@[simp]
+@[simp, to_dual self]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
 
@@ -954,6 +958,7 @@ theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
 theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x < y := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
+@[to_dual existing lt_symm_apply]
 theorem symm_apply_lt (e : α ≃o β) {x : α} {y : β} : e.symm y < x ↔ y < e x := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
@@ -1107,7 +1112,7 @@ end StrictMono
 
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
-  ⟨f.toEquiv, f.map_rel_iff⟩
+  ⟨f.toEquiv, f.le_iff_le⟩
 
 section
 variable [LE α] [LE β] (f : α ≃o β)
@@ -1122,51 +1127,35 @@ end
 
 section LatticeIsos
 
+@[to_dual]
 theorem OrderIso.map_bot' [LE α] [PartialOrder β] (f : α ≃o β) {x : α} {y : β} (hx : ∀ x', x ≤ x')
     (hy : ∀ y', y ≤ y') : f x = y := by
   refine le_antisymm ?_ (hy _)
-  rw [← f.apply_symm_apply y, f.map_rel_iff]
+  rw [← f.apply_symm_apply y, f.le_iff_le]
   apply hx
 
+@[to_dual]
 theorem OrderIso.map_bot [LE α] [PartialOrder β] [OrderBot α] [OrderBot β] (f : α ≃o β) : f ⊥ = ⊥ :=
   f.map_bot' (fun _ => bot_le) fun _ => bot_le
 
-theorem OrderIso.map_top' [LE α] [PartialOrder β] (f : α ≃o β) {x : α} {y : β} (hx : ∀ x', x' ≤ x)
-    (hy : ∀ y', y' ≤ y) : f x = y :=
-  f.dual.map_bot' hx hy
-
-theorem OrderIso.map_top [LE α] [PartialOrder β] [OrderTop α] [OrderTop β] (f : α ≃o β) : f ⊤ = ⊤ :=
-  f.dual.map_bot
-
+@[to_dual le_map_sup]
 theorem OrderEmbedding.map_inf_le [SemilatticeInf α] [SemilatticeInf β] (f : α ↪o β) (x y : α) :
     f (x ⊓ y) ≤ f x ⊓ f y :=
   f.monotone.map_inf_le x y
 
-theorem OrderEmbedding.le_map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ↪o β) (x y : α) :
-    f x ⊔ f y ≤ f (x ⊔ y) :=
-  f.monotone.le_map_sup x y
-
+@[to_dual]
 theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y := by
   refine (f.toOrderEmbedding.map_inf_le x y).antisymm ?_
   apply f.symm.le_iff_le.1
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 
-theorem OrderIso.map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ≃o β) (x y : α) :
-    f (x ⊔ y) = f x ⊔ f y :=
-  f.dual.map_inf x y
-
+@[to_dual]
 theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
     IsMax (f x) ↔ IsMax x := by
   refine ⟨f.strictMono.isMax_of_apply, ?_⟩
   conv_lhs => rw [← f.symm_apply_apply x]
   exact f.symm.strictMono.isMax_of_apply
-
-theorem OrderIso.isMin_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
-    IsMin (f x) ↔ IsMin x := by
-  refine ⟨f.strictMono.isMin_of_apply, ?_⟩
-  conv_lhs => rw [← f.symm_apply_apply x]
-  exact f.symm.strictMono.isMin_of_apply
 
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]

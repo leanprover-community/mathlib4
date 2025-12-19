@@ -6088,6 +6088,7 @@ public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
+public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
@@ -7366,6 +7367,7 @@ public import Mathlib.Topology.UniformSpace.UniformApproximation
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Uniformizable
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.UrysohnsBounded
 public import Mathlib.Topology.UrysohnsLemma
