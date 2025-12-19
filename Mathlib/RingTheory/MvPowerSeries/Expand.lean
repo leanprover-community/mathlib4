@@ -157,9 +157,8 @@ theorem expand_eq_expand {φ : MvPolynomial σ R} :
   ext n
   simp only [MvPolynomial.coeff_coe]
   by_cases h : ∀ i, p ∣ n i
-  · have : ∃ m, n = p • m :=
+  · obtain ⟨m, hm⟩ : ∃ m, n = p • m :=
       ⟨Finsupp.equivFunOnFinite.symm fun i => n i / p, by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
-    obtain ⟨m, hm⟩ := this
     rw [hm, coeff_expand_smul p hp _ _, φ.coeff_expand_smul _ hp, φ.coeff_coe]
   · obtain ⟨i, hi⟩ := not_forall.mp h
     rw [coeff_expand_of_not_dvd p hp _ hi, MvPolynomial.coeff_expand_of_not_dvd _ hi]
