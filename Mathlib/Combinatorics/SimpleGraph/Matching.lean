@@ -109,7 +109,7 @@ lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
   have aux {N N' : Subgraph G} (hN : N.IsMatching) (hd : Disjoint N.support N'.support)
-    (hmN: v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
+    (hmN : v ∈ N.verts) : ∃! w, (N ⊔ N').Adj v w := by
     obtain ⟨w, hw⟩ := hN hmN
     use w
     refine ⟨sup_adj.mpr (.inl hw.1), ?_⟩
@@ -460,7 +460,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   -- If w = w', then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
-    have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
+    have : (G \ p.toSubgraph.spanningCoe).Adj w v := by
       simp only [sdiff_adj, Subgraph.spanningCoe_adj]
       exact ⟨hw'2.symm, fun h ↦ hnpvw' h.symm⟩
     exact this.reachable
@@ -539,7 +539,7 @@ which we do not want in this case. This is why this property, just like `IsCycle
 for `SimpleGraph` rather than `SimpleGraph.Subgraph`.
 -/
 def IsAlternating (G G' : SimpleGraph V) :=
-  ∀ ⦃v w w': V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
+  ∀ ⦃v w w' : V⦄, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
 
 lemma IsAlternating.mono {G'' : SimpleGraph V} (halt : G.IsAlternating G') (h : G'' ≤ G) :
     G''.IsAlternating G' := fun _ _ _ hww' hvw hvw' ↦ halt hww' (h hvw) (h hvw')
@@ -561,7 +561,7 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
   · exact halt hww' hl h1
   · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w') = s(u, x))]
     simp only [hnadj, not_false_eq_true, iff_true]
-    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1,h2r2⟩
+    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1, h2r2⟩
     · subst h2l1 h2l2
       exact (hx' _ hww' hl.symm).symm
     · simp_all
@@ -582,7 +582,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   by_cases h : G'.Adj v w
   · obtain ⟨w', hw'⟩ := hG'cyc.other_adj_of_adj h
-    have hmadj :  M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
+    have hmadj : M.Adj v w ↔ ¬M.Adj v w' := by simpa using hG' hw'.1 h hw'.2
     use w'
     simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
       hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
