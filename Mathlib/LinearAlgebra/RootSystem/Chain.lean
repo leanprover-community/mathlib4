@@ -237,9 +237,6 @@ private lemma chainCoeff_reflectionPerm_left_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
-@[deprecated (since := "2025-05-28")]
-alias chainCoeff_reflection_perm_left_aux := chainCoeff_reflectionPerm_left_aux
-
 private lemma chainCoeff_reflectionPerm_right_aux :
     letI := P.indexNeg
     Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) =
@@ -255,9 +252,6 @@ private lemma chainCoeff_reflectionPerm_right_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
-@[deprecated (since := "2025-05-28")]
-alias chainCoeff_reflection_perm_right_aux := chainCoeff_reflectionPerm_right_aux
-
 @[simp]
 lemma chainTopCoeff_reflectionPerm_left :
     P.chainTopCoeff (P.reflectionPerm i i) j = P.chainBotCoeff i j := by
@@ -268,9 +262,6 @@ lemma chainTopCoeff_reflectionPerm_left :
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff (-i) j)
   · simpa using this (P.chainBotCoeff i j)
-
-@[deprecated (since := "2025-05-28")]
-alias chainTopCoeff_reflection_perm_left := chainTopCoeff_reflectionPerm_left
 
 @[simp]
 lemma chainBotCoeff_reflectionPerm_left :
@@ -283,9 +274,6 @@ lemma chainBotCoeff_reflectionPerm_left :
   · simpa using this (-P.chainBotCoeff (-i) j)
   · simpa using this (-P.chainTopCoeff i j)
 
-@[deprecated (since := "2025-05-28")]
-alias chainBotCoeff_reflection_perm_left := chainBotCoeff_reflectionPerm_left
-
 @[simp]
 lemma chainTopCoeff_reflectionPerm_right :
     P.chainTopCoeff i (P.reflectionPerm j j) = P.chainBotCoeff i j := by
@@ -296,9 +284,6 @@ lemma chainTopCoeff_reflectionPerm_right :
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff i (-j))
   · simpa using this (P.chainBotCoeff i j)
-
-@[deprecated (since := "2025-05-28")]
-alias chainTopCoeff_reflection_perm_right := chainTopCoeff_reflectionPerm_right
 
 @[simp]
 lemma chainBotCoeff_reflectionPerm_right :
@@ -361,8 +346,6 @@ lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
   exact chainTopCoeff_of_sub h hk
 
 omit h
-@[deprecated (since := "2025-05-28")]
-alias chainBotCoeff_reflection_perm_right := chainBotCoeff_reflectionPerm_right
 
 variable (i j)
 
