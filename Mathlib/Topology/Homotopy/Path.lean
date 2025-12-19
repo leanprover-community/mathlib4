@@ -366,6 +366,10 @@ theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) 
   induction γ using Quotient.ind with | mk γ =>
   rfl
 
+theorem cast_heq {x y x' y' : X} (hx : x' = x) (hy : y' = y) {γ : Homotopic.Quotient x y} :
+    γ.cast hx hy ≍ γ := by
+  cases hx; cases hy; exact heq_of_eq γ.cast_rfl_rfl
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
@@ -397,6 +401,14 @@ theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous
 
 @[deprecated (since := "2025-11-13")]
 noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
+
+theorem map_comp {Z} [TopologicalSpace Z] {p : Path.Homotopic.Quotient x₀ x₁}
+    {f : C(X, Y)} {g : C(Y, Z)} : p.map (g.comp f) = (p.map f).map g := by
+  rcases p; rfl
+
+theorem map_cast {x y : X} (p : Homotopic.Quotient x y) {x' y'} {hx : x' = x} {hy : y' = y}
+    {f : C(X, Y)} : (p.cast hx hy).map f = (p.map f).cast congr(f $hx) congr(f $hy) := by
+  rcases p; rfl
 
 end Quotient
 
