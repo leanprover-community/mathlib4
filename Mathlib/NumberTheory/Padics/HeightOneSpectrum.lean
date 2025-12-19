@@ -48,7 +48,7 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
 
 TODO : Abstract the isomorphisms in this file using a universal predicate on adic completions,
 along the lines of `IsComplete` + uniformity arises from a valuation + the valuations are
-equivalent. It is best to do this after `Valued` has been refactor, or at least after
+equivalent. It is best to do this after `Valued` has been refactored, or at least after
 `adicCompletion` has `IsValuativeTopology` instance.
 -/
 
