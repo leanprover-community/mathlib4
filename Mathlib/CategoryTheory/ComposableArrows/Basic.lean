@@ -42,6 +42,8 @@ TODO (@joelriou):
 
 @[expose] public section
 
+set_option backward.privateInPublic true
+
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
@@ -60,7 +62,7 @@ namespace CategoryTheory
 
 open Category
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
@@ -918,7 +920,7 @@ section
 
 open ComposableArrows
 
-variable {C} {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+variable {C} {D : Type*} [Category* D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/
