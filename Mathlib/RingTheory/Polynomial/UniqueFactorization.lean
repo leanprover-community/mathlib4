@@ -113,8 +113,9 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
+private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
+  have := Fintype.ofFinite σ
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
     induction Fintype.card σ with
     | zero =>

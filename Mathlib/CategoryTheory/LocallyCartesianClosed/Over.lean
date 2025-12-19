@@ -62,40 +62,10 @@ open Limits
 
 variable {X : C} (Y Z : Over X)
 
-/-- The canonical pullback cone constructed from `ChosenPullbacksAlong.isPullback.`
-Note: this limit cone is computable as lifts are constructed from the data contained in the
-`ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
-`CategoryTheory.Square.IsPullback` (a `Prop`).
--/
-def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
-    IsLimit (isPullback Y.hom Z.hom |>.cone) :=
-  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
-    (by cat_disch) (by cat_disch) (by cat_disch)
-
 /-- The binary fan provided by `fst'` and `snd'`. -/
-def binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
+abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
-
-@[simp]
-theorem binaryFan_pt [ChosenPullbacksAlong Z.hom] :
-    (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
-  rfl
-
-@[simp]
-theorem binaryFan_pt_hom [ChosenPullbacksAlong Z.hom] :
-    (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
-  rfl
-
-@[simp]
-theorem binaryFan_fst [ChosenPullbacksAlong Z.hom] :
-    (binaryFan Y Z).fst = fst' Y.hom Z.hom :=
-  rfl
-
-@[simp]
-theorem binaryFan_snd [ChosenPullbacksAlong Z.hom] :
-    (binaryFan Y Z).snd = snd' Y.hom Z.hom :=
-  rfl
 
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
@@ -103,7 +73,10 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
   BinaryFan.IsLimit.mk (binaryFan Y Z)
     (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [Over.w u, Over.w v])) (by simp))
     (by cat_disch) (by cat_disch)
-    (fun a b m h₁ h₂ => by ext; apply hom_ext (f := Y.hom) (g := Z.hom) <;> aesop)
+    (fun a b m h₁ h₂ => by
+      ext
+      dsimp [Over.map, Comma.mapRight]
+      cat_disch)
 
 end
 
@@ -135,6 +108,7 @@ lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
 @[simp]
 lemma tensorObj_left (Y Z : Over X) : (Y ⊗ Z).left = pullbackObj Y.hom Z.hom := rfl
 
+@[simp]
 lemma tensorObj_hom (Y Z : Over X) : (Y ⊗ Z).hom = snd Y.hom Z.hom ≫ Z.hom := rfl
 
 @[simp]
@@ -160,38 +134,39 @@ lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ fst R.hom (S ⊗ T).hom = fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst R S T)
+    (α_ R S T).hom.left ≫ fst R.hom (snd S.hom T.hom ≫ T.hom) =
+      fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom :=
+  congr_arg CommaMorphism.left (associator_hom_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom =
-      fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom := by
-  simpa only using congr_arg CommaMorphism.left (associator_hom_snd_fst R S T)
+    (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ fst S.hom T.hom =
+      fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom :=
+  congr_arg CommaMorphism.left (associator_hom_snd_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
-    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom =
-      snd (R ⊗ S).hom T.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_hom_snd_snd R S T)
+    (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ snd S.hom T.hom =
+      snd (R ⊗ S).hom T.hom :=
+  congr_arg CommaMorphism.left (associator_hom_snd_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_fst (R S T : Over X) :
-    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom = fst R.hom (S ⊗ T).hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_inv_fst_fst R S T)
+    (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ fst R.hom S.hom =
+      fst R.hom (S ⊗ T).hom :=
+  congr_arg CommaMorphism.left (associator_inv_fst_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom =
-      snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom := by
-  simpa only [snd_eq_snd', fst_eq_fst']
-    using congr_arg CommaMorphism.left (associator_inv_fst_snd R S T)
+    (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ snd R.hom S.hom =
+      snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom :=
+  congr_arg CommaMorphism.left (associator_inv_fst_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ snd (R ⊗ S).hom T.hom =
-      snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_inv_snd R S T)
+    (α_ R S T).inv.left ≫ snd (snd R.hom S.hom ≫ S.hom) T.hom =
+      snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom :=
+  congr_arg CommaMorphism.left (associator_inv_snd R S T)
 
 @[simp]
 lemma leftUnitor_hom_left (Z : Over X) :
@@ -199,13 +174,13 @@ lemma leftUnitor_hom_left (Z : Over X) :
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_fst (Z : Over X) :
-    (λ_ Z).inv.left ≫ fst (𝟙 X) Z.hom = Z.hom := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_fst Z)
+    (λ_ Z).inv.left ≫ fst (𝟙 X) Z.hom = Z.hom :=
+  congr_arg CommaMorphism.left (leftUnitor_inv_fst Z)
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_snd (Y : Over X) :
-    (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_snd Y)
+    (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left :=
+  congr_arg CommaMorphism.left (leftUnitor_inv_snd Y)
 
 @[simp]
 lemma rightUnitor_hom_left (Y : Over X) :
@@ -213,55 +188,55 @@ lemma rightUnitor_hom_left (Y : Over X) :
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_fst (Y : Over X) :
-    (ρ_ Y).inv.left ≫ fst Y.hom (𝟙 X) = 𝟙 Y.left := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_fst Y)
+    (ρ_ Y).inv.left ≫ fst Y.hom (𝟙 X) = 𝟙 Y.left :=
+  congr_arg CommaMorphism.left (rightUnitor_inv_fst Y)
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_snd (Y : Over X) :
-    (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
+    (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom :=
+  congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
 
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) := by
-  cat_disch
+    (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) :=
+  rfl
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left ≫ fst R.hom T.hom = fst R.hom S.hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerLeft_fst R f)
+    (R ◁ f).left ≫ fst R.hom T.hom = fst R.hom S.hom :=
+  congr_arg CommaMorphism.left (whiskerLeft_fst R f)
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerLeft_snd R f)
+    (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left :=
+  congr_arg CommaMorphism.left (whiskerLeft_snd R f)
 
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) := by
-  cat_disch
+    (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) :=
+  rfl
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left ≫ fst T.hom R.hom = fst S.hom R.hom ≫ f.left := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerRight_fst f R)
+    (f ▷ R).left ≫ fst T.hom R.hom = fst S.hom R.hom ≫ f.left :=
+  congr_arg CommaMorphism.left (whiskerRight_fst f R)
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerRight_snd f R)
+    (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom :=
+  congr_arg CommaMorphism.left (whiskerRight_snd f R)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) := by
-  cat_disch
+    (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) :=
+  rfl
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g).left ≫ fst S.hom U.hom = fst R.hom T.hom ≫ f.left := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (tensorHom_fst f g)
+    (f ⊗ₘ g).left ≫ fst S.hom U.hom = fst R.hom T.hom ≫ f.left :=
+  congr_arg CommaMorphism.left (tensorHom_fst f g)
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g).left ≫ snd S.hom U.hom = snd R.hom T.hom ≫ g.left := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (tensorHom_snd f g)
+    (f ⊗ₘ g).left ≫ snd S.hom U.hom = snd R.hom T.hom ≫ g.left :=
+  congr_arg CommaMorphism.left (tensorHom_snd f g)
 
 end Over
 
@@ -283,7 +258,7 @@ def toOver (X : C) : C ⥤ Over X where
 @[simp]
 lemma toOver_map {X : C} {A A' : C} (f : A ⟶ A') :
     (toOver X).map f = Over.homMk (f ▷ X) := by
-  simp only [toOver]
+  simp [toOver]
 
 variable (C)
 
@@ -307,6 +282,7 @@ attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
+@[simps!]
 def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
@@ -323,11 +299,13 @@ theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (t
    simp
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
+@[simps!]
 def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
   (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivToOverUnit C |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
+@[simps!]
 def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
     toOver X ⋙ pullback f ≅ toOver Y :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjToOver X))
@@ -339,6 +317,7 @@ omit [CartesianMonoidalCategory C] in
 /-- The functor `pullback f : Over X ⥤ Over Y` is naturally isomorphic to
 `toOver : Over X ⥤ Over (Over.mk f)` post-composed with the
 iterated slice equivalence `Over (Over.mk f) ⥤ Over Y`. -/
+@[simps!]
 def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : Y ⟶ X) :
     toOver (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))

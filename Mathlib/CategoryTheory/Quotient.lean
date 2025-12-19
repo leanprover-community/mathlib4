@@ -34,7 +34,7 @@ open Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 /-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
 def Functor.homRel : HomRel C :=
@@ -46,7 +46,7 @@ lemma Functor.homRel_iff {X Y : C} (f g : X ⟶ Y) :
 
 end
 
-variable {C : Type _} [Category C] (r : HomRel C)
+variable {C : Type _} [Category* C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
@@ -59,7 +59,7 @@ class Congruence : Prop where
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 
 /-- For `F : C ⥤ D`, `F.homRel` is a congruence. -/
-instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+instance Functor.congruence_homRel {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) :
     Congruence F.homRel where
   equivalence :=
     { refl := fun _ ↦ rfl
@@ -125,7 +125,7 @@ instance category : Category (Quotient r) where
 
 /-- An equivalence between the type synonym for a quotient category and the type alias
 for the original category. -/
-def equiv {C : Type _} [Category C] (r : HomRel C) : Quotient r ≃ C where
+def equiv {C : Type _} [Category* C] (r : HomRel C) : Quotient r ≃ C where
   toFun x := x.1
   invFun x := ⟨x⟩
 
@@ -214,7 +214,7 @@ theorem compClosure.congruence :
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 
-variable {D : Type _} [Category D] (F : C ⥤ D)
+variable {D : Type _} [Category* D] (F : C ⥤ D)
 
 /-- The induced functor on the quotient category. -/
 def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
@@ -300,7 +300,7 @@ lemma natTransLift_app (F G : Quotient r ⥤ D)
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
+    natTransLift r τ ≫ natTransLift r τ' = natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :

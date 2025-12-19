@@ -51,7 +51,7 @@ structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
   /-- The mapping of relations -/
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]

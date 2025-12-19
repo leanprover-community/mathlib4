@@ -37,6 +37,9 @@ localization, Ore, non-commutative
 
 @[expose] public section
 
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn true
+
 assert_not_exists RelIso MonoidWithZero
 
 universe u
@@ -47,6 +50,7 @@ namespace OreLocalization
 
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
+set_option backward.proofsInPublic true in
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
@@ -228,6 +232,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
     simp only [mul_assoc]
 
+set_option backward.privateInPublic true in
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
 private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
@@ -250,6 +255,8 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The scalar multiplication on the Ore localization of monoids. -/
 @[to_additive (attr := irreducible)
   /-- the vector addition on the Ore localization of additive monoids. -/]
@@ -440,7 +447,7 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
-@[to_additive /-- The difference `s -ₒ 0` as a an additive unit. -/]
+@[to_additive /-- The difference `s -ₒ 0` as an additive unit. -/]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
   val := (s : R) /ₒ 1
   inv := (1 : R) /ₒ s
@@ -483,7 +490,7 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
         rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
-  map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
+  map_one' := by rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂
@@ -533,7 +540,7 @@ protected def hsmul (c : R) :
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
-/- Warning: This gives an diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+/- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/

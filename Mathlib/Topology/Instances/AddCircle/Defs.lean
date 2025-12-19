@@ -17,14 +17,14 @@ public import Mathlib.Topology.Order.T5
 /-!
 # The additive circle
 
-We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
+We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`.
 
-See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircle`, see
+See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
 ## Main definitions and results:
 
-* `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
+* `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
 * `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
@@ -117,7 +117,7 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 
 end Continuity
 
-/-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
+/-- The "additive circle": `𝕜 ⧸ ℤ ∙ p`. See also `Circle` and `Real.Angle`. -/
 abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
@@ -465,7 +465,7 @@ theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
-    mul_div_right_comm, eq_comm, add_eq_right, ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+    mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
@@ -533,15 +533,27 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · rw [← coe_setOf, Nat.card_congr (setAddOrderOfEquiv p hn),
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
+omit [Fact (0 < p)]
+
+theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite := by
+  wlog hp : 0 < p generalizing p; swap
+  · have := Fact.mk hp
+    convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
+    simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
+  obtain rfl | hp := eq_or_lt_of_not_gt hp
+  · refine (Set.finite_singleton 0).subset fun u hu ↦ ?_
+    obtain ⟨u, rfl⟩ := QuotientAddGroup.mk_surjective u
+    rw [Set.mem_setOf, ← coe_nsmul] at hu
+    rw [Set.mem_singleton_iff]
+    rw [QuotientAddGroup.eq_zero_iff, zmultiples_zero_eq_bot] at hu ⊢
+    exact (_root_.nsmul_eq_zero_iff hn.ne').mp hu
+  convert ← this (-p) (neg_pos.mpr hp) using 1
+  · rw [AddCircle, zmultiples_neg]
+  exact congr_arg_heq ({u : 𝕜 ⧸ · | n • u = 0}) zmultiples_neg
 
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
-  finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
-
-theorem finite_torsion {n : ℕ} (hn : 0 < n) :
-    { u : AddCircle p | n • u = 0 }.Finite := by
-  convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
-  simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
+  (finite_torsion p hn).subset fun _ h ↦ ((addOrderOf_eq_iff hn).mp h).1
 
 end FiniteOrderPoints
 

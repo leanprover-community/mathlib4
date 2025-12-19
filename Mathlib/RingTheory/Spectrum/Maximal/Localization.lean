@@ -17,6 +17,9 @@ Localization results.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
@@ -215,7 +218,7 @@ variable (f : R →+* S)
 
 /-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
 noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
-  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (f.specComap I))
+  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (comap f I))
 
 theorem mapPiLocalization_naturality :
     (mapPiLocalization f).comp (toPiLocalization R) = (toPiLocalization S).comp f := by
