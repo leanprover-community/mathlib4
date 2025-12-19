@@ -269,6 +269,10 @@ variable (f g)
 def pullbackCone : PullbackCone f g :=
   PullbackCone.mk (fst f g) (snd f g) (by rw [condition])
 
+@[simp] lemma pullbackCone_fst : (pullbackCone f g).fst = fst f g := rfl
+
+@[simp] lemma pullbackCone_snd : (pullbackCone f g).snd = snd f g := rfl
+
 /-- The canonical pullback cone is a limit cone.
 Note: this limit cone is computable as lifts are constructed from the data contained in the
 `ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
