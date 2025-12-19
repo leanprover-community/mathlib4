@@ -19,7 +19,7 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Tactic.Translate.GuessName
-public import Mathlib.Tactic.Translate.UnfoldBoundary
+public meta import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Lean.Meta.CoeAttr
 
 /-!

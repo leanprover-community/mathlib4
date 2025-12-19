@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.Translate.ToDual
+public meta import Mathlib.Tactic.Translate.ToDual
 import all Init.Core  -- TODO: for accessing proofs
 
 
