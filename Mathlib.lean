@@ -1374,6 +1374,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
