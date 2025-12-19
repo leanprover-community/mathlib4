@@ -360,8 +360,8 @@ example (i : Fin n) : P (eq ▸ i) := by
   exact test_sorry
 
 section
--- test not rewriting a non-defeq cast even when
--- the result of the cast is defeq to its argument
+-- test not cleaning up a cast by a non-defeq equality
+-- even when the result of the cast is defeq to its argument
 
 @[irreducible]
 private def const {α : Sort u} (a : α) {β : Sort v} (_ : β) : α := a
@@ -371,9 +371,78 @@ example (Q : Prop) (h : const Q n) : P h := by
   guard_target =ₐ P (cast% eq ▸ h)
   unfold const at h ⊢
   guard_target =ₐ P (cast% Eq.rec (motive := fun _ _ => Q) h eq)
-  rw! [Eq.refl h]
+  rw! [Eq.refl @P]
   guard_target =ₐ P (cast% Eq.rec (motive := fun _ _ => Q) h eq)
   change P h
   exact test_sorry
 
 end
+
+-- test cleaning up a cast whose argument is a function
+example (f : ∀ k, Fin k → Nat) (x : Fin m) : P (f m x) := by
+  conv =>
+    enter [1]; fun
+    rewrite! (castMode := .all) [← eq]
+    guard_target =ₐ cast% eq.symm.symm ▸ f n
+  -- `conv` isn't preserving the metadata :(
+  guard_target =ₐ P ((eq.symm.symm ▸ f n) x)
+  change P ((cast% eq.symm.symm ▸ f n) x)
+  generalize f n = g
+  rw! (castMode := .all) [eq]
+  guard_target =ₐ P ((cast% eq ▸ g) x)
+  exact test_sorry
+
+-- test tracing for `cleanupCasts`
+/--
+trace: [Tactic.depRewrite.cleanupCasts] P (eq ▸ x) => continue P (eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] Fin m => continue Fin m
+[Tactic.depRewrite.cleanupCasts] m => continue m
+[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+  [Tactic.depRewrite.cleanupCasts] found potential cast
+        eq ▸ x
+  [Tactic.depRewrite.cleanupCasts] lhs
+        n
+      is not definitionally equal to rhs
+        m
+[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] n => continue n
+[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] x' => continue x'
+[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] x => continue x
+[Tactic.depRewrite.cleanupCasts] eq => continue eq
+---
+trace: [Tactic.depRewrite.cleanupCasts] Q (⋯ ▸ eq ▸ x) => continue Q (⋯ ▸ eq ▸ x)
+[Tactic.depRewrite.cleanupCasts] Q => continue Q
+[Tactic.depRewrite.cleanupCasts] ⋯ ▸ eq ▸ x => visit eq ▸ x
+  [Tactic.depRewrite.cleanupCasts] found potential cast
+        ⋯ ▸ eq ▸ x
+[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+  [Tactic.depRewrite.cleanupCasts] found potential cast
+        eq ▸ x
+  [Tactic.depRewrite.cleanupCasts] lhs
+        n
+      is not definitionally equal to rhs
+        m
+[Tactic.depRewrite.cleanupCasts] eq ▸ x => continue eq ▸ x
+[Tactic.depRewrite.cleanupCasts] Nat => continue Nat
+[Tactic.depRewrite.cleanupCasts] n => continue n
+[Tactic.depRewrite.cleanupCasts] fun x' h' => Fin x' => continue fun x' h' => Fin x'
+[Tactic.depRewrite.cleanupCasts] n = x' => continue n = x'
+[Tactic.depRewrite.cleanupCasts] x' => continue x'
+[Tactic.depRewrite.cleanupCasts] Fin x' => continue Fin x'
+[Tactic.depRewrite.cleanupCasts] x => continue x
+[Tactic.depRewrite.cleanupCasts] m => continue m
+[Tactic.depRewrite.cleanupCasts] eq => continue eq
+-/
+#guard_msgs in
+set_option trace.Tactic.depRewrite.cleanupCasts true in
+example (x : Fin n) : P x := by
+  rw! (castMode := .all) [eq]
+  guard_target =ₐ P (cast% eq ▸ x)
+  generalize P = Q
+  rw! (castMode := .all) [eq]
+  guard_target =ₐ Q (cast% eq ▸ x)
+  exact test_sorry

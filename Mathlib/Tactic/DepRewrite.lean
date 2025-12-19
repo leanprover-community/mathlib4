@@ -501,6 +501,10 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
 The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
+    -- since the `pre` method returns a result instead of calling itself recursively,
+    -- the tracing creates many parallel nodes insetad of nesting them
+    -- unfortunately, there does not seem to be a way to nest the trace nodes
+    -- within the bounds of the `Lean.Meta.transform` API
     withTraceNode traceClsClean (fun
       | .ok (.visit e') => pure m!"{e} => visit {e'}"
       | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
