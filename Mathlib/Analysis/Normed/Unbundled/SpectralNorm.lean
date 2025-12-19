@@ -498,8 +498,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ
       · rfl
-      · exact instNonemptyOfInhabited
-      · exact SemilatticeSup.to_isDirected_le
+      all_goals infer_instance
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
