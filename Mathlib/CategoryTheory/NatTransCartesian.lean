@@ -87,29 +87,25 @@ theorem comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : IsCartesian 
     IsCartesian (α ≫ β) :=
   fun _ _ f => (hα f).paste_vert (hβ f)
 
-theorem whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : IsCartesian α) (H : C ⥤ D)
-    [∀ (X Y : J) (f : Y ⟶ X), PreservesLimit (cospan (α.app X) (G.map f)) H] :
-    IsCartesian (whiskerRight α H) :=
-  fun _ _ f => (hα f).map H
-
 theorem whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C}
     {α : F ⟶ G} (hα : IsCartesian α) (H : K ⥤ J) : IsCartesian (whiskerLeft H α) :=
   fun _ _ f => hα (H.map f)
+
+theorem whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : IsCartesian α) (H : C ⥤ D)
+    [∀ (X Y : J) (f : X ⟶ Y), PreservesLimit (cospan (α.app Y) (G.map f)) H] :
+    IsCartesian (whiskerRight α H) :=
+  fun _ _ f => (hα f).map H
 
 theorem hcomp {K : Type*} [Category K] {F G : J ⥤ C} {M N : C ⥤ K} {α : F ⟶ G} {β : M ⟶ N}
     (hα : IsCartesian α) (hβ : IsCartesian β)
     [∀ (X Y : J) (f : Y ⟶ X), PreservesLimit (cospan (α.app X) (G.map f)) M] :
     IsCartesian (NatTrans.hcomp α β) := by
-  have ha := hα.whiskerRight M
-  have hb := hβ.whiskerLeft G
-  have hc := ha.comp hb
-  unfold IsCartesian
+  have H := hα.whiskerRight M |>.comp (hβ.whiskerLeft G)
   intros X Y f
-  specialize hc f
-  simp only [Functor.comp_obj, Functor.comp_map, comp_app,
-    whiskerRight_app, whiskerLeft_app,
-    naturality] at hc
-  exact hc
+  specialize H f
+  simp only [Functor.comp_obj, Functor.comp_map, comp_app, whiskerRight_app, whiskerLeft_app,
+  naturality] at H
+  exact H
 
 open TwoSquare
 
