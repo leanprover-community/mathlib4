@@ -692,7 +692,7 @@ lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
-      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (nhds (g x))}) ↦ f.1) p μ := by
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
   refine fun ε hε => ?_
   obtain ⟨δ, hδ, hδ'⟩ := hUI hε
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
