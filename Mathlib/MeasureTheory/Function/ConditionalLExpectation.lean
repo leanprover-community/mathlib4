@@ -74,20 +74,29 @@ theorem setLIntegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.tri
     ← lintegral_trim hm (by measurability), lintegral_indicator hs, setLIntegral_rnDeriv' h hs,
     trim_measurableSet_eq hm hs, withDensity_apply _ (hm s hs)]
 
+theorem setLIntegral_condLExp_trim (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
+    (X : Ω → ℝ≥0∞) {s : Set Ω} (hs : MeasurableSet[mΩ] s) :
+    ∫⁻ ω in s, P⁻[X|mΩ] ω ∂P.trim hm = ∫⁻ ω in s, X ω ∂P := by
+  rw [setLIntegral_trim hm (measurable_condLExp _ _ _) hs, setLIntegral_condLExp _ _ _ hs]
+
 theorem lintegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] (X : Ω → ℝ≥0∞) :
     ∫⁻ ω, P⁻[X|mΩ] ω ∂P = ∫⁻ ω, X ω ∂P := by
   simpa [← setLIntegral_univ] using setLIntegral_condLExp _ _ _ .univ
 
+theorem eq_condLExp_ae₀ (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
+    (X : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ] Y (P.trim hm))
+    (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
+    Y =ᵐ[P] P⁻[X|mΩ] := by
+  apply ae_eq_of_ae_eq_trim
+  apply ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ (μ := P.trim hm) hY (by fun_prop)
+  intro s hs _
+  rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
+  exact hXY s hs
+
 theorem eq_condLExp_ae (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
-    Y =ᵐ[P] P⁻[X|mΩ] := by
-  --change P {ω | Y ω ≠ P⁻[X|mΩ] ω} = 0
-  have h₁ : MeasurableSet[mΩ] {ω | Y ω > P⁻[X|mΩ] ω} := by sorry
-  have h₂ : MeasurableSet[mΩ] {ω | Y ω < P⁻[X|mΩ] ω} := by sorry
-  --have h₃ := lintegral_condLExp hm P X h₁
-  --have h₄ := lintegral_condLExp hm P X h₂
-  sorry
+    Y =ᵐ[P] P⁻[X|mΩ] := eq_condLExp_ae₀ _ _ _ hY.aemeasurable hXY
 
 theorem condLExp_const (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] (c : ℝ≥0∞) :
     P⁻[fun _ : Ω ↦ c|mΩ] = fun _ ↦ c := condLExp_eq_self _ _ (measurable_const)
@@ -105,19 +114,33 @@ theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
   simp [condLExp_of_not_le hm]
 
 @[gcongr]
-theorem condLExp_congr_ae_trim (P : Measure[mΩ₀] Ω)
-    {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) : P⁻[X|mΩ] =ᵐ[P.trim hm] P⁻[Y|mΩ] := by
+theorem condLExp_congr_ae_trim (P : Measure[mΩ₀] Ω) {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) :
+    P⁻[X|mΩ] =ᵐ[P.trim hm] P⁻[Y|mΩ] := by
   apply ae_eq_trim_of_measurable hm (measurable_condLExp _ _ X) (measurable_condLExp _ _ Y)
   exact condLExp_congr_ae P hXY
 
--- we need `measurable_bot_iff`
-#check MeasurableSpace.SeparatesPoints
--- similar proof should work where we rule out the not `FiniteMeasure` case
-theorem condLExp_bot' (X : Ω → ℝ≥0∞) :
-    P⁻[X|⊥] = fun _ => (P .univ)⁻¹ • ∫⁻ ω, X ω ∂P := by sorry
+theorem condLExp_bot' (P : Measure[mΩ₀] Ω) [NeZero P] (X : Ω → ℝ≥0∞) :
+    P⁻[X|⊥] = fun _ => (P .univ)⁻¹ • ∫⁻ ω, X ω ∂P := by
+  by_cases hP : IsFiniteMeasure P; swap
+  · have hσ : ¬SigmaFinite (P.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
+    rw [not_isFiniteMeasure_iff] at hP
+    rw [condLExp_of_not_sigmaFinite bot_le hσ]
+    simpa [hP] using (by rfl)
+  obtain ⟨c, h_eq⟩ := MeasurableSpace.measurable_bot_eq_const (measurable_condLExp ⊥ P X)
+  ext _
+  rw [← lintegral_condLExp bot_le]
+  simp [h_eq, mul_comm, mul_assoc, ENNReal.mul_inv_cancel
+    (NeZero.ne (P .univ)) (measure_ne_top _ _)]
 
-theorem condLExp_bot [IsProbabilityMeasure P] (X : Ω → ℝ≥0∞) :
-    P⁻[X|⊥] = fun _ => ∫⁻ ω, X ω ∂P := by sorry
+theorem condLExp_bot_ae_eq (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
+    P⁻[X|⊥] =ᵐ[P] fun _ => (P .univ)⁻¹ • ∫⁻ ω, X ω ∂P := by
+  rcases eq_zero_or_neZero P with rfl | hP
+  · rw [ae_zero]; exact Filter.eventually_bot
+  exact Filter.Eventually.of_forall <| congr_fun (condLExp_bot' P X)
+
+theorem condLExp_bot (P : Measure[mΩ₀] Ω) [IsProbabilityMeasure P] (X : Ω → ℝ≥0∞) :
+    P⁻[X|⊥] = fun _ => ∫⁻ ω, X ω ∂P :=
+  (condLExp_bot' P X).trans (by simp)
 
 theorem condLExp_mono (hXY : X ≤ᵐ[P] Y) :
     P⁻[X|mΩ] ≤ᵐ[P] P⁻[Y|mΩ] := by
@@ -125,9 +148,29 @@ theorem condLExp_mono (hXY : X ≤ᵐ[P] Y) :
   swap; · simp_rw [condLExp_of_not_le hm]; rfl
   by_cases hσ : SigmaFinite (P.trim hm)
   swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; rfl
-  sorry
+  apply ae_le_of_ae_le_trim
+  apply ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ := P.trim hm) (by fun_prop)
+  intro s hs _
+  repeat rw [setLIntegral_condLExp_trim hm _ _ hs]
+  apply setLIntegral_mono_ae' (hm s hs)
+  filter_upwards [hXY] using fun _ h _ ↦ h
 
-theorem condLExp_add (X Y : Ω → ℝ≥0∞) :
+theorem condLExp_add_le (X Y : Ω → ℝ≥0∞) :
+    P⁻[X|mΩ] + P⁻[Y|mΩ] ≤ᵐ[P] P⁻[X + Y|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀; swap
+  · simp_rw [condLExp_of_not_le hm]; filter_upwards; simp
+  by_cases hσ : SigmaFinite (P.trim hm); swap
+  · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; filter_upwards; simp
+  apply ae_le_of_ae_le_trim
+  apply ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ := P.trim hm) (by fun_prop)
+  intro s hs _
+  simp only [Pi.add_apply]
+  rw [lintegral_add_left (by measurability)]
+  repeat rw [setLIntegral_condLExp_trim hm _ _ hs]
+  grw [le_lintegral_add]
+  simp
+
+theorem condLExp_add_left (X Y : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X P) :
     P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
   swap; · simp_rw [condLExp_of_not_le hm]; simp
@@ -137,12 +180,11 @@ theorem condLExp_add (X Y : Ω → ℝ≥0∞) :
   intro s hs
   simp only [Pi.add_apply]
   rw [lintegral_add_left (by measurability)]
-  sorry
+  repeat rw [setLIntegral_condLExp hm _ _ hs]
+  rw [lintegral_add_left' (by fun_prop)]
 
--- condLExp_finset_sum (induction on add)
-
--- condLExp_smul (same sort of idea)
-
--- Add docs
+theorem condLExp_add_right (X Y : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ₀] Y P) :
+    P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
+  rw [add_comm, add_comm P⁻[X|mΩ]]; exact condLExp_add_left Y X hY
 
 end MeasureTheory
