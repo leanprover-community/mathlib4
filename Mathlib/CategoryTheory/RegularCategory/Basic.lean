@@ -71,7 +71,7 @@ instance : Preregular C where
 
 variable {X Y : C} (f : X ⟶ Y)
 
-namespace Regular.StrongEpiMonoFactorisation
+namespace Regular
 
 local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
@@ -157,6 +157,6 @@ noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
 instance isRegularEpi_of_extremalEpi (f : X ⟶ Y) [ExtremalEpi f] : IsRegularEpi f :=
   ⟨⟨regularEpiOfExtremalEpi f⟩⟩
 
-end Regular.StrongEpiMonoFactorisation
+end Regular
 
 end CategoryTheory
