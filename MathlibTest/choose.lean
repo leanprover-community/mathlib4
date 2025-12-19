@@ -116,6 +116,13 @@ example (h : ∀ i : Nat, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   guard_hyp h' : ∀ (i : Nat), i < 7 → f i < i + i
   trivial
 
+-- Test type normalization: annotated type `n > 0 + 0` matches actual type `n > 0`
+example (h : ∃ n : Nat, n > 0) : True := by
+  choose (n : Nat) (hn : n > 0 + 0) using h
+  guard_hyp n : Nat
+  guard_hyp hn : n > 0  -- actual type is `n > 0`, not `n > 0 + 0`
+  trivial
+
 -- Type annotation mismatch should fail (using fail_if_success)
 /--
 error: type mismatch for 'n'
