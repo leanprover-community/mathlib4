@@ -159,7 +159,7 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
   termination_by p.length
   decreasing_by {
     rw [← Walk.length_tail_add_one hnp]
-    omega
+    lia
   }
   exact aux hu hr.some
 
@@ -643,29 +643,21 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
     intro h hadj
     exact ⟨v, h, w, hadj, rfl, (C.mem_supp_congr_adj hadj).mp h, rfl⟩
 
-@[deprecated (since := "2025-05-08")]
-alias adj_spanningCoe_induce_supp := adj_spanningCoe_toSimpleGraph
-
-/-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
-private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+/-- Get the walk between two vertices in a connected component from a walk in the original graph.
+This is used in `reachable_toSimpleGraph`. -/
+private def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
   cases p with
   | nil => exact Walk.nil
   | @cons v w u h p =>
     have hw : w ∈ C := C.mem_supp_of_adj_mem_supp hu h
     have h' : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
-    exact Walk.cons h' (C.walk_toSimpleGraph' hw hv p)
-
-@[deprecated (since := "2025-05-08")] alias reachable_induce_supp := walk_toSimpleGraph'
+    exact Walk.cons h' (C.walk_toSimpleGraph hw hv p)
 
 /-- There is a walk between every pair of vertices in a connected component. -/
-noncomputable def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ :=
-  C.walk_toSimpleGraph' hu hv (C.reachable_of_mem_supp hu hv).some
-
 lemma reachable_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Reachable ⟨u, hu⟩ ⟨v, hv⟩ :=
-  Walk.reachable (C.walk_toSimpleGraph hu hv)
+  Walk.reachable (C.walk_toSimpleGraph hu hv (C.reachable_of_mem_supp hu hv).some)
 
 lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Connected where
   preconnected := by
@@ -673,10 +665,9 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
     exact C.reachable_toSimpleGraph hu hv
   nonempty := ⟨C.out, C.out_eq⟩
 
-@[deprecated (since := "2025-05-08")] alias connected_induce_supp := connected_toSimpleGraph
-
 end ConnectedComponent
 
+set_option backward.proofsInPublic true in
 /-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
 homomorphism from `G` to `H` -/
 @[simps]
@@ -803,15 +794,9 @@ theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) 
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp only [h, true_and]
 
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_adj_and_forall_cycle_not_mem := isBridge_iff_adj_and_forall_cycle_notMem
-
 theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
-
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_mem_and_forall_cycle_not_mem := isBridge_iff_mem_and_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
@@ -830,7 +815,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
-/-- If `e` is an adge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
+/-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
     (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
   isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦

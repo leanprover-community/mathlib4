@@ -230,13 +230,11 @@ lemma isUnit_dblZ_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     IsUnit (W.dblZ P) :=
   (dblZ_ne_zero_of_Y_ne' hP hQ hPz hx hy).isUnit
 
-private lemma toAffine_slope_of_eq [DecidableEq F]
-    {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+private lemma toAffine_slope_of_eq [DecidableEq F] {P Q : Fin 3 → F}
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
     (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
       -W.dblU P / W.dblZ P := by
-  have hPy : P y - W.negY P ≠ 0 := sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy
   simp only [X_eq_iff hPz hQz, ne_eq, Y_eq_iff' hPz hQz] at hx hy
   rw [Affine.slope_of_Y_ne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz, dblU_eq, dblZ]
   simp [field]
@@ -276,7 +274,7 @@ lemma dblX_of_Z_ne_zero [DecidableEq F]
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.dblX P / W.dblZ P ^ 2 = W.toAffine.addX (P x / P z ^ 2) (Q x / Q z ^ 2)
       (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  rw [dblX, toAffine_slope_of_eq hP hQ hPz hQz hx hy, dblZ, ← (X_eq_iff hPz hQz).mp hx,
+  rw [dblX, toAffine_slope_of_eq hPz hQz hx hy, dblZ, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy]
 
 variable (W') in
@@ -313,7 +311,7 @@ lemma negDblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation 
     (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) : W.negDblY P / W.dblZ P ^ 3 =
     W.toAffine.negAddY (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3)
       (W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3)) := by
-  rw [negDblY, dblX, toAffine_slope_of_eq hP hQ hPz hQz hx hy, dblZ, ← (X_eq_iff hPz hQz).mp hx,
+  rw [negDblY, dblX, toAffine_slope_of_eq hPz hQz hx hy, dblZ, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hx hy]
 
 variable (W') in
