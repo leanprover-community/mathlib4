@@ -742,9 +742,7 @@ theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : 
 
 theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
     (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
-  induction h' with
-  | refl => exact hr _
-  | tail _ hbc ih => exact ht ih (h _ _ hbc)
+  simpa [reflTransGen_eq_self hr ht] using ReflTransGen.mono h h'
 
 @[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
   reflTransGen_of_transitive_reflexive
