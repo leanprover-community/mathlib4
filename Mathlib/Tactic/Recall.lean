@@ -44,7 +44,7 @@ open Lean Meta Elab Command Term
 elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
     let declName := id.getId
-    addConstInfo id declName
+    addTermInfo' id (← mkConstWithLevelParams declName) (isBinder := true)
     let info ← getConstInfo declName
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
     let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
