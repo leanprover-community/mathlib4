@@ -247,13 +247,21 @@ section
 
 variable {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
 
+/-- The induced functor `CofibrantObject.π C ⥤ D`, when `D` is a localization
+of `C` with respect to weak equivalences. -/
 def π.toLocalization : π C ⥤ D :=
   CategoryTheory.Quotient.lift _ (ι ⋙ L)
     (fun _ _ _ _ h ↦ (factorsThroughLocalization C h).map_eq_of_isInvertedBy _
       (fun _ _ _ ↦ Localization.inverts L (weakEquivalences _) _))
 
+/-- The isomorphism `toπ ⋙ toLocalization L ≅ ι ⋙ L` which expresses that
+if `L : C ⥤ D` is a localization functor, then its restriction on the
+full subcategory of cofibrant objects factors through the homotopy category
+of cofibrant objects. -/
 def π.toπCompToLocalizationIso : toπ ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
 
+/-- The natural isomorphism `π.resolution ⋙ π.toLocalization L ⟶ L` when
+`L : C ⥤ D` is a localization functor. -/
 noncomputable def π.resolutionCompToLocalizationNatTrans :
     π.resolution ⋙ π.toLocalization L ⟶ L where
   app X := L.map (pResolutionObj X)
