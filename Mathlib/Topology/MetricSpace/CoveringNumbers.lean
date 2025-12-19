@@ -121,6 +121,9 @@ lemma IsCover.externalCoveringNumber_le_encard (hC : IsCover ε A C) :
 lemma IsCover.coveringNumber_le_encard (h_subset : C ⊆ A) (hC : IsCover ε A C) :
     coveringNumber ε A ≤ C.encard := (iInf₂_le C h_subset).trans (iInf_le _ hC)
 
+lemma IsSeparated.encard_le_packingNumber (h_subset : C ⊆ A) (hC : IsSeparated ε C) :
+    C.encard ≤ packingNumber ε A := le_iSup₂_of_le C h_subset (le_iSup_of_le hC le_rfl)
+
 lemma externalCoveringNumber_le_encard_self (A : Set X) : externalCoveringNumber ε A ≤ A.encard :=
   IsCover.externalCoveringNumber_le_encard (by simp)
 
