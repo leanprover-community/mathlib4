@@ -320,15 +320,15 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
 
 theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
-  intro x y hf
-  rcases lt_trichotomy x y with (hxy | rfl | hxy)
-  · exact absurd hf <| h _ _ hxy
-  · rfl
-  · exact absurd hf.symm <| h _ _ hxy
+  grind [Injective]
 
 theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
     (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
   fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
+
+theorem Function.Injective.of_eq_imp_le [PartialOrder α] (f : α → β)
+    (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
+  fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
 
 /-! ### Monotonicity under composition -/
 
