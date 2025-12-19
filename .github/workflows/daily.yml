@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     strategy:
+      fail-fast: false
       matrix:
         branch_type: [master, nightly]
     steps:
@@ -45,12 +46,6 @@ jobs:
             | (.url + (.steps[] | select(.name == "Check environments using lean4checker")
               | "#step:\(.number):1"))')
           echo "lean4checker_url=$lean4checker_url" | tee -a "$GITHUB_OUTPUT"
-
-          mathlib_test_executable_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
-            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
-            | (.url + (.steps[] | select(.name == "Run mathlib_test_executable")
-              | "#step:\(.number):1"))')
-          echo "mathlib_test_executable_url=$mathlib_test_executable_url" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -115,12 +110,6 @@ jobs:
           # so we explicitly check Batteries as well here.
           lake env lean4checker/.lake/build/bin/lean4checker Batteries Mathlib
 
-      - name: Run mathlib_test_executable # make sure this name is consistent with "Get URLs"
-        id: mathlib-test
-        continue-on-error: true
-        run: |
-          lake exe mathlib_test_executable
-
       - name: Post success message for lean4checker on Zulip
         if: steps.lean4checker.outcome == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -133,6 +122,83 @@ jobs:
           topic: 'lean4checker'
           content: |
             ✅ lean4checker [succeeded](${{ steps.urls.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+
+      - name: Post failure / cancelled message for lean4checker on Zulip
+        if: steps.lean4checker.outcome == 'failure' || steps.lean4checker.outcome == 'cancelled'
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'lean4checker failure'
+          content: |
+            ❌ lean4checker [$${{ steps.lean4checker.outcome }}](${{ steps.urls.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+
+  check-mathlib_test_executable:
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    strategy:
+      fail-fast: false
+      matrix:
+        branch_type: [master, nightly]
+    steps:
+      # Checkout repository, so that we can fetch tags to decide which branch we want.
+      - name: Checkout branch or tag
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      # this step needs to be run here while we have `mathlib4` checked out,
+      # or else `gh run view` will try to look for runs in `mathlib4-nightly-testing`
+      - name: Get URLs
+        id: urls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # adapted from https://cmbuckley.co.uk/blog/2024/04/09/deep-links-to-github-actions-job-logs/
+          mathlib_test_executable_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
+            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
+            | (.url + (.steps[] | select(.name == "Run mathlib_test_executable")
+              | "#step:\(.number):1"))')
+          echo "mathlib_test_executable_url=$mathlib_test_executable_url" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Fetch latest tags (if nightly)
+        if: matrix.branch_type == 'nightly'
+        run: |
+          # When in nightly mode, fetch tags from the nightly-testing repository
+          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
+          git fetch nightly-testing --tags
+          LATEST_TAG=$(git tag | grep -E "${{ env.TAG_PATTERN }}" | sort -r | head -n 1)
+          echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_ENV"
+
+      - name: Set branch ref
+        run: |
+          if [ "${{ matrix.branch_type }}" == "master" ]; then
+            echo "BRANCH_REF=${{ env.DEFAULT_BRANCH }}" >> "$GITHUB_ENV"
+          else
+            echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
+          fi
+
+      # Checkout the branch or tag we want to test.
+      - name: Checkout branch or tag
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
+          ref: ${{ env.BRANCH_REF }}
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+          reinstall-transient-toolchain: true
+
+      - name: Run mathlib_test_executable # make sure this name is consistent with "Get URLs"
+        id: mathlib-test
+        continue-on-error: true
+        run: |
+          lake exe mathlib_test_executable
 
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.mathlib-test.outcome == 'success'
@@ -147,22 +213,8 @@ jobs:
           content: |
             ✅ mathlib_test_executable [succeeded](${{ steps.urls.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
-      - name: Post failure message for lean4checker on Zulip
-        if: steps.lean4checker.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'lean4checker failure'
-          content: |
-            ❌ lean4checker [failed](${{ steps.urls.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
-        continue-on-error: true
-
-      - name: Post failure message for mathlib_test_executable on Zulip
-        if: steps.mathlib-test.outcome == 'failure'
+      - name: Post failure / cancelled message for mathlib_test_executable on Zulip
+        if: steps.mathlib-test.outcome == 'failure' || steps.mathlib-test.outcome == 'cancelled'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -172,5 +224,4 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [failed](${{ steps.urls.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
-        continue-on-error: true
+            ❌ mathlib_test_executable [${{ steps.mathlib-test.outcome }}](${{ steps.urls.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
