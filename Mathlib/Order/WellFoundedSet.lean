@@ -897,7 +897,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       · exact hg' (Nat.zero_le 1)
 
 theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
-    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
 theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}

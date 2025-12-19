@@ -852,7 +852,7 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
   · apply limsup_le_of_le h₁
     push_neg +distrib at h'
     rcases h' with ⟨z, x_z, hz⟩
-    exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
+    exact (h z x_z).mono <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
 /- A version of `limsup_le_iff` with large inequalities in densely ordered spaces.-/
 lemma limsup_le_iff' [DenselyOrdered β] {x : β}

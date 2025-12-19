@@ -1042,7 +1042,7 @@ theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =
 
 @[to_additive (attr := gcongr)]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
-    (h' : f' =ᶠ[l] g') :  f / f' =ᶠ[l] g / g' :=
+    (h' : f' =ᶠ[l] g') : f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
 
 @[to_additive]
