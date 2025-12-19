@@ -10,9 +10,6 @@ public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Dual.BaseChange
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
 /-!
 # Transvections in a module
@@ -281,7 +278,9 @@ theorem exists_basis_of_pairing_ne_zero
       simp [Finsupp.single_eq_of_ne h, this]
     rw [← LinearMap.mem_ker, ← hs, Module.Basis.coe_mk]
     apply Submodule.subset_span
-    grind
+    apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
+    simp [← hi, b, Subtype.coe_inj, Ne.symm h]
+
 
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v = 0`,
