@@ -265,6 +265,9 @@ def unusedFintypeInType : Linter where
         | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
       return
+    -- Cheap early exit if either of `Finite` or `Fintype` are not imported.
+    unless (← getEnv).isImportedConst `Finite && (← getEnv).isImportedConst `Fintype do
+      return
     cmd.logUnusedInstancesInTheoremsWhere
       (·.isAppOrForallOfConst `Fintype)
       fun _ thm unusedParams => do

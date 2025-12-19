@@ -149,7 +149,7 @@ private theorem sin_angle_eq_sin_angle_add_add_angle_add {x y : V} (hx : x ≠ 0
     simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
     ring_nf
 
-/-- In a paralellogram, the two parts of the inner angle add to the inner angle,
+/-- In a parallelogram, the two parts of the inner angle add to the inner angle,
 vector angle form. -/
 theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     angle x y = angle x (x + y) + angle y (x + y) := by
@@ -180,7 +180,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     cases eq_zero_or_eq_zero_of_smul_eq_zero this
     · linarith
     · contradiction
-  obtain rfl : n = 0 := by cutsat
+  obtain rfl : n = 0 := by lia
   simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
