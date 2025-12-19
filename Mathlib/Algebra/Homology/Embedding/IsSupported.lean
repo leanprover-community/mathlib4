@@ -35,7 +35,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (e' : K ≅ L) (φ : K ⟶ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
@@ -86,9 +86,7 @@ variable {K L} in
 lemma isSupported_iff_of_quasiIso [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [QuasiIso φ] :
     K.IsSupported e ↔ L.IsSupported e := by
-  simp only [isSupported_iff]
-  exact forall_congr' (fun i' ↦ forall_congr'
-    (fun hi' ↦ exactAt_iff_of_quasiIsoAt φ _))
+  simp [isSupported_iff, exactAt_iff_of_quasiIsoAt φ]
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by
@@ -151,7 +149,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C] [HasZeroMorphisms D]
   (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
 instance map_isStrictlySupported [K.IsStrictlySupported e] :
