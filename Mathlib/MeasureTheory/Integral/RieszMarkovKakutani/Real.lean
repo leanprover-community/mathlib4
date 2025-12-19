@@ -17,7 +17,7 @@ public import Mathlib.Order.Interval.Set.Union
 The Riesz–Markov–Kakutani representation theorem relates linear functionals on spaces of continuous
 functions on a locally compact space to measures.
 
-There are many closely related variations of the theorem. This file contains that proof of the
+There are many closely related variations of the theorem. This file contains the proof of the
 version where the space is a locally compact T2 space, the linear functionals are real and the
 continuous functions have compact support.
 
