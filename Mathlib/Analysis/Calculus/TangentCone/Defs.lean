@@ -57,9 +57,6 @@ structure UniqueDiffWithinAt (s : Set E) (x : E) : Prop where
   dense_tangentConeAt : Dense (Submodule.span 𝕜 (tangentConeAt 𝕜 s x) : Set E)
   mem_closure : x ∈ closure s
 
-@[deprecated (since := "2025-04-27")]
-alias UniqueDiffWithinAt.dense_tangentCone := UniqueDiffWithinAt.dense_tangentConeAt
-
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
 the whole space. The main role of this property is to ensure that the differential along `s` is
 unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq` in

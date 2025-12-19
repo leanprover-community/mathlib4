@@ -102,9 +102,12 @@ section
 
 variable (x y : ℕ)
 
+set_option backward.privateInPublic true in
 private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem xgcdAux_P {r r'} :
     ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') := by
   induction r, r' using gcd.induction with
@@ -259,13 +262,37 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
 
 end Int
 
-@[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
-    x ^ m.gcd n = 1 := by
-  rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
-  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
-  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+section Monoid
+variable {M : Type*} [Monoid M] {a : M} {m n : ℕ}
+
+@[to_additive (attr := simp) gcd_nsmul_eq_zero]
+lemma pow_gcd_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 where
+  mp hmn := by
+    constructor
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_left n), pow_mul, hmn, one_pow]
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_right n), pow_mul, hmn, one_pow]
+  mpr
+  | ⟨hm, hn⟩ => by
+    obtain _ | m := m
+    · simpa
+    obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
+    rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+    rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+
+@[to_additive]
+lemma pow_eq_one_iff_of_coprime (hmn : m.Coprime n) : a ^ m = 1 ∧ a ^ n = 1 ↔ a = 1 := by
+  simp [← pow_gcd_eq_one, hmn]
+
+end Monoid
+
+section Group
+variable {M : Type*} [Group M] {a : M} {m n : ℤ}
+
+@[to_additive (attr := simp) intGCD_nsmul_eq_zero]
+lemma pow_intGCD_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 := by
+  obtain m | m := m <;> obtain n | n := n <;> simp
+
+end Group
 
 variable {α : Type*}
 
