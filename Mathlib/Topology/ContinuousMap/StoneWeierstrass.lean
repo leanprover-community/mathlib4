@@ -617,7 +617,7 @@ lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [Com
   convert (Set.univ_inter _).symm
   rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
     ← polynomialFunctions.starClosure_eq_adjoin_X s]
-  congrm(($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
+  congrm (($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
 
 end ContinuousMap
 

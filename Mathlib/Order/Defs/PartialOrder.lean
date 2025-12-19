@@ -48,6 +48,15 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+/-- A variant of `Preorder.mk` which allows `to_dual` to dualize a `Preorder` instance. -/
+@[to_dual existing mk]
+def Preorder.mk' [LE α] [LT α] (le_refl : ∀ a : α, a ≤ a)
+    (ge_trans : ∀ a b c : α, b ≤ a → c ≤ b → c ≤ a)
+    (lt_iff_le_not_ge : ∀ a b : α, b < a ↔ b ≤ a ∧ ¬a ≤ b) : Preorder α where
+  le_refl := le_refl
+  le_trans a b c h₁ h₂ := ge_trans c b a h₂ h₁
+  lt_iff_le_not_ge a b := lt_iff_le_not_ge b a
+
 instance [Preorder α] : Std.LawfulOrderLT α where
   lt_iff := Preorder.lt_iff_le_not_ge
 
@@ -147,6 +156,8 @@ instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
+@[deprecated (since := "2025-12-09")] alias decidableGTOfDecidableGE := decidableLT'OfDecidableLE'
+
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
@@ -178,6 +189,12 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+/-- A variant of `PartialOrder.mk` which allows `to_dual` to dualize a `PartialOrder` instance. -/
+@[to_dual existing mk]
+def PartialOrder.mk' [Preorder α] (le_antisymm : ∀ a b : α, b ≤ a → a ≤ b → a = b) :
+    PartialOrder α where
+  le_antisymm a b h₁ h₂ := (le_antisymm b a h₁ h₂).symm
+
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
 
@@ -208,6 +225,9 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
     if hab : a ≤ b then
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
+
+@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableGE := decidableEqOfDecidableLE'
+@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableLE' := decidableEqOfDecidableLE'
 
 -- See Note [decidable namespace]
 @[to_dual Decidable.lt_or_eq_of_le']

@@ -143,7 +143,7 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
   -- Porting note: Inserted universe hint below
-  rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
+  rw [← toNat_lift, (lift_mk_eq.{_, _, v}).mpr ⟨e⟩, toNat_lift]
 
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
 

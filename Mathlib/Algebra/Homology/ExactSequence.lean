@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- The composable arrows associated to a short complex. -/
 @[simps!]
@@ -57,6 +57,7 @@ theorem ShortComplex.mapToComposableArrows_app_1 {S₁ S₂ : ShortComplex C} (�
 theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
     (ShortComplex.mapToComposableArrows φ).app 2 = φ.τ₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
     (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by
@@ -72,6 +73,7 @@ namespace ComposableArrows
 
 variable {n : ℕ} (S : ComposableArrows C n)
 
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- `F : ComposableArrows C n` is a complex if all compositions of
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
@@ -105,7 +107,7 @@ lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by omega
+  zero i hi := by lia
 
 variable (S)
 
@@ -192,7 +194,7 @@ lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
   toIsComplex := S.isComplex₁
-  exact i hi := by exfalso; omega
+  exact i hi := by exfalso; lia
 
 lemma isComplex₂_iff (S : ComposableArrows C 2) :
     S.IsComplex ↔ S.map' 0 1 ≫ S.map' 1 2 = 0 := by
@@ -304,7 +306,7 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
   rw [exact_iff_δlast]
   constructor <;> assumption
 
-lemma Exact.isIso_map' {C : Type*} [Category C] [Preadditive C]
+lemma Exact.isIso_map' {C : Type*} [Category* C] [Preadditive C]
     [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)
     (h₀ : S.map' k (k + 1) = 0) (h₁ : S.map' (k + 2) (k + 3) = 0) :
     IsIso (S.map' (k + 1) (k + 2)) := by
