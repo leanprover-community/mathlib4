@@ -298,7 +298,7 @@ theorem continuousWithinAt_diff_self :
 
 /-- A function is continuous at a point `x` within a set `s` if `x` is not an accumulated point of
 `s`. -/
-lemma ContinuousWithinAt.of_isolated (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
+lemma ContinuousWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : ContinuousWithinAt f s x := by
   rw [← continuousWithinAt_diff_self]
   simp_all [ContinuousWithinAt, AccPt, ← nhdsWithin_inter', Set.diff_eq, Set.inter_comm]
 
@@ -306,6 +306,11 @@ lemma ContinuousWithinAt.of_isolated (h : ¬AccPt x (𝓟 s)) : ContinuousWithin
 theorem continuousWithinAt_compl_self :
     ContinuousWithinAt f {x}ᶜ x ↔ ContinuousAt f x := by
   rw [compl_eq_univ_diff, continuousWithinAt_diff_self, continuousWithinAt_univ]
+
+/-- A function is continuous at a point `x` if `x` is isolated. -/
+lemma ContinuousAt.of_not_accPt (h : ¬AccPt x (𝓟 {x}ᶜ)) : ContinuousAt f x := by
+  rw [← continuousWithinAt_compl_self]
+  exact ContinuousWithinAt.of_not_accPt h
 
 theorem ContinuousOn.mono (hf : ContinuousOn f s) (h : t ⊆ s) :
     ContinuousOn f t := fun x hx => (hf x (h hx)).mono_left (nhdsWithin_mono _ h)
