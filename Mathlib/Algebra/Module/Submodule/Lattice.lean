@@ -176,9 +176,11 @@ instance : InfSet (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
+set_option backward.privateInPublic true in
 private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
   Set.biInter_subset_of_mem
 
+set_option backward.privateInPublic true in
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
@@ -189,6 +191,8 @@ instance : Min (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with

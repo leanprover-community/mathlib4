@@ -150,12 +150,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
+set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
   by_contra! hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
   le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
@@ -336,6 +339,7 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
 
 open scoped symmDiff
 
+set_option backward.privateInPublic true in
 private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
     (ofColex s ∆ ofColex t).Nonempty := by
   simpa
@@ -363,6 +367,8 @@ lemma toColex_le_toColex_iff_max'_mem :
     refine ⟨_, h hst, ?_, le_max' _ _ <| mem_symmDiff.2 <| Or.inl ⟨has, hat⟩⟩
     simpa [mem_symmDiff, h hst] using max'_mem _ <| symmDiff_nonempty.2 hst
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_iff_max'_mem {s t : Colex (Finset α)} :
     s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
   toColex_le_toColex_iff_max'_mem
@@ -371,6 +377,8 @@ lemma toColex_lt_toColex_iff_max'_mem :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
   rw [lt_iff_le_and_ne, toColex_le_toColex_iff_max'_mem]; aesop
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma lt_iff_max'_mem {s t : Colex (Finset α)} :
     s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop

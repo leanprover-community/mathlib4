@@ -20,6 +20,9 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 
 public meta section
 
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
+
 namespace Mathlib.Tactic.TFAE
 
 /-! ### Parsing and syntax

@@ -85,6 +85,7 @@ set_option quotPrecheck false
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.ToType
 
+set_option backward.privateInPublic true in
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
 
@@ -236,6 +237,7 @@ instance : InverseSystem (embFunctor F E) where
   map_self _ _ := rfl
   map_map _ _ _ _ _ _ := rfl
 
+set_option backward.privateInPublic true in
 private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i).ne'
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/

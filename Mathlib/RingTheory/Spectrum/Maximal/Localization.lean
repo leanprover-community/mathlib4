@@ -17,6 +17,9 @@ Localization results.
 
 @[expose] public section
 
+set_option backward.privateInPublic false
+set_option backward.privateInPublic.warn true
+
 noncomputable section
 
 variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]

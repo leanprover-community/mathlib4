@@ -46,8 +46,10 @@ namespace leftExactFunctorForgetEquivalence
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts
 
+set_option backward.privateInPublic true in
 private noncomputable local instance : BraidedCategory C := .ofCartesianMonoidalCategory
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
