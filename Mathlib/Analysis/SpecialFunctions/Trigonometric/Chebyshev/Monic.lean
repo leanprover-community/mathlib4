@@ -129,7 +129,6 @@ theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
      sSup { |P.eval x| | x ∈ Set.Icc (-1) 1 } = 1 / 2 ^ (n - 1) ↔
      P = (1 / 2 ^ (n - 1) : ℝ) • (T ℝ n) :=
     by
-  have hnℤ := (Int.ofNat_ne_zero.mpr hn)
   constructor
   case mp =>
     intro hsSup
@@ -187,7 +186,7 @@ theorem sup_abs_eval_eq_iff_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
     apply eq_of_le_of_ge
     · refine csSup_le (by use |P.eval 1|; grind) (fun x hx => ?_)
       obtain ⟨θ, hθ, hx⟩ := Set.mem_setOf.mp hx
-      have := (T_real_abs_eval_le_one_iff_abs_le_one hnℤ θ).mp (abs_le.mpr hθ)
+      have := (abs_eval_T_real_le_one_iff (Int.ofNat_ne_zero.mpr hn) θ).mp (abs_le.mpr hθ)
       aesop
     · refine le_csSup (bddAbove P) ⟨1, ⟨by grind, by aesop⟩⟩
 
