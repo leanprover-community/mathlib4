@@ -111,7 +111,7 @@ lemma mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x
 @[deprecated (since := "2025-05-09")] alias mul' := fun_mul
 
 /-- Finite products of meromorphic functions are meromorphic. -/
-@[fun_prop] -- TODO: to_fun does not generate the applied declaration
+@[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
 theorem prod (h : ∀ σ, MeromorphicAt (F σ) x) :
     MeromorphicAt (∏ n ∈ s, F n) x := by
   classical
@@ -131,7 +131,7 @@ theorem fun_prod (h : ∀ σ, MeromorphicAt (F σ) x) :
   simp
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
-@[fun_prop] -- TODO: to_fun does not do anything here
+@[fun_prop] -- TODO: to_fun generates an unreadable statement, see #32866
 theorem sum (h : ∀ σ, MeromorphicAt (G σ) x) :
     MeromorphicAt (∑ n ∈ s, G n) x := by
   classical
@@ -496,14 +496,23 @@ include hs in
 
 include hf in
 /-- Derivatives of meromorphic functions are meromorphic. -/
-@[to_fun] -- TODO: copy generated doc-string, check statement!
+-- TODO: to_fun generates the same statement; missing push tag
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
+/-- Derivatives of meromorphic functions are meromorphic. -/
+theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
+
+include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
-@[to_fun] -- TODO: copy generated doc-string, check statement!
+-- TODO: to_fun generates the same statement; missing push tag
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
+
+include hf in
+/-- Iterated derivatives of meromorphic functions are meromorphic. -/
+theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
+  MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
 
 end arithmetic
 

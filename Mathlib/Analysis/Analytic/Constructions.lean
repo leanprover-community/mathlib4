@@ -588,18 +588,11 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
+@[to_fun]
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
   (analyticAt_smul _).comp₂ hf hg
-
--- TODO: using `to_fun` on `AnalyticAt.mul` generates the same lemmas as `smul`, not this one
-/-- Scalar multiplication of one analytic function by another. -/
-@[fun_prop]
-lemma AnalyticAt.fun_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
-    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
-  hf.smul hg
 
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
@@ -621,7 +614,7 @@ lemma AnalyticWithinAt.mul {f g : E → A} {s : Set E} {z : E}
   (analyticAt_mul _).comp₂_analyticWithinAt hf hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
-@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to AnalyticAt.fun_mul
+@[to_fun (attr := fun_prop)]
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
   (analyticAt_mul _).comp₂ hf hg
@@ -639,7 +632,7 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
     (n : ℕ) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
@@ -652,27 +645,27 @@ lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithi
     exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to the generated lemma
+@[to_fun (attr := fun_prop)]
 lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
     AnalyticAt 𝕜 (f ^ n) z := by
   rw [← analyticWithinAt_univ] at hf ⊢
   exact hf.pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
     AnalyticOn 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
@@ -680,14 +673,14 @@ lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
     AnalyticAt 𝕜 (f ^ n) z := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
     (hn : 0 ≤ n) :
     AnalyticOn 𝕜 (f ^ n) s := by
@@ -695,7 +688,7 @@ lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : Analyt
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-@[to_fun] -- TODO: copy the doc-string to the generated lemma
+@[to_fun]
 lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
     (hn : 0 ≤ n) :
     AnalyticOnNhd 𝕜 (f ^ n) s := by
