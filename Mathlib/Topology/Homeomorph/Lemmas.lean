@@ -280,7 +280,7 @@ def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X whe
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
 `Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]
-def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
     dsimp [Equiv.sumArrowEquivProdArrow]
@@ -545,7 +545,7 @@ lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}
     (hf : Bijective f) {g : (i : ι) → X i → Y (f i)} (hg : ∀ i, IsHomeomorph (g i)) :
     IsHomeomorph (Sigma.map f g) := by
-  simp_rw [isHomeomorph_iff_isEmbedding_surjective,] at hg ⊢
+  simp_rw [isHomeomorph_iff_isEmbedding_surjective] at hg ⊢
   exact ⟨(isEmbedding_sigmaMap hf.1).2 fun i ↦ (hg i).1, hf.2.sigma_map fun i ↦ (hg i).2⟩
 
 lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]

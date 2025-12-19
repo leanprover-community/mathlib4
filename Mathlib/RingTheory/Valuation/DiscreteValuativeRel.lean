@@ -34,7 +34,7 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
   · rintro ⟨e⟩
     let x := e.symm (exp (-1))
     have hx0 : x ≠ 0 := by simp [x]
-    have hx1 : x < 1 := by simp [- exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
+    have hx1 : x < 1 := by simp [-exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
     refine ⟨⟨x, hx1, fun y hy ↦ ?_⟩, ⟨x, hx0, hx1.ne⟩, .comap e.toMonoidHom e.strictMono⟩
     rcases eq_or_ne y 0 with rfl | hy0
     · simp
