@@ -719,6 +719,8 @@ section SymEquiv
 
 attribute [local instance] List.Vector.Perm.isSetoid
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
@@ -734,6 +736,8 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
           rw [h₁, h₂]
           first | done | constructor }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
 def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
@@ -807,6 +811,8 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 /-! ### The other element of an element of the symmetric square -/
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
 -/
@@ -815,6 +821,8 @@ private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
 
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `Mem.other`. -/
 @[aesop norm unfold (rule_sets := [Sym2])]
