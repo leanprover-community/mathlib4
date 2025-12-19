@@ -330,8 +330,8 @@ lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
   simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
 
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
-    haveI : NeZero n := k.neZero
-    k ≠ 0 → 1 ≤ k := by
+    haveI := k.neZero
+    (hk : k ≠ 0) → 1 ≤ k := by
   have : NeZero n := k.neZero
   intro hk
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
@@ -340,9 +340,9 @@ lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
   | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
 lemma val_sub_one_of_ne_zero {i : Fin n} :
-    haveI : NeZero n := i.neZero
+    haveI := i.neZero
     i ≠ 0 → (i - 1).val = i - 1 := by
-  have : NeZero n := i.neZero
+  have := i.neZero
   intro hi
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   rw [Fin.sub_val_of_le (one_le_of_ne_zero hi), Fin.val_one', Nat.mod_eq_of_lt
@@ -369,9 +369,9 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 /-- Converting the value of a `Fin n` to `Fin n` results in the same value. -/
 @[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} (a : Fin n) :
-    have : NeZero n := a.neZero
+    have := a.neZero
     (a.val : Fin n) = a :=
-  have : NeZero n := a.neZero
+  have := a.neZero
   Fin.ext <| val_cast_of_lt a.isLt
 
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
@@ -517,7 +517,7 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 
 theorem val_add_one_of_lt' {n : ℕ} {i : Fin n} (h : i + 1 < n) :
-    haveI : NeZero n := i.neZero
+    haveI := i.neZero
     (i + 1).val = i.val + 1 := by
   simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
