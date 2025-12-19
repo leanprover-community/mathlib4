@@ -11,6 +11,14 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Construc
 /-!
 # The left derivability structure attached to a model category
 
+We show that the inclusion of the full subcategory of cofibrant objects
+in a model category is a left derivability structure. This is the dual to
+Corollaire 10.10 in [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
+
+## References
+
+* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
+
 -/
 
 universe v u
