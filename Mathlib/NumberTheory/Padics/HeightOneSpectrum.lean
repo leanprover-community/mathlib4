@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Isomorphisms between `adicCompletion ℚ` and `ℚ_[p]`
@@ -131,9 +130,8 @@ open Valuation
 noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=
   (valuation_equiv_padicValuation v).uniformEquiv
-    (fun γ ↦ by obtain ⟨r, hr⟩ := v.valuation_surjective ℚ γ; exact ⟨r, 1, by aesop⟩)
-    (fun γ ↦ by obtain ⟨r, hr⟩ := surjective_padicValuation (primesEquiv v) γ
-                exact ⟨r, 1, by aesop⟩)
+    (exists_div_eq_of_surjective (v.valuation_surjective ℚ))
+    (exists_div_eq_of_surjective (surjective_padicValuation (primesEquiv v)))
 
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :

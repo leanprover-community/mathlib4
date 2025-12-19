@@ -210,7 +210,7 @@ theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
   exact ⟨r, 1, by simp [hr]⟩
 
 open UniformSpace.Completion in
-theorem valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
+theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) (hv : Function.Surjective v)
     (hw : Function.Surjective w) {x : v.Completion} :
     Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (exists_div_eq_of_surjective hv)
