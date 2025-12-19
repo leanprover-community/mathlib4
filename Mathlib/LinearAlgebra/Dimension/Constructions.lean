@@ -552,6 +552,8 @@ end SubalgebraRank
 
 section Extend
 
+namespace Module.Basis
+
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
     {W : Submodule R V} {m n : Type*}
     (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
@@ -559,102 +561,73 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- Given a basis `bW` of a submodule of an `R`-module `V`,
 and a basis `bQ` of the quotient `V ⧸ W`,
 this is a basis of `V` combining `bW` and a lift of `bQ`. -/
-noncomputable def basisSum :
+noncomputable def sumQuot :
     Basis (m ⊕ n) R V := by
   let b : m ⊕ n → V := Sum.elim (fun i ↦ bW i) ((Function.surjInv W.mkQ_surjective) ∘ bQ)
-  have bl : b ∘ Sum.inl = W.subtype ∘ bW := rfl
   have br : W.mkQ ∘ b ∘ Sum.inr = bQ := by
     ext j
-    simp only [Function.comp_apply, b, Sum.elim_inr, Function.comp_apply]
-    rw [Function.rightInverse_surjInv W.mkQ_surjective]
+    apply Function.rightInverse_surjInv W.mkQ_surjective
   apply Basis.mk (v := b)
-  · apply  LinearIndependent.sumElim_of_quotient
+  · apply LinearIndependent.sumElim_of_quotient
     · exact bW.linearIndependent
     · convert bQ.linearIndependent
-  · intro x _
-    simp only [b, Set.Sum.elim_range, Submodule.span_union]
-    have := bW.span_eq
-    rw [show Set.range (fun i ↦ (bW i : V)) =
-      W.subtype '' (Set.range (fun i ↦ bW i)) from by aesop]
-    rw [← Submodule.map_span, bW.span_eq, Submodule.map_top, Submodule.range_subtype]
-    generalize_proofs hQ
-    suffices W.mkQ x ∈ Submodule.map W.mkQ
-      (Submodule.span R (Set.range (Function.surjInv hQ ∘ ⇑bQ))) by
-      obtain ⟨y, hy, hxy⟩ := this
-      rw [eq_comm, ← sub_eq_zero, ← map_sub, ← LinearMap.mem_ker, W.ker_mkQ] at hxy
-      rw [← sub_add_cancel x y]
-      exact add_mem (Submodule.mem_sup_left hxy) (Submodule.mem_sup_right hy)
-    rw [Submodule.map_span, ← Set.range_comp]
-    convert Submodule.mem_top
-    rw [← bQ.span_eq]
+  · unfold b
+    rw [Set.Sum.elim_range, Submodule.span_union,
+      show Set.range (fun i ↦ (bW i : V)) = W.subtype '' (Set.range (fun i ↦ bW i)) by aesop,
+      ← Submodule.map_span, bW.span_eq, Submodule.map_top, Submodule.range_subtype, top_le_iff,
+      ← Submodule.map_mkQ_eq_top, Submodule.map_span, ← Set.range_comp, ← bQ.span_eq]
     congr 2
 
 @[simp]
-theorem basisSum_inl (i : m) :
-    basisSum bW bQ (Sum.inl i) = bW i := by
-  simp [basisSum]
+theorem sumQuot_inl (i : m) :
+    sumQuot bW bQ (Sum.inl i) = bW i := by
+  simp [sumQuot]
 
 @[simp]
-theorem basisSum_inr (j : n) :
-    W.mkQ (basisSum bW bQ (Sum.inr j)) = bQ j := by
-  simp only [basisSum, Basis.coe_mk, Function.comp_apply, Sum.elim_inr, Function.comp_apply]
-  rw [Function.rightInverse_surjInv W.mkQ_surjective]
-
-theorem basisSum_repr_left (i : m) :
-    (basisSum bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
-  rw [← Module.Basis.apply_eq_iff, basisSum_inl]
+theorem sumQuot_inr (j : n) :
+    Submodule.Quotient.mk (sumQuot bW bQ (Sum.inr j)) = bQ j := by
+  simpa only [sumQuot, Basis.coe_mk, Sum.elim_inr, Function.comp_apply, ← W.mkQ_apply]
+    using Function.rightInverse_surjInv W.mkQ_surjective _
 
 @[simp]
-theorem basisSum_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
-    (basisSum bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i := by
-  suffices ∀ w : W,
-    (basisSum bW bQ).repr (W.subtype w) (Sum.inl i) = bW.repr w i by
-    exact this ⟨v, hv⟩
+theorem sumQuot_repr_left (i : m) :
+    (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
+  rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
+
+theorem sumQuot_repr_inl (w : W) (i : m) :
+    (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical
-  intro w
-  simp only [← Module.Basis.coord_apply]
-  rw [← LinearMap.comp_apply]
-  revert w
-  rw [← LinearMap.ext_iff]
-  apply bW.ext
-  intro j
-  simp [basisSum_repr_left, Finsupp.single_apply]
+  refine Eq.symm <| (bW.repr_apply_eq
+      (fun w i => (sumQuot bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
+  aesop (add simp Finsupp.single_apply)
 
 @[simp]
-theorem basisSum_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = 0 := by
-  classical
-  suffices ∀ w : W,
-    (basisSum bW bQ).repr (W.subtype w) (Sum.inr j) = 0 by
-    exact this ⟨v, hv⟩
-  intro w
-  simp only [← Module.Basis.coord_apply]
-  rw [← LinearMap.comp_apply]
-  rw [← LinearMap.zero_apply (σ₁₂ := RingHom.id R) w]
-  revert w
-  rw [← LinearMap.ext_iff]
-  apply bW.ext
-  intro i
-  simp [basisSum_repr_left]
+theorem sumQuot_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
+    (sumQuot bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i :=
+  sumQuot_repr_inl bW bQ ⟨v, hv⟩ i
 
 @[simp]
-theorem basisSum_repr_inr (v : V) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
+theorem sumQuot_repr_inr (v : V) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
   simp only [← Module.Basis.coord_apply]
   rw [← LinearMap.comp_apply]
   revert v
   rw [← LinearMap.ext_iff]
-  apply (basisSum bW bQ).ext
+  apply (sumQuot bW bQ).ext
   intro x
   induction x with
   | inl i =>
-    simp [basisSum_inl, LinearMap.comp_apply,
-      show W.mkQ (bW i) = 0 from by
-      rw [← LinearMap.mem_ker, Submodule.ker_mkQ]
-      exact Submodule.coe_mem (bW i)]
+    simp [sumQuot_inl, LinearMap.comp_apply,
+      (Quotient.mk_eq_zero W).mpr (Submodule.coe_mem (bW i))]
   | inr i =>
     classical
-    rw [LinearMap.comp_apply, basisSum_inr]
-    simp [Finsupp.single_apply]
+    simp [LinearMap.comp_apply, sumQuot_inr, Finsupp.single_apply]
+
+theorem sumQuot_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = 0 := by
+  suffices W.mkQ v = 0 by simp [sumQuot_repr_inr, this]
+  aesop
+
+end Module.Basis
 
 end Extend

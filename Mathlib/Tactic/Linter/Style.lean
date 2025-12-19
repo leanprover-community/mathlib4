@@ -75,16 +75,17 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) is set.
+`synthInstance.maxHeartbeats` option) or the `linter.flexible` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
 
 `maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
 explaining the need for them; another linter enforces this).
+The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
-**How to fix this?** The `maxHeartbeats` options can be scoped to individual commands, if they
-are truly necessary.
+**How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
+individual commands, if they are truly necessary.
 
 The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
 so you can simply remove them. (Some tests will intentionally use one of these options;
@@ -104,7 +105,7 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
                please remove 'set_option {name}'."
-        else if name.components.contains `maxHeartbeats then
+        else if name.components.contains `maxHeartbeats || name == `linter.flexible then
           Linter.logLint linter.style.setOption head m!"Unscoped option {name} is not allowed:\n\
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
