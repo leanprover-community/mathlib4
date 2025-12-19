@@ -9,20 +9,21 @@ public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Isomorphisms between `adicCompletion ℚ` and `ℚ_[p]`
 
-If `v : HeightOneSpectrum (𝓞 ℚ)`, then `v.adicCompletion ℚ` is the uniform space completion of `ℚ`
-with respect to the `v`-adic valuation, which is defined more generally via Dedekind domains and
-their fields of fractions. On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the
-completion of `ℚ` with respect to the `p`-adic norm using the completion of Cauchy sequences.
-This file constructs continuous `ℚ`-algebra` isomorphisms between the two, as well as continuous
-`ℤ`-algebra isomorphisms for their respective rings of integers.
+Let `R` have field of fractions `ℚ`. If `v : HeightOneSpectrum R`, then `v.adicCompletion ℚ` is
+the uniform space completion of `ℚ` with respect to the `v`-adic valuation.
+On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the completion of `ℚ` with respect
+to the `p`-adic norm using the completion of Cauchy sequences. This file constructs continuous
+`ℚ`-algebra` isomorphisms between the two, as well as continuous `ℤ`-algebra isomorphisms for their
+respective rings of integers.
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
 ```
-HeightOneSpectrum (𝓞 ℚ) <----------->  Nat.Primes
+HeightOneSpectrum R <----------->  Nat.Primes
           |                               |
           |                               |
           v                               v
@@ -35,7 +36,7 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
 
 ## Main definitions
 - `Rat.HeightOneSpectrum.primesEquiv` : the equivalence between height-one prime ideals of
-  `𝓞 ℚ` and prime numbers in `ℕ`.
+  `R` and prime numbers in `ℕ`.
 - `Rat.HeightOneSpectrum.padicEquiv v` : the continuous `ℚ`-algebra isomorphism
   `v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v]`.
 - `Padic.adicCompletionEquiv p` : the continuous `ℚ`-algebra isomorphism
@@ -52,57 +53,76 @@ open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
-namespace Rat.HeightOneSpectrum
+namespace Rat.IsDedekindDomain
 
-/-- The generator in `ℕ` of a height-one prime ideal in `𝓞 ℚ`. -/
-noncomputable def natGenerator (v : HeightOneSpectrum (𝓞 ℚ)) : ℕ :=
-  Submodule.IsPrincipal.generator (v.asIdeal.map ringOfIntegersEquiv) |>.natAbs
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+  [Module.Finite ℤ R]
 
-theorem span_natGenerator (v : HeightOneSpectrum (𝓞 ℚ)) :
-    Ideal.span {(natGenerator v : ℤ)} = v.asIdeal.map ringOfIntegersEquiv := by
+theorem algebraMap_surjective : Function.Surjective (algebraMap ℤ R) := by
+  intro x
+  obtain ⟨y, hy⟩ := IsIntegrallyClosed.isIntegral_iff.1 <|
+    IsIntegral.algebraMap (B := ℚ) (IsIntegralClosure.isIntegral ℤ ℚ x)
+  exact ⟨y, IsFractionRing.injective R ℚ <|
+    by simp only [← IsScalarTower.algebraMap_apply ℤ R ℚ, hy]⟩
+
+noncomputable def intEquiv [Module.Free ℤ R] : R ≃+* ℤ :=
+  RingEquiv.ofBijective _ ⟨FaithfulSMul.algebraMap_injective ℤ R, algebraMap_surjective R⟩ |>.symm
+
+end IsDedekindDomain
+
+namespace HeightOneSpectrum
+
+open Rat.IsDedekindDomain
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+  [Module.Finite ℤ R] [Module.Free ℤ R]
+
+noncomputable def natGenerator (v : HeightOneSpectrum R) : ℕ :=
+  Submodule.IsPrincipal.generator (v.asIdeal.map <| intEquiv R) |>.natAbs
+
+theorem span_natGenerator (v : HeightOneSpectrum R) :
+    Ideal.span {(natGenerator v : ℤ)} = v.asIdeal.map (intEquiv R) := by
   simp [natGenerator]
 
-theorem natGenerator_dvd_iff (v : HeightOneSpectrum (𝓞 ℚ)) {n : ℕ} :
-    natGenerator v ∣ n ↔ ↑n ∈ v.asIdeal.map ringOfIntegersEquiv := by
+theorem natGenerator_dvd_iff (v : HeightOneSpectrum R) {n : ℕ} :
+    natGenerator v ∣ n ↔ ↑n ∈ v.asIdeal.map (intEquiv R) := by
   rw [← span_natGenerator, Ideal.mem_span_singleton]
   exact Int.ofNat_dvd.symm
 
-theorem prime_natGenerator (v : HeightOneSpectrum (𝓞 ℚ)) : Nat.Prime (natGenerator v) :=
+theorem prime_natGenerator (v : HeightOneSpectrum R) : Nat.Prime (natGenerator v) :=
   Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
-    ((Ideal.map_eq_bot_iff_of_injective ringOfIntegersEquiv.injective).not.2 v.ne_bot)
+    ((Ideal.map_eq_bot_iff_of_injective (intEquiv R).injective).not.2 v.ne_bot)
 
-local instance (p : Nat.Primes) : (Ideal.span {(p.1 : ℤ)}).IsPrime :=
-  (Ideal.span_singleton_prime (by simp [p.2.ne_zero])).2 <| Nat.prime_iff_prime_int.1 p.2
-
-/-- The equivalence between height-one prime ideals of `𝓞 ℚ` and primes in `ℕ`. -/
-noncomputable def primesEquiv : HeightOneSpectrum (𝓞 ℚ) ≃ Nat.Primes where
+/-- The equivalence between height-one prime ideals of `R` and primes in `ℕ`. -/
+noncomputable def primesEquiv : HeightOneSpectrum R ≃ Nat.Primes where
   toFun v := ⟨natGenerator v, prime_natGenerator v⟩
   invFun p :=
-    have h : Prime ((Ideal.span {(p.1 : ℤ)}).map ringOfIntegersEquiv.symm) :=
+    have h : Prime ((Ideal.span {(p.1 : ℤ)}).map (intEquiv R).symm) :=
       map_prime_of_equiv _ (by simp [← Nat.prime_iff_prime_int, p.2]) (by simp [p.2.ne_zero])
     .ofPrime h
   left_inv v := by
     simp only [Ideal.map_symm]
     congr
-    rw [← v.asIdeal.comap_map_of_bijective _ ringOfIntegersEquiv.bijective, ← span_natGenerator]
+    rw [← v.asIdeal.comap_map_of_bijective _ (intEquiv R).bijective, ← span_natGenerator]
   right_inv p := by
     simp only [Ideal.map_symm, natGenerator, HeightOneSpectrum.ofPrime_asIdeal]
     congr
-    simp [Ideal.map_comap_of_surjective _ ringOfIntegersEquiv.surjective,
+    simp [Ideal.map_comap_of_surjective _ (intEquiv R).surjective,
       Int.associated_iff_natAbs.1 (Submodule.IsPrincipal.associated_generator_span_self _)]
 
-theorem valuation_equiv_padicValuation (v : HeightOneSpectrum (𝓞 ℚ)) :
+theorem valuation_equiv_padicValuation (v : HeightOneSpectrum R) :
     (v.valuation ℚ).IsEquiv (padicValuation (primesEquiv v)) := by
-  simp [Valuation.isEquiv_iff_val_le_one, padicValuation_le_one_iff, valuation_le_one_iff_den,
-    primesEquiv, natGenerator_dvd_iff, ← Ideal.apply_mem_of_equiv_iff (f := ringOfIntegersEquiv)]
+  simp [primesEquiv, Valuation.isEquiv_iff_val_le_one, valuation_le_one_iff_den,
+    padicValuation_le_one_iff, natGenerator_dvd_iff,
+    map_natCast (intEquiv R) _ ▸ Ideal.apply_mem_of_equiv_iff]
 
 open Valuation
 
 /-- The uniform space isomorphism `ℚ ≃ᵤ ℚ`, where the LHS has the uniformity from
 `HeightOneSpectrum.valuation ℚ v` and the RHS has uniformity from
 `Rat.padicValuation (natGenerator v)`, for a height-one prime ideal
-`v : HeightOneSpectrum (𝓞 ℚ)`. -/
-noncomputable def withValEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
+`v : HeightOneSpectrum R`. -/
+noncomputable def withValEquiv (v : HeightOneSpectrum R) :
     WithVal (v.valuation ℚ) ≃ᵤ WithVal (padicValuation (primesEquiv v)) :=
   (valuation_equiv_padicValuation v).uniformEquiv
     (fun γ ↦ by obtain ⟨r, hr⟩ := v.valuation_surjective ℚ γ; exact ⟨r, 1, by aesop⟩)
@@ -110,7 +130,7 @@ noncomputable def withValEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
                 exact ⟨r, 1, by aesop⟩)
 
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
-noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
+noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
   __ := (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
@@ -119,7 +139,7 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
-noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
+noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
   __ := let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
@@ -141,7 +161,7 @@ v.adicCompletionIntegers ℚ  ----->  ℤ_[primesEquiv v]
 v.adicCompletion ℚ  ------------->  ℚ_[primesEquiv v]
 ```
 commutes. -/
-theorem adicCompletionIntegers.coe_padicIntEquiv_apply (v : HeightOneSpectrum (𝓞 ℚ))
+theorem adicCompletionIntegers.coe_padicIntEquiv_apply (v : HeightOneSpectrum R)
     (x : v.adicCompletionIntegers ℚ) : padicIntEquiv v x = adicCompletion.padicEquiv v x := rfl
 
 /-- The diagram
@@ -153,11 +173,11 @@ v.adicCompletionIntegers ℚ  <-----  ℤ_[primesEquiv v]
 v.adicCompletion ℚ  <-------------  ℚ_[primesEquiv v]
 ```
 commutes. -/
-theorem adicCompletionIntegers.coe_padicIntEquiv_symm_apply (v : HeightOneSpectrum (𝓞 ℚ))
+theorem adicCompletionIntegers.coe_padicIntEquiv_symm_apply (v : HeightOneSpectrum R)
     (x : ℤ_[primesEquiv v]) : (adicCompletionIntegers.padicIntEquiv v).symm x =
       (adicCompletion.padicEquiv v).symm x := rfl
 
-theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum (𝓞 ℚ)) :
+theorem adicCompletion.padicEquiv_bijOn (v : HeightOneSpectrum R) :
     Set.BijOn (padicEquiv v) (v.adicCompletionIntegers ℚ) (subring (primesEquiv v)) := by
   refine ⟨fun x hx ↦ ?_, (padicEquiv v).injective.injOn, fun y hy ↦ ?_⟩
   · rw [← adicCompletionIntegers.coe_padicIntEquiv_apply v ⟨x, hx⟩]
@@ -171,10 +191,13 @@ open Rat.HeightOneSpectrum
 
 namespace Padic
 
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R]
+  [Algebra R ℚ] [IsFractionRing R ℚ] [Module.Finite ℤ R]
+
 /-- The continuous `ℚ`-algebra isomorphism between `ℚ_[p]` and
 `(primesEquiv.symm p).adicCompletion ℚ`. -/
 noncomputable def adicCompletionEquiv (p : Nat.Primes) :
-    ℚ_[p] ≃A[ℚ] (primesEquiv.symm p).adicCompletion ℚ := by
+    ℚ_[p] ≃A[ℚ] ((primesEquiv (R := R)).symm p).adicCompletion ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
     (adicCompletion.padicEquiv (primesEquiv.symm p)).symm
 
@@ -184,10 +207,13 @@ namespace PadicInt
 
 open Padic
 
+variable (R : Type*) [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R]
+  [Algebra R ℚ] [IsFractionRing R ℚ] [Module.Finite ℤ R]
+
 /-- The continuous `ℤ`-algebra isomorphism between `ℤ_[p]` and
 `(primesEquiv.symm p).adicCompletionIntegers ℚ`. -/
 noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
-    ℤ_[p] ≃A[ℤ] (primesEquiv.symm p).adicCompletionIntegers ℚ := by
+    ℤ_[p] ≃A[ℤ] ((primesEquiv (R := R)).symm p).adicCompletionIntegers ℚ := by
   apply (ContinuousAlgEquiv.cast (primesEquiv.apply_symm_apply p).symm).trans
     (adicCompletionIntegers.padicIntEquiv (primesEquiv.symm p)).symm
 
@@ -201,7 +227,7 @@ noncomputable def adicCompletionIntegersEquiv (p : Nat.Primes) :
 ```
 commutes. -/
 theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
-    (adicCompletionIntegersEquiv p x) = adicCompletionEquiv p x := by
+    (adicCompletionIntegersEquiv R p x) = adicCompletionEquiv R p x := by
   simp only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.trans_apply,
     adicCompletionIntegers.coe_padicIntEquiv_symm_apply,
     adicCompletionEquiv, ContinuousAlgEquiv.trans_apply, ContinuousAlgEquiv.cast_apply,
@@ -221,7 +247,7 @@ theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
 commutes. -/
 theorem coe_adicCompletionIntegersEquiv_symm_apply (p : Nat.Primes)
     (x : (primesEquiv.symm p).adicCompletionIntegers ℚ) :
-    (adicCompletionIntegersEquiv p).symm x = (adicCompletionEquiv p).symm x := by
+    (adicCompletionIntegersEquiv R p).symm x = (adicCompletionEquiv R p).symm x := by
   simp only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.symm_trans_apply,
     ContinuousAlgEquiv.symm_symm, adicCompletionEquiv, Equiv.cast_apply, eq_cast_iff_heq,
     ← adicCompletionIntegers.coe_padicIntEquiv_apply, ContinuousAlgEquiv.cast_symm_apply]
