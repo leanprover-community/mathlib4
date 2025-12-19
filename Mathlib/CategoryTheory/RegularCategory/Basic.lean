@@ -136,7 +136,6 @@ noncomputable def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f wher
   I := coequalizer (pullback.fst f f) (pullback.snd f f)
   m := coequalizer.desc f pullback.condition
   e := coequalizer.π (pullback.fst f f) (pullback.snd f f)
-  fac := coequalizer.π_desc f _
 
 instance : IsRegularEpi (strongEpiMonoFactorisation f).e := by
   dsimp [strongEpiMonoFactorisation]
