@@ -495,7 +495,7 @@ lemma padicValNat_le_self {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat
   rcases dvd with ⟨k, hk⟩
   have : padicValNat 2 k < k := by calc
     _ ≤ log 2 k := padicValNat_le_nat_log k
-    _ < _ := log_lt_self 2 (by omega)
+    _ < _ := log_lt_self 2 (by lia)
   grind [padicValNat.mul, padicValNat.self]
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff

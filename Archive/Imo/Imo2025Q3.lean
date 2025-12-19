@@ -10,10 +10,10 @@ import Mathlib.Tactic.Simproc.Factors
 /-!
 # IMO 2025 Q3
 
-Let $\mathbb{N}+$ denote the set of positive integers. A function $f: \mathbb{N}+ \rightarrow
-\mathbb{N}+$ is said to be bonza if $f(a)$ divides $b^a-f(b)^{f(a)}$ for all positive integers $a$
-and $b$. Determine the smallest real constant $c$ such that $f(n) \leq c n$ for all bonza functions
-$f$ and all positive integers $n$.
+Let `ℕ+` denote the set of positive integers. A function `f: ℕ+ → ℕ+` is said to be bonza if
+`f(a) ∣ b ^ a - (f b)^ (f a)` for all positive integers `a` and `b`.
+Determine the smallest real constant `c` such that `f(n) ≤ c * n` for all bonza functions `f` and
+all positive integers `n`.
 
 ## Solution
 
@@ -42,7 +42,7 @@ namespace bonza
 
 variable {f : ℕ → ℕ}
 
-/-- For each bonza function $f$, we have $f n | n ^ n$ -/
+/-- For each bonza function `f`, we have `f n ∣ n ^ n` -/
 lemma apply_dvd_pow (hf : bonza f) {n : ℕ} (hn : 0 < n) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n := (f n : ℤ).dvd_refl.pow (ne_zero_of_lt (hf.2 n hn))
   have : (f n : ℤ) ∣ (n : ℤ) ^ n := (dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
@@ -70,7 +70,7 @@ lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : bonza f) {p : ℕ} (hp : p.
           (by norm_num) (f b)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
-/-- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$ -/
+/-- For each bonza function `f`, then `f p = 1` for sufficient big prime `p` -/
 theorem not_id_apply_prime_of_gt_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∃ N, ∀ p > N, p.Prime → f p = 1 := by
   obtain ⟨b, hb, neq⟩ : ∃ b, 0 < b ∧ f b ≠ b := Set.not_subset.mp hnf
@@ -108,7 +108,7 @@ theorem apply_prime_gt_two_eq_one (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f 
     have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
     lia
 
-/-- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two -/
+/-- Therefore, if a bonza function is not identity, then every `f x` is a pow of two -/
 lemma not_id_two_pow (hf : bonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∀ n, 0 < n → ∃ a, f n = 2 ^ a := fun n hn ↦
   have : ∀ {p}, p.Prime → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
