@@ -211,7 +211,7 @@ def lift {X Y Z : Scheme.{u}}
 lemma lift_fac {X Y Z : Scheme.{u}}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] (H : f.ker ≤ g.ker) : lift f g H ≫ f = g := by
   nth_rw 2 [← f.toImage_imageι]
-  simp [lift, - Scheme.Hom.toImage_imageι, g.toImage_imageι]
+  simp [lift, -Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
 lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)
