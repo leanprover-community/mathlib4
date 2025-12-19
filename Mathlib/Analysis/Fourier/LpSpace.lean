@@ -39,35 +39,39 @@ open SchwartzMap MeasureTheory FourierTransform ComplexInnerProductSpace
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
+namespace MeasureTheory.Lp
+
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
-def Lp.fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
+def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
   (SchwartzMap.fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
     (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume) (SchwartzMap.toLpCLM ℂ (E := E) F 2 volume)
     -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
     (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top)
     (SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top) norm_fourier_toL2_eq
 
-instance Lp.instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
+instance instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourier := fourierTransformₗᵢ E F
 
-instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
+instance instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourierInv := (fourierTransformₗᵢ E F).symm
 
-instance Lp.instFourierPair : FourierPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
+instance instFourierPair : FourierPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourierInv_fourier_eq := (Lp.fourierTransformₗᵢ E F).symm_apply_apply
 
-instance Lp.instFourierPairInv : FourierInvPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
+instance instFourierPairInv : FourierInvPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourier_fourierInv_eq := (Lp.fourierTransformₗᵢ E F).apply_symm_apply
 
 /-- Plancherel's theorem for `L2` functions. -/
 @[simp]
-theorem Lp.norm_fourier_eq (f : Lp (α := E) F 2) : ‖𝓕 f‖ = ‖f‖ :=
+theorem norm_fourier_eq (f : Lp (α := E) F 2) : ‖𝓕 f‖ = ‖f‖ :=
   (Lp.fourierTransformₗᵢ E F).norm_map f
 
 @[simp]
-theorem Lp.inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
+theorem inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
   (Lp.fourierTransformₗᵢ E F).inner_map_map f g
+
+end MeasureTheory.Lp
 
 @[simp]
 theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
