@@ -88,15 +88,17 @@ lemma externalCoveringNumber_eq_zero :
     externalCoveringNumber ε A = 0 ↔ A = ∅ := by simp [externalCoveringNumber]
 
 @[simp]
-lemma externalCoveringNumber_pos (hA : A.Nonempty) :
-    0 < externalCoveringNumber ε A := Ne.bot_lt (by simpa using hA.ne_empty)
+lemma externalCoveringNumber_pos_iff : 0 < externalCoveringNumber ε A ↔ A.Nonempty := by
+  rw [← not_iff_not]
+  simp [not_nonempty_iff_eq_empty]
 
 @[simp]
 lemma coveringNumber_eq_zero : coveringNumber ε A = 0 ↔ A = ∅ := by simp [coveringNumber]
 
 @[simp]
-lemma coveringNumber_pos (hA : A.Nonempty) :
-    0 < coveringNumber ε A := Ne.bot_lt (by simpa using hA.ne_empty)
+lemma coveringNumber_pos_iff : 0 < coveringNumber ε A ↔ A.Nonempty := by
+  rw [← not_iff_not]
+  simp [not_nonempty_iff_eq_empty]
 
 @[simp]
 lemma packingNumber_eq_zero : packingNumber ε A = 0 ↔ A = ∅ := by
@@ -107,8 +109,9 @@ lemma packingNumber_eq_zero : packingNumber ε A = 0 ↔ A = ∅ := by
   simpa using h {x} (by simp [hx]) (by simp)
 
 @[simp]
-lemma packingNumber_pos (hA : A.Nonempty) :
-    0 < packingNumber ε A := Ne.bot_lt (by simpa using hA.ne_empty)
+lemma packingNumber_pos_iff : 0 < packingNumber ε A ↔ A.Nonempty := by
+  rw [← not_iff_not]
+  simp [not_nonempty_iff_eq_empty]
 
 lemma externalCoveringNumber_le_coveringNumber (ε : ℝ≥0) (A : Set X) :
     externalCoveringNumber ε A ≤ coveringNumber ε A := by
@@ -178,8 +181,7 @@ lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.
       _ ≤ ({a} : Set X).encard :=
         (IsCover.singleton_of_ediam_le hA ha).coveringNumber_le_encard (by simp [ha])
       _ ≤ 1 := by simp
-  · rw [Order.one_le_iff_pos]
-    exact coveringNumber_pos h_nonempty
+  · simpa [Order.one_le_iff_pos]
 
 lemma externalCoveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty)
     (hA : EMetric.diam A ≤ ε) :
@@ -187,8 +189,7 @@ lemma externalCoveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty)
   refine le_antisymm ?_ ?_
   · exact (externalCoveringNumber_le_coveringNumber ε A).trans_eq
       (coveringNumber_eq_one_of_ediam_le h_nonempty hA)
-  · rw [Order.one_le_iff_pos]
-    exact externalCoveringNumber_pos h_nonempty
+  · simpa [Order.one_le_iff_pos]
 
 lemma externalCoveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) :
     externalCoveringNumber ε A ≤ 1 := by
