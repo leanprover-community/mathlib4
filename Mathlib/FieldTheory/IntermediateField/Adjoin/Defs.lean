@@ -326,6 +326,9 @@ instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
 
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
+
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
 @[mono, gcongr]
