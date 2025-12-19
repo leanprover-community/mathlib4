@@ -12,11 +12,43 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
-/-! # The three Iwasawa structures on permutation and alternating groups
+/-! # The alternating group is simple
+
+* `Equiv.Perm.iwasawaStructure_two`:
+  the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Nat.Combination α 2`
+  Its commutative subgroups consist of the permutations with support
+  in a given element of `Nat.Combination α 2`.
+  They are cyclic of order 2.
+
+* `alternatingGroup_of_le_of_normal`:
+  If `α` has at least 5 elements, then a nontrivial normal subgroup
+  of `Equiv.Perm α` contains the alternating group.
+
+
+* `alternatingGroup.iwasawaStructure_three`:
+  the natural `IwasawaStructure` of `alternatingGroup α` acting on `Nat.Combination α 3`
+
+  Its commutative subgroups consist of the permutations with support
+  in a given element of `Nat.Combination α 2`.
+  They are cyclic of order 3.
+
+
+* `alternatingGroup.iwasawaStructure_three`:
+  the natural `IwasawaStructure` of `alternatingGroup α` acting on `Nat.Combination α 4`
+
+  Its commutative subgroups consist of the permutations of
+  cycleType (2, 2) with support in a given element of `Nat.Combination α 2`.
+  They have order 4 and exponent 2 (`IsKleinFour`).
+
+* `alternatingGroup.normal_subgroup_eq_bot_or_eq_top`:
+  If `α` has at least 5 elements, then a nontrivial normal subgroup of `alternatingGroup` is `⊤`.
+
+* `alternatingGroup.isSimpleGroup`:
+  If `α` has at least 5 elements, then `alternatingGroup α`
+  is a simple group.
 
 -/
 
-@[expose] public section
 
 open scoped Pointwise
 
@@ -102,7 +134,7 @@ theorem conj_smul_rangeOfSubtype {α : Type*} [DecidableEq α] [Finite α] {p : 
 variable [Finite α]
 
 /-- The Iwasawa structure of `Perm α` acting on `Nat.Combination α 2`. -/
-def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
+@[expose] public def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
     suffices IsCyclic (Perm s) by
@@ -121,7 +153,7 @@ def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) whe
 
 /-- If `α` has at least 5 elements, then the only nontrivial
 normal sugroup of `Equiv.Perm α` is `alternatingGroup α`. -/
-theorem Equiv.Perm.le_alternatingGroup
+public theorem alternatingGroup_of_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
     {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
     alternatingGroup α ≤ N := by
@@ -163,14 +195,6 @@ namespace alternatingGroup
 -- open MulAction Equiv.Perm Equiv Finset Subgroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
-
-/- def ofSubtype {α : Type*} [Fintype α] [DecidableEq α] {p : α → Prop} [DecidablePred p] :
-    alternatingGroup (Subtype p) →* alternatingGroup α where
-  toFun x := ⟨Perm.ofSubtype (p := p) x, by
-    rw [mem_alternatingGroup, sign_ofSubtype, x.prop]⟩
-  map_mul' x y := by simp
-  map_one' := by simp
--/
 
 -- The `convert` is bizarre
 def ofSubtype {p : ℕ} (s : Nat.Combination α p) :
@@ -282,6 +306,7 @@ theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
     simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 3`. -/
+@[expose] public
 def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
   T s := (ofSubtype s).range
   is_comm s := by
@@ -386,7 +411,7 @@ theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) 
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 4`,
 provided `α` has at least 5 elements. -/
-def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
+@[expose] public def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
     IwasawaStructure (alternatingGroup α) (Nat.Combination α 4) where
   T s := (kleinFour s).map (ofSubtype s)
   is_comm s := by
@@ -448,7 +473,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_8
 /-- If `α` has at least 5 elements,
 then the only nontrivial normal sugroup of `alternatingGroup α`
 is `⊤`. -/
-theorem normal_subgroup_eq_bot_or_eq_top
+public theorem normal_subgroup_eq_bot_or_eq_top
     (hα : 5 ≤ Nat.card α)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
@@ -459,7 +484,7 @@ theorem normal_subgroup_eq_bot_or_eq_top
   · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_6 hα hα' hnN
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
-theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
+public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     IsSimpleGroup (alternatingGroup α) where
   exists_pair_ne := by
     suffices Nontrivial (alternatingGroup α) by
