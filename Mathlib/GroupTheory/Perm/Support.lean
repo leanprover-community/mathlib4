@@ -509,6 +509,34 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
   grind
 
+theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
+    Disjoint (swap x y) (swap z t) := by
+  rw [Equiv.Perm.disjoint_iff_disjoint_support,
+    (support_swap_iff x y).mpr (by grind),
+    (support_swap_iff z t).mpr (by grind)]
+  simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, not_or,
+    Finset.disjoint_singleton_right]
+  grind
+
+theorem support_swap_mul_swap'
+    {x y z t : α} (h : [x, y, z, t].Nodup) :
+    ((swap x y) * (swap z t)).support = {x, y, z, t} := by
+  apply le_antisymm
+  · apply le_trans (Perm.support_mul_le _ _)
+    apply _root_.sup_le
+    · rw [support_swap (by grind)]
+      simp
+    · rw [support_swap (by grind)]
+      simp only [Finset.le_eq_subset, Finset.subset_insert_iff, Finset.subset_singleton_iff]
+      grind
+  · apply Finset.insert_subset
+    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
+    apply Finset.insert_subset
+    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
+    apply Finset.insert_subset
+    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
+    · simp only [Finset.singleton_subset_iff, mem_support, coe_mul, Function.comp_apply]; grind
+
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
 

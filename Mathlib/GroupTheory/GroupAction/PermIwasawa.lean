@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
@@ -22,181 +22,9 @@ open scoped Pointwise
 
 open MulAction Equiv.Perm Equiv
 
-theorem IsKleinFour.isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
-    IsMulCommutative G where
-  is_comm := {
-    comm := mul_comm_of_exponent_two exponent_two
-      }
-
-theorem Subgroup.mem_smul_iff_inv_smul_mem
-    {α β : Type*} [Group α] [Group β] [MulDistribMulAction α β]
-    {a : α} {G : Subgroup β} {b : β} :
-    b ∈ a • G ↔ a⁻¹ • b ∈ G := by
-  simp only [← SetLike.mem_coe]
-  rw [Subgroup.coe_pointwise_smul, Set.mem_smul_set_iff_inv_smul_mem]
-
-theorem Subgroup.mem_inv_smul_iff_smul_mem
-    {α β : Type*} [Group α] [Group β] [MulDistribMulAction α β]
-    {a : α} {G : Subgroup β} {b : β} :
-    b ∈ a⁻¹ • G ↔ a • b ∈ G := by
-  simp only [← SetLike.mem_coe]
-  rw [Subgroup.coe_pointwise_smul, Set.mem_inv_smul_set_iff]
-
-theorem Finset.map_equiv_eq_smul {α : Type*} [DecidableEq α]
-      (g : Equiv.Perm α) (s : Finset α) :
-      Finset.map (Equiv.toEmbedding g) s = g • s := by
-    ext x
-    simp only [Finset.mem_map_equiv, ← Finset.inv_smul_mem_iff]
-    rw [← Equiv.Perm.smul_def, ← Equiv.Perm.inv_def]
-
 namespace Equiv.Perm
 
-open Subgroup
-
 variable {α : Type*} [DecidableEq α]
-
-theorem disjoint_swap_swap [Fintype α]
-    {x y z t : α} (h : [x, y, z, t].Nodup) :
-    Disjoint (swap x y) (swap z t) := by
-  rw [Equiv.Perm.disjoint_iff_disjoint_support]
-  rw [(Equiv.Perm.support_swap_iff x y).mpr (by grind)]
-  rw [(Equiv.Perm.support_swap_iff z t).mpr (by grind)]
-  simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, not_or,
-    Finset.disjoint_singleton_right]
-  grind
-
-theorem cycleType_swap_mul_swap' [Fintype α]
-    {x y z t : α} (h : [x, y, z, t].Nodup) :
-    ((swap x y) * (swap z t)).cycleType = {2, 2} := by
-  rw [(disjoint_swap_swap h).cycleType_mul]
-  rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
-  · simp
-  · rw [Equiv.Perm.swap_isSwap_iff]
-    grind
-  · rw [Equiv.Perm.swap_isSwap_iff]
-    grind
-
-theorem sign_swap_mul_swap' [Fintype α]
-    {x y z t : α} (h : [x, y, z, t].Nodup) :
-    ((swap x y) * (swap z t)).sign = 1 := by
-  rw [sign_of_cycleType, cycleType_swap_mul_swap' (by grind),
-    ← Units.val_inj]
-  norm_num
-
-theorem support_swap_mul_swap' [Fintype α]
-    {x y z t : α} (h : [x, y, z, t].Nodup) :
-    ((swap x y) * (swap z t)).support = {x, y, z, t} := by
-  apply le_antisymm
-  · apply le_trans (Perm.support_mul_le _ _)
-    apply sup_le
-    · rw [support_swap (by grind)]
-      simp
-    · rw [support_swap (by grind)]
-      simp only [Finset.le_eq_subset, Finset.subset_insert_iff, Finset.subset_singleton_iff]
-      grind
-  · apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    · simp only [Finset.singleton_subset_iff, mem_support, coe_mul, Function.comp_apply]; grind
-
-theorem IsThreeCycle.support_eq_iff_mem_support
-    [Fintype α] {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
-    g.support = {a, g a, g (g a)} ↔ a ∈ g.support := by
-  constructor
-  · intro hg
-    simp [hg]
-  · intro ha
-    symm
-    apply Finset.eq_of_subset_of_card_le
-    · apply Finset.insert_subset ha
-      apply Finset.insert_subset
-      · rwa [Perm.apply_mem_support]
-      simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
-    · rw [hg3.card_support]
-      simp only [mem_support, ne_eq] at ha
-      rw [Finset.card_insert_eq_ite, if_neg]
-      · rw [Finset.card_insert_eq_ite, if_neg]
-        · simp
-        · simpa using Ne.symm ha
-      · simp only [Finset.mem_insert, Finset.mem_singleton]
-        contrapose ha
-        rcases ha with ha | ha
-        · exact ha.symm
-        · suffices (g ^ 3) a = a by simpa [pow_succ, ← ha] using this
-          simp [← hg3.orderOf]
-
-theorem IsThreeCycle.nodup_iff_mem_support
-    [Fintype α] {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
-    [a, g a, g (g a)].Nodup ↔ a ∈ g.support := by
-  constructor
-  · intro ha
-    rw [mem_support]
-    grind
-  rw [← hg3.support_eq_iff_mem_support]
-  intro ha
-  suffices g.support.card = 3 by grind
-  exact hg3.card_support
-
-theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
-    [Fintype α] {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
-    g = (swap a (g a)) * (swap (g a) (g (g a))) ↔ a ∈ g.support := by
-  constructor
-  · intro hg
-    rw [Perm.mem_support]
-    intro hx
-    apply hg3.isCycle.ne_one
-    simpa [hx] using hg
-  intro ha
-  have ha' := hg3.support_eq_iff_mem_support.mpr ha
-  have ha'' := hg3.nodup_iff_mem_support.mpr ha
-  ext x
-  simp only [coe_mul, Function.comp_apply]
-  by_cases h : x ∈ g.support
-  · simp only [ha', Finset.mem_insert, Finset.mem_singleton] at h
-    rcases h with rfl | (rfl | rfl)
-    · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
-      simp
-    · rw [swap_apply_left, swap_apply_of_ne_of_ne (by grind) (by grind)]
-    · simp only [swap_apply_right]
-      suffices (g ^ 3) a = a by simpa
-      simp [← hg3.orderOf]
-  · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
-    rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
-    simpa [notMem_support] using h
-
-theorem closure_cycleType22_eq_alternatingGroup
-    [Fintype α] (h5 : 5 ≤ Nat.card α) :
-    Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
-  apply le_antisymm
-  · simp only [Subgroup.closure_le]
-    intro g hg
-    simp only [Set.mem_setOf_eq] at hg
-    simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
-  · rw [← Equiv.Perm.closure_three_cycles_eq_alternating,
-      Subgroup.closure_le]
-    intro g hg3
-    obtain ⟨a, ha⟩ := hg3.isCycle.nonempty_support
-    have h_support := hg3.support_eq_iff_mem_support.mpr ha
-    have h_nodup := hg3.nodup_iff_mem_support.mpr ha
-    have : ∃ b c, b ∉ g.support ∧ c ∉ g.support ∧ b ≠ c := by
-      simp only [← Finset.mem_compl]
-      rw [← Finset.one_lt_card_iff]
-      rw [← Nat.succ_le_iff, Nat.succ_eq_add_one]
-      rw [← Nat.add_le_add_iff_right, Finset.card_compl_add_card]
-      rwa [hg3.card_support, ← Nat.card_eq_fintype_card]
-    obtain ⟨b, c, hb, hc, hbc⟩ := this
-    let k := swap a (g a) * (swap b c)
-    let k' := swap b c * (swap (g a) (g (g a)))
-    have H : g = k * k' := by
-      nth_rewrite 1 [hg3.eq_swap_mul_swap_iff_mem_support.mpr ha]
-      simp [k, k', ← mul_assoc]
-    simp only [H]
-    apply mul_mem <;>
-    · apply Subgroup.subset_closure
-      exact cycleType_swap_mul_swap' (by grind)
 
 theorem mem_support_ofSubtype [Fintype α] {p : α → Prop}
     [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
@@ -223,7 +51,7 @@ lemma exists_Perm_smul_ofSubtype_eq_conj
 theorem Equiv.Perm.support_conj_eq_smul_support
     {α : Type*} [DecidableEq α] [Fintype α] (g k : Equiv.Perm α) :
     (g * k * g⁻¹).support = g • k.support := by
-  rw [support_conj, Finset.map_equiv_eq_smul]
+  simp [support_conj, Finset.smul_finset_def, Finset.map_eq_image]
 
 theorem Equiv.Perm.support_conj_eq_smul_support'
     {α : Type*} [DecidableEq α] [Fintype α] (g k : Equiv.Perm α) :
@@ -264,7 +92,7 @@ theorem conj_smul_rangeOfSubtype {α : Type*} [DecidableEq α] [Finite α] {p : 
       = MulAut.conj g • (ofSubtype : Perm {x // x ∈ s} →* Perm α).range := by
   have : Fintype α := Fintype.ofFinite α
   ext k
-  rw [Subgroup.mem_smul_iff_inv_smul_mem]
+  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_rangeOfSubtype_iff, SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv]
   rw [← Nat.Combination.coe_coe, Nat.Combination.coe_smul,
       Finset.coe_smul_finset, Nat.Combination.coe_coe]
@@ -332,7 +160,7 @@ end Equiv.Perm
 
 namespace alternatingGroup
 
-open MulAction Equiv.Perm Equiv Subgroup
+-- open MulAction Equiv.Perm Equiv Finset Subgroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
@@ -377,13 +205,13 @@ lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingG
   classical
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  simp only [Subgroup.mem_subgroupOf, Subgroup.mem_smul_iff_inv_smul_mem]
+  simp only [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mapOfSubtype, Subgroup.mem_inf]
   simp only [Subgroup.mk_smul]
   simp only [MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def]
-  rw [← Subgroup.mem_smul_iff_inv_smul_mem, ← conj_smul_rangeOfSubtype]
+  rw [← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_rangeOfSubtype]
   apply and_congr
   · convert Iff.rfl
   · simp only [mem_alternatingGroup, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply]
@@ -415,9 +243,9 @@ theorem range_ofSubtype_conj {p : ℕ} (s : Nat.Combination α p) (g : alternati
     (ofSubtype (g • s)).range = MulAut.conj g • (ofSubtype s).range := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  rw [Subgroup.mem_smul_iff_inv_smul_mem]
+  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_range_ofSubtype]
-  simp only [mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
+  simp only [Subgroup.mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
 
@@ -437,13 +265,13 @@ theorem closure_isThreeCycles_eq_top :
 
 theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure
-      {g : alternatingGroup α | (g : Equiv.Perm α).cycleType = {2, 2} } = ⊤ := by
+      {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2} } = ⊤ := by
   apply Subgroup.map_injective (alternatingGroup α).subtype_injective
   rw [MonoidHom.map_closure]
   suffices (alternatingGroup α).subtype ''
     { g : alternatingGroup α | (g : Perm α).cycleType = {2, 2} } =
       { g : Perm α | g.cycleType = {2, 2} } by
-    rw [this, Perm.closure_cycleType22_eq_alternatingGroup h5]
+    rw [this, Perm.closure_cycleType_eq_2_2_eq_alternatingGroup h5]
     aesop
   ext g
   constructor
@@ -491,7 +319,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_6
   rw [← commutator_alternatingGroup_eq_top hα]
   apply iwasawaStructure_three.commutator_le
   intro h
-  rw [← ne_eq, ← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one] at hN
+  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
   obtain ⟨g, hgN, hg_ne⟩ := hN
   suffices ∃ s : Nat.Combination α 3, g • s ≠ s by
     obtain ⟨s, hs⟩ := this
@@ -529,7 +357,7 @@ theorem mem_map_kleinFour_ofSubtype (s : Nat.Combination α 4) (k : alternatingG
     rw [mem_support_ofSubtype]
     exact Exists.choose
   · rintro ⟨hk, hk'⟩
-    rw [mem_map]
+    rw [Subgroup.mem_map]
     rw [← mem_range_ofSubtype] at hk
     obtain ⟨k, rfl⟩ := hk
     simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk, cycleType_ofSubtype] at hk'
@@ -545,9 +373,9 @@ theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) 
         MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  rw [Subgroup.mem_smul_iff_inv_smul_mem]
+  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_map_kleinFour_ofSubtype]
-  simp only [mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
+  simp only [Subgroup.mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
   apply and_congr Iff.rfl
@@ -564,7 +392,7 @@ def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
   is_comm s := by
     have : IsMulCommutative (kleinFour s) :=
       (kleinFour_isKleinFour (by aesop)).isMulCommutative
-    apply map_isMulCommutative
+    apply Subgroup.map_isMulCommutative
   is_conj g s := map_kleinFour_conj s g
   is_generator := by
     rw [eq_top_iff, ← closure_isCycleType22_eq_top h5, Subgroup.closure_le]
@@ -595,7 +423,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_8
   rw [← Nat.card_eq_fintype_card] at hα
   apply (iwasawaStructure_four hα).commutator_le
   intro h
-  rw [← ne_eq, ← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one] at hN
+  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
   obtain ⟨g, hgN, hg_ne⟩ := hN
   suffices ∃ s : Nat.Combination α 4, g • s ≠ s by
     obtain ⟨s, hs⟩ := this
