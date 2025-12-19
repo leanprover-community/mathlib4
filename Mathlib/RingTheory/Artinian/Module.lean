@@ -144,25 +144,8 @@ lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
 open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
-    (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_isEmpty.1 h.wf).elim' ?_
-  have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
-  have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
-    rintro n x ⟨y, _, rfl⟩
-    exact (f y).2
-  have : ∀ a b : ℕ, a ≤ b ↔
-      span R (Subtype.val ∘ f '' { m | b ≤ m }) ≤ span R (Subtype.val ∘ f '' { m | a ≤ m }) := by
-    intro a b
-    rw [span_le_span_iff hs (this b) (this a),
-      Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
-    simp only [Set.mem_setOf_eq]
-    exact ⟨fun hab x ↦ hab.trans, (· _ le_rfl)⟩
-  exact ⟨⟨fun n ↦ span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y ↦ by
-    rw [le_antisymm_iff, ← this y x, ← this x y]
-    exact fun ⟨h₁, h₂⟩ ↦ le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
-    intro a b
-    conv_rhs => rw [GT.gt, lt_iff_le_not_ge, this, this, ← lt_iff_le_not_ge]
-    rfl⟩
+    (hs : LinearIndependent R ((↑) : s → M)) : s.Finite :=
+  WellFoundedLT.finite_of_iSupIndep hs.iSupIndep_span_singleton fun i _ ↦ hs.ne_zero i (by simp_all)
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
 theorem set_has_minimal_iff_artinian :
@@ -229,6 +212,13 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
   simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
+
+lemma IsArtinian.subsingleton_of_injective [IsArtinian R N] {f : P × N →ₗ[R] N}
+    (inj : Function.Injective f) : Subsingleton P :=
+  subsingleton_of_forall_eq 0 fun p ↦
+    have ⟨_, eq⟩ := IsArtinian.surjective_of_injective_endomorphism (f ∘ₗ .inr ..)
+      (inj.comp (Prod.mk_right_injective _)) (f (p, 0))
+    congr($(inj eq).1).symm
 
 namespace LinearMap
 
