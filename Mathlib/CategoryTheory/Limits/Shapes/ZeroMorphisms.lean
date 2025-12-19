@@ -223,7 +223,7 @@ morphisms for some other reason, for example from additivity. Library code that 
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObjects`. -/
+asks for an instance of `HasZeroObject`. -/
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -248,9 +248,9 @@ open ZeroObject
 It is rarely a good idea to use this. Many categories that have a zero object have zero
 morphisms for some other reason, for example from additivity. Library code that uses
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-the `has_zero_morphisms` instances will not be definitionally equal. For this reason library
+the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObjects`. -/
+asks for an instance of `HasZeroObject`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by

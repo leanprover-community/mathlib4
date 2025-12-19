@@ -48,11 +48,11 @@ protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
 variable {X}
 
 /-- Assist the typechecker by expressing a morphism `X ⟶ X` as a term of `CategoryTheory.End X`. -/
-def of (f : X ⟶ X) : End X := f
+abbrev of (f : X ⟶ X) : End X := f
 
 /-- Assist the typechecker by expressing an endomorphism `f : CategoryTheory.End X` as a term of
 `X ⟶ X`. -/
-def asHom (f : End X) : X ⟶ X := f
+abbrev asHom (f : End X) : X ⟶ X := f
 
 -- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
 -- But that would require many more extra simp lemmas to get rid of the `of`.
@@ -63,6 +63,8 @@ theorem one_def : (1 : End X) = 𝟙 X := rfl
 -- But that would require many more extra simp lemmas to get rid of the `of`.
 @[simp]
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
+
+lemma ext {x y : End X} (h : asHom x = asHom y) : x = y := h
 
 end Struct
 
@@ -199,5 +201,12 @@ noncomputable def autMulEquivOfFullyFaithful (X : C) :
 end FullyFaithful
 
 end Functor
+
+/-- The multiplicative bijection `End X ≃* End (F X)` when `X : InducedCategory C F`. -/
+@[simps!]
+def InducedCategory.endEquiv {D : Type*} {F : D → C}
+    {X : InducedCategory C F} : End X ≃* End (F X) where
+  toEquiv := InducedCategory.homEquiv
+  map_mul' _ _ := rfl
 
 end CategoryTheory

@@ -218,12 +218,11 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
       rw [Construction.fac])) (fun τ => by
         ext
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
-        erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
-          eqToHom_refl, comp_id, id_comp]
-        · rfl
-        all_goals
-          change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ _ = L ⋙ _
-          rw [Construction.fac])
+        rw [ObjectProperty.eqToHom_hom, ObjectProperty.eqToHom_hom, eqToHom_app, eqToHom_app,
+          eqToHom_refl, eqToHom_refl]
+        dsimp
+        rw [comp_id, id_comp]
+        rfl)
   exact Functor.isEquivalence_of_iso iso
 
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by
