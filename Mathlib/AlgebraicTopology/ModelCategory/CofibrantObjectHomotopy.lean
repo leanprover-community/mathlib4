@@ -12,6 +12,14 @@ public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 /-!
 # The homotopy category of cofibrant objects
 
+Let `C` be a model category. By using the right homotopy relation,
+we introduce the homotopy category `CofibrantObject.π C` of cofibrant objects
+in `C`, and we define a cofibrant resolution functor
+`CofibrantObject.π.resolution : C ⥤ CofibrantObject.π C`.
+
+## References
+* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
+
 -/
 
 universe v u
@@ -27,6 +35,7 @@ variable {C : Type*} [Category C] [ModelCategory C]
 namespace CofibrantObject
 
 variable (C) in
+/-- The right homotopy relation on the category of cofibrant objects. -/
 def homRel : HomRel (CofibrantObject C) :=
   fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
 
@@ -42,8 +51,11 @@ lemma compClosure_homRel :
   exact (h.postcomp p.hom).precomp i.hom
 
 variable (C) in
+/-- The homotopy category of cofibrant objects. -/
 abbrev π := Quotient (CofibrantObject.homRel C)
 
+/-- The quotient functor from the category of cofibrant objects to its
+homotopy category. -/
 def toπ : CofibrantObject C ⥤ π C := Quotient.functor _
 
 lemma toπ_obj_surjective : Function.Surjective (toπ (C := C)).obj :=
@@ -86,6 +98,7 @@ lemma weakEquivalence_toπ_map_iff {X Y : CofibrantObject C} (f : X ⟶ Y) :
   apply MorphismProperty.quotient_iff
 
 variable (C) in
+/-- The functor `CofibrantObject C ⥤ π C`, considered as a localizer morphism. -/
 def toπLocalizerMorphism :
     LocalizerMorphism (weakEquivalences (CofibrantObject C))
       (weakEquivalences (CofibrantObject.π C)) where
@@ -120,7 +133,7 @@ instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
   change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)
   infer_instance
 
-def π.exists_resolution (X : C) :
+lemma π.exists_resolution (X : C) :
     ∃ (X' : C) (_ : IsCofibrant X') (p : X' ⟶ X), Fibration p ∧ WeakEquivalence p := by
   have h := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C)
     (initial.to X)
@@ -128,12 +141,16 @@ def π.exists_resolution (X : C) :
   rw [isCofibrant_iff_of_isInitial h.i initialIsInitial]
   infer_instance
 
+/-- Given `X : C`, this is a cofibrant object `X'` equipped with a
+trivial fibration `X' ⟶ X` (see `π.pResolutionObj`). -/
 noncomputable def π.resolutionObj (X : C) : C :=
     (exists_resolution X).choose
 
 instance (X : C) : IsCofibrant (π.resolutionObj X) :=
   (π.exists_resolution X).choose_spec.choose
 
+/-- This is the trivial fibration `resolutionObj X ⟶ X` where
+`resolutionObj X` is a choice of a cofibrant resolution of `X`. -/
 noncomputable def π.pResolutionObj (X : C) : resolutionObj X ⟶ X :=
   (exists_resolution X).choose_spec.choose_spec.choose
 
@@ -143,13 +160,15 @@ instance (X : C) : Fibration (π.pResolutionObj X) :=
 instance (X : C) : WeakEquivalence (π.pResolutionObj X) :=
   (π.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
-def π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
+lemma π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       g ≫ pResolutionObj Y = pResolutionObj X ≫ f := by
   have sq : CommSq (initial.to _) (initial.to _) (pResolutionObj Y)
     (pResolutionObj X ≫ f) := ⟨by simp⟩
   exact ⟨sq.lift, sq.fac_right⟩
 
+/-- The lifting of a morphism `f : X ⟶ Y` on cofibrant resolutions.
+(This is functorial only up to homotopy, see `π.resolution`.) -/
 noncomputable def π.resolutionMap {X Y : C} (f : X ⟶ Y) :
     resolutionObj X ⟶ resolutionObj Y :=
   (exists_resolution_map f).choose
@@ -176,19 +195,20 @@ lemma π.resolutionObj_hom_ext {X : C} [IsCofibrant X] {Y : C} {f g : X ⟶ reso
   exact (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence
     (X := X) (g := pResolutionObj Y)).1 h
 
+/-- The cofibrant resolution functor from a model category to the homotopy category
+of cofibrant objects. -/
 noncomputable def π.resolution : C ⥤ CofibrantObject.π C where
   obj X := toπ.obj (mk (resolutionObj X))
   map f := toπ.map (homMk (resolutionMap f))
   map_id X := by
     rw [← toπ.map_id]
-    apply resolutionObj_hom_ext
-    simpa using .refl _
+    exact resolutionObj_hom_ext (by simpa using .refl _)
   map_comp {X₁ X₂ X₃} f g := by
     rw [← toπ.map_comp]
-    apply resolutionObj_hom_ext
-    simpa using .refl _
+    refine resolutionObj_hom_ext (by simpa using .refl _)
 
 variable (C) in
+/-- The cofibration resolution functor, as a localizer morphism. -/
 @[simps]
 noncomputable def π.localizerMorphismResolution :
     LocalizerMorphism (weakEquivalences C)
@@ -199,6 +219,8 @@ noncomputable def π.localizerMorphismResolution :
       weakEquivalence_toπ_map_iff, weakEquivalence_resolutionMap_iff,
       weakEquivalence_homMk_iff] using h
 
+/-- The map `π.pResolutionObj`, when applied to already cofibrant objects, gives
+a natural transformation `ι ⋙ π.resolution ⟶ toπ`. -/
 @[simps]
 noncomputable def π.ιCompResolutionNatTrans : ι ⋙ π.resolution (C := C) ⟶ toπ where
   app X := toπ.map { hom := (π.pResolutionObj (ι.obj X)) }
@@ -206,11 +228,10 @@ noncomputable def π.ιCompResolutionNatTrans : ι ⋙ π.resolution (C := C) �
     ext : 1
     exact π.resolutionMap_fac f.hom)
 
-instance π.weakEquivalence_ιCompResolutionNatTrans_app (X : CofibrantObject C) :
-    WeakEquivalence (ιCompResolutionNatTrans.app X) := by
+instance (X : CofibrantObject C) :
+    WeakEquivalence (π.ιCompResolutionNatTrans.app X) := by
   dsimp
   rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_of_objectProperty]
-  dsimp
   infer_instance
 
 instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
@@ -249,6 +270,7 @@ instance : IsIso (π.resolutionCompToLocalizationNatTrans L) := by
 end
 
 variable (C) in
+/-- The inclusion `CofibrantObject C ⥤ C`, as a localizer morphism. -/
 @[simps]
 def localizerMorphism : LocalizerMorphism (weakEquivalences (CofibrantObject C))
     (weakEquivalences C) where
