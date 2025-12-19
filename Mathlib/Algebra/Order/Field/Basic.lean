@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
-# Lemmas about linear ordered (semi)fields
+# Lemmas about (linear) ordered (semi)fields
 -/
 
 @[expose] public section
@@ -24,7 +24,7 @@ open Function OrderDual
 
 variable {ι α β : Type*}
 
-section LinearOrderedSemifield
+section OrderedSemifield
 variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
   {a b c d e : α} {m n : ℤ}
 
@@ -200,27 +200,6 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
         _ = a₂ := add_self_div_two a₂
         ⟩
 
-section linearOrdered
-variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α}
-
-theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
-  have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
-  refine ⟨a / max (b + 1) 1, this, ?_⟩
-  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
-  exact lt_max_iff.2 (Or.inl <| lt_add_one _)
-
-theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
-  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
-  ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff₀ hc₀]⟩
-
-theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
-  (monotone_div_right_of_nonneg hc).map_min.symm
-
-theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / c) = max a b / c :=
-  (monotone_div_right_of_nonneg hc).map_max.symm
-
-end linearOrdered
-
 theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
   fun _ x1 _ y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
 
@@ -306,6 +285,27 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
 
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+
+end OrderedSemifield
+
+section LinearOrderedSemifield
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α}
+
+theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
+  have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
+  refine ⟨a / max (b + 1) 1, this, ?_⟩
+  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
+  exact lt_max_iff.2 (Or.inl <| lt_add_one _)
+
+theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
+  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
+  ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff₀ hc₀]⟩
+
+theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
+  (monotone_div_right_of_nonneg hc).map_min.symm
+
+theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / c) = max a b / c :=
+  (monotone_div_right_of_nonneg hc).map_max.symm
 
 end LinearOrderedSemifield
 
