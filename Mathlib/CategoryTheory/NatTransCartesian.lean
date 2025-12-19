@@ -5,9 +5,8 @@ Authors: Sina Hazratpour, Wojciech Nawrocki
 -/
 module
 
-import Mathlib.CategoryTheory.NatTrans
-import Mathlib.CategoryTheory.Functor.TwoSquare
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Cartesian natural transformations
@@ -39,12 +38,13 @@ https://github.com/sinhp/Poly
 
 -/
 
+@[expose] public section
+
+universe v' u' v u
 
 open CategoryTheory Limits IsPullback
 
 namespace CategoryTheory
-
-universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
 variable {K : Type*} [Category K] {D : Type*} [Category D]
