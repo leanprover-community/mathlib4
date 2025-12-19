@@ -179,7 +179,7 @@ end Guessing
 /-!
 ### Closing tactics
 
-TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/
@@ -258,3 +258,4 @@ We register `bound` with the `hint` tactic.
 -/
 
 register_hint 70 bound
+register_try?_tactic (priority := 70) bound

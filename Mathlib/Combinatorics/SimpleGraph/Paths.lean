@@ -396,17 +396,18 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       (by rw [length_cons]; lia : (n + 1) ≤ (q.cons h).length)
       (by lia : 0 ≤ (q.cons h).length)
       (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
-    omega
+    lia
 
-theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
-    (hmem : s(u, w) ∈ p.edges) : w = p.snd := by
+theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hmem : s(u, w) ∈ p.edges) :
+    w = p.snd := by
+  have hnil := edges_eq_nil.not.mp <| List.ne_nil_of_mem hmem
   rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
   have : u ∉ p.tail.support := by induction p <;> simp_all
   grind [fst_mem_support_of_mem_edges]
 
-theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
-  simpa [hnil, hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
+  simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
 /-! ### About cycles -/
 
@@ -420,7 +421,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
     (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
-  omega
+  lia
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
@@ -459,9 +460,6 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; lia)
     (by simp only [Set.mem_setOf_eq]; lia) h'
   lia
-
-@[deprecated (since := "2025-04-27")]
-alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
 
 /-! ### Walk decompositions -/
 
@@ -855,7 +853,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
   induction p with
   | nil => simp
   | cons _ _ ih =>
-    simp only [Walk.transfer, cons_isPath_iff, support_transfer _ ] at pp ⊢
+    simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :

@@ -55,7 +55,7 @@ namespace SimplicialObject
 
 namespace Augmented
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
@@ -82,7 +82,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
 augmented simplicial object in `D` obtained by applying `F` to `X`. -/
-def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
+def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
   s n := F.map (ed.s n)
@@ -247,7 +247,7 @@ namespace Arrow
 
 namespace AugmentedCechNerve
 
-variable {C : Type*} [Category C] (f : Arrow C)
+variable {C : Type*} [Category* C] (f : Arrow C)
   [∀ n : ℕ, HasWidePullback f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
   (S : SplitEpi f.hom)
 
@@ -349,7 +349,7 @@ namespace Augmented
 namespace ExtraDegeneracy
 
 open AlgebraicTopology CategoryTheory Limits
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The constant augmented simplicial object has an extra degeneracy. -/
 @[simps]
