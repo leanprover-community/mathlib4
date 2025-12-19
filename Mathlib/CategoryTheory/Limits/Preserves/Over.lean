@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
 
@@ -14,9 +16,11 @@ See `Mathlib/CategoryTheory/Adjunction/Over.lean`
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-! # `L^2` space
 
@@ -23,6 +25,8 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
   `fun x ↦ ⟪f x, g x⟫` is integrable.
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -159,8 +163,6 @@ private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike
   · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε := E) ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
     finiteness
-
-@[deprecated (since := "2025-04-22")] alias norm_sq_eq_inner' := norm_sq_eq_re_inner
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)

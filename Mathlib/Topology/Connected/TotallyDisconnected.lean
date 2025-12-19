@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -17,6 +19,8 @@ We define the following properties for sets in a topological space:
 For both of these definitions, we also have a class stating that the whole space
 satisfies that property: `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 -/
+
+@[expose] public section
 
 open Function Set Topology
 
@@ -73,7 +77,7 @@ instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnecte
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)] :
-    TotallyDisconnectedSpace (Σi, X i) := by
+    TotallyDisconnectedSpace (Σ i, X i) := by
   refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
@@ -297,17 +301,18 @@ theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTop
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
 theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
+  rw [isDiscrete_iff_discreteTopology] at hT
   exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
 theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
-  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hc hTm hx' hx⟩
+  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩

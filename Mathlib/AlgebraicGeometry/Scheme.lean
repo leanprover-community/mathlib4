@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Spec
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.AlgebraicGeometry.Spec
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes
@@ -17,6 +19,8 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -50,7 +54,7 @@ instance : CoeSort Scheme Type* where
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for coercing schemes to types. -/
 @[app_delab TopCat.carrier]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
@@ -203,8 +207,10 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
   cases f; cases g; congr 1
-  exact LocallyRingedSpace.Hom.ext' <| SheafedSpace.ext _ _ h_base
-    (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
+  apply LocallyRingedSpace.Hom.ext'
+  ext : 1
+  · exact h_base
+  · exact TopCat.Presheaf.ext (fun U ↦ by simpa using h_app U)
 
 /-- An alternative ext lemma for scheme morphisms. -/
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
@@ -384,6 +390,10 @@ theorem eqToHom_app {X Y : Scheme} (e : X = Y) (U) :
 instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHom :=
   forgetToLocallyRingedSpace.map_isIso f
 
+instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHom :=
+  inferInstanceAs (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
+    SheafedSpace.forgetToPresheafedSpace).map f.toLRSHom))
+
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
@@ -414,7 +424,7 @@ lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
   subst h
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
-  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  simp only [Hom.copyBase]
   congr
   cat_disch
 
@@ -519,7 +529,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).base = ofHom (PrimeSpectrum.comap f.hom) := rfl
+lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
 
 @[deprecated (since := "2025-10-07")] alias Spec.map_base_apply := Spec.map_apply

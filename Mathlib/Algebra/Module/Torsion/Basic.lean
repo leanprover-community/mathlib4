@@ -3,16 +3,18 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.ZMod
-import Mathlib.Algebra.Regular.Opposite
-import Mathlib.GroupTheory.Torsion
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Coprime.Ideal
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Torsion submodules
@@ -67,6 +69,8 @@ import Mathlib.RingTheory.SimpleModule.Basic
 
 Torsion, submodule, module, quotient
 -/
+
+@[expose] public section
 
 namespace Ideal
 
@@ -527,7 +531,7 @@ instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
-/-- If a `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
+/-- If an `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
 map from the `R`-module `M` to the `R ⧸ I`-module `M`. -/
 def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
     let _ := hM.module; M →ₛₗ[Ideal.Quotient.mk I] M :=
@@ -631,7 +635,7 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
-/-- The `a`-torsion submodule as an `(R ⧸ R∙a)`-module. -/
+/-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
@@ -738,9 +742,9 @@ theorem _root_.Module.isTorsionBySet_annihilator_top :
 variable {R M}
 
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
-    (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
+    (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator ∩ R⁰ : Set R).Nonempty := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
-  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
+  refine ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
@@ -847,7 +851,7 @@ theorem exists_isTorsionBy {p : R} (hM : IsTorsion' M <| Submonoid.powers p) (d 
   let oj := List.argmax (fun i => pOrder hM <| s i) (List.finRange d)
   have hoj : oj.isSome :=
     Option.ne_none_iff_isSome.mp fun eq_none =>
-      hd <| List.finRange_eq_nil.mp <| List.argmax_eq_none.mp eq_none
+      hd <| List.finRange_eq_nil_iff.mp <| List.argmax_eq_none.mp eq_none
   use Option.get _ hoj
   rw [isTorsionBy_iff_torsionBy_eq_top, eq_top_iff, ← hs, Submodule.span_le,
     Set.range_subset_iff]
@@ -921,7 +925,7 @@ macro_rules | `($A[$n]) => `(torsionBy $A $n)
 
 /-- Unexpander for `torsionBy`. -/
 @[scoped app_unexpander torsionBy]
-def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
+meta def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $A $n) => `($A[$n])
   | _ => throw ()
 

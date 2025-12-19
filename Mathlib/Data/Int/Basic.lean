@@ -3,12 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Init
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.OfNat
 
 /-!
 # Basic operations on the integers
@@ -16,6 +19,8 @@ import Mathlib.Tactic.OfNat
 This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
+
+@[expose] public section
 
 open Nat
 
@@ -42,8 +47,8 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
     (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by cutsat]
-  have : b + zb = z := by omega
+  rw [show z + 1 - b = zb + 1 by lia]
+  have : b + zb = z := by lia
   subst this
   convert cast_heq _ _
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]

@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.SetTheory.Cardinal.Embedding
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -32,6 +33,20 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
+## Results for `SubMulAction`.
+
+* `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
+  that for `a`, `b` and `g` such that `g • a = b`, the actions
+  of `stabilizer G a` and of `stabilizer G b` are equivalently `n`-pretransitive for all `n : ℕ`.
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows the
+  same result for `n`-transitivity.
+
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : if the action of `G` on `α`
+  is pretransitive, then it is `n.succ` pretransitive if and only if
+  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
+
 ## Results for permutation groups
 
 * The permutation group is pretransitive, is multiply pretransitive,
@@ -46,6 +61,8 @@ These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
 
 -/
+
+@[expose] public section
 
 open MulAction MulActionHom Function.Embedding Fin Set Nat
 
@@ -304,6 +321,19 @@ namespace SubMulAction.ofStabilizer
 variable {G α : Type*} [Group G] [MulAction G α]
 
 open scoped BigOperators Pointwise Cardinal
+
+@[to_additive]
+theorem isPretransitive_iff_of_conj {a b : α} {g : G} (hg : b = g • a) :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isPretransitive_iff [IsPretransitive G α] {a b : α} :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isPretransitive_iff_of_conj hg.symm
 
 @[to_additive]
 theorem isMultiplyPretransitive_iff_of_conj
@@ -619,11 +649,11 @@ alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 
-namespace AlternatingGroup
+namespace alternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on `α` is `(Nat.card α - 2)`-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
@@ -656,7 +686,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
     rw [Nat.card_eq_fintype_card] at hα1
-    rw [alternatingGroup.eq_bot_of_card_le_two hα1.le]
+    rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
@@ -712,4 +742,4 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   letI := isPretransitive_of_three_le_card α h
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
-end AlternatingGroup
+end alternatingGroup

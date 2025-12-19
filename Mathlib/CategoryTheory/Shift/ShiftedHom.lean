@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! Shifted morphisms
 
@@ -16,11 +18,13 @@ shifted hom.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
@@ -158,8 +162,14 @@ def map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] :
   F.map f ≫ (F.commShiftIso a).hom.app Y
 
 @[simp]
+lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.CommShift M] :
+    (ShiftedHom.mk₀ m₀ hm₀ f).map F = .mk₀ _ hm₀ (F.map f) := by
+  subst hm₀
+  simp [map, mk₀, shiftFunctorZero', F.commShiftIso_zero M, ← Functor.map_comp_assoc]
+
+@[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
-  simp [map, Functor.commShiftIso, Functor.CommShift.iso]
+  simp [map]
 
 lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by

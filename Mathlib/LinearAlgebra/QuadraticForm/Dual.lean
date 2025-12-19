@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Quadratic form structures related to `Module.Dual`
@@ -20,6 +22,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
   from `(Q.prod <| -Q)` to `QuadraticForm.dualProd R M`.
 
 -/
+
+@[expose] public section
 
 
 variable (R M N : Type*)
@@ -84,7 +88,7 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
   toFun_smul a p := by
-    rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
+    rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, map_smul, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
@@ -141,7 +145,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
       smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
-    rw [← LinearMap.map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
+    rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
     simp only [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
       invOf_mul_cancel_left']
 
@@ -152,3 +156,54 @@ TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`
 end Ring
 
 end QuadraticForm
+
+/-- Vectors which subtend obtuse angles with each other and all lie in the same half-space are
+linearly independent.
+
+This is [serre1965](Ch. V, §9, Lemma 4). -/
+lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hB : B.toQuadraticMap.PosDef)
+    (f : Module.Dual R M) (v : ι → M)
+    (hp : ∀ i, 0 < f (v i))
+    (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
+    LinearIndependent R v := by
+  refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
+  set x := ∑ i ∈ s with 0 ≤ c i, c i • v i with hx
+  set y := ∑ i ∈ s with c i < 0, (-c i) • v i with hy
+  replace hc : x = y := by
+    simp_rw [hx, hy, neg_smul, Finset.sum_neg_distrib, ← add_eq_zero_iff_eq_neg, ← hc]
+    simp [← s.sum_filter_add_sum_filter_not (p := fun i ↦ 0 ≤ c i) (f := fun i ↦ c i • v i)]
+  have hx₀ : x = 0 := by
+    suffices B x y ≤ 0 by simpa [hc, ← hB.le_zero_iff, B.toQuadraticMap_apply]
+    suffices 0 ≤ ∑ x ∈ s with c x < 0, ∑ i ∈ s with 0 ≤ c i, c x * (c i * (B (v i)) (v x)) by
+      simpa [hx, hy, map_neg, Finset.mul_sum]
+    refine Finset.sum_nonneg fun i hi ↦ Finset.sum_nonneg fun j hj ↦ ?_
+    rcases eq_or_ne i j with rfl | hij
+    · rw [← mul_assoc]
+      exact mul_nonneg (mul_self_nonneg _) (hB.nonneg _)
+    · specialize hn hij.symm
+      grind [mul_nonneg_iff, mul_nonpos_iff]
+  replace hx : ∑ i ∈ s with 0 ≤ c i, c i * f (v i) = 0 := by
+    rw [hx₀] at hx
+    simpa using (congr(f $hx)).symm
+  replace hx (i : ι) (hi : i ∈ s) : c i ≤ 0 := by
+    have aux (j : ι) (hj : j ∈ {i ∈ s | 0 ≤ c i}) : 0 ≤ c j * f (v j) := by
+      obtain ⟨hjs : j ∈ s, hj₀ : 0 ≤ c j⟩ := by simpa using hj
+      nlinarith [hp j]
+    rw [Finset.sum_eq_zero_iff_of_nonneg aux] at hx
+    by_contra! hi'
+    have : 0 < c i * f (v i) := mul_pos hi' (hp i)
+    grind
+  replace hy : ∑ i ∈ s with c i < 0, c i * f (v i) = 0 := by
+    rw [← hc, hx₀] at hy
+    simpa using (congr(f $hy)).symm
+  replace hy (i : ι) (hi : i ∈ s) : 0 ≤ c i := by
+    have aux (j : ι) (hj : j ∈ {i ∈ s | c i < 0}) : c j * f (v j) ≤ 0 := by
+      obtain ⟨hjs : j ∈ s, hj₀ : c j < 0⟩ := by simpa using hj
+      nlinarith [hp j]
+    rw [Finset.sum_eq_zero_iff_of_nonpos aux] at hy
+    by_contra! hi'
+    have : c i * f (v i) < 0 := mul_neg_of_neg_of_pos hi' (hp i)
+    grind
+  exact fun i hi ↦ le_antisymm (hx i hi) (hy i hi)

@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.Dirac
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+module
+
+public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Counting measure
@@ -13,6 +15,8 @@ In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
+
+@[expose] public section
 
 open Set
 open scoped ENNReal Finset

@@ -3,7 +3,9 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Morphisms from equations between objects.
@@ -23,6 +25,8 @@ You have two options:
 This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -71,7 +75,7 @@ theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = 
   cases h'
   simp
 
-theorem conj_eqToHom_iff_heq' {C} [Category C] {W X Y Z : C}
+theorem conj_eqToHom_iff_heq' {C} [Category* C] {W X Y Z : C}
     (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : Z = X) :
     f = eqToHom h ≫ g ≫ eqToHom h' ↔ f ≍ g := conj_eqToHom_iff_heq _ _ _ h'.symm
 
@@ -85,35 +89,35 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
   { mp := fun h => h ▸ by simp
     mpr := fun h => h ▸ by simp }
 
-theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
+theorem eqToHom_comp_heq {C} [Category* C] {W X Y : C}
     (f : Y ⟶ X) (h : W = Y) : eqToHom h ≫ f ≍ f := by
   rw [← conj_eqToHom_iff_heq _ _ h rfl, eqToHom_refl, Category.comp_id]
 
-@[simp] theorem eqToHom_comp_heq_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem eqToHom_comp_heq_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
     eqToHom h ≫ f ≍ g ↔ f ≍ g :=
   ⟨(eqToHom_comp_heq ..).symm.trans, (eqToHom_comp_heq ..).trans⟩
 
-@[simp] theorem heq_eqToHom_comp_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem heq_eqToHom_comp_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
     g ≍ eqToHom h ≫ f ↔ g ≍ f :=
   ⟨(·.trans (eqToHom_comp_heq ..)), (·.trans (eqToHom_comp_heq ..).symm)⟩
 
-theorem comp_eqToHom_heq {C} [Category C] {X Y Z : C}
+theorem comp_eqToHom_heq {C} [Category* C] {X Y Z : C}
     (f : X ⟶ Y) (h : Y = Z) : f ≫ eqToHom h ≍ f := by
   rw [← conj_eqToHom_iff_heq' _ _ rfl h, eqToHom_refl, Category.id_comp]
 
-@[simp] theorem comp_eqToHom_heq_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem comp_eqToHom_heq_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
     f ≫ eqToHom h ≍ g ↔ f ≍ g :=
   ⟨(comp_eqToHom_heq ..).symm.trans, (comp_eqToHom_heq ..).trans⟩
 
-@[simp] theorem heq_comp_eqToHom_iff {C} [Category C] {W X Y Z Z' : C}
+@[simp] theorem heq_comp_eqToHom_iff {C} [Category* C] {W X Y Z Z' : C}
     (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
     g ≍ f ≫ eqToHom h ↔ g ≍ f :=
   ⟨(·.trans (comp_eqToHom_heq ..)), (·.trans (comp_eqToHom_heq ..).symm)⟩
 
-theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
+theorem heq_comp {C} [Category* C] {X Y Z X' Y' Z' : C}
     {f : X ⟶ Y} {g : Y ⟶ Z} {f' : X' ⟶ Y'} {g' : Y' ⟶ Z'}
     (eq1 : X = X') (eq2 : Y = Y') (eq3 : Z = Z')
     (H1 : f ≍ f') (H2 : g ≍ g') :
@@ -343,6 +347,20 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
+@[simp]
+lemma InducedCategory.eqToHom_hom {C D : Type*} [Category D] {F : C → D}
+    {X Y : InducedCategory D F} (h : X = Y) :
+    (eqToHom h).hom = eqToHom (by subst h; rfl) := by
+  subst h
+  rfl
+
+@[simp]
+lemma ObjectProperty.eqToHom_hom {C : Type*} [Category C] {P : ObjectProperty C}
+    {X Y : P.FullSubcategory} (h : X = Y) :
+    (eqToHom h).hom = eqToHom (by subst h; rfl) := by
+  subst h
+  rfl
+
 /-- If `T ≃ D` is a bijection and `D` is a category, then
 `InducedCategory D e` is equivalent to `D`. -/
 @[simps]
@@ -351,19 +369,8 @@ def Equivalence.induced {T : Type*} (e : T ≃ D) :
   functor := inducedFunctor e
   inverse :=
     { obj := e.symm
-      map {X Y} f := show e (e.symm X) ⟶ e (e.symm Y) from
-        eqToHom (e.apply_symm_apply X) ≫ f ≫
-          eqToHom (e.apply_symm_apply Y).symm
-      map_comp {X Y Z} f g := by
-        dsimp
-        rw [Category.assoc]
-        erw [Category.assoc]
-        rw [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
-  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
-    dsimp
-    erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
-    rfl )
+      map f := InducedCategory.homMk (eqToHom (by simp) ≫ f ≫ eqToHom (by simp)) }
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
-  functor_unitIso_comp X := eqToHom_trans (by simp) (by simp)
 
 end CategoryTheory

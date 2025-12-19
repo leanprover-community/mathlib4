@@ -3,9 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Beibei Xiong, Weijie Jiang
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -40,6 +41,8 @@ Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
 
 -/
+
+@[expose] public section
 
 open Multiset Nat
 
@@ -182,7 +185,6 @@ which counts the number of partitions of a set of cardinality `n`.
 Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
 over all multisets `m : Multiset ℕ` such that `m.sum = n`.
 -/
-
 protected def bell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)

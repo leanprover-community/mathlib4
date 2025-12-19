@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Analysis.Complex.Norm
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Analysis.Complex.Norm
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function
@@ -22,6 +24,8 @@ This file contains the definitions of the real and complex exponential function.
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -53,7 +57,7 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-def exp (z : ℂ) : ℂ :=
+irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -139,7 +143,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   map_prod (M := Multiplicative ℂ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _ expMonoidHom _ _
 
 /-- This is a useful version of `exp_nsmul` for q-expansions of modular forms. -/
 lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
@@ -167,7 +171,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
-  dsimp [exp]
+  simp only [exp]
   rw [← lim_conj]
   refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
@@ -220,7 +224,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (M := Multiplicative ℝ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
@@ -449,6 +453,13 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
     _ ≤ ‖x‖ ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = ‖x‖ ^ 2 := by rw [mul_one]
 
+theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ = ‖x‖ ^ 2 := by simp
+
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖
       ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
@@ -568,7 +579,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   · simp [field]
-  · cutsat
+  · lia
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
@@ -594,7 +605,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   simp
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; lia]
   simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
@@ -667,7 +678,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : PositivityExt where eval {u α} _ _ e := do
+meta def evalExp : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
     assertInstancesCommute

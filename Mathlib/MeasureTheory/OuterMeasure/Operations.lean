@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures
@@ -22,6 +24,8 @@ We also show that outer measures on a type `α` form a complete lattice.
 outer measure
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -240,7 +244,7 @@ instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> in
 def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
-  mono {_ _} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
+  mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _

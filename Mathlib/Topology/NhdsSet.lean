@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Neighborhoods of a set
@@ -20,10 +22,12 @@ There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
 
 Furthermore, we have the following results:
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
-* In T₁-spaces, `𝓝ˢ`is strictly monotone and hence injective:
+* In T₁-spaces, `𝓝ˢ` is strictly monotone and hence injective:
   `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in
   `Mathlib/Topology/Separation/Basic.lean`.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

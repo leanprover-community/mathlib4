@@ -3,8 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 -/
+module
 
-import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.Defs
 
 /-!
 # Central Algebras
@@ -18,6 +19,8 @@ In this file, we prove some basic results about central algebras over a commutat
 - `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
+
+@[expose] public section
 
 universe u v
 

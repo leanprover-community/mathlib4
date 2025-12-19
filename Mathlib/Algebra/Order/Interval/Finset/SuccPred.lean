@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Order.Interval.Finset.SuccPred
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
 # Finset intervals in an additive successor-predecessor order
@@ -23,6 +25,8 @@ Please keep in sync with:
 
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
+
+@[expose] public section
 
 open Function Order OrderDual
 

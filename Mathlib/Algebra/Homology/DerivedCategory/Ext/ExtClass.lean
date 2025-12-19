@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
 /-!
 # The Ext class of a short exact sequence
@@ -14,6 +16,8 @@ in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -101,7 +105,7 @@ lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
 @[simp]
 lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h : 1 + n = n') :
     (Ext.mk₀ S.g).comp (hS.extClass.comp γ h) (zero_add n') = 0 := by
-  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by cutsat) (by cutsat) (by cutsat),
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     comp_extClass, Ext.zero_comp]
 
 @[simp]
@@ -115,7 +119,7 @@ lemma extClass_comp : hS.extClass.comp (Ext.mk₀ S.f) (add_zero 1) = 0 := by
 @[simp]
 lemma extClass_comp_assoc {Y : C} {n : ℕ} (γ : Ext S.X₂ Y n) {n' : ℕ} {h : 1 + n = n'} :
     hS.extClass.comp ((Ext.mk₀ S.f).comp γ (zero_add n)) h = 0 := by
-  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by cutsat) (by cutsat) (by cutsat),
+  rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     extClass_comp, Ext.zero_comp]
 
 end ShortExact

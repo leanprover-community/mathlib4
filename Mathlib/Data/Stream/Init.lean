@@ -3,14 +3,18 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Stream.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Stream.Defs
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
 -/
+
+@[expose] public section
 
 open Nat Function Option
 

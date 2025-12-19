@@ -3,11 +3,13 @@ Copyright (c) 2023 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Operator.Mul
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Analytic.OfScalars
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Various ways to combine analytic functions
@@ -18,6 +20,8 @@ We show that the following are analytic:
 2. Arithmetic on analytic functions: `mul`, `smul`, `inv`, `div`
 3. Finite sums and products: `Finset.sum`, `Finset.prod`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -399,7 +403,7 @@ alias AnalyticAt.along_snd := AnalyticAt.curry_right
 theorem AnalyticWithinAt.curry_right
     {f : E × F → G} {s : Set (E × F)} {p : E × F} (fa : AnalyticWithinAt 𝕜 f s p) :
     AnalyticWithinAt 𝕜 (fun y ↦ f (p.1, y)) {y | (p.1, y) ∈ s} p.2 :=
-  AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
+  AnalyticWithinAt.comp₂ fa analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
@@ -845,7 +849,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
     (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.ofScalars_radius_ge_inv_of_tendsto A _ one_ne_zero (by simp) |>.le
+    FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -895,7 +899,9 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       have : y = Units.ofNearby z y hy := rfl
       rw [this, Eq.comm]
       simp only [Ring.inverse_unit, Function.comp_apply]
-      simp [Units.ofNearby, f1, f2, f3, Units.add, _root_.mul_sub]
+      simp only [Units.ofNearby, Units.add, mul_sub, Units.inv_mul, neg_sub, add_sub_cancel,
+        mul_inv_rev, Units.val_mul, Units.val_inv_copy, Units.inv_eq_val_inv, Units.val_copy,
+        _root_.sub_sub_cancel, Units.mul_left_inj, f1, f2, f3]
       rw [← Ring.inverse_unit]
       congr
       simp

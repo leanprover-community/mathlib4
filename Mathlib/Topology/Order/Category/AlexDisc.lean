@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Specialization
+module
+
+public import Mathlib.Topology.Specialization
 
 /-!
 # Category of Alexandrov-discrete topological spaces
@@ -11,6 +13,8 @@ import Mathlib.Topology.Specialization
 This defines `AlexDisc`, the category of Alexandrov-discrete topological spaces with continuous
 maps, and proves it's equivalent to the category of preorders.
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology
 
@@ -26,7 +30,7 @@ instance : CoeSort AlexDisc (Type _) :=
   ⟨fun X => X.toTopCat⟩
 
 instance category : Category AlexDisc :=
-  InducedCategory.category toTopCat
+  inferInstanceAs (Category (InducedCategory _ toTopCat))
 
 instance concreteCategory : ConcreteCategory AlexDisc (C(·, ·)) :=
   InducedCategory.concreteCategory toTopCat
@@ -35,9 +39,13 @@ instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := InducedCategory.ha
 
 -- TODO: generalize to `InducedCategory.forget₂_full`?
 instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full where
-  map_surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨InducedCategory.homMk f, rfl⟩
 
 instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
+  map_injective {X Y f g} h := by
+    ext x
+    exact ConcreteCategory.congr_hom h x
+
 
 /-- Construct a bundled `AlexDisc` from the underlying topological space. -/
 abbrev of (X : Type*) [TopologicalSpace X] [AlexandrovDiscrete X] : AlexDisc where
@@ -53,8 +61,8 @@ lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
-  hom := TopCat.ofHom (e : ContinuousMap α β)
-  inv := TopCat.ofHom (e.symm : ContinuousMap β α)
+  hom := ConcreteCategory.ofHom (e : ContinuousMap α β)
+  inv := ConcreteCategory.ofHom (e.symm : ContinuousMap β α)
   hom_inv_id := by ext; apply e.symm_apply_apply
   inv_hom_id := by ext; apply e.apply_symm_apply
 
@@ -65,7 +73,7 @@ end AlexDisc
 def alexDiscEquivPreord : AlexDisc ≌ Preord where
   functor := forget₂ _ _ ⋙ topToPreord
   inverse.obj X := AlexDisc.of (WithUpperSet X)
-  inverse.map f := TopCat.ofHom (WithUpperSet.map f.hom)
+  inverse.map f := ConcreteCategory.ofHom (WithUpperSet.map f.hom)
   unitIso := NatIso.ofComponents fun X ↦ AlexDisc.Iso.mk <| by
     dsimp; exact homeoWithUpperSetTopologyorderIso X
   counitIso := NatIso.ofComponents fun X ↦ Preord.Iso.mk <| by
