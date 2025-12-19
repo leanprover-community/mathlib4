@@ -40,12 +40,8 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
     obtain ⟨κ', hκ', lt⟩ := HasCardinalLT.exists_regular_cardinal (Arrow J)
     have : Fact (κ₀ ⊔ κ₁ ⊔ κ').IsRegular :=
       ⟨iteInduction (fun a ↦ hκ') (fun a ↦ iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out))⟩
-    have hκ₀ : κ₀ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by
-      trans κ₀ ⊔ κ₁
-      all_goals simp
-    have hκ₁ : κ₁ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by
-      trans κ₀ ⊔ κ₁
-      all_goals simp
+    have hκ₀ : κ₀ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
+    have hκ₁ : κ₁ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
     have (k : J) : IsCardinalPresentable (diag.obj k) (κ₀ ⊔ κ₁ ⊔ κ') := by
       have := le _ (hx k)
       dsimp [isCardinalPresentable] at this
@@ -67,6 +63,5 @@ lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [Pr
   obtain ⟨d, hd, ⟨i⟩⟩ := hPQ _ (hx j)
   exact ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
     eqToHom (by simp) ≫ i.inv ≫ ι.app _, by simp [← w]⟩
-
 
 end CategoryTheory.Adjunction
