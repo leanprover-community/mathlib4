@@ -21,11 +21,6 @@ set_option linter.unusedVariables false
 
 open BigOperators Module.Free Fintype Matrix Set Polynomial Finset Complex Differentiable AnalyticAt
 
-lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
-  (s : Finset β) (f : β → γ) (Hs : s.Nonempty) :
-  ∃ x ∈ s, ∃ y, y = f x ∧ ∀ x' ∈ s, y ≤ f x' := by
-  obtain ⟨x, hxs, hx⟩ := s.exists_min_image f Hs
-  exact ⟨x, hxs, f x, rfl, hx⟩
 
 lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
   (∀ z ∈ U, f z = g z) → AnalyticOn ℂ f U → AnalyticOn ℂ g U := by
