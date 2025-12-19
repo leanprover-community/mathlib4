@@ -231,6 +231,8 @@ section Deprications
 @[deprecated (since := "2025-12-19")]
 alias Adapted.stronglyMeasurable := StronglyAdapted.stronglyMeasurable
 
+@[deprecated (since := "2025-12-19")] alias adapted_const' := stronglyAdapted_const'
+
 @[deprecated (since := "2025-12-19")] alias adapted_const := stronglyAdapted_const
 
 @[deprecated (since := "2025-12-19")] alias adapted_zero' := stronglyAdapted_zero'

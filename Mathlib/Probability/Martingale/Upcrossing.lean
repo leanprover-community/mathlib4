@@ -390,6 +390,9 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
   simp_rw [← not_le]
   exact hl.inter hu.compl
 
+@[deprecated (since := "2025-12-19")]
+alias Adapted.upcrossingStrat := StronglyAdapted.upcrossingStrat
+
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)) ℱ μ :=
