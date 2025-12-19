@@ -83,29 +83,29 @@ theorem isCartesian_of_isPullback_isTerminal_from {F G : J ⥤ C} (α : F ⟶ G)
 
 namespace IsCartesian
 
-theorem comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : IsCartesian α) (hβ : IsCartesian β) :
-    IsCartesian (α ≫ β) :=
-  fun _ _ f => (hα f).paste_vert (hβ f)
+theorem comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} :
+    IsCartesian α → IsCartesian β → IsCartesian (α ≫ β) :=
+  fun cα cβ _ _ f => (cα f).paste_vert (cβ f)
 
 theorem whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C}
-    {α : F ⟶ G} (hα : IsCartesian α) (H : K ⥤ J) : IsCartesian (whiskerLeft H α) :=
-  fun _ _ f => hα (H.map f)
+    {α : F ⟶ G} (H : K ⥤ J) :
+  IsCartesian α → IsCartesian (whiskerLeft H α) :=
+  fun cα _ _ f => cα (H.map f)
 
-theorem whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : IsCartesian α) (H : C ⥤ D)
+theorem whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (H : C ⥤ D)
     [∀ (X Y : J) (f : X ⟶ Y), PreservesLimit (cospan (α.app Y) (G.map f)) H] :
-    IsCartesian (whiskerRight α H) :=
-  fun _ _ f => (hα f).map H
+    IsCartesian α → IsCartesian (whiskerRight α H) :=
+  fun cα _ _ f => (cα f).map H
 
 theorem hcomp {K : Type*} [Category K] {F G : J ⥤ C} {M N : C ⥤ K} {α : F ⟶ G} {β : M ⟶ N}
-    (hα : IsCartesian α) (hβ : IsCartesian β)
     [∀ (X Y : J) (f : Y ⟶ X), PreservesLimit (cospan (α.app X) (G.map f)) M] :
-    IsCartesian (NatTrans.hcomp α β) := by
-  have H := hα.whiskerRight M |>.comp (hβ.whiskerLeft G)
-  intros X Y f
-  specialize H f
-  simp only [Functor.comp_obj, Functor.comp_map, comp_app, whiskerRight_app, whiskerLeft_app,
-  naturality] at H
-  exact H
+    IsCartesian α → IsCartesian β → IsCartesian (α ◫ β) :=
+  fun cα cβ => by
+    have H := cα.whiskerRight M |>.comp (cβ.whiskerLeft G)
+    intro X Y f
+    specialize H f
+    simpa [Functor.comp_obj, Functor.comp_map, comp_app, whiskerRight_app, whiskerLeft_app,
+    naturality] using H
 
 open TwoSquare
 
@@ -117,9 +117,9 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u
 
 variable {C₅ : Type u₅} {C₆ : Type u₆} {C₇ : Type u₇} {C₈ : Type u₈}
   [Category.{v₅} C₅] [Category.{v₆} C₆] [Category.{v₇} C₇] [Category.{v₈} C₈]
-  {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}
+  {T' : C₂ ⥤ C₅} {R' : C₅ ⥤ C₆} {B' : C₄ ⥤ C₆} {L'' : C₃ ⥤ C₇} {R'' : C₄ ⥤ C₈} {B'' : C₇ ⥤ C₈}
 
-theorem vComp {w : TwoSquare T L R B} {w' : TwoSquare B L' R'' B''}
+theorem vComp {w : TwoSquare T L R B} {w' : TwoSquare B L'' R'' B''}
     [∀ (X Y : C₁) (f : Y ⟶ X), PreservesLimit (cospan (w.app X) ((L ⋙ B).map f)) R''] :
     IsCartesian w → IsCartesian w' → IsCartesian (w ≫ᵥ w') :=
   fun cw cw' =>
