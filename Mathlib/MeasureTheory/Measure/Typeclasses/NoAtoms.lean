@@ -141,42 +141,26 @@ open Filter TopologicalSpace
 
 variable {X : Type*} [EMetricSpace X] [MeasurableSpace X]
 
+/-- If a subset of a topological space has no accumulation points,
+then it carries the discrete topology. -/
+lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
+    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun x => ?_
+  simp only [accPt_iff_frequently, not_frequently, ne_eq, not_and] at h
+  obtain ⟨U, hU_mem, hU⟩ := Filter.eventually_iff_exists_mem.mp (h x x.2)
+  obtain ⟨V, hVU, hV_open, hxV⟩ := mem_nhds_iff.mp hU_mem
+  exact ⟨V, hV_open, Set.ext fun y => ⟨fun hyV => by_contra fun hne =>
+    hU y (hVU hyV) (Subtype.coe_ne_coe.mpr hne) y.2, fun hy => hy ▸ hxV⟩⟩
+
 /-- If a set has positive measure under an atomless measure, then it has an accumulation point. -/
 theorem exists_accPt_of_noAtoms {X : Type*} {E : Set X}
     [EMetricSpace X] [MeasurableSpace X]
     (μ : Measure X) [NoAtoms μ] (h_sep : TopologicalSpace.IsSeparable E) (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
-  have h_discrete : DiscreteTopology E := by
-    have h_isolated : ∀ x ∈ E, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ U ∩ E = {x} := by
-      intro x hx
-      specialize h x
-      rw [accPt_iff_frequently] at h
-      simp only [ne_eq, not_frequently, not_and] at h
-      obtain ⟨w, hw, hsep⟩ := EMetric.mem_nhds_iff.mp h
-      use EMetric.ball x w, EMetric.isOpen_ball, EMetric.mem_ball_self hw
-      ext y; simp only [mem_inter_iff, mem_singleton_iff]
-      refine ⟨fun ⟨hy, hyE⟩ => by_contra fun hne => hsep (EMetric.mem_ball.mp hy) hne hyE,
-              fun hy => by rw [hy]; exact ⟨EMetric.mem_ball_self hw, hx⟩⟩
-    refine discreteTopology_iff_isOpen_singleton.mpr fun x => ?_
-    obtain ⟨U, hU_open, hxU, hU_eq⟩ := h_isolated x x.2
-    refine ⟨U, hU_open, ?_⟩
-    ext y
-    simp only [mem_preimage, mem_singleton_iff, Subtype.ext_iff]
-    constructor
-    · intro hy
-      have : (y : X) ∈ U ∩ E := ⟨hy, y.2⟩
-      rw [hU_eq] at this
-      exact this
-    · intro hy
-      rw [hy]
-      exact hxU
-  have h_countable : Countable E := by
-    classical
-    have hsepE : SeparableSpace E := h_sep.separableSpace
-    simpa using (TopologicalSpace.separableSpace_iff_countable (α := E)).1 hsepE
-  have : μ E = 0 := E.countable_coe_iff.mp h_countable |>.measure_zero μ
-  exact hE.ne' this
+  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
+  exact hE.ne' <| (TopologicalSpace.separableSpace_iff_countable.mp h_sep.separableSpace
+    |> E.countable_coe_iff.mp).measure_zero μ
 
 end
 
