@@ -588,10 +588,6 @@ theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflT
       | refl => apply refl
       | tail _ h₂ IH => exact trans IH h₂, single⟩
 
-lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr₂ : Transitive r')
-    (h : Subrelation r r') : Subrelation (ReflTransGen r) r' := fun hxy ↦ by
-  simpa [reflTransGen_eq_self hr₁ hr₂] using ReflTransGen.mono h hxy
-
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
 theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ trans
@@ -754,9 +750,10 @@ theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : 
 
 theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
     (ht : Transitive r) (h : Subrelation r' r) : Subrelation (ReflTransGen r') r := fun h' ↦ by
-  induction h' with
-  | refl => exact hr _
-  | tail _ hbc ih => exact ht ih <| h hbc
+  simpa [reflTransGen_eq_self hr ht] using ReflTransGen.mono h h'
+
+@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
+  reflTransGen_of_transitive_reflexive
 
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (Subrelation r' r) → Subrelation (ReflTransGen r') r :=
