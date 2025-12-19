@@ -20,8 +20,10 @@ of the theorem. The main definition is `HasRankNullity.{u} R`, which states that
 2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
 
 The following instances are provided in mathlib:
-1. `DivisionRing.hasRankNullity` for division rings in `LinearAlgebra/Dimension/DivisionRing.lean`.
-2. `IsDomain.hasRankNullity` for commutative domains in `LinearAlgebra/Dimension/Localization.lean`.
+1. `DivisionRing.hasRankNullity` for division rings in
+   `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`.
+2. `IsDomain.hasRankNullity` for commutative domains in
+   `Mathlib/LinearAlgebra/Dimension/Localization.lean`.
 
 TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondition R]`.
 See `nonempty_oreSet_of_strongRankCondition` for a start.
@@ -103,7 +105,7 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
-    rw [Subtype.coe_mk, ← hsec x,mkQ_apply, Quotient.mk_eq_zero]
+    rw [Subtype.coe_mk, ← hsec x, mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,

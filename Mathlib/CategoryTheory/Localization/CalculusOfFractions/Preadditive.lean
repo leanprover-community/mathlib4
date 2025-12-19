@@ -26,7 +26,7 @@ As `L` is essentially surjective, we finally transport these abelian group struc
 to `X' ⟶ Y'` for all `X'` and `Y'` in `D`.
 
 Preadditive category instances are defined on the categories `W.Localization`
-(and `W.Localization'`) under the assumption the `W` has a left calculus of fractions.
+(and `W.Localization'`) under the assumption that `W` has a left calculus of fractions.
 (It would be easy to deduce from the results in this file that if `W` has a right calculus
 of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)

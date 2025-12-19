@@ -31,7 +31,7 @@ lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
   · intro
     refine ⟨?_, fun a b ↦ ?_⟩
     · have := Finite.of_injective (fun (a : C) ↦ Arrow.mk (𝟙 a))
-        (fun _ _  ↦ congr_arg Comma.left)
+        (fun _ _ ↦ congr_arg Comma.left)
       apply Fintype.ofFinite
     · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
         (fun f g h ↦ by
@@ -39,7 +39,7 @@ lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
           congr)
       apply Fintype.ofFinite
   · rintro ⟨_⟩
-    have := Fintype.ofEquiv  _ (Arrow.equivSigma C).symm
+    have := Fintype.ofEquiv _ (Arrow.equivSigma C).symm
     infer_instance
 
 instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
