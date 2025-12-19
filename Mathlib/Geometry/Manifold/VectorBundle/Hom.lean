@@ -174,7 +174,7 @@ Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`
+`inCoordinates`, see `ContMDiffWithinAt.clm_bundle_apply`.
 -/
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
@@ -215,7 +215,7 @@ Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but n
 a point.
 
 For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
-`inCoordinates`, see `ContMDiffAt.clm_bundle_apply`
+`inCoordinates`, see `ContMDiffAt.clm_bundle_apply`.
 -/
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
