@@ -82,13 +82,13 @@ theorem alternating_sum_choose_mul_eq_iff' (f g : ℕ → G) :
     ring_nf
     simp
   · rw [alternating_sum_choose_mul_eq_iff (fun n ↦ (-1) ^ n • f n) g]
-    refine forall_congr' ?_
+    apply forall_congr'
     intro n
     rw [← IsUnit.smul_left_cancel (y := f n) (isUnit_neg_one_pow (R := ℤ) n)]
     refine Eq.congr ?_ rfl
     rw [smul_sum]
     congr! 1
-    rw [smul_smul, ← mul_assoc, ← pow_add, ← add_assoc, ← Nat.two_mul n, pow_add]
+    rw [smul_smul, ← mul_assoc, ← pow_add, ← add_assoc, ← Nat.two_mul, pow_add]
     simp
 
 theorem alternating_sum_choose_mul_choose (n m : ℕ) :
