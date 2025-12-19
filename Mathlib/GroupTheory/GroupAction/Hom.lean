@@ -417,8 +417,6 @@ end MulActionHom
 
 namespace MulActionHom
 
-section
-
 variable {R M N X Y : Type*} {σ : M → N}
 
 attribute [local simp] map_smulₛₗ smul_sub
@@ -540,6 +538,46 @@ instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
 
 instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
+
+section
+
+/-- For a monoid `M` acting on a type `X`, the `M`-equivariant functions from `X` to itself
+form a monoid under composition. -/
+@[to_additive /-- For an additive monoid `M` acting on a type `X`, the `M`-equivariant functions
+from `X` to itself form an additive monoid under composition. -/]
+local instance instMonoidEnd [SMul M X] : Monoid (X →[M] X) where
+  mul f g := f.comp g
+  mul_assoc _ _ _ := rfl
+  one := .id _
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+@[to_additive (attr := simp)] theorem mul_def [SMul M X] {f g : X →[M] X} : f * g = f.comp g := rfl
+
+/-- The `M`-equivariant functions from a monoid `M` to itself are exactly
+right multiplications by elements of `M`. See also `RingEquiv.moduleEndSelf`. -/
+@[to_additive (attr := simps)
+/-- The `M`-equivariant functions from an additive monoid `M` to itself are exactly
+right additions by elements of `M`. -/]
+def equivMulOpposite [Monoid M] : (M →[M] M) ≃* Mᵐᵒᵖ where
+  toFun f := .op (f 1)
+  invFun m := .mk (· * m.unop) fun _ _ ↦ mul_assoc ..
+  left_inv f := by ext m; change m • f 1 = _; rw [← map_smul, smul_eq_mul, mul_one]
+  right_inv := mul_one
+  map_mul' f g := congr_arg MulOpposite.op <| by
+    dsimp [← smul_eq_mul]; simp_rw [← map_smul, smul_eq_mul, mul_one]; rfl
+
+/-- The functions from a monoid `M` to itself equivariant with respect to the right `M`-action
+are exactly left multiplications by elements of `M`. See also `RingEquiv.moduleEndSelfOp`. -/
+@[to_additive (attr := simps)
+/-- The functions from an additive monoid `M` to itself equivariant with respect to
+the right `M`-action are exactly left additions by elements of `M`. -/]
+def mulOppositeEquiv [Monoid M] : (M →[Mᵐᵒᵖ] M) ≃* M where
+  toFun f := f 1
+  invFun m := .mk (m * ·) fun _ _ ↦ (mul_assoc ..).symm
+  left_inv f := by ext m; change MulOpposite.op m • f 1 = _; simp [← map_smul]
+  right_inv := mul_one
+  map_mul' f g := show _ = MulOpposite.op (g 1) • f 1 by simp [← map_smul]
 
 end
 
