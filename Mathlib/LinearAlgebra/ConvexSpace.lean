@@ -37,7 +37,6 @@ universe issues with indexed families.
 
 ## TODO
 
-* Complete the proofs for `StdSimplex.map` and `StdSimplex.join`.
 * Show that an `AffineSpace` is a `ConvexSpace`.
 * Show that `lineMap` agrees with `convexComboPair` where defined.
 * Show the usual associativity law for binary convex combinations follows from the `assoc` axiom.
