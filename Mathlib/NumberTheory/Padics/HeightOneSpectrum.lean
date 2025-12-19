@@ -45,6 +45,11 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
   isomorphism `v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[natGenerator v]`.
 - `PadicInt.adicCompletionIntegersEquiv p` : the continuous `ℤ`-algebra isomorphism
   `ℤ_[p] ≃A[ℤ] (primesEquiv.symm p).adicCompletionIntegers ℚ`.
+
+TODO : Abstract the isomorphisms in this file using a universal predicate on adic completions,
+along the lines of `IsComplete` + uniformity arises from a valuation + the valuations are
+equivalent. It is best to do this after `Valued` has been refactor, or at least after
+`adicCompletion` has `IsValuativeTopology` instance.
 -/
 
 @[expose] public section
@@ -72,8 +77,7 @@ noncomputable def Rat.intEquiv : R ≃+* ℤ :=
 
 namespace Rat.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsFractionRing R ℚ]
-  [IsIntegralClosure R ℤ ℚ]
+variable {R : Type*} [CommRing R] [Algebra R ℚ] [IsFractionRing R ℚ] [IsIntegralClosure R ℤ ℚ]
 
 /-- If `v : HeightOneSpectrum R` then `natGenerator v` is the generator in `ℕ` of the corresponding
 ideal in `ℤ`. -/
