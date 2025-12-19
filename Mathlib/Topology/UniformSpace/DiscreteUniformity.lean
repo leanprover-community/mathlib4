@@ -39,11 +39,18 @@ theorem _root_.discreteUniformity_iff_eq_principal_setRelId {X : Type*} [Uniform
     DiscreteUniformity X ↔ uniformity X = 𝓟 SetRel.id := by
   rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff, bot_uniformity]
 
+@[deprecated (since := "2025-12-19")]
+alias _root_.discreteUniformity_iff_eq_principal_relId :=
+  _root_.discreteUniformity_iff_eq_principal_setRelId
+
 @[deprecated (since := "2025-10-17")]
-alias _root_.discreteUniformity_iff_eq_principal_idRel := discreteUniformity_iff_eq_principal_setRelId
+alias _root_.discreteUniformity_iff_eq_principal_idRel :=
+  discreteUniformity_iff_eq_principal_setRelId
 
 theorem eq_principal_setRelId : uniformity X = 𝓟 SetRel.id :=
   discreteUniformity_iff_eq_principal_setRelId.mp inferInstance
+
+@[deprecated (since := "2025-12-19")] alias eq_principal_relId := eq_principal_setRelId
 
 @[deprecated (since := "2025-10-17")]
 alias eq_principal_idRel := eq_principal_setRelId
@@ -56,6 +63,10 @@ instance : DiscreteTopology X where
 theorem _root_.discreteUniformity_iff_setRelId_mem_uniformity {X : Type*} [UniformSpace X] :
     DiscreteUniformity X ↔ SetRel.id ∈ uniformity X := by
   rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
+
+@[deprecated (since := "2025-12-19")]
+alias _root_.discreteUniformity_iff_relId_mem_uniformity :=
+  _root_.discreteUniformity_iff_setRelId_mem_uniformity
 
 @[deprecated (since := "2025-10-17")]
 alias _root_.discreteUniformity_iff_idRel_mem_uniformity :=
