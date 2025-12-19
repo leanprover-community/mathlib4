@@ -141,7 +141,7 @@ protected theorem stronglyAdapted [LE E] (hf : Supermartingale f ℱ μ) : Stron
 
 protected theorem stronglyMeasurable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) :
     StronglyMeasurable[ℱ i] (f i) :=
-  hf.adapted i
+  hf.stronglyAdapted i
 
 protected theorem integrable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
   hf.2.2 i
