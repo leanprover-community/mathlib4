@@ -32,15 +32,17 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
 namespace LinearMap
 
-variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
+variable {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
 NB. It is only a transvection when `f v = 0`. See also `Module.preReflection`. -/
 def transvection (f : Module.Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
-  map_add' x y := by simp only [map_add]; module
-  map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul]; module
+  map_add' x y := by
+    simp only [map_add, add_add_add_comm]
+    simp [add_assoc, add_smul]
+  map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_eq_mul, smul_add, mul_smul]
 
 namespace transvection
 
@@ -50,8 +52,8 @@ theorem apply (f : Module.Dual R V) (v x : V) :
 
 theorem comp_of_left_eq_apply {f : Module.Dual R V} {v w : V} {x : V} (hw : f w = 0) :
     transvection f v (transvection f w x) = transvection f (v + w) x := by
-  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hw, smul_add]
-  module
+  simp only [transvection, coe_mk, AddHom.coe_mk, map_add,
+    map_smul, hw, smul_add, zero_smul, add_zero, add_assoc]
 
 theorem comp_of_left_eq {f : Module.Dual R V} {v w : V} (hw : f w = 0) :
     (transvection f v) ∘ₗ (transvection f w) = transvection f (v + w) := by
@@ -59,8 +61,8 @@ theorem comp_of_left_eq {f : Module.Dual R V} {v w : V} (hw : f w = 0) :
 
 theorem comp_of_right_eq_apply {f g : Module.Dual R V} {v : V} {x : V} (hf : f v = 0) :
     (transvection f v) (transvection g v x) = transvection (f + g) v x := by
-  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul, hf, add_apply]
-  module
+  simp only [transvection, coe_mk, AddHom.coe_mk, map_add, map_smul,
+    hf, add_apply, zero_smul, add_zero, add_smul, add_assoc]
 
 theorem comp_of_right_eq {f g : Module.Dual R V} {v : V} (hf : f v = 0) :
     (transvection f v) ∘ₗ (transvection g v) = transvection (f + g) v := by
@@ -78,7 +80,13 @@ theorem of_right_eq_zero (f : Module.Dual R V) :
   ext
   simp [transvection]
 
+theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
+    (f : Module.Dual R V) (v : V) (e : V ≃ₗ[R] W) :
+    e ∘ₗ (transvection f v) ∘ₗ e.symm = transvection (f ∘ₗ e.symm) (e v) := by
+  ext; simp [transvection.apply]
+
 theorem eq_id_of_finrank_le_one
+    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
     [Module.Free R V] [Module.Finite R V] [StrongRankCondition R]
     {f : Module.Dual R V} {v : V}
     (hfv : f v = 0) (h1 : Module.finrank R V ≤ 1) :
@@ -111,14 +119,9 @@ theorem eq_id_of_finrank_le_one
     rw [Fin.eq_mk_iff_val_eq]
     simpa [h1, Nat.lt_one_iff] using j.prop
 
-theorem congr {W : Type*} [AddCommMonoid W] [Module R W]
-    (f : Module.Dual R V) (v : V) (e : V ≃ₗ[R] W) :
-    e ∘ₗ (transvection f v) ∘ₗ e.symm = transvection (f ∘ₗ e.symm) (e v) := by
-  ext; simp [transvection.apply]
-
 end LinearMap.transvection
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
 namespace LinearEquiv
 
@@ -188,41 +191,38 @@ end LinearEquiv.transvection
 
 section baseChange
 
-namespace LinearMap.transvection
-
-open LinearMap LinearEquiv
+open IsBaseChange LinearMap LinearEquiv
 
 open scoped TensorProduct
 
-variable {A : Type*} [CommRing A] [Algebra R A]
+variable
+    {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
+    (A : Type*) [CommSemiring A] [Algebra R A]
 
-variable (A) in
-theorem baseChange (f : Module.Dual R V) (v : V) :
+theorem LinearMap.transvection.baseChange (f : Module.Dual R V) (v : V) :
     (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
   ext; simp [transvection, TensorProduct.tmul_add]
-
-theorem _root_.LinearEquiv.transvection.baseChange
-    {f : Module.Dual R V} {v : V} (h : f v = 0)
-    (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
-    (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
-  simp [← toLinearMap_inj, coe_baseChange,
-    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
-
-open IsBaseChange
 
 variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
-theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
+theorem IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endHom_comp_apply, toDual_comp_apply]
+  | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]
 
-end LinearMap.transvection
+theorem _root_.LinearEquiv.transvection.baseChange
+    {R V A : Type*} [CommRing R] [AddCommGroup V]
+    [Module R V] [CommRing A] [Algebra R A]
+    {f : Module.Dual R V} {v : V} (h : f v = 0)
+    (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
+    (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
+  simp [← toLinearMap_inj, coe_baseChange,
+    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
 
 end baseChange
 
@@ -279,7 +279,9 @@ theorem exists_basis_of_pairing_ne_zero
       simp [Finsupp.single_eq_of_ne h, this]
     rw [← LinearMap.mem_ker, ← hs, Module.Basis.coe_mk]
     apply Submodule.subset_span
-    grind
+    simp only [id_eq]
+    apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
+    simp [← hi, b, Subtype.coe_inj, Ne.symm h]
 
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v = 0`,
@@ -393,6 +395,8 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
 
 end Field
 
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+
 theorem Module.Free.of_det_ne_one {f : V →ₗ[R] V} (hf : f.det ≠ 1) :
     Module.Free R V := by
   by_cases H : ∃ s : Finset V, Nonempty (Module.Basis s R V)
@@ -490,7 +494,8 @@ end determinant
 
 namespace SpecialLinearGroup
 
-variable {f : Module.Dual R V} {v : V} (hfv : f v = 0)
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+    {f : Module.Dual R V} {v : V} (hfv : f v = 0)
 
 /-- Transvections in the special linear group. -/
 def transvection : SpecialLinearGroup R V :=
