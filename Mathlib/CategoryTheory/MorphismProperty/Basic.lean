@@ -161,7 +161,7 @@ def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
 
 lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
-    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+    (⨆ i, W i).toSet = ⋃ i, (W i).toSet := by
   ext
   simp [mem_toSet_iff]
 

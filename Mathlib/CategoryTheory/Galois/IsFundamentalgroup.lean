@@ -49,6 +49,7 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 -/
 
 @[expose] public section
+
 universe u₁ u₂ w
 
 namespace CategoryTheory
@@ -68,8 +69,9 @@ on `F.obj X` and `F.obj Y` are compatible with `F.map f`. -/
 class IsNaturalSMul : Prop where
   naturality (g : G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) : F.map f (g • x) = g • F.map f x
 
+set_option backward.privateInPublic true in
 variable {G} in
-@[simps!]
+@[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
   FintypeCat.equivEquivIso <| {
     toFun := fun x ↦ g • x
@@ -80,22 +82,23 @@ private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
 
 variable [IsNaturalSMul F G]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical
 group homomorphism into the automorphism group of `F`. -/
 def toAut : G →* Aut F where
   toFun g := NatIso.ofComponents (isoOnObj F g) <| by
     intro X Y f
     ext
-    simp [IsNaturalSMul.naturality]
+    exact (IsNaturalSMul.naturality _ _ _).symm
   map_one' := by
     ext
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, one_smul]
-    rfl
+    dsimp [isoOnObj]
+    cat_disch
   map_mul' := by
     intro g h
     ext X x
-    simp only [NatIso.ofComponents_hom_app, isoOnObj_hom, mul_smul]
-    rfl
+    apply mul_smul
 
 variable {G} in
 @[simp]
@@ -156,9 +159,9 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))
   let px : F.obj P := is₁.inv (is₂.symm x)
   have hpx (i : ι) : F.map (Pi.π X i) px = x i := by
-    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom]
-    simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply,
-      FintypeCat.productEquiv_symm_comp_π_apply]
+    simp only [px, is₁, is₂, ← piComparison_comp_π, ← PreservesProduct.iso_hom,
+      FintypeCat.comp_apply]
+    rw [FintypeCat.inv_hom_id_apply, FintypeCat.productEquiv_symm_comp_π_apply]
   obtain ⟨A, f, a, _, hfa⟩ := exists_hom_from_galois_of_fiber F P px
   obtain ⟨g, hg⟩ := toAut_surjective_isGalois F G t A
   refine ⟨g, fun i y ↦ action_ext_of_isGalois F (x i) ?_ _⟩
