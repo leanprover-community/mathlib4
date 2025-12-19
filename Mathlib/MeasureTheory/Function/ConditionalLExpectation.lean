@@ -27,14 +27,14 @@ should be considered "the" measurable function which satisfies `setLIntegral_con
 (which is proven unique up to `P`-ae measurable equality in `eq_condLExp`). The actual definition
 is just used to show existence. However for (potential) convenience the actual definition assigns
 `P⁻[X|mΩ] := X` in the case when `X` is `mΩ`-measurable (which can be invoked using
-`condLExp_eq_self`),
+`condLExp_eq_self`).
 
 ## Main Statements
 
 * `condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) : Ω → ℝ≥0∞`: conditional
-  (lebesgue) expectation of `X` with respect to `mΩ`
+  (lebesgue) expectation of `X` with respect to `mΩ`.
 * `setLIntegral_condLExp (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) (hs : MeasurableSet[mΩ] s)`:
-  For any `mΩ`-measurable set `s`, `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`
+  For any `mΩ`-measurable set `s`, `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`.
 * `eq_condLExp (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) (hs : MeasurableSet[mΩ] s)` : the conditional
   (lebesgue) expectation is characterized by its lintegral on `mΩ` sets up to `P`-ae equality.
 
@@ -58,8 +58,7 @@ variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω}
 open Classical in
 /-- Conditional (lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
-It is defined as `0` if either `mΩ` is not a sub-σ-algebra of `mΩ₀` or `P` is
-not `σ-finite` with respect to `mΩ`.
+It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
 
 One should typically not use the definition directly.
 -/
