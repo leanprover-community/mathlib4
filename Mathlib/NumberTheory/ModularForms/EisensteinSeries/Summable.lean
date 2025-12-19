@@ -249,7 +249,7 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
-  simpa [pow_two] using (linear_inv_isBigO_right_add c₂ 0 z).mul 
+  simpa [pow_two] using (linear_inv_isBigO_right_add c₂ 0 z).mul
     (linear_inv_isBigO_right_add c₁ 1 z)
 
 lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
@@ -265,7 +265,7 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   have h0 : z ∈ verticalStrip |z.re| (z.im) := by simp [mem_verticalStrip_iff]
   use ‖r ⟨⟨|z.re|, z.im⟩, z.2⟩‖⁻¹
   filter_upwards with m
-  apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using 
+  apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
     summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
   simp [abs_of_pos (r_pos _)]
   aesop
@@ -285,7 +285,7 @@ lemma isLittleO_const_vec (a b : ℤ) :
 lemma vec_add_const_isTheta (a b : ℤ) :
     (fun (m : Fin 2 → ℤ) => ‖![m 0 + a, m 1 + b]‖⁻¹) =Θ[cofinite] (fun m => ‖m‖⁻¹) := by
   have (x : Fin 2 → ℤ) : ![x 0 + a, x 1 + b] = x + ![a, b] := List.ofFn_inj.mp rfl
-  simpa only [isTheta_inv, isTheta_norm_left, this] 
+  simpa only [isTheta_inv, isTheta_norm_left, this]
     using (IsTheta.add_isLittleO (by rw [← isTheta_norm_left]) (isLittleO_const_vec a b))
 
 lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
