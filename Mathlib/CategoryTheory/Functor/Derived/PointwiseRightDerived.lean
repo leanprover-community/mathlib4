@@ -12,11 +12,14 @@ public import Mathlib.CategoryTheory.Localization.StructuredArrow
 /-!
 # Pointwise right derived functors
 
-We define the pointwise right derived functors using the notion
+We define pointwise right derived functors using the notion
 of pointwise left Kan extensions.
 
 We show that if `F : C ⥤ H` inverts `W : MorphismProperty C`,
 then it has a pointwise right derived functor.
+
+Note: the file `Functor.Derived.PointwiseLeftDerived` was obtained
+by dualizing this file. These two files should be kept in sync.
 
 -/
 
