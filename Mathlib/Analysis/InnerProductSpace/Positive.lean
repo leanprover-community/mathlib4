@@ -130,6 +130,11 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
 open ComplexOrder in
+theorem IsPositive.ne_zero_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) :
+    T ≠ 0 ↔ ∃ x, 0 < inner 𝕜 (T x) x := by
+  simp [← hT.isSymmetric.inner_map_self_eq_zero, lt_iff_le_and_ne', hT.inner_nonneg_left]
+
+open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
