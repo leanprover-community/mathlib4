@@ -24,15 +24,16 @@ open Function OrderDual
 
 variable {ι α β : Type*}
 
-attribute [local instance] PosMulReflectLT.toMulPosReflectLT
-
 section LinearOrderedSemifield
 variable [Semifield α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
   {a b c d e : α} {m n : ℤ}
 
+attribute [local instance] PosMulReflectLT.toMulPosReflectLT
+
 /-!
 ### Relating one division and involving `1`
 -/
+
 
 @[bound]
 theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
@@ -78,6 +79,7 @@ theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by
 ### Relating two divisions, involving `1`
 -/
 
+
 theorem one_div_le_one_div_of_le (ha : 0 < a) (h : a ≤ b) : 1 / b ≤ 1 / a := by
   simpa using inv_anti₀ ha h
 
@@ -112,6 +114,7 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 ### Results about halving.
 The equalities also hold in semifields of characteristic `0`.
 -/
+
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
   div_pos h zero_lt_two
@@ -151,6 +154,7 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 /-!
 ### Miscellaneous lemmas
 -/
+
 
 @[simp] lemma div_pos_iff_of_pos_left (ha : 0 < a) : 0 < a / b ↔ 0 < b := by
   simp only [div_eq_mul_inv, mul_pos_iff_of_pos_left ha, inv_pos]
@@ -308,6 +312,7 @@ variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n 
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
 
+
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero]
 
@@ -340,8 +345,7 @@ theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b :=
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc)
       _ ≥ b * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
-      _ = b / c := (div_eq_mul_one_div b c).symm
-      ⟩
+      _ = b / c := (div_eq_mul_one_div b c).symm⟩
 
 theorem div_le_iff_of_neg' (hc : c < 0) : b / c ≤ a ↔ c * a ≤ b := by
   rw [mul_comm, div_le_iff_of_neg hc]
