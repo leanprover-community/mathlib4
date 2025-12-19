@@ -436,8 +436,8 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
   separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
 /-- In a field `F`, for any `t ∈ F` and `n > 0`, the polynomial `X ^ n - t` is separable
-    iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
-    is separable iff `t ≠ 1`. -/
+iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
+is separable iff `t ≠ 1`. -/
 theorem X_pow_sub_C_separable_iff {n : ℕ} {x : F} (hn : 0 < n) (hx : x ≠ 0) :
     (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
   refine ⟨fun h hn' ↦ ?_, fun h => separable_X_pow_sub_C x h hx⟩
