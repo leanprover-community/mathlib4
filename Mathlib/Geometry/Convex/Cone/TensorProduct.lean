@@ -146,14 +146,6 @@ theorem minTensorProduct_comm :
     LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
     Set.image2_swap (· ⊗ₜ[R] · : H → G → _)]
 
-omit [LinearOrder R] [IsStrictOrderedRing R] in
-/-- Helper lemma: swapping order of duals and tensor product preserves evaluation. -/
-private lemma dualDistrib_comm_swap {M N : Type*} [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (φ : Dual R M) (ψ : Dual R N) (z : M ⊗[R] N) :
-    dualDistrib R N M (ψ ⊗ₜ[R] φ) ((TensorProduct.comm R M N) z) =
-      dualDistrib R M N (φ ⊗ₜ[R] ψ) z := by
-  induction z <;> simp_all [mul_comm]
-
 /-- The maximal tensor product is commutative. -/
 @[simp]
 theorem maxTensorProduct_comm :
@@ -162,10 +154,11 @@ theorem maxTensorProduct_comm :
   simp only [mem_map, mem_maxTensorProduct]
   constructor
   · rintro ⟨w, hw, rfl⟩ ψ hψ φ hφ
-    simpa only [LinearEquiv.coe_coe, dualDistrib_comm_swap] using hw φ hφ ψ hψ
+    simpa only [LinearEquiv.coe_coe, dualDistrib_apply_comm, TensorProduct.comm_tmul]
+      using hw φ hφ ψ hψ
   · intro hz
     refine ⟨(TensorProduct.comm R H G) z, ?_, (TensorProduct.comm R H G).symm_apply_apply z⟩
     intro φ hφ ψ hψ
-    simpa only [dualDistrib_comm_swap] using hz ψ hψ φ hφ
+    simpa only [dualDistrib_apply_comm, TensorProduct.comm_tmul] using hz ψ hψ φ hφ
 
 end PointedCone
