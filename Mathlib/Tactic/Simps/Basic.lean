@@ -904,6 +904,9 @@ structure Config where
   /-- The name of the source declaration being processed by @[simps]. Used internally to check
   whether the definition body is exposed, to avoid @[defeq] validation errors. -/
   srcDeclName : Name := Name.anonymous
+  /-- Whether the source definition body is exposed. When false, we skip @[defeq] inference to
+  avoid validation errors. Computed once at initialization to avoid repeated checks. -/
+  bodyExposed : Bool := false
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -1004,8 +1007,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       value := declValue }
   -- Only infer @[defeq] if the source definition body is exposed, to avoid validation errors.
   -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.40.5Bsimps.5D.20respects.20non-exposed.20body.3F
-  let bodyExposed := (← getEnv).setExporting true |>.find? cfg.srcDeclName |>.any (·.hasValue)
-  if bodyExposed then
+  if cfg.bodyExposed then
     inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
@@ -1210,7 +1212,8 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
-  let mut cfg := { cfg with srcDeclName := d.name }
+  let bodyExposed := (← getEnv).setExporting true |>.find? d.name |>.any (·.hasValue)
+  let mut cfg := { cfg with srcDeclName := d.name, bodyExposed := bodyExposed }
   let nm : NameStruct :=
     { parent := nm.getPrefix
       components :=
