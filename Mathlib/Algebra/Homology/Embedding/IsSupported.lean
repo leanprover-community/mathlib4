@@ -86,9 +86,7 @@ variable {K L} in
 lemma isSupported_iff_of_quasiIso [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [QuasiIso φ] :
     K.IsSupported e ↔ L.IsSupported e := by
-  simp only [isSupported_iff]
-  exact forall_congr' (fun i' ↦ forall_congr'
-    (fun hi' ↦ exactAt_iff_of_quasiIsoAt φ _))
+  simp [isSupported_iff, exactAt_iff_of_quasiIsoAt φ]
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by
