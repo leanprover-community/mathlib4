@@ -12,7 +12,7 @@ public import Mathlib.Topology.Instances.Discrete
 # Adapted and progressively measurable processes
 
 This file defines the related notions of a process `u` being `StronglyAdapted` or `ProgMeasurable`
-(progressively measurable) with respect to a filter `f`, and proves some basic facts about them.
+(progressively measurable) with respect to a filtration `f`, and proves some basic facts about them.
 
 ## Main definitions
 
