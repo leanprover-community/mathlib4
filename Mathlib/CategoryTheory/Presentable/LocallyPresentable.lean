@@ -60,9 +60,9 @@ section Finite
 open Cardinal
 attribute [local instance] fact_isRegular_aleph0
 
-/-- A category is finitely locally presentable if it is locally `ℵ₀`-presentable. -/
-abbrev IsFinitelyLocallyPresentable :=
-  IsCardinalAccessibleCategory.{w} C ℵ₀
+/-- A category is locally finitely presentable if it is locally `ℵ₀`-presentable. -/
+abbrev IsLocallyFinitelyPresentable :=
+  IsCardinalLocallyPresentable.{w} C ℵ₀
 
 /-- A category is finitely accessible if it is `ℵ₀`-accessible. -/
 abbrev IsFinitelyAccessibleCategory :=
