@@ -722,7 +722,7 @@ end CommRing
 
 section VectorSpace
 
-variable {K V₁ V₂ : Type*} [Field K]
+variable {K V₁ V₂ : Type*} [DivisionRing K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Module.Dual
@@ -732,7 +732,7 @@ variable {f : Module.Dual K V₁}
 section
 variable (hf : f ≠ 0)
 
-lemma range_eq_top_of_ne_zero {K V₁ : Type*} [Semifield K] [AddCommMonoid V₁] [Module K V₁]
+lemma range_eq_top_of_ne_zero {K V₁ : Type*} [DivisionSemiring K] [AddCommMonoid V₁] [Module K V₁]
     {f : Module.Dual K V₁} (hf : f ≠ 0) : LinearMap.range f = ⊤ :=
   LinearMap.range_eq_top.mpr (LinearMap.surjective hf)
 
@@ -779,6 +779,9 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
   simp [h', hy, hy']
 
 end Module.Dual
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace LinearMap
 
