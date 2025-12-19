@@ -672,6 +672,38 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
   grw [← le_max_left]
 
+/-- If `fn` is `UnifIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
+    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
+  intro ε hε
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine eLpNorm_le_of_tendstoInMeasure
+    (Eventually.of_forall fun n => hδ' (s n) t ht ht') (hs.indicator t) ?_
+  exact fun n => (hfn (s n)).indicator ht
+
+/-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
+    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+  intro ε hε
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine Lp.eLpNorm_le_of_ae_tendsto
+    (Eventually.of_forall (f := u) fun n => hδ' (s n) t ht ht') ?_ ?_
+  · exact fun n => (hfn (s n)).indicator ht
+  · filter_upwards [hs] with a ha
+    by_cases memt : a ∈ t
+    · simpa [memt]
+    · simp [memt]
+
 end UnifIntegrable
 
 section UniformIntegrable
@@ -887,6 +919,31 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
   convert uniformIntegrable_average hp hf using 2 with n
   ext x
   simp [div_eq_inv_mul]
+
+/-- If `fn` is `UniformIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UniformIntegrable`. -/
+lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UniformIntegrable fn p μ) :
+    UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
+  refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_tendstoInMeasure u (fun i => hUI.1 i), ?_⟩
+  · exact hs.aestronglyMeasurable (fun n => hUI.1 (s n))
+  · obtain ⟨C, hC⟩ := hUI.2.2
+    exact ⟨C, fun ⟨f, s, hs⟩ => eLpNorm_le_of_tendstoInMeasure
+      (Eventually.of_forall fun n => hC (s n)) hs (fun n => hUI.1 (s n))⟩
+
+/-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
+`UniformIntegrable`. -/
+lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β}
+    (hUI : UniformIntegrable fn p μ) :
+    UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+  refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_ae_tendsto u (fun i => hUI.1 i), ?_⟩
+  · exact aestronglyMeasurable_of_tendsto_ae u (fun n => hUI.1 (s n)) hs
+  · obtain ⟨C, hC⟩ := hUI.2.2
+    exact ⟨C, fun ⟨f, s, hs⟩ => Lp.eLpNorm_le_of_ae_tendsto
+      (Eventually.of_forall fun n => hC (s n)) (fun n => hUI.1 (s n)) hs⟩
 
 end UniformIntegrable
 
