@@ -242,7 +242,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
   nontriviality A
   intro x hx
   by_cases hr' : r = 0
-  · simp [hr'] at hx ⊢
+  · simp only [hr', zero_smul, spectrum.zero_eq, Set.mem_singleton_iff] at hx ⊢
     exact hx.symm.le
   · lift r to ℝˣ using IsUnit.mk0 r hr'
     rw [← Units.smul_def, spectrum.unit_smul_eq_smul, Set.mem_smul_set_iff_inv_smul_mem] at hx

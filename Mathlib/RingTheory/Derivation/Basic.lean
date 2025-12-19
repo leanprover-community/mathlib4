@@ -320,6 +320,17 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
 
+variable (R A B M) in
+/-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
+is a `B`-linear map. -/
+@[simps!]
+def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    [IsScalarTower R B M] :
+    Derivation R B M →ₗ[B] Derivation R A M where
+  toFun d := d.compAlgebraMap A
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
@@ -486,7 +497,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
     rw [← zpow_natCast]
     congr
-    cutsat
+    lia
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
       ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
@@ -495,7 +506,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     rw [← zpow_sub₀ ha]
     congr 3
     · norm_cast
-    cutsat
+    lia
 
 end Field
 

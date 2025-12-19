@@ -130,14 +130,14 @@ by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
 -/
 def previousInstName : Name → Name
   | nm@(.str init tail) =>
-    let last := tail.takeRightWhile (· != '_')
+    let last := tail.takeEndWhile (· != '_')
     let newTail := match last.toNat? with
                     | some (n + 2) => s!"_{n + 1}"
                     | _ => ""
-    let newTailPrefix := tail.dropRightWhile (· != '_')
+    let newTailPrefix := tail.dropEndWhile (· != '_')
     if newTailPrefix.isEmpty then nm else
     let newTail :=
-      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+      (if newTailPrefix.back == '_' then newTailPrefix.dropEnd 1 else newTailPrefix).copy ++ newTail
     .str init newTail
   | nm => nm
 
