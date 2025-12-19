@@ -188,7 +188,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   -- we can choose a measurable function $g_{n}$
   -- such that $g_{n}(x) ≤ \min (f(x), n)$ for all $x$
   -- and both sides have the same integral over the whole space w.r.t. $μ$.
-  have (n : ℕ): ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
+  have (n : ℕ) : ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
       ∫⁻ a, min (f a) n ∂μ = ∫⁻ a, g a ∂μ := by
     simpa [and_assoc] using exists_measurable_le_lintegral_eq μ (f ⊓ n)
   choose g hgm hgf hgle hgint using this

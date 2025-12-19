@@ -67,7 +67,7 @@ differentiations of measure that apply in both contexts.
 -/
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/
-  setsAt :  X → Set (Set X)
+  setsAt : X → Set (Set X)
   /-- All sets of the family are measurable. -/
   measurableSet : ∀ x : X, ∀ s ∈ setsAt x, MeasurableSet s
   /-- All sets of the family have nonempty interior. -/

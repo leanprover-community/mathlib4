@@ -345,7 +345,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
         Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
-    exact this hf.toFinset _ (by simpa only [e] )
+    exact this hf.toFinset _ (by simpa only [e])
   clear ss b
   refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
@@ -396,7 +396,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
       exact (f.right_continuous a).mono Ioi_subset_Ici_self
     have B : f a - f a < δ := by rwa [sub_self, NNReal.coe_pos, ← ENNReal.coe_pos]
-    have :  (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
+    have : (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
     exact (((tendsto_order.1 A).2 _ B).and self_mem_nhdsWithin).exists
   have : Nonempty R := ⟨a⟩
   have : ∀ i, ∃ p : R × R, Icc a' b ∩ s i ⊆ Iotop p.1 p.2 ∧
