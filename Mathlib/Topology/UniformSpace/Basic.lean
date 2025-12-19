@@ -70,6 +70,19 @@ lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
     {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
   hs.relInv.relImage
 
+lemma IsClosed.relInv [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) : IsClosed s.inv :=
+  hs.preimage continuous_swap
+
+lemma IsClosed.relImage_of_finite [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set α} (ht : t.Finite) : IsClosed (s.image t) := by
+  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  exact ht.isClosed_biUnion fun _ _ => hs.preimage <| .prodMk_right _
+
+lemma IsClosed.relPreimage_of_finite [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set β} (ht : t.Finite) : IsClosed (s.preimage t) :=
+  hs.relInv.relImage_of_finite ht
+
 section UniformSpace
 
 variable [UniformSpace α]
