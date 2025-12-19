@@ -551,7 +551,7 @@ variable [LinearOrderedCommGroupWithZero Γ₀]
   This is true, for example, when `A` is a finite field.
   See `Valuation.FiniteField.instIsTrivialOnConstants`. -/
 class IsTrivialOnConstants {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
-  (v : Valuation B Γ₀) where trivial : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
+  (v : Valuation B Γ₀) where eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
 attribute [grind =>] IsTrivialOnConstants.trivial
 
@@ -559,7 +559,7 @@ variable {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B] (v : Va
   [IsTrivialOnConstants A v]
 
 @[simp]
-theorem IsTrivialOnConstants.integer : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
+theorem IsTrivialOnConstants.valuation_map_le_one : ∀ a : A, v (algebraMap A B a) ≤ 1 := by
   intro a
   by_cases a = 0 <;> grind [zero_le']
 
