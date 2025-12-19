@@ -22,7 +22,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 ## Main statements
 
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
-* Zeroes of T and U: `T_real_roots_eq`, `U_real_roots_eq`
+* Zeroes of T and U: `roots_T_real`, `roots_U_real`
 * Extrema of T: `T_real_eval_at_extremum`, `T_real_extrema_eq`
 
 ## TODO
@@ -96,39 +96,69 @@ theorem abs_eval_T_real_le_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
   · intro hx; exact abs_eval_T_real_le_one n hx
   · intro hx; contrapose! hx; exact one_lt_abs_eval_T_real hn hx
 
-theorem eval_T_real_eq_cos {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |(T ℝ n).eval x| ≤ 1) :
-    (T ℝ n).eval x = cos (n * arccos x) := by
-  have := (abs_eval_T_real_le_one_iff hn x).mpr hx
-  rw [← T_real_cos, cos_arccos (by grind) (by grind)]
-
-
-/-- `T_real_roots n` is the set of roots of `T ℝ n`. -/
-noncomputable def T_real_roots (n : ℕ) : Finset ℝ :=
-  (Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
-
-@[simp]
-theorem card_T_real_roots (n : ℕ) : (T_real_roots n).card = n := by
+theorem roots_T_real (n : ℕ) :
+    (T ℝ n).roots =
+    ((Finset.range n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))).val := by
   by_cases n = 0
-  case pos hn => simp [T_real_roots, hn]
-  case neg hn =>
-    rw [T_real_roots, Finset.card_image_of_injOn, Finset.card_range]
-    apply injOn_cos.comp (by aesop)
-    intro k hk
-    apply Set.mem_Icc.mpr
-    constructor
-    · positivity
-    · field_simp
+  case pos hn => simp [hn]
+  case neg =>
+  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+      rw [← hx, T_real_cos, cos_eq_zero_iff]
+      use k
+      field_simp
       norm_cast
-      grind
+    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
+      apply injOn_cos.comp (by aesop)
+      intro k hk
+      apply Set.mem_Icc.mpr
+      constructor
+      · positivity
+      · field_simp
+        norm_cast
+        grind
 
-theorem T_real_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_real_roots n).val := by
-  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) (by simp)
-  obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-  rw [← hx, T_real_cos, cos_eq_zero_iff]
-  use k
-  field_simp
-  norm_cast
+theorem rootMultiplicity_T_real {n k : ℕ} (hk : k < n) :
+    (T ℝ n).rootMultiplicity (cos ((2 * k + 1) * π / (2 * n))) = 1 := by
+  rw [← count_roots, roots_T_real, Multiset.count_eq_one_of_mem (by simp)]
+  grind
 
+theorem roots_U_real (n : ℕ) :
+    (U ℝ n).roots =
+    ((Finset.range n).image (fun (k : ℕ) => cos ((k + 1) * π / (n + 1)))).val := by
+  by_cases n = 0
+  case pos hn => simp [hn]
+  case neg =>
+  · refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) ?_
+    · obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
+      suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
+        apply (mul_eq_zero_iff_right (ne_of_gt ?_)).mp this
+        apply sin_pos_of_pos_of_lt_pi (by positivity)
+        field_simp
+        norm_cast
+        grind
+      rw [← hx, U_real_cos, sin_eq_zero_iff]
+      use k + 1
+      field_simp
+      norm_cast
+      ring
+    · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
+      apply injOn_cos.comp
+      · intro x hx y hy hxy
+        field_simp at hxy
+        aesop
+      · intro k hk
+        apply Set.mem_Icc.mpr
+        constructor
+        · positivity
+        · field_simp
+          norm_cast
+          grind
+
+theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
+    (U ℝ n).rootMultiplicity (cos ((k + 1) * π / (n + 1))) = 1 := by
+  rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
+  grind
 
 /-- `T_real_extrema n` is the set of extremal points of `T ℝ n` in [-1, 1]. -/
 noncomputable def T_real_extrema (n : ℕ) : Finset ℝ :=
@@ -195,40 +225,5 @@ theorem T_real_extrema_eq {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   · rintro ⟨k, hk, hx⟩
     have := T_real_eval_at_extremum hnℤ k
     aesop
-
-
-/-- `U_real_roots n` is the set of roots of `U ℝ n`. -/
-noncomputable def U_real_roots (n : ℕ) : Finset ℝ :=
-  (Finset.range n).image (fun (k : ℕ) => cos ((k + 1) * π / (n + 1)))
-
-@[simp]
-theorem card_U_real_roots (n : ℕ) : (U_real_roots n).card = n := by
-  rw [U_real_roots, Finset.card_image_of_injOn, Finset.card_range]
-  apply injOn_cos.comp
-  · intro x hx y hy hxy
-    field_simp at hxy
-    aesop
-  · intro k hk
-    apply Set.mem_Icc.mpr
-    constructor
-    · positivity
-    · field_simp
-      norm_cast
-      grind
-
-theorem U_real_roots_eq {n : ℕ} : (U ℝ n).roots = (U_real_roots n).val := by
-  refine roots_eq_of_degree_eq_card (fun x hx ↦ ?_) (by simp)
-  obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp hx
-  suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
-    apply (mul_eq_zero_iff_right (ne_of_gt ?_)).mp this
-    apply sin_pos_of_pos_of_lt_pi (by positivity)
-    field_simp
-    norm_cast
-    grind
-  rw [← hx, U_real_cos, sin_eq_zero_iff]
-  use k + 1
-  field_simp
-  norm_cast
-  ring
 
 end Polynomial.Chebyshev
