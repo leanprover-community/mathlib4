@@ -26,6 +26,7 @@ universe w v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
+set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure CommAlgCat where
   private mk ::
@@ -47,6 +48,8 @@ instance : CoeSort (CommAlgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] carrier
 
 variable (R) in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `CommAlgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
@@ -54,6 +57,7 @@ abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommAlgCat R`. -/
 @[ext]
 structure Hom (A B : CommAlgCat.{v} R) where
@@ -61,11 +65,15 @@ structure Hom (A B : CommAlgCat.{v} R) where
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (CommAlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (CommAlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

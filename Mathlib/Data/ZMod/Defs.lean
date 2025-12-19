@@ -74,6 +74,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
 
+set_option backward.privateInPublic true in
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
@@ -82,6 +83,8 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Distributive structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with

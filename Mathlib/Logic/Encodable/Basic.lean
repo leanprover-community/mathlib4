@@ -475,19 +475,26 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
+set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
+set_option backward.privateInPublic true in
 private def decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 attribute [local instance] decidable_good
 
 open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=

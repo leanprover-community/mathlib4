@@ -97,6 +97,7 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
 -- Split out from the following instance for faster elaboration.
+set_option backward.privateInPublic true in
 private theorem mapTriangleCommShiftIso_add
     [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
@@ -105,6 +106,8 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   commShiftIso := F.mapTriangleCommShiftIso

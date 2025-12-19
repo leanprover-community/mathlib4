@@ -56,13 +56,16 @@ def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
 
 section
 
+#adaptation_note /-- Removed `private`:
+`ofFunctor` was marked `private` in #31807,
+but we have removed this when disabling `set_option backward.privateInPublic` as a global option. -/
 /--
 The type of 1-morphisms in the bicategory of categories `Cat`.
 This is a structure around `Functor` to prevent defeq-abuse
 -/
 @[ext]
 structure Hom (C D : Cat.{v, u}) where
-  private ofFunctor ::
+  ofFunctor ::
   /-- The Functor underlying a 1-morphism in Cat -/
   toFunctor : C ⥤ D
 
@@ -99,12 +102,15 @@ and the type of functors between the categories corresponding to those objects.
 def Hom.equivFunctor (C D : Cat.{v, u}) :
     (C ⟶ D) ≃ C ⥤ D := (equivCatHom _ _).symm
 
+#adaptation_note /-- Removed `private`:
+`ofNatTrans` was marked `private` in #31807,
+but we have removed this when disabling `set_option backward.privateInPublic` as a global option. -/
 /--
 The type of 2-morphisms in the bicategory of categories `Cat`.
 This is a wrapper around `NatTrans` to prevent defeq-abuse.
 -/
 structure Hom₂ {C D : Cat.{v, u}} (F G : C ⟶ D) where
-  private ofNatTrans ::
+  ofNatTrans ::
   /-- The natural transformation underlying a 2-morphism in `Cat` -/
   toNatTrans : F.toFunctor ⟶ G.toFunctor
 

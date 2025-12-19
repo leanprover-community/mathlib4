@@ -93,10 +93,14 @@ theorem heq_path_of_eq_image :
   apply Path.Homotopic.hpath_hext
   exact hfg
 
+set_option backward.privateInPublic true in
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
+set_option backward.privateInPublic true in
 private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem eq_path_of_eq_image :
     (πₘ (TopCat.ofHom f)).map ⟦p⟧ =
         hcast (start_path hfg) ≫ (πₘ (TopCat.ofHom g)).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by

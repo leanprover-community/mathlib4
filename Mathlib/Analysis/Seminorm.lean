@@ -565,6 +565,7 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   rw [Seminorm.sSup_apply bddAbove_empty, Real.iSup_of_isEmpty]
   rfl
 
+set_option backward.privateInPublic true in
 private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
   refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
@@ -573,6 +574,8 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs�
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
 Note that, while `inf`, `sup` and `sSup` have good definitional properties (corresponding to

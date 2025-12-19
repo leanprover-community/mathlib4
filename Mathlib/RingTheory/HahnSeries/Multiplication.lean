@@ -561,6 +561,7 @@ section Ring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
+set_option backward.privateInPublic true in
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z = x * (y * z) := by
   ext b
   rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
@@ -570,6 +571,8 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
   mul_assoc := mul_assoc'
 
@@ -680,6 +683,7 @@ namespace HahnModule
 
 variable [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
+set_option backward.privateInPublic true in
 private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
   ext b
@@ -694,6 +698,8 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
   inferInstanceAs <| Module R V⟦Γ'⟧
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   inferInstanceAs (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with

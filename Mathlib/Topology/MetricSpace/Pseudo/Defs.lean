@@ -93,6 +93,7 @@ export Dist (dist)
 
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
+set_option backward.privateInPublic true in
 /-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
@@ -103,6 +104,8 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.

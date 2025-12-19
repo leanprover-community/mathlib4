@@ -496,16 +496,19 @@ variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
       ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for isomorphisms between lax braided functors. -/
 def isoOfComponents :
     F ≅ G :=
   fullyFaithfulForget.preimageIso
     (LaxMonoidalFunctor.isoOfComponents e naturality unit tensor)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma isoOfComponents_hom_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).hom.hom.hom.app X = (e X).hom := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma isoOfComponents_inv_hom_hom_app (X : C) :
     (isoOfComponents e naturality unit tensor).inv.hom.hom.app X = (e X).inv := rfl

@@ -138,6 +138,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   have : a ∉ U := fun H ↦ ha.not_gt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
+set_option backward.privateInPublic true in
 /-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
@@ -168,6 +169,8 @@ private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCom
   · exact (Finset.max'_subset _ <| erase_subset _ _).trans_lt (max_lt.trans_le <| le_max' _ _ <|
       mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If we're compressed by all useful compressions, then we're an initial segment. This is the other
 key Kruskal-Katona part. -/
 lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ : Set (Finset α)).Sized r)

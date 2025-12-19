@@ -521,6 +521,8 @@ instance [Infinite α] : Infinite (Equiv.Perm α) := by
 
 namespace Infinite
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -529,6 +531,8 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
@@ -543,6 +547,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩

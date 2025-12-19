@@ -66,14 +66,18 @@ Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any n
 compact type to `GHSpace`. -/
 section GHSpace
 
+set_option backward.privateInPublic true in
 /-- Equivalence relation identifying two nonempty compact sets which are isometric -/
 private def IsometryRel (x : NonemptyCompacts ℓ_infty_ℝ) (y : NonemptyCompacts ℓ_infty_ℝ) : Prop :=
   Nonempty (x ≃ᵢ y)
 
+set_option backward.privateInPublic true in
 /-- This is indeed an equivalence relation -/
 private theorem equivalence_isometryRel : Equivalence IsometryRel :=
   ⟨fun _ => Nonempty.intro (IsometryEquiv.refl _), fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e⟩ ⟨f⟩ => ⟨e.trans f⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
 instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
   Setoid.mk IsometryRel equivalence_isometryRel

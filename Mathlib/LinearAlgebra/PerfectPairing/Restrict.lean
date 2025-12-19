@@ -45,6 +45,7 @@ variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Modu
 
 include hi hj hij
 
+set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toPerfPair.symm := by
@@ -73,6 +74,8 @@ lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 set_option linter.deprecated false in
 /-- The restriction of a perfect pairing to submodules (expressed as injections to provide
 definitional control). -/
@@ -92,6 +95,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -115,6 +119,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
+set_option backward.privateInPublic true in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
@@ -145,6 +150,8 @@ lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
   bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM fun m n ↦ hp n m,
     p.flip.restrictScalars_surjective_aux j i h₂ fun m n ↦ hp n m⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 set_option linter.deprecated false in
 /-- Restriction of scalars for a perfect pairing taking values in a subring. -/
 @[deprecated IsPerfPair.restrictScalars (since := "2025-05-28")]

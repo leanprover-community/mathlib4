@@ -306,15 +306,23 @@ variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
       whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
       by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_left (c : C) : (mkNatTrans αₗ αᵣ h).app (left c) = αₗ.app c := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_right (d : D) : (mkNatTrans αₗ αᵣ h).app (right d) = αᵣ.app d := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclLeft_mkNatTrans : whiskerLeft (inclLeft C D) (mkNatTrans αₗ αᵣ h) = αₗ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclRight_mkNatTrans :
     whiskerLeft (inclRight C D) (mkNatTrans αₗ αᵣ h) = αᵣ := rfl

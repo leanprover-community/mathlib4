@@ -85,6 +85,7 @@ theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
 
+set_option backward.privateInPublic true in
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
 private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
     Finset (Finset α × Finset α) :=
@@ -121,6 +122,8 @@ private lemma pairwiseDisjoint_distinctPairs :
 
 variable [Nonempty α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (hε₁ : ε ≤ 1)
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5) :
     (G.edgeDensity x.1.1 x.1.2 : ℝ) ^ 2 +

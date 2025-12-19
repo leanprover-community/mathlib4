@@ -449,6 +449,7 @@ private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricS
   (prod_antilipschitzWith_ofLp_aux p α β).isUniformInducing
     (prod_lipschitzWith_ofLp_aux p α β).uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
   rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity]
@@ -457,6 +458,7 @@ private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β
 instance instProdBornology (p : ℝ≥0∞) (α β : Type*) [Bornology α] [Bornology β] :
     Bornology (WithLp p (α × β)) := Bornology.induced ofLp
 
+set_option backward.privateInPublic true in
 private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     @cobounded _ PseudoMetricSpace.toBornology = cobounded (WithLp p (α × β)) :=
   le_antisymm (prod_antilipschitzWith_ofLp_aux p α β).tendsto_cobounded.le_comap
@@ -577,6 +579,8 @@ end ContinuousLinearEquiv
 /-! Throughout the rest of the file, we assume `1 ≤ p`. -/
 variable [hp : Fact (1 ≤ p)]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -588,6 +592,8 @@ edistance, and having as uniformity the product uniformity. -/
 instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
   EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :

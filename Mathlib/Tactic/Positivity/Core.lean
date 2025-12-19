@@ -410,6 +410,7 @@ def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   trace[Tactic.positivity] "{e} => {result.toString}"
   throwNone (pure result)
 
+set_option backward.privateInPublic true in
 private inductive OrderRel : Type
 | le : OrderRel -- `0 ≤ a`
 | lt : OrderRel -- `0 < a`

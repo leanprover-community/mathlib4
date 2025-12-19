@@ -67,10 +67,12 @@ namespace MeasureTheory.Measure
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
+set_option backward.privateInPublic true in
 /-- Every temperate growth measure defines a tempered distribution. -/
 def toTemperedDistribution : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
 
+set_option backward.privateInPublic true in
 @[simp]
 theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
     μ.toTemperedDistribution g = ∫ (x : E), g x ∂μ := by

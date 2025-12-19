@@ -383,6 +383,7 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
+set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in
@@ -398,6 +399,8 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   use N p p
   simpa [mul_apply, single, ite_and] using NxMI p p
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-07-28")] alias jacobson_matricesOver_le := jacobson_matrix_le
 
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/

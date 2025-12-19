@@ -404,6 +404,7 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι] [∀ i, DecidableEq (M i)]
 
+set_option backward.privateInPublic true in
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -418,6 +419,8 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
           property := by subst ij; simp [rcons, h2] }
       else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
 def equivPair (i) : Word M ≃ Pair M i where

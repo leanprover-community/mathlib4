@@ -646,6 +646,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
 @[deprecated (since := "2025-05-08")]
 alias adj_spanningCoe_induce_supp := adj_spanningCoe_toSimpleGraph
 
+set_option backward.privateInPublic true in
 /-- Get the walk between two vertices in a connected component from a walk in the original graph. -/
 private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) (p : G.Walk u v) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ := by
@@ -656,8 +657,12 @@ private def walk_toSimpleGraph' {G : SimpleGraph V} (C : G.ConnectedComponent) {
     have h' : C.toSimpleGraph.Adj ⟨u, hu⟩ ⟨w, hw⟩ := h
     exact Walk.cons h' (C.walk_toSimpleGraph' hw hv p)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-05-08")] alias reachable_induce_supp := walk_toSimpleGraph'
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- There is a walk between every pair of vertices in a connected component. -/
 noncomputable def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C) (hv : v ∈ C) : C.toSimpleGraph.Walk ⟨u, hu⟩ ⟨v, hv⟩ :=

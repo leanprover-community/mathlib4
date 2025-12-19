@@ -158,6 +158,7 @@ def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon D where
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
+set_option backward.privateInPublic true in
 /-- Functor translating a comonoid object in a functor category
 to a functor into the category of comonoid objects.
 -/
@@ -179,6 +180,7 @@ def inverseObj (F : C ⥤ Comon D) : Comon (C ⥤ D) where
   { counit := { app X := ε[(F.obj X).X] }
     comul := { app X := Δ[(F.obj X).X] } }
 
+set_option backward.privateInPublic true in
 /-- Functor translating a functor into the category of comonoid objects
 to a comonoid object in the functor category
 -/
@@ -192,6 +194,7 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
 
+set_option backward.privateInPublic true in
 /-- The unit for the equivalence `Comon (C ⥤ D) ≌ C ⥤ Comon D`.
 -/
 @[simps!]
@@ -200,6 +203,9 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
     { hom := .mk' { app := fun _ => 𝟙 _ }
       inv := .mk' { app := fun _ => 𝟙 _ } })
 
+-- probably this was originally also intended to be a private def
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
 @[simps!]
@@ -211,6 +217,8 @@ end ComonFunctorCategoryEquivalence
 
 open ComonFunctorCategoryEquivalence
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- When `D` is a monoidal category,
 comonoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the comonoid objects of `D`.

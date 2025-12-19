@@ -49,6 +49,7 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
+set_option backward.privateInPublic true in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
     ⁅z, v⁆ ∈ weightSpace V χ := by
@@ -144,6 +145,8 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [pow_zero, Module.End.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (R V) in
 /-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
 Lie submodule for `L`. -/

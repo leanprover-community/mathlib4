@@ -55,6 +55,7 @@ theorem flatten_splitBy (r : α → α → Bool) (l : List α) : (l.splitBy r).f
   | nil => rfl
   | cons _ _ => flatten_splitByLoop
 
+set_option backward.privateInPublic true in
 private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ splitBy.loop r l a g [] := by
   induction l generalizing a g with
@@ -66,8 +67,12 @@ private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a
     · rw [splitByLoop_eq_append, mem_append]
       simpa using IH
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with

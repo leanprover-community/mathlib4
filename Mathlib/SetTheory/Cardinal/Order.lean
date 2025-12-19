@@ -208,11 +208,14 @@ theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
+set_option backward.privateInPublic true in
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
   rw [← mk_option]
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
