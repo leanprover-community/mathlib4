@@ -431,9 +431,15 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
             throwTacticEx `depRewrite mvarId
               m!"internal error: output{indentExpr eAbst}\nof dabstract is not a lambda"
           /-
-          If `depRewrite` rewrites the expression, but `cleanupCasts` exactly undoes this rewrite,
-          then after a since call to `rw!` the goal will remain unchanged, even though
-          the rewrite succeeded.
+          This error message may not show up in cases that it could reasonably be expected
+          to show up in while using `rw!`.
+          In the case that the `depRewrite` step finds an
+          instance of the pattern to rewrite with, and it does the rewrite, but then the
+          `cleanupCasts` step happens and the result of the `cleanupCasts` step is
+          syntactically equal to the original expression.
+          Then the error message would be skipped, because `depRewrite` found instances
+          of the pattern to rewrite, even though the final result of the `rw!` call
+          is the same as the original expression.
           -/
           if !eBody.hasLooseBVars then
             throwTacticEx `depRewrite mvarId
