@@ -705,8 +705,7 @@ lemma isOrthogonal_iff_pairing_eq_zero [NeZero (2 : R)] [NoZeroSMulDivisors R M]
 
 lemma isFixedPt_reflectionPerm_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     IsFixedPt (P.reflectionPerm i) j ↔ P.pairing i j = 0 := by
-  refine ⟨fun h ↦ ?_, P.reflectionPerm_eq_of_pairing_eq_zero'⟩
-  simpa [P.ne_zero i, pairing_eq_zero_iff, IsFixedPt, reflectionPerm_eq_iff_smul_root] using h
+  simp [P.ne_zero i, pairing_eq_zero_iff, IsFixedPt, reflectionPerm_eq_iff_smul_root]
 
 @[deprecated (since := "2025-05-28")]
 alias isFixedPt_reflection_perm_iff := isFixedPt_reflectionPerm_iff
