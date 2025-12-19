@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Arcosh
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
@@ -22,9 +23,8 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 ## Main statements
 
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
-* Values of x such that |T_n(x)| = 1: `abs_eval_T_real_eq_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
-* Local extrema of T: `isLocalExtr_T_real`
+* Local extrema of T: `isLocalExtr_T_real_iff`
 -/
 
 @[expose] public section
@@ -265,5 +265,26 @@ theorem isLocalExtr_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k
   cases k.even_or_odd
   case inl hk₂ => exact .inr (isLocalMax_T_real hn hk₀ hk₁ hk₂)
   case inr hk₂ => exact .inl (isLocalMin_T_real hn hk₁ hk₂)
+
+theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
+    IsLocalExtr (T ℝ n).eval x ↔ ∃ k ∈ Finset.Ioo 0 n, x = cos (k * π / n) := by
+  constructor
+  · intro hx
+    replace hx := hx.deriv_eq_zero
+    rw [Polynomial.deriv, T_derivative_eq_U, eval_mul, Int.cast_natCast, eval_natCast,
+      mul_eq_zero_iff_left (by aesop)] at hx
+    replace hx : x ∈ (U ℝ (n - 1)).roots :=
+      (mem_roots (degree_ne_bot.mp (ne_of_eq_of_ne (by grind [degree_U_natCast])
+        (WithBot.natCast_ne_bot (n - 1))))).mpr hx
+    rw [show (n - 1 : ℤ) = (n - 1 : ℕ) by grind, roots_U_real] at hx
+    obtain ⟨k, hk₁, hx⟩ := Finset.mem_image.mp hx
+    refine ⟨k + 1, Finset.mem_Ioo.mpr ⟨k.zero_lt_succ, by grind⟩, ?_⟩
+    rw [← hx]
+    congr <;> norm_cast
+    exact Nat.sub_add_cancel (Nat.one_le_of_lt hn)
+  · rintro ⟨k, hk, hx⟩
+    rw [hx]
+    exact isLocalExtr_T_real (Nat.ne_zero_of_lt hn)
+      (Finset.mem_Ioo.mp hk).1 (Finset.mem_Ioo.mp hk).2
 
 end Polynomial.Chebyshev
