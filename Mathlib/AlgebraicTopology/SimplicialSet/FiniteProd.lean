@@ -78,7 +78,7 @@ instance (d₁ d₂ : ℕ) [X₁.HasDimensionLE d₁] [X₂.HasDimensionLE d₂]
 instance [X₁.Finite] [X₂.Finite] : (X₁ ⊗ X₂).Finite := by
   obtain ⟨d₁, _⟩ := X₁.hasDimensionLT_of_finite
   obtain ⟨d₂, _⟩ := X₂.hasDimensionLT_of_finite
-  have := hasDimensionLT_prod X₁ X₂ d₁ d₂ (d₁ + d₂) (by omega)
+  have := hasDimensionLT_prod X₁ X₂ d₁ d₂ (d₁ + d₂) (by lia)
   exact finite_of_hasDimensionLT _ (d₁ + d₂) (fun i hi ↦ inferInstance)
 
 open CartesianMonoidalCategory in
