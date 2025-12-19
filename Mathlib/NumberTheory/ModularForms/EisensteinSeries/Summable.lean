@@ -242,9 +242,8 @@ lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
-  simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
-  simpa [sub_eq_add_neg] using (linear_inv_isBigO_right_add c₂ 0 z).mul
-    (linear_inv_isBigO_right_add c₁ 0 z).comp_neg_int
+  simpa [pow_two] using (linear_inv_isBigO_right_add c₂ 0 z).mul
+      (linear_inv_isBigO_right_add c₁ 0 z).comp_neg_int
 
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
@@ -270,23 +269,17 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   simp [abs_of_pos (r_pos _)]
   aesop
 
-lemma isLittleO_const_vec (a b : ℤ) :
-    (fun _ : (Fin 2 → ℤ) ↦ ![a, b]) =o[cofinite] (fun x ↦ ‖x‖) := by
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Asymptotics.isLittleO_const_left,
-    Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true]
-  right
-  apply Filter.tendsto_atTop.mpr (fun r ↦ ?_)
-  simp only [Function.comp_apply, norm_norm, eventually_cofinite, not_le]
-  apply IsCompact.finite_of_discrete
-  apply Metric.isCompact_of_isClosed_isBounded (isClosed_discrete {v | ‖v‖ < r})
-  simp_rw [← dist_zero, dist_comm]
-  exact Metric.isBounded_ball
+lemma isLittleO_const_left_of_properSpace_of_discreteTopology
+    {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]
+    [ProperSpace α] : (fun _ : α ↦ a) =o[cofinite] (‖·‖) := by
+  simpa [isLittleO_const_left, Function.comp_def] using
+    .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding IsClosedEmbedding.id
 
 lemma vec_add_const_isTheta (a b : ℤ) :
     (fun (m : Fin 2 → ℤ) => ‖![m 0 + a, m 1 + b]‖⁻¹) =Θ[cofinite] (fun m => ‖m‖⁻¹) := by
   have (x : Fin 2 → ℤ) : ![x 0 + a, x 1 + b] = x + ![a, b] := List.ofFn_inj.mp rfl
-  simpa only [isTheta_inv, isTheta_norm_left, this]
-    using (IsTheta.add_isLittleO (by rw [← isTheta_norm_left]) (isLittleO_const_vec a b))
+  simpa only [isTheta_inv, isTheta_norm_left, this] using (IsTheta.add_isLittleO
+  (by rw [← isTheta_norm_left]) (isLittleO_const_left_of_properSpace_of_discreteTopology ![a, b]))
 
 lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
     (fun m : (Fin 2 → ℤ) => (((m 0 : ℂ) + a) * z + m 1 + b)⁻¹) =O[cofinite] (fun m => ‖m‖⁻¹) :=
