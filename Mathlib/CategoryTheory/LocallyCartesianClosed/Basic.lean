@@ -145,14 +145,14 @@ namespace ChosenPullbacks
 
 open ChosenPullbacksAlong
 
-attribute [instance] cartesianMonoidalCategoryOver
+attribute [local instance] cartesianMonoidalCategoryOver
 
 variable {X : C}
 
-/-- The push-pull object `(pullback Z.hom).obj Y` is isomorphic to the cartesian product
-`Y ⊗ Z` in the slice category `Over X`.
-Note: Whereas the left hand-side is defined in a computable way, the right hand-side relies on
-the non-constructive monoidal structure on `Over X` so this isomorphism is noncomputable.
+/-- The push-pull object `(Over.map Z.hom).obj ((pullback Z.hom).obj Y)` is isomorphic to the
+cartesian product `Y ⊗ Z` in the slice category `Over X`.
+Note: The monoidal structure of `Over X` is the one induced by the chosen pullbacks, namely
+the one provided by `cartesianMonoidalCategoryOver`.
 -/
 @[simps!]
 def mapPullbackIsoProd [ChosenPullbacks C] (Y Z : Over X) :
@@ -172,7 +172,9 @@ def pullbackMapNatIsoTensorRight [ChosenPullbacks C] (Z : Over X) :
     (fun Y => mapPullbackIsoProd Y Z)
     (by
       intro Y' Y f
-      simp
+      simp only [Functor.const_obj_obj, Functor.id_obj, Functor.comp_obj, Functor.flip_obj_obj,
+        curriedTensor_obj_obj, Functor.comp_map, mapPullbackIsoProd_hom, comp_id,
+        Functor.flip_obj_map, curriedTensor_map_app, id_comp]
       ext
       · simp only [Over.map_obj_left, whiskerRight_fst]
         apply pullback_map_left_fst
@@ -182,20 +184,12 @@ def pullbackMapNatIsoTensorRight [ChosenPullbacks C] (Z : Over X) :
 
 @[simp]
 theorem pullbackMapNatIsoTensorRight_hom_app [ChosenPullbacks C] {Y : Over X} (Z : Over X) :
-    (pullbackMapNatIsoTensorRight Z).hom.app Y = (mapPullbackIsoProd Y Z).hom := by
+    (pullbackMapNatIsoTensorRight Z).hom.app Y = 𝟙 _ := by
   cat_disch
 
-def _root_.Over.mapIsoMapLeft {Y Z : Over X} (g : Y ⟶ Z) :
-    Over.map g ≅ Y.iteratedSliceEquiv.functor ⋙ Over.map g.left ⋙ Z.iteratedSliceEquiv.inverse :=
-  NatIso.ofComponents
-    (fun A => by
-      simp [Over.map_obj_left]
-      fapply Over.isoMk
-      · simp
-        apply Iso.refl
-      · sorry
-        )
-
+def _root_.Over.mapIsoMapLeft {U V : Over X} (p : U ⟶ V) :
+    Over.map p ≅ U.iteratedSliceEquiv.functor ⋙ Over.map p.left ⋙ V.iteratedSliceEquiv.inverse :=
+  NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
 
 /-
 A
