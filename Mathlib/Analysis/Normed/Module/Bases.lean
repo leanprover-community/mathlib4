@@ -9,6 +9,9 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Analysis.Normed.Module.WeakDual
 
 @[expose] public section
 
@@ -16,6 +19,7 @@ noncomputable section
 
 universe u
 
+open Filter Topology LinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
@@ -95,13 +99,13 @@ theorem coeff_smul {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (c : 𝕜) (x : 
     rw [coeff_unique h (c • x) (fun n => c * a n) ⟨casum, this⟩]
 
 
+variable [CompleteSpace X]
+
 /-- A canonical projection associated to a Schauder basis. -/
 def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (P : ℕ → X →L[𝕜] X) : Prop  :=
     (∀ n : ℕ, ∀ x: X, (P n x = ∑ i ∈ Finset.range n, (coeff h x i) • e i))
 
 namespace CanonicalProjections
-
-open Filter Topology LinearMap
 
 theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) {P : ℕ → X →L[𝕜] X}
 (hp : CanonicalProjections h P) (n : ℕ) : Module.finrank 𝕜 (range (P n)) = n := by
@@ -117,6 +121,70 @@ theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e)
     Tendsto (fun n => P n x) atTop (𝓝 x) := by
     sorry
 
+theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e)
+    {P : ℕ → X →L[𝕜] X} (hp : CanonicalProjections h P) :
+    ∃ C : ℝ, ∀ n : ℕ, ‖P n‖ ≤ C := by
+    sorry
+
+def from_basis {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
+    { P: ℕ → X →L[𝕜] X | CanonicalProjections h P } := by
+      use fun n =>
+        LinearMap.mkContinuous_norm_le
+          (fun x => ∑ i ∈ Finset.range n, (coeff h x i) • e i)
+          (by sorry)
+
+
+lemma norm_by_projections_is_norm {e : ℕ → X} (h : SchauderBasis 𝕜 X e)
+    {P : ℕ → X →L[𝕜] X} (hp : CanonicalProjections h P) :
+    IsNorm (fun x => limsup (fun n => ‖P n x‖) atTop) := by
+    sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+theorem coeff_bounded_linear {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
+    ∃ f : X →L[𝕜] 𝕜, ∀ x : X, f x = coeff h x n := by
+    let linear_map : X →ₗ[𝕜] 𝕜 :=
+        { toFun := fun x => coeff h x n
+          map_add' := by
+            intros x y
+            rw [coeff_add h x y]
+            rfl
+          map_smul' := by
+            intros c x
+            rw [coeff_smul h c x]
+            rfl }
+    have bound :  ∀ x : X, ‖linear_map x‖ ≤ 1 * ‖x‖ := by
+        sorry
+    let f_continuous := LinearMap.mkContinuous linear_map 1 bound
+    use f_continuous
+    intro x
+    rfl
+
+
+
+
+
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n)
     (hcomp : ∀ m n : ℕ, P n ∘ P m = P (min n m))
@@ -126,10 +194,18 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     sorry
 
 
+
+
+
+
+def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e)
+    {P : ℕ → X →L[𝕜] X} (hp : CanonicalProjections h P) : ℝ :=
+    sInf { C : ℝ | ∀ n : ℕ, ‖P n‖ ≤ C }
+
 end CanonicalProjections
 
 
-variable [CompleteSpace X]
+
 
 
 variable (𝕜 X) in
@@ -150,6 +226,16 @@ theorem grunblum_criterion {e : ℕ → X} (K : ℝ) (hC : 1 < K)
         ‖∑ i ∈ Finset.range m, a i • e i‖ ≤ K * ‖∑ i ∈ Finset.range n, a i • e i‖) :
     BasicSequence 𝕜 X e := by
     sorry
+
+theorem basic_sequence_of_infinite_dim : ¬FiniteDimensional 𝕜 X →
+    ∃ e : ℕ → X, BasicSequence 𝕜 X e := by
+    sorry
+
+lemma exists_perpendicular_vector (S : Set (WeakDual 𝕜 X)) (h0w : 0 ∈ closure S)
+    (h0ns : 0 ∉ closure (WeakDual.toStrongDual '' S)) :
+     ∃ x : X, ∀ f ∈ S, f.toLinearMap x = 0 := by
+    sorry
+
 
 
 end BasicSequence
