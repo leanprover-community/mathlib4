@@ -120,12 +120,13 @@ theorem cyclotomic_mahlerMeasure_eq_one {R : Type*} [CommRing R] [Algebra R ℂ]
     ((cyclotomic n R).map (algebraMap R ℂ)).mahlerMeasure = 1 := by
   rcases eq_or_ne n 0 with hn | hn
   · simp [hn]
-  simp only [map_cyclotomic, mahlerMeasure_eq_leadingCoeff_mul_prod_roots, cyclotomic.monic n ℂ,
-    Monic.leadingCoeff, one_mem, CStarRing.norm_of_mem_unitary, one_mul]
-  apply Multiset.prod_eq_one
-  have : NeZero (n : ℂ) := @NeZero.charZero _ _ {out := hn} _ _
-  simpa [Polynomial.cyclotomic.roots_eq_primitiveRoots_val] using fun _ hz ↦ le_of_eq <|
-    IsPrimitiveRoot.norm'_eq_one (isPrimitiveRoot_of_mem_primitiveRoots hz) hn
+  have : NeZero n := ⟨hn⟩
+  suffices ∏ x ∈ primitiveRoots n ℂ, max 1 ‖x‖ = 1 by
+    simpa [mahlerMeasure_eq_leadingCoeff_mul_prod_roots, cyclotomic.monic n ℂ,
+      Polynomial.cyclotomic.roots_eq_primitiveRoots_val]
+  suffices ∀ x ∈ primitiveRoots n ℂ, ‖x‖ ≤ 1 from Multiset.prod_eq_one (by simpa)
+  intro _ hz
+  exact (IsPrimitiveRoot.norm'_eq_one (isPrimitiveRoot_of_mem_primitiveRoots hz) hn).le
 
 end Cyclotomic
 
