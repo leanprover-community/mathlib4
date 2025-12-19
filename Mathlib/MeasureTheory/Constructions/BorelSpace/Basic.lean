@@ -203,7 +203,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
-    OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
+    OpensMeasurableSpace α ↔ (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 

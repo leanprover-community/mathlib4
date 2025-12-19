@@ -199,7 +199,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
   let ε' := (b - a) / N
-  replace hε' : 0 < ε' ∧  ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
+  replace hε' : 0 < ε' ∧ ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
