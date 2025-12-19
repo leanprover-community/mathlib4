@@ -305,6 +305,7 @@ def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
 
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
+@[simps!]
 def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
     toOver X ⋙ pullback f ≅ toOver Y :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjToOver X))
