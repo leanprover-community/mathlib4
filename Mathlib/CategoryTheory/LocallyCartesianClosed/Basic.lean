@@ -68,6 +68,11 @@ terminal object is cartesian closed.
 - `LocallyCartesianClosed.overLocallyCartesianClosed` shows that the slices of a locally cartesian
 closed category are locally cartesian closed.
 
+### TODO
+
+- Under the assumptions that `C` has chosen pullbacks and a terminal object, show that the functor
+  `toOverUnit : C ⥤ Over (𝟙_ C)` is strong monoidal (in fact strict monoidal).
+
 ### References
 
 The content here is based on our work on the formalization of polynomial functors project at the
@@ -76,6 +81,8 @@ Trimester "Prospect of Formal Mathematics" at the Hausdorff Institute (HIM) in B
 You can find the polynomial functors project at https://github.com/sinhp/Poly
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -87,31 +94,36 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 namespace ChosenPullbacks
 
-variable [ChosenPullbacks C] {X : C}
+-- variable {X : C}
 
 open ChosenPullbacksAlong
 
 /-- The binary fan provided by `fst'` and `snd'`. -/
-def binaryFan (T Y Z : C) (h : Limits.IsTerminal T) :
+def binaryFan (T Y Z : C) (h : Limits.IsTerminal T)
+    [ChosenPullbacksAlong <| h.from Z] :
     Limits.BinaryFan Y Z :=
   Limits.BinaryFan.mk (P:= pullbackObj (h.from Y) (h.from Z)) (fst _ _) (snd _ _)
 
 @[simp]
-theorem binaryFan_pt (T Y Z : C) (h : Limits.IsTerminal T) :
+theorem binaryFan_pt (T Y Z : C) (h : Limits.IsTerminal T)
+    [ChosenPullbacksAlong <| h.from Z] :
     (binaryFan T Y Z h).pt = pullbackObj (h.from Y) (h.from Z) :=
   rfl
 
 @[simp]
-theorem binaryFan_fst (T Y Z : C) (h : Limits.IsTerminal T) :
+theorem binaryFan_fst (T Y Z : C) (h : Limits.IsTerminal T)
+    [ChosenPullbacksAlong <| h.from Z] :
     (binaryFan T Y Z h).fst = fst (h.from Y) (h.from Z) :=
   rfl
 
 @[simp]
-theorem binaryFan_snd (T Y Z : C) (h : Limits.IsTerminal T) :
+theorem binaryFan_snd (T Y Z : C) (h : Limits.IsTerminal T)
+    [ChosenPullbacksAlong <| h.from Z] :
     (binaryFan T Y Z h).snd = snd (h.from Y) (h.from Z) :=
   rfl
 
-def binaryFanIsBinaryProduct (T Y Z : C) (h : Limits.IsTerminal T) :
+def binaryFanIsBinaryProduct (T Y Z : C) (h : Limits.IsTerminal T)
+    [ChosenPullbacksAlong <| h.from Z] :
     Limits.IsLimit (binaryFan T Y Z h) :=
   Limits.BinaryFan.IsLimit.mk (binaryFan T Y Z h)
     (fun a b => lift a b)
@@ -119,33 +131,15 @@ def binaryFanIsBinaryProduct (T Y Z : C) (h : Limits.IsTerminal T) :
     (by simp)
     (fun f g m h₁ h₂ => by cat_disch)
 
-def cartesianMonoidalCategory (T : C) (h : Limits.IsTerminal T := by infer_instance) :
+/-- A cartesian monoidal category structure on `C` induced by chosen pullbacks and a terminal
+object `T`. -/
+def cartesianMonoidalCategory (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks C] :
     CartesianMonoidalCategory C :=
   ofChosenFiniteProducts (C := C)
     ⟨Limits.asEmptyCone T, h⟩
     (fun Y Z ↦ ⟨_, binaryFanIsBinaryProduct T Y Z h⟩)
 
 end ChosenPullbacks
-
-namespace ChosenPullbacksAlong
-
-variable {X : C}
-
-@[reassoc (attr := simp)]
-theorem pullback_map_left_fst {Z : C} {Y Y' : Over X} (f : Y' ⟶ Y) (g : Z ⟶ X)
-    [ChosenPullbacksAlong g] :
-    ((pullback g).map f).left ≫ ChosenPullbacksAlong.fst Y.hom g =
-      ChosenPullbacksAlong.fst Y'.hom g ≫ f.left := by
-  sorry
-
-@[reassoc (attr := simp)]
-theorem pullback_map_left_snd {Z : C} {Y Y' : Over X} (f : Y' ⟶ Y) (g : Z ⟶ X)
-    [ChosenPullbacksAlong g] :
-    ((pullback g).map f).left ≫ ChosenPullbacksAlong.snd Y.hom g =
-      ChosenPullbacksAlong.snd Y'.hom g :=
-  Over.w ((pullback g).map f)
-
-end ChosenPullbacksAlong
 
 namespace ChosenPullbacks
 
@@ -214,17 +208,18 @@ Z ---⟶  Y
 
 -/
 
-/-- If `C` has chosen pullbacks, then `Over I` also has chosen pullbacks`. -/
-instance chosenPullbacksOver [ChosenPullbacks C] :
-    ChosenPullbacks (Over X) := fun {Y Z : Over X} g => {
-  pullback := Y.iteratedSliceEquiv.functor ⋙ pullback g.left ⋙ Z.iteratedSliceEquiv.inverse,
-  mapPullbackAdj.unit.app A :=
-    Over.homMk (
-      Over.homMk (
-          (mapPullbackAdj g.left).unit.app (Over.mk (Y:= A.left.left) A.hom.left) |>.left)
-            (by simp; sorry)) (by cat_disch)
-  mapPullbackAdj.counit.app := sorry
-    }
+-- /-- If `C` has chosen pullbacks, then `Over I` also has chosen pullbacks`. -/
+-- instance chosenPullbacksOver [ChosenPullbacks C] :
+--     ChosenPullbacks (Over X) := fun {Y Z : Over X} g => {
+--   pullback := Y.iteratedSliceEquiv.functor ⋙ pullback g.left ⋙ Z.iteratedSliceEquiv.inverse,
+--   mapPullbackAdj.unit.app A :=
+--     Over.homMk (
+--       Over.homMk (
+--           (mapPullbackAdj g.left).unit.app (Over.mk (Y:= A.left.left) A.hom.left) |>.left)
+--             (by simp; sorry)) (by cat_disch)
+--   mapPullbackAdj.unit.naturality := by sorry
+--   mapPullbackAdj.counit.app := sorry
+--     }
 
 
 end ChosenPullbacks
