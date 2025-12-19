@@ -541,7 +541,7 @@ alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multiplia
 @[to_additive]
 lemma multipliable_pnat_iff_multipliable_nat {M : Type u_1} [CommGroup M] [TopologicalSpace M]
     [IsTopologicalGroup M] {f : ℕ → M} : Multipliable (fun n : ℕ+ ↦ f n) ↔ Multipliable f := by
-  rw [multipliable_pnat_iff_multipliable_succ , multipliable_nat_add_iff (f := f) 1]
+  rw [multipliable_pnat_iff_multipliable_succ, multipliable_nat_add_iff]
 
 @[to_additive]
 theorem tprod_pnat_eq_tprod_succ {f : ℕ → M} : ∏' n : ℕ+, f n = ∏' n, f (n + 1) :=
