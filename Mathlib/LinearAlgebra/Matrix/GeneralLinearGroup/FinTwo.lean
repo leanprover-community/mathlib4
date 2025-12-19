@@ -55,7 +55,7 @@ lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
   have aux : m.discr = 0 ↔ m 0 0 = m 1 1 := by
     suffices m.discr = (m 0 0 - m 1 1) ^ 2 by
       rw [this, IsReduced.pow_eq_zero_iff two_ne_zero, sub_eq_zero]
-    grind [disc_fin_two, trace_fin_two, det_fin_two]
+    grind [discr_fin_two, trace_fin_two, det_fin_two]
   have (h : m 0 0 = m 1 1) : m ∈ Set.range (scalar _) ↔ m 0 1 = 0 := by
     constructor
     · rintro ⟨a, rfl⟩
@@ -111,7 +111,7 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
         tauto
       rw [← sub_scalar_sq_eq_discr, hm, trace_add, scalar_apply, trace_diagonal]
       simp [mul_div_cancel_left₀ _ (NeZero.ne (2 : K)),
-        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero , hnsq]
+        (Matrix.isNilpotent_trace_of_isNilpotent ⟨2, hnsq⟩).eq_zero, hnsq]
 
 end Field
 
@@ -222,8 +222,9 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     | base => simp
     | succ n hn IH =>
       simp only [pow_succ, IH, add_mul, Nat.add_sub_cancel, mul_add, ← map_mul, add_assoc]
-      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← MulAction.mul_smul, ← smul_eq_diagonal_mul,
-        smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul, Nat.cast_add_one, add_mul, one_mul]
+      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← SemigroupAction.mul_smul,
+        ← smul_eq_diagonal_mul, smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul,
+        Nat.cast_add_one, add_mul, one_mul]
       rw [(by lia : n = n - 1 + 1), pow_succ, (by lia : n - 1 + 1 = n)]
       ring_nf
   · suffices a ≠ 0 by simp [this, hm0, hn]

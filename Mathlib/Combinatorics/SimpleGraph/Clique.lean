@@ -112,13 +112,13 @@ theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nont
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   refine ⟨fun h ↦ ⟨f ⁻¹' t, ?_, ?_⟩, by rintro ⟨x, hs, rfl⟩; exact hs.map⟩
   · rintro x (hx : f x ∈ t) y (hy : f y ∈ t) hne
-    obtain ⟨u,v, huv, hux, hvy⟩ := h hx hy (by simpa)
+    obtain ⟨u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
     rw [EmbeddingLike.apply_eq_iff_eq] at hux hvy
     rwa [← hux, ← hvy]
   rw [Set.image_preimage_eq_iff]
   intro x hxt
-  obtain ⟨y,hyt, hyne⟩ := ht.exists_ne x
-  obtain ⟨u,v, -, rfl, rfl⟩ := h hyt hxt hyne
+  obtain ⟨y, hyt, hyne⟩ := ht.exists_ne x
+  obtain ⟨u, v, -, rfl, rfl⟩ := h hyt hxt hyne
   exact Set.mem_range_self _
 
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
@@ -808,10 +808,10 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v, w⟩ := e
-  by_contra c
+  by_contra! c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he
-  rw [not_nonempty_iff_eq_empty, filter_eq_empty_iff] at c
+  rw [filter_eq_empty_iff] at c
   simp_rw [mem_compl, Sym2.mem_iff, not_or] at c
   by_cases vins : v ∈ s
   · have wins : w ∈ s := by by_contra wnins; exact (c wnins).right rfl

@@ -100,7 +100,9 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
   calc
     Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
       rw [revAt_invol]
-    _ = f (revAt N i) := Finsupp.embDomain_apply _ _ _
+    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+
+@[simp] lemma reflect_reflect {N : ℕ} {p : R[X]} : (p.reflect N).reflect N = p := by ext; simp
 
 @[simp]
 theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
@@ -123,7 +125,6 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   grind
-
 
 @[simp]
 theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
@@ -178,6 +179,11 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
   reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
+
+lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
+    (p.reflect N).natDegree ≤ max N p.natDegree := by
+  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
+    revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂
 
