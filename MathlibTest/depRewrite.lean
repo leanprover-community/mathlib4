@@ -316,9 +316,9 @@ example (f : Nat → Nat → Nat) : P (f (id n) (id n)) := by
 /-! ## Tests for `rw!` -/
 
 -- Test basic functionality
-example (f : (n : Nat) → [NeZero n] → Nat) [NeZero n] [NeZero m] : f n = f m := by
+example (f : (n : Nat) → [NeZero n] → Nat) [hn : NeZero n] [hm : NeZero m] : f n = f m := by
   rw! [eq]
-  guard_target =ₐ @f m (cast% eq ▸ ‹NeZero n›) = @f m ‹NeZero m›
+  guard_target =ₐ @f m (cast% eq ▸ hn) = @f m hm
   rfl
 
 example (f g : (n : Nat) → Fin n → Nat) (h : f m = g m) (i : Fin n) : f n i = g n i := by
@@ -358,3 +358,22 @@ example (i : Fin n) : P (eq ▸ i) := by
   rw! [← eq]
   guard_target =ₐ P ((cast% Eq.rec (motive := fun x _ => n = x) eq eq.symm) ▸ i)
   exact test_sorry
+
+section
+-- test not rewriting a non-defeq cast even when
+-- the result of the cast is defeq to its argument
+
+@[irreducible]
+private def const {α : Sort u} (a : α) {β : Sort v} (_ : β) : α := a
+
+example (Q : Prop) (h : const Q n) : P h := by
+  rewrite! [eq]
+  guard_target =ₐ P (cast% eq ▸ h)
+  unfold const at h ⊢
+  guard_target =ₐ P (cast% Eq.rec (motive := fun _ _ => Q) h eq)
+  rw! [Eq.refl h]
+  guard_target =ₐ P (cast% Eq.rec (motive := fun _ _ => Q) h eq)
+  change P h
+  exact test_sorry
+
+end
