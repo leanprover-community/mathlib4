@@ -236,20 +236,16 @@ theorem choose_mul_add {m n : ℕ} (hn : n ≠ 0) :
   simp only [hp, add_succ_sub_one]
   calc
     (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p + 1))! * (p + 1)!)
-      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p + 1))! * (p + 1)! := by rw [Nat.mul_assoc]
+      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p + 1))! * (p + 1)! := by lia
     _ = (m * (p + 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
-    _ = ((m * (p + 1) + p) + 1)! := by rw [Nat.add_assoc]
+    _ = ((m * (p + 1) + p) + 1)! := by lia
     _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
-    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by
-      rw [Nat.mul_comm, Nat.mul_comm _ (m + 1), Nat.add_mul, Nat.one_mul, Nat.add_assoc]
+    _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by lia
     _ = ((m * (p + 1) + p).choose p * (m * (p + 1))! * (p)!) * ((p + 1) * (m + 1)) := by
       rw [add_choose_mul_factorial_mul_factorial]
-    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * (((p + 1) * (p)!) * (m + 1)) := by
-      rw [Nat.mul_assoc, ← Nat.mul_assoc p !, Nat.mul_comm p !]
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * (((p + 1) * (p)!) * (m + 1)) := by lia
     _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
-    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by
-      rw [Nat.mul_comm (m + 1), Nat.mul_assoc _ (m + 1), Nat.mul_comm (m + 1),
-        Nat.mul_assoc _ (m * (p + 1)) !, Nat.mul_assoc _ (p + 1) !]
+    _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by lia
 
 theorem choose_mul_right {m n : ℕ} (hn : n ≠ 0) :
     (m * n).choose n = m * (m * n - 1).choose (n - 1) := by
