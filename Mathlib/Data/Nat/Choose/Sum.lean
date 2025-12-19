@@ -164,7 +164,7 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = if n = 0 then 1 else 0 := by
   cases n with
   | zero => simp
-  | succ n => simp [Int.alternating_sum_choose]
+  | succ n => simp [Int.alternating_sum_range_choose_eq_choose]
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by
