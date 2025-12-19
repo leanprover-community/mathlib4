@@ -70,7 +70,7 @@ lemma of_essentiallySmall {X : C} {J : Type*} [Category* J] [EssentiallySmall.{w
 
 /-- If `C` is finitely accessible and `P` implies finitely presentable, then `X`
 satisfies `ind P` if and only if every morphism `Z ⟶ X` from a finitely presentable object
-factors via an object satisfying `W`. -/
+factors via an object satisfying `P`. -/
 lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
     [IsFinitelyAccessibleCategory.{w} C] {X : C} :
     ind.{w} P X ↔ ∀ {Z : C} (g : Z ⟶ X) [IsFinitelyPresentable.{w} Z],
