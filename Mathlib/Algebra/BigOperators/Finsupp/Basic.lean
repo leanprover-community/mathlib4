@@ -50,6 +50,9 @@ def prod [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) : N :=
 
 variable [Zero M] [Zero M'] [CommMonoid N]
 
+@[to_additive (attr := simp)]
+lemma prod_fun_one (f : α →₀ M) : f.prod (fun _ _ ↦ (1 : N)) = 1 := by simp [prod]
+
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
