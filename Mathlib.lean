@@ -2438,6 +2438,7 @@ public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 public import Mathlib.CategoryTheory.Functor.EpiMono
@@ -3074,6 +3075,13 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.SmallRepresentatives
 public import Mathlib.CategoryTheory.Square
+public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+public import Mathlib.CategoryTheory.Subfunctor.Finite
+public import Mathlib.CategoryTheory.Subfunctor.Image
+public import Mathlib.CategoryTheory.Subfunctor.OfSection
+public import Mathlib.CategoryTheory.Subfunctor.Sieves
+public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Subobject.Comma
@@ -3086,13 +3094,6 @@ public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 public import Mathlib.CategoryTheory.Subobject.Types
 public import Mathlib.CategoryTheory.Subobject.WellPowered
-public import Mathlib.CategoryTheory.Subpresheaf.Basic
-public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
-public import Mathlib.CategoryTheory.Subpresheaf.Finite
-public import Mathlib.CategoryTheory.Subpresheaf.Image
-public import Mathlib.CategoryTheory.Subpresheaf.OfSection
-public import Mathlib.CategoryTheory.Subpresheaf.Sieves
-public import Mathlib.CategoryTheory.Subpresheaf.Subobject
 public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
@@ -3286,6 +3287,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
+public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
@@ -6094,6 +6096,7 @@ public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
+public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
@@ -7371,6 +7374,7 @@ public import Mathlib.Topology.UniformSpace.UniformApproximation
 public import Mathlib.Topology.UniformSpace.UniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Uniformizable
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.UrysohnsBounded
 public import Mathlib.Topology.UrysohnsLemma

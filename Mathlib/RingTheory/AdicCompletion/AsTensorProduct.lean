@@ -229,7 +229,7 @@ private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f
 private lemma tens_surj : Function.Surjective (lTensorf I M f) :=
   LinearMap.lTensor_surjective (AdicCompletion I R) hf
 
-private lemma adic_exact [IsNoetherianRing R] [Fintype ι] :
+private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
     Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
   map_exact (Submodule.injective_subtype _) (f.exact_subtype_ker_map) hf
 
@@ -237,7 +237,7 @@ private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
 
 private
-lemma ofTensorProduct_bijective_of_map_from_fin [Fintype ι] [IsNoetherianRing R] :
+lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R] :
     Function.Bijective (ofTensorProduct I M) :=
   LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective
     (lTensorKerIncl I M f)
