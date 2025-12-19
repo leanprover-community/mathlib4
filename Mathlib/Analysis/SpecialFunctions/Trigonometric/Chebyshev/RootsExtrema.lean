@@ -36,7 +36,7 @@ namespace Polynomial.Chebyshev
 
 open Real
 
-theorem T_real_eval_bounded_of_bounded (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
+theorem eval_T_real_mem_Icc (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
     (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
   rw [← cos_arccos (x := x) (by grind) (by grind)]
   grind [T_real_cos, cos_mem_Icc]
