@@ -282,6 +282,7 @@ attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
+@[simps!]
 def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
   NatIso.ofComponents fun X => Iso.refl _
