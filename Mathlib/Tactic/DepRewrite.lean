@@ -214,7 +214,7 @@ where
       let mut es := #[x', ← mkEqTrans h h']
       for (f, M) in Δ do
         fs := fs.push (.fvar f)
-        es := es.push (← mkEqRec M (.fvar f) h')
+        es := es.push (.mdata castMData (← mkEqRec M (.fvar f) h'))
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
 
@@ -232,7 +232,7 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
       let mut es := #[x', h']
       for (f, M) in Δ do
         fs := fs.push (.fvar f)
-        es := es.push (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h'))
+        es := es.push (.mdata castMData (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h')))
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
   let e' := .mdata castMData (← mkEqRec motive e h)
