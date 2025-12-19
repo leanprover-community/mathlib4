@@ -33,11 +33,11 @@ lemma iSup_subcomplexOfSimplex_prod_eq_top :
     ⨆ (x₁ : X₁.N) (x₂ : X₂.N),
       (Subcomplex.ofSimplex x₁.simplex).prod (Subcomplex.ofSimplex x₂.simplex) = ⊤ := by
   ext m ⟨x₁, x₂⟩
-  simp only [Subpresheaf.iSup_obj, Subcomplex.prod_obj, Set.mem_iUnion, Subpresheaf.top_obj,
+  simp only [Subfunctor.iSup_obj, Subcomplex.prod_obj, Set.mem_iUnion, Subfunctor.top_obj,
     Set.top_eq_univ, Set.mem_univ, iff_true]
   have hx₁ : x₁ ∈ (⊤ : X₁.Subcomplex).obj _ := by simp
   have hx₂ : x₂ ∈ (⊤ : X₂.Subcomplex).obj _ := by simp
-  simp only [← N.iSup_subcomplex_eq_top, Subpresheaf.iSup_obj, Set.mem_iUnion] at hx₁ hx₂
+  simp only [← N.iSup_subcomplex_eq_top, Subfunctor.iSup_obj, Set.mem_iUnion] at hx₁ hx₂
   obtain ⟨s₁, hs₁⟩ := hx₁
   obtain ⟨s₂, hs₂⟩ := hx₂
   exact ⟨s₁, s₂, hs₁, hs₂⟩
@@ -78,8 +78,7 @@ instance (d₁ d₂ : ℕ) [X₁.HasDimensionLE d₁] [X₂.HasDimensionLE d₂]
 instance [X₁.Finite] [X₂.Finite] : (X₁ ⊗ X₂).Finite := by
   obtain ⟨d₁, _⟩ := X₁.hasDimensionLT_of_finite
   obtain ⟨d₂, _⟩ := X₂.hasDimensionLT_of_finite
-  have := hasDimensionLT_prod X₁ X₂ d₁ d₂ (d₁ + d₂) (by lia)
-  exact finite_of_hasDimensionLT _ (d₁ + d₂) (fun i hi ↦ inferInstance)
+  exact finite_of_hasDimensionLT _ (d₁ + d₂) (fun _ _ ↦ inferInstance)
 
 open CartesianMonoidalCategory in
 lemma finite_of_isPullback {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
