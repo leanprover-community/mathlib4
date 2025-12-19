@@ -87,7 +87,7 @@ def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI := (IsFractionRing.injective A K).isDomain
   haveI := NoZeroSMulDivisors.trans_faithfulSMul A K L₂
   haveI := IsIntegralClosure.isLocalization A K L B
-  haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
+  haveI H : ∀ (y : Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B₂ L₂).comp σ) (y : B)) := by
     rintro ⟨_, x, hx, rfl⟩
     simpa only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgHom.commutes,
