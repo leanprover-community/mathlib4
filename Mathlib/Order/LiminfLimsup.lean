@@ -1152,15 +1152,8 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
       exact h₁ i i_s
     have cobddsup := isCoboundedUnder_le_finset_sup' hs h₃
     refine (limsup_le_iff cobddsup bddsup).2 (fun b hb ↦ ?_)
-    rw [eventually_iff_exists_mem]
-    use ⋂ i ∈ s, {a | F i a < b}
-    split_ands
-    · rw [biInter_finset_mem]
-      suffices key : ∀ i ∈ s, ∀ᶠ a in f, F i a < b from fun i i_s ↦ eventually_iff.1 (key i i_s)
-      intro i i_s
-      apply eventually_lt_of_limsup_lt _ (h₂ i i_s)
-      exact lt_of_le_of_lt (Finset.le_sup' (f := fun i ↦ limsup (F i) f) i_s) hb
-    · simp only [mem_iInter, mem_setOf_eq, sup'_lt_iff, imp_self, implies_true]
+    simp only [gt_iff_lt, sup'_lt_iff, eventually_all_finset] at hb ⊢
+    exact fun i i_s ↦ eventually_lt_of_limsup_lt (hb i i_s) (h₂ i i_s)
   · apply Finset.sup'_le hs (fun i ↦ limsup (F i) f)
     refine fun i i_s ↦ limsup_le_limsup (Eventually.of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
     simp only [le_sup'_iff]
