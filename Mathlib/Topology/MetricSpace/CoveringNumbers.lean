@@ -217,6 +217,142 @@ lemma packingNumber_singleton (ε : ℝ≥0) (x : X) : packingNumber ε {x} = 1 
   le_antisymm ((packingNumber_le_encard_self {x}).trans_eq (by simp)) <|
     le_iSup_of_le {x} <| le_iSup_of_le (by simp) <| le_iSup_of_le (by simp) (by simp)
 
+section minimalCover
+
+lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
+    ∃ C, C ⊆ A ∧ C.Finite ∧ IsCover ε A C ∧ C.encard = coveringNumber ε A := by
+  simp only [coveringNumber, ne_eq, iInf_eq_top, encard_eq_top_iff, not_forall, not_infinite] at h
+  obtain ⟨C', hC'_subset, hC'_cover, hC'_fin⟩ := h
+  have : Nonempty { s : Set X // s ⊆ A ∧ IsCover ε A s } := ⟨C', hC'_subset, hC'_cover⟩
+  let h := ENat.exists_eq_iInf (fun C : {s : Set X // s ⊆ A ∧ IsCover ε A s} ↦ (C : Set X).encard)
+  obtain ⟨C, hC⟩ := h
+  refine ⟨C, C.2.1, ?_, C.2.2, ?_⟩
+  · refine Set.encard_lt_top_iff.mp ?_
+    simp only [hC, iInf_lt_top, encard_lt_top_iff, Subtype.exists, exists_prop]
+    exact ⟨C', ⟨hC'_subset, hC'_cover⟩, hC'_fin⟩
+  · rw [hC]
+    simp_rw [iInf_subtype, iInf_and]
+    rfl
+
+open Classical in
+/-- A finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
+It is defined as the empty set if no such finite cover exists. -/
+noncomputable
+def minimalCover (ε : ℝ≥0) (A : Set X) : Set X :=
+  if h : coveringNumber ε A ≠ ⊤ then (exists_set_encard_eq_coveringNumber h).choose else ∅
+
+lemma minimalCover_subset : minimalCover ε A ⊆ A := by
+  by_cases h : coveringNumber ε A ≠ ⊤
+  · simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+    exact (exists_set_encard_eq_coveringNumber h).choose_spec.1
+  · simp [minimalCover, h]
+
+lemma finite_minimalCover :
+    (minimalCover ε A).Finite := by
+  by_cases h : coveringNumber ε A ≠ ⊤
+  · simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+    exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.1
+  · simp [minimalCover, h]
+
+lemma isCover_minimalCover (h : coveringNumber ε A ≠ ⊤) :
+    IsCover ε A (minimalCover ε A) := by
+  simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+  exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.2.1
+
+lemma card_minimalCover (h : coveringNumber ε A ≠ ⊤) :
+    (minimalCover ε A).encard = coveringNumber ε A := by
+  simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+  exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.2.2
+
+end minimalCover
+
+section maximalSeparatedSet
+
+lemma exists_set_encard_eq_packingNumber (h : packingNumber ε A ≠ ⊤) :
+    ∃ C, C ⊆ A ∧ C.Finite ∧ IsSeparated ε C ∧ C.encard = packingNumber ε A := by
+  rcases Set.eq_empty_or_nonempty A with hA | hA
+  · simp [hA, packingNumber]
+  have : Nonempty { s : Set X // s ⊆ A ∧ IsSeparated ε s } := by
+    obtain ⟨a, ha⟩ := hA
+    exact ⟨⟨{a}, by simp [ha], by simp⟩⟩
+  let h_exists := ENat.exists_eq_iSup_of_lt_top
+    (f := fun C : { s : Set X // s ⊆ A ∧ IsSeparated ε s } ↦ (C : Set X).encard)
+  simp_rw [packingNumber] at h ⊢
+  simp_rw [iSup_subtype, iSup_and] at h_exists
+  specialize h_exists h.lt_top
+  obtain ⟨C, hC⟩ := h_exists
+  refine ⟨C, C.2.1, ?_, C.2.2, ?_⟩
+  · refine Set.encard_ne_top_iff.mp ?_
+    rwa [hC]
+  · rw [hC]
+
+/-- A finite `ε`-separated subset of a set `A` with maximal cardinality.
+It is defined as the empty set if no such finite subset exists. -/
+noncomputable
+def maximalSeparatedSet (ε : ℝ≥0) (A : Set X) : Set X :=
+  if h : packingNumber ε A ≠ ⊤ then (exists_set_encard_eq_packingNumber h).choose else ∅
+
+lemma maximalSeparatedSet_subset : maximalSeparatedSet ε A ⊆ A := by
+  by_cases h : packingNumber ε A ≠ ⊤
+  · simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+    exact (exists_set_encard_eq_packingNumber h).choose_spec.1
+  · simp only [maximalSeparatedSet, h, dite_false, Set.empty_subset]
+
+lemma isSeparated_maximalSeparatedSet :
+    IsSeparated ε (maximalSeparatedSet ε A : Set X) := by
+  by_cases h : packingNumber ε A ≠ ⊤
+  · simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+    exact (exists_set_encard_eq_packingNumber h).choose_spec.2.2.1
+  · simp only [maximalSeparatedSet, h, dite_false, IsSeparated.empty]
+
+lemma card_maximalSeparatedSet (h : packingNumber ε A ≠ ⊤) :
+    (maximalSeparatedSet ε A).encard = packingNumber ε A := by
+  simp only [maximalSeparatedSet, ne_eq, h, not_false_eq_true, ↓reduceDIte]
+  exact (exists_set_encard_eq_packingNumber h).choose_spec.2.2.2
+
+lemma card_le_of_isSeparated (h_subset : C ⊆ A)
+    (h_sep : IsSeparated ε C) (h : packingNumber ε A ≠ ⊤) :
+    C.encard ≤ (maximalSeparatedSet ε A).encard := by
+  rw [card_maximalSeparatedSet h]
+  exact le_iSup_of_le C <| le_iSup_of_le h_subset <| le_iSup_of_le h_sep (by simp)
+
+/-- The maximal separated set is a cover. -/
+lemma isCover_maximalSeparatedSet (h : packingNumber ε A ≠ ⊤) :
+    IsCover ε A (maximalSeparatedSet ε A) := by
+  intro x hxA
+  by_contra h_dist
+  push_neg at h_dist
+  have hx_not_mem : x ∉ maximalSeparatedSet ε A := by
+    intro hx_mem
+    specialize h_dist x hx_mem
+    simp at h_dist
+  classical
+  let C := {x} ∪ maximalSeparatedSet ε A
+  have hC_subset : C ⊆ A := by
+    simp [C, hxA, maximalSeparatedSet_subset, Set.insert_subset]
+  have hC_separated : IsSeparated ε (C : Set X) := by
+    intro a ha b hb hab
+    by_cases hax : a = x
+    · subst hax
+      have hb' : b ∈ maximalSeparatedSet ε A := by simpa [C, hab.symm] using hb
+      simpa using h_dist b hb'
+    by_cases hbx : b = x
+    · subst hbx
+      have ha' : a ∈ maximalSeparatedSet ε A := by simpa [C, hab] using ha
+      have h := h_dist a ha'
+      simp only [mem_setOf_eq, not_le] at h
+      rwa [edist_comm] at h
+    simp only [singleton_union, mem_insert_iff, hax, false_or, hbx, C] at ha hb
+    exact isSeparated_maximalSeparatedSet ha hb hab
+  refine absurd (card_le_of_isSeparated hC_subset hC_separated h) ?_
+  simp only [singleton_union, not_le, C]
+  rw [encard_insert_of_notMem hx_not_mem, ENat.lt_add_one_iff]
+  rwa [card_maximalSeparatedSet h]
+
+end maximalSeparatedSet
+
+section comparisons
+
 /-- The packing number of a set `A` for radius `2 * ε` is at most the external covering number
 of `A` for radius `ε`. -/
 theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
@@ -242,5 +378,34 @@ theorem packingNumber_two_mul_le_externalCoveringNumber (ε : ℝ≥0) (A : Set 
       gcongr
       · exact hf' x
       · simpa [edist_comm, hxy] using hf' y
+
+theorem coveringNumber_le_packingNumber (ε : ℝ≥0) (A : Set X) :
+    coveringNumber ε A ≤ packingNumber ε A := by
+  by_cases h_top : packingNumber ε A ≠ ⊤
+  · rw [← card_maximalSeparatedSet h_top]
+    refine (iInf_le _ (maximalSeparatedSet ε A : Set X)).trans (le_of_eq ?_)
+    simp [maximalSeparatedSet_subset, iInf_pos, isCover_maximalSeparatedSet h_top]
+  · simp only [ne_eq, Decidable.not_not] at h_top
+    simp [h_top]
+
+theorem coveringNumber_two_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
+    coveringNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
+  rcases Set.eq_empty_or_nonempty A with (h_empty | h_nonempty)
+  · simp [h_empty]
+  refine (coveringNumber_le_packingNumber _ A).trans ?_
+  exact packingNumber_two_mul_le_externalCoveringNumber ε A
+
+lemma coveringNumber_subset_le (h : A ⊆ B) :
+    coveringNumber ε A ≤ coveringNumber (ε / 2) B := by
+  calc coveringNumber ε A
+  _ ≤ packingNumber ε A := coveringNumber_le_packingNumber ε A
+  _ = packingNumber (2 * (ε / 2)) A := by ring_nf
+  _ ≤ externalCoveringNumber (ε / 2) A :=
+    packingNumber_two_mul_le_externalCoveringNumber (ε / 2) A
+  _ ≤ externalCoveringNumber (ε / 2) B := externalCoveringNumber_mono_set h
+  _ ≤ coveringNumber (ε / 2) B :=
+    externalCoveringNumber_le_coveringNumber (ε / 2) B
+
+end comparisons
 
 end Metric
