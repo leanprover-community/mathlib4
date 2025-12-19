@@ -245,7 +245,7 @@ lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa [sub_eq_add_neg] using (linear_inv_isBigO_right_add c₂ 0 z).mul
