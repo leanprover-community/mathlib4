@@ -62,6 +62,8 @@ In this file we therefore keep these notions separate: a uniform filter determin
 ring theory, ideal, filter, uniform filter, Gabriel filter, torsion theory
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 universe u v
