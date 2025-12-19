@@ -36,6 +36,8 @@ We prove inequalities between these covering and packing numbers.
 * `packingNumber_two_mul_le_externalCoveringNumber`: the packing number with radius `2 * ε` is
   less than or equal to the external covering number for `ε`.
 
+TODO: ADD THINGS HERE BEFORE REMOVING THE WIP TAG
+
 ## References
 
 * [R. Vershynin, *High-dimensional probability*][vershynin2018high]
@@ -217,7 +219,7 @@ lemma packingNumber_singleton (ε : ℝ≥0) (x : X) : packingNumber ε {x} = 1 
   le_antisymm ((packingNumber_le_encard_self {x}).trans_eq (by simp)) <|
     le_iSup_of_le {x} <| le_iSup_of_le (by simp) <| le_iSup_of_le (by simp) (by simp)
 
-section minimalCover
+section MinimalCover
 
 lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     ∃ C, C ⊆ A ∧ C.Finite ∧ IsCover ε A C ∧ C.encard = coveringNumber ε A := by
@@ -264,9 +266,9 @@ lemma card_minimalCover (h : coveringNumber ε A ≠ ⊤) :
   simp only [minimalCover, ne_eq, h, not_false_eq_true, ↓reduceDIte]
   exact (exists_set_encard_eq_coveringNumber h).choose_spec.2.2.2
 
-end minimalCover
+end MinimalCover
 
-section maximalSeparatedSet
+section MaximalSeparatedSet
 
 lemma exists_set_encard_eq_packingNumber (h : packingNumber ε A ≠ ⊤) :
     ∃ C, C ⊆ A ∧ C.Finite ∧ IsSeparated ε C ∧ C.encard = packingNumber ε A := by
@@ -349,9 +351,9 @@ lemma isCover_maximalSeparatedSet (h : packingNumber ε A ≠ ⊤) :
   rw [encard_insert_of_notMem hx_not_mem, ENat.lt_add_one_iff]
   rwa [card_maximalSeparatedSet h]
 
-end maximalSeparatedSet
+end MaximalSeparatedSet
 
-section comparisons
+section Comparisons
 
 /-- The packing number of a set `A` for radius `2 * ε` is at most the external covering number
 of `A` for radius `ε`. -/
@@ -406,6 +408,6 @@ lemma coveringNumber_subset_le (h : A ⊆ B) :
   _ ≤ coveringNumber (ε / 2) B :=
     externalCoveringNumber_le_coveringNumber (ε / 2) B
 
-end comparisons
+end Comparisons
 
 end Metric
