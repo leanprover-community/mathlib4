@@ -132,7 +132,7 @@ class WeakPseudoEMetricSpace
   topology_eq_on_restrict :
     letI τ' := (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace
     ∀ (x : α) {s : Set α},
-    IsOpen[τ'] s → IsOpen[instTopologicalSpaceSubtype (t := τ)] ((ball x ⊤) ↓∩ s)
+    IsOpen[τ'] s → IsOpen[instTopologicalSpaceSubtype (t := τ)] ((EMetric.ball x ⊤) ↓∩ s)
 
 attribute [instance] PseudoEMetricSpace.toUniformSpace
 
@@ -214,6 +214,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
       rw [UniformSpace.mem_uniformity_ofCore_iff, inst.6]
     rwa [e]
 
+@[reducible]
 def WeakPseudoEMetricSpace.toPseudoEMetricSpace
     (α : Type u) [TopologicalSpace α] [inst : WeakPseudoEMetricSpace α] :
     PseudoEMetricSpace α where
@@ -710,6 +711,7 @@ instance EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] 
   topology_eq_on_restrict := inst.toWeakPseudoEMetricSpace.6
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
+@[reducible]
 def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : WeakEMetricSpace α] :
     EMetricSpace α where
   edist := edist
