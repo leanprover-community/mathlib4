@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Order.Disjointed
-public import Mathlib.MeasureTheory.Integral.Regular
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
-public import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.MeasureTheory.Integral.Regular
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Prokhorov theorem
@@ -83,16 +83,16 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
         simp only [integral_const, smul_eq_mul, mul_neg, neg_le_neg_iff]
         gcongr
         exact hμ
-      _ ≤ ∫ (x : E), g x ∂μ := by
-        apply integral_mono
+      _ ≤ ∫ x, g x ∂μ := by
+        gcongr
         · simp
         · exact g.continuous.integrable_of_hasCompactSupport g.hasCompactSupport
         · intro x
           apply neg_le_of_abs_le
           exact g.toBoundedContinuousFunction.norm_coe_le_norm x
-    · calc ∫ (x : E), g x ∂μ
+    · calc ∫ x, g x ∂μ
       _ ≤ ∫ (x : E), ‖g.toBoundedContinuousFunction‖ ∂μ := by
-        apply integral_mono
+        gcongr
         · exact g.continuous.integrable_of_hasCompactSupport g.hasCompactSupport
         · simp
         · intro x
@@ -106,16 +106,14 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   let Λ' : C_c(E, ℝ) →ₚ[ℝ] ℝ :=
   { toFun := Λ
     map_add' g g' := by
-      have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ (x : E), g x + g' x ∂μ)
-          f (𝓝 (Λ g + Λ g')) := by
+      have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x + g' x ∂μ) f (𝓝 (Λ g + Λ g')) := by
         convert (hΛ g).add (hΛ g')
         rw [integral_add]
         · exact g.continuous.integrable_of_hasCompactSupport g.hasCompactSupport
         · exact g'.continuous.integrable_of_hasCompactSupport g'.hasCompactSupport
       exact tendsto_nhds_unique (hΛ (g + g')) this
     map_smul' c g := by
-      have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ (x : E), c • g x ∂μ)
-          f (𝓝 (c • Λ g)) := by
+      have : Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, c • g x ∂μ) f (𝓝 (c • Λ g)) := by
         convert (hΛ g).const_smul c
         rw [integral_smul]
       exact tendsto_nhds_unique (hΛ (c • g)) this
@@ -154,7 +152,7 @@ variable (E) in
 /-- In a compact space, the set of finite measures with mass `C` is compact. -/
 lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace [CompactSpace E] (C : ℝ≥0) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C} := by
-  have : {μ : FiniteMeasure E | μ.mass = C} = {μ | μ.mass ≤ C} ∩  {μ | μ.mass = C} := by grind
+  have : {μ : FiniteMeasure E | μ.mass = C} = {μ | μ.mass ≤ C} ∩ {μ | μ.mass = C} := by grind
   rw [this]
   apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_le_of_compactSpace E C)
   exact isClosed_eq (by fun_prop) (by fun_prop)
@@ -163,8 +161,7 @@ lemma isCompact_setOf_finiteMeasure_eq_of_compactSpace [CompactSpace E] (C : ℝ
 instance [CompactSpace E] : CompactSpace (ProbabilityMeasure E) := by
   constructor
   apply (ProbabilityMeasure.toFiniteMeasure_isEmbedding E).isCompact_iff.2
-  simp only [image_univ, ProbabilityMeasure.range_toFiniteMeasure]
-  apply isCompact_setOf_finiteMeasure_eq_of_compactSpace
+  simpa using isCompact_setOf_finiteMeasure_eq_of_compactSpace E 1
 
 /-- The set of finite measures of mass at most `C` supported on a given compact set `K` is
 compact. -/
@@ -204,8 +201,7 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
-form a compact set.
--/
+form a compact set. -/
 lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     {u : ℕ → ℝ≥0} {K : ℕ → Set E} (C : ℝ≥0)
     (hu : Tendsto u atTop (𝓝 0)) (hK : ∀ n, IsCompact (K n)) (h : NormalSpace E ∨ Monotone K) :
@@ -229,15 +225,9 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   -- We can decompose a measure as a sum of restrictions to `disjointed K n`, finite version.
   have I (μ : FiniteMeasure E) (n : ℕ) :
       ∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i) = μ.restrict (partialSups K n) := by
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      simp only [Finset.sum_range_succ, ih]
-      rw [← FiniteMeasure.restrict_union]
-      · simp only [partialSups_add_one_eq_sup_disjointed, sup_eq_union]
-      · rw [← Order.succ_eq_add_one, disjointed_succ _ (not_isMax n)]
-        exact disjoint_sdiff_right
-      · apply MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
+    rw [← biUnion_range_disjointed _ n, FiniteMeasure.restrict_biUnion_finset]
+    · exact (disjoint_disjointed K).set_pairwise (Finset.range (n + 1))
+    · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
   have J {μ : FiniteMeasure E} {n m : ℕ} (hm : n ≤ m) (h'K : Monotone K)  :
       ∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i) = μ.restrict (K m \ K n) := by
     induction m, hm using Nat.le_induction with
@@ -300,8 +290,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       (ENNReal.tendsto_nat_tsum _).comp (tendsto_add_atTop_nat 1)
     apply le_of_tendsto' this (fun n ↦ ?_)
     have : ∑ i ∈ Finset.range (n + 1), (ν i : Measure E) univ
-        = (∑ i ∈ Finset.range (n + 1), ν i).toMeasure univ := by
-      simp only [toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+        = (∑ i ∈ Finset.range (n + 1), ν i).toMeasure univ := by simp
     rw [this]
     suffices (∑ i ∈ Finset.range (n + 1), ν i).mass ≤ C by
       convert ENNReal.coe_le_coe.2 this
@@ -379,9 +368,9 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         _ ≤ ∫ x, ‖g x‖ ∂(ρ.restrict ((partialSups K) n)ᶜ) := norm_integral_le_integral_norm _
         _ ≤ ∫ x, ‖g‖ ∂(ρ.restrict ((partialSups K) n)ᶜ : Measure E) := by
           apply integral_mono_of_nonneg
-          · filter_upwards [] with x using by positivity
+          · filter_upwards with x using by positivity
           · simp
-          · filter_upwards [] with x using norm_coe_le_norm g x
+          · filter_upwards with x using norm_coe_le_norm g x
         _ = ‖g‖ * ρ ((partialSups K) n)ᶜ := by simp [mul_comm]
         _ ≤ ‖g‖ * ρ (K n)ᶜ := by gcongr; apply le_partialSups
         _ ≤ ‖g‖ * u n := by gcongr; exact h'ρ.2 n
@@ -430,12 +419,8 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
           apply le_of_eq
           apply gK
           simpa using hx
-    _ = ρ (K n)ᶜ := by
-      rw [integral_indicator (hK n).measurableSet.compl]
-      simp
-    _ ≤ u n := by
-      norm_cast
-      exact hρ.2 n
+    _ = ρ (K n)ᶜ := by simp [integral_indicator (hK n).measurableSet.compl]
+    _ ≤ u n := mod_cast hρ.2 n
   · -- to show that `μ (Kₙᶜ) ≤ uₙ` when the sequence `K` is monotone, we argue that the only
     -- contribution to `μ (Kₙᶜ)` comes from the measures `νᵢ` with `i > n`. Then we restrict to
     -- a finite sum `∑ i ∈ Ioc n m, νᵢ`, and argue that it is the limit of
@@ -474,8 +459,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       gcongr
       simp
     have : ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ
-        = (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ := by
-      simp only [toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+        = (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ := by simp
     rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
       convert ENNReal.coe_le_coe.2 this
@@ -488,7 +472,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     apply le_of_tendsto this
     filter_upwards [hf] with μ hμ
     rw [J hm h, restrict_mass]
-    apply le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
+    exact le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
 zero, the finite measures of mass `C` giving mass at most `uₙ` to the complement of `Kₙ` form a
