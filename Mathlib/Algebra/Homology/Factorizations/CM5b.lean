@@ -27,7 +27,7 @@ open CategoryTheory Limits Abelian
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C] [Abelian C] [EnoughInjectives C]
+variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
   {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
 namespace cm5b
