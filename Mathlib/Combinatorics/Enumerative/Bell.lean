@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Be
 module
 
 public import Mathlib.Data.Nat.Choose.Multinomial
-public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -66,7 +65,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
             ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by
         rw [factorial_succ, pow_succ]; ring
       _ = (x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1)) *
-            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by
+            (c * x + x - 1).choose (x - 1) * x ! * (c + 1) := by
         rw [Finset.prod_range_succ]; ring
       _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by
         rw [bell_mul_eq_lemma hx]; ring
@@ -133,7 +132,7 @@ theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
   unfold uniformBell bell
   rw [toFinset_replicate]
   split_ifs with hm
-  · simp  [hm]
+  · simp [hm]
   · by_cases hn : n = 0
     · simp [hn]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
@@ -185,7 +184,6 @@ which counts the number of partitions of a set of cardinality `n`.
 Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
 over all multisets `m : Multiset ℕ` such that `m.sum = n`.
 -/
-
 protected def bell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)

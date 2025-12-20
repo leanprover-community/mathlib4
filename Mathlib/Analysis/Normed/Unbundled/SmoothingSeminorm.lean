@@ -480,7 +480,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
   intro ε hε
   rw [sub_le_iff_le_add]
   have h_mul : smoothingFun μ x ^ a * smoothingFun μ y ^ b + ε ≤
-      max (smoothingFun μ x) (smoothingFun μ y) + ε :=  by
+      max (smoothingFun μ x) (smoothingFun μ y) + ε := by
     rw [max_def]
     split_ifs with h
     · rw [add_le_add_iff_right]
@@ -558,7 +558,7 @@ theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) :
   have hlim : Tendsto (fun n => smoothingSeminormSeq μ x (m * n)) atTop
       (𝓝 (smoothingFun μ x)) :=
     Tendsto.comp (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x) (tendsto_atTop_atTop_of_monotone
-      (fun n k hnk ↦ mul_le_mul_left' hnk m) (fun n ↦ ⟨n, le_mul_of_one_le_left' hm⟩))
+      (fun n k hnk ↦ mul_le_mul_right hnk m) (fun n ↦ ⟨n, le_mul_of_one_le_left' hm⟩))
   apply tendsto_nhds_unique _ (Tendsto.pow hlim m)
   have h_eq (n : ℕ) : smoothingSeminormSeq μ x (m * n) ^ m = smoothingSeminormSeq μ (x ^ m) n := by
     have hm' : (m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hm))
