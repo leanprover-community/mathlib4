@@ -133,7 +133,7 @@ def obj (m : ComonadBicat B) :=
   m.toOplax.obj ⟨⟨PUnit.unit⟩⟩
 
 /-- The morphism in `B` associated with the comonad. -/
-def hom (m : ComonadBicat B) : m.obj  ⟶ m.obj :=
+def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=
