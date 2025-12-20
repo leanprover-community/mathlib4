@@ -340,20 +340,8 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
     [LieAlgebra.IsKilling K L] [LieModule.IsTriangularizable K H L]
     {α : LieModule.Weight K H L} (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα ≠ ⊥ := by
-      have h_nonzero : ∃ x ∈ LieAlgebra.IsKilling.corootSubmodule α, x ≠ 0 := by
-        -- Since α is non-zero, the coroot space is non-zero. The coroot itself is in the coroot space, and when mapped into L via the inclusion, it should still be non-zero.
-        obtain ⟨x, hx⟩ : ∃ x ∈ LieAlgebra.corootSpace (⇑α : ↥H → K), x ≠ 0 := by
-          have h_nonzero : ∃ x ∈ LieAlgebra.corootSpace (⇑α : ↥H → K), x ≠ 0 := by
-            have h_nonzero : LieAlgebra.corootSpace (⇑α : ↥H → K) ≠ ⊥ := by
-              aesop
-            contrapose! h_nonzero;
-            exact eq_bot_iff.mpr h_nonzero;
-          exact h_nonzero;
-        exact ⟨ x, ⟨ x, hx.1, rfl ⟩, by simpa using hx.2 ⟩;
-      obtain ⟨ x, hx₁, hx₂ ⟩ := h_nonzero;
-      contrapose! hx₂; aesop;
-      rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ] at hx₂;
-      simp_all +decide [ LieSubmodule.eq_bot_iff ]
+  rw [sl2SubmoduleOfRoot_eq_sup]
+  exact ne_bot_of_le_ne_bot α.genWeightSpace_ne_bot (le_sup_of_le_left le_sup_left)
 
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
     (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
