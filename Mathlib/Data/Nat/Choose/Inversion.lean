@@ -62,14 +62,14 @@ theorem alternating_sum_choose_smul_of_alternating_sum_choose_smul {f g : ℕ �
 /-- **Binomial inversion**, symmetric version. -/
 theorem alternating_sum_choose_smul_eq_iff (f g : ℕ → G) :
     (∀ n, ∑ k ∈ Finset.range (n + 1), ((-1) ^ k * (↑(n.choose k) : ℤ)) • f k = g n) ↔
-    ∀ n, ∑ k ∈ Finset.range (n + 1), ((-1) ^ k * (↑(n.choose k) : ℤ)) • g k = f n :=
+      ∀ n, ∑ k ∈ Finset.range (n + 1), ((-1) ^ k * (↑(n.choose k) : ℤ)) • g k = f n :=
   ⟨fun h _ ↦ alternating_sum_choose_smul_of_alternating_sum_choose_smul _ h,
   fun h _ ↦ alternating_sum_choose_smul_of_alternating_sum_choose_smul _ h⟩
 
 /-- **Binomial inversion**, asymmetric version. -/
 theorem sum_choose_smul_eq_iff (f g : ℕ → G) :
     (∀ n, ∑ k ∈ Finset.range (n + 1), (n.choose k) • f k = g n) ↔
-    ∀ n, ∑ k ∈ Finset.range (n + 1), ((- 1) ^ (n + k) * (↑(n.choose k) : ℤ)) • g k = f n := by
+      ∀ n, ∑ k ∈ Finset.range (n + 1), ((- 1) ^ (n + k) * (↑(n.choose k) : ℤ)) • g k = f n := by
   apply Iff.trans (b := ∀ (n : ℕ),
     ∑ k ∈ Finset.range (n + 1), ((-1) ^ k *(↑(n.choose k) : ℤ)) • (-1) ^ k • f k = g n)
   · congr! 3
@@ -88,7 +88,7 @@ theorem sum_choose_smul_eq_iff (f g : ℕ → G) :
 
 theorem alternating_sum_choose_mul_choose (n m : ℕ) :
     ∑ k ∈ Finset.range (n + 1), (-1) ^ k * (↑(n.choose k) : ℤ) * (k.choose m)
-    = (-1) ^ m * if n = m then 1 else 0 := by
+      = (-1) ^ m * if n = m then 1 else 0 := by
   apply alternating_sum_choose_smul_of_alternating_sum_choose_smul
   intro k
   by_cases h : m < k + 1 <;> simp only [reduceNeg, mul_ite, mul_one, mul_zero, Int.zsmul_eq_mul,
