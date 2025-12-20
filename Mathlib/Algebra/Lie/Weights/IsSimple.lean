@@ -346,8 +346,9 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
     (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
     invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
-  refine' ⟨ fun h => _, fun h => _ ⟩;
-  · by_contra hq_nonzero
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · -- Forward: if the ideal is ⊥, then q = ⊥
+    by_contra hq_nonzero
     have hq_invt : q ∈ (rootSystem H).invtRootSubmodule := by
       rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq
     have h_ne_bot : (⟨q, hq_invt⟩ : (rootSystem H).invtRootSubmodule) ≠ ⊥ :=
@@ -355,16 +356,12 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
     rw [Ne, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall] at h_ne_bot
     obtain ⟨i, hi⟩ := h_ne_bot
     rw [not_not] at hi
-    have h_sl2_nonzero : sl2SubmoduleOfRoot (by
-    aesop : i.val.IsNonZero) ≠ ⊥ := by
-      all_goals generalize_proofs at *;
-      exact?
-    generalize_proofs at *;
-    refine' h_sl2_nonzero ( le_bot_iff.mp _ );
-    convert h.le using 1;
-    simp +decide [ LieAlgebra.IsKilling.invtSubmoduleToLieIdeal ];
-    exact?;
-  · simp +decide [ h, Submodule.map_zero, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal ]
+    have hα₀ : i.val.IsNonZero := (Finset.mem_filter.mp i.property).2
+    have h_sl2_le : (sl2SubmoduleOfRoot hα₀ : Submodule K L) ≤ invtSubmoduleToLieIdeal q hq := by
+      rw [coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
+      exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
+    sorry
+  · simp [h, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal]
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
