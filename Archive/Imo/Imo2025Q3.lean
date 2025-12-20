@@ -183,7 +183,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
   · obtain ⟨k, hk⟩ := hf.not_id_two_pow hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
-        have eq1 : f 3 = 1 := IsBonza.apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
+        have eq1 : f 3 = 1 := hf.apply_prime_gt_two_eq_one hnf 3 (by norm_num) prime_three
         have eq2 : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
           grind [natCast_pred_of_pos, pos_of_neZero]
         have := hf.1 n 3 hn (by norm_num)
