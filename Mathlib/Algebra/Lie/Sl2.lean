@@ -150,7 +150,7 @@ local notation "ψ" n => ((toEnd R L M f) ^ n) m
 set_option linter.unusedVariables false in
 @[nolint unusedArguments]
 lemma lie_f_pow_toEnd_f (P : HasPrimitiveVectorWith t m μ) (n : ℕ) :
-    ⁅f, ψ n⁆ = ψ(n + 1) := by
+    ⁅f, ψ n⁆ = ψ (n + 1) := by
   simp [pow_succ']
 
 variable (P : HasPrimitiveVectorWith t m μ)
