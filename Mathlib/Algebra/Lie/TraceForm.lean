@@ -227,8 +227,8 @@ lemma traceForm_eq_sum_genWeightSpaceOf
       (genWeightSpaceOf M χ z) (genWeightSpaceOf M χ z) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (genWeightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
-    convert finite_genWeightSpaceOf_ne_bot R L M z
-    exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
+    simp_rw [ne_eq, LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)]
+    exact finite_genWeightSpaceOf_ne_bot R L M z
   classical
   have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by

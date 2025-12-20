@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -39,6 +41,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 @[expose] public section
 
+open Module
 
 namespace LocalizedModule
 
@@ -154,6 +157,7 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s1 * s2) :=
   mk_eq.mpr <| ⟨1, rfl⟩
 
+set_option backward.privateInPublic true in
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
   induction x with | _ mx sx
   induction y with | _ my sy
@@ -165,10 +169,12 @@ private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + 
   · rw [mul_assoc]
   · rw [eq_comm, mul_comm, add_assoc, mul_smul, mul_smul, ← mul_smul sx sz, mul_comm, mul_smul]
 
+set_option backward.privateInPublic true in
 private theorem add_comm' (x y : LocalizedModule S M) : x + y = y + x :=
   LocalizedModule.induction_on₂ (fun m m' s s' => by rw [mk_add_mk, mk_add_mk, add_comm, mul_comm])
     x y
 
+set_option backward.privateInPublic true in
 private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
   induction_on
     (fun m s => by
@@ -176,6 +182,7 @@ private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
       exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
+set_option backward.privateInPublic true in
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
   induction_on
     (fun m s => by
@@ -185,12 +192,16 @@ private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
 
 instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
 
+set_option backward.privateInPublic true in
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
+set_option backward.privateInPublic true in
 private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = n • x + x :=
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : AddCommMonoid (LocalizedModule S M) where
   add_assoc := add_assoc'
   zero_add := zero_add'
@@ -331,17 +342,20 @@ theorem mk_smul_mk (r : R) (m : M) (s t : S) :
 
 variable {T}
 
+set_option backward.privateInPublic true in
 private theorem one_smul_aux (p : LocalizedModule S M) : (1 : T) • p = p := by
   induction p with | _ m s
   rw [show (1 : T) = IsLocalization.mk' T (1 : R) (1 : S) by rw [IsLocalization.mk'_one, map_one]]
   rw [mk'_smul_mk, one_smul, one_mul]
 
+set_option backward.privateInPublic true in
 private theorem mul_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x * y) • p = x • y • p := by
   induction p with | _ m s
   rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y]
   simp_rw [← IsLocalization.mk'_mul, mk'_smul_mk, ← mul_smul, mul_assoc]
 
+set_option backward.privateInPublic true in
 private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
     x • (p + q) = x • p + x • q := by
   induction p with | _ m s
@@ -353,9 +367,11 @@ private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, smul_add, ← mul_smul, Submonoid.coe_mul]; ring_nf
   · rw [mul_mul_mul_comm] -- ring does not work here
 
+set_option backward.privateInPublic true in
 private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := by
   conv => lhs; rw [← zero_mk 1, smul_def, smul_zero, zero_mk]
 
+set_option backward.privateInPublic true in
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
   induction p with | _ m s
@@ -367,11 +383,14 @@ private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
   · simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_eq_mul]; ring_nf
   · rw [mul_mul_mul_comm, mul_assoc] -- ring does not work here
 
+set_option backward.privateInPublic true in
 private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
   induction p with | _ m s
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance isModule : Module T (LocalizedModule S M) where
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
@@ -1358,6 +1377,30 @@ namespace IsLocalizedModule
 variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
   [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
   (f : M →ₗ[R] N)
+
+lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s ≠ 0 → IsRegular s)
+    [IsTorsionFree R M] [IsLocalization S A] [IsLocalizedModule S f] : IsTorsionFree A N where
+  isSMulRegular c hc x y hxy := by
+    by_cases hS₀ : 0 ∈ S
+    · have : Subsingleton N := (IsLocalizedModule.subsingleton_iff S f).2 fun _ ↦ ⟨0, hS₀, by simp⟩
+      exact Subsingleton.elim ..
+    obtain ⟨⟨a, s⟩, rfl⟩ := IsLocalization.mk'_surjective S c
+    obtain ⟨⟨m₁, t₁⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+    obtain ⟨⟨m₂, t₂⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
+    replace hS : ∀ s ∈ S, IsRegular s := fun s hs ↦ hS s hs <| ne_of_mem_of_not_mem hs hS₀
+    rw [IsLocalization.isRegular_mk' hS] at hc
+    have (s : S) (x y : M) : s • x = s • y ↔ x = y := (hS _ s.2).isSMulRegular.eq_iff
+    simp only [Function.uncurry_apply_pair, mk'_smul_mk', mk'_eq_mk'_iff, mul_smul, this,
+      exists_const] at hxy ⊢
+    simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy
+
+lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
+    [IsLocalization S A] [IsLocalizedModule S f] : Module.IsTorsionFree A N :=
+  isTorsionFree_of_forall_isRegular f S <| by simp [isRegular_iff_ne_zero]
+
+instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
+    IsTorsionFree (Localization S) (LocalizedModule S M) :=
+  isTorsionFree (LocalizedModule.mkLinearMap S M) S
 
 theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
