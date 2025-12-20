@@ -272,7 +272,7 @@ theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
-  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; cutsat
+  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; lia
 
 instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
   nontrivial_iff_two_le.2 Nat.AtLeastTwo.one_lt
@@ -280,17 +280,17 @@ instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
 /-- If working with more than two elements, we can always pick a third distinct from two existing
 elements. -/
 theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
-  have : NeZero n := ⟨by cutsat⟩
+  have : NeZero n := ⟨by lia⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
   simp_rw [← Fin.val_ne_iff]
   by_cases h0 : 0 ≠ i ∧ 0 ≠ j
   · exact ⟨0, h0⟩
   · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-    · exact ⟨⟨1, by cutsat⟩, h1⟩
-    · refine ⟨⟨2, by cutsat⟩, ?_⟩
+    · exact ⟨⟨1, by lia⟩, h1⟩
+    · refine ⟨⟨2, by lia⟩, ?_⟩
       dsimp only
-      cutsat
+      lia
 
 section Monoid
 
@@ -322,10 +322,10 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).val < n -
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
-    letI : NeZero (n - i.1) := neZero_iff.mpr (by cutsat)
+    letI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by cutsat
+  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
 
 lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
@@ -482,7 +482,7 @@ theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b,
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
     ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
   cases n
-  · cutsat
+  · lia
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
   refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
@@ -509,7 +509,7 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
 
 theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i : Fin n} (h : i + 1 < n) :
     (i + 1).val = i.val + 1 := by
-  simpa [add_def] using Nat.mod_eq_of_lt (by cutsat)
+  simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
 instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
   suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m

@@ -79,6 +79,11 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+variable {C} in
+@[simp]
+lemma singleFunctor_obj_d (X : C) (n p q : ℤ) :
+    ((singleFunctor C n).obj X).d p q = 0 := rfl
+
 instance (n : ℤ) : (singleFunctor C n).Full :=
   inferInstanceAs (single _ _ _).Full
 

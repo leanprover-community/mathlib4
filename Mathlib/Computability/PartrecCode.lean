@@ -205,7 +205,7 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  cutsat
+  lia
 
 end Nat.Partrec.Code
 

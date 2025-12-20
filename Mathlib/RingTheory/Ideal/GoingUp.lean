@@ -404,13 +404,17 @@ end IsIntegral
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+  [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
 
+theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
+  primesOver.isMaximal ⟨P, hP⟩
+
 variable (A B) in
-lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
+lemma primesOver_bot [NoZeroSMulDivisors A B] [Nontrivial A] [IsDomain B] :
+    primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl

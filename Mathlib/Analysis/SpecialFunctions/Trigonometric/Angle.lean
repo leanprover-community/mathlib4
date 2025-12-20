@@ -913,15 +913,15 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
   rw [hk] at hu hn
   have hk0 : k ≤ 0 := by
     by_contra hk1
-    grw [← show 1 ≤ k by cutsat] at hu
+    grw [← show 1 ≤ k by lia] at hu
     simp only [Int.cast_one] at hu
     linarith [pi_pos]
   have hkn1 : -1 ≤ k := by
     by_contra hkn2
-    grw [show k ≤ -2 by cutsat] at hn
+    grw [show k ≤ -2 by lia] at hn
     simp only [Int.cast_neg, Int.cast_ofNat] at hn
     linarith [pi_pos]
-  obtain rfl | rfl : k = -1 ∨ k = 0 := (by cutsat) <;> grind
+  obtain rfl | rfl : k = -1 ∨ k = 0 := (by lia) <;> grind
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :

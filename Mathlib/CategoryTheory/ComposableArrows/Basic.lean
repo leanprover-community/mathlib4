@@ -76,13 +76,13 @@ macro "valid" : tactic =>
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]
-abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by cutsat⟩
+abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by lia⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
 @[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
-    F.obj ⟨i, by cutsat⟩ ⟶ F.obj ⟨j, by cutsat⟩ :=
+    F.obj ⟨i, by lia⟩ ⟶ F.obj ⟨j, by lia⟩ :=
   F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
 
 lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) : F.map' i i = 𝟙 _ := F.map_id _
@@ -146,7 +146,7 @@ lemma map_id (i : Fin 2) : map f i i (by simp) = 𝟙 _ :=
 
 lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
     map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
-  obtain rfl | rfl : i = j ∨ j = k := by cutsat
+  obtain rfl | rfl : i = j ∨ j = k := by lia
   · rw [map_id, id_comp]
   · rw [map_id, comp_id]
 

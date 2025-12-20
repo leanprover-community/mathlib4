@@ -797,8 +797,12 @@ abbrev CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] :=
   UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}
 
 @[inherit_doc]
-scoped[CompactConvergenceCLM] notation
-  E " →SL_c[" σ "] " F => CompactConvergenceCLM σ E F
+scoped[CompactConvergenceCLM]
+notation:25 E " →SL_c[" σ "] " F => CompactConvergenceCLM σ E F
+
+@[inherit_doc]
+scoped[CompactConvergenceCLM]
+notation:25 E " →L_c[" R "] " F => CompactConvergenceCLM (RingHom.id R) E F
 
 namespace CompactConvergenceCLM
 

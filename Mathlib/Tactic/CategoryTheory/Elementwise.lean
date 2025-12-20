@@ -258,8 +258,4 @@ elab "elementwise_of% " t:term : term => do
   let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
 
--- TODO: elementwise tactic
-syntax "elementwise" (ppSpace colGt ident)* : tactic
-syntax "elementwise!" (ppSpace colGt ident)* : tactic
-
 end Tactic.Elementwise

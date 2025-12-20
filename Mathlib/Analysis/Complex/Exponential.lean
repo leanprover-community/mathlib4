@@ -57,7 +57,7 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-def exp (z : ℂ) : ℂ :=
+irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -171,7 +171,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
-  dsimp [exp]
+  simp only [exp]
   rw [← lim_conj]
   refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
@@ -581,7 +581,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   · simp [field]
-  · cutsat
+  · lia
 
 -- TODO: fix non-terminal simp
 set_option linter.flexible false in
@@ -609,7 +609,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   simp
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; lia]
   simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :

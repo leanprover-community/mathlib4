@@ -78,12 +78,12 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
 open scoped Function in -- required for scoped `on` notation
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
-  wlog ltij : i < j
-  · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
+  wlog! ltij : i < j
+  · exact (this a hij.symm (lt_of_le_of_ne ltij hij.symm)).symm
   unfold Function.onFun coprimes
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_succ_of_le (le_max_left _ _))
   exact coprime_mul_succ
-    (Nat.dvd_factorial (by cutsat)
+    (Nat.dvd_factorial (by lia)
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
 /-- Gödel's Beta Function. This is similar to `(Encodable.decodeList)[i]`, but it is easier to
