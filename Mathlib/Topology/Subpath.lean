@@ -3,7 +3,9 @@ Copyright (c) 2025 Sebastian Kumar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Subpaths
@@ -24,7 +26,7 @@ of each other (not yet proven). However, `Path.subpath` works without assuming a
 Prove that `Path.truncateOfLE` and `Path.subpath` are reparameterizations of each other.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open unitInterval Set Function
 
