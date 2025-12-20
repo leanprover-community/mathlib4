@@ -342,31 +342,49 @@ lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual �
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
+theorem Helly' {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) :
+    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) ↔
+    (∀ β : I → 𝕜, ‖∑ i : I, β i * α i‖ ≤ ‖∑ i : I, β i • f i‖) := by
+  refine ⟨fun h β ↦ ?_, fun h ↦ ?_⟩
+  · by_cases hβ : β = 0
+    · simp [hβ]
+    replace hβ : 0 < ∑ i, ‖β i‖ := by
+      apply Finset.sum_pos' (s := Finset.univ) (fun i _ ↦ norm_nonneg (β i))
+      simpa [← not_forall, ← funext_iff]
+    apply le_of_forall_pos_le_add
+    intro ε hε
+    set ε' := ε * (∑ i, ‖β i‖)⁻¹ with hε'
+    obtain ⟨x, hx_le, h_lt⟩ := h (ε := ε') (by positivity)
+    have : ‖(∑ i, β i * α i) - (∑ i, β i * (f i x))‖ ≤ ε' * ∑ i, ‖β i‖ := by
+      grw [← Finset.sum_sub_distrib, Finset.mul_sum, norm_sum_le]
+      apply Finset.sum_le_sum (fun i _ ↦ ?_)
+      rw [← mul_sub, norm_mul, mul_comm, ← norm_neg, neg_sub]
+      exact mul_le_mul_of_nonneg_right (le_of_lt (h_lt i)) <| norm_nonneg (β i)
+    calc ‖(∑ i, β i * α i)‖ ≤ ‖(∑ i, β i * α i) - (∑ i, β i * (f i x))‖ + ‖∑ i, β i * (f i x)‖ := by
+                                  apply norm_le_norm_sub_add
+        _ ≤ ‖∑ i : I, β i * (f i x)‖ + ε' * ∑ i : I, ‖β i‖ := by
+                grw [this, add_comm, add_le_add_left]
+                rfl
+        _ ≤ ‖∑ i : I, β i • f i‖ + ε' * ∑ i : I, ‖β i‖ := by
+                grw [add_le_add_left]
+                erw [← sum_apply Finset.univ (fun i ↦ β i • f i) x]
+                exact ContinuousLinearMap.unit_le_opNorm _ _ hx_le
+        _ ≤ ‖∑ i : I, β i • f i‖ + ε := by
+          rw [hε', mul_assoc, inv_mul_cancel₀ (by positivity), mul_one]
 
-theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) (r : ℝ) :
-    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E, ‖x‖ ≤ r + ε ∧ ∀ i, f i x = α i) ↔
-    (∀ β : I → 𝕜, ‖∑ i : I, β i * α i‖ ≤ r * ‖∑ i : I, β i • f i‖) := sorry
+
+  · sorry
+
 
 -- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
-theorem three (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
-    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ ‖φ‖ + ε ∧ ∀ i, f i (x) = φ (f i) := by
-  apply (Helly 𝕜 f (fun i ↦ φ (f i)) ‖φ‖).mpr _ hε
+theorem three' (I : Type*) [Fintype I] {φ : StrongDual 𝕜 (StrongDual 𝕜 E)} (hφ : ‖φ‖ ≤ 1)
+    {ε : ℝ} (hε : 0 < ε)
+    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
+  apply (Helly' 𝕜 f (fun i ↦ φ (f i))).mpr _ hε
   intro β
   calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
                           _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
-
--- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
-theorem three' (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
-    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
-  sorry
---
--- theorem aux : IsClosed (X := WeakDual 𝕜 (StrongDual 𝕜 E))
---     (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) := by
---   have hbdd : Bornology.IsBounded ((inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) := sorry
---   -- have := @WeakDual.isClosed_closedBall 𝕜 _ (StrongDual 𝕜 E) _ _ 0 1
---   have := @WeakDual.isClosed_image_coe_of_bounded_of_closed 𝕜 _ (StrongDual 𝕜 E) _ _
---     (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) hbdd
---   sorry
+                          _ ≤ ‖∑ i, β i • f i‖ := by grw [hφ, one_mul]
 
 /-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
 the unit sphere of the double dual. The result below is somewhat stronger, and it would be better
@@ -417,7 +435,8 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜
   rintro ⟨I, ε⟩ hε
   -- refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
   -- · sorry
-  · obtain ⟨y, hy_le, hy_eq⟩ := three' 𝕜 I ξ hε (·)
+  · simp only [mem_closedBall] at hξ
+    obtain ⟨y, hy_le, hy_eq⟩ := three' 𝕜 I hξ hε (·)
     refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
     · --simp only at hy_le --useless of course
       simp only [Seminorm.mem_ball]
