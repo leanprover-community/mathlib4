@@ -447,7 +447,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     obtain ⟨f, rfl⟩ := hf
     rw [mul_assoc] at hp; subst hp
     rw [natDegree_mul (by aesop) (by aesop), natDegree_X_sub_C, add_comm, Nat.succ_inj] at hn
-    have := ih (by aesop) hg₀ (f * g) rfl (splits_X_sub_C_mul_iff.mp h) hn
+    have := ih (by aesop) hg₀ (f * g) rfl  (splits_X_sub_C_mul_iff.mp h) hn
     aesop
 
 theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
@@ -485,6 +485,7 @@ lemma map_sub_roots_sprod_eq_prod_map_eval
   trans ((s ×ˢ g.roots).map fun ij ↦ (-1) * (ij.1 - ij.2)).prod
   · rw [← Multiset.map_swap_product, Multiset.map_map]; simp
   · rw [Multiset.prod_map_mul]; simp [map_sub_sprod_roots_eq_prod_map_eval _ _ hg hg']
+
 end CommRing
 
 section DivisionSemiring
