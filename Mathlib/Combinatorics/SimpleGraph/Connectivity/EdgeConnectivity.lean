@@ -149,4 +149,3 @@ lemma isEdgeConnected_two :
         exact (h_conn.connected_delete_edge_of_not_isBridge h_not_bridge).preconnected u v
 
 end SimpleGraph
-
