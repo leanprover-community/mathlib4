@@ -168,7 +168,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
-    Limits.IsLimit.{v} (limitCone.{v,u} F) :=
+    Limits.IsLimit.{v} (limitCone.{v, u} F) :=
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
   { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
     fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)

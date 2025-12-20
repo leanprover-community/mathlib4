@@ -405,10 +405,10 @@ theorem min'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.eras
   ne_of_mem_erase (min'_mem _ s0)
 
 theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
-  by_cases s0 : (s.erase x).Nonempty
+  by_cases! s0 : (s.erase x).Nonempty
   · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
-  · rw [not_nonempty_iff_eq_empty.mp s0, max_empty]
+  · rw [s0, max_empty]
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
