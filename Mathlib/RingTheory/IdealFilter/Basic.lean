@@ -110,13 +110,13 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
 
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
 lemma isTorsionQuot_inf_left_iff (F : IdealFilter A) (L K : Ideal A) :
-    IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K:= by
+    IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K := by
   constructor <;>
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
-    · have hcol := Ideal.colon_inf_eq_left_of_le L K ((Ideal.span_singleton_le_iff_mem K).mpr h_k)
-      simpa [hcol] using h_I_le
+    simpa [Submodule.colon_inf_eq_left_of_le _ _ _ ((Ideal.span_singleton_le_iff_mem K).mpr h_k)]
+      using h_I_le
 
 /-- Unfolding lemma for `IsTorsion`. -/
 lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
@@ -134,7 +134,8 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
   intro x h_x
   obtain ⟨J, h_J⟩ := F.nonempty
-  exact ⟨J, h_J, by simp [Ideal.colon_eq_top_of_le ((Ideal.span_singleton_le_iff_mem I).mpr h_x)]⟩
+  have h_le := (Ideal.span_singleton_le_iff_mem I).mpr h_x
+  exact ⟨J, h_J, by simp [Submodule.colon_eq_top_of_le _ _ h_le]⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma IsTorsionQuot.mono_left {F : IdealFilter A}
@@ -146,31 +147,6 @@ lemma IsTorsionQuot.mono_left {F : IdealFilter A}
   refine Submodule.mem_colon.mpr ?_
   intro a h_a
   exact I_leq_J (Submodule.mem_colon.mp (h_L h_y) a h_a)
-
-/-- If `y` belongs to both colon ideals, then it belongs to the colon of the inf. -/
-lemma mem_colon_inf {I J : Ideal A} {s : Set A} {x : A} :
-    x ∈ I.colon (Ideal.span s) →
-    x ∈ J.colon (Ideal.span s) →
-    x ∈ (I ⊓ J).colon (Ideal.span s) := by
-  intro h_xI h_xJ
-  refine Submodule.mem_colon.mpr ?_
-  intro p h_p
-  exact ⟨Submodule.mem_colon.mp h_xI p h_p, Submodule.mem_colon.mp h_xJ p h_p⟩
-
-/-- The colon ideal distributes over `⊓` (intersection of ideals). -/
-lemma colon_inf (I J : Ideal A) (s : Set A) :
-    (I ⊓ J).colon (Ideal.span s)
-      = I.colon (Ideal.span s) ⊓ J.colon (Ideal.span s) := by
-  ext x
-  constructor
-  · intro h_x
-    refine ⟨Submodule.mem_colon.mpr ?_, Submodule.mem_colon.mpr ?_⟩
-    · intro p h_p
-      exact (Submodule.mem_colon.mp h_x p h_p).1
-    · intro p h_p
-      exact (Submodule.mem_colon.mp h_x p h_p).2
-  · rintro ⟨h_xI, h_xJ⟩
-    exact mem_colon_inf h_xI h_xJ
 
 /-- `isPFilter_gabrielComposition` shows that the set defining `gabrielComposition` is a
 `PFilter`. -/
@@ -189,7 +165,7 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
         obtain ⟨K₂, h_K₂F, h_K₂⟩ := h_JL x x_L
         refine ⟨K₁ ⊓ K₂, Order.PFilter.inf_mem h_K₁F h_K₂F, ?_⟩
         rintro y ⟨h_y₁, h_y₂⟩
-        simpa [colon_inf] using ⟨h_K₁ h_y₁, h_K₂ h_y₂⟩
+        simpa [Submodule.colon_inf_left] using ⟨h_K₁ h_y₁, h_K₂ h_y₂⟩
   · intro I J h_IJ ⟨K, h_K, h_IK⟩
     exact ⟨K, h_K, h_IK.mono_left h_IJ⟩
 
@@ -228,4 +204,5 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
     refine ⟨J, h_J, ?_⟩
     intro x h_x
     refine ⟨I.colon (Ideal.span {x}), h_colon x h_x, by simp⟩
+
 end IdealFilter

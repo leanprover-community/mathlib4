@@ -64,28 +64,34 @@ theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J :
   calc I = I.colon ⊤ := colon_top.symm
        _ ≤ I.colon J := colon_mono (le_refl I) le_top
 
-/-- If `M ≤ K`, then intersecting with `K` does not change the colon ideal. -/
-lemma _root_.Ideal.colon_inf_eq_left_of_le (L K : Ideal R) {M : Ideal R} (h_M : M ≤ K) :
-    (L ⊓ K).colon M = L.colon M := by
-  ext a
-  constructor <;> intro h_a
-  · rcases Submodule.mem_colon.mp h_a with h
-    refine Submodule.mem_colon.mpr ?_
-    intro p h_p
-    exact (h p h_p).1
-  · rcases Submodule.mem_colon.mp h_a with h
-    refine Submodule.mem_colon.mpr ?_
-    intro p h_p
-    refine ⟨h p h_p, SMulMemClass.smul_mem a (h_M h_p)⟩
-
-/-- If `J ≤ I`, then the colon ideal `I.colon J` is the whole ring. -/
-lemma _root_.Ideal.colon_eq_top_of_le {I J : Ideal R} (h_J : J ≤ I) :
-    I.colon J = ⊤ := by
+/-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
+lemma colon_eq_top_of_le (N P : Submodule R M) (h : P ≤ N) :
+    N.colon P  = ⊤ := by
   refine top_unique ?_
   intro x _
   refine Submodule.mem_colon.mpr ?_
   intro p h_p
-  exact I.mul_mem_left x (h_J h_p)
+  exact h (Submodule.smul_mem P x h_p)
+
+/-- The colon ideal distributes over `⊓` (intersection of submodules). -/
+lemma colon_inf_left (N₁ N₂ P : Submodule R M) : (N₁ ⊓ N₂).colon P = N₁.colon P ⊓ N₂.colon P := by
+  ext x
+  constructor
+  · intro h_x
+    refine ⟨Submodule.mem_colon.mpr ?_, Submodule.mem_colon.mpr ?_⟩ <;> intro p h_p
+    · exact (Submodule.mem_colon.mp h_x p h_p).1
+    · exact (Submodule.mem_colon.mp h_x p h_p).2
+  · rintro ⟨h_xI, h_xJ⟩
+    refine Submodule.mem_colon.mpr ?_
+    intro p h_p
+    exact ⟨Submodule.mem_colon.mp h_xI p h_p, Submodule.mem_colon.mp h_xJ p h_p⟩
+
+/-- If `P ≤ N₂`, then intersecting with `N₁` does not change the colon ideal. -/
+lemma colon_inf_eq_left_of_le (N₁ N₂ P : Submodule R M) (h : P ≤ N₂) :
+    (N₁ ⊓ N₂).colon P = N₁.colon P := calc
+  (N₁ ⊓ N₂).colon P = N₁.colon P ⊓ N₂.colon P := colon_inf_left N₁ N₂ P
+  _ = N₁.colon P ⊓ ⊤ := by rw[colon_eq_top_of_le N₂ P h]
+  _ = N₁.colon P := inf_top_eq (N₁.colon P)
 
 end Semiring
 
