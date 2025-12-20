@@ -60,10 +60,10 @@ section
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α} [EDist α]
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
-def ball (x : α) (ε : ℝ≥0∞) : Set α :=
+def EMetric.ball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 
-@[simp] theorem mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
+@[simp] theorem EMetric.mem_ball : y ∈ ball x ε ↔ edist y x < ε := Iff.rfl
 
 end
 
