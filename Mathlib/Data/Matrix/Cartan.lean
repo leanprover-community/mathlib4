@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-!
 # Cartan matrices
@@ -121,10 +122,11 @@ def C (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
 def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
   Matrix.of fun i j =>
     if i = j then 2
-    else if i.val + 1 = j.val ∧ j.val < n - 2 then -1
-    else if j.val + 1 = i.val ∧ i.val < n - 2 then -1
-    else if i.val = n - 3 ∧ (j.val = n - 2 ∨ j.val = n - 1) then -1
-    else if j.val = n - 3 ∧ (i.val = n - 2 ∨ i.val = n - 1) then -1
+    else if n ≤ 2 then 0
+    else if i.val + 1 = j.val ∧ j.val + 2 < n then -1
+    else if j.val + 1 = i.val ∧ i.val + 2 < n then -1
+    else if i.val + 3 = n ∧ (j.val + 2 = n ∨ j.val + 1 = n) then -1
+    else if j.val + 3 = n ∧ (i.val + 2 = n ∨ i.val + 1 = n) then -1
     else 0
 
 /-! ### Properties -/
@@ -166,14 +168,80 @@ theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
 
 /-! ### Small cases -/
 
-theorem A_one : A 1 = !![2] := by
-  ext i j; fin_cases i; fin_cases j; simp [A, Matrix.of_apply]
+theorem A_one : A 1 = !![2] := by decide
 
-theorem A_two : A 2 = !![2, -1; -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [A, Matrix.of_apply]
+theorem A_two : A 2 = !![ 2, -1;
+                         -1,  2] := by decide
 
-theorem A_three : A 3 = !![2, -1, 0; -1, 2, -1; 0, -1, 2] := by
-  ext i j; fin_cases i <;> fin_cases j <;> simp [A]
+theorem A_three : A 3 = !![ 2, -1,  0;
+                           -1,  2, -1;
+                            0, -1,  2] := by decide
+
+theorem B_one : B 1 = A 1 := by decide
+
+theorem C_one : C 1 = A 1 := by decide
+
+theorem D_one : D 1 = A 1 := by decide
+
+theorem D_two : D 2 = !![2, 0;
+                         0, 2] := by decide
+
+theorem B_two : B 2 = !![ 2, -2;
+                         -1,  2] := by decide
+
+theorem C_two : C 2 = !![ 2, -1;
+                         -2,  2] := by decide
+
+theorem D_three : D 3 = !![ 2, -1, -1;
+                           -1,  2,  0;
+                           -1,  0,  2] := by decide
+
+theorem D_three' : (D 3).reindex c[0, 1] c[0, 1] = A 3 := by decide
+
+theorem D_four : D 4 = !![ 2, -1,  0,  0;
+                          -1,  2, -1, -1;
+                           0, -1,  2,  0;
+                           0, -1,  0,  2] := by decide
+
+
+
+/-! ### Exceptional matrix diagonal entries -/
+
+@[simp] theorem E₆_diag (i : Fin 6) : E₆ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₇_diag (i : Fin 7) : E₇ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem E₈_diag (i : Fin 8) : E₈ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
+
+@[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
+
+
+/-! ### Exceptional matrix off-diagonal entries -/
+
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E₆ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₆]
+
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E₇ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₇]
+
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E₈ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₈]
+
+theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [F₄]
+
+theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [G₂]
+
+/-! ### Exceptional matrix transpose properties -/
+
+@[simp] theorem E₆_transpose : E₆.transpose = E₆ := by decide
+
+@[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
+
+@[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
 
 end Properties
 

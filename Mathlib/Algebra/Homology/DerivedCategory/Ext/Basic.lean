@@ -431,7 +431,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} whe
         dsimp
         symm
         apply Ext.comp_assoc
-        all_goals omega }
+        all_goals lia }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     simp
