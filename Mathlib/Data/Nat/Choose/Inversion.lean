@@ -6,8 +6,6 @@ Authors: Felix Pernegger
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Data.Nat.Choose.Sum
 
 /-! # Binomial inversion
