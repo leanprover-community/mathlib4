@@ -355,9 +355,20 @@ theorem iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
 
-def iteratedSliceOverMapIso {f g : Over X} (p : f ⟶ g) :
+variable {f}
+
+/-- The naturality of the iterated slice equivalence up to isomorphism. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
+    iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
+  NatIso.ofComponents (fun h => Iso.refl _) (by cat_disch)
+
+/-- The natural isomorphism witnessing `Over.map` in the iterated slice is
+compatible with `Over.map` base category, mediated by the iterated slice equivalence. -/
+@[simps! hom_app inv_app]
+def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
     f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
-  NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
 
 end IteratedSlice
 
@@ -437,6 +448,13 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   inverse := Over.post (X := F.functor.obj X) F.inverse ⋙ Over.map (F.unitIso.inv.app X)
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
+
+/-- `post (Over.forget X) : Over f ⥤ Over (forget.obj f)` is naturally isomorphic to the
+`Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardIsoPost (f : Over X) :
+    post (Over.forget X) ≅ Over.iteratedSliceForward f :=
+  NatIso.ofComponents (fun h ↦ Iso.refl _) (by cat_disch)
 
 open Limits
 
