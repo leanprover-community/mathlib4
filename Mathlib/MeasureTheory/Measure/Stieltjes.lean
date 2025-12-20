@@ -56,7 +56,6 @@ section Prerequisites
 
 variable {R : Type*} [LinearOrder R]
 
-set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 This makes sure that any element which is not bot belongs to an interval `Iotop a b`, and also
@@ -79,7 +78,6 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot. -/
 def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
@@ -103,6 +101,10 @@ lemma measurableSet_botSet [MeasurableSpace R] [MeasurableSingletonClass R] :
     MeasurableSet (botSet (R := R)) := by
   simp only [botSet]
   split_ifs <;> simp
+
+lemma botSet_eq_of_orderBot [OrderBot R] : botSet = {(⊥ : R)} := by
+  rw [botSet, dif_pos ⟨⊥, isBot_bot⟩, Set.singleton_eq_singleton_iff, ← isBot_iff_eq_bot]
+  exact Classical.choose_spec _
 
 end Prerequisites
 
@@ -267,23 +269,27 @@ theorem countable_leftLim_ne [OrderTopology R] (f : StieltjesFunction R) :
 /-! ### The outer measure associated to a Stieltjes function -/
 
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
-def length (s : Set R) : ℝ≥0∞ :=
+@[no_expose] def length (s : Set R) : ℝ≥0∞ :=
   -- we treat separately the empty case, where the formula below would give `∞`.
   if IsEmpty R then 0
   -- if there is a bot element `x`, it does not belong to any interval `Ioc a b`. So we remove it
   -- when measuring the size of a set (the set `{x}` will have measure `0` in our construction).
   else ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-lemma length_eq [Nonempty R] (s : Set R) :
+private lemma length_eq' [Nonempty R] (s : Set R) :
     f.length s = ⨅ (a) (b) (_ : s \ botSet ⊆ Ioc a b), ofReal (f b - f a) := by
   simp [length]
+
+lemma length_eq [Nonempty R] [NoMinOrder R] (s : Set R) :
+    f.length s = ⨅ (a) (b) (_ : s ⊆ Ioc a b), ofReal (f b - f a) := by
+  simp [length, botSet]
+
+lemma length_eq_of_orderBot [OrderBot R] (s : Set R) :
+    f.length s = ⨅ (a) (b) (_ : s \ {⊥} ⊆ Ioc a b), ofReal (f b - f a) := by
+  simp [length, botSet_eq_of_orderBot]
 
 lemma length_eq_of_isEmpty [IsEmpty R] (s : Set R) : f.length s = 0 := by
   simp only [length, if_pos]
@@ -293,13 +299,13 @@ theorem length_empty : f.length ∅ = 0 := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
   inhabit R
-  rw [length_eq]
+  rw [length_eq']
   exact nonpos_iff_eq_zero.1 <| iInf_le_of_le default <| iInf_le_of_le default <| by simp
 
 @[simp]
 theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by
   have : Nonempty R := ⟨a⟩
-  rw [length_eq]
+  rw [length_eq']
   refine
     le_antisymm (iInf_le_of_le a <| iInf₂_le b diff_subset)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 ?_)
@@ -313,15 +319,13 @@ theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by
 theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
-  simp only [length_eq]
+  simp only [length_eq']
   exact iInf_mono fun a => biInf_mono fun b h' => (diff_subset_diff_left h).trans h'
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-theorem length_diff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
+private theorem length_diff_botSet {s : Set R} : f.length (s \ botSet) = f.length s := by
   rcases isEmpty_or_nonempty R with hR | hR
   · simp [length_eq_of_isEmpty]
-  · simp [length_eq]
+  · simp [length_eq']
 
 open MeasureTheory
 
@@ -334,16 +338,8 @@ theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
 
 variable [OrderTopology R]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
-`f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
-statement for half-open intervals, the point of the current statement being that one can use
-compactness to reduce it to a finite sum, and argue by induction on the size of the covering set.
-
-To be able to handle also the top element if there is one, we use `Iotop` instead of `Ioo` in the
-statement. As these intervals are all open, this does not change the proof. -/
-theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆ ⋃ i, Iotop (c i) (d i)) :
+private theorem length_subadditive_Icc_Iotop {a b : R} {c d : ℕ → R}
+    (ss : Icc a b ⊆ ⋃ i, Iotop (c i) (d i)) :
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
     ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Iotop (c i) (d i)) →
@@ -375,6 +371,15 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
   · rintro x ⟨h₁, h₂⟩
     apply (cv ⟨h₁, le_trans h₂ (le_of_lt bcd.1)⟩).resolve_left (fun h ↦ ?_)
     order [(Iotop_subset_Ioc h).1]
+
+/-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
+`f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
+statement for half-open intervals, the point of the current statement being that one can use
+compactness to reduce it to a finite sum, and argue by induction on the size of the covering set. -/
+theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R}
+    (ss : Icc a b ⊆ ⋃ i, Ioo (c i) (d i)) :
+    ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) :=
+  f.length_subadditive_Icc_Iotop <| ss.trans <| iUnion_mono fun _ => Ioo_subset_Iotop
 
 @[simp]
 theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b - f a) := by
@@ -417,7 +422,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_ne_zero.2 (ε'0 i).ne')
     conv at hl =>
       lhs
-      rw [length_eq]
+      rw [length_eq']
     simp only [iInf_lt_iff, exists_prop] at hl
     rcases hl with ⟨p, q', spq, hq'⟩
     have A : Icc a' b ∩ s i ⊆ Ioc p q' := by
@@ -447,7 +452,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     ofReal (f b - f a) = ofReal (f b - f a' + (f a' - f a)) := by rw [sub_add_sub_cancel]
     _ ≤ ofReal (f b - f a') + ofReal (f a' - f a) := ENNReal.ofReal_add_le
     _ ≤ ∑' i, ofReal (f (g i).2 - f (g i).1) + ofReal δ :=
-      (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
+      (add_le_add (f.length_subadditive_Icc_Iotop I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
     _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
       (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
@@ -459,9 +464,9 @@ omit [OrderTopology R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
   have : Nonempty R := ⟨c⟩
-  simp only [length_eq]
+  simp only [length_eq']
   refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
-  simp only [← length_eq]
+  simp only [← length_eq']
   rw [← length_diff_botSet, inter_diff_right_comm, ← length_diff_botSet (s := t \ Ioi c),
     diff_diff_comm]
   refine
@@ -498,7 +503,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
         ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
         lhs
-        rw [length_eq]
+        rw [length_eq']
       simp only [iInf_lt_iff] at hl
       rcases hl with ⟨a, b, h₁, h₂⟩
       rw [← f.outer_Ioc] at h₂
