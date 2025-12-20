@@ -430,6 +430,10 @@ def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       apply coequalizer.hom_ext
       simp [← w]
 
+instance (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+    IsRegularEpi (coequalizer.π g h) :=
+  ⟨⟨coequalizerRegular g h⟩⟩
+
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
 def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
