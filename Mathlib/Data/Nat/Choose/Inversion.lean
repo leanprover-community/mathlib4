@@ -79,7 +79,7 @@ theorem sum_choose_smul_eq_iff (f g : ℕ → G) :
   · rw [alternating_sum_choose_smul_eq_iff (fun n ↦ (-1) ^ n • f n) g]
     apply forall_congr'
     intro n
-    rw [← IsUnit.smul_left_cancel (y := f n) (isUnit_neg_one_pow (R := ℤ) n)]
+    rw [← ((isUnit_neg_one (α := ℤ)).pow n) |>.smul_left_cancel (y := f n)]
     refine Eq.congr ?_ rfl
     rw [smul_sum]
     congr! 1

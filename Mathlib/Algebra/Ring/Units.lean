@@ -100,11 +100,6 @@ theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔
 
 theorem isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUnit_one.neg
 
-theorem isUnit_neg_one_pow [Monoid R] [HasDistribNeg R] (n : ℕ) : IsUnit ((-1 : R) ^ n) := by
-  induction n with
-  | zero => simp
-  | succ => simpa [pow_succ]
-
 theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) :=
   (IsUnit.neg_iff _).symm.trans <| neg_sub x y ▸ Iff.rfl
 
