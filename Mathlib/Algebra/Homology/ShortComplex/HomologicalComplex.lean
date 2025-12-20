@@ -240,7 +240,7 @@ lemma p_descOpcycles {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j)
 variable (i)
 
 /-- The map `K.opcycles i ⟶ K.X j` induced by the differential `K.d i j`. -/
-noncomputable def fromOpcycles : K.opcycles i ⟶ K.X j  :=
+noncomputable def fromOpcycles : K.opcycles i ⟶ K.X j :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
 omit [K.HasHomology i] in

@@ -144,7 +144,7 @@ variable {M₁ M₂ : TopModuleCat R}
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 @[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
-@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (- φ).hom = - φ.hom := rfl
+@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
 @[simp] lemma hom_nsmul (n : ℕ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
 @[simp] lemma hom_zsmul (n : ℤ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl

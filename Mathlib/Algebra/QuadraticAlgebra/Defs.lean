@@ -190,7 +190,7 @@ instance : Neg (QuadraticAlgebra R a b) where neg z := ⟨-z.re, -z.im⟩
 
 @[simp]
 theorem neg_mk (x y : R) :
-    - (mk x y : QuadraticAlgebra R a b) = ⟨-x, -y⟩ := rfl
+    -(mk x y : QuadraticAlgebra R a b) = ⟨-x, -y⟩ := rfl
 
 end Neg
 

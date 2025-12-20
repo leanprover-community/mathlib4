@@ -560,7 +560,7 @@ variable {s : UpperSet (MulArchimedeanClass M)}
 
 @[to_additive]
 theorem subsemigroup_eq_subgroup_of_ne_top (hs : s ≠ ⊤) :
-    subsemigroup s = (subgroup s : Set M)  := by
+    subsemigroup s = (subgroup s : Set M) := by
   simp [subgroup, hs]
 
 variable (M) in

@@ -76,7 +76,7 @@ def precompHomeomorph (f : A ≅ B) :
   right_inv _ := by simp
 
 lemma isHomeomorph_precomp (f : A ⟶ B) [IsIso f] :
-    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R))  :=
+    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) :=
   (precompHomeomorph (asIso f)).isHomeomorph
 
 /-- `Hom(A/I, R)` has the subspace topology of `Hom(A, R)`.

@@ -187,8 +187,8 @@ variable (A B : CommRingCat.{u})
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
   BinaryCofan.mk
-    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶ of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶ of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl :

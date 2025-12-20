@@ -311,7 +311,7 @@ noncomputable instance commShiftQuotient :
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
-  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _)
 
 instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where

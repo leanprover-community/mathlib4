@@ -57,7 +57,7 @@ variable {R L}
 /-- The definitions `LieDerivation.ad` and `LieAlgebra.ad` agree. -/
 @[simp] lemma coe_ad_apply_eq_ad_apply (x : L) : ad R L x = LieAlgebra.ad R L x := by ext; simp
 
-lemma ad_apply_lieDerivation (x : L) (D : LieDerivation R L L) : ad R L (D x) = - ⁅x, D⁆ := rfl
+lemma ad_apply_lieDerivation (x : L) (D : LieDerivation R L L) : ad R L (D x) = -⁅x, D⁆ := rfl
 
 lemma lie_ad (x : L) (D : LieDerivation R L L) : ⁅ad R L x, D⁆ = ⁅x, D⁆ := by ext; simp
 

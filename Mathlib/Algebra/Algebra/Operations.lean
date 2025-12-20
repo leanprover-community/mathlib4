@@ -185,7 +185,7 @@ protected theorem smul_assoc {B} [Semiring B] [Module R B] [Module A B] [Module 
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
 theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
-    I • (⨆ i, t i)= ⨆ i, I • t i :=
+    I • (⨆ i, t i) = ⨆ i, I • t i :=
   toAddSubmonoid_injective <| by
     simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 

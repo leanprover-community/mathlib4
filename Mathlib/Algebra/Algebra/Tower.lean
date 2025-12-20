@@ -404,4 +404,4 @@ theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [Co
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 
-end  Algebra.algebraMapSubmonoid
+end Algebra.algebraMapSubmonoid

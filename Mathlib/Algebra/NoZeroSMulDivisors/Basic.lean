@@ -69,14 +69,7 @@ variable (R)
 variable [NoZeroSMulDivisors R M]
 
 theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
-  fun c d h =>
-  sub_eq_zero.mp
-    ((smul_eq_zero.mp
-          (calc
-            (c - d) • x = c • x - d • x := sub_smul c d x
-            _ = 0 := sub_eq_zero.mpr h
-            )).resolve_right
-      hx)
+  fun c d h ↦ by simpa [← sub_smul, hx, sub_eq_zero] using congr($h - d • x)
 
 end SMulInjective
 

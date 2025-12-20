@@ -106,7 +106,7 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
 syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
 /-- A list of parenthesized binders -/
