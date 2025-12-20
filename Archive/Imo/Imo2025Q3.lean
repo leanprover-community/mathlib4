@@ -133,10 +133,10 @@ def fExample : ℕ → ℕ := fun x ↦
 
 namespace fExample
 
-lemma dvd_pow_sub {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
+lemma dvd_pow_sub {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
-  · exact (pow_dvd_pow 2 (padicValNat_le_self ha ha2)).trans
+  · exact (pow_dvd_pow 2 (padicValNat_add_le_self (hp := fact_prime_two) (by lia))).trans
       (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
   · calc
     _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by
