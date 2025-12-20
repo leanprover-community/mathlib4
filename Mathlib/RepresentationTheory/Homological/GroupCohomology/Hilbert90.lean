@@ -5,8 +5,9 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.FieldTheory.Fixed
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Hilbert's Theorem 90
@@ -127,16 +128,15 @@ theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
       (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
   simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
 
-variable [IsCyclic (L ≃ₐ[K] L)] [DecidableEq (L ≃ₐ[K] L)]
+variable [IsCyclic (L ≃ₐ[K] L)]
 
-attribute [local instance] IsCyclic.commGroup
-
+attribute [local instance] IsCyclic.commGroup in
 /-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
 that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
 such that `g(y)/y = x`. -/
-theorem exists_div_of_norm_eq_one (g : L ≃ₐ[K] L)
-    (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : L) (hx : Algebra.norm K x = 1) :
-    ∃ y : Lˣ, g y / y = x := by
+theorem exists_div_of_norm_eq_one {g : Gal(L/K)} (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : L)
+    (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y / y = x := by
+  classical
   let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
   have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
   rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
