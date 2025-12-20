@@ -435,6 +435,12 @@ theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {I : Ideal T} (hI
   · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
     rw [prod_add, pow_count]
 
+theorem map_prime_of_equiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (f : T ≃+* R) {I : Ideal T} (hI : Prime I) (h : I ≠ ⊥) : Prime (I.map f) := by
+  rw [Ideal.prime_iff_isPrime h] at hI
+  exact (Ideal.prime_iff_isPrime <| (I.map_eq_bot_iff_of_injective f.injective).not.2 h).2
+    (Ideal.map_isPrime_of_equiv _)
+
 end IsDedekindDomain
 
 /-!
@@ -811,8 +817,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I 
         (factors I).toFinset.prod_coe_sort fun P => P ^ (factors I).count P
       _ = ((factors I).map fun P => P).prod := (Finset.prod_multiset_map_count (factors I) id).symm
       _ = (factors I).prod := by rw [Multiset.map_id']
-      _ = I := associated_iff_eq.mp (factors_prod hI)
-      )
+      _ = I := associated_iff_eq.mp (factors_prod hI))
 
 @[simp]
 theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :

@@ -38,7 +38,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   [Preadditive C] [HasBinaryBiproducts C]
   [Preadditive D] [HasBinaryBiproducts D]
   {K L : CochainComplex C ℤ} (φ : K ⟶ L)
