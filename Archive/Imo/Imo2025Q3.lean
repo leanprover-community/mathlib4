@@ -50,7 +50,7 @@ lemma apply_dvd_pow (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ∣ n ^ n := b
 
 lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : IsBonza f) {p : ℕ} (hp : p.Prime) :
     f p = 1 ∨ (∀ b > (0 : ℕ), (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
-  have : f p ∣ p ^ p := apply_dvd_pow hf hp.pos
+  have : f p ∣ p ^ p := hf.apply_dvd_pow hp.pos
   obtain ⟨k, _, eq⟩ : ∃ k, k ≤ p ∧ f p = p ^ k := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : k = 0
   · left
@@ -77,7 +77,7 @@ theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : 
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
   have : f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
-    Or.casesOn (apply_prime_eq_one_or_dvd_self_sub_apply hf pp) (by grind) (by grind)
+    Or.casesOn (hf.apply_prime_eq_one_or_dvd_self_sub_apply pp) (by grind) (by grind)
   rcases this with ch | ch
   · exact ch
   · have : p ≤ ((b : ℤ) - (f b : ℤ)).natAbs := natAbs_le_of_dvd_ne_zero ch (by grind)
@@ -86,13 +86,13 @@ theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : 
 theorem apply_prime_gt_two_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∀ p > 2, p.Prime → f p = 1 := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, p.Prime → f p = 1 :=
-    not_id_apply_prime_of_gt_eq_one hf hnf
+    hf.not_id_apply_prime_of_gt_eq_one hnf
   have apply_dvd_pow_sub {a p : ℕ} (ha : 0 < a) (pp : p.Prime) (hp : N < p) :
       (f a : ℤ) ∣ p ^ a - 1 := by
     simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by lia)
   intro q hq qp
   obtain ⟨k, ha1, ha2⟩ : ∃ k, k ≤ q ∧ f q = q ^ k :=
-    (dvd_prime_pow qp).mp (apply_dvd_pow hf (zero_lt_of_lt hq))
+    (dvd_prime_pow qp).mp (hf.apply_dvd_pow (zero_lt_of_lt hq))
   by_cases ch : k = 0
   · simpa [ch] using ha2
   · have {p : ℕ} (pp : p.Prime) (hp : N < p) : (q : ℤ) ∣ p ^ q - 1 := by calc
@@ -118,7 +118,7 @@ lemma not_id_two_pow (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
       _ ∣ _ := by
         have := hf.1 n p hn pp.pos
         have p_gt_two : 2 < p := lt_of_le_of_ne pp.two_le (fun a ↦ nh (id (Eq.symm a)))
-        rwa [apply_prime_gt_two_eq_one hf hnf p p_gt_two pp, Nat.cast_one, one_pow] at this
+        rwa [hf.apply_prime_gt_two_eq_one hnf p p_gt_two pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (ne_zero_of_lt hn)
     exact (pp.not_dvd_one) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
   ⟨(f n).primeFactorsList.length, eq_prime_pow_of_unique_prime_dvd (ne_zero_of_lt (hf.2 n hn)) this⟩
@@ -180,10 +180,10 @@ lemma isBonza : IsBonza fExample := by
 theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x > (0 : ℕ), f x = x
   · simpa [hnf n hn] using by lia
-  · obtain ⟨k, hk⟩ := IsBonza.not_id_two_pow hf hnf n hn
+  · obtain ⟨k, hk⟩ := hf.not_id_two_pow hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
-        have eq1 : f 3 = 1 := IsBonza.apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
+        have eq1 : f 3 = 1 := hf.apply_prime_gt_two_eq_one hnf 3 (by norm_num) prime_three
         have eq2 : (3 : ℤ) ^ n - 1 = (3 ^ n - 1 : ℕ) := by
           grind [natCast_pred_of_pos, pos_of_neZero]
         have := hf.1 n 3 hn (by norm_num)
@@ -202,7 +202,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
     · have : k = 0 := by
         by_contra! nh
-        have : Odd (f n) := ch.pow.of_dvd_nat (IsBonza.apply_dvd_pow hf hn)
+        have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
       simpa [hk, this] using by lia
