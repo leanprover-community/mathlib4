@@ -6,18 +6,15 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.LocallyConvex.Polar
-public import Mathlib.Analysis.Seminorm
-public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # The strong dual of a normed space
-**CHANGE?**
+
 In this file we consider the strong dual `StrongDual` of a normed space, and the continuous linear
 map `NormedSpace.inclusionInDoubleDual` from a normed space into its double StrongDual.
 
@@ -39,7 +36,6 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 ## References
 
 * [Conway, John B., A course in functional analysis][conway1990]
-* **add Yosida**
 
 ## Tags
 
