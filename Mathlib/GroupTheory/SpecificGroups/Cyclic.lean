@@ -71,7 +71,7 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
 @[to_additive]
 instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
     IsCyclic (Subgroup.zpowers g) :=
-  (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr <| exists_apply_eq_apply zpowers g
+  (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
