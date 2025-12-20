@@ -120,7 +120,7 @@ lemma Submonoid.closure_irreducible [Monoid.FG M] :
     -- `∏ s ∈ S \ {r}, s ^ m s = ∏ s ∈ S \ {r}, s ^ n s = 1`.
     -- Furthermore, `m r + n r = 1` implies that one of `m r` or `n r` is zero.
     -- Therefore one of `a` or `b` is `1`, contradicting the fact that they are non-units.
-    obtain h | h : m r = 0 ∨ n r = 0 := by omega
+    obtain h | h : m r = 0 ∨ n r = 0 := by lia
     · obtain rfl : a = 1 := by simpa [h, Finset.prod_eq_one hr'.1] using hm
       simp at ha
     · obtain rfl : b = 1 := by simpa [h, Finset.prod_eq_one hr'.2] using hn
