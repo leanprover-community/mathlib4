@@ -1,12 +1,21 @@
-import Mathlib.Data.List.Monad
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.Util.Qq
+/-
+Copyright (c) 2025 Paul Lezeau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Paul Lezeau
+-/
+module
+
+public meta import Mathlib.Data.List.Monad
+public meta import Mathlib.Data.Fin.Tuple.Reflection
+public meta import Mathlib.Util.Qq
 
 /-! # The vecPerm simproc
 
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
 
 -/
+
+public meta section
 
 open Lean Elab Meta Simp Qq
 
