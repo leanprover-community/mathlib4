@@ -78,7 +78,7 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 attribute [to_additive (attr := default_instance)] instHSMul
-attribute [to_additive existing (reorder := 1 2)] instHPow
+attribute [to_additive existing] instHPow
 
 variable {G : Type*}
 

@@ -947,7 +947,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, hg]
-        rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+        rw [← map_mul, map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)

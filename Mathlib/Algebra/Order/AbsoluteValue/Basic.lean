@@ -102,7 +102,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 lemma listSum_le [AddLeftMono S] (l : List R) : abv l.sum ≤ (l.map abv).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_right ih (abv head)
 
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=

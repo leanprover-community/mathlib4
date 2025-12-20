@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Ring.InjSurj
 namespace Subfield
 variable {K : Type*}
 
-/-- A subfield of an ordered field is a ordered field. -/
+/-- A subfield of an ordered field is an ordered field. -/
 instance toIsStrictOrderedRing [Field K] [LinearOrder K] [IsStrictOrderedRing K] (s : Subfield K) :
     IsStrictOrderedRing s :=
   Function.Injective.isStrictOrderedRing

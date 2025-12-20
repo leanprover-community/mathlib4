@@ -92,10 +92,10 @@ theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.
 
 instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
   smul_lt_smul_of_pos_left _r hr _a _b hab :=
-    ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
+    ENNReal.mul_lt_mul_right (coe_pos.2 hr).ne' coe_ne_top hab
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
-  smul_le_smul_of_nonneg_right _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+  smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
 
 end Actions
 

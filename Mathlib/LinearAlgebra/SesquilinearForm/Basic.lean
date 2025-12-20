@@ -373,7 +373,7 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
     rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
   smul_mem' c x hx n hn := by
-    rw [LinearMap.IsOrtho, LinearMap.map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+    rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
 
 variable {N L : Submodule R₁ M₁}
 
@@ -994,8 +994,8 @@ lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
 positive definiteness. -/
 lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
     B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
-  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
-  push_neg
+  rw [B.nondegenerate_iff hs hB]
+  contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)

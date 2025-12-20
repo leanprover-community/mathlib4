@@ -230,7 +230,7 @@ theorem eq_starProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
 orthogonal projection. -/
 theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
     (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : K.starProjection u = v :=
-  eq_starProjection_of_mem_orthogonal hv (by simpa [hu] )
+  eq_starProjection_of_mem_orthogonal hv (by simpa [hu])
 
 @[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_orthogonal' :=
   eq_starProjection_of_mem_orthogonal'
@@ -448,7 +448,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> match_scalars <;> field_simp [hv']
