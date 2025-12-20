@@ -618,7 +618,7 @@ theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (
 def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : StrictMono f) : α ↪o β :=
   ofMapLEIff f fun _ _ => h.le_iff_le
 
-@[simp]
+@[simp, grind =]
 theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} (h : StrictMono f) :
     ⇑(ofStrictMono f h) = f :=
   rfl

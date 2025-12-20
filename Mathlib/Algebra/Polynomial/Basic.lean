@@ -617,7 +617,7 @@ theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, if_neg hn.symm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
