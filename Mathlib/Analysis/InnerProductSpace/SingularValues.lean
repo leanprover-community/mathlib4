@@ -5,12 +5,13 @@ public import Mathlib
 namespace LinearMap
 open NNReal
 
-recall LinearMap.isPositive_adjoint_comp_self
-
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
   (T : E →ₗ[𝕜] F)
+
+-- This cluster of theorems should be moved to other files.
+recall LinearMap.isPositive_adjoint_comp_self
 
 -- LinearMap.isSymmetric_adjoint_mul_self but domain and range can be different
 public theorem isSymmetric_adjoint_comp_self
@@ -21,19 +22,6 @@ public theorem eigenvalues_adjoint_comp_self_nonneg
   : 0 ≤ (LinearMap.isPositive_adjoint_comp_self T).isSymmetric.eigenvalues hn i := by
   apply LinearMap.IsPositive.nonneg_eigenvalues
   exact T.isPositive_adjoint_comp_self
-
--- TODO: prove from the fact that the set of nonzero eigenvectors forms a basis for T
-noncomputable def IsSymmetric.defa
-  {T : E →ₗ[𝕜] E} (h : T.IsSymmetric)
-  {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-  : OrthonormalBasis {i : Fin n // h.eigenvalues hn i ≠ 0} 𝕜 (LinearMap.range T)
-  := sorry
-  --:= OrthonormalBasis.mk (v := h.eigenvectorBasis hn) sorry sorry
-
-theorem adjoint_comp_self_eq_id_iff_isometry
-  : adjoint T ∘ₗ T = LinearMap.id ↔ Isometry T := by
-  rw [AddMonoidHomClass.isometry_iff_norm]
-  sorry
 
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
@@ -109,7 +97,8 @@ public theorem singularValues_antitone : Antitone T.singularValues := by
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
-  -- I think this is one of the hard ones
+  -- I think this is one of the hard ones. Might want to hold off on it until the theory of left
+  -- and right singular vectors has been developed.
   sorry
 
 -- It's unclear what the right way to state "The rank of T, as a natural number" is,
@@ -117,7 +106,8 @@ public theorem singularValues_lt_rank {n : ℕ}
 -- `Cardinal.toNat T.rank` is better.
 public theorem singularValues_rank
   : T.singularValues (Module.finrank 𝕜 (range T)) = 0 := by
-  -- I think this is one of the hard ones
+  -- I think this is one of the hard ones. Might want to hold off on it until the theory of left
+  -- and right singular vectors has been developed.
   sorry
 
 public theorem singularValues_le_rank {n : ℕ}
