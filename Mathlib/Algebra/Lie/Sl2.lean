@@ -218,7 +218,7 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
     {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
   by_contra h
-  have : t.HasPrimitiveVectorWith (ψ(n + 1)) (n - 2 * (n + 1) : R) :=
+  have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=
     { ne_zero := h
       lie_h := (P.lie_h_pow_toEnd_f _).trans (by simp [hn])
       lie_e := (P.lie_e_pow_succ_toEnd_f _).trans (by simp [hn]) }
