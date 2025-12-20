@@ -86,6 +86,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
@@ -118,6 +119,8 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)

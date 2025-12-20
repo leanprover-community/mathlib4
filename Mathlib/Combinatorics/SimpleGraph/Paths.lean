@@ -461,9 +461,6 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
     (by simp only [Set.mem_setOf_eq]; lia) h'
   lia
 
-@[deprecated (since := "2025-04-27")]
-alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
-
 /-! ### Walk decompositions -/
 
 section WalkDecomp
@@ -856,7 +853,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
   induction p with
   | nil => simp
   | cons _ _ ih =>
-    simp only [Walk.transfer, cons_isPath_iff, support_transfer _ ] at pp ⊢
+    simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :

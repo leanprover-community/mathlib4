@@ -302,9 +302,11 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
+set_option backward.privateInPublic true in
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
+set_option backward.privateInPublic true in
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     Gˣ where
   val := f i
@@ -318,6 +320,8 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/

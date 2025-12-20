@@ -459,18 +459,6 @@ theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
 theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :
     ¬BddBelow (range f) := not_bddAbove_of_tendsto_atTop (β := βᵒᵈ) h
 
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atTop := not_bddAbove_of_tendsto_atTop
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atBot := not_bddBelow_of_tendsto_atBot
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atTop' := not_bddAbove_of_tendsto_atTop
-
-@[deprecated (since := "2025-04-28")]
-alias unbounded_of_tendsto_atBot' := not_bddBelow_of_tendsto_atBot
-
 end NeBot
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}

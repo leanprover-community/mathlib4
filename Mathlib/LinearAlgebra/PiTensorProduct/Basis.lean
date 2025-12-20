@@ -42,11 +42,8 @@ noncomputable def Basis.piTensorProduct [Finite ι] (b : Π i, Basis (κ i) R (M
 theorem Basis.piTensorProduct_repr_tprod_apply [Fintype ι] (b : Π i, Basis (κ i) R (M i))
     (x : Π i, M i) (p : Π i, κ i) :
     (Basis.piTensorProduct b).repr (tprod R x) p = ∏ i : ι, (b i).repr (x i) (p i) := by
-  simp only [piTensorProduct, LinearEquiv.trans_symm, Finsupp.lcongr_symm, Equiv.refl_symm,
-    Basis.map_repr, LinearEquiv.symm_symm, Finsupp.basisSingleOne_repr, LinearEquiv.trans_refl,
-    LinearEquiv.trans_apply, congr_tprod, Finsupp.lcongr_apply_apply, Equiv.refl_apply,
-    ofFinsuppEquiv_apply, AlgEquiv.toLinearEquiv_apply, constantBaseRingEquiv_tprod]
-  convert rfl
+  rw [piTensorProduct, Subsingleton.elim (Fintype.ofFinite ι) ‹_›]
+  simp
 
 @[simp]
 theorem Basis.piTensorProduct_apply [Finite ι] (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :

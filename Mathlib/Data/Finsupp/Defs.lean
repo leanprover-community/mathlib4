@@ -186,7 +186,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a => not_imp_comm]
+  grind
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
@@ -222,7 +222,8 @@ section OnFinset
 
 variable [Zero M]
 
-private irreducible_def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
+/-- The (not exposed) support of `Finsupp.onFinset`. -/
+@[no_expose] def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
@@ -232,7 +233,7 @@ otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support := onFinset_support s f
   toFun := f
-  mem_support_toFun := by classical simpa [onFinset_support_def]
+  mem_support_toFun := by simpa [onFinset_support]
 
 @[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
