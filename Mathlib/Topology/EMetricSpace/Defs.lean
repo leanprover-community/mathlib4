@@ -702,7 +702,8 @@ class WeakEMetricSpace
     (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
-instance EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
+@[reducible]
+def EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
     WeakEMetricSpace α where
   edist x y := edist x y
   edist_self := edist_self
