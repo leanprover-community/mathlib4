@@ -202,7 +202,7 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         _ ≤ _ := mul_le_mul_left 4 (le_of_dvd hn pow_padicValNat_dvd)
     · have : k = 0 := by
         by_contra! nh
-        have : Odd (f n) := ch.pow.of_dvd_nat (IsBonza.apply_dvd_pow hf hn)
+        have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
       simpa [hk, this] using by lia
