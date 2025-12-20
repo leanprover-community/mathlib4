@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 William Saunders. All rights reserved.
+Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: William Saunders
+Authors: Fengyang Wang
 -/
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.RingTheory.PowerSeries.Basic
@@ -22,10 +22,11 @@ when equipped with the Cauchy product (discrete convolution).
 ### Normed Algebra Structure
 * `lp.oneNormedRing`: `lp (fun _ : ℕ => R) 1` is a `NormedRing`
 * `lp.oneNormOneClass`: `‖1‖ = 1`
-* `lp.oneNormedAlgebra`: `lp (fun _ : ℕ => R) 1` is a `NormedAlgebra R`
+* `lp.oneNormedAlgebra`: `lp (fun _ : ℕ => R) 1` is a `NormedAlgebra 𝕜` for `NormedField 𝕜`
 
 ### Key Lemmas
 * `Memℓp.one_mul`: Cauchy product preserves ℓ¹ membership
+* `one_memℓp_one`: The identity element is in ℓ¹
 * `lp.one_norm_mul_le`: Submultiplicativity `‖f * g‖ ≤ ‖f‖ * ‖g‖`
 
 ## Design Philosophy
@@ -271,10 +272,13 @@ theorem _root_.Memℓp.one_mul {f g : ∀ _ : ℕ, R} (hf : Memℓp f 1) (hg : M
 theorem _root_.one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
   rw [memℓp_gen_iff (by norm_num : 0 < (1 : ℝ≥0∞).toReal)]
   simp only [ENNReal.toReal_one, Real.rpow_one]
-  have h : (fun n => ‖CauchyProduct.one n‖) = fun n => if n = 0 then ‖(1 : R)‖ else 0 := by
+  have h : (fun n => ‖(CauchyProduct.one : ℕ → R) n‖) =
+      fun n => if n = 0 then ‖(1 : R)‖ else 0 := by
     ext n; cases n with
-    | zero => simp [CauchyProduct.one]
-    | succ n => simp [CauchyProduct.one]
+    | zero => simp only [CauchyProduct.one_zero, ↓reduceIte]
+    | succ n =>
+        simp only [CauchyProduct.one_succ, norm_zero,
+          Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]
   rw [h]
   exact summable_of_ne_finset_zero (s := {0}) (fun n hn => by simp at hn; simp [hn])
 
@@ -282,40 +286,33 @@ theorem _root_.one_memℓp_one : Memℓp (CauchyProduct.one : ℕ → R) 1 := by
 
 namespace lp
 
-variable (R) in
-/-- The subring of elements of `∀ _ : ℕ, R` whose ℓ¹ norm is finite. -/
-def lpOneSubring : Subring (PreLp fun _ : ℕ => R) :=
-  { lp (fun _ : ℕ => R) 1 with
-    carrier := { f | Memℓp f 1 }
-    one_mem' := one_memℓp_one
-    mul_mem' := Memℓp.one_mul }
-
 instance oneMul : Mul (lp (fun _ : ℕ => R) 1) where
   mul f g := ⟨CauchyProduct.apply (⇑f) (⇑g), f.property.one_mul g.property⟩
+
+instance oneOne : One (lp (fun _ : ℕ => R) 1) where
+  one := ⟨CauchyProduct.one, one_memℓp_one⟩
 
 @[simp]
 theorem one_coeFn_mul (f g : lp (fun _ : ℕ => R) 1) :
     ⇑(f * g) = CauchyProduct.apply (⇑f) (⇑g) := rfl
 
-instance oneRing : Ring (lp (fun _ : ℕ => R) 1) :=
-  { (lpOneSubring R).toRing with
-    mul := (· * ·)
-    mul_assoc := fun f g h => lp.ext <| CauchyProduct.assoc (⇑f) (⇑g) (⇑h)
-    left_distrib := fun f g h => lp.ext <| CauchyProduct.left_distrib (⇑f) (⇑g) (⇑h)
-    right_distrib := fun f g h => lp.ext <| CauchyProduct.right_distrib (⇑f) (⇑g) (⇑h)
-    zero_mul := fun f => lp.ext <| CauchyProduct.zero_mul (⇑f)
-    mul_zero := fun f => lp.ext <| CauchyProduct.mul_zero (⇑f)
-    one_mul := fun f => lp.ext <| CauchyProduct.one_mul (⇑f)
-    mul_one := fun f => lp.ext <| CauchyProduct.mul_one (⇑f) }
-
-theorem _root_.Memℓp.one_pow {f : ∀ _ : ℕ, R} (hf : Memℓp f 1) (n : ℕ) : Memℓp (f ^ n) 1 :=
-  (lpOneSubring R).pow_mem hf n
-
 @[simp]
 theorem one_coeFn_one : ⇑(1 : lp (fun _ : ℕ => R) 1) = CauchyProduct.one := rfl
 
-@[simp]
-theorem one_coeFn_pow (f : lp (fun _ : ℕ => R) 1) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n := rfl
+instance oneRing : Ring (lp (fun _ : ℕ => R) 1) where
+  mul_assoc := fun f g h => lp.ext <| CauchyProduct.assoc (⇑f) (⇑g) (⇑h)
+  one_mul := fun f => lp.ext <| CauchyProduct.one_mul (⇑f)
+  mul_one := fun f => lp.ext <| CauchyProduct.mul_one (⇑f)
+  left_distrib := fun f g h => lp.ext <| CauchyProduct.left_distrib (⇑f) (⇑g) (⇑h)
+  right_distrib := fun f g h => lp.ext <| CauchyProduct.right_distrib (⇑f) (⇑g) (⇑h)
+  zero_mul := fun f => lp.ext <| CauchyProduct.zero_mul (⇑f)
+  mul_zero := fun f => lp.ext <| CauchyProduct.mul_zero (⇑f)
+
+-- Note: The power operation `f ^ n` is automatically defined by the `Ring` instance
+-- as repeated Cauchy product multiplication. Unlike the `p = ∞` case where multiplication
+-- is pointwise, here `f ^ 0 = 1` is the Kronecker delta `[1, 0, 0, ...]`, not the
+-- constant sequence `[1, 1, 1, ...]`. There is no coercion lemma `⇑(f ^ n) = (⇑f) ^ n`
+-- because Pi-power and Cauchy-power are fundamentally different operations.
 
 /-! ### Submultiplicativity (Key Analytic Property)
 
@@ -368,8 +365,10 @@ theorem one_norm_one : ‖(1 : lp (fun _ : ℕ => R) 1)‖ = 1 := by
   rw [one_norm_eq_tsum]
   have h : (fun n => ‖(1 : lp (fun _ : ℕ => R) 1) n‖) = fun n => if n = 0 then 1 else 0 := by
     ext n; cases n with
-    | zero => simp [CauchyProduct.one]
-    | succ n => simp [CauchyProduct.one]
+    | zero => rw [one_coeFn_one, CauchyProduct.one_zero, norm_one]; simp only [↓reduceIte]
+    | succ n =>
+        rw [one_coeFn_one, CauchyProduct.one_succ, _root_.norm_zero]
+        simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte]
   rw [h, tsum_ite_eq]
 
 instance oneNormOneClass : NormOneClass (lp (fun _ : ℕ => R) 1) where
@@ -390,8 +389,9 @@ instance oneNormedCommRing : NormedCommRing (lp (fun _ : ℕ => R) 1) where
 
 /-! ### Scalar Multiplication Compatibility
 
-These instances establish that scalar multiplication (by R) is compatible with
-ring multiplication, making ℓ¹ an R-algebra. -/
+These instances establish that scalar multiplication by R is compatible with
+ring multiplication. The full algebra structure over a NormedField 𝕜 is
+established in the `OneAlgebra` section. -/
 
 instance one_isScalarTower : IsScalarTower R (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
   ⟨fun r f g => lp.ext <| CauchyProduct.smul_mul r (⇑f) (⇑g)⟩
@@ -399,17 +399,58 @@ instance one_isScalarTower : IsScalarTower R (lp (fun _ : ℕ => R) 1) (lp (fun 
 instance one_smulCommClass : SMulCommClass R (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
   ⟨fun r f g => lp.ext <| (CauchyProduct.mul_smul r (⇑f) (⇑g)).symm⟩
 
-/-! ### Algebra Structure -/
-
-instance oneAlgebra : Algebra R (lp (fun _ : ℕ => R) 1) :=
-  Algebra.ofModule (fun r f g => smul_mul_assoc r f g) (fun r f g => mul_smul_comm r f g)
-
-instance oneNormedAlgebra : NormedAlgebra R (lp (fun _ : ℕ => R) 1) where
-  norm_smul_le := fun r f => by rw [norm_smul]
-
 end lp
 
 end OneNormedCommRing
+
+section OneAlgebra
+
+variable {𝕜 : Type*} {R : Type*}
+variable [NormedField 𝕜] [NormedCommRing R] [NormOneClass R] [NormedAlgebra 𝕜 R]
+
+namespace lp
+
+/-! ### Algebra Structure
+
+For a NormedField 𝕜 acting on R via NormedAlgebra 𝕜 R, we establish the algebra
+structure on ℓ¹. The key is that scalar multiplication by 𝕜 commutes with the
+Cauchy product multiplication. -/
+
+omit [NormOneClass R] in
+/-- Scalar multiplication satisfies `(c • f) * g = c • (f * g)` for Cauchy product. -/
+theorem one_smul_mul_assoc (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
+    (c • f) * g = c • (f * g) := Subtype.ext <| funext fun n => by
+  simp only [lp.coeFn_smul, one_coeFn_mul, Pi.smul_apply, CauchyProduct.apply_eq, Finset.smul_sum]
+  apply Finset.sum_congr rfl
+  intro kl _
+  exact smul_mul_assoc c (f kl.1) (g kl.2)
+
+omit [NormOneClass R] in
+/-- Scalar multiplication satisfies `f * (c • g) = c • (f * g)` for Cauchy product. -/
+theorem one_mul_smul_comm (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
+    f * (c • g) = c • (f * g) := Subtype.ext <| funext fun n => by
+  simp only [lp.coeFn_smul, one_coeFn_mul, Pi.smul_apply, CauchyProduct.apply_eq, Finset.smul_sum]
+  apply Finset.sum_congr rfl
+  intro kl _
+  exact mul_smul_comm c (f kl.1) (g kl.2)
+
+/-- Scalar multiplication by 𝕜 is associative with Cauchy product multiplication. -/
+instance one_isScalarTower' : IsScalarTower 𝕜 (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
+  ⟨fun c f g => one_smul_mul_assoc c f g⟩
+
+/-- Scalar multiplication by 𝕜 commutes with Cauchy product multiplication. -/
+instance one_smulCommClass' : SMulCommClass 𝕜 (lp (fun _ : ℕ => R) 1) (lp (fun _ : ℕ => R) 1) :=
+  ⟨fun c f g => (one_mul_smul_comm c f g).symm⟩
+
+instance oneAlgebra : Algebra 𝕜 (lp (fun _ : ℕ => R) 1) :=
+  Algebra.ofModule one_smul_mul_assoc one_mul_smul_comm
+
+instance oneNormedAlgebra : NormedAlgebra 𝕜 (lp (fun _ : ℕ => R) 1) where
+  norm_smul_le := norm_smul_le
+
+end lp
+
+end OneAlgebra
 
 end
 
