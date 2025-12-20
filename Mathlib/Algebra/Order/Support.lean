@@ -25,12 +25,6 @@ We define supports and prove how they interact with operations.
 
 @[expose] public section
 
-namespace AddSubmonoid
-
-variable {G : Type*} [AddGroup G] (M : AddSubmonoid G)
-
-end AddSubmonoid
-
 namespace Submonoid
 
 variable {G : Type*} [Group G] (M : Submonoid G)
@@ -82,23 +76,20 @@ section HasIdealSupport
 
 variable [M.HasIdealSupport]
 
-@[aesop unsafe 80% apply]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : x * a ∈ M := by
   have := M.smul_mem_support
   aesop
 
-@[aesop unsafe 80% apply]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : -(x * a) ∈ M := by
   have := M.smul_mem_support
   aesop
 
-/--
-The support of a subsemiring `S` of a commutative ring `R` is
-the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
--/
+/-- The support `M ∩ -M` of a submonoid `M` of a ring `R`, as an ideal. -/
 def support : Ideal R where
   __ := supportAddSubgroup M
-  smul_mem' := have := M.smul_mem_support; by aesop
+  smul_mem' := by aesop
 
 variable {M} in
 @[aesop simp]
