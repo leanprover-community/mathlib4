@@ -3,9 +3,11 @@ Copyright (c) 2025 Youheng Luo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Youheng Luo
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Data.Set.Card
 
 /-!
 # Edge Connectivity
@@ -18,6 +20,8 @@ This file defines k-edge-connectivity for simple graphs.
 * `SimpleGraph.IsEdgeConnected`: A graph is `k`-edge-connected if any two vertices are
   `k`-edge-reachable.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
@@ -149,4 +153,3 @@ lemma isEdgeConnected_two :
         exact (h_conn.connected_delete_edge_of_not_isBridge h_not_bridge).preconnected u v
 
 end SimpleGraph
-
