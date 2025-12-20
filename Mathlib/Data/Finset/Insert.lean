@@ -104,7 +104,7 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
-@[simp]
+@[simp, grind .]
 theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
   (singleton_ne_empty a).symm
 
@@ -128,14 +128,7 @@ theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by
-  constructor
-  · rintro rfl
-    simp
-  · rintro ⟨hne, h_uniq⟩
-    rw [eq_singleton_iff_unique_mem]
-    refine ⟨?_, h_uniq⟩
-    rw [← h_uniq hne.choose hne.choose_spec]
-    exact hne.choose_spec
+  grind
 
 theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} :
     s.Nonempty ↔ s = {default} := by
