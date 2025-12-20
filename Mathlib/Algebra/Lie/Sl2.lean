@@ -41,7 +41,7 @@ structure IsSl2Triple (h e f : L) : Prop where
   h_ne_zero : h ≠ 0
   lie_e_f : ⁅e, f⁆ = h
   lie_h_e_nsmul : ⁅h, e⁆ = 2 • e
-  lie_h_f_nsmul : ⁅h, f⁆ = - (2 • f)
+  lie_h_f_nsmul : ⁅h, f⁆ = -(2 • f)
 
 namespace IsSl2Triple
 
@@ -87,7 +87,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
 lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith t m μ  where
+    HasPrimitiveVectorWith t m μ where
   ne_zero := hm
   lie_h := hm'
   lie_e := by

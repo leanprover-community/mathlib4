@@ -102,7 +102,7 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
   · grind [SignType.neg_eq_self_iff]
   rw [if_pos h₄, if_pos ?_]
-  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil ]
+  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
   cases _ : SignType.sign P.leadingCoeff
   <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
   <;> grind [= SignType.neg_eq_neg_one, SignType.zero_eq_zero, SignType.pos_eq_one,
@@ -134,7 +134,7 @@ theorem signVariations_neg : signVariations (-P) = signVariations P := by
   have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
     grind [Left.sign_neg]
   have h_neg_destutter (l : List SignType) :
-      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·)  := by
+      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by
     grind [List.map_destutter, neg_inj]
   rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
   congr 5
@@ -356,8 +356,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     have : P.signVariations = P.eraseLead.signVariations + ?_ := by
       simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁,
         hs_nC, h_lC]
-      exact rfl
-  )
+      exact rfl)
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/

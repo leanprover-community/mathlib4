@@ -133,7 +133,7 @@ instance : Zero (LocalizedModule S M) :=
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
   refine ⟨fun a b ↦ ?_⟩
-  induction a,b using LocalizedModule.induction_on₂
+  induction a, b using LocalizedModule.induction_on₂
   exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
 
 @[simp]
@@ -361,7 +361,7 @@ private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
   induction p with | _ m s
   induction q with | _ n t
   rw [smul_def, smul_def, mk_add_mk, mk_add_mk]
-  rw [show x • _ =  IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
+  rw [show x • _ = IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
   rw [← IsLocalization.mk'_cancel _ _ (IsLocalization.sec S x).2, mk'_smul_mk]
   congr 1
   · simp only [Submonoid.smul_def, smul_add, ← mul_smul, Submonoid.coe_mul]; ring_nf
@@ -375,7 +375,7 @@ set_option backward.privateInPublic true in
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
   induction p with | _ m s
-  rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
+  rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ = IsLocalization.mk' T _ _ • _ by
     rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y,
       ← IsLocalization.mk'_add, IsLocalization.mk'_cancel _ _ s], mk'_smul_mk, ← smul_assoc,
     ← smul_assoc, ← add_smul]
@@ -1203,7 +1203,7 @@ lemma map_mk' (h : M →ₗ[R] N) (x) (s : S) :
   rfl
 
 @[simp]
-lemma map_id : map S f f (.id ) = .id := by
+lemma map_id : map S f f (.id) = .id := by
   ext x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   simp

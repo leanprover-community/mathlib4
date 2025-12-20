@@ -310,7 +310,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using  CategoryTheory.Quotient.sound _
+  simpa [homMk] using CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
