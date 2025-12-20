@@ -166,6 +166,8 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
   hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
+/-- The upper bounds of the image of a continuous function on a dense set is equal to the upper
+bounds of the range of the universe. -/
 theorem Dense.continuous_upperBounds {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
@@ -176,6 +178,8 @@ theorem Dense.continuous_upperBounds {α : Type*} [TopologicalSpace α] [Preorde
   rw [mem_closure_iff_frequently] at hi
   exact (hi.mono hx).mem_of_closed isClosed_Iic
 
+/-- The lower bounds of the image of a continuous function on a dense set is equal to the lower
+bounds of the range of the universe. -/
 theorem Dense.continuous_lowerBounds {α : Type*} [TopologicalSpace α] [Preorder α]
     [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
     (hf : Continuous f) :
