@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cartan matrices
@@ -242,6 +243,38 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 @[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
 
 @[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+
+/-! ### Exceptional matrix determinants -/
+
+theorem G₂_det : G₂.det = 1 := by decide
+
+set_option maxRecDepth 600 in
+theorem F₄_det : F₄.det = 1 := by decide
+
+/-! ### Simply-laced property
+
+A Cartan matrix is simply-laced if it is symmetric, i.e., all off-diagonal entries
+are either 0 or -1. This is equivalent to the transpose being equal to itself.
+-/
+
+/-- A Cartan matrix is simply-laced if it equals its transpose. -/
+def IsSimplyLaced {n : ℕ} (A : Matrix (Fin n) (Fin n) ℤ) : Prop := A.transpose = A
+
+theorem E₆_isSimplyLaced : IsSimplyLaced E₆ := E₆_transpose
+
+theorem E₇_isSimplyLaced : IsSimplyLaced E₇ := E₇_transpose
+
+theorem E₈_isSimplyLaced : IsSimplyLaced E₈ := E₈_transpose
+
+theorem A_isSimplyLaced (n : ℕ) : IsSimplyLaced (A n) := A_transpose n
+
+theorem D_isSimplyLaced (n : ℕ) : IsSimplyLaced (D n) := D_transpose n
+
+/-! ### Determinant positivity -/
+
+theorem G₂_det_pos : 0 < G₂.det := by decide
+
+theorem F₄_det_pos : 0 < F₄.det := by decide
 
 end Properties
 
