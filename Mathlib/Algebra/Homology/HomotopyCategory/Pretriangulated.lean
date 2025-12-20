@@ -167,10 +167,9 @@ lemma triangle_mor₃_hom : (CochainComplex.mappingCone.triangle φ₁).mor₃ �
     CochainComplex.mappingCone.map φ₁ φ₂ a b comm ≫
     (CochainComplex.mappingCone.triangle φ₂).mor₃ := by
   ext n
-  simp [CochainComplex.mappingCone.map]
   apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
-  · simp
-  · simp
+  · simp [CochainComplex.mappingCone.map]
+  · simp [CochainComplex.mappingCone.map]
 
 variable (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
 

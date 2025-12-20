@@ -153,11 +153,10 @@ lemma descShortComplex_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫
     CochainComplex.mappingCone.descShortComplex S₂ := by
   ext n
-  simp [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
   apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
-  · simp
+  · simp [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
   · have : (S₁.g ≫ f.τ₃).f n = (f.τ₂ ≫ S₂.g).f n := by rw [f.comm₂₃]
-    simpa
+    simpa [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
 
 end mappingCone
 
