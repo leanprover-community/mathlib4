@@ -249,9 +249,9 @@ register_option linter.unusedFintypeInType : Bool := {
     replaced by a hypothesis of `Finite` or removed entirely."
 }
 
-/-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
-remainder of the type, and suggests replacing them with a use of `classical` in the proof or
-`open scoped Classical in` at the term level. -/
+/-- Detects `Fintype` instance hypotheses in the types of theorems which are not used in the
+remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
+and the use of `Fintype.ofFinite` in the proof. -/
 def unusedFintypeInType : Linter where
   run := /- withSetOptionIn -/ fun cmd => do
     /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
