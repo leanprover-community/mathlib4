@@ -92,7 +92,7 @@ theorem apply_prime_gt_two_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), 
     simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by lia)
   intro q hq qp
   obtain ⟨k, ha1, ha2⟩ : ∃ k, k ≤ q ∧ f q = q ^ k :=
-    (dvd_prime_pow qp).mp (apply_dvd_pow hf (zero_lt_of_lt hq))
+    (dvd_prime_pow qp).mp (hf.apply_dvd_pow (zero_lt_of_lt hq))
   by_cases ch : k = 0
   · simpa [ch] using ha2
   · have {p : ℕ} (pp : p.Prime) (hp : N < p) : (q : ℤ) ∣ p ^ q - 1 := by calc
