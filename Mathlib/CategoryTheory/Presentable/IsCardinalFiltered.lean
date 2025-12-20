@@ -83,12 +83,14 @@ section max
 
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
 
+set_option backward.proofsInPublic true in
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
 this is a choice of objects in `J` which is the target of a map from any of
 the objects `S k`. -/
 noncomputable def max : J :=
   (cocone (Discrete.functor S) (by simpa using hS)).pt
 
+set_option backward.proofsInPublic true in
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
 this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax (k : K) :
@@ -181,11 +183,11 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
         naturality _ _ _ := rfl }⟩
 
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
-    IsCardinalFiltered κ.ord.toType κ :=
+    IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
     have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
     obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
-      (α := κ.ord.toType) (r := (· < ·)) (S := Set.range f)
+      (α := κ.ord.ToType) (r := (· < ·)) (S := Set.range f)
       (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
         (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
     exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
