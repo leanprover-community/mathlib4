@@ -30,7 +30,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
   and similarly for a local diffeomorphism on `s`.
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `IsLocalDiffeomorph.diffeomorph_of_bijective`:
+* `IsLocalDiffeomorph.diffeomorphOfBijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
 * `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
@@ -331,7 +331,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
+noncomputable def IsLocalDiffeomorph.diffeomorphOfBijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
@@ -358,6 +358,9 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
+
+@[deprecated (since := "2025-12-19")]
+alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
 
 end Basic
 
