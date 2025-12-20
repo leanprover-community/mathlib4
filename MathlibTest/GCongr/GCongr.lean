@@ -4,8 +4,6 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 # Testing for the `gcongr` tactic
 -/
 
-namespace GCongrTests
-
 /-
 Test that `gcongr` lemmas are applied in the `reducible` transparency by default.
 Previously, `DFunLike.coe` would be unfolded when applying a `@[gcongr]` lemma.
@@ -96,5 +94,3 @@ attribute [local gcongr] foo_monotone in example (a b) (h : a ≤ b) : foo a ≤
 
 axiom foo_mono_rev (a b) : foo a → a ≤ b → foo b
 attribute [local gcongr] foo_mono_rev in example (a b) (h : a ≤ b) : foo a → foo b := by gcongr
-
-end GCongrTests
