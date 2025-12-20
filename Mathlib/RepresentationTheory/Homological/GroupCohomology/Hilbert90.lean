@@ -1,13 +1,11 @@
 /-
 Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston
+Authors: Riccardo Brasca, Amelia Livingston
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
-public import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
