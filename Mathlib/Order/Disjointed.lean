@@ -191,20 +191,6 @@ lemma biUnion_range_succ_disjointed {α : Type*} (f : ℕ → Set α) (n : ℕ) 
     (⋃ i ∈ Finset.range (n + 1), disjointed f i) = partialSups f n := by
   rw [Nat.range_succ_eq_Iic, biUnion_Iic_disjointed]
 
-lemma biUnion_Ioc_disjointed_of_monotone
-    {α ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
-    (f : ι → Set α) (hf : Monotone f) {m n : ι} (hm : n ≤ m) :
-    ⋃ i ∈ Finset.Ioc n m, disjointed f i = f m \ f n := by
-  let : SuccOrder ι := LinearLocallyFiniteOrder.succOrder ι
-  induction hm using Succ.rec with
-  | rfl => simp
-  | succ m hm ih =>
-    by_cases h'm : IsMax m
-    · simpa [Order.succ_eq_iff_isMax.mpr h'm] using ih
-    · rw [← Finset.insert_Ioc_right_eq_Ioc_succ_of_not_isMax hm h'm]
-      simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left, ih, hf.disjointed_succ h'm]
-      exact diff_union_diff_cancel (hf (Order.le_succ m)) (hf hm)
-
 end PartialOrder
 
 section LinearOrder -- the index type is a linear order
@@ -258,6 +244,26 @@ lemma Monotone.disjointed_succ_sup {f : ι → α} (hf : Monotone f) (i : ι) :
       sdiff_sup_cancel <| hf <| le_succ i]
 
 end SuccOrder
+
+lemma sup_Ioc_disjointed_of_monotone
+    {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    {f : ι → α} (hf : Monotone f) {m n : ι} (hm : n ≤ m) :
+    (Finset.Ioc n m).sup (disjointed f) = f m \ f n := by
+  let : SuccOrder ι := LinearLocallyFiniteOrder.succOrder ι
+  induction hm using Succ.rec with
+  | rfl => simp
+  | succ m hm ih =>
+    by_cases h'm : IsMax m
+    · simpa [Order.succ_eq_iff_isMax.mpr h'm] using ih
+    · rw [← Finset.insert_Ioc_right_eq_Ioc_succ_of_not_isMax hm h'm]
+      simp only [sup_insert, hf.disjointed_succ h'm, ih]
+      exact sdiff_sup_sdiff_cancel (hf (Order.le_succ m)) (hf hm)
+
+lemma biUnion_Ioc_disjointed_of_monotone
+    {α ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    {f : ι → Set α} (hf : Monotone f) {m n : ι} (hm : n ≤ m) :
+    ⋃ i ∈ Finset.Ioc n m, disjointed f i = f m \ f n := by
+  simp [← sup_Ioc_disjointed_of_monotone hf hm]
 
 end LinearOrder
 
