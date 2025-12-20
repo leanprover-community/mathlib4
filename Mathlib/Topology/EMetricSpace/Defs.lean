@@ -198,7 +198,8 @@ theorem mem_uniformity_edist {s : Set (α × α)} :
     s ∈ 𝓤 α ↔ ∃ ε > 0, ∀ {a b : α}, edist a b < ε → (a, b) ∈ s :=
   uniformity_basis_edist.mem_uniformity_iff
 
-instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMetricSpace α] :
+@[reducible]
+def PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMetricSpace α] :
     WeakPseudoEMetricSpace α where
   edist_self := edist_self
   edist_comm := edist_comm
