@@ -270,7 +270,28 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Dual K H)) (by simp) = ⊤ := by
   rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
     LieSubmodule.top_toSubmodule]
-  sorry
+      -- For any non-zero root α, the sl2 submodule of α contains the root space L_α.
+  have h_sl2_submodule_contains_root_space : ∀ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.rootSpace H α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
+    intro α hα
+    have h_sl2_submodule_contains_root_space : LieModule.genWeightSpace L α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
+      rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ];
+      exact le_sup_of_le_left ( le_sup_left );
+    exact?;
+  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α`.
+  have h_sup_le_sup : ⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
+    refine' iSup_le fun α => _;
+    by_cases hα : α.IsNonZero;
+    · exact le_iSup₂_of_le α hα ( h_sl2_submodule_contains_root_space α hα );
+    · simp_all +decide [ LieModule.Weight.IsNonZero ];
+      sorry
+  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α` implies `⊤ ≤ ⨆ α, sl2SubmoduleOfRoot α`.
+  have h_top_le_sup : (⊤ : Submodule K L) ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
+    have h_top_le_sup : (⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α) = ⊤ := by
+      exact?;
+    aesop;
+  simp_all +decide [ Submodule.eq_top_iff' ];
+  convert h_top_le_sup using 1;
+  simp +decide [ Submodule.mem_iSup ]
 
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_top_iff (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
@@ -313,10 +334,52 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
   simp only [center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
   exact hy_ne_zero h_y_center
 
-@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
+lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
+    {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+    {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
+    [LieAlgebra.IsKilling K L] [LieModule.IsTriangularizable K H L]
+    {α : LieModule.Weight K H L} (hα : α.IsNonZero) :
+    sl2SubmoduleOfRoot hα ≠ ⊥ := by
+      have h_nonzero : ∃ x ∈ LieAlgebra.IsKilling.corootSubmodule α, x ≠ 0 := by
+        -- Since α is non-zero, the coroot space is non-zero. The coroot itself is in the coroot space, and when mapped into L via the inclusion, it should still be non-zero.
+        obtain ⟨x, hx⟩ : ∃ x ∈ LieAlgebra.corootSpace (⇑α : ↥H → K), x ≠ 0 := by
+          have h_nonzero : ∃ x ∈ LieAlgebra.corootSpace (⇑α : ↥H → K), x ≠ 0 := by
+            have h_nonzero : LieAlgebra.corootSpace (⇑α : ↥H → K) ≠ ⊥ := by
+              aesop
+            contrapose! h_nonzero;
+            exact eq_bot_iff.mpr h_nonzero;
+          exact h_nonzero;
+        exact ⟨ x, ⟨ x, hx.1, rfl ⟩, by simpa using hx.2 ⟩;
+      obtain ⟨ x, hx₁, hx₂ ⟩ := h_nonzero;
+      contrapose! hx₂; aesop;
+      rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ] at hx₂;
+      simp_all +decide [ LieSubmodule.eq_bot_iff ]
+
+@[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
+    (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
     invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
-  sorry
+  refine' ⟨ fun h => _, fun h => _ ⟩;
+  · by_contra hq_nonzero
+    obtain ⟨i, hi⟩ : ∃ i : { x : LieModule.Weight K (↥H) L // x ∈ LieSubalgebra.root }, (LieAlgebra.IsKilling.rootSystem H).toRootPairing.root i ∈ q := by
+      have := @RootPairing.invtRootSubmodule.eq_bot_iff;
+      contrapose! this;
+      refine' ⟨ _, _, _, _, _, K, _, _, _, _, _ ⟩;
+      exact { x : LieModule.Weight K (↥H) L // x ∈ LieSubalgebra.root };
+      exact Module.Dual K H;
+      exact ↥H;
+      all_goals try infer_instance;
+      refine' ⟨ _, _, ⟨ ⟨ q, _ ⟩, _ ⟩ ⟩;
+      exact rootSystem H
+    have h_sl2_nonzero : sl2SubmoduleOfRoot (by
+    aesop : i.val.IsNonZero) ≠ ⊥ := by
+      all_goals generalize_proofs at *;
+      exact?
+    generalize_proofs at *;
+    refine' h_sl2_nonzero ( le_bot_iff.mp _ );
+    convert h.le using 1;
+    simp +decide [ LieAlgebra.IsKilling.invtSubmoduleToLieIdeal ];
+    exact?;
+  · simp +decide [ h, Submodule.map_zero, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal ]
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
