@@ -180,6 +180,13 @@ theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t
   unfold encard
   simp [ENat.card_congr (Equiv.Set.prod ..)]
 
+@[simp]
+theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i : α, Set (ι i)} :
+    (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
+  simp only [encard, ENat.card]
+  rw [Cardinal.mk_congr (Equiv.Set.univPi s)]
+  simp [Cardinal.prod_eq_of_fintype]
+
 section Lattice
 
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
@@ -1026,6 +1033,10 @@ theorem ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff (hs : s.Finite := by toFinit
 theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
   rw [← ncard_univ, ← ncard_union_eq (@disjoint_compl_right _ _ s) hs hsc, union_compl_self]
+
+theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
+    (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard = Nat.card α - s.ncard := by
+  rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
 
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by

@@ -204,19 +204,15 @@ theorem apply_union_le (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} : μ (s
 sets is the limit of the measures of the partial unions. -/
 protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
     [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
-    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
     using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
 
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
-theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
-  by_contra maybe_empty
-  have zero : (μ : Measure Ω) univ = 0 := by
-    rw [univ_eq_empty_iff.mpr (not_nonempty_iff.mp maybe_empty), measure_empty]
-  rw [measure_univ] at zero
-  exact zero_ne_one zero.symm
+theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω :=
+  nonempty_of_isProbabilityMeasure μ
 
 @[ext]
 theorem eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
