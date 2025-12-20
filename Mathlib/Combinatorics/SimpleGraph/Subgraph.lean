@@ -941,9 +941,8 @@ theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
 @[simp]
 theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
     Subgraph.map f (G.subgraphOfAdj hvw) = G'.subgraphOfAdj (f.map_adj hvw) := by
-  ext
-  · grind [Subgraph.map_verts, subgraphOfAdj_verts]
-  · grind [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
+  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Relation.Map, Subgraph.map_adj,
+    subgraphOfAdj_adj]
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u ⊆ {v, w} :=
@@ -1209,8 +1208,8 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 
 lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
-  calc G' = G'.induce G'.verts               := Subgraph.induce_self_verts.symm
-       _  ≤ (⊤ : G.Subgraph).induce G'.verts := Subgraph.induce_mono_left le_top
+  calc G' = G'.induce G'.verts := Subgraph.induce_self_verts.symm
+       _ ≤ (⊤ : G.Subgraph).induce G'.verts := Subgraph.induce_mono_left le_top
 
 lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') := by
   constructor
@@ -1238,7 +1237,7 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h <;> simp [hvw, hvw.symm]
     · intro h
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
-      obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
+      obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first | exact (ha.ne rfl).elim|simp
 
 instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [DecidableRel G'.Adj] :
     DecidableRel (G'.induce s).Adj :=
@@ -1310,7 +1309,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
   fun x y =>
     if h : G.Adj x y
     then
-      .isTrue <|  SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
+      .isTrue <| SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
         ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
