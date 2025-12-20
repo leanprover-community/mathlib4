@@ -177,9 +177,9 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
         obtain ⟨i, hi⟩ : ∃ i, m i > n i := by
           by_contra! hc
           exact h_le (Finsupp.coe_le_coe.mp hc)
-        have aux' : ¬ p • m i ≤ p • n i := by
-          simpa using Nat.mul_lt_mul_of_pos_left hi (p.ne_zero_iff_zero_lt.mp hp)
-        exact Not.intro fun a ↦ aux' (a i)
+        have : ¬ p • m i ≤ p • n i := by
+          simp [Nat.mul_lt_mul_of_pos_left hi (p.ne_zero_iff_zero_lt.mp hp)]
+        exact Not.intro fun a ↦ this (a i)
       rw [coeff_trunc', hm, if_neg not_le, MvPolynomial.coeff_expand_smul _ hp, coeff_trunc',
         if_neg h_le]
   · obtain ⟨i, hi⟩ := h
@@ -189,10 +189,10 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
     rw [coeff_trunc', if_neg hd]
 
 include hp in
-theorem expand_trunc' (n : σ →₀ ℕ) [DecidableEq σ] (f : MvPowerSeries σ R) :
-    (MvPolynomial.expand p) ((trunc' R n) f) = (trunc' R (p • n))
-    ↑((MvPolynomial.expand p) ((trunc' R (p • n)) f)) := by
-  rw [← expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' (le_self_nsmul (zero_le n) hp) _]
+theorem expand_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) [DecidableEq σ] (f : MvPowerSeries σ R) :
+    (MvPolynomial.expand p) (trunc' R n f) = (trunc' R (p • n))
+    ↑((MvPolynomial.expand p) (trunc' R m f)) := by
+  rw [← expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' h]
 
 end MvPolynomial
 
@@ -207,14 +207,16 @@ theorem expand_char {f : MvPowerSeries σ R} :
   intro n
   use (p • n)
   refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
-  · have aux' : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
+  · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
       simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
       ext m
-      simp [MvPolynomial.coeff_map]
+      simp only [MvPolynomial.coeff_coe, MvPolynomial.coeff_map, coeff_map]
     rw [trunc'_map, trunc'_expand, trunc'_pow (Nat.one_le_iff_ne_zero.mpr (expChar_ne_zero R p)),
-      ← MvPolynomial.coe_pow p, ← MvPolynomial.expand_char, aux', trunc'_map, expand_trunc' p hp]
+      ← MvPolynomial.coe_pow p, ← MvPolynomial.expand_char, this, trunc'_map,
+        expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
+
 
 theorem map_expand_pow_char (f : MvPowerSeries σ R) (n : ℕ) :
     map (frobenius R p ^ n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
