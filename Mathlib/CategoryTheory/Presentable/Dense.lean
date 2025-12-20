@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
 # `κ`-presentable objects form a dense subcategory
@@ -69,5 +70,25 @@ instance [IsCardinalAccessibleCategory C κ] (X : C) :
   exact IsCardinalFiltered.of_final p.toCostructuredArrow κ
 
 end IsCardinalAccessibleCategory
+
+namespace IsFinitelyAccessibleCategory
+
+instance [IsFinitelyAccessibleCategory.{w} C] (X : C) :
+    IsFiltered (CostructuredArrow (ObjectProperty.isFinitelyPresentable.{w} C).ι X) := by
+  rw [← CategoryTheory.isCardinalFiltered_aleph0_iff.{w},
+    ObjectProperty.isFinitelyPresentable_eq_isCardinalPresentable]
+  infer_instance
+
+instance [IsFinitelyAccessibleCategory.{w} C] :
+    (ObjectProperty.isFinitelyPresentable.{w} C).ι.IsDense := by
+  rw [ObjectProperty.isFinitelyPresentable_eq_isCardinalPresentable]
+  infer_instance
+
+instance [IsFinitelyAccessibleCategory.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (ObjectProperty.isFinitelyPresentable.{w} C) := by
+  rw [ObjectProperty.isFinitelyPresentable_eq_isCardinalPresentable]
+  infer_instance
+
+end IsFinitelyAccessibleCategory
 
 end CategoryTheory
