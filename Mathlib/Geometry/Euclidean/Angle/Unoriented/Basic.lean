@@ -338,7 +338,7 @@ they are equal. -/
 lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
   grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
 
-/-- The angle between normalized vector and another vector is equal to the angle
+/-- The angle between a normalized vector and another vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_left (x y : V) :
