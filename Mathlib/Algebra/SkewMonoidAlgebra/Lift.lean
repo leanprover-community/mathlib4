@@ -205,9 +205,9 @@ theorem domCongr_refl :
   apply AlgEquiv.ext
   aesop
 
-set_option backward.proofsInPublic true in
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
+    (domCongrAlg k A he).symm =
+      domCongrAlg (e := e.symm) _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl
 
 end domCongr

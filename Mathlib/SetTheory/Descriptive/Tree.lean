@@ -70,9 +70,9 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 
 variable (T) (x y : List A)
 
-set_option backward.proofsInPublic true in
 /-- The residual tree obtained by regarding the node x as new root -/
-def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa [List.append_assoc])⟩
+def subAt : tree A :=
+  ⟨(x ++ ·)⁻¹' T, fun _ a _ ↦ mem_of_append (y := [a]) (by rwa [List.append_assoc])⟩
 
 @[simp] lemma mem_subAt : y ∈ subAt T x ↔ x ++ y ∈ T := Iff.rfl
 
