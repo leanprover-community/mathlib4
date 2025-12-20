@@ -101,7 +101,7 @@ where
           trace[translate_detail] "refoldConsts: created the cast {cast} to unfold {.ofConstName c}"
           let .forallE _ α _ _ ← inferType cast | throwError s!"{cast} is not of the right form"
           let goal' ← mkFreshExprMVar α
-          go (mkAppN e xs) goal'.mvarId!
+          go (e.beta xs) goal'.mvarId!
           goal.assign <| ← mkLambdaFVars xs <| .app cast goal'
           return
       if ← isDefEq (← goal.getType) (← inferType e) then

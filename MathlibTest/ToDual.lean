@@ -120,6 +120,47 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
+@[to_dual DecidableLE1_dual]
+def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := h
+
+@[to_dual DecidableLE2_dual]
+def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
+
+-- Not yet supported because it probably won't show up in practice
+-- (though it wouldn't be too hard to fix `unfoldConsts` to support this)
+/--
+error: @[to_dual] failed to insert a cast to make `fun {α} [PartialOrder α] h =>
+  h` have type `{α : Type} → [inst : PartialOrder α] → DecidableLE α → (a b : α) → Decidable (a ≤ b)`
+
+fun {α} [PartialOrder α] h =>
+  h : {α : Type} →
+  [inst : PartialOrder α] →
+    DecidableLE α →
+      DecidableLE
+        α does not have type {α : Type} → [inst : PartialOrder α] → DecidableLE α → (a b : α) → Decidable (a ≤ b).
+-/
+#guard_msgs in
+@[to_dual DecidableLE3_dual]
+def DecidableLE3 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := h
+
+@[to_dual DecidableLE4_dual]
+def DecidableLE4 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := id h
+
+-- The arguments to `h` have been introduced, and swapped:
+/--
+info: fun {α} [PartialOrder α] h a b => h b a
+---
+info: fun {α} [PartialOrder α] h => id fun a b => h b a
+---
+info: fun {α} [PartialOrder α] h => id fun a b => h b a
+-/
+#guard_msgs in
+open Lean in
+run_meta
+  logInfo m!"{(← getConstInfo ``DecidableLE1_dual).value!}"
+  logInfo m!"{(← getConstInfo ``DecidableLE2_dual).value!}"
+  logInfo m!"{(← getConstInfo ``DecidableLE4_dual).value!}"
+
 -- The arguments to `inst✝` have been swapped:
 /--
 info: @dite (a < b ⊕' a = b) (b ≤ a) (inst✝ b a) (fun hba => PSum.inr ⋯) fun hba => PSum.inl ⋯
