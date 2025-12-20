@@ -83,7 +83,7 @@ theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
   its values on `F (single a 1)`. -/
 theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
-    (f : SkewMonoidAlgebra k G) : F f  = f.sum fun a b ↦ b • F (single a 1) := by
+    (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -201,7 +201,7 @@ theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x =
   equivMapDomain_single ..
 
 theorem domCongr_refl :
-    domCongrAlg k A  (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
+    domCongrAlg k A (e := MulEquiv.refl G) (fun _ _ ↦ rfl) = AlgEquiv.refl := by
   apply AlgEquiv.ext
   aesop
 
