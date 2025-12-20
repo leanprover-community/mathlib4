@@ -60,9 +60,6 @@ proves `CommSemiring (PowerSeries R)`, we inherit all ring axioms for free.
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## References
-
-* [Katznelson, *An Introduction to Harmonic Analysis*], Chapter I
 -/
 
 open scoped BigOperators NNReal ENNReal
