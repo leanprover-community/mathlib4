@@ -55,7 +55,8 @@ private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux₁ {p p' : P}
 
 /-- Auxiliary lemma for the degenerate case of `dist_orthogonalProjection_eq_iff_angle_eq` where
 `p` lies in `s₁` or `s₂`. -/
-private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux {p p' : P} {s₁ s₂ : AffineSubspace ℝ P}
+private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux {p p' : P}
+    {s₁ s₂ : AffineSubspace ℝ P}
     [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (hp'₁ : p' ∈ s₁) (hp'₂ : p' ∈ s₂) (h' : p ∈ s₁ ∨ p ∈ s₂) :
     haveI : Nonempty s₁ := ⟨p', hp'₁⟩
