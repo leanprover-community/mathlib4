@@ -10,7 +10,6 @@ public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
