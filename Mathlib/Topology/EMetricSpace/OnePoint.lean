@@ -56,7 +56,7 @@ theorem edist_cast_cast {a b : α} :
     edist (self := OnePoint.toEDist (α := α)) a b = edist a b := rfl
 
 theorem im_ball (a : α) (r : ENNReal) :
-    OnePoint.some '' ball a r = ball (α := OnePoint α) a r := by
+    OnePoint.some '' EMetric.ball a r = EMetric.ball (α := OnePoint α) a r := by
   ext x
   dsimp
   constructor <;> intro h
@@ -76,20 +76,20 @@ section
 variable {α : Type u} [TopologicalSpace α] [WeakPseudoEMetricSpace α] {x : OnePoint α}
 
 theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
-    ball (∞ : OnePoint α) r = {∞} := by
-  refine eq_singleton_iff_unique_mem.mpr ⟨mem_ball.mpr hr, ?_⟩
+    EMetric.ball (∞ : OnePoint α) r = {∞} := by
+  refine eq_singleton_iff_unique_mem.mpr ⟨EMetric.mem_ball.mpr hr, ?_⟩
   intro x
   match x with
   | (_ : α) => simp
   | ∞ => tauto
 
-theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ ball x r := by
+theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ EMetric.ball x r := by
   match x with
   | (_ : α) => simp
   | ∞ => contradiction
 
 @[simp]
-theorem infty_not_mem_ball' {x : α} (r : ENNReal) : ∞ ∉ ball (↑x : OnePoint α) r :=
+theorem infty_not_mem_ball' {x : α} (r : ENNReal) : ∞ ∉ EMetric.ball (↑x : OnePoint α) r :=
   infty_not_mem_ball r (OnePoint.coe_ne_infty x)
 
 private lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
@@ -126,7 +126,7 @@ private lemma eq_of_edist_eq_zero' {α : Type u} [TopologicalSpace α] (m : Weak
   | ∞, (_ : α) => by simp
   | ∞, ∞ => by simp
 
-lemma prod_open_iff {α : Type u} {m : PseudoEMetricSpace α} (s : Set (OnePoint α)) :
+private lemma prod_open_iff {α : Type u} {m : PseudoEMetricSpace α} (s : Set (OnePoint α)) :
     IsOpen[(pseudoEMetricSpaceOfEDist (edist_self' m.toWeakPseudoEMetricSpace)
     (edist_comm' m.toWeakPseudoEMetricSpace)
     (edist_triangle' m.toWeakPseudoEMetricSpace)).toUniformSpace.toTopologicalSpace] s
@@ -156,9 +156,9 @@ instance toWeakPseudoEMetricSpace
     {α : Type u} [TopologicalSpace α] [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (OnePoint α) where
   edist := edist
-  edist_self := edist_self' m
-  edist_comm := edist_comm' m
-  edist_triangle := edist_triangle' m
+  edist_self := private edist_self' m
+  edist_comm := private edist_comm' m
+  edist_triangle := private edist_triangle' m
   topology_le := by
     rw [EMetric.Uniformity_eq]
     intro s sh
@@ -170,7 +170,7 @@ instance toWeakPseudoEMetricSpace
       use 1
       simpa [ball_infty_of_pos]
     | (x : α) =>
-      let t := (ball (α := OnePoint α) x 1 ∩ s)
+      let t := (EMetric.ball (α := OnePoint α) x 1 ∩ s)
       have op: IsOpen[(pseudoEMetricSpaceOfEDist
           m.edist_self m.edist_comm m.edist_triangle).toUniformSpace.toTopologicalSpace]
           (OnePoint.some ⁻¹' s) := by
@@ -199,7 +199,7 @@ instance toWeakPseudoEMetricSpace
       | ∞ => contradiction
       | (z : α) =>
         apply Set.ext_iff.1 at s's
-        simp only [mem_preimage, Subtype.forall, mem_ball, mem_image] at s's ⊢ yh
+        simp only [mem_preimage, Subtype.forall, EMetric.mem_ball, mem_image] at s's ⊢ yh
         specialize s's z yh
         constructor <;> intro h
         · obtain ⟨r, rh, rh'⟩ := h
@@ -215,12 +215,12 @@ instance toWeakPseudoEMetricSpace
 instance toWeakEMetricSpace {α : Type u} [TopologicalSpace α] [m : WeakEMetricSpace α] :
     WeakEMetricSpace (OnePoint α) where
   edist := edist
-  edist_self := edist_self' _
-  edist_comm := edist_comm' _
-  edist_triangle := edist_triangle' _
+  edist_self := private edist_self' _
+  edist_comm := private edist_comm' _
+  edist_triangle := private edist_triangle' _
   topology_le := (@toWeakPseudoEMetricSpace α _ _).topology_le
   topology_eq_on_restrict := (@toWeakPseudoEMetricSpace α _ _).topology_eq_on_restrict
-  eq_of_edist_eq_zero := eq_of_edist_eq_zero' m
+  eq_of_edist_eq_zero := private eq_of_edist_eq_zero' m
 
 end
 
