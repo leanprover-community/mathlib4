@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Ideal.Defs
 Let `G` be an (additive) group, and let `M` be a submonoid of `G`.
 The *support* of `M` is `M ∩ -M`, the largest subgroup of `M`.
 When `M ∪ -M = G`, the support of `M` forms an ideal.
-We define supports and prove how they interact with operations.
 
 ## Main definitions
 
@@ -76,12 +75,12 @@ section HasIdealSupport
 
 variable [M.HasIdealSupport]
 
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike])]
 theorem smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : x * a ∈ M := by
   have := M.smul_mem_support
   aesop
 
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike])]
 theorem neg_smul_mem (x : R) {a : R} (h₁a : a ∈ M) (h₂a : -a ∈ M) : -(x * a) ∈ M := by
   have := M.smul_mem_support
   aesop
@@ -110,7 +109,7 @@ instance (M : Subsemiring R) [HasMemOrNegMem M] : M.HasIdealSupport where
   smul_mem_support x a ha := by
     have := mem_or_neg_mem M x
     have : ∀ x y, -x ∈ M → -y ∈ M → x * y ∈ M := fun _ _ hx hy ↦ by simpa using mul_mem hx hy
-    aesop (add unsafe 80% apply this)
+    aesop (add 80% this)
 
 end Subsemiring
 
