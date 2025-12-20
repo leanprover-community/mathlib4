@@ -146,8 +146,7 @@ theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : edist x y ≤ r) :
   (h x y).trans <| mul_right_mono hr
 
 theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x y < r) :
-    edist (f x) (f y) < K * r :=
-  (h x y).trans_lt <| (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 hK) ENNReal.coe_ne_top).2 hr
+    edist (f x) (f y) < K * r := by grw [h x y]; gcongr; simp
 
 theorem mapsTo_emetric_closedBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedBall x r) (closedBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy

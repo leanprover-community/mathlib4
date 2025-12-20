@@ -19,7 +19,8 @@ satisfy the corresponding properties.
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
-pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
+pushforward functors. Similar results are obtained for sheaves of modules
+in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
 
 -/
 
@@ -27,7 +28,7 @@ pushforward functors. Similar results shall be obtained for sheaves of modules (
 
 namespace CategoryTheory
 
-variable {C₀ C₁ C₂ C₃ : Type*} [Category C₀] [Category C₁] [Category C₂] [Category C₃]
+variable {C₀ C₁ C₂ C₃ : Type*} [Category* C₀] [Category* C₁] [Category* C₂] [Category* C₃]
 
 open Functor
 

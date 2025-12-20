@@ -21,8 +21,6 @@ variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 /-- Construct a `LinearOrderedCommGroupWithZero` from a canonically linear ordered semifield. -/
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α where
-  __ := ‹Semifield α›
-  __ := ‹LinearOrder α›
   bot := 0
   bot_le := zero_le
   zero_le_one := zero_le_one
