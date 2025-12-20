@@ -144,6 +144,10 @@ that haven't been formalised at all yet and only depend on the material here are
 diffeology, diffeological space, smoothness, smooth function
 -/
 
+@[expose] public section
+
+assert_not_exists ChartedSpace
+
 open Topology ContDiff
 
 /-- A diffeology on `X`, given by the smooth functions (or "plots") from ℝⁿ to `X`. -/
