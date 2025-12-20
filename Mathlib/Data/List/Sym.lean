@@ -81,12 +81,7 @@ theorem mk_mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
   | nil => simp at ha
   | cons x xs ih =>
     rw [mem_sym2_cons_iff]
-    rw [mem_cons] at ha hb
-    obtain (rfl | ha) := ha <;> obtain (rfl | hb) := hb
-    · left; rfl
-    · right; left; use b
-    · right; left; rw [Sym2.eq_swap]; use a
-    · right; right; exact ih ha hb
+    grind [Sym2.eq, Sym2.rel_iff']
 
 theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
     s(a, b) ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by

@@ -77,7 +77,7 @@ elab "cases_first_enat" : tactic => focus do
     evalTactic (← `(tactic| all_goals try simp only [enat_to_nat_top] at *))
 
 /-- `enat_to_nat` shifts all `ENat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `enat_to_nat; omega`. -/
+A typical use case is `enat_to_nat; lia`. -/
 macro "enat_to_nat" : tactic => `(tactic| focus (
     (repeat' cases_first_enat) <;>
     (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)

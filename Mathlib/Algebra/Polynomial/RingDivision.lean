@@ -265,9 +265,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
       have hdeg : degree (X - C x) ≤ degree p := by
-        rw [degree_X_sub_C, degree_eq_natDegree hp]
-        rw [degree_eq_natDegree hp] at hpd
-        exact WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 hpd)
+        simpa using Nat.WithBot.one_le_iff_zero_lt.mpr hpd
       have hdiv0 : p /ₘ (X - C x) ≠ 0 :=
         mt (divByMonic_eq_zero_iff (monic_X_sub_C x)).1 <| not_lt.2 hdeg
       ⟨x ::ₘ t,

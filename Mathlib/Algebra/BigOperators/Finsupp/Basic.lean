@@ -456,7 +456,7 @@ theorem sum_sub_index [AddGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : 
 theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β} {g : β → M → N} :
     (v.embDomain f).prod g = v.prod fun a b => g (f a) b := by
   rw [prod, prod, support_embDomain, Finset.prod_map]
-  simp_rw [embDomain_apply]
+  simp_rw [embDomain_apply_self]
 
 @[to_additive]
 theorem prod_finset_sum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g : ι → α →₀ M}
@@ -584,18 +584,13 @@ At the time of writing Mathlib does not have a typeclass to express the conditio
 that addition on a `FunLike` type is pointwise; hence this is asserted via explicit hypotheses. -/
 theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [FunLike F γ B]
     (g : ι →₀ A) (k : ι → A → F) (x : γ)
-    (hg0 : ∀ (i : ι), k i 0 = 0) (hgadd : ∀ (i : ι) (a₁ a₂ : A), k i (a₁ + a₂) = k i a₁ + k i a₂)
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
-  induction g using Finsupp.induction with
-  | zero => simp [h0]
-  | single_add i a f hf ha ih =>
-    rw [Finsupp.sum_add_index' hg0 hgadd, Finsupp.sum_add_index', hadd, ih]
-    · congr 1
-      rw [Finsupp.sum_single_index (hg0 i), Finsupp.sum_single_index]
-      simp [hg0, h0]
-    · simp [hg0, h0]
-    · simp [hgadd, hadd]
+  classical
+  unfold Finsupp.sum
+  induction g.support using Finset.induction with
+  | empty => simp [h0]
+  | insert i s hi ih => simp [sum_insert hi, hadd, ih]
 
 @[deprecated "use instead `sum_finset_sum_index` (with equality reversed)" (since := "2025-11-07")]
 theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
@@ -632,10 +627,15 @@ end Nat
 namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
 
-@[simp] lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
+-- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
+-- TODO(Jovan): Remove the annotations once unnecessary again.
+
+@[to_additive self (dont_translate := M), simp]
+lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
     op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
 
-@[simp] lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+@[to_additive self (dont_translate := M), simp]
+lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
     unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
 
 end MulOpposite
