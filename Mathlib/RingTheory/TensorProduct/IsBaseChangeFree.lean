@@ -36,15 +36,15 @@ noncomputable def basis :
       (finsuppPow ι (linearMap R S)).equiv
 
 theorem basis_apply (i) : ibc.basis b i = ε (b i) := by
-  simp [basis]
-  simp [LinearEquiv.baseChange]
+  simp only [basis, LinearEquiv.baseChange, Module.Basis.coe_ofRepr, LinearEquiv.trans_symm,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply]
   generalize_proofs _ _ _ _ ibcRA
   have : ibcRA.equiv.symm (Finsupp.single i 1) = 1 ⊗ₜ (Finsupp.single i 1) := by
     simp [LinearEquiv.symm_apply_eq, IsBaseChange.equiv_tmul]
   simp [this, IsBaseChange.equiv_tmul]
 
 theorem basis_repr_comp_apply (v i) :
-    (ibc.basis b).repr (ε v) i = algebraMap R S (b.repr v i):= by
+    (ibc.basis b).repr (ε v) i = algebraMap R S (b.repr v i) := by
   conv_lhs => rw [← b.linearCombination_repr v, Finsupp.linearCombination_apply,
     map_finsuppSum, map_finsuppSum]
   simp only [map_smul, Finsupp.sum_apply]

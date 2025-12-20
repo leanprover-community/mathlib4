@@ -403,7 +403,7 @@ alias AnalyticAt.along_snd := AnalyticAt.curry_right
 theorem AnalyticWithinAt.curry_right
     {f : E × F → G} {s : Set (E × F)} {p : E × F} (fa : AnalyticWithinAt 𝕜 f s p) :
     AnalyticWithinAt 𝕜 (fun y ↦ f (p.1, y)) {y | (p.1, y) ∈ s} p.2 :=
-  AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
+  AnalyticWithinAt.comp₂ fa analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
@@ -899,7 +899,9 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       have : y = Units.ofNearby z y hy := rfl
       rw [this, Eq.comm]
       simp only [Ring.inverse_unit, Function.comp_apply]
-      simp [Units.ofNearby, f1, f2, f3, Units.add, _root_.mul_sub]
+      simp only [Units.ofNearby, Units.add, mul_sub, Units.inv_mul, neg_sub, add_sub_cancel,
+        mul_inv_rev, Units.val_mul, Units.val_inv_copy, Units.inv_eq_val_inv, Units.val_copy,
+        _root_.sub_sub_cancel, Units.mul_left_inj, f1, f2, f3]
       rw [← Ring.inverse_unit]
       congr
       simp
