@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Data.Nat.SuccPred
@@ -112,5 +113,36 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+
+namespace Walk
+
+variable {V : Type*} [BEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
+
+/-- The subgraph of a walk contains the path graph with the same number of vertices -/
+def homCoeToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
+  toFun n := ⟨w.support[n], w.mem_verts_toSubgraph.mpr <| List.getElem_mem _⟩
+  map_rel' {a b} h := by
+    grind [support_getElem_eq_getVert, Subgraph.coe_adj, pathGraph_adj, toSubgraph_adj_getVert,
+      Subgraph.Adj.symm]
+
+/-- A walk induces a homomorphism from a path graph to the graph -/
+def pathGraphHom : pathGraph w.support.length →g G :=
+  w.toSubgraph.hom.comp w.homCoeToSubgraph
+
+variable {w} in
+/-- The subgraph of a path is isomorphic to the path graph with the same number of vertices -/
+def IsPath.isoCoeToSubgraph [LawfulBEq V] (h : w.IsPath) :
+    pathGraph w.support.length ≃g w.toSubgraph.coe where
+  toFun := w.homCoeToSubgraph
+  invFun v :=
+    ⟨w.support.idxOf v.val, List.idxOf_lt_length_of_mem <| w.mem_verts_toSubgraph.mp v.prop⟩
+  left_inv := by grind [homCoeToSubgraph, RelHom.coeFn_mk, h.support_nodup]
+  right_inv := by grind [homCoeToSubgraph, RelHom.coeFn_mk]
+  map_rel_iff' := by
+    refine ⟨fun hadj ↦ ?_, w.homCoeToSubgraph.map_rel'⟩
+    grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support, homCoeToSubgraph,
+      RelHom.coeFn_mk, h.support_nodup.getElem_inj_iff]
+
+end Walk
 
 end SimpleGraph
