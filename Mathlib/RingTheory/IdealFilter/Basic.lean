@@ -119,12 +119,12 @@ lemma isTorsionQuot_inf_left_iff (F : IdealFilter A) (L K : Ideal A) :
       simpa [hcol] using h_I_le
 
 /-- Unfolding lemma for `IsTorsion`. -/
-@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
+lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
     IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m :=
   Iff.rfl
 
 /-- Unfolding lemma for `IsTorsionQuot`. -/
-@[simp] lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
+lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
     IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ L.colon (Ideal.span {k}) :=
   Iff.rfl
 
