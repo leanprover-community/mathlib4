@@ -8,7 +8,31 @@ import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
-# A copy of a metric space with
+# A copy of a metric space with metric given by `d x y = dist x y ^ α`
+
+Given a (pseudo) (extended) metric space `X` and a number `0 < α < 1`,
+one can consider the metric given by `d x y = (dist x y) ^ α`.
+In this file we define `WithRPowDist X α hα₀ hα₁` to be a one-field structure wrapper around `X`
+with metric given by this formula.
+
+One of the reasons to introduce this definition is the following.
+In the proof of his version of the Morse-Sard theorem,
+Moreira [Moreira2001] studies maps of two variables that are Lipschitz continuous in one variable,
+but satisfy a stronger assumption `‖f (a, y) - f (a, b)‖ = O(‖y - b‖ ^ α)`
+along the second variable, as long as `(a, b)` is one of the "interesting" points.
+
+If we want to apply Vitali family in this context, we need to cover the set by products
+`closedBall a (R ^ α) ×ˢ closedBall b R` so that both components make a similar contribution
+to `‖f (x, y) - f (a, b)‖`. These sets aren't balls in the original metric
+(or even subsets of balls that occupy at least a fixed fraction of the volume,
+as we require in our version of Vitali theorem).
+
+However, if we change the metric on the first component to the one introduced in this file,
+then these sets become balls, and we can apply Vitali theorem.
+
+## References
+* [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
+  [Moreira2001]
 -/
 
 open scoped ENNReal NNReal Filter Uniformity Topology
@@ -16,16 +40,21 @@ open Function
 
 noncomputable section
 
+/-- A copy of a type with metric given by `dist x y = (dist x.val y.val) ^ α`.
+
+This is defined as a one-field structure. -/
 @[ext]
-structure WithRPowDist (X : Type*) (r : ℝ) (hr₀ : 0 < r) (hr₁ : r ≤ 1) where
+structure WithRPowDist (X : Type*) (α : ℝ) (hα₀ : 0 < α) (hα₁ : α ≤ 1) where
+  /-- The value wrapped in `x : WithRPowDist X α hα₀ hα₁`. -/
   val : X
 
 namespace WithRPowDist
 
 variable {X : Type*} {α : ℝ} {hα₀ : 0 < α} {hα₁ : α ≤ 1}
 
+/-- The natural equivalence between `WithRPowDist X α hr₀ hr₁` and `X`. -/
 @[simps -fullyApplied apply symm_apply]
-def equiv (X : Type*) (r : ℝ) (hr₀ : 0 < r) (hr₁ : r ≤ 1) : WithRPowDist X r hr₀ hr₁ ≃ X where
+def equiv (X : Type*) (α : ℝ) (hr₀ : 0 < α) (hr₁ : α ≤ 1) : WithRPowDist X α hr₀ hr₁ ≃ X where
   toFun := val
   invFun := mk
   left_inv _ := rfl
@@ -63,6 +92,12 @@ theorem surjective_mk : Surjective (mk :  X → WithRPowDist X α hα₀ hα₁)
 theorem injective_mk : Injective (mk : X → WithRPowDist X α hα₀ hα₁) := by
   simp [Injective]
 
+/-!
+### Topological space structure
+
+The topology on `WithRPowDist X α hα₀ hα₁` is induced from `X`.
+-/
+
 section TopologicalSpace
 
 variable [TopologicalSpace X]
@@ -78,12 +113,16 @@ theorem continuous_val : Continuous (val : WithRPowDist X α hα₀ hα₁ → X
 theorem continuous_mk : Continuous (mk : X → WithRPowDist X α hα₀ hα₁) :=
   continuous_induced_rng.2 continuous_id
 
-/-
-Define a homeomorphism between this space and X.
--/
+/-- The natural homeomorphism between `WithRPowDist X α hα₀ hα₁` and `X`. -/
 @[simps! -fullyApplied toEquiv apply symm_apply]
 def homeomorph : WithRPowDist X α hα₀ hα₁ ≃ₜ X where
   toEquiv := WithRPowDist.equiv X α hα₀ hα₁
+
+/-!
+We copy some instances from the underlying space `X` to `WithRPowDist X α hα₀ hα₁`.
+In the future, we can add more of them, if needed,
+or even copy all the topology-related classes, if we get a tactic to do it automatically.
+-/
 
 instance [T0Space X] : T0Space (WithRPowDist X α hα₀ hα₁) :=
   homeomorph.symm.t0Space
@@ -95,6 +134,12 @@ instance [SecondCountableTopology X] : SecondCountableTopology (WithRPowDist X �
   homeomorph.secondCountableTopology
 
 end TopologicalSpace
+
+/-!
+### Bornology
+
+The bornology on `WithRPowDist X α hα₀ hα₁` is induced from `X`.
+-/
 
 section Bornology
 
@@ -126,6 +171,12 @@ theorem isBounded_preimage_val_iff {s : Set X} :
 
 end Bornology
 
+/-!
+### Uniform space structure
+
+The uniform space structure on `WithRPowDist X α hα₀ hα₁` is induced from `X`.
+-/
+
 section UniformSpace
 
 variable [UniformSpace X]
@@ -149,6 +200,15 @@ def uniformEquiv : WithRPowDist X α hα₀ hα₁ ≃ᵤ X where
   uniformContinuous_invFun := uniformContinuous_mk
 
 end UniformSpace
+
+/-!
+### Extended distance and a (pseudo) extended metric space structure
+
+Th extended distance on `WithRPowDist X α hα₀ hα₁`
+is given by `edist x y = (edist x.val y.val) ^ α`.
+
+If the original space is a (pseudo) extended metric space, then so is `WithRPowDist X α hα₀ hα₁`.
+-/
 
 section EDist
 
@@ -259,6 +319,15 @@ end PseudoEMetricSpace
 
 instance [EMetricSpace X] : EMetricSpace (WithRPowDist X α hα₀ hα₁) :=
   .ofT0PseudoEMetricSpace _
+
+/-!
+### Distance and a (pseudo) metric space structure
+
+Th extended distance on `WithRPowDist X α hα₀ hα₁`
+is given by `dist x y = (dist x.val y.val) ^ α`.
+
+If the original space is a (pseudo) metric space, then so is `WithRPowDist X α hα₀ hα₁`.
+-/
 
 instance [Dist X] : Dist (WithRPowDist X α hα₀ hα₁) where
   dist x y := dist x.val y.val ^ α
