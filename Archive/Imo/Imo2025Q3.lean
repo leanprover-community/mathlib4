@@ -10,7 +10,7 @@ import Mathlib.Tactic.Simproc.Factors
 /-!
 # IMO 2025 Q3
 
-Let `ℕ+` denote the set of positive integers. A function `f: ℕ+ → ℕ+` is said to be bonza if
+Let `ℕ+` denote the set of positive integers. A function `f : ℕ+ → ℕ+` is said to be bonza if
 `f a ∣ b ^ a - (f b) ^ (f a)` for all positive integers `a` and `b`.
 Determine the smallest real constant `c` such that `f n ≤ c * n` for all bonza functions `f` and
 all positive integers `n`.
