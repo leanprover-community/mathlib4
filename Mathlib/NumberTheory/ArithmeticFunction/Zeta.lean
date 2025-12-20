@@ -13,7 +13,7 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 We define `ζ` to be the arithmetic function with `ζ n = 1` for `0 < n` (whose Dirichlet series
 is the Riemann zeta function).
 
-# Main Definitions
+## Main Definitions
 
 * `ArithmeticFunction.zeta` is the arithmetic function such that `ζ x = 1` for `0 < x`. The notation
   `ζ` for this function is available by opening `ArithmeticFunction.zeta`.

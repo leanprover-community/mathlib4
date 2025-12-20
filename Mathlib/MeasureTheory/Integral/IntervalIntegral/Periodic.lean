@@ -36,7 +36,7 @@ open scoped MeasureTheory NNReal ENNReal
 ## Measures and integrability on ℝ and on the circle
 -/
 
-@[measurability]
+@[fun_prop]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
@@ -208,7 +208,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
   linarith [hT.out]
 
 /-- The integral of a function lifted to AddCircle from an interval `(t, t + T]` to `AddCircle T`
-is equal the the intervalIntegral over the interval. -/
+is equal to the intervalIntegral over the interval. -/
 lemma integral_liftIoc_eq_intervalIntegral {t : ℝ} {f : ℝ → E} :
     ∫ a, liftIoc T t f a = ∫ a in t..t + T, f a := by
   rw [← AddCircle.intervalIntegral_preimage T t]

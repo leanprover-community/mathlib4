@@ -98,14 +98,16 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
-    Small.{max v w} (filteredClosure f).FullSubcategory  := by
+    Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · #adaptation_note
+        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
+        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
       · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
         rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
@@ -254,7 +256,9 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · #adaptation_note
+      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
+      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
       rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
