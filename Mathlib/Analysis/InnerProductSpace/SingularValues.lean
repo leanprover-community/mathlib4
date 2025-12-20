@@ -6,46 +6,43 @@ open NNReal
 
 recall LinearMap.isPositive_adjoint_comp_self
 
+variable {𝕜 : Type*} [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
+
 -- LinearMap.isSymmetric_adjoint_mul_self but domain and range can be different
-theorem LinearMap.isSymmetric_adjoint_comp_self {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  (T : E →ₗ[𝕜] F) [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+public theorem LinearMap.isSymmetric_adjoint_comp_self
+  (T : E →ₗ[𝕜] F)
   : (adjoint T ∘ₗ T).IsSymmetric := T.isPositive_adjoint_comp_self.isSymmetric
 
-theorem LinearMap.eigenvalues_adjoint_comp_self_nonneg {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  (T : E →ₗ[𝕜] F) [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+theorem LinearMap.eigenvalues_adjoint_comp_self_nonneg
+  (T : E →ₗ[𝕜] F)
   {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : 0 ≤ (LinearMap.isPositive_adjoint_comp_self T).isSymmetric.eigenvalues hn i := by
   apply LinearMap.IsPositive.nonneg_eigenvalues
   exact T.isPositive_adjoint_comp_self
 
 -- TODO: prove from the fact that the set of nonzero eigenvectors forms a basis for T
-noncomputable def LinearMap.IsSymmetric.defa {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  {T : E →ₗ[𝕜] E} [FiniteDimensional 𝕜 E] (h : T.IsSymmetric)
+noncomputable def LinearMap.IsSymmetric.defa
+  {T : E →ₗ[𝕜] E} (h : T.IsSymmetric)
   {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   : OrthonormalBasis {i : Fin n // h.eigenvalues hn i ≠ 0} 𝕜 (LinearMap.range T)
   := sorry
   --:= OrthonormalBasis.mk (v := h.eigenvectorBasis hn) sorry sorry
 
-theorem LinearMap.adjoint_comp_self_eq_id_iff_isometry {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  (T : E →ₗ[𝕜] F) [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
+theorem LinearMap.adjoint_comp_self_eq_id_iff_isometry
+  (T : E →ₗ[𝕜] F)
   : adjoint T ∘ₗ T = LinearMap.id ↔ Isometry T := by
   rw [AddMonoidHomClass.isometry_iff_norm]
   sorry
 
-variable {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
-
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
-Singular values may appear multiple times in this list.
+This definition accounts for the multiplicity of a singular value.
+
+This definition is not public, but there are different characterizations depending on the use-case:
+- `LinearMap.singularValues_fin` and `LinearMap.singularValues_of_finrank_le` for
+a characterization similar in spirit to `LinearMap.IsSymmetric.eigenvalues`.
 
 Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
 In mathematical literature, the number of singular values varies, with popular choices including
@@ -73,3 +70,23 @@ public noncomputable def LinearMap.singularValues (T : E →ₗ[𝕜] F) : ℕ �
     Finsupp.ofSupportFinite
       (fun i ↦ Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
       (Set.toFinite _)
+
+/--
+Connection between `LinearMap.singularValues` and `LinearMap.IsSymmetric.eigenvalues`.
+Together with `LinearMap.singularValues_of_finrank_le`, this characterizes the singular values.
+-/
+public theorem LinearMap.singularValues_fin (T : E →ₗ[𝕜] F) {n : ℕ}
+  (hn : Module.finrank 𝕜 E = n) (i : Fin n)
+  : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
+  sorry
+
+/--
+`LinearMap.singularValues_fin` when combined with this characterizes the singular values.
+
+This theorem is strictly weaker than (TODO: A theorem which states that the singular values after
+rank(T) are 0).
+-/
+public theorem LinearMap.singularValues_of_finrank_le (T : E →ₗ[𝕜] F) {i : ℕ}
+  (hi : Module.finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
+  -- Unlike the `rank(T)` lemma, this should follow directly from the definition.
+  sorry
