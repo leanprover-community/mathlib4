@@ -3,9 +3,11 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Chinese Remainder Theorem
@@ -21,6 +23,8 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 
 Chinese Remainder Theorem, Gödel, beta function
 -/
+
+@[expose] public section
 
 open scoped Function -- required for scoped `on` notation
 namespace Nat
@@ -136,7 +140,7 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
       funext fun nod' : l'.Nodup =>
       have nod : l.Nodup := pp.symm.nodup_iff.mp nod'
       funext fun hs' : ∀ i ∈ l', s i ≠ 0 =>
-      have hs : ∀ i ∈ l, s i ≠ 0  := by simpa [List.Perm.mem_iff pp] using hs'
+      have hs : ∀ i ∈ l, s i ≠ 0 := by simpa [List.Perm.mem_iff pp] using hs'
       funext fun co' : Set.Pairwise {x | x ∈ l'} (Coprime on s) =>
       have co : Set.Pairwise {x | x ∈ l} (Coprime on s) := by simpa [List.Perm.mem_iff pp] using co'
       have lco : l.Pairwise (Coprime on s) := List.Nodup.pairwise_of_forall_ne nod co

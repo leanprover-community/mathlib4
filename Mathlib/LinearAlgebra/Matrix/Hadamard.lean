@@ -3,8 +3,10 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Hadamard product of matrices
@@ -29,6 +31,8 @@ and contains basic properties about them.
 
 hadamard product, hadamard
 -/
+
+@[expose] public section
 
 
 variable {α m n R : Type*}

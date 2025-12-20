@@ -3,10 +3,12 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.Mirror
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Int.Order.Units
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Mirror
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials
@@ -23,6 +25,8 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
   trinomials.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace
 
@@ -215,10 +219,10 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · exact fun h => h.2.ne rfl
-  · refine ⟨?_, add_lt_add_left key n⟩
+  · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)
-  · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
+  · constructor <;> gcongr
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
   · grind

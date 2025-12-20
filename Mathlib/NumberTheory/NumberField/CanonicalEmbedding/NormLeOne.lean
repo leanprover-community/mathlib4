@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1
@@ -36,7 +38,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see the description of `logSpace` below) the fundamental system of units given by
-  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ)`, that is the vector
   `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
@@ -57,7 +59,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 7. Finally, we need to prove that the frontier of `normLeOne K` has zero-volume (we will prove
   in passing that `normLeOne K` is bounded.) For that we prove that
   `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
-  `volume_interior_eq_volume_closure`. Since we now that the volume of `interior (normLeOne K)` is
+  `volume_interior_eq_volume_closure`. Since we know that the volume of `interior (normLeOne K)` is
   finite since it is bounded by the volume of `normLeOne K`, the result follows, see
   `volume_frontier_normLeOne`. We proceed in several steps.
 
@@ -119,6 +121,8 @@ identify `realSpace K` with its image in `mixedSpace K`).
   by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
 
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -256,7 +260,7 @@ theorem expMap_target :
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
-  Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
+  Set.injOn_univ.1 (expMap_source K ▸ expMap.injOn)
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
@@ -300,7 +304,7 @@ theorem logMap_expMap {x : realSpace K}
 theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
     ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
       Real.log (|Algebra.norm ℚ x| : ℚ) := by
-  simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
+  simp_rw [← prod_eq_abs_norm, Real.log_prod (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
     Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 /--

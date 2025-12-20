@@ -3,12 +3,16 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Higher differentiability over `ℝ` or `ℂ`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -186,7 +190,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {α β : Type*} [Pseu
     refine .trans ?_ <| mul_le_mul_of_nonneg_right (ENNReal.coe_le_coe.2 <| t.le_sup hz) (zero_le _)
     refine (add_le_add (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <|
       hε _ z.2, hx⟩) <| hK' _ z.2 _ ⟨hy, hy'⟩).trans ?_
-    refine (add_le_add_left (mul_le_mul_of_nonneg_left (edist_triangle_left z.1 y x)
+    refine (add_le_add_right (mul_le_mul_of_nonneg_left (edist_triangle_left z.1 y x)
       (zero_le _)) _).trans ?_
     simp_rw [edist_dist, ENNReal.coe_nnreal_eq]
     rw [← ENNReal.ofReal_mul, ← ENNReal.ofReal_mul, ← ENNReal.ofReal_add, ← ENNReal.ofReal_mul,
@@ -195,7 +199,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {α β : Type*} [Pseu
     · have h : dist x z ≤ dist x y := by
         linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
       apply ENNReal.ofReal_le_ofReal
-      refine (add_le_add_right (mul_le_mul_of_nonneg_left h (by positivity)) _).trans ?_
+      refine (add_le_add_left (mul_le_mul_of_nonneg_left h (by positivity)) _).trans ?_
       linarith
     all_goals positivity
 

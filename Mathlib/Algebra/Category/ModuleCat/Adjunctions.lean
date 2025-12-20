@@ -3,16 +3,20 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
 is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Cardinal
@@ -92,7 +96,7 @@ lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
     (adj R).homEquiv X M = freeHomEquiv := by
   simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
-instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
+instance : (forget (ModuleCat.{u} R)).IsRightAdjoint :=
   (adj R).isRightAdjoint
 
 end
@@ -208,7 +212,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category C]`,
+/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category* C]`,
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/

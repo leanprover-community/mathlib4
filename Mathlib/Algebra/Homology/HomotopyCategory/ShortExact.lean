@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-import Mathlib.Algebra.Homology.HomologySequenceLemmas
-import Mathlib.Algebra.Homology.Refinements
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.Algebra.Homology.Refinements
 
 /-!
-# The mapping cone of a monomorphism, up to a quasi-isomophism
+# The mapping cone of a monomorphism, up to a quasi-isomorphism
 
 If `S` is a short exact short complex of cochain complexes in an abelian category,
 we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X₃`.
@@ -20,12 +22,14 @@ distinguished triangle attached to the mapping cone of `S.f`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category ComplexShape HomotopyCategory Limits
   HomologicalComplex.HomologySequence Pretriangulated Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 
@@ -35,7 +39,7 @@ lemma homologySequenceδ_quotient_mapTriangle_obj
     (homologyFunctor C (up ℤ) 0).homologySequenceδ
         ((quotient C (up ℤ)).mapTriangle.obj T) n₀ n₁ h =
       (homologyFunctorFactors C (up ℤ) n₀).hom.app _ ≫
-        (HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftMap T.mor₃ n₀ n₁ (by cutsat) ≫
+        (HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftMap T.mor₃ n₀ n₁ (by lia) ≫
         (homologyFunctorFactors C (up ℤ) n₁).inv.app _ := by
   apply homologyFunctor_shiftMap
 
@@ -101,7 +105,7 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
   dsimp [Functor.shiftMap, homologyFunctor_shift]
   rw [HomologicalComplex.homologyπ_naturality_assoc,
     HomologicalComplex.liftCycles_comp_cyclesMap_assoc,
-    S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by cutsat) (n₁ + 1) (by simp),
+    S.X₁.liftCycles_shift_homologyπ_assoc _ _ _ _ n₁ (by lia) (n₁ + 1) (by simp),
     Iso.inv_hom_id_app]
   dsimp [homologyFunctor_shift]
   simp only [hab, add_comp, assoc, inl_v_triangle_mor₃_f_assoc,
