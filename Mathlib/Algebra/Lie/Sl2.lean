@@ -216,7 +216,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
-    {n : ℕ} (hn : μ = n) : (ψ(n + 1)) = 0 := by
+    {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
   by_contra h
   have : t.HasPrimitiveVectorWith (ψ(n + 1)) (n - 2 * (n + 1) : R) :=
     { ne_zero := h
