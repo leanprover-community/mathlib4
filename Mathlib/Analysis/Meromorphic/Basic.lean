@@ -639,13 +639,18 @@ def Meromorphic (f : 𝕜 → E) := ∀ x, MeromorphicAt f x
 
 /-- A function is meromorphic iff it is meromorphic on Set.univ. -/
 @[simp]
-lemma meromorphicOn_univ {f : 𝕜 → E} : MeromorphicOn f Set.univ ↔ Meromorphic f  := by tauto
+lemma meromorphicOn_univ {f : 𝕜 → E} : MeromorphicOn f Set.univ ↔ Meromorphic f := by tauto
 
 namespace Meromorphic
 
 variable
   {ι : Type*} {s : Finset ι}
   {f g : 𝕜 → E} {F : ι → 𝕜 → 𝕜} {G : ι → 𝕜 → E}
+
+@[fun_prop]
+lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
+
+lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
 
 @[to_fun (attr := fun_prop)]
 lemma neg (hf : Meromorphic f) : Meromorphic (-f) := fun x ↦ (hf x).neg
@@ -680,10 +685,10 @@ lemma pow {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) : Meromorphic (f ^ 
 @[to_fun (attr := fun_prop)]
 lemma zpow {f : 𝕜 → 𝕜} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).zpow n
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) := fun x ↦ (hf x).deriv
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (_root_.deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
 
