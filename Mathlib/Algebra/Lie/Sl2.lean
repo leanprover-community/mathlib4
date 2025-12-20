@@ -167,7 +167,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
     ring
 
 lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
-    ⁅e, ψ(n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
+    ⁅e, ψ (n + 1)⁆ = ((n + 1) * (μ - n)) • ψ n := by
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
