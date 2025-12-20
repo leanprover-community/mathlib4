@@ -109,7 +109,7 @@ variable [Inhabited ι]
 
 /-- the functor from Module Cat of `Mₙ(R)` to Module Cat of `R` induced by sending `M` to
   the image of `E₁₁ • ·` where `E₁₁` is the elementary matrix -/
-@[simp]
+@[simps]
 def MatrixModCat.toModuleCat : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R where
   obj M := ModuleCat.of R (MatrixModCat.toModuleCat.α R ι M)
   map f := ModuleCat.ofHom <| LinearMap.fromMatrixLinear f.hom
