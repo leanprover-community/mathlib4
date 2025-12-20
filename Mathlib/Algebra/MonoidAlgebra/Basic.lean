@@ -265,7 +265,6 @@ variable (k A)
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
 def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] where
   toRingEquiv := mapDomainRingEquiv A e
-  __ := Finsupp.domLCongr (R := k) (M := A) e.toEquiv
   commutes' _ := by ext; simp
 
 @[to_additive (attr := simp)]
