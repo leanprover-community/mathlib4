@@ -195,8 +195,8 @@ theorem uniformContinuous_val : UniformContinuous (val : WithRPowDist X α hα�
 theorem uniformContinuous_mk : UniformContinuous (mk : X → WithRPowDist X α hα₀ hα₁) :=
   uniformContinuous_comap' uniformContinuous_id
 
-/-
-Define a UniformEquiv between this space and X.
+/--
+The natural uniform space equivalence between `WithRPowDist X α hα hα₁` and the underlying space.
 -/
 @[simps! toEquiv apply symm_apply]
 def uniformEquiv : WithRPowDist X α hα₀ hα₁ ≃ᵤ X where
