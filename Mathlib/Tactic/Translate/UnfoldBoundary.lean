@@ -66,6 +66,7 @@ partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   let e ← do
     let r ← Simp.simp eType
     if let some pf := r.proof? then
+      trace[translate_detail] "unfoldConsts: added a cast from {eType} to {r.expr}"
       mkAppOptM ``cast #[eType, r.expr, pf, e]
     else
       pure e
@@ -73,6 +74,7 @@ partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   if let .const c us := eTypeWhnf.getAppFn then
     if let some (cast, _) := b.casts.find? c then
       let e := .app (mkAppN (.const cast us) eTypeWhnf.getAppArgs) e
+      trace[translate_detail] "unfoldConsts: created the cast {e} to unfold {.ofConstName c}"
       return ← unfoldConsts b e
   return e
 
@@ -86,14 +88,17 @@ where
   go (e : Expr) (goal : MVarId) : SimpM Unit := do
     let goal ← do
       let r ← Simp.simp (← goal.getType)
-      match r.proof? with
-      | some proof => goal.replaceTargetEq r.expr proof
-      | none => pure goal
+      if let some proof := r.proof? then
+        trace[translate_detail] "refoldConsts: added a cast from {← goal.getType} to {r.expr}"
+        goal.replaceTargetEq r.expr proof
+      else
+        pure goal
     forallTelescope (← goal.getType) fun xs tgt => do
       let tgt ← whnf tgt
       if let .const c us := tgt.getAppFn then
         if let some (_, cast) := b.casts.find? c then
           let cast := mkAppN (.const cast us) tgt.getAppArgs
+          trace[translate_detail] "refoldConsts: created the cast {cast} to unfold {.ofConstName c}"
           let .forallE _ α _ _ ← inferType cast | throwError s!"{cast} is not of the right form"
           let goal' ← mkFreshExprMVar α
           go (mkAppN e xs) goal'.mvarId!
