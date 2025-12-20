@@ -360,7 +360,10 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
     have h_sl2_le : (sl2SubmoduleOfRoot hα₀ : Submodule K L) ≤ invtSubmoduleToLieIdeal q hq := by
       rw [coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
       exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
-    sorry
+    rw [h] at h_sl2_le
+    simp at h_sl2_le
+    have tt := LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot hα₀
+    contradiction
   · simp [h, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal]
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
