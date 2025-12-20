@@ -155,9 +155,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
       rw [antidiagonal_zero]
       exact List.pairwise_singleton _ _
     | succ n n_ih =>
-      simp only [antidiagonal_succ, pairwise_cons, mem_map, mem_antidiagonal, Prod.exists,
-        Prod.map_apply, Nat.succ_eq_add_one, id_eq, forall_exists_index, and_imp, Prod.forall,
-        Prod.mk.injEq]
+      simp
       grind
 
 end List.Nat
