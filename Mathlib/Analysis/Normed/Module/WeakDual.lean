@@ -12,6 +12,7 @@ public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space
+-- **ADD SOMETHING?**
 
 Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
@@ -313,3 +314,120 @@ theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
     (isClosed_closedBall x' r)
 
 end WeakDual
+
+end
+section Goldstine
+
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+
+
+open NormedSpace Metric
+open scoped BigOperators
+
+
+theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) (r : ℝ) :
+    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E, ‖x‖ ≤ r + ε ∧ ∀ i, f i x = α i) ↔
+    (∀ β : I → 𝕜, ‖∑ i : I, β i * α i‖ ≤ r * ‖∑ i : I, β i • f i‖) := sorry
+
+-- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
+theorem three (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
+    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ ‖φ‖ + ε ∧ ∀ i, f i (x) = φ (f i) := by
+  apply (Helly 𝕜 f (fun i ↦ φ (f i)) ‖φ‖).mpr _ hε
+  intro β
+  calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
+                          _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
+
+-- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
+theorem three' (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
+    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
+  sorry
+
+theorem aux : IsClosed (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) := by
+  sorry
+  -- apply WeakDual.isClosed_closedBall
+
+
+/-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
+the unit sphere of the double dual.
+See [K. Yosida, "Functional Analysis", Chap IV, 8, Corollary to Theorem 3]. -/
+-- **RENAME!!!**
+theorem goldstine : closure (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)
+    = closedBall (0 : StrongDual 𝕜 (StrongDual 𝕜 E)) 1 := by
+  -- have uno := @LinearMap.weakBilin_withSeminorms 𝕜 (StrongDual 𝕜 E) E _ _ _ _ _
+  --   (topDualPairing 𝕜 E)
+  -- let F := (topDualPairing 𝕜 (StrongDual 𝕜 E)).toSeminormFamily
+  -- let f := F 0
+  set B' := topDualPairing 𝕜 (StrongDual 𝕜 E) with hB'
+  let F' := LinearMap.toSeminormFamily B'
+  -- let B := (topDualPairing 𝕜 E) This, I don't care
+  -- let Estar' := WeakBilin B'
+  -- let f : Estar' → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
+  -- let Estar'₀ := WeakDual 𝕜 (StrongDual 𝕜 E)
+  -- let Estar'₁ := WeakDual 𝕜 E This is the weak top on E* not on E**
+  -- let g₀ : Estar'₀ → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
+  have uno : WithSeminorms (𝕜 := 𝕜) (E := WeakDual 𝕜 (StrongDual 𝕜 E)) F' := by
+    apply LinearMap.weakBilin_withSeminorms
+  -- have due'' := uno.hasBasis_zero_ball
+  -- have due' := uno.mem_nhds_iff
+  ext ξ
+  have due := uno.hasBasis_ball (x := ξ)
+  -- have tre' := mem_closure_iff_nhds_basis (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+  --   (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due'' --ci siamo quasi
+  -- -- above, use mem_closure_iff_nhds_basis nhds_basis_ball
+  -- have brez := mem_closure_iff_nhds (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+  --   (s := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) (x := ξ)
+  -- rw [brez]
+  -- refine ⟨fun hξ ↦ ?_, fun hξ U hU ↦ ?_⟩
+  -- · sorry
+  -- ·
+
+--
+  have tre := mem_closure_iff_nhds_basis' (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+    (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due --ci siamo quasi
+  rw [tre]
+  refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
+  · sorry
+  · obtain ⟨y, hy_le, hy_eq⟩ := three' 𝕜 I ξ hε (·)
+    refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
+    · --simp only at hy_le --useless of course
+      simp only [Seminorm.mem_ball]
+      apply Seminorm.finset_sup_apply_lt hε
+      intro i hi
+      -- simp only --remove
+      replace hy_eq := hy_eq ⟨i, hi⟩
+      rw [LinearMap.toSeminormFamily_apply]
+      simp only [map_sub, LinearMap.sub_apply, gt_iff_lt]
+      have repl_ξ := @topDualPairing_apply 𝕜 _ _ _ _ _ _ _ _ ξ i
+      have repl_iDD := @topDualPairing_apply 𝕜 _ _ _ _ _ _ _ _ (inclusionInDoubleDual 𝕜 E y) i
+      -- rw [hB']
+      erw [repl_ξ, repl_iDD] --not very nice, probably related to `(·)`
+      exact hy_eq
+
+      -- simp only at hy_eq
+--
+--       set ξ' : StrongDual 𝕜 (StrongDual 𝕜 E):= by
+--         use ξ
+--         exact map_continuous ξ with hξ'
+--         -- not really nice...
+--       set v : StrongDual 𝕜 E →L[𝕜] 𝕜 := (inclusionInDoubleDual 𝕜 E) y - ξ' with hv
+--       erw [← hv]
+--       convert_to (⨆ i : I, F' i) v < ε
+--       rw [Seminorm.coe_iSup_eq]
+--       have := @Seminorm.iSup_apply 𝕜 _ _ _ _ I (fun i ↦ F' i) ?_ v
+--       -- rw [hξ']
+--       -- simp_rw [Finset.sup_eq_iSup]
+--       -- simp at this
+--
+--         -- (x := ((inclusionInDoubleDual 𝕜 E) y - ξ))
+--       -- rw [this]
+--       -- simp only [Set.mem_image, mem_closedBall, dist_zero_right]
+--       -- refine ⟨y, ?_, rfl⟩
+--       -- sorry -- use somewhere hy.1
+--     · simp
+--       sorry -- use somewhere hy.2
+
+
+end Goldstine
