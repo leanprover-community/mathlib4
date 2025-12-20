@@ -230,7 +230,7 @@ private def CastKind.mkProof (lhs : Expr) : CastKind → MetaM Expr
 
 private def elabInsertCast (declName : Name) (castKind : CastKind) (stx : Term) :
     CommandElabM (Name × Name) :=
-  Command.liftTermElabM do withDeclNameForAuxNaming declName do
+  Command.liftTermElabM do withDeclNameForAuxNaming declName do withExporting do
   let .defnInfo info ← getConstInfo declName | throwError "`{declName}` is not a definition"
   lambdaTelescope (cleanupAnnotations := true) info.value fun xs body => do
     let addDecl name type value : MetaM Unit := do
@@ -251,7 +251,7 @@ private def elabInsertCast (declName : Name) (castKind : CastKind) (stx : Term) 
     -- Make the goal easier to prove by unfolding the dual lhs
     let dualType' ← castKind.mkRel ((← unfoldDefinition? dualLhs).getD dualLhs) dualBody
     let dualValue ← elabTermEnsuringType stx dualType' <* synthesizeSyntheticMVarsNoPostponing
-    let dualName ← mkAuxDeclName
+    let dualName ← mkAuxDeclName `_to_dual_cast
     addDecl dualName dualType (← instantiateMVars dualValue)
 
     _ ← addTranslationAttr data name { tgt := dualName, existing := true, ref := .missing }
