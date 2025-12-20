@@ -200,6 +200,17 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
   rw [Finset.prod_eq_prod_diff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
 
+lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
+    [∀ i, Semiring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
+  rw [_root_.eq_top_iff]
+  rintro x -
+  induction x using Pi.single_induction with
+  | zero => simp
+  | add f g hf hg => exact Ideal.add_mem _ hf hg
+  | single i r =>
+      rw [show Pi.single i r = Pi.single i r * Pi.single i 1 by simp [← Pi.single_mul_left]]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
+
 end Ideal
 
 end CommSemiring
