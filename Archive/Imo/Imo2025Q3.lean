@@ -50,7 +50,7 @@ lemma apply_dvd_pow (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ∣ n ^ n := b
 
 lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : IsBonza f) {p : ℕ} (hp : p.Prime) :
     f p = 1 ∨ (∀ b > (0 : ℕ), (p : ℤ) ∣ (b : ℤ) - ((f b) : ℤ)) := by
-  have : f p ∣ p ^ p := apply_dvd_pow hf hp.pos
+  have : f p ∣ p ^ p := hf.apply_dvd_pow hp.pos
   obtain ⟨k, _, eq⟩ : ∃ k, k ≤ p ∧ f p = p ^ k := (Nat.dvd_prime_pow hp).mp this
   by_cases ch : k = 0
   · left
