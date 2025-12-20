@@ -801,15 +801,13 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
       if hi : ∃ m < n, i = e m then ⟨hi.choose, by linarith [hi.choose_spec.1]⟩ else Fin.last n
     have sg (n : ℕ) : (g n).Surjective := by
       intro b
-      simp only [g]
+      unfold g
       refine ⟨e b, ?_⟩
       by_cases hb : b < n
       · have : ∃ m < n, e b = e m := ⟨b, ⟨hb, rfl⟩⟩
         simp only [this, ↓reduceDIte, Fin.ext_iff]
         exact e.injective this.choose_spec.2.symm
-      · ext
-        simp [hb]
-        omega
+      · ext; simp [hb]; omega
     have G (n : ℕ) := hs.coarserPartition (g n) (sg n)
     refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise (G n)
       (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
