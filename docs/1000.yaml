@@ -3095,6 +3095,8 @@ Q5385326:
 
 Q5421989:
   title: Exterior angle theorem
+  authors: Wang Ying
+  decl: EuclideanGeometry.exterior_angle_eq_angle_add_angle
 
 Q5436274:
   title: Farrell–Markushevich theorem
