@@ -1005,7 +1005,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
-  addConstInfo ref declName
+  addTermInfo' ref (← mkConstWithLevelParams declName) (isBinder := true) |>.run'
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
