@@ -347,8 +347,7 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
     (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
     invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · -- Forward: if the ideal is ⊥, then q = ⊥
-    by_contra hq_nonzero
+  · by_contra hq_nonzero
     have hq_invt : q ∈ (rootSystem H).invtRootSubmodule := by
       rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq
     have h_ne_bot : (⟨q, hq_invt⟩ : (rootSystem H).invtRootSubmodule) ≠ ⊥ :=
