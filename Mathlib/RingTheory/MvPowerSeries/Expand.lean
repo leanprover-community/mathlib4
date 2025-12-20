@@ -153,7 +153,7 @@ section MvPolynomial
 `MvPowerSeries.expand p hp ↑φ` coincide. -/
 @[simp]
 theorem expand_eq_expand {φ : MvPolynomial σ R} :
-    (φ.expand p : MvPowerSeries σ R) = expand p hp (↑φ) := by
+    expand p hp (↑φ) = (φ.expand p : MvPowerSeries σ R)  := by
   ext n
   simp only [MvPolynomial.coeff_coe]
   by_cases! h : ∀ i, p ∣ n i
@@ -191,7 +191,7 @@ include hp in
 theorem expand_trunc' (n : σ →₀ ℕ) [DecidableEq σ] (f : MvPowerSeries σ R) :
     (MvPolynomial.expand p) ((trunc' R n) f) = (trunc' R (p • n))
     ↑((MvPolynomial.expand p) ((trunc' R (p • n)) f)) := by
-  rw [expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' (le_self_nsmul (zero_le n) hp) _]
+  rw [← expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' (le_self_nsmul (zero_le n) hp) _]
 
 end MvPolynomial
 
@@ -208,7 +208,7 @@ theorem expand_char {f : MvPowerSeries σ R} :
   refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
   · have aux' : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
-      simp only [MvPolynomial.map_expand, expand_eq_expand p hp, map_expand]
+      simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
       ext m
       simp [MvPolynomial.coeff_map]
