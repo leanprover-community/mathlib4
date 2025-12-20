@@ -91,6 +91,7 @@ variable [Semiring R]
 public def apply (a b : ℕ → R) : ℕ → R :=
   fun n => ∑ kl ∈ Finset.antidiagonal n, a kl.1 * b kl.2
 
+/-- Notation for Cauchy product: `a ⋆ b` denotes the Cauchy product of sequences `a` and `b`. -/
 scoped notation:70 a:70 " ⋆ " b:71 => apply a b
 
 lemma apply_eq (a b : ℕ → R) (n : ℕ) :
