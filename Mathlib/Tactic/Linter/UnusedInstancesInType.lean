@@ -265,19 +265,25 @@ def unusedFintypeInType : Linter where
         | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
       return
-    -- Cheap early exit if either of `Finite` or `Fintype` are not imported.
-    unless (← getEnv).isImportedConst `Finite && (← getEnv).isImportedConst `Fintype do
+    -- Cheap early exit if `Fintype` is not imported.
+    unless (← getEnv).isImportedConst `Fintype do
       return
     cmd.logUnusedInstancesInTheoremsWhere
       (·.isAppOrForallOfConst `Fintype)
       fun _ thm unusedParams => do
+        let importFintypeOfFiniteNote? :=
+          if (← getEnv).isImportedConst `Fintype.ofFinite then none else
+            some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
+              to make `Fintype.ofFinite` available."
         logLint linter.unusedFintypeInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
           Consider replacing \
           {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \
           corresponding {if unusedParams.size = 1 then "instance" else "instances"} of \
-          `{.ofConstName `Finite}` or removing \
-          {if unusedParams.size = 1 then "it" else "them"} entirely."
+          `{.ofConstName `Finite}` and using \
+          `{.ofConstName `Fintype.ofFinite}` in the proof, or removing \
+          {if unusedParams.size = 1 then "it" else "them"} entirely.\
+          {importFintypeOfFiniteNote?.getD m!""}"
 
 initialize addLinter unusedFintypeInType
 
