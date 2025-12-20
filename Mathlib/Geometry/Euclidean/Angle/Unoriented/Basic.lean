@@ -6,7 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
@@ -338,7 +338,7 @@ they are equal. -/
 lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
   grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
 
-/-- The angle between normalized vector and other vector is equal to the angle
+/-- The angle between normalized vector and another vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_left (x y : V) :
@@ -347,7 +347,7 @@ lemma angle_normalize_left (x y : V) :
   · simp [hx]
   · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
 
-/-- The angle between a vector and normalized other vector is equal to the angle
+/-- The angle between a vector and another normalized vector is equal to the angle
 between the original vectors. -/
 @[simp]
 lemma angle_normalize_right (x y : V) :

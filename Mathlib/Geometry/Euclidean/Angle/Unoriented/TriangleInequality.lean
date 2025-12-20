@@ -5,7 +5,7 @@ Authors: Ilmārs Cīrulis, Alex Meiburg, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.Normed.Module.Normalize
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 import Mathlib.Geometry.Euclidean.Triangle
@@ -133,7 +133,8 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
       (norm_normalize_eq_one_iff.mpr H3) (norm_normalize_eq_one_iff.mpr H4)
   have := sin_angle_nonneg x y; have := sin_angle_nonneg y z
   grw [← H2]
-  ring_nf; rfl
+  apply le_of_eq
+  ring
 
 lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ π) :
     ortho x y ≠ 0 := by
