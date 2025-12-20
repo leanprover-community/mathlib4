@@ -109,15 +109,9 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
   ∀ k ∈ K, ∃ I ∈ F, I ≤ L.colon (Ideal.span {k})
 
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
-lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
-    IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
-  unfold IsTorsionQuot
-  constructor
-  · intro h k h_k
-    rcases h k h_k with ⟨I, h_I, h_I_le⟩
-    refine ⟨I, h_I, ?_⟩
-    · have hcol := Ideal.colon_inf_eq_left_of_le L K ((Ideal.span_singleton_le_iff_mem K).mpr h_k)
-      simpa [hcol] using h_I_le
+lemma isTorsionQuot_inf_left_iff (F : IdealFilter A) (L K : Ideal A) :
+    IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K:= by
+  constructor <;>
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
