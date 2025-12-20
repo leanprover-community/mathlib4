@@ -341,7 +341,7 @@ lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : No
   obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
-  cutsat
+  lia
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
@@ -355,7 +355,7 @@ lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : None
   obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
-  cutsat
+  lia
 
 /-! ### About paths -/
 
