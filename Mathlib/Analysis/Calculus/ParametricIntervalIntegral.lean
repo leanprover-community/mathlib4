@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Derivatives of interval integrals depending on parameters
@@ -127,10 +126,10 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [IsLocallyFiniteMeasure μ] 
     HasFDerivAt (fun x => ∫ t in a..b, f x t ∂μ)
       (∫ t in a..b, fderiv 𝕜 (fun x ↦ f x t) x₀ ∂μ) x₀ := by
   wlog hab : a ≤ b with h
-  · simp_rw [intervalIntegral.integral_symm b a]
+  · simp_rw [integral_symm b a]
     exact (h hu (uIcc_comm a b ▸ hF₁) (uIcc_comm a b ▸ hF₂) (uIcc_comm a b ▸ hF₃)
       (le_of_not_ge hab)).neg
-  simp_rw [intervalIntegral.integral_of_le hab, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab]
+  simp_rw [integral_of_le hab, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab]
   exact _root_.hasFDerivAt_integral_of_continuousOn_fderiv
     hu isCompact_uIcc isCompact_uIcc.measure_lt_top hF₁ hF₂ hF₃
 
@@ -146,30 +145,11 @@ theorem hasFDerivAt_integral_of_contDiffOn [IsLocallyFiniteMeasure μ] [NoAtoms 
       (∫ t in a..b, fderiv ℝ (fun x ↦ f x t) x₀ ∂μ) x₀ := by
   wlog hab : a < b with h
   · obtain hab | hab := lt_or_eq_of_le <| le_of_not_gt hab
-    · simpa only [intervalIntegral.integral_symm b a] using (h hu (uIcc_comm a b ▸ hF) hab).neg
+    · simpa only [integral_symm b a] using (h hu (uIcc_comm a b ▸ hF) hab).neg
     · simp [hab, hasFDerivAt_const]
-  wlog hu' : IsOpen u with h
-  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
-    exact h (μ := μ) (hu'.2.1.mem_nhds hu'.2.2) (hF.mono <| prod_mono_left hu'.1) hab hu'.2.1
-  refine hasFDerivAt_integral_of_continuousOn_fderiv hu hF.continuousOn (fun t ht ↦
-    hF.differentiableOn_one.comp (by fun_prop) fun x hx ↦ (⟨hx, ht⟩ : (x, t) ∈ _ ×ˢ _)) ?_
-  refine .congr (f := fun x ↦ (fderivWithin ℝ f.uncurry (u ×ˢ Icc a b) x).comp (.inl ℝ H ℝ))
-      ?_ fun x hx ↦ ?_
-  · rw [uIcc_of_le hab.le] at hF ⊢
-    refine ((ContinuousLinearMap.compL ℝ H (H × ℝ) E).flip
-      (.inl ℝ H ℝ)).continuous.comp_continuousOn ?_
-    refine (hF.continuousOn_fderivWithin ?_ le_rfl)
-    exact hu'.uniqueDiffOn.prod <| uniqueDiffOn_Icc hab
-  · rw [show (fun y ↦ f y x.2) = (f.uncurry ∘ fun y ↦ (y, x.2)) by rfl]
-    rw [← fderivWithin_eq_fderiv (s := u) (hu'.uniqueDiffWithinAt hx.1) <| by
-      refine DifferentiableOn.differentiableAt (s := u) ?_ (hu'.mem_nhds hx.1)
-      exact ((hF.differentiableOn le_rfl).comp (by fun_prop) (fun y hy ↦ ⟨hy, hx.2⟩))]
-    rw [uIcc_of_le hab.le] at hF hx
-    rw [fderivWithin_comp _ (t := u ×ˢ Set.Icc a b) (hF.differentiableOn (by simp) _ ⟨hx.1, hx.2⟩)
-      (by fun_prop) (by exact fun y hy ↦ ⟨hy, hx.2⟩) (hu'.uniqueDiffWithinAt hx.1)]
-    congr
-    exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
-      (hu'.uniqueDiffWithinAt hx.1)
+  simp_rw [integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc, ← uIcc_of_le hab.le]
+  exact _root_.hasFDerivAt_integral_of_contDiffOn hu isCompact_uIcc isCompact_uIcc.measure_lt_top
+    (uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab) hF
 
 end intervalIntegral
 
@@ -185,35 +165,10 @@ lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFinite
     · simp_rw [intervalIntegral.integral_symm b a]
       exact (h hu (uIcc_comm a b ▸ hf) hab).neg
     · simp [hab, contDiffOn_const]
-  revert E; change ∀ E : _, _
-  refine ENat.nat_induction n ?_ ?_ ?_
-  · intro E _ _ f
-    simp_rw [WithTop.coe_zero, contDiffOn_zero]
-    exact ContinuousOn.parametric_intervalIntegral
-  · intro k h E _ _ f hf
-    refine (contDiffOn_succ_iff_fderiv_of_isOpen (𝕜 := ℝ) (n := k) hu).2 ⟨?_, by simp, ?_⟩
-    · intro x hx
-      have h := intervalIntegral.hasFDerivAt_integral_of_contDiffOn (μ := μ)
-        (hu.mem_nhds hx) (hf.of_le <| by simp)
-      exact h.differentiableAt.differentiableWithinAt
-    · have := hf.fderivWithin (hu.uniqueDiffOn.prod <| uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab)
-        (m := k) le_rfl
-      refine (h _ (f := fun x t ↦ (fderivWithin ℝ f.uncurry (u ×ˢ [[a, b]]) (x, t)).comp
-        (.inl ℝ H ℝ)) (by fun_prop)).congr ?_
-      intro x hx
-      have h := intervalIntegral.hasFDerivAt_integral_of_contDiffOn (μ := μ)
-        (hu.mem_nhds hx) (hf.of_le <| by simp)
-      rw [h.fderiv]
-      refine intervalIntegral.integral_congr fun t ht ↦ ?_
-      rw [show (fun x ↦ f x t) = (f.uncurry ∘ fun x ↦ (x, t)) by rfl]
-      rw [← fderivWithin_eq_fderiv (hu.uniqueDiffWithinAt hx) (((hf.differentiableOn (by simp)).comp
-        (by fun_prop) (fun x hx ↦ ⟨hx, ht⟩)).differentiableAt (hu.mem_nhds hx))]
-      rw [fderivWithin_comp _ (t := u ×ˢ [[a, b]]) (hf.differentiableOn (by simp) _ ⟨hx, ht⟩)
-        (by fun_prop) (fun x hx ↦ ⟨hx, ht⟩) (hu.uniqueDiffWithinAt hx)]
-      congr
-      exact (hasFDerivAt_prodMk_left x t).hasFDerivWithinAt.fderivWithin (hu.uniqueDiffWithinAt hx)
-  · intro h E _ _ f hf
-    exact contDiffOn_infty.2 fun n ↦ h n E <| hf.of_le <| WithTop.coe_le_coe.2 le_top
+  simp_rw [intervalIntegral.integral_of_le hab.le, ← integral_Icc_eq_integral_Ioc,
+    ← uIcc_of_le hab.le]
+  exact hf.parametric_integral hu isCompact_uIcc isCompact_uIcc.measure_lt_top
+    (uIcc_of_le hab.le ▸ uniqueDiffOn_Icc hab)
 
 /-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
 `fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
@@ -221,4 +176,6 @@ lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMe
     [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
     (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
-  contDiffOn_univ.1 <| ContDiffOn.parametric_intervalIntegral isOpen_univ hf.contDiffOn
+  contDiffOn_univ.1 <| hf.contDiffOn.parametric_intervalIntegral isOpen_univ
+
+#min_imports
