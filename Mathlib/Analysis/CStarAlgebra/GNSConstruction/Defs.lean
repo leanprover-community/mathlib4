@@ -27,6 +27,7 @@ but they are described below for the sake of clarity and completeness.
 - `N`: the subspace of `A` defined as all elements for which `f (star a * a) = 0`.
 - `sq` : a semi-inner product that we will use to define a proper inner product on `A / N f`.
 - `A_mod_N` : the quotient space that we will complete to produce a Hilbert space.
+- `H` : the Hilbert space that we construct, parameterized by positive linear functional, `f`.
 
 ## References
 

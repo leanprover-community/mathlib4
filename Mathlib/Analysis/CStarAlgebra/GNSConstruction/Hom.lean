@@ -14,15 +14,10 @@ public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs
 In this file we define the *-homomorphism from our C*-algebra `A` into the Hilbert space `GNS.H`
 that is constructed in Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs.
 
+
 ## Main results
 
-- `WithFunctional`: a type synonym of `A` that "forgets" the norm of `A` and bundles in a fixed
-  linear functional `f` so that we can construct an inner product and inner product-induced norm.
-  `WithFunctional A f` is isomorphic to `A` and so they are sometimes used interchangeably where
-  Lean can correctly distinguish which one to use.
-- `N`: the subspace of `A` defined as all elements for which `f (star a * a) = 0`.
-- `sq` : a semi-inner product that we will use to define a proper inner product on `A / N f`.
-- `A_mod_N` : the quotient space that we will complete to produce a Hilbert space.
+- `π f` : The unital *-homomorphism from `A` into the bounded linear operators on `GNS.H`.
 
 ## References
 
