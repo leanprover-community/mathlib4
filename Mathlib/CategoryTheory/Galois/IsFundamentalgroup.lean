@@ -49,6 +49,7 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 -/
 
 @[expose] public section
+
 universe u₁ u₂ w
 
 namespace CategoryTheory
@@ -68,6 +69,7 @@ on `F.obj X` and `F.obj Y` are compatible with `F.map f`. -/
 class IsNaturalSMul : Prop where
   naturality (g : G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) : F.map f (g • x) = g • F.map f x
 
+set_option backward.privateInPublic true in
 variable {G} in
 @[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
@@ -80,6 +82,8 @@ private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
 
 variable [IsNaturalSMul F G]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical
 group homomorphism into the automorphism group of `F`. -/
 def toAut : G →* Aut F where
