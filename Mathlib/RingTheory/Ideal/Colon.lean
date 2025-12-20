@@ -64,6 +64,19 @@ theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J :
   calc I = I.colon ⊤ := colon_top.symm
        _ ≤ I.colon J := colon_mono (le_refl I) le_top
 
+/-- If `M ≤ K`, then intersecting with `K` does not change the colon ideal. -/
+lemma _root_.Ideal.colon_inf_eq_left_of_le (L K : Ideal R) {M : Ideal R} (h_M : M ≤ K) :
+    (L ⊓ K).colon M = L.colon M := by
+  ext a
+  constructor <;> intro h_a
+  · rcases Submodule.mem_colon.mp h_a with h
+    refine Submodule.mem_colon.mpr ?_
+    intro p h_p
+    exact (h p h_p).1
+  · rcases Submodule.mem_colon.mp h_a with h
+    refine Submodule.mem_colon.mpr ?_
+    intro p h_p
+    refine ⟨h p h_p, SMulMemClass.smul_mem a (h_M h_p)⟩
 end Semiring
 
 section CommSemiring

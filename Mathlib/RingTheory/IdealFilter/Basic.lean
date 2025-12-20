@@ -108,22 +108,6 @@ This formulation avoids forming the quotient module explicitly. -/
 def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
   ∀ k ∈ K, ∃ I ∈ F, I ≤ L.colon (Ideal.span {k})
 
-/-- If `k ∈ K`, then intersecting with `K` does not change the colon ideal. -/
-lemma colon_inf_eq_of_mem (L K : Ideal A) {k : A} (h_k : k ∈ K) :
-    (L ⊓ K).colon (Ideal.span ({k} : Set A)) = L.colon (Ideal.span ({k} : Set A)) := by
-  -- ext `a : A` and unpack `Submodule.mem_colon`
-  ext a
-  constructor <;> intro h_a
-  · rcases Submodule.mem_colon.mp h_a with h
-    refine Submodule.mem_colon.mpr ?_
-    intro p h_p
-    exact (h p h_p).1
-  · rcases Submodule.mem_colon.mp h_a with h
-    refine Submodule.mem_colon.mpr ?_
-    intro p h_p
-    exact ⟨h p h_p,
-      (Ideal.span_singleton_le_iff_mem K).mpr h_k (Submodule.smul_mem (Ideal.span {k}) a h_p)⟩
-
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
 lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
     IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
@@ -132,12 +116,12 @@ lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
-    · have hcol := colon_inf_eq_of_mem (L := L) (K := K) (k := k) h_k
+    · have hcol := Ideal.colon_inf_eq_left_of_le L K ((Ideal.span_singleton_le_iff_mem K).mpr h_k)
       simpa [hcol] using h_I_le
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
     refine ⟨I, h_I, ?_⟩
-    · have hcol := colon_inf_eq_of_mem (L := L) (K := K) (k := k) h_k
+    · have hcol := Ideal.colon_inf_eq_left_of_le L K ((Ideal.span_singleton_le_iff_mem K).mpr h_k)
       simpa [hcol] using h_I_le
 
 /-- Unfolding lemma for `IsTorsion`. -/
