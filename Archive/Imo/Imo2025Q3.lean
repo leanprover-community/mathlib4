@@ -180,7 +180,7 @@ lemma isBonza : IsBonza fExample := by
 theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x > (0 : ℕ), f x = x
   · simpa [hnf n hn] using by lia
-  · obtain ⟨k, hk⟩ := IsBonza.not_id_two_pow hf hnf n hn
+  · obtain ⟨k, hk⟩ := hf.not_id_two_pow hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
         have eq1 : f 3 = 1 := IsBonza.apply_prime_gt_two_eq_one hf hnf 3 (by norm_num) prime_three
