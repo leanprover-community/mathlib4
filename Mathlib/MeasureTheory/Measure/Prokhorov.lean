@@ -433,21 +433,17 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
         grind
       · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
-          not_true_eq_false, imp_false, not_lt]
+          not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
         intro i hi h'i
-        have : ν i (K n)ᶜ = 0 := by
-          apply (ν i).mono_null _ (νK i)
-          rw [Monotone.partialSups_eq h]
-          exact h h'i
-        exact (null_iff_toMeasure_null (ν i) (K n)ᶜ).mp this
+        apply (ν i).mono_null _ (νK i)
+        rw [Monotone.partialSups_eq h]
+        exact compl_subset_compl.2 (h h'i)
     rw [this]
-    suffices ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ ≤ u n by
+    suffices (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ ≤ u n by
       apply le_trans _ this
+      simp only [toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
       gcongr
       simp
-    have : ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) univ
-        = (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ := by simp
-    rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
       convert ENNReal.coe_le_coe.2 this
       simp
