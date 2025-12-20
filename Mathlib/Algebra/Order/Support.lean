@@ -41,6 +41,7 @@ def supportSubgroup : Subgroup G where
   mul_mem' := by aesop
   inv_mem' := by aesop
 
+set_option backward.privateInPublic true in
 variable {M} in
 @[to_additive (attr := aesop simp)]
 theorem mem_supportSubgroup {x} : x ∈ M.supportSubgroup ↔ x ∈ M ∧ x⁻¹ ∈ M := .rfl
@@ -90,6 +91,7 @@ def support : Ideal R where
   __ := supportAddSubgroup M
   smul_mem' := by aesop
 
+set_option backward.privateInPublic true in
 variable {M} in
 @[aesop simp]
 theorem mem_support {x} : x ∈ M.support ↔ x ∈ M ∧ -x ∈ M := .rfl
