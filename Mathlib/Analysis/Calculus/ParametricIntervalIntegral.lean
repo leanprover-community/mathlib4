@@ -177,5 +177,3 @@ lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMe
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
     (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
   contDiffOn_univ.1 <| hf.contDiffOn.parametric_intervalIntegral isOpen_univ
-
-#min_imports
