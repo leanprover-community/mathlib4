@@ -128,22 +128,13 @@ lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
     IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ L.colon (Ideal.span {k}) :=
   Iff.rfl
 
-/-- If `x ∈ I`, then the colon ideal `I.colon (Ideal.span {x})` is the whole ring. -/
-lemma colon_span_singleton_eq_top_of_mem {I : Ideal A} {x : A} (h_x : x ∈ I) :
-    I.colon (Ideal.span {x}) = ⊤ := by
-  apply (Ideal.eq_top_iff_one (I.colon (Ideal.span {x}))).mpr
-  apply Submodule.mem_colon.mpr
-  intro p h_p
-  refine (Ideal.span_singleton_le_iff_mem I).mpr h_x ?_
-  simp only [one_smul, h_p]
-
-/-- For any filter `F` and ideal `J`, the quotient `J/J` is `F`-torsion in the sense of
+/-- For any filter `F` and ideal `I`, the quotient `I/I` is `F`-torsion in the sense of
 `IsTorsionQuot`. -/
 lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
   intro x h_x
   obtain ⟨J, h_J⟩ := F.nonempty
-  exact ⟨J, h_J, by simp [colon_span_singleton_eq_top_of_mem h_x]⟩
+  exact ⟨J, h_J, by simp [Ideal.colon_eq_top_of_le ((Ideal.span_singleton_le_iff_mem I).mpr h_x)]⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot_mono_left (F : IdealFilter A)

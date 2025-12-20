@@ -77,6 +77,16 @@ lemma _root_.Ideal.colon_inf_eq_left_of_le (L K : Ideal R) {M : Ideal R} (h_M : 
     refine Submodule.mem_colon.mpr ?_
     intro p h_p
     refine ⟨h p h_p, SMulMemClass.smul_mem a (h_M h_p)⟩
+
+/-- If `J ≤ I`, then the colon ideal `I.colon J` is the whole ring. -/
+lemma _root_.Ideal.colon_eq_top_of_le {I J : Ideal R} (h_J : J ≤ I) :
+    I.colon J = ⊤ := by
+  refine top_unique ?_
+  intro x _
+  refine Submodule.mem_colon.mpr ?_
+  intro p h_p
+  exact I.mul_mem_left x (h_J h_p)
+
 end Semiring
 
 section CommSemiring
