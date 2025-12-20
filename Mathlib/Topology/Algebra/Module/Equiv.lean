@@ -1177,8 +1177,6 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M
   simp
   rfl
 
-@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
-
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
@@ -1198,18 +1196,58 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
-
 theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
   simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
 
-@[deprecated (since := "2025-04-22")]
-alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
-
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
+
+namespace IsInvertible
+
+variable {f : M →L[R] M₂}
+
+@[simp]
+theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem bijective (hf : f.IsInvertible) : Function.Bijective f := by
+  rcases hf with ⟨e, rfl⟩
+  simp [ContinuousLinearEquiv.bijective]
+
+protected theorem injective (hf : f.IsInvertible) : Function.Injective f :=
+  hf.bijective.injective
+
+protected theorem surjective (hf : f.IsInvertible) : Function.Surjective f :=
+  hf.bijective.surjective
+
+protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+protected theorem inverse_inverse (hf : f.IsInvertible) : f.inverse.inverse = f := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
+  by_contra H
+  obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
+  simp_all [Subsingleton.elim f 0]
+
+@[simp]
+theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+    f.inverse.IsInvertible ↔ f.IsInvertible :=
+  ⟨.of_isInvertible_inverse, .inverse⟩
+
+end IsInvertible
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :

@@ -99,7 +99,7 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
   simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
   congr
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
