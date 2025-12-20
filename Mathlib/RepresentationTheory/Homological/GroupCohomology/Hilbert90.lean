@@ -140,7 +140,7 @@ theorem exists_div_of_norm_eq_one {g : Gal(L/K)} (hg : ∀ x, x ∈ Subgroup.zpo
   let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
   have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
   rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
-  have := FiniteCyclicGroup.groupCohomologyπOdd_eq_zero_iff  (ofAlgebraAutOnUnits K L) g hg
+  have := FiniteCyclicGroup.groupCohomologyπOdd_eq_zero_iff (ofAlgebraAutOnUnits K L) g hg
     1 (by simp) ⟨toAdditive.symm <| ofMul xu, by simp_all⟩
   rcases this.1 (Subsingleton.elim (α := groupCohomology.H1 (Rep.ofAlgebraAutOnUnits K L)) _ _)
     with ⟨y, hy⟩
