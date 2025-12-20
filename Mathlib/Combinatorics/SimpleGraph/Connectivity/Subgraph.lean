@@ -114,6 +114,17 @@ protected lemma Connected.sup {H K : G.Subgraph}
     (H ⊔ K).Connected :=
   Subgraph.connected_sup hH.preconnected hK.preconnected hn
 
+lemma Preconnected.degree_zero_iff {H : G.Subgraph} (h : H.Preconnected) (v : H.verts)
+    [Fintype (H.neighborSet v)] : H.degree v = 0 ↔ H.verts.Subsingleton := by
+  refine ⟨fun hv ↦ Set.not_nontrivial_iff.mp fun hn ↦ ?_, (degree_eq_zero_of_subsingleton H _ ·)⟩
+  have := hn.coe_sort
+  simpa [hv] using h.coe.degree_pos_of_nontrivial v
+
+lemma Preconnected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts]
+    (h : H.Preconnected) (v : H.verts) : ∃ u, H.Adj v u := by
+  have := h.coe.exists_adj_of_nontrivial v
+  tauto
+
 /--
 This lemma establishes a condition under which a subgraph is the same as a connected component.
 Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.

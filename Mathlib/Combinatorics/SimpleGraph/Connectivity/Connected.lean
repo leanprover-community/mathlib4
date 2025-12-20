@@ -705,6 +705,12 @@ theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty :=
   hconn.preconnected.set_univ_walk_nonempty u v
 
+lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
+    (v : V) : ∃ u, G.Adj v u := by
+  have ⟨u, huv⟩ := exists_ne v
+  have ⟨w⟩ := h v u
+  exact ⟨_, w.adj_snd <| w.not_nil_of_ne huv.symm⟩
+
 /-! ### Bridge edges -/
 
 section BridgeEdges
