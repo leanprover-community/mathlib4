@@ -126,7 +126,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [TopologicalSpace M'] [ChartedSpace H' M']
 
 variable (I I') in
-/-- Property in the model space of a model with corners of being differentiable within at set at a
+/-- Property in the model space of a model with corners of being differentiable within a set at a
 point, when read in the model vector space. This property will be lifted to manifolds to define
 differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=

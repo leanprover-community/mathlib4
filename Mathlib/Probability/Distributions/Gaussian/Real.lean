@@ -182,7 +182,7 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
   simp only [Set.mem_univ, iff_true]
   exact (gaussianPDF_pos _ hv x).ne'
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) :=
   (measurable_gaussianPDFReal _ _).ennreal_ofReal
 

@@ -108,13 +108,13 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 lemma functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   exact Functor.final_comp (functor c).op _
 
 section Limit
 
-variable {C : Type*} [Category C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
@@ -145,7 +145,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : Profiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on

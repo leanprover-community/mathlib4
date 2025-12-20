@@ -353,9 +353,7 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
-  apply Subfield.closure_le.mpr
-  rw [Set.union_subset_iff]
-  exact ⟨HF, HS⟩
+  simpa using ⟨HF, HS⟩
 
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
@@ -523,7 +521,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab

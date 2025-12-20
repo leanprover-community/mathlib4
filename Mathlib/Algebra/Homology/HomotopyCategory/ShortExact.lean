@@ -29,7 +29,7 @@ assert_not_exists TwoSidedIdeal
 open CategoryTheory Category ComplexShape HomotopyCategory Limits
   HomologicalComplex.HomologySequence Pretriangulated Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 

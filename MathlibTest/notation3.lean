@@ -53,7 +53,7 @@ def testTagAppFns (n : Name) : TermElabM Unit := do
   let fmts := tags.map (findWithTag · f.fmt)
   unless fmts.all (!·.isEmpty) do throwError "missing tag"
   let fmts := fmts.toList.flatten
-  logInfo m!"{repr <| fmts.map (·.pretty.trim)}"
+  logInfo m!"{repr <| fmts.map (·.pretty.trimAscii.copy)}"
 
 section
 /-- info: [] -/
