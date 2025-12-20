@@ -10,7 +10,7 @@ theorem Function.mul_comm (f g : ℝ → ℝ) : f * g = g * f := _root_.mul_comm
 
 /-- Look I am the doc-string of `foo`. -/
 @[to_fun]
-theorem foo : 1 = 1 := rfl
+theorem foo : (1 : Nat → Nat) = 1 := rfl
 
 open Lean in
 /--
