@@ -1170,7 +1170,8 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   let nestedNames ← copyMetaData t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
-  addConstInfo cfg.ref tgt
+  Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
+    |>.run' |>.run'
   if let some doc := cfg.doc then
     addDocStringCore tgt doc
   return nestedNames.push tgt
