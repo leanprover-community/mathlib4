@@ -126,4 +126,9 @@ public theorem singularValues_le_rank {n : ℕ}
   -- `LinearMap.singularValues_antitone`, and order properties of `ℝ≥0`.
   sorry
 
+public theorem support_singularValues
+  : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
+  -- Follows from `singularValues_lt_rank` and `singularValues_le_rank`.
+  sorry
+
 end LinearMap
