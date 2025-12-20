@@ -88,10 +88,6 @@ theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ EMetric.ball
   | (_ : α) => simp
   | ∞ => contradiction
 
-@[simp]
-theorem infty_not_mem_ball' {x : α} (r : ENNReal) : ∞ ∉ EMetric.ball (↑x : OnePoint α) r :=
-  infty_not_mem_ball r (OnePoint.coe_ne_infty x)
-
 private lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : OnePoint α, edist x x = 0
   | (_ : α) => by simp [m.edist_self]
