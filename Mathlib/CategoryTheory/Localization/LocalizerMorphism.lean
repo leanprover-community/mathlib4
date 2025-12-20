@@ -3,7 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Morphisms of localizers
@@ -24,6 +27,8 @@ localized categories.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u₅ u₅' u₆
 
 namespace CategoryTheory
@@ -43,6 +48,15 @@ structure LocalizerMorphism where
   map : W₁ ≤ W₂.inverseImage functor
 
 namespace LocalizerMorphism
+
+variable {W₁ W₂} in
+/-- Constructor for localizer morphisms given by a functor `F : C₁ ⥤ C₂`
+under the stronger assumption that the classes of morphisms `W₁` and `W₂`
+satisfy `W₁ = W₂.inverseImage F`. -/
+@[simps]
+def ofEq {F : C₁ ⥤ C₂} (hW : W₁ = W₂.inverseImage F) : LocalizerMorphism W₁ W₂ where
+  functor := F
+  map := by rw [hW]
 
 /-- The identity functor as a morphism of localizers. -/
 @[simps]
@@ -101,7 +115,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
-it will be so for any choice of localized categoriees. -/
+it will be so for any choice of localized categories. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂
@@ -142,6 +156,13 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
     G.IsEquivalence := (by
   rw [Φ.isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
   exact h.isEquivalence)
+
+instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
+  let G := Φ.localizedFunctor W₁.Q W₂.Q
+  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+    ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
+  have := Φ.isEquivalence W₁.Q W₂.Q G
+  exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/

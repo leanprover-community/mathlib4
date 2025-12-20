@@ -3,8 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Measures as real-valued functions
@@ -25,6 +27,8 @@ There are no lemmas on infinite sums, as summability issues are really
 more painful with reals than nonnegative extended reals. They should probably be added in the long
 run.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff
@@ -50,13 +54,11 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[simp] theorem measureReal_univ_eq_one [IsProbabilityMeasure μ] :
-    μ.real Set.univ = 1 := by
-  simp [Measure.real]
+@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
-  ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (measure_ne_top μ univ)
+  ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (by finiteness)
 
 theorem measureReal_univ_ne_zero [IsFiniteMeasure μ] [NeZero μ] : μ.real Set.univ ≠ 0 :=
   measureReal_univ_pos.ne'
@@ -167,8 +169,8 @@ theorem measureReal_union_null (h₁ : μ.real s₁ = 0) (h₂ : μ.real s₂ = 
 theorem measureReal_union_null_iff
     (h₁ : μ s₁ ≠ ∞ := by finiteness) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real (s₁ ∪ s₂) = 0 ↔ μ.real s₁ = 0 ∧ μ.real s₂ = 0 :=
-  ⟨fun h ↦ ⟨measureReal_mono_null subset_union_left h (measure_union_ne_top h₁ h₂),
-      measureReal_mono_null subset_union_right h (measure_union_ne_top h₁ h₂)⟩,
+  ⟨fun h ↦ ⟨measureReal_mono_null subset_union_left h (by finiteness),
+      measureReal_mono_null subset_union_right h (by finiteness)⟩,
   fun h ↦ measureReal_union_null h.1 h.2⟩
 
 /-- If two sets are equal modulo a set of measure zero, then `μ.real s = μ.real t`. -/
@@ -263,9 +265,9 @@ lemma measureReal_symmDiff_le (u : Set α)
   rcases eq_top_or_lt_top (μ u) with hu | hu
   · simp only [measureReal_def, measure_symmDiff_eq_top h₁ hu, ENNReal.toReal_top]
     exact add_nonneg ENNReal.toReal_nonneg ENNReal.toReal_nonneg
-  · exact le_trans (measureReal_mono (symmDiff_triangle s t u) (measure_union_ne_top
-      (measure_symmDiff_ne_top h₁ h₂) (measure_symmDiff_ne_top h₂ hu.ne)))
-        (measureReal_union_le (s ∆ t) (t ∆ u))
+  · exact le_trans (measureReal_mono (symmDiff_triangle s t u)
+        (measure_union_ne_top (by finiteness) (by finiteness)))
+      (measureReal_union_le (s ∆ t) (t ∆ u))
 
 theorem measureReal_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ)
@@ -368,6 +370,10 @@ theorem measureReal_compl [IsFiniteMeasure μ] (h₁ : MeasurableSet s) :
   rw [compl_eq_univ_diff]
   exact measureReal_diff (subset_univ s) h₁
 
+theorem measureReal_compl₀ [IsFiniteMeasure μ] (h₁ : NullMeasurableSet s μ) :
+    μ.real sᶜ = μ.real univ - μ.real s := by
+  linarith [measureReal_add_measureReal_compl₀ h₁]
+
 theorem measureReal_union_congr_of_subset (hs : s₁ ⊆ s₂)
     (hsμ : μ.real s₂ ≤ μ.real s₁) (ht : t₁ ⊆ t₂) (htμ : μ.real t₂ ≤ μ.real t₁)
     (h₁ : μ s₂ ≠ ∞ := by finiteness) (h₂ : μ t₂ ≠ ∞ := by finiteness) :
@@ -381,8 +387,8 @@ theorem sum_measureReal_le_measureReal_univ [IsFiniteMeasure μ] {s : Finset ι}
     (h : ∀ i ∈ s, MeasurableSet (t i)) (H : Set.PairwiseDisjoint (↑s) t) :
     (∑ i ∈ s, μ.real (t i)) ≤ μ.real univ := by
   simp only [measureReal_def]
-  rw [← ENNReal.toReal_sum (fun i hi ↦ measure_ne_top _ _)]
-  apply ENNReal.toReal_mono (measure_ne_top _ _)
+  rw [← ENNReal.toReal_sum (by finiteness)]
+  apply ENNReal.toReal_mono (by finiteness)
   exact sum_measure_le_measure_univ (fun i mi ↦ (h i mi).nullMeasurableSet) H.aedisjoint
 
 theorem measureReal_add_apply {μ₁ μ₂ : Measure α} (h₁ : μ₁ s ≠ ∞ := by finiteness)
@@ -399,9 +405,9 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
   apply exists_nonempty_inter_of_measure_univ_lt_sum_measure μ
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
-  apply (ENNReal.toReal_lt_toReal (measure_ne_top _ _) _).1
+  apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
   · convert H
-    rw [ENNReal.toReal_sum (fun i hi ↦ measure_ne_top _ _)]
+    rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 
 /-- If two sets `s` and `t` are included in a set `u` of finite measure,
@@ -428,6 +434,14 @@ theorem nonempty_inter_of_measureReal_lt_add'
   rw [inter_comm]
   exact nonempty_inter_of_measureReal_lt_add hs h't h's h hu
 
+variable [IsProbabilityMeasure μ]
+
+lemma probReal_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ.real sᶜ = 1 - μ.real s := by
+  rw [measureReal_compl₀ h, probReal_univ]
+
+lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.real s :=
+  probReal_compl_eq_one_sub₀ hs.nullMeasurableSet
+
 end MeasureTheory
 
 namespace Mathlib.Meta.Positivity
@@ -436,7 +450,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: applications of `μ.real` are nonnegative. -/
 @[positivity MeasureTheory.Measure.real _ _]
-def evalMeasureReal : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalMeasureReal : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)

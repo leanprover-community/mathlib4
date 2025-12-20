@@ -3,13 +3,14 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
-# Proper nontrivally normed fields
+# Proper nontrivially normed fields
 
 Nontrivially normed fields are `ProperSpaces` when they are `WeaklyLocallyCompact`.
 
@@ -23,6 +24,8 @@ This is a special case of `ProperSpace.of_locallyCompactSpace` from
 `Mathlib/Analysis/Normed/Module/FiniteDimension.lean`, specialized to be on the field itself
 with a proof that requires fewer imports.
 -/
+
+@[expose] public section
 
 assert_not_exists FiniteDimensional
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -26,6 +28,8 @@ two edges is a square.
 
 Define all other graph products!
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -144,9 +148,6 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
 
-@[deprecated (since := "2025-03-30")]
-alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
-
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
@@ -155,7 +156,7 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
   | .cons x w' => next c =>
     unfold ofBoxProdLeft ofBoxProdRight
     rw [length_cons, length_boxProd w']
-    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by simp_all
     rcases disj with h₁ | h₂
     · simp only [h₁, and_self, ↓reduceDIte, length_cons, Or.by_cases]
       rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
@@ -268,7 +269,7 @@ lemma edist_boxProd (x y : α × β) :
     have w_len : w_app.length = wG.length + wH.length := by
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
-    ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+    · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h

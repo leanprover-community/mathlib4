@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Category.Preord
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Category.Preord
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Category of partial orders
@@ -13,12 +15,16 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 This defines `PartOrd`, the category of partial orders with monotone maps.
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 universe u
 
 /-- The category of partial orders. -/
 structure PartOrd where
+  /-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying partially ordered type. -/
   (carrier : Type*)
   [str : PartialOrder carrier]
@@ -34,9 +40,7 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
-/-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [PartialOrder X] : PartOrd := ⟨X⟩
-
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
@@ -44,11 +48,15 @@ structure Hom (X Y : PartOrd.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -109,12 +117,11 @@ lemma hom_ext {X Y : PartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
-lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -203,10 +210,10 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
 -- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
 @[simp]
 lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
-  (a : preordToPartOrd.obj (Preord.dual.obj X)) :
-  (PartOrd.Hom.hom
-      (X := preordToPartOrd.obj (Preord.dual.obj X))
-      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
-      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
-    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+    (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+    (PartOrd.Hom.hom
+        (X := preordToPartOrd.obj (Preord.dual.obj X))
+        (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+        (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+      (OrderIso.dualAntisymmetrization ↑X).symm a :=
   rfl

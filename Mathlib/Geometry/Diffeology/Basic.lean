@@ -3,7 +3,9 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+module
+
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 
 /-!
 # Diffeological spaces
@@ -319,16 +321,16 @@ def DiffeologicalSpace.ofCorePlotsOn {X : Type*} (d : CorePlotsOn X) : Diffeolog
     refine d.isPlotOn_univ.mp <| d.locality _ fun x _ ↦ ?_
     let ⟨u, hu, hxu, hu'⟩ := h x
     let ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp hu x hxu
-    have h := hu' (f := PartialHomeomorph.univBall x ε) (fun x' ↦ by
-      have h := (PartialHomeomorph.univBall x ε).map_source (x := x')
-      rw [PartialHomeomorph.univBall_source, PartialHomeomorph.univBall_target x hε] at h
-      exact hε' (h (Set.mem_univ _))) PartialHomeomorph.contDiff_univBall
+    have h := hu' (f := OpenPartialHomeomorph.univBall x ε) (fun x' ↦ by
+      have h := (OpenPartialHomeomorph.univBall x ε).map_source (x := x')
+      rw [OpenPartialHomeomorph.univBall_source, OpenPartialHomeomorph.univBall_target x hε] at h
+      exact hε' (h (Set.mem_univ _))) OpenPartialHomeomorph.contDiff_univBall
     have h' := d.isPlotOn_reparam (Metric.isOpen_ball) (Set.mapsTo_univ _ _)
-      (d.isPlotOn_univ.mpr h) (PartialHomeomorph.contDiffOn_univBall_symm (c := x) (r := ε))
+      (d.isPlotOn_univ.mpr h) (OpenPartialHomeomorph.contDiffOn_univBall_symm (c := x) (r := ε))
     refine ⟨_, Metric.isOpen_ball, Metric.mem_ball_self hε, (d.isPlotOn_congr _ ?_).mp h'⟩
-    rw [Function.comp_assoc, ← PartialHomeomorph.coe_trans]; apply Set.EqOn.comp_left
-    convert (PartialHomeomorph.symm_trans_self (PartialHomeomorph.univBall x ε)).2
-    simp [(PartialHomeomorph.univBall_target x hε)]
+    rw [Function.comp_assoc, ← OpenPartialHomeomorph.coe_trans]; apply Set.EqOn.comp_left
+    convert (OpenPartialHomeomorph.symm_trans_self (OpenPartialHomeomorph.univBall x ε)).2
+    simp [(OpenPartialHomeomorph.univBall_target x hε)]
   dTopology := d.dTopology
   isOpen_iff_preimages_plots := d.isOpen_iff_preimages_plots
 

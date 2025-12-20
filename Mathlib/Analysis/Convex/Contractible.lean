@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Topology.Homotopy.Contractible
+module
+
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Topology.Homotopy.Contractible
 
 /-!
 # A convex set is contractible
@@ -12,6 +14,8 @@ import Mathlib.Topology.Homotopy.Contractible
 In this file we prove that a (star) convex set in a real topological vector space is a contractible
 topological space.
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E]
@@ -30,10 +34,8 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
             ((continuous_const.sub continuous_subtype_val.fst').smul
               continuous_subtype_val.snd')).subtype_mk
         _
-  · ext1
-    simp
-  · ext1
-    simp
+  · simp
+  · simp
 
 /-- A non-empty convex set is a contractible space. -/
 protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty) :

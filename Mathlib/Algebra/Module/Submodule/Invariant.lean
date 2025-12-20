@@ -3,10 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Sublattice
 
 /-!
 # The lattice of invariant submodules
@@ -18,6 +20,8 @@ lattice structure of invariant submodules.
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
+
+@[expose] public section
 
 open Submodule (span)
 
@@ -39,6 +43,25 @@ def invtSubmodule : Sublattice (Submodule R M) where
 lemma mem_invtSubmodule {p : Submodule R M} :
     p ∈ f.invtSubmodule ↔ p ≤ p.comap f :=
   Iff.rfl
+
+/-- `p` is `f` invariant if and only if `p.map f ≤ p`. -/
+theorem mem_invtSubmodule_iff_map_le {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ p.map f ≤ p := Submodule.map_le_iff_le_comap.symm
+
+/-- `p` is `f` invariant if and only if `Set.MapsTo f p p`. -/
+theorem mem_invtSubmodule_iff_mapsTo {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ Set.MapsTo f p p := Iff.rfl
+
+alias ⟨_, _root_.Set.Mapsto.mem_invtSubmodule⟩ := mem_invtSubmodule_iff_mapsTo
+
+theorem mem_invtSubmodule_iff_forall_mem_of_mem {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ ∀ x ∈ p, f x ∈ p :=
+  Iff.rfl
+
+/-- `p` is `f.symm` invariant if and only if `p ≤ p.map f`. -/
+lemma mem_invtSubmodule_symm_iff_le_map {f : M ≃ₗ[R] M} {p : Submodule R M} :
+    p ∈ invtSubmodule f.symm ↔ p ≤ p.map f :=
+  (mem_invtSubmodule_iff_map_le _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
 
 namespace invtSubmodule
 

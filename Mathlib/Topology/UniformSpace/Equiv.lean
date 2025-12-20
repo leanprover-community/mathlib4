@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.Pi
+module
+
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Uniform isomorphisms
@@ -14,12 +16,14 @@ import Mathlib.Topology.UniformSpace.Pi
 This file defines uniform isomorphisms between two uniform spaces. They are bijections with both
 directions uniformly continuous. We denote uniform isomorphisms with the notation `≃ᵤ`.
 
-# Main definitions
+## Main definitions
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
 
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -179,10 +183,10 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
 theorem range_coe (h : α ≃ᵤ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
-  funext h.symm.toEquiv.image_eq_preimage
+  funext h.symm.toEquiv.image_eq_preimage_symm
 
 theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
-  (funext h.toEquiv.image_eq_preimage).symm
+  (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
@@ -375,6 +379,17 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
   uniformContinuous_invFun :=
     (e.symm.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
   toEquiv := e.toEquiv.image s
+
+/-- A uniform isomorphism `e : α ≃ᵤ β` lifts to subtypes `{ a : α // p a } ≃ᵤ { b : β // q b }`
+provided `p = q ∘ e`. -/
+@[simps!]
+def subtype {p : α → Prop} {q : β → Prop} (e : α ≃ᵤ β) (h : ∀ a, p a ↔ q (e a)) :
+    { a : α // p a } ≃ᵤ { b : β // q b } where
+  uniformContinuous_toFun := by
+    simpa [Equiv.coe_subtypeEquiv_eq_map] using e.uniformContinuous.subtype_map _
+  uniformContinuous_invFun := by
+    simpa [Equiv.coe_subtypeEquiv_eq_map] using e.symm.uniformContinuous.subtype_map _
+  __ := e.subtypeEquiv h
 
 end UniformEquiv
 
