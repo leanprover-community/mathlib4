@@ -39,21 +39,21 @@ variable {s} in
 between that excenter and its touchpoints on those faces. -/
 lemma ExcenterExists.angle_excenter_touchpoint_eq {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {p : P} {i₁ i₂ : Fin (n + 1)}
-    (hp : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points) ⊓
-      affineSpan ℝ (Set.range (s.faceOpposite i₂).points)) :
+    (hp₁ : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points))
+    (hp₂ : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₂).points)) :
     ∠ (s.excenter signs) p (s.touchpoint signs i₁) =
       ∠ (s.excenter signs) p (s.touchpoint signs i₂) :=
-  (dist_orthogonalProjection_eq_iff_angle_eq hp).1 (h.dist_excenter_eq_dist_excenter i₁ i₂)
+  (dist_orthogonalProjection_eq_iff_angle_eq hp₁ hp₂).1 (h.dist_excenter_eq_dist_excenter i₁ i₂)
 
 variable {s} in
 /-- The incenter of a simplex bisects the angle at a point shared between two faces, as measured
 between the incenter and its touchpoints on those faces. -/
 lemma angle_incenter_touchpoint_eq {p : P} {i₁ i₂ : Fin (n + 1)}
-    (hp : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points) ⊓
-      affineSpan ℝ (Set.range (s.faceOpposite i₂).points)) :
+    (hp₁ : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points))
+    (hp₂ : p ∈ affineSpan ℝ (Set.range (s.faceOpposite i₂).points)) :
     ∠ s.incenter p (s.touchpoint ∅ i₁) =
       ∠ s.incenter p (s.touchpoint ∅ i₂) :=
-  s.excenterExists_empty.angle_excenter_touchpoint_eq hp
+  s.excenterExists_empty.angle_excenter_touchpoint_eq hp₁ hp₂
 
 variable {s} in
 /-- Given a face of a simplex, if a point bisects the angle between that face and each other face,
@@ -61,8 +61,8 @@ as measured at points shared between those faces between that point and its proj
 faces, that point is an excenter of the simplex. -/
 lemma exists_excenterExists_and_eq_excenter_of_forall_angle_orthogonalProjectionSpan_eq {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {i₁ : Fin (n + 1)}
-    (h : ∀ i₂, i₂ ≠ i₁ → ∃ p' : P, p' ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points) ⊓
-      affineSpan ℝ (Set.range (s.faceOpposite i₂).points) ∧
+    (h : ∀ i₂, i₂ ≠ i₁ → ∃ p' : P, p' ∈ affineSpan ℝ (Set.range (s.faceOpposite i₁).points) ∧
+      p' ∈ affineSpan ℝ (Set.range (s.faceOpposite i₂).points) ∧
       ∠ p p' ((s.faceOpposite i₁).orthogonalProjectionSpan p) =
         ∠ p p' ((s.faceOpposite i₂).orthogonalProjectionSpan p)) :
     ∃ signs, s.ExcenterExists signs ∧ p = s.excenter signs := by
@@ -71,8 +71,8 @@ lemma exists_excenterExists_and_eq_excenter_of_forall_angle_orthogonalProjection
   intro i
   by_cases hi : i = i₁
   · rw [hi]
-  obtain ⟨p', hp', ha⟩ := h i hi
-  exact ((dist_orthogonalProjection_eq_iff_angle_eq hp').2 ha).symm
+  obtain ⟨p', hp'₁, hp'₂, ha⟩ := h i hi
+  exact ((dist_orthogonalProjection_eq_iff_angle_eq hp'₁ hp'₂).2 ha).symm
 
 end Simplex
 
@@ -123,7 +123,7 @@ lemma oangle_incenter_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h�
     ← (t.sbtw_touchpoint_empty h₁₂ h₁₃ h₂₃).oangle_eq_right]
   have hd := t.dist_incenter_eq_dist_incenter i₃ i₂
   simp_rw [touchpoint, orthogonalProjectionSpan] at hd ⊢
-  refine oangle_eq_of_dist_orthogonalProjection_eq ⟨mem_affineSpan _ ?_, mem_affineSpan _ ?_⟩
+  refine oangle_eq_of_dist_orthogonalProjection_eq (mem_affineSpan _ ?_) (mem_affineSpan _ ?_)
     (t.touchpoint_empty_injective.ne h₂₃.symm) hd
   · simp
     grind
@@ -139,7 +139,7 @@ lemma oangle_excenter_singleton_eq {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ 
     (t.touchpoint_singleton_sbtw h₁₂ h₁₃ h₂₃).symm.oangle_eq_right]
   have hd := (t.excenterExists_singleton i₁).dist_excenter_eq_dist_excenter i₃ i₂
   simp_rw [touchpoint, orthogonalProjectionSpan] at hd ⊢
-  refine oangle_eq_of_dist_orthogonalProjection_eq ⟨mem_affineSpan _ ?_, mem_affineSpan _ ?_⟩
+  refine oangle_eq_of_dist_orthogonalProjection_eq (mem_affineSpan _ ?_) (mem_affineSpan _ ?_)
     ((t.excenterExists_singleton i₁).touchpoint_injective.ne h₂₃.symm) hd
   · simp
     grind
@@ -157,7 +157,7 @@ lemma oangle_excenter_singleton_eq_add_pi {i₁ i₂ i₃ : Fin 3} (h₁₂ : i�
     ← (t.sbtw_touchpoint_singleton h₁₂.symm h₂₃ h₁₃).oangle_eq_right, add_left_inj]
   have hd := (t.excenterExists_singleton i₁).dist_excenter_eq_dist_excenter i₃ i₁
   simp_rw [touchpoint, orthogonalProjectionSpan] at hd ⊢
-  refine oangle_eq_of_dist_orthogonalProjection_eq ⟨mem_affineSpan _ ?_, mem_affineSpan _ ?_⟩
+  refine oangle_eq_of_dist_orthogonalProjection_eq (mem_affineSpan _ ?_) (mem_affineSpan _ ?_)
     ((t.excenterExists_singleton i₁).touchpoint_injective.ne h₁₃.symm) hd
   · simp
     grind

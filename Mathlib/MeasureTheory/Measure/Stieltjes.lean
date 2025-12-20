@@ -148,8 +148,8 @@ theorem rightLim_eq [OrderTopology R]
   rw [← f.mono.continuousWithinAt_Ioi_iff_rightLim_eq, continuousWithinAt_Ioi_iff_Ici]
   exact f.right_continuous' x
 
-theorem iInf_Ioi_eq
-     (f : StieltjesFunction ℝ) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
+theorem iInf_Ioi_eq [OrderTopology R] [DenselyOrdered R] [NoMaxOrder R]
+     (f : StieltjesFunction R) (x : R) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [f.mono.rightLim_eq_sInf, sInf_image']
   rw [← neBot_iff]
@@ -252,7 +252,8 @@ noncomputable def _root_.Monotone.stieltjesFunction [OrderTopology R]
         rightLim f z ≤ f a := hf.rightLim_le za
         _ < u := (h'y ⟨hz.1.trans_lt za, ay⟩).2
 
-theorem _root_.Monotone.stieltjesFunction_eq {f : ℝ → ℝ} (hf : Monotone f) (x : ℝ) :
+theorem _root_.Monotone.stieltjesFunction_eq
+    [OrderTopology R] {f : R → ℝ} (hf : Monotone f) (x : R) :
     hf.stieltjesFunction x = rightLim f x :=
   rfl
 
