@@ -137,9 +137,9 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
   exact ⟨J, h_J, by simp [Ideal.colon_eq_top_of_le ((Ideal.span_singleton_le_iff_mem I).mpr h_x)]⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
-lemma isTorsionQuot_mono_left (F : IdealFilter A)
-    {I J K : Ideal A} (I_leq_J : I ≤ J) : IsTorsionQuot F I K → IsTorsionQuot F J K := by
-  intro I_tors x h_x
+lemma IsTorsionQuot.mono_left {F : IdealFilter A}
+    {I J K : Ideal A} (I_tors : IsTorsionQuot F I K) (I_leq_J : I ≤ J) : IsTorsionQuot F J K := by
+  intro x h_x
   obtain ⟨L, ⟨L_in_F, h_L⟩⟩ := I_tors x h_x
   refine ⟨L, L_in_F, ?_⟩
   intro y h_y
@@ -191,7 +191,7 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
         rintro y ⟨h_y₁, h_y₂⟩
         simpa [colon_inf] using ⟨h_K₁ h_y₁, h_K₂ h_y₂⟩
   · intro I J h_IJ ⟨K, h_K, h_IK⟩
-    exact ⟨K, h_K, isTorsionQuot_mono_left F h_IJ h_IK⟩
+    exact ⟨K, h_K, h_IK.mono_left h_IJ⟩
 
 /-- `gabrielComposition F G` is the Gabriel composition of ideal filters `F` and `G`. -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
