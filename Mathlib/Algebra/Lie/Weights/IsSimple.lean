@@ -360,16 +360,13 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
     invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
   refine' ⟨ fun h => _, fun h => _ ⟩;
   · by_contra hq_nonzero
-    obtain ⟨i, hi⟩ : ∃ i : { x : LieModule.Weight K (↥H) L // x ∈ LieSubalgebra.root }, (LieAlgebra.IsKilling.rootSystem H).toRootPairing.root i ∈ q := by
-      have := @RootPairing.invtRootSubmodule.eq_bot_iff;
-      contrapose! this;
-      refine' ⟨ _, _, _, _, _, K, _, _, _, _, _ ⟩;
-      exact { x : LieModule.Weight K (↥H) L // x ∈ LieSubalgebra.root };
-      exact Module.Dual K H;
-      exact ↥H;
-      all_goals try infer_instance;
-      refine' ⟨ _, _, ⟨ ⟨ q, _ ⟩, _ ⟩ ⟩;
-      exact rootSystem H
+    have hq_invt : q ∈ (rootSystem H).invtRootSubmodule := by
+      rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq
+    have h_ne_bot : (⟨q, hq_invt⟩ : (rootSystem H).invtRootSubmodule) ≠ ⊥ :=
+      fun h_eq => hq_nonzero (Subtype.ext_iff.mp h_eq)
+    rw [Ne, RootPairing.invtRootSubmodule.eq_bot_iff, not_forall] at h_ne_bot
+    obtain ⟨i, hi⟩ := h_ne_bot
+    rw [not_not] at hi
     have h_sl2_nonzero : sl2SubmoduleOfRoot (by
     aesop : i.val.IsNonZero) ≠ ⊥ := by
       all_goals generalize_proofs at *;
