@@ -6,11 +6,11 @@ Authors: Vlad Tsyrklevich
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
-public import Mathlib.Tactic.ENatToNat
+
+import Mathlib.Data.Finite.Card
+import Mathlib.Tactic.ENatToNat
 
 /-!
 # Vertex cover
@@ -165,29 +165,28 @@ theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard
 
 @[simp]
 theorem vertexCoverNum_ne_top_of_finite_edgeSet (h : G.edgeSet.Finite) : vertexCoverNum G ≠ ⊤ :=
-  ne_top_of_le_ne_top (Set.encard_ne_top_iff.mpr h) (@vertexCoverNum_le_encard_edgeSet V G)
+  ne_top_of_le_ne_top (Set.encard_ne_top_iff.mpr h) vertexCoverNum_le_encard_edgeSet
 
 @[simp]
 theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 := by
-  by_cases! h' : Subsingleton V
-  · simp [tsub_eq_zero_of_le]
+  nontriviality V using tsub_eq_zero_of_le
   refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
   · grw [hn, vertexCoverNum_le_card_sub_one]
-  · by_contra! hh
-    have : n - 1 ≤ ENat.card V := by
-      grw [tsub_le_iff_right, hn]
-      simp [add_assoc, one_add_one_eq_two]
-    obtain ⟨t, ht₁, ht₂⟩ := exists_of_le_vertexCoverNum (n - 1) (ENat.le_sub_one_of_lt hh) this
-    have : 1 < (Set.univ \ t).encard := by
-      refine ENat.add_one_le_iff (by simp) |>.mp ?_
-      rw [Set.encard_diff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
-      refine ENat.le_sub_of_add_le_left (by simp [ht₁]) ?_
-      refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
-      grw [ht₁, ENat.coe_sub, hn]
-      simp [add_assoc, one_add_one_eq_two, le_tsub_add]
-    obtain ⟨a, b, _, _, hne⟩ := Set.one_lt_encard_iff.mp <| this
-    have := @ht₂ a b (by simp [hne])
-    grind
+  by_contra! hh
+  have : n - 1 ≤ ENat.card V := by
+    grw [tsub_le_iff_right, hn]
+    simp [add_assoc, one_add_one_eq_two]
+  obtain ⟨t, ht₁, ht₂⟩ := exists_of_le_vertexCoverNum (n - 1) (ENat.le_sub_one_of_lt hh) this
+  have : 1 < (Set.univ \ t).encard := by
+    refine ENat.add_one_le_iff (by simp) |>.mp ?_
+    rw [Set.encard_diff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
+    refine ENat.le_sub_of_add_le_left (by simp [ht₁]) ?_
+    refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
+    grw [ht₁, ENat.coe_sub, hn]
+    simp [add_assoc, one_add_one_eq_two, le_tsub_add]
+  obtain ⟨a, b, _, _, hne⟩ := Set.one_lt_encard_iff.mp <| this
+  have := @ht₂ a b (by simp [hne])
+  grind
 
 theorem vertexCoverNum_le_vertexCoverNum_of_injective (f : G →g H) (hf : Function.Injective f) :
     vertexCoverNum G ≤ vertexCoverNum H := by

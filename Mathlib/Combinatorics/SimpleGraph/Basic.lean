@@ -523,11 +523,11 @@ theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
 theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
   simp [eq_bot_iff_forall_not_adj]
 
-theorem eq_top_iff_exists_not_adj : G = ⊤ ↔ ∀ a b : V, a = b ∨ G.Adj a b := by
-  simp [← top_le_iff, le_iff_adj, Classical.or_iff_not_imp_left]
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
 
 theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  simp [eq_top_iff_exists_not_adj]
+  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 
