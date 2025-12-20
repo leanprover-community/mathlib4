@@ -198,6 +198,8 @@ theorem mem_uniformity_edist {s : Set (α × α)} :
     s ∈ 𝓤 α ↔ ∃ ε > 0, ∀ {a b : α}, edist a b < ε → (a, b) ∈ s :=
   uniformity_basis_edist.mem_uniformity_iff
 
+/-- Every PseudoEMetricSpace has a WeakPseudoEMetricSpace structure by
+  using the topology induced by edist. -/
 @[reducible]
 def PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMetricSpace α] :
     WeakPseudoEMetricSpace α where
@@ -215,6 +217,7 @@ def PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMet
       rw [UniformSpace.mem_uniformity_ofCore_iff, inst.6]
     rwa [e]
 
+/-- A WeakPseudoEMetricSpace has a PseudoEMetricSpace structure by forgetting the topology. -/
 @[reducible]
 def WeakPseudoEMetricSpace.toPseudoEMetricSpace
     (α : Type u) [TopologicalSpace α] [inst : WeakPseudoEMetricSpace α] :
@@ -238,6 +241,7 @@ theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr
     ↔ IsOpen[((uniformSpaceOfEDist
     m.edist m.edist_self m.edist_comm m.edist_triangle)).toTopologicalSpace] s := by rfl
 
+/-- Make a PseudoEMetricSpace from the metric. -/
 abbrev pseudoEMetricSpaceOfEDist {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : PseudoEMetricSpace α where
@@ -702,6 +706,8 @@ class WeakEMetricSpace
     (α : Type u) [TopologicalSpace α] : Type u extends WeakPseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
+/-- Every EMetricSpace has a WeakEMetricSpace structure by
+  using the topology induced by edist. -/
 @[reducible]
 def EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
     WeakEMetricSpace α where
@@ -713,6 +719,7 @@ def EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
   topology_eq_on_restrict := inst.toWeakPseudoEMetricSpace.6
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
+/-- Every WeakEMetricSpace is a EMetricSpace by forgetting the topology. -/
 @[reducible]
 def WeakEMetricSpace.toEMetricSpace (α : Type u) [TopologicalSpace α] [inst : WeakEMetricSpace α] :
     EMetricSpace α where
