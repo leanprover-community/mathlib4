@@ -142,7 +142,7 @@ lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y 
     inner_eq_neg_mul_norm_iff_angle_eq_pi]
 
 lemma eq_of_angle_eq_zero (hxy : angle x y = 0) : x = y := by
-  grind [angle_eq_zero_iff, abs, norm_zero, norm_smul, Real.norm_eq_abs, one_smul]
+  grind [eq_of_angle_eq_zero_of_norm_eq]
 
 include hz in
 lemma angle_expression_of_angle_eq_angle_sum :
@@ -220,10 +220,9 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
 
 lemma mem_span_of_linear_combination {x y z : V} {kx ky kz : ℝ≥0} (hy : ky ≠ 0)
     (hlincomb : ky • y = kx • x + kz • z) : y ∈ Submodule.span ℝ≥0 {x, z} := by
-  rw [← smul_right_inj (inv_ne_zero hy), smul_add, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ hy,
-    one_smul] at hlincomb
-  simp [hlincomb, Submodule.span]
-  grind [Set.pair_subset_iff, SetLike.mem_coe, Submodule.add_mem, Submodule.smul_mem]
+  have h₁ : ky • y ∈ Submodule.span ℝ≥0 {x, z} := by
+    rw [Submodule.mem_span_pair]; grind
+  rwa [Submodule.smul_mem_iff _ hy] at h₁
 
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
