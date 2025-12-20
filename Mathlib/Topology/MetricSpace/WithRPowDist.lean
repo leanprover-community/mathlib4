@@ -3,9 +3,12 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # A copy of a metric space with metric given by `d x y = dist x y ^ α`
@@ -34,6 +37,8 @@ then these sets become balls, and we can apply Vitali theorem.
 * [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
   [Moreira2001]
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Filter Uniformity Topology
 open Function
