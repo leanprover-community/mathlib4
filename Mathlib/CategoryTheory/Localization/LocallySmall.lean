@@ -50,10 +50,10 @@ noncomputable irreducible_def hasLocalizationOfLocallySmall'
     (L : C ⥤ D) [L.IsLocalization W] :
     HasLocalization.{w} W := by
   have : LocallySmall.{w} (InducedCategory _ L.obj) :=
-    ⟨fun X Y ↦ inferInstanceAs (Small.{w} (L.obj X ⟶ L.obj Y))⟩
+    ⟨fun X Y ↦ small_of_injective InducedCategory.homEquiv.injective⟩
   let L' : C ⥤ (InducedCategory _ L.obj) :=
     { obj X := X
-      map f := L.map f }
+      map f := InducedCategory.homMk (L.map f) }
   have := Localization.essSurj L W
   have : (inducedFunctor L.obj).EssSurj := ⟨fun Y ↦ ⟨_, ⟨L.objObjPreimageIso Y⟩⟩⟩
   have : (inducedFunctor L.obj).IsEquivalence := { }
