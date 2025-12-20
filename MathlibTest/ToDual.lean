@@ -109,3 +109,41 @@ theorem not_lt_self {α : Type} [PartialOrder α] (a : α) : ¬ a < a := lt_irre
 -- Test that we do not translate numerals like we do in `@[to_additive]`
 @[to_dual self]
 theorem one_le_one {α : Type} [One α] [Preorder α] : (1 : α) ≤ 1 := le_rfl
+
+/-! Test the `to_dual_insert_cast` framework. -/
+
+section
+variable {α : Type} [PartialOrder α]
+
+@[to_dual lt_sum_eq_of_le']
+def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
+    a < b ⊕' a = b :=
+  if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
+
+-- The arguments to `inst✝` have been swapped:
+/--
+info: @dite (a < b ⊕' a = b) (b ≤ a) (inst✝ b a) (fun hba => PSum.inr ⋯) fun hba => PSum.inl ⋯
+---
+info: @dite (b < a ⊕' a = b) (a ≤ b) (inst✝ a b) (fun hba => PSum.inr ⋯) fun hba => PSum.inl ⋯
+-/
+#guard_msgs in
+open Lean Meta in
+run_meta
+  lambdaTelescope (← getConstInfo ``lt_sum_eq_of_le).value! fun _ => (logInfo m!"{·.setPPExplicit true}")
+  lambdaTelescope (← getConstInfo ``lt_sum_eq_of_le').value! fun _ => (logInfo m!"{·.setPPExplicit true}")
+
+/-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
+def Cov.Ico (a b : α) := fun x ↦ a ⩿ x ∧ x ⋖ b
+
+/-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
+@[to_dual existing (reorder := a b)]
+def Cov.Ioc (a b : α) := fun x ↦ a ⋖ x ∧ x ⩿ b
+
+to_dual_insert_cast Cov.Ico := by grind
+
+-- The dual theorems `mem_Ioc'` does not hold by reflexivity.
+-- To prove it, some rewrites have been added to the proof of `mem_Ico`.
+@[to_dual mem_Ioc']
+theorem mem_Ico {a b x : α} : Cov.Ico a b x ↔ (a ≤ x ∧ ∀ ⦃c⦄, a < c → ¬c < x) ∧ x ⋖ b := Iff.rfl
+
+end
