@@ -123,4 +123,12 @@ theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℤ) ↔ IsSquare (ofNat(n) : ℕ) :=
   isSquare_natCast_iff
 
+-- These next two don't make good `norm_cast` lemmas.
+theorem natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
+  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
+  norm_cast
+
+theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
+  natCast_pow_pred 2 p (by decide)
+
 end Int
