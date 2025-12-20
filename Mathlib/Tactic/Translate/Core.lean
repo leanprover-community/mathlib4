@@ -180,7 +180,7 @@ structure TranslateData : Type where
   when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
   morally self-dual, but their definition is not self-dual. So, in order to allow these constants
   to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
-  unfoldBoundaries : Option UnfoldBoundary.UnfoldBoundaryExt := none
+  unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaryExt := none
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -536,17 +536,17 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   if let some value := decl.value? (allowOpaque := true) then
     let mut value := value
-    if let some b := t.unfoldBoundaries then
+    if let some b := t.unfoldBoundaries? then
       value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
     value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
-    if let some b := t.unfoldBoundaries then
+    if let some b := t.unfoldBoundaries? then
       value ← b.unfoldInsertions value
     decl := decl.updateValue value
   let mut type := decl.type
-  if let some b := t.unfoldBoundaries then
+  if let some b := t.unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
-  if let some b := t.unfoldBoundaries then
+  if let some b := t.unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return decl.updateType type
 
@@ -867,7 +867,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   let mut srcType := srcDecl.type
-  if let some b := t.unfoldBoundaries then
+  if let some b := t.unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName
   srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
@@ -886,9 +886,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     else
       pure reorder'
   srcType ← reorderForall reorder srcType
-  if let some b := t.unfoldBoundaries then
+  if let some b := t.unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
-
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some

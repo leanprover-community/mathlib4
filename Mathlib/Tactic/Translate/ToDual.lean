@@ -109,8 +109,8 @@ initialize casts : NameMapExtension (Name × Name) ← registerNameMapExtension 
 @[inherit_doc UnfoldBoundaryExt.insertionFuns]
 initialize insertionFuns : NameMapExtension Unit ← registerNameMapExtension _
 
-@[inherit_doc TranslateData.unfoldBoundaries]
-def unfoldBoundaries : UnfoldBoundaryExt := { unfolds, casts, insertionFuns }
+@[inherit_doc TranslateData.unfoldBoundaries?]
+def unfoldBoundaries? : Option UnfoldBoundaryExt := some { unfolds, casts, insertionFuns }
 
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
@@ -202,7 +202,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; unfoldBoundaries; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; unfoldBoundaries?; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true
@@ -254,14 +254,34 @@ private def elabInsertCast (declName : Name) (castKind : CastKind) (stx : Term) 
     let dualName ← mkAuxDeclName `_to_dual_cast
     addDecl dualName dualType (← instantiateMVars dualValue)
 
-    _ ← addTranslationAttr data name { tgt := dualName, existing := true, ref := .missing }
+    let relevantArg? := (argInfoAttr.find? (← getEnv) declName).map (·.relevantArg)
+    _ ← addTranslationAttr data name
+      { tgt := dualName, existing := true, ref := .missing, relevantArg? }
     return (name, dualName)
 
+/-- The `to_dual_insert_cast foo := ...` command should be used when the translation of some
+definition `foo` is not definitionally equal to the translation of its value.
+It requires a proof that these two are equal, which `by grind` can usually prove.
+
+The command internally generates an unfolding theorem for `foo`, and a dual of this theorem.
+If type checking a term requires the definition `foo` to be unfolded, then before translating
+that term, a `cast` is inserted into the term using this unfolding theorem.
+As a result, type checking the term won't anymore require unfolding `foo`, so the term
+can be safely translated. -/
 elab "to_dual_insert_cast" declName:ident " := " valStx:term : command => do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
   let (name, _) ← elabInsertCast declName .eq valStx
   unfolds.add declName { origin := .decl name, proof := mkConst name, rfl := true }
 
+/-- The `to_dual_insert_cast_fun foo := ...` command should be used when the translation of some
+type `foo` is not definitionally equal to the translation of its value.
+It requires a dual of the function that unfolds `foo` and of the function that refolds `foo`.
+
+The command internally generates these unfold/refold functions for `foo`, and a duals of these.
+If type checking a term requires the definition `foo` to be unfolded, then before translating
+that term, the unfold/refold function is inserted into the term.
+As a result, type checking the term won't anymore require unfolding `foo`, so the term
+can be safely translated. At the end, the remaining unfold/refold functions are unfolded. -/
 elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command => do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
   let (name₁, dualName₁) ← elabInsertCast declName .unfoldFun valStx₁
