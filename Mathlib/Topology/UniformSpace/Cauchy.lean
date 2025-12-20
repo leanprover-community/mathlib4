@@ -449,7 +449,7 @@ variable [DiscreteUniformity α]
 of a point. -/
 theorem eq_pure_of_cauchy {f : Filter α} (hf : Cauchy f) : ∃ x : α, f = pure x := by
   rcases hf with ⟨f_ne_bot, f_le⟩
-  simp only [DiscreteUniformity.eq_principal_relId, le_principal_iff, mem_prod_iff] at f_le
+  simp only [DiscreteUniformity.eq_principal_setRelId, le_principal_iff, mem_prod_iff] at f_le
   obtain ⟨S, hS, T, hT, H⟩ := f_le
   obtain ⟨x, rfl, _, _, _⟩ := SetRel.exists_eq_singleton_of_prod_subset_id
     (f_ne_bot.nonempty_of_mem hS) (f_ne_bot.nonempty_of_mem hT) H
