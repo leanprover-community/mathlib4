@@ -199,16 +199,6 @@ lemma isCompact_setOf_finiteMeasure_le_of_isCompact
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact isCompact_setOf_finiteMeasure_le_of_compactSpace _ _
 
-lemma FiniteMeasure.restrict_biUnion_finset {ι E : Type*} {_ : MeasurableSpace E}
-    (μ : FiniteMeasure E) (T : Finset ι)
-    (s : ι → Set E) (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
-    μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
-  ext t ht
-  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
-  rw [Measure.restrict_biUnion_finset hd hm]
-  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
-  conv_rhs => rw [← Finset.sum_attach]
-
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending
 to zero, the finite measures of mass at most `C` giving mass at most `uₙ` to the complement of `Kₙ`
 form a compact set. -/
@@ -235,21 +225,9 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
   -- We can decompose a measure as a sum of restrictions to `disjointed K n`, finite version.
   have I (μ : FiniteMeasure E) (n : ℕ) :
       ∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i) = μ.restrict (partialSups K n) := by
-    rw [Nat.range_succ_eq_Iic, biUnion_Iic_disjointed, FiniteMeasure.restrict_biUnion_finset]
-    · exact (disjoint_disjointed K).set_pairwise (Finset.range (n + 1))
+    rw [← biUnion_range_succ_disjointed, FiniteMeasure.restrict_biUnion_finset]
+    · exact (disjoint_disjointed K).set_pairwise _
     · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
-  have J {μ : FiniteMeasure E} {n m : ℕ} (hm : n ≤ m) (h'K : Monotone K)  :
-      ∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i) = μ.restrict (K m \ K n) := by
-
-    induction m, hm using Nat.le_induction with
-    | base => ext; simp
-    | succ m hnm ih =>
-      rw [← Finset.insert_Ioc_right_eq_Ioc_add_one hnm, Finset.sum_insert (by simp), ih,
-        ← restrict_union _ ((hK m).measurableSet.diff (hK n).measurableSet)]; swap
-      · rw [Monotone.disjointed_add_one h'K]; grind
-      rw [Monotone.disjointed_add_one h'K, diff_union_diff_cancel]
-      · exact h'K (Nat.le_add_right m 1)
-      · exact h'K hnm
   have A n : IsCompact (partialSups K n) := by
     simpa [partialSups_eq_accumulate] using isCompact_accumulate hK _
   -- start with a ultrafilter `f`, for which we want to prove convergence.
@@ -458,9 +436,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
           not_true_eq_false, imp_false, not_lt]
         intro i hi h'i
         have : ν i (K n)ᶜ = 0 := by
-          apply le_antisymm ?_ bot_le
-          apply le_trans ?_ (νK i).le
-          gcongr
+          apply (ν i).mono_null _ (νK i)
           rw [Monotone.partialSups_eq h]
           exact h h'i
         exact (null_iff_toMeasure_null (ν i) (K n)ᶜ).mp this
@@ -482,7 +458,11 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       exact tendsto_finset_sum _ (fun i hi ↦ hν i)
     apply le_of_tendsto this
     filter_upwards [hf] with μ hμ
-    rw [J hm h, restrict_mass]
+    have : ∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i) = μ.restrict (K m \ K n) := by
+      rw [← biUnion_Ioc_disjointed_of_monotone h hm, FiniteMeasure.restrict_biUnion_finset]
+      · exact (disjoint_disjointed K).set_pairwise _
+      · exact MeasurableSet.disjointed (fun i ↦ (hK i).measurableSet)
+    rw [this, restrict_mass]
     exact le_trans (apply_mono _ (diff_subset_compl (K m) (K n))) (hμ.2 n)
 
 /-- **Prokhorov theorem**: Given a sequence of compact sets `Kₙ` and a sequence `uₙ` tending to
