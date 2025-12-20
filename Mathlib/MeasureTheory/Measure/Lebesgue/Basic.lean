@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.MeasureTheory.Group.LIntegral
-import Mathlib.MeasureTheory.Integral.Marginal
-import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.MeasureTheory.Group.LIntegral
+public import Mathlib.MeasureTheory.Integral.Marginal
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`
@@ -27,6 +29,8 @@ More properties of the Lebesgue measure are deduced from this in
 `Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean`, where they are proved more generally for any
 additive Haar measure on a finite-dimensional real vector space.
 -/
+
+@[expose] public section
 
 
 assert_not_exists MeasureTheory.integral
@@ -212,7 +216,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
-  refine lt_of_lt_of_le ?_ (measure_mono hs)
+  grw [← hs]
   simpa [-mem_Ioo] using hx.1.trans hx.2
 
 /-!
@@ -347,14 +351,14 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :
     (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
-    simp only [LinearMap.coe_proj, Algebra.id.smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
+    simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i

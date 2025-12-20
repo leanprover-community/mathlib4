@@ -3,15 +3,20 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
-import Qq
+module
+
+public meta import Mathlib.Order.BoundedOrder.Basic
+public meta import Mathlib.Order.Lattice
+public meta import Mathlib.Util.AtomM
+public meta import Qq
 
 /-!
 # Facts collection for the `order` Tactic
 
 This file implements the collection of facts for the `order` tactic.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 
@@ -45,32 +50,26 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"#{res} := #{lhs} ⊓ #{rhs}"
   | .isSup lhs rhs res => s!"#{res} := #{lhs} ⊔ #{rhs}"
 
-/-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
-pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
-indices, and `facts` stores `AtomicFact`s about them. -/
-abbrev CollectFactsState := Std.HashMap Expr <| DiscrTree (Nat × Expr) × Array AtomicFact
+/-- State for `CollectFactsM`. It contains a map that maps a type to atomic facts collected for
+this type. -/
+abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
-abbrev CollectFactsM := StateT CollectFactsState MetaM
+abbrev CollectFactsM := StateT CollectFactsState AtomM
 
 /-- Adds `fact` to the state. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    (atomToIdx, facts.push fact)
+  modify fun res => res.modify type fun facts => facts.push fact
 
 /-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
 Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (.empty, #[])
-  let (atomToIdx, facts) := (← get).get! type
-  match ← (← atomToIdx.getUnify x).findM? fun (_, e) => isDefEq x e with
-  | some (idx, _) => return idx
-  | none =>
-    let idx := atomToIdx.size
-    let atomToIdx ← atomToIdx.insert x (idx, x)
-    modify fun res => res.insert type (atomToIdx, facts)
-    match x with
+  modify fun res => res.insertIfNew type #[]
+  match ← AtomM.containsThenAddQ x with
+  | (true, idx, _) => return idx
+  | (false, idx, ⟨x', _⟩) =>
+    match x' with
     | ~q((@OrderTop.toTop _ $instLE $instTop).top) =>
       addFact type (.isTop idx)
     | ~q((@OrderBot.toBot _ $instLE $instBot).bot) =>
@@ -86,15 +85,23 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
     | _ => pure ()
     return idx
 
--- The linter claims `u` is unused, but it used on the next line.
+-- TODO: The linter claims `u` is unused, but it used on the next line.
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
-def collectFactsImp : CollectFactsM Unit := do
+partial def collectFactsImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
+    CollectFactsM Unit := do
   let ctx ← getLCtx
-  for ldecl in ctx do
-    if ldecl.isImplementationDetail then
-      continue
-    processExpr ldecl.toExpr
+  for expr in hyps do
+    processExpr expr
+  processExpr negGoal
+  if !only? then
+    for ldecl in ctx do
+      if ldecl.isImplementationDetail then
+        continue
+      let e := ldecl.toExpr
+      if e == negGoal then
+        continue
+      processExpr e
 where
   /-- Extracts facts and atoms from the expression. -/
   processExpr (expr : Expr) : CollectFactsM Unit := do
@@ -133,16 +140,21 @@ where
         let yIdx ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
       | _ => return
+    | ~q($p ∧ $q) =>
+      processExpr q(And.left $expr)
+      processExpr q(And.right $expr)
+    | ~q(Exists $P) =>
+      processExpr q(Exists.choose_spec $expr)
     | _ => return
 
-/-- Collects facts from the local context. For each occurring type `α`, the returned map contains
-a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
-atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
-def collectFacts : MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
-  let res := (← collectFactsImp.run ∅).snd
-  return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
-      acc.insert value.fst value.snd
-    (idxToAtom, facts)
+/-- Collects facts from the local context. `negGoal` is the negated goal, `hyps` is the expressions
+passed to the tactic using square brackets. If `only?` is true, we collect facts only from `hyps`
+and `negGoal`, otherwise we also use the local context.
+
+For each occurring type `α`, the returned map contains an array containing all collected
+`AtomicFact`s about atoms of type `α`. -/
+def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
+    AtomM <| Std.HashMap Expr <| Array AtomicFact := do
+  return (← (collectFactsImp only? hyps negGoal).run ∅).snd
 
 end Mathlib.Tactic.Order

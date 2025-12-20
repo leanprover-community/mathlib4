@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Dual
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Von Neumann algebras
@@ -21,6 +23,8 @@ is a *-closed subalgebra of bounded operators on `H` which is equal to its doubl
 We'll also need to prove the von Neumann double commutant theorem,
 that the concrete definition is equivalent to a *-closed subalgebra which is weakly closed.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -43,7 +47,7 @@ class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
+      Nonempty (StrongDual ℂ X ≃ₗᵢ⋆[ℂ] M)
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,

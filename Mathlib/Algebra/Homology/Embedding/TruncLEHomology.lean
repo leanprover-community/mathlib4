@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
-import Mathlib.Algebra.Homology.Embedding.TruncLE
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
+public import Mathlib.Algebra.Homology.Embedding.TruncLE
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-! # The homology of a canonical truncation
 
@@ -26,12 +28,14 @@ sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C]
+  {C : Type*} [Category* C]
 
 section
 
@@ -63,7 +67,7 @@ instance (i' : ι') : (K.truncLE e).HasHomology i' :=
 lemma quasiIsoAt_ιTruncLE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.ιTruncLE e) j' := by
   have := K.op.quasiIsoAt_πTruncGE e.op hj'
-  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _ ).map (K.op.πTruncGE e.op).op) j')
+  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _).map (K.op.πTruncGE e.op).op) j')
 
 instance (i : ι) : QuasiIsoAt (K.ιTruncLE e) (e.f i) := K.quasiIsoAt_ιTruncLE e rfl
 

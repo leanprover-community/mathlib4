@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Data.Sigma.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Data.Sigma.Basic
 
 /-!
 # Sigma instances for additive and multiplicative actions
@@ -18,6 +20,8 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 * `Mathlib/Algebra/Group/Action/Prod.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -62,7 +66,7 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
     rw [smul_mk, smul_mk, op_smul_eq_smul]⟩
 
 /-- This is not an instance because `i` becomes a metavariable. -/
-@[to_additive "This is not an instance because `i` becomes a metavariable."]
+@[to_additive /-- This is not an instance because `i` becomes a metavariable. -/]
 protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σ i, α i) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (Sigma.ext_iff.1 <| h <| mk i a).2⟩
 

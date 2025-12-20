@@ -3,10 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Matrix.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -20,7 +23,9 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+@[expose] public section
+
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -167,6 +172,10 @@ protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
+
+theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by

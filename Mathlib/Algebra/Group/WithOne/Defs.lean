@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -25,6 +27,8 @@ information about these structures (which are not that standard in informal math
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
+@[expose] public section
+
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
 assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
@@ -34,7 +38,7 @@ universe u v w
 variable {α : Type u}
 
 /-- Add an extra element `1` to a type -/
-@[to_additive "Add an extra element `0` to a type"]
+@[to_additive /-- Add an extra element `0` to a type -/]
 def WithOne (α) :=
   Option α
 
@@ -82,7 +86,7 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
+@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
   Option.some
 
@@ -122,7 +126,7 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+/-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
 @[to_additive (attr := simp) unzero_coe]
@@ -163,8 +167,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 
 @[to_additive]
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
-  mul := (· * ·)
-  one := 1
   one_mul := (Option.lawfulIdentity_merge _).left_id
   mul_one := (Option.lawfulIdentity_merge _).right_id
 

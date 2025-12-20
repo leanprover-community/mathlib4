@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Properties of objects on categories equipped with shift
@@ -16,11 +18,13 @@ implies `P (X⟦a⟧)` for all `a : A`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P : ObjectProperty C)
   {A : Type*} [AddMonoid A] [HasShift C A]
 
 namespace ObjectProperty
@@ -82,11 +86,5 @@ lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C 
   exact P.le_shift (-g) _ hX
 
 end ObjectProperty
-
-@[deprecated (since := "2025-02-25")] alias PredicateShift := ObjectProperty.shift
-@[deprecated (since := "2025-02-25")] alias predicateShift_iff := ObjectProperty.prop_shift_iff
-@[deprecated (since := "2025-02-25")] alias predicateShift_zero := ObjectProperty.shift_zero
-@[deprecated (since := "2025-02-25")] alias predicateShift_predicateShift :=
-  ObjectProperty.shift_shift
 
 end CategoryTheory

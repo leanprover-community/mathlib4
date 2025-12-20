@@ -3,10 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.ULift
 
 /-!
 
@@ -26,6 +28,8 @@ categories.
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -44,7 +48,7 @@ See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
-  comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
+  comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
   ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
@@ -200,7 +204,7 @@ def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
   toFun := toFunctor
   invFun F := F.toOrderHom
 
-/-- The categorical equivalence beween the category of monotone functions `X →o Y` and the category
+/-- The categorical equivalence between the category of monotone functions `X →o Y` and the category
 of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
 @[simps! functor_obj_obj inverse_obj unitIso_hom_app unitIso_inv_app counitIso_inv_app_app
   counitIso_hom_app_app]

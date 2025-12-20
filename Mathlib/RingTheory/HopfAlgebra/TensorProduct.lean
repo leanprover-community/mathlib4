@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.RingTheory.HopfAlgebra.Basic
-import Mathlib.RingTheory.Bialgebra.TensorProduct
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
 # Tensor products of Hopf algebras
@@ -13,7 +15,28 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
 
+@[expose] public section
+
 open Coalgebra TensorProduct HopfAlgebra
+
+/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map with
+appropriate conditions. -/
+noncomputable abbrev HopfAlgebra.ofAlgHom {R A : Type*} [CommSemiring R] [CommSemiring A]
+    [Bialgebra R A] (antipode : A →ₐ[R] A)
+    (mul_antipode_rTensor_comul :
+      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
+        (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
+    (mul_antipode_lTensor_comul :
+      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
+        (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
+    HopfAlgebra R A where
+  antipode := antipode
+  mul_antipode_rTensor_comul := by
+    rw [← Algebra.TensorProduct.lmul'_comp_map] at mul_antipode_rTensor_comul
+    exact congr(($mul_antipode_rTensor_comul).toLinearMap)
+  mul_antipode_lTensor_comul := by
+    rw [← Algebra.TensorProduct.lmul'_comp_map] at mul_antipode_lTensor_comul
+    exact congr(($mul_antipode_lTensor_comul).toLinearMap)
 
 namespace TensorProduct
 

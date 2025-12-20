@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Group.Ext
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -51,6 +53,8 @@ matrices over a ring, in particular the Schur complement (see
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -161,7 +165,7 @@ def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
     (ht : IsColimit t) : (Bicone.ofColimitCocone ht).IsBilimit :=
   isBilimitOfIsColimit _ <| IsColimit.ofIsoColimit ht <| Cocones.ext (Iso.refl _) <| by
-    rintro ⟨j⟩; simp
+    simp
 
 end Fintype
 
@@ -781,8 +785,7 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
 
 theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
-  by_contra! h
-  rcases h with ⟨nz, a₁, a₂⟩
+  by_contra! ⟨nz, a₁, a₂⟩
   set x := biprod.inl ≫ f ≫ inv f ≫ biprod.fst
   have h₁ : x = 𝟙 W := by simp [x]
   have h₀ : x = 0 := by
@@ -813,23 +816,14 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
   cases nonempty_fintype τ
   intro z
   have reassoced {t : τ} {W : C} (h : _ ⟶ W) :
-    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h = 0 ≫ h := by
-    simp only [← Category.assoc]
-    apply eq_whisker
-    simp only [Category.assoc]
-    apply z
+    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h = 0 ≫ h := by grind
   set x := biproduct.ι S s ≫ f ≫ inv f ≫ biproduct.π S s
   have h₁ : x = 𝟙 (S s) := by simp [x]
   have h₀ : x = 0 := by
     dsimp [x]
     rw [← Category.id_comp (inv f), Category.assoc, ← biproduct.total]
     simp only [comp_sum_assoc]
-    conv_lhs =>
-      congr
-      congr
-      next => skip
-      intro j; simp only [reassoced]
-    simp
+    grind [CategoryTheory.Limits.zero_comp, Finset.sum_const_zero]
   exact h₁.symm.trans h₀
 
 /-- If `f : ⨁ S ⟶ ⨁ T` is an isomorphism, and `s` is a non-trivial summand of the source,

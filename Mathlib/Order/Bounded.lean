@@ -3,8 +3,10 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.RelClasses
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Bounded and unbounded sets
@@ -12,6 +14,8 @@ We prove miscellaneous lemmas about bounded and unbounded sets. Many of these ar
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

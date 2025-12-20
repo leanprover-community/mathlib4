@@ -3,15 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Analysis.Calculus.LogDeriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Differentiability of the complex `log` function
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -24,11 +28,11 @@ namespace Complex
 theorem isOpenMap_exp : IsOpenMap exp :=
   isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 
-/-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
+/-- `Complex.exp` as an `OpenPartialHomeomorph` with `source = {z | -π < im z < π}` and
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
-  PartialHomeomorph.ofContinuousOpen
+noncomputable def expPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ :=
+  OpenPartialHomeomorph.ofContinuousOpen
     { toFun := exp
       invFun := log
       source := {z : ℂ | z.im ∈ Ioo (-π) π}
@@ -79,8 +83,9 @@ open scoped Topology
 
 variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasStrictFDerivAt f f' x)
-    (h₂ : f x ∈ slitPlane) : HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
+theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
+    (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :
+    HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).comp_hasStrictFDerivAt x h₁
 
 theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDerivAt f f' x)
@@ -91,7 +96,7 @@ theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ 
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 
-theorem HasFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasFDerivAt f f' x)
+theorem HasFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
 
@@ -108,7 +113,7 @@ theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt �
     (h₂ : f x ∈ slitPlane) : DifferentiableAt ℂ (fun t => log (f t)) x :=
   (h₁.hasFDerivAt.clog h₂).differentiableAt
 
-theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E} {x : E}
+theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {s : Set E} {x : E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivWithinAt x h₁

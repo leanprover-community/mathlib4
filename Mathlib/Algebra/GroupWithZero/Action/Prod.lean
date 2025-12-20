@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.End
+module
+
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -17,6 +19,8 @@ This file defines instances for `MulActionWithZero` and related structures on `Î
 * `Algebra.GroupWithZero.Action.Pi`
 * `Algebra.GroupWithZero.Action.Units`
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

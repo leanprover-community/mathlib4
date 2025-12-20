@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Units of continuous functions
@@ -13,6 +15,8 @@ import Mathlib.Topology.ContinuousMap.Algebra
 This file concerns itself with `C(X, M)ˣ` and `C(X, Mˣ)` when `X` is a topological space
 and `M` has some monoid structure compatible with its topology.
 -/
+
+@[expose] public section
 
 
 variable {X M R 𝕜 : Type*} [TopologicalSpace X]
@@ -28,8 +32,8 @@ and the units of the monoid of continuous maps. -/
 -- `simps` generates some lemmas here with LHS not in simp normal form,
 -- so we write them out manually below.
 @[to_additive (attr := simps apply_val_apply symm_apply_apply_val)
-"Equivalence between continuous maps into the additive units of an additive monoid with continuous
-addition and the additive units of the additive monoid of continuous maps."]
+/-- Equivalence between continuous maps into the additive units of an additive monoid with
+continuous addition and the additive units of the additive monoid of continuous maps. -/]
 def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
     { val := ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩

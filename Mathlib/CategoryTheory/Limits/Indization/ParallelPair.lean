@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Final
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
+module
+
+public import Mathlib.CategoryTheory.Comma.Final
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
 # Parallel pairs of natural transformations between ind-objects
@@ -18,6 +20,8 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
   our proof is more direct).
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -99,8 +103,8 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [Functor.prod'_obj, Functor.comp_obj, prod_Hom, Functor.prod'_map, Functor.comp_map,
-      prod_comp, Prod.mk.injEq, CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
+    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
       IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
       CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
     exact this.1
@@ -116,8 +120,8 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [Functor.prod'_obj, Functor.comp_obj, prod_Hom, Functor.prod'_map, Functor.comp_map,
-      prod_comp, Prod.mk.injEq, CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
+    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
       IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
       CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
     exact this.2

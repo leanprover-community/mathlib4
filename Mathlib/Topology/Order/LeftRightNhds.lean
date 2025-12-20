@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pointwise.Set
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
@@ -14,6 +16,8 @@ import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -107,7 +111,7 @@ space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
   /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
-  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  is the whole space, as one cannot use it inside the subspace since it doesn't have the order
   topology. Instead, we follow the main steps of its proof. -/
   let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
   suffices H : t.Countable by
@@ -132,8 +136,8 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
   simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
   intro a ha b hb hab
-  wlog H : a < b generalizing a b with h
-  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+  wlog! H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne H hab.symm
     exact (h hb ha hab.symm this).symm
   have : y a ≤ b := by
     by_contra!
@@ -226,7 +230,7 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Icc a b] a,
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
-      ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
+      ∃ u ∈ Ioi a, Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Icc_eq_nhdsGE hab]
   tfae_have 1 ↔ 3 := by
@@ -356,8 +360,8 @@ theorem eventually_mabs_div_lt (a : α) {ε : α} (hε : 1 < ε) : ∀ᶠ x in �
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atTop` then `f * g` tends to `atTop`. -/
-@[to_additive add_atTop "In a linearly ordered additive commutative group with the order topology,
-if `f` tends to `C` and `g` tends to `atTop` then `f + g` tends to `atTop`."]
+@[to_additive add_atTop /-- In a linearly ordered additive commutative group with the order
+topology, if `f` tends to `C` and `g` tends to `atTop` then `f + g` tends to `atTop`. -/]
 theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
   nontriviality α
@@ -367,16 +371,16 @@ theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Ten
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
-@[to_additive add_atBot "In a linearly ordered additive commutative group with the order topology,
-if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`."]
+@[to_additive add_atBot /-- In a linearly ordered additive commutative group with the order
+topology, if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`. -/]
 theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
   Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
-@[to_additive atTop_add "In a linearly ordered additive commutative group with the order topology,
-if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`."]
+@[to_additive atTop_add /-- In a linearly ordered additive commutative group with the order
+topology, if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/]
 theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x * g x) l atTop := by
   conv in _ * _ => rw [mul_comm]
@@ -384,8 +388,8 @@ theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendst
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `atBot` and `g` tends to `C` then `f * g` tends to `atBot`. -/
-@[to_additive atBot_add "In a linearly ordered additive commutative group with the order topology,
-if `f` tends to `atBot` and `g` tends to `C` then `f + g` tends to `atBot`."]
+@[to_additive atBot_add /-- In a linearly ordered additive commutative group with the order
+topology, if `f` tends to `atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/]
 theorem Filter.Tendsto.atBot_mul' {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x * g x) l atBot := by
   conv in _ * _ => rw [mul_comm]
@@ -419,17 +423,14 @@ theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
 
-@[deprecated (since := "2025-03-18")]
-alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
-
 /-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
 form a basis of neighborhoods of `a`.
 
 This upper bound for `ε` guarantees that all elements of these intervals are greater than one. -/
-@[to_additive "If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
+@[to_additive /-- If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
 form a basis of neighborhoods of `a`.
 
-This upper bound for `ε` guarantees that all elements of these intervals are positive."]
+This upper bound for `ε` guarantees that all elements of these intervals are positive. -/]
 theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a / ε) (a * ε) :=
   (nhds_basis_Ioo_one_lt a).restrict fun ε hε ↦

@@ -3,7 +3,9 @@ Copyright (c) 2023 Mark Andrew Gerads. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 -/
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.Ring
 
 /-!
 # Hyperoperation sequence
@@ -24,6 +26,8 @@ This file defines the Hyperoperation sequence.
 
 hyperoperation
 -/
+
+@[expose] public section
 
 
 /-- Implementation of the hyperoperation sequence
@@ -75,9 +79,7 @@ theorem hyperoperation_two_two_eq_four (n : ℕ) : hyperoperation (n + 1) 2 2 = 
 
 @[grind =]
 theorem hyperoperation_ge_three_one (n k : ℕ) : hyperoperation (n + 3) 1 k = 1 := by
-  induction n generalizing k with
-  | zero => grind
-  | succ n ih => cases k <;> grind
+  induction n generalizing k with grind [cases Nat]
 
 @[grind =]
 theorem hyperoperation_ge_four_zero (n k : ℕ) :

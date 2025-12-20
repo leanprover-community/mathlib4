@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Divisibility
@@ -27,6 +29,8 @@ The divisibility relation is defined for all monoids, and as such, depends on th
 
 divisibility, divides
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -102,6 +106,9 @@ theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
   use d
   rw [mul_assoc]
 
+theorem IsLeftRegular.dvd_cancel_left (h : IsLeftRegular a) : a * b ∣ a * c ↔ b ∣ c :=
+  ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd; ⟨d, h (eq.trans <| mul_assoc ..)⟩, mul_dvd_mul_left a⟩
+
 end Semigroup
 
 section Monoid
@@ -128,8 +135,8 @@ lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
 
 lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
-  | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by rw [pow_succ']; exact hab.mul_right _
+  | 0, hn => (hn rfl).elim
+  | n + 1, _ => by rw [pow_succ']; exact hab.mul_right _
 
 alias Dvd.dvd.pow := dvd_pow
 

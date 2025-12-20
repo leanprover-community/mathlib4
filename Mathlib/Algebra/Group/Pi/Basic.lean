@@ -3,11 +3,13 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Spread
 
 /-!
 # Instances and theorems on pi types
@@ -22,6 +24,8 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 `pi_instance`. See this Zulip discussion:
 [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
+
+@[expose] public section
 
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
@@ -89,7 +93,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   __ := divInvMonoid
   __ := involutiveInv
   mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
-  inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+  inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
 instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
@@ -136,21 +140,6 @@ instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
 @[to_additive]
 instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
   { leftCancelMonoid, commMonoid with }
-
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
-  (f' i, g' i)
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-
--- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
--- @[simp]
-theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
-  rfl
 
 end Pi
 
@@ -202,7 +191,7 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive "If the zero function is surjective, the codomain is trivial."]
+@[to_additive /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)

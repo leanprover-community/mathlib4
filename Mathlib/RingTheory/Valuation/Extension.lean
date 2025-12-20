@@ -3,7 +3,9 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Extension of Valuations
@@ -44,6 +46,8 @@ without first determining the normalizations once and for all.
 Valuation, Extension of Valuations
 
 -/
+
+@[expose] public section
 namespace Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
@@ -57,8 +61,6 @@ the valuation `vR` on `R`. More precisely, `vR` is equivalent to the comap of th
 class HasExtension : Prop where
   /-- The valuation `vR` on `R` is equivalent to the comap of the valuation `vA` on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
-
-@[deprecated (since := "2025-04-02")] alias _root_.IsValExtension := HasExtension
 
 namespace HasExtension
 
@@ -139,11 +141,8 @@ instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
-    Function.Injective (algebraMap vK.integer vA.integer) := by
-  intro x y h
-  simp only [Subtype.ext_iff, val_algebraMap] at h
-  ext
-  apply RingHom.injective (algebraMap K A) h
+    Function.Injective (algebraMap vK.integer vA.integer) :=
+  FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
@@ -164,7 +163,7 @@ open IsLocalRing Valuation ValuationSubring
 
 variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
   [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
-   (vL : Valuation L Γ₁) [vK.HasExtension vL]
+  (vL : Valuation L Γ₁) [vK.HasExtension vL]
 
 local notation "K₀" => Valuation.valuationSubring vK
 local notation "L₀" => Valuation.valuationSubring vL

@@ -3,14 +3,16 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Sequences in topological spaces
 
 In this file we prove theorems about relations
-between closure/compactness/continuity etc and their sequential counterparts.
+between closure/compactness/continuity etc. and their sequential counterparts.
 
 ## Main definitions
 
@@ -59,6 +61,8 @@ We build theory about these definitions here, so we remind the definitions.
 
 sequentially closed, sequentially compact, sequential space
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set TopologicalSpace Topology
@@ -331,7 +335,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/-- A sequentially compact set in a uniform set with countably generated uniformity filter
+/-- A sequentially compact set in a uniform space with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1
