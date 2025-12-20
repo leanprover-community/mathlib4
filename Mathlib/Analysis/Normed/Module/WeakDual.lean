@@ -342,9 +342,9 @@ lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual �
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
-theorem Helly' {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) :
-    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) ↔
-    (∀ β : I → 𝕜, ‖∑ i : I, β i * α i‖ ≤ ‖∑ i : I, β i • f i‖) := by
+theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜₁ E₁) (α : I → 𝕜₁) :
+    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E₁, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) ↔
+    (∀ β : I → 𝕜₁, ‖∑ i : I, β i * α i‖ ≤ ‖∑ i : I, β i • f i‖) := by
   refine ⟨fun h β ↦ ?_, fun h ↦ ?_⟩
   · by_cases hβ : β = 0
     · simp [hβ]
@@ -371,16 +371,14 @@ theorem Helly' {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I →
                 exact ContinuousLinearMap.unit_le_opNorm _ _ hx_le
         _ ≤ ‖∑ i : I, β i • f i‖ + ε := by
           rw [hε', mul_assoc, inv_mul_cancel₀ (by positivity), mul_one]
-
-
-  · sorry
+  · sorry --for the first direction, `𝕜₁` and `E₁` were enough
 
 
 -- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
-theorem three' (I : Type*) [Fintype I] {φ : StrongDual 𝕜 (StrongDual 𝕜 E)} (hφ : ‖φ‖ ≤ 1)
+theorem three (I : Type*) [Fintype I] {φ : StrongDual 𝕜 (StrongDual 𝕜 E)} (hφ : ‖φ‖ ≤ 1)
     {ε : ℝ} (hε : 0 < ε)
     (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
-  apply (Helly' 𝕜 f (fun i ↦ φ (f i))).mpr _ hε
+  apply (Helly 𝕜 f (fun i ↦ φ (f i))).mpr _ hε
   intro β
   calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
                           _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
@@ -436,14 +434,14 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜
   -- refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
   -- · sorry
   · simp only [mem_closedBall] at hξ
-    obtain ⟨y, hy_le, hy_eq⟩ := three' 𝕜 I hξ hε (·)
+    obtain ⟨y, hy_le, hy_eq⟩ := three 𝕜 I hξ hε (·)
     refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
     · --simp only at hy_le --useless of course
       simp only [Seminorm.mem_ball]
       apply Seminorm.finset_sup_apply_lt hε
       intro i hi
       -- simp only --remove
-      replace hy_eq := hy_eq ⟨i, hi⟩
+      replace hy_eq := sub_zero (a := ξ) ▸ hy_eq ⟨i, hi⟩
       rw [LinearMap.toSeminormFamily_apply]
       simp only [map_sub, LinearMap.sub_apply, gt_iff_lt]
       have repl_ξ := @topDualPairing_apply 𝕜 _ _ _ _ _ _ _ _ ξ i
