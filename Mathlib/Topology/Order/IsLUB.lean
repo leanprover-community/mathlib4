@@ -186,6 +186,8 @@ theorem Dense.continuous_lowerBounds {α : Type*} [TopologicalSpace α] [Preorde
   rw [mem_closure_iff_frequently] at hi
   exact (hi.mono hx).mem_of_closed isClosed_Ici
 
+/-- The supremum of a bounded above, continuous function on a dense set is equal to the supremum on
+the universe. -/
 theorem Dense.continuous_sup {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLattice α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
@@ -197,6 +199,8 @@ theorem Dense.continuous_sup {α : Type*} [TopologicalSpace α]
   refine (isLUB_congr (hS.continuous_upperBounds hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
   exact h.mono (by grind)
 
+/-- The infimum of a bounded below, continuous function on a dense set is equal to the infimum on
+the universe. -/
 theorem Dense.continuous_inf {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
@@ -208,6 +212,8 @@ theorem Dense.continuous_inf {α : Type*} [TopologicalSpace α]
   refine (isGLB_congr (hS.continuous_lowerBounds hf)).mp (isGLB_ciInf_set ?_ hS.nonempty)
   exact h.mono (by grind)
 
+/-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
+complete linear order. The assumption of `BddAbove (range f)` is not needed in this theorem. -/
 theorem Dense.continuous_sup' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
@@ -228,6 +234,8 @@ theorem Dense.continuous_sup' {α : Type*} [TopologicalSpace α]
       exact h1 this
     simp [csSup_of_not_bddAbove h1, csSup_of_not_bddAbove h2]
 
+/-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
+complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/
 theorem Dense.continuous_inf' {α : Type*} [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
     {S : Set γ} (hS : Dense S) (hf : Continuous f) :
@@ -247,6 +255,7 @@ theorem Dense.continuous_inf' {α : Type*} [TopologicalSpace α]
       simp only [hS.closure_eq, image_univ] at this
       exact h1 this
     simp [csInf_of_not_bddBelow h1, csInf_of_not_bddBelow h2]
+
 /-- A closed interval in a conditionally complete linear order is compact.
 Also see general API on `CompactIccSpace`. -/
 protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
