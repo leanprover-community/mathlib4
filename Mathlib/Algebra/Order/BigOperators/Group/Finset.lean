@@ -177,7 +177,7 @@ lemma one_lt_prod_iff_of_one_le [MulLeftMono N] (hf : ∀ x ∈ s, 1 ≤ f x) :
     1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
   have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod' hf
   rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le' hf, not_forall]
-  simp +contextual [← exists_prop, - exists_const_iff, hf _ _ |>.lt_iff_ne']
+  simp +contextual [← exists_prop, -exists_const_iff, hf _ _ |>.lt_iff_ne']
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' [MulLeftMono N] :

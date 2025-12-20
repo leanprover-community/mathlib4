@@ -98,7 +98,7 @@ lemma mk_sub (x y : Cocycle K L n) :
 
 @[simp]
 lemma mk_neg (x : Cocycle K L n) :
-    mk (-x) = - mk x := rfl
+    mk (-x) = -mk x := rfl
 
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=

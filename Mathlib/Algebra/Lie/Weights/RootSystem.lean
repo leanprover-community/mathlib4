@@ -104,7 +104,7 @@ lemma apply_coroot_eq_cast' :
     this, mul_comm (2 : K)]
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength α β) :
-    rootSpace H (- (n • α) + chainTop α β) ≠ ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) ≠ ⊥ := by
   by_cases hα : α.IsZero
   · simpa only [hα.eq, smul_zero, neg_zero, chainTop_zero, zero_add, ne_eq] using β.2
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α β).exists_ne_zero
@@ -117,10 +117,10 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength �
   exact ⟨_, toEnd_pow_apply_mem hf hx n, prim.pow_toEnd_f_ne_zero_of_eq_nat rfl hn⟩
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn : chainLength α β < n) :
-    rootSpace H (- (n • α) + chainTop α β) = ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) = ⊥ := by
   by_contra e
   let W : Weight K H L := ⟨_, e⟩
-  have hW : (W : H → K) = - (n • α) + chainTop α β := rfl
+  have hW : (W : H → K) = -(n • α) + chainTop α β := rfl
   have H₁ : 1 + n + chainTopCoeff (-α) W ≤ chainLength (-α) W := by
     have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,

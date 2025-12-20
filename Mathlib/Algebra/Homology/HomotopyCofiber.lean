@@ -190,7 +190,7 @@ lemma d_sndX (i j : ι) (hij : c.Rel i j) :
 lemma inlX_d (i j k : ι) (hij : c.Rel i j) (hjk : c.Rel j k) :
     inlX φ j i hij ≫ d φ i j = -F.d j k ≫ inlX φ k j hjk + φ.f j ≫ inrX φ j := by
   apply ext_to_X φ j k hjk
-  · simp [d_fstX φ  _ _ _ hij hjk]
+  · simp [d_fstX φ _ _ _ hij hjk]
   · simp [d_sndX φ _ _ hij]
 
 @[reassoc]

@@ -347,7 +347,7 @@ def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] �
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
-    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟a) (- ⅟a * b) := by
+    (algEquivCMulXAddC a b).symm = algEquivCMulXAddC (⅟a) (-⅟a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
   congr
@@ -642,7 +642,7 @@ variable [CommRing R] {p : R[X]} {t : R}
 
 @[simp]
 theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
-    aeval x (- p) = - aeval x p := map_neg ..
+    aeval x (-p) = -aeval x p := map_neg ..
 
 @[simp]
 theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :

@@ -224,7 +224,7 @@ theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
-  refine (image_subset_iff.trans ?_ ).symm; congr! 1;
+  refine (image_subset_iff.trans ?_).symm; congr! 1;
   exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]

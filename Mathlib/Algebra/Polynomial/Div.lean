@@ -678,7 +678,7 @@ lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p
               (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩).2
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 
-lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = - (p %ₘ q) := by
+lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = -(p %ₘ q) := by
   rw [eq_neg_iff_add_eq_zero, ← add_modByMonic, neg_add_cancel, zero_modByMonic]
 
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
