@@ -86,7 +86,7 @@ theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : 
 theorem apply_prime_gt_two_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∀ p > 2, p.Prime → f p = 1 := by
   obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, p.Prime → f p = 1 :=
-    not_id_apply_prime_of_gt_eq_one hf hnf
+    hf.not_id_apply_prime_of_gt_eq_one hnf
   have apply_dvd_pow_sub {a p : ℕ} (ha : 0 < a) (pp : p.Prime) (hp : N < p) :
       (f a : ℤ) ∣ p ^ a - 1 := by
     simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by lia)
