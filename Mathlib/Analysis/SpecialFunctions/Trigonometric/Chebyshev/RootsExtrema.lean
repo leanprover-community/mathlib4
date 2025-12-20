@@ -24,7 +24,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
-* Local extrema of T: `isLocalExtr_T_real_iff`
+* Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
 -/
 
 @[expose] public section
@@ -286,5 +286,43 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     rw [hx]
     exact isLocalExtr_T_real (Nat.ne_zero_of_lt hn)
       (Finset.mem_Ioo.mp hk).1 (Finset.mem_Ioo.mp hk).2
+
+theorem isMaxOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k ≤ n) (hk₂ : Even k) :
+    IsMaxOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) :=
+  isMaxOn_iff.mpr (fun x hx => le_of_le_of_eq (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
+    ((eval_T_real_eq_one_iff hn _).mpr ⟨k, hk₁, hk₂, rfl⟩).symm)
+
+theorem isMinOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k ≤ n) (hk₂ : Odd k) :
+    IsMinOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) :=
+  isMinOn_iff.mpr (fun x hx => le_of_eq_of_le
+    ((eval_T_real_eq_neg_one_iff hn _).mpr ⟨k, hk₁, hk₂, rfl⟩)
+    (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1)
+
+theorem isExtrOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk : k ≤ n) :
+    IsExtrOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) := by
+  cases k.even_or_odd
+  case inl hk₂ => exact .inr (isMaxOn_T_real hn hk hk₂)
+  case inr hk₂ => exact .inl (isMinOn_T_real hn hk hk₂)
+
+theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
+    IsExtrOn (T ℝ n).eval (Set.Icc (-1) 1) x ↔
+    ∃ k ≤ n, x = cos (k * π / n) := by
+  constructor
+  · intro h
+    apply (abs_eval_T_real_eq_one_iff hn x).mp
+    apply eq_of_le_of_ge (abs_eval_T_real_le_one n (by grind))
+    refine h.elim (fun h => ?_) (fun h => ?_)
+    · refine le_abs.mpr (.inr (le_neg_of_le_neg ?_))
+      have := isMinOn_iff.mp h (cos (1 * π / n)) (by grind [abs_cos_le_one])
+      rw [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
+        by simp⟩] at this
+      assumption
+    · refine le_abs.mpr (.inl ?_)
+      have := isMaxOn_iff.mp h (cos (0 * π / n)) (by simp)
+      rw [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
+      assumption
+  · rintro ⟨k, hk, hx⟩
+    rw [hx]
+    exact isExtrOn_T_real hn hk
 
 end Polynomial.Chebyshev
