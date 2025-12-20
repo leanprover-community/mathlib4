@@ -236,7 +236,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
   intro s hs contra
-  rcases span_le_degreeLE_of_finite hs with ⟨n,hn⟩
+  rcases span_le_degreeLE_of_finite hs with ⟨n, hn⟩
   have : ((X : R[X]) ^ (n + 1)) ∈ Polynomial.degreeLE R ↑n := by
     rw [contra] at hn
     exact hn Submodule.mem_top
@@ -324,7 +324,7 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 @[simp]
 theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
     p.restriction.map (algebraMap _ _) = p :=
-  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubring_apply, coeff_restriction]
+  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
 
 @[simp]
 theorem degree_restriction {p : R[X]} : (restriction p).degree = p.degree := by simp [degree]
@@ -665,7 +665,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine ⟨m + n, ?_⟩
-        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
@@ -683,9 +683,9 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           exact Classical.not_not.1 (Nat.find_min hg hj)
 
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
-theorem isPrime_map_C_of_isPrime {P : Ideal R} (H : IsPrime P) :
+instance isPrime_map_C_of_isPrime {P : Ideal R} [IsPrime P] :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) :=
-  (isPrime_map_C_iff_isPrime P).mpr H
+  (isPrime_map_C_iff_isPrime P).mpr ‹_›
 
 theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
@@ -745,7 +745,7 @@ theorem prime_C_iff : Prime (C r) ↔ Prime r :=
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
-      apply Ideal.isPrime_map_C_of_isPrime hr
+      infer_instance
     · intro h; apply (this (C_eq_zero.mp h))
     · assumption⟩
 

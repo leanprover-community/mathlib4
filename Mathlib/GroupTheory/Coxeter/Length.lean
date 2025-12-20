@@ -252,14 +252,14 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       lia
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by lia
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
-      _ ≤ (alternatingWord i' i (M i i' - 1)).length  := cs.length_wordProd_le _
-      _ = M i i' - 1                                  := length_alternatingWord _ _ _
-      _ ≤ M i i'                                      := Nat.sub_le _ _
-      _ < M i i' + 1                                  := Nat.lt_succ_self _
+      _ ≤ (alternatingWord i' i (M i i' - 1)).length := cs.length_wordProd_le _
+      _ = M i i' - 1 := length_alternatingWord _ _ _
+      _ ≤ M i i' := Nat.sub_le _ _
+      _ < M i i' + 1 := Nat.lt_succ_self _
   | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
