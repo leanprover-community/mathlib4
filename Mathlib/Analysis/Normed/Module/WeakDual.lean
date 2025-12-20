@@ -5,6 +5,10 @@ Authors: Kalle Kytölä, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Convex.Uniform
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Analysis.LocallyConvex.WeakDual --minimize imports
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.WeakDual
@@ -319,11 +323,24 @@ end
 section Goldstine
 
 variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜₁ : Type*) [NontriviallyNormedField 𝕜₁]
+variable {E₁ : Type*} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
 
+open Metric NormedSpace Function ContinuousLinearMap Pointwise Topology
 
+open scoped BigOperators Topology
 
-open NormedSpace Metric
-open scoped BigOperators
+/- Move the next two lemmas above, checking hp-/
+lemma IsClosed_image_ball [CompleteSpace E] : IsClosed
+    ((inclusionInDoubleDual 𝕜 E) '' closedBall 0 1) :=
+  inclusionInDoubleDualLi 𝕜 (E := E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
+
+lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁))}
+    {c : (StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁))} {ε : ℝ} (hs : s ⊆ closedBall c ε) :
+    letI 𝒯 : TopologicalSpace (WeakDual 𝕜₁ (StrongDual 𝕜₁ E₁)) := inferInstance
+    (closure[𝒯] s) ⊆ closedBall (α := ((StrongDual 𝕜₁ (StrongDual 𝕜₁ E₁)))) c ε :=
+  closure_minimal hs (WeakDual.isClosed_closedBall ..)
+
 
 
 theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜 E) (α : I → 𝕜) (r : ℝ) :
@@ -342,20 +359,29 @@ theorem three (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E))
 theorem three' (I : Type*) [Fintype I] (φ : StrongDual 𝕜 (StrongDual 𝕜 E)) {ε : ℝ} (hε : 0 < ε)
     (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
   sorry
-
-theorem aux : IsClosed (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-    (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) := by
-  sorry
-  -- apply WeakDual.isClosed_closedBall
-
+--
+-- theorem aux : IsClosed (X := WeakDual 𝕜 (StrongDual 𝕜 E))
+--     (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) := by
+--   have hbdd : Bornology.IsBounded ((inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) := sorry
+--   -- have := @WeakDual.isClosed_closedBall 𝕜 _ (StrongDual 𝕜 E) _ _ 0 1
+--   have := @WeakDual.isClosed_image_coe_of_bounded_of_closed 𝕜 _ (StrongDual 𝕜 E) _ _
+--     (inclusionInDoubleDual 𝕜 E '' closedBall 0 1) hbdd
+--   sorry
 
 /-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
-the unit sphere of the double dual.
+the unit sphere of the double dual. The result below is somewhat stronger, and it would be better
+to move the inclusion back to `Normed.Module.Dual` and to keep here the full equality.
+
 See [K. Yosida, "Functional Analysis", Chap IV, 8, Corollary to Theorem 3]. -/
 -- **RENAME!!!**
-theorem goldstine : closure (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-    (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)
+theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜 E)) := inferInstance
+    closure[𝒯] (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)
     = closedBall (0 : StrongDual 𝕜 (StrongDual 𝕜 E)) 1 := by
+  have : (inclusionInDoubleDualLi 𝕜 (E := E)) '' closedBall 0 1 ⊆ closedBall 0 1 := by
+    rw [Set.image_subset_iff]
+    intro _ hx
+    simp_all
+  apply (WeakClosure_subset_closedBall _ this).antisymm
   -- have uno := @LinearMap.weakBilin_withSeminorms 𝕜 (StrongDual 𝕜 E) E _ _ _ _ _
   --   (topDualPairing 𝕜 E)
   -- let F := (topDualPairing 𝕜 (StrongDual 𝕜 E)).toSeminormFamily
@@ -372,7 +398,7 @@ theorem goldstine : closure (X := WeakDual 𝕜 (StrongDual 𝕜 E))
     apply LinearMap.weakBilin_withSeminorms
   -- have due'' := uno.hasBasis_zero_ball
   -- have due' := uno.mem_nhds_iff
-  ext ξ
+  intro ξ hξ
   have due := uno.hasBasis_ball (x := ξ)
   -- have tre' := mem_closure_iff_nhds_basis (X := WeakDual 𝕜 (StrongDual 𝕜 E))
   --   (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due'' --ci siamo quasi
@@ -386,10 +412,11 @@ theorem goldstine : closure (X := WeakDual 𝕜 (StrongDual 𝕜 E))
 
 --
   have tre := mem_closure_iff_nhds_basis' (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-    (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due --ci siamo quasi
+    (t := (inclusionInDoubleDualLi 𝕜 (E := E) '' closedBall 0 1)) due --ci siamo quasi
   rw [tre]
-  refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
-  · sorry
+  rintro ⟨I, ε⟩ hε
+  -- refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
+  -- · sorry
   · obtain ⟨y, hy_le, hy_eq⟩ := three' 𝕜 I ξ hε (·)
     refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
     · --simp only at hy_le --useless of course
