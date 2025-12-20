@@ -46,7 +46,7 @@ section Center
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
-theorem _root_.LinearMap.eq_smul_id
+theorem LinearMap.eq_smul_id
     (h : ∀ v, ¬ LinearIndependent K ![v, f v]) :
     ∃ a : K, f = a • LinearMap.id (R := K) (M := V) := by
   nontriviality V
@@ -137,6 +137,99 @@ theorem _root_.LinearMap.center :
     aesop
   · rw [Subalgebra.mem_center_iff]
     aesop
+
+theorem LinearMap.eq_smul_id'
+    {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+    {f : V →ₗ[K] V}
+    (hV : finrank K V ≠ 1)
+    (h : ∀ v, ¬ LinearIndependent K ![v, f v]) :
+    ∃ a : K, ∀ x, f x = a • x := by
+  nontriviality V
+  obtain ⟨u, hu⟩ := exists_ne (0 : V)
+  have h' (v : V) (hv : v ≠ 0) : ∃ a : K, f v = a • v := by
+    specialize h v
+    simp only [LinearIndependent.pair_iff, not_forall] at h
+    obtain ⟨x, y, hxy, h⟩ := h
+    suffices y ≠ 0 by
+      use (- (1 / y) * x)
+      rw [← IsUnit.smul_left_cancel (Ne.isUnit this), ← mul_smul]
+      rw [← sub_eq_zero, sub_eq_neg_add, ← hxy, add_left_inj]
+      rw [← neg_smul]
+      apply congr_arg₂ _ _ rfl
+      simp only [one_div, neg_mul, mul_neg, neg_neg]
+      rw [← mul_assoc, mul_inv_cancel₀ this, one_mul]
+    intro hy
+    refine h ⟨?_, hy⟩
+    simp only [hy, zero_smul, add_zero, smul_eq_zero] at hxy
+    exact Or.resolve_right hxy hv
+  let φ : {v : V // v ≠ 0} → K := fun v ↦ (h' v.val v.prop).choose
+  have hφ (v) : f v.val = φ v • v.val := (h' v.val v.prop).choose_spec
+  have H (v w) (hvw : LinearIndependent K ![v.val, w.val]) :
+      φ v = φ w := by
+    rw [LinearIndependent.pair_iff] at hvw
+    have : v.val + w.val ≠ 0 := fun h ↦ by simpa [h] using hvw 1 1
+    have := hφ ⟨v.val + w.val, this⟩
+    rw [map_add, smul_add, ← sub_eq_zero,
+      add_sub_add_comm, hφ v, hφ w] at this
+    simp only [← sub_smul] at this
+    replace this := hvw _ _ this
+    simp only [sub_eq_zero] at this
+    rw [this.1, this.2]
+  use φ ⟨u, hu⟩
+  intro v
+  by_cases hv : v = 0
+  · simp [hv]
+  by_cases huv : LinearIndependent K ![v, u]
+  · rw [hφ ⟨v, hv⟩, H ⟨v, hv⟩ ⟨u, hu⟩ huv]
+  · simp only [hφ ⟨v, hv⟩]
+    suffices ∃ w, LinearIndependent K ![u, w] by
+      obtain ⟨w, huw⟩ := this
+      have hw : w ≠ 0 := fun h  ↦ by
+        simp only [LinearIndependent.pair_iff, h, smul_zero, add_zero] at huw
+        exact one_ne_zero (α := K) (huw 0 1 (by simp)).2
+      rw [H ⟨u, hu⟩ ⟨w, hw⟩ huw]
+      rw [H ⟨v, hv⟩ ⟨w, hw⟩ ?_]
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd]
+      rw [LinearIndependent.pair_iff] at huv huw ⊢
+      intro s t h
+      suffices ∃ c : K, v = c • u by
+        obtain ⟨c, hvu⟩ := this
+        simp only [hvu, ← mul_smul] at h
+        replace h := huw (s * c) t h
+        simp only [mul_eq_zero] at h
+        refine ⟨Or.resolve_right h.1 ?_, h.2⟩
+        contrapose hv
+        simpa [hv] using hvu
+      push_neg at huv
+      obtain ⟨s, t, hst, hst'⟩ := huv
+      by_cases hs : s = 0
+      · exfalso
+        apply hu
+        simpa [hs, hst' hs] using hst
+      · use - (1 / s) * t
+        rw [← sub_eq_zero, neg_mul, neg_smul, sub_neg_eq_add]
+        rw [← IsUnit.smul_left_cancel (Ne.isUnit hs)]
+        simp [← mul_smul, ← mul_assoc, mul_inv_cancel₀ hs, hst]
+    sorry
+
+ /-
+  · simp only [LinearIndependent.pair_iff, not_forall, not_and] at huv
+    obtain ⟨x, y, hxy, h'⟩ := huv
+    have hx : x ≠ 0 := fun hx ↦ by
+      simp only [hx, zero_smul, zero_add, smul_eq_zero] at hxy
+      apply h' hx
+      exact Or.resolve_right hxy hv
+    suffices b • u = a • u by
+      rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at this
+      exact Or.resolve_right this hu
+    suffices x • b • u = x • a • u by
+      rw [← sub_eq_zero, ← smul_sub, smul_eq_zero, sub_eq_zero] at this
+      apply Or.resolve_left this hx
+    rw [← eq_neg_iff_add_eq_zero] at hxy
+    rw [← hau, ← LinearMap.map_smul, hxy, map_neg,
+      LinearMap.map_smul, hbv, smul_comm x b, smul_comm y b, hxy]
+    simp
+-/
 
 end Center
 
@@ -691,45 +784,27 @@ theorem mem_dilatransvections_pow_of_fixedReduce_ne_smul_id
     | n + 1 =>
       simp only [add_assoc, Nat.reduceAdd] at h
       have : ∃ v, LinearIndependent K ![v, e.fixedReduce v] := by
-        by_contra! h
-        obtain ⟨a, ha⟩ := LinearMap.eq_smul_id h
-        exact he a ha
+        contrapose! he
+        refine LinearMap.eq_smul_id' ?_ he
+        simp [h]
       obtain ⟨v, hu⟩ := this
       obtain ⟨u, rfl⟩ := e.fixedSubmodule.mkQ_surjective v
       simp only [Nat.succ_eq_add_one, Nat.reduceAdd, mkQ_apply,
-        SpecialLinearGroup.reduce_apply] at hu
-      simp only [LinearIndependent.pair_iff] at  hu
+        fixedReduce_mk, LinearIndependent.pair_iff] at hu
       have hu' : e u ∉ e.fixedSubmodule ⊔ Submodule.span K {e u - u} := fun hu' ↦ by
         rw [Submodule.mem_sup] at hu'
         obtain ⟨y, hy, z, hz, hu'⟩ := hu'
         rw [Submodule.mem_span_singleton] at hz
         obtain ⟨a, rfl⟩ := hz
         specialize hu a (1 - a) ?_
-        · simp only [← mkQ_apply, ← map_smul, ← map_add, ← LinearMap.mem_ker,
+        · simp only [← mkQ_apply, ← LinearMap.map_smul, ← map_add, ← LinearMap.mem_ker,
             Submodule.ker_mkQ]
           convert hy
-          simp only at hu'
           rw [eq_comm, ← sub_eq_iff_eq_add, eq_comm] at hu'
-          rw [map_smul, hu']
-          module
+          rw [hu']
+          simp only [smul_sub, sub_smul, one_smul]
+          abel
         · aesop
-      let t (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
-        SpecialLinearGroup K V :=
-        SpecialLinearGroup.transvection (f := f) (v := u - e u) (by
-          simp only [← LinearMap.mem_ker]
-          apply hf
-          apply Submodule.mem_sup_right
-          rw [mem_span_singleton]
-          exact ⟨-1, by simp⟩)
-      have ht_fixed (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
-           e.fixedSubmodule ≤ (t f hf : SpecialLinearGroup K V).fixedSubmodule := fun x hx ↦ by
-        simp only [mem_fixedSubmodule_iff, t]
-        simp only [transvection.coe_toLinearEquiv, LinearEquiv.transvection.coe_apply,
-          LinearMap.transvection.apply, add_eq_left, smul_eq_zero]
-        left
-        rw [← LinearMap.mem_ker]
-        apply hf
-        apply Submodule.mem_sup_left hx
       have he'_rank :
         finrank K (e.fixedSubmodule ⊔ Submodule.span K {u} : Submodule K V) =
           finrank K e.fixedSubmodule + 1 := by
@@ -745,9 +820,24 @@ theorem mem_dilatransvections_pow_of_fixedReduce_ne_smul_id
         rw [← Nat.add_left_inj, add_assoc, Submodule.finrank_quotient_add_finrank, he'_rank]
         rw [← h, ← add_assoc]
         rw [Submodule.finrank_quotient_add_finrank, add_comm]
-      have he'_fixed (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f)
+      let t (u : V) (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
+        V ≃ₗ[K] V :=
+        transvection (f := f) (v := u - e u) (by
+          simp only [← LinearMap.mem_ker]
+          apply hf
+          apply Submodule.mem_sup_right
+          rw [mem_span_singleton]
+          exact ⟨-1, by simp⟩)
+      have ht_fixed (u : V) (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
+           e.fixedSubmodule ≤ (t u f hf).fixedSubmodule := fun x hx ↦ by
+        simp only [mem_fixedSubmodule_iff, t, transvection.apply, add_eq_left, smul_eq_zero]
+        left
+        rw [← LinearMap.mem_ker]
+        apply hf
+        apply Submodule.mem_sup_left hx
+      have he'_fixed (u : V) (hu' : e u ∉ e.fixedSubmodule ⊔ K ∙ (e u - u)) (f : Dual K V) (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f)
         (hfu : f (e u) = 1) :
-        (t f hf * e).fixedSubmodule = e.fixedSubmodule ⊔ Submodule.span K {u} := by
+        (t u f hf * e).fixedSubmodule = e.fixedSubmodule ⊔ Submodule.span K {u} := by
         apply fixedSubmodule_transvection_mul
         · contrapose hu'
           apply mem_sup_left
@@ -757,19 +847,32 @@ theorem mem_dilatransvections_pow_of_fixedReduce_ne_smul_id
           rw [Submodule.gc_map_comap, Submodule.comap_bot]
           exact le_trans le_sup_left hf
         exact hfu
-      obtain ⟨f, hfv, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem' hu'
+      obtain ⟨f, hfv, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hu' inferInstance
+      let v := (f (e u))⁻¹ • u
+      replace hf : map f (e.fixedSubmodule ⊔ K ∙ (e v - v)) = ⊥ := by
+        suffices K ∙ (e v - v) = K ∙ (e u - u) by rwa [this]
+        simp [v, ← smul_sub]
+        apply le_antisymm
+        · simp only [span_singleton_le_iff_mem]
+          apply smul_mem
+          exact mem_span_singleton_self (e u - u)
+        · simp only [span_singleton_le_iff_mem, mem_span_singleton, ← mul_smul]
+          use f (e u)
+          rw [mul_inv_cancel₀ hfv, one_smul]
+      replace hfv : f (e v) = 1 := by
+        simp [v, inv_mul_cancel₀ hfv]
       rw [← LinearMap.le_ker_iff_map] at hf
-      set e' := t f hf * e with e'_def
-      by_cases he' : e'.transvectionDegree ≤ n + 1
+      set e' := t v f hf * e with e'_def
+      by_cases he' : e' ∈ dilatransvections K V ^ (n + 1)
       · -- this is the easy case where one knows that `e'` is
         -- the product of at most `n + 1` transvections
-        apply le_trans (transvectionDegree_le_of_transvection_mul e (t f hf) (mem_transvections _))
-        apply add_le_add_left he'
+        sorry
       -- in the remaining case, one has `0 < n`
       have hn_pos : 0 < n := by
         contrapose! he'
         simp only [nonpos_iff_eq_zero] at he'
-        rw [← ENat.coe_one, ← ENat.coe_add, ← he'_rank', ← he'_fixed f hf hfv, ← e'_def]
+        simp only [he', zero_add, pow_one]
+        rw [← he'_rank', ← he'_fixed v ?_ f hf hfv, ← e'_def]
         apply transvectionDegree_le_of_reduce_eq_one e'
         suffices Subsingleton (SpecialLinearGroup K (V ⧸ e'.fixedSubmodule)) by
           exact Subsingleton.eq_one e'.reduce
@@ -777,7 +880,7 @@ theorem mem_dilatransvections_pow_of_fixedReduce_ne_smul_id
         rw [he'_fixed f hf hfv, he'_rank', he']
       -- and we will need to modify `e'` by changing `f`.
       -- the induction hypothesis implies that `e'.reduce` is a homothety
-      have : ∃ a : K, e'.reduce = a • LinearMap.id (R := K) (M := V ⧸ e'.fixedSubmodule) := by
+      have : ∃ a : K, ∀ x, e'.fixedReduce x = a • x := by
         contrapose! he'
         apply hind e' he'
         rw [e'_def, he'_fixed f hf hfv, he'_rank']
@@ -880,6 +983,7 @@ theorem mem_dilatransvections_pow_of_fixedReduce_ne_smul_id
         simp only [mem_sup, mem_span_singleton, exists_exists_eq_and]
         use 1, 1, by module
 
+#exit
 
 variable [Module.Finite K V]
 
