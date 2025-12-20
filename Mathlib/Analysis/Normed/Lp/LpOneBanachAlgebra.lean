@@ -3,6 +3,8 @@ Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fengyang Wang
 -/
+module
+
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -86,7 +88,7 @@ section Semiring
 variable [Semiring R]
 
 /-- Cauchy product (convolution) of sequences: `(a ⋆ b)_n = Σ_{k+l=n} a_k * b_l`. -/
-def apply (a b : ℕ → R) : ℕ → R :=
+public def apply (a b : ℕ → R) : ℕ → R :=
   fun n => ∑ kl ∈ Finset.antidiagonal n, a kl.1 * b kl.2
 
 scoped notation:70 a:70 " ⋆ " b:71 => apply a b
