@@ -77,7 +77,7 @@ theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : 
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
   have : f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
-    Or.casesOn (apply_prime_eq_one_or_dvd_self_sub_apply hf pp) (by grind) (by grind)
+    Or.casesOn (hf.apply_prime_eq_one_or_dvd_self_sub_apply pp) (by grind) (by grind)
   rcases this with ch | ch
   · exact ch
   · have : p ≤ ((b : ℤ) - (f b : ℤ)).natAbs := natAbs_le_of_dvd_ne_zero ch (by grind)
