@@ -2,6 +2,12 @@ import Mathlib.Data.List.Monad
 import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Util.Qq
 
+/-! # The vecPerm simproc
+
+The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
+
+-/
+
 open Lean Elab Meta Simp Qq
 
 namespace FinVec
@@ -42,7 +48,9 @@ private def permAsList (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     return none
 
 
-/-- Simproc to compute things of the form
+/--
+The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
+This can be used to simplify expressions as follows:
 ```
 example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
   simp only [vecPerm]
