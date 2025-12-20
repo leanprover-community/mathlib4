@@ -166,6 +166,88 @@ theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
   hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
+theorem Dense.continuous_upperBounds {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
+    (hf : Continuous f) :
+    upperBounds (f '' S) = upperBounds (range f) := by
+  refine subset_antisymm ?_ fun _ => upperBounds_mono (Set.image_subset_range f S) le_rfl
+  refine subset_trans ?_ fun _ => upperBounds_mono (hf.range_subset_closure_image_dense hS) le_rfl
+  intro x hx i hi
+  rw [mem_closure_iff_frequently] at hi
+  exact (hi.mono hx).mem_of_closed isClosed_Iic
+
+theorem Dense.continuous_lowerBounds {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ] {S : Set γ} (hS : Dense S)
+    (hf : Continuous f) :
+    lowerBounds (f '' S) = lowerBounds (range f) := by
+  refine subset_antisymm ?_ fun _ => lowerBounds_mono (Set.image_subset_range f S) le_rfl
+  refine subset_trans ?_ fun _ => lowerBounds_mono (hf.range_subset_closure_image_dense hS) le_rfl
+  intro x hx i hi
+  rw [mem_closure_iff_frequently] at hi
+  exact (hi.mono hx).mem_of_closed isClosed_Ici
+
+theorem Dense.continuous_sup {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
+    ⨆ i, f i = ⨆ s : S, f s := by
+  rw [← sSup_range, ← sSup_range]
+  obtain (_ | _) := isEmpty_or_nonempty γ
+  · simp [Set.range_eq_empty]
+  refine (isLUB_csSup (range_nonempty f) h).unique ?_
+  refine (isLUB_congr (hS.continuous_upperBounds hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
+  exact h.mono (by grind)
+
+theorem Dense.continuous_inf {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
+    ⨅ i, f i = ⨅ s : S, f s := by
+  rw [← sInf_range, ← sInf_range]
+  obtain (_ | _) := isEmpty_or_nonempty γ
+  · simp [Set.range_eq_empty]
+  refine (isGLB_csInf (range_nonempty f) h).unique ?_
+  refine (isGLB_congr (hS.continuous_lowerBounds hf)).mp (isGLB_ciInf_set ?_ hS.nonempty)
+  exact h.mono (by grind)
+
+theorem Dense.continuous_sup' {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    ⨆ i, f i = ⨆ s : S, f s := by
+  rw [← sSup_range, ← sSup_range]
+  obtain (_ | _) := isEmpty_or_nonempty γ
+  · simp [Set.range_eq_empty]
+  by_cases h1 : BddAbove (range f)
+  · refine (isLUB_csSup (range_nonempty f) h1).unique ?_
+    refine (isLUB_congr (hS.continuous_upperBounds hf)).mp (isLUB_ciSup_set ?_ hS.nonempty)
+    exact h1.mono (by grind)
+  · have h2 : ¬ BddAbove (range (fun s : S => f (Subtype.val s))) := by
+      intro h
+      have := range_comp' f (Subtype.val : S → γ)
+      simp_all only [Subtype.range_coe_subtype, setOf_mem_eq]
+      have := h.closure.mono (image_closure_subset_closure_image hf)
+      simp only [hS.closure_eq, image_univ] at this
+      exact h1 this
+    simp [csSup_of_not_bddAbove h1, csSup_of_not_bddAbove h2]
+
+theorem Dense.continuous_inf' {α : Type*} [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
+    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    ⨅ i, f i = ⨅ s : S, f s := by
+  rw [← sInf_range, ← sInf_range]
+  obtain (_ | _) := isEmpty_or_nonempty γ
+  · simp [Set.range_eq_empty]
+  by_cases h1 : BddBelow (range f)
+  · refine (isGLB_csInf (range_nonempty f) h1).unique ?_
+    refine (isGLB_congr (hS.continuous_lowerBounds hf)).mp (isGLB_ciInf_set ?_ hS.nonempty)
+    exact h1.mono (by grind)
+  · have h2 : ¬ BddBelow (range (fun s : S => f (Subtype.val s))) := by
+      intro h
+      have := range_comp' f (Subtype.val : S → γ)
+      simp_all only [Subtype.range_coe_subtype, setOf_mem_eq]
+      have := h.closure.mono (image_closure_subset_closure_image hf)
+      simp only [hS.closure_eq, image_univ] at this
+      exact h1 this
+    simp [csInf_of_not_bddBelow h1, csInf_of_not_bddBelow h2]
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
