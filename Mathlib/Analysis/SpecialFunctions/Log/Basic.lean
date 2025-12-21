@@ -74,9 +74,7 @@ theorem le_exp_log (x : ℝ) : x ≤ exp (log x) := by
 theorem log_exp (x : ℝ) : log (exp x) = x :=
   exp_injective <| exp_log (exp_pos x)
 
-@[simp]
-theorem log_comp_exp : Real.log ∘ Real.exp = id :=
-  funext log_exp
+@[simp] theorem log_comp_exp : log ∘ exp = id := funext log_exp
 
 theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
