@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel
+public import Mathlib.Data.Rel.Cover
 public import Mathlib.Topology.Order
 
 /-!
@@ -176,8 +176,6 @@ theorem Monotone.compRel [Preorder β] {f g : β → SetRel α α} (hf : Monoton
 @[deprecated (since := "2025-10-17")] alias compRel_left_mono := SetRel.comp_subset_comp_left
 @[deprecated (since := "2025-10-17")] alias compRel_right_mono := SetRel.comp_subset_comp_right
 @[deprecated (since := "2025-10-17")] alias prodMk_mem_compRel := SetRel.prodMk_mem_comp
-@[deprecated (since := "2025-03-10")] alias prod_mk_mem_compRel := SetRel.prodMk_mem_comp
-
 set_option linter.deprecated false in
 @[deprecated SetRel.id_comp (since := "2025-10-17")]
 theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=
@@ -470,6 +468,9 @@ instance uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
 theorem refl_mem_uniformity {x : α} {s : SetRel α α} (h : s ∈ 𝓤 α) : (x, x) ∈ s :=
   refl_le_uniformity h rfl
 
+theorem isRefl_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s.IsRefl :=
+  ⟨fun _ => refl_mem_uniformity h⟩
+
 theorem mem_uniformity_of_eq {x y : α} {s : SetRel α α} (h : s ∈ 𝓤 α) (hx : x = y) : (x, y) ∈ s :=
   refl_le_uniformity h hx
 
@@ -480,8 +481,8 @@ theorem comp_le_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) �
   UniformSpace.comp
 
 theorem lift'_comp_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) = 𝓤 α :=
-  comp_le_uniformity.antisymm <| le_lift'.2 fun s hs ↦ mem_of_superset hs <|
-    have : SetRel.IsRefl s := ⟨fun _ ↦ refl_mem_uniformity hs⟩; SetRel.left_subset_comp
+  comp_le_uniformity.antisymm <| le_lift'.2 fun _s hs ↦ mem_of_superset hs <|
+    have := isRefl_of_mem_uniformity hs; SetRel.left_subset_comp
 
 theorem tendsto_swap_uniformity : Tendsto (@Prod.swap α α) (𝓤 α) (𝓤 α) :=
   symm_le_uniformity
@@ -510,15 +511,15 @@ theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a
   tendsto_diag_uniformity (fun _ => a) f
 
 theorem symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, (∀ a b, (a, b) ∈ t → (b, a) ∈ t) ∧ t ⊆ s :=
+    ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ⊆ s :=
   have : preimage Prod.swap s ∈ 𝓤 α := symm_le_uniformity hs
-  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left⟩
+  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, ⟨fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩⟩, inter_subset_left⟩
 
 theorem comp_symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, (∀ {a b}, (a, b) ∈ t → (b, a) ∈ t) ∧ t ○ t ⊆ s :=
   let ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
-  let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
-  ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
+  let ⟨t', ht', _, ht'₂⟩ := symm_of_uniformity ht₁
+  ⟨t', ht', SetRel.symm _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ map Prod.swap (𝓤 α) := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
@@ -561,7 +562,7 @@ theorem uniformity_lift_le_comp {f : SetRel α α → Filter β} (h : Monotone f
 theorem comp3_mem_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
-  have : SetRel.IsRefl t := SetRel.id_subset_iff.1 <| refl_le_uniformity ht
+  have := isRefl_of_mem_uniformity ht
   ⟨t, ht, (SetRel.comp_subset_comp (SetRel.left_subset_comp.trans htt') htt').trans ht's⟩
 
 /-- See also `comp3_mem_uniformity`. -/
@@ -580,7 +581,7 @@ theorem comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     _ ⊆ s := w_sub
 
 theorem subset_comp_self_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
-  have : SetRel.IsRefl s := SetRel.id_subset_iff.1 <| refl_le_uniformity h; SetRel.left_subset_comp
+  have := isRefl_of_mem_uniformity h; SetRel.left_subset_comp
 
 theorem comp_comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ○ t ○ t ⊆ s := by
@@ -652,6 +653,13 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
   · rintro ⟨⟨w, z⟩, ⟨w_in, z_in⟩, hwz⟩
     rw [mem_ball_symmetry] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
+
+lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
+    U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
+  simp [SetRel.IsCover, subset_def, ball, U.comm]
+
+alias ⟨_root_.SetRel.IsCover.subset_iUnion_ball, _root_.SetRel.IsCover.of_subset_iUnion_ball⟩ :=
+  isCover_iff_subset_iUnion_ball
 
 end UniformSpace
 
@@ -732,6 +740,16 @@ theorem UniformSpace.mem_closure_iff_symm_ball {s : Set α} {x} :
 theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
     x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → (ball x V ∩ s).Nonempty := by
   simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
+
+theorem UniformSpace.closure_subset_preimage
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s := by
+  intro x hx
+  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_ball.mp hx hU
+  exact ⟨y, hy, hxy⟩
+
+theorem UniformSpace.closure_subset_image
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s :=
+  closure_subset_preimage (symm_le_uniformity hU) s
 
 theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' (ball x) :=
   (nhds_basis_uniformity' (𝓤 α).basis_sets).eq_biInf

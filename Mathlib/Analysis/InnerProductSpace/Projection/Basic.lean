@@ -230,7 +230,7 @@ theorem eq_starProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
 orthogonal projection. -/
 theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
     (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : K.starProjection u = v :=
-  eq_starProjection_of_mem_orthogonal hv (by simpa [hu] )
+  eq_starProjection_of_mem_orthogonal hv (by simpa [hu])
 
 @[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_orthogonal' :=
   eq_starProjection_of_mem_orthogonal'

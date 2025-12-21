@@ -45,6 +45,7 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
@@ -67,6 +68,8 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
@@ -454,12 +457,8 @@ def ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
 
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
-def Hom.hom₂ {M N P : SemimoduleCat.{u} R}
-    -- We write `Hom` instead of `M ⟶ (of R (N ⟶ P))`, otherwise dot notation breaks
-    -- since it is expecting the type of `f` to be `SemimoduleCat.Hom`, not `Quiver.Hom`.
-    (f : Hom M (of R (N ⟶ P))) :
-    M →ₗ[R] N →ₗ[R] P :=
-  Hom.hom (by convert (f ≫ ofHom homLinearEquiv.toLinearMap))
+def Hom.hom₂ {M N P : SemimoduleCat.{u} R} (f : M ⟶ (of R (N ⟶ P))) : M →ₗ[R] N →ₗ[R] P :=
+  (f ≫ ofHom homLinearEquiv.toLinearMap).hom
 
 @[simp] lemma Hom.hom₂_ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     (ofHom₂ f).hom₂ = f := rfl

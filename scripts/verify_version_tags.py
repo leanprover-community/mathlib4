@@ -230,7 +230,14 @@ def verify_local_remote_consistency(tag: str) -> VerificationResult:
     # Get local SHA
     code, stdout, _ = run_cmd(['git', 'rev-parse', tag])
     if code != 0:
-        return VerificationResult(False, f"Tag {tag} not found locally")
+        # Tag not found locally - this is expected when running from release_checklist.py
+        # which doesn't have a local mathlib4 checkout with tags fetched.
+        # The GitHub check below will verify the tag exists remotely.
+        return VerificationResult(
+            True,
+            f"Tag {tag} not found locally (not in a mathlib4 checkout?)",
+            warning=True
+        )
     local_sha = stdout.strip()
 
     # Get all remotes and their URLs

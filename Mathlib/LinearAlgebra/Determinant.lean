@@ -501,7 +501,7 @@ noncomputable def LinearMap.equivOfIsUnitDet
     have : Finite ι := Module.Finite.finite_basis b
     have : Fintype ι := Fintype.ofFinite ι
     have : DecidableEq ι := Classical.typeDecidableEq ι
-    exact LinearEquiv.ofIsUnitDet (by rwa [det_toMatrix b])
+    exact LinearEquiv.ofIsUnitDet (v := b) (v' := b) (f := f) (by rwa [det_toMatrix b])
   · exact 1
 
 @[simp]
@@ -655,7 +655,7 @@ theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
 
 theorem det_mul_det (b b' b'' : Basis ι A M) :
     b.det b' * b'.det b'' = b.det b'' := by
-  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
+  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b' := by
     ext; simp
   conv_rhs =>
     rw [this, Basis.det_comp, det_basis, mul_comm]

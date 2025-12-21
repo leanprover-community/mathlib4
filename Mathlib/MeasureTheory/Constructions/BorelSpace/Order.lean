@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
 module
 
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
@@ -727,7 +727,7 @@ theorem Measurable.isGLB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     (hf : ∀ i, Measurable (f i))
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsGLB { a | ∃ i, f i b = a } (g b))
     (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g :=
-  Measurable.isLUB_of_mem (α := αᵒᵈ) hf hs hg hg'  g'_meas
+  Measurable.isLUB_of_mem (α := αᵒᵈ) hf hs hg hg' g'_meas
 
 theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
