@@ -15,7 +15,7 @@ If `top`, `left`, `right` and `bottom` are four morphisms which are the edges
 of a square, `CommSq top left right bottom` is the predicate that this
 square is commutative.
 
-The structure `CommSq` is extended in `CategoryTheory/Shapes/Limits/CommSq.lean`
+The structure `CommSq` is extended in `Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean`
 as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 
 ## Future work
