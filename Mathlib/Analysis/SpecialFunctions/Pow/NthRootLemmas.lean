@@ -61,62 +61,25 @@ theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
-    a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
-  have hk := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
+    a ≤ ((a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
+  rw [Nat.le_div_iff_mul_le (by positivity), Nat.mul_comm,
+    ← Nat.add_mul_div_right _ _ (by positivity),
+    Nat.le_div_iff_mul_le (by positivity)]
+  have := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
     (by positivity) (sq_nonneg _) (sq_nonneg _) (by grind) (n + 1)
-  rw [Nat.add_one_sub_one n] at hk
-  nth_rw 4 [add_comm] at hk
-  rw [sub_add_comm, sub_self, zero_add] at hk
-
-  rcases a.eq_zero_or_pos with rfl | ha
-  · exact Nat.zero_le _
-
-  have hl : (a : Int) ^ (n + 1) + n * b ^ (n + 1) ≥ (n + 1) * b ^ n * a := by
-    calc a ^ (n + 1) + n * b ^ (n + 1)
-      = (a : Int) ^ (n + 1) + n * b ^ (n + 1) := by norm_cast
-    _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by
-      simp only [ge_iff_le, add_le_add_iff_right]
-      exact hk
-    _ = (n + 1) * b ^ n * a := by ring1
-  norm_cast at hl
-  have hq := @Nat.div_le_div_right ((n+1)*b^n *a) (a ^ (n + 1) + n * b ^ (n+1)) (b ^ n) hl
-  nth_rw 1 [Nat.mul_comm] at hq
-  rw [← mul_assoc] at hq
-  rw [Nat.add_div_of_dvd_left _] at hq
-  · nth_rw 2 [Nat.pow_add] at hq
-    nth_rw 4 [Nat.mul_comm] at hq
-    rw [← Nat.mul_assoc] at hq
-    rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-    rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-    rw [pow_one] at hq
-    calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
-    _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by exact Nat.div_le_div_right hq
-  rw [pow_succ, mul_comm, mul_assoc]
-  exact dvd_mul_right (b ^ n) _
+  -- `grind` should solve this, but:  https://github.com/leanprover/lean4/issues/11539
+  simp [mul_sub, ← add_sub_assoc] at this
+  norm_cast at this
+  grind
 
 private theorem nthRoot.always_exists (n a : ℕ) :
     ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by
-  have H : ∃ c, a < (c + 1) ^ (n + 1) := by
-    use a
-    apply Nat.le_self_pow
-    positivity
-  set c := Nat.find H with hc
-  use c
-  exact ⟨by
-    rcases c.eq_zero_or_pos with h₀ | hpos
-    · rw [h₀, zero_pow]
-      · exact Nat.zero_le _
-      positivity
-    calc
-      c ^ (n + 1) = (c - 1 + 1) ^ (n + 1) := by
-                  congr
-                  exact (Nat.sub_eq_iff_eq_add hpos).mp rfl
-                _ ≤ a := by
-                  rw [← Nat.not_gt_eq _ _]
-                  apply Nat.find_min H
-                  rw [← hc]
-                  exact sub_one_lt_of_lt hpos
-    , Nat.find_spec H⟩
+  have H : ∃ c, a < (c + 1) ^ (n + 1) := ⟨a, Nat.le_self_pow (by positivity) (a + 1)⟩
+  let (eq := hc) c := Nat.find H
+  refine ⟨c, ?_, hc ▸ Nat.find_spec H⟩
+  cases c with
+  | zero => simp
+  | succ k => simpa using Nat.find_min H hc.le
 
 /--
 An auxiliary lemma saying that if `b ≠ 0`,
