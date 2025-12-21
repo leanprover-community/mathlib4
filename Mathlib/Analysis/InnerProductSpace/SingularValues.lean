@@ -11,7 +11,11 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   (T : E →ₗ[𝕜] F)
 
 -- This cluster of theorems should be moved to other files.
+recall LinearMap.isPositive_self_comp_adjoint
 recall LinearMap.isPositive_adjoint_comp_self
+
+public theorem isSymmetric_self_comp_adjoint
+  : (T ∘ₗ adjoint T).IsSymmetric := T.isPositive_self_comp_adjoint.isSymmetric
 
 -- LinearMap.isSymmetric_adjoint_mul_self but domain and range can be different
 public theorem isSymmetric_adjoint_comp_self
@@ -161,20 +165,32 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
       (Set.toFinite _)
 
 public noncomputable def leftSingularVectors : ℕ →₀ F :=
-  have := T -- Temporary trick to make sure that T is a paramater of the definition
-  sorry
+  (adjoint T).rightSingularVectors
+
+@[simp]
+public theorem rightSingularVectors_adjoint
+  : (adjoint T).rightSingularVectors = T.leftSingularVectors := (rfl)
+
+@[simp]
+public theorem leftSingularVectors_adjoint
+  : (adjoint T).leftSingularVectors = T.rightSingularVectors := by simp [leftSingularVectors]
 
 public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := sorry
 
 public theorem leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n) (i : Fin n)
-  : (sorry : Prop) := sorry
+  : T.leftSingularVectors i = T.isSymmetric_self_comp_adjoint.eigenvectorBasis hn i := by
+  simpa using (adjoint T).rightSingularVectors_fin hn i
 
 public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
   : T.rightSingularVectors i = 0 := sorry
 
 public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 F ≤ i)
-  : T.leftSingularVectors i = 0 := sorry
+  : T.leftSingularVectors i = 0 := by
+  -- As seen in `leftSingularVectors_fin`, the proofs of the corresponding left singular vector
+  -- lemmas should be very short (usually one-liners) following directly from the corresponding
+  -- right singular vector lemma.
+  sorry
 
 public theorem hasEigenvector_adjoint_comp_self_rightSingularVectors
   {i : ℕ} (hi : i < Module.finrank 𝕜 E)
