@@ -71,7 +71,7 @@ Use this class to talk about the case where `R` is equipped with an equivalence 
 of valuations. -/
 @[ext]
 class ValuativeRel (R : Type*) [CommRing R] where
-  /-- The relation operator arising from `ValuativeRel`. -/
+  /-- The valuation less-equal operator arising from `ValuativeRel`. -/
   vle : R → R → Prop
   vle_total (x y) : vle x y ∨ vle y x
   vle_trans {z y x} : vle x y → vle y z → vle x z
@@ -105,10 +105,20 @@ class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] w
 
 namespace ValuativeRel
 
+@[deprecated (since := "2025-12-20")] alias Rel := vle
+@[deprecated (since := "2025-12-20")] alias rel_total := vle_total
+@[deprecated (since := "2025-12-20")] alias rel_trans := vle_trans
+@[deprecated (since := "2025-12-20")] alias rel_add := vle_add
+@[deprecated (since := "2025-12-20")] alias rel_mul_right := vle_mul_right
+@[deprecated (since := "2025-12-20")] alias rel_mul_cancel := vle_mul_cancel
+@[deprecated (since := "2025-12-20")] alias not_rel_one_zero := not_vle_one_zero
+
 variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
 
-/-- The strict version of the valuative relation. -/
+/-- The valuation less-than relation, defined as `x < y ↔ ¬ y ≤ᵥ x`. -/
 def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
+
+@[deprecated (since := "2025-12-20")] alias SRel := vlt
 
 @[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.vlt
 
@@ -116,70 +126,108 @@ macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.vlt $a $b)
 
 lemma vlt_iff (x y : R) : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
+@[deprecated (since := "2025-12-20")] alias srel_iff := vlt_iff
+
 @[simp]
 lemma not_vlt_iff {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := Iff.rfl.not_left
+
+@[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt_iff
 
 @[simp]
 lemma vle_refl (x : R) : x ≤ᵥ x := by
   cases vle_total x x <;> assumption
 
+@[deprecated (since := "2025-12-20")] alias rel_refl := vle_refl
+
 lemma vle_rfl {x : R} : x ≤ᵥ x :=
   vle_refl x
 
+@[deprecated (since := "2025-12-20")] alias rel_rfl := vle_rfl
+
 protected alias vle.refl := vle_refl
 
+@[deprecated (since := "2025-12-20")] protected alias Rel.refl := vle.refl
+
 protected alias vle.rfl := vle_rfl
+
+@[deprecated (since := "2025-12-20")] protected alias Rel.rfl := vle.rfl
 
 @[simp]
 theorem zero_vle (x : R) : 0 ≤ᵥ x := by
   simpa using vle_mul_right x ((vle_total 0 1).resolve_right not_vle_one_zero)
 
+@[deprecated (since := "2025-12-20")] alias zero_rel := zero_vle
+
 @[simp]
 lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
   not_vle_one_zero
+
+@[deprecated (since := "2025-12-20")] alias zero_srel_one := zero_vlt_one
 
 @[gcongr]
 lemma vle_mul_left {x y : R} (z) : x ≤ᵥ y → z * x ≤ᵥ z * y := by
   rw [mul_comm z x, mul_comm z y]
   apply vle_mul_right
 
+@[deprecated (since := "2025-12-20")] alias rel_mul_left := vle_mul_left
+
 instance : Trans (vle (R := R)) (vle (R := R)) (vle (R := R)) where
   trans h1 h2 := vle_trans h1 h2
 
 protected alias vle.trans := vle_trans
 
+@[deprecated (since := "2025-12-20")] protected alias Rel.trans := vle.trans
+
 lemma vle_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
   h2.trans h1
 
+@[deprecated (since := "2025-12-20")] alias rel_trans' := vle_trans'
+
 protected alias vle.trans' := vle_trans'
+
+@[deprecated (since := "2025-12-20")] protected alias Rel.trans' := vle.trans'
 
 @[gcongr]
 lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := vle_mul_left _ h2
     _ ≤ᵥ y * y' := vle_mul_right _ h1
 
+@[deprecated (since := "2025-12-20")] alias mul_rel_mul := mul_vle_mul
+
 @[simp] lemma mul_vle_mul_iff_left (hz : 0 <ᵥ z) : x * z ≤ᵥ y * z ↔ x ≤ᵥ y :=
   ⟨vle_mul_cancel hz, vle_mul_right _⟩
+
+@[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_left := mul_vle_mul_iff_left
 
 @[simp] lemma mul_vle_mul_iff_right (hx : 0 <ᵥ x) : x * y ≤ᵥ x * z ↔ y ≤ᵥ z := by
   simp [mul_comm x, hx]
 
+@[deprecated (since := "2025-12-20")] alias mul_rel_mul_iff_right := mul_vle_mul_iff_right
+
 @[simp] lemma mul_vlt_mul_iff_left (hz : 0 <ᵥ z) : x * z <ᵥ y * z ↔ x <ᵥ y :=
   (mul_vle_mul_iff_left hz).not
 
+@[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_left := mul_vlt_mul_iff_left
+
 @[simp] lemma mul_vlt_mul_iff_right (hx : 0 <ᵥ x) : x * y <ᵥ x * z ↔ y <ᵥ z :=
   (mul_vle_mul_iff_right hx).not
+
+@[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
 @[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
 
 theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (vle_total y x).imp (fun h => vle_add .rfl h) (fun h => vle_add h .rfl)
 
+@[deprecated (since := "2025-12-20")] alias rel_add_cases := vle_add_cases
+
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose! hy
   rw [not_vlt_iff] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
   exact vle_mul_cancel hx hy
+
+@[deprecated (since := "2025-12-20")] alias zero_srel_mul := zero_vlt_mul
 
 variable (R) in
 /-- The submonoid of elements `x : R` whose valuation is positive. -/
@@ -189,6 +237,8 @@ def posSubmonoid : Submonoid R where
   one_mem' := zero_vlt_one
 
 @[simp] lemma zero_vlt_coe_posSubmonoid (x : posSubmonoid R) : 0 <ᵥ x.val := x.prop
+
+@[deprecated (since := "2025-12-20")] alias zero_srel_coe_posSubmonoid := zero_vlt_coe_posSubmonoid
 
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
@@ -200,8 +250,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by simp
 
 @[simp]
-lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
-    (x : R) ≠ 0 := by
+lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   have := x.prop
   rw [posSubmonoid_def] at this
   contrapose! this
@@ -607,8 +656,12 @@ variable {x y : R}
 lemma vle_iff_le : x ≤ᵥ y ↔ v x ≤ v y :=
   Compatible.vle_iff_le _ _
 
+@[deprecated (since := "2025-12-20")] alias rel_iff_le := vle_iff_le
+
 lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Compatible.vle_iff_le, vlt_iff]
+
+@[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
 
 @[deprecated (since := "2025-10-09")]
 alias Compatible.srel_iff_lt := vlt_iff_lt
@@ -617,6 +670,11 @@ lemma vle_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.vle_iff_le]
 lemma vlt_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.vlt_iff_lt]
 lemma one_vle_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.vle_iff_le]
 lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
+
+@[deprecated (since := "2025-12-20")] alias rel_one_iff := vle_one_iff
+@[deprecated (since := "2025-12-20")] alias srel_one_iff := vlt_one_iff
+@[deprecated (since := "2025-12-20")] alias one_rel_iff := one_vle_iff
+@[deprecated (since := "2025-12-20")] alias one_srel_iff := one_vlt_iff
 
 @[simp]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
@@ -690,12 +748,20 @@ variable {R : Type*} [CommRing R] [ValuativeRel R] {a b c d : R}
 lemma vlt_of_vlt_of_vle (hab : a <ᵥ b) (hbc : b ≤ᵥ c) : a <ᵥ c :=
   lt_of_lt_of_le (α := WithPreorder R) hab hbc
 
+@[deprecated (since := "2025-12-20")] alias srel_of_srel_of_rel := vlt_of_vlt_of_vle
+
 alias vlt.trans_vle := vlt_of_vlt_of_vle
+
+@[deprecated (since := "2025-12-20")] alias SRel.trans_rel := vlt.trans_le
 
 lemma vlt_of_vle_of_vlt (hab : a ≤ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
   lt_of_le_of_lt (α := WithPreorder R) hab hbc
 
+@[deprecated (since := "2025-12-20")] alias srel_of_rel_of_srel := mul_vlt_mul_iff_left
+
 alias vle.trans_vlt := vlt_of_vle_of_vlt
+
+@[deprecated (since := "2025-12-20")] alias Rel.trans_srel := srel_of_rel_of_srel
 
 lemma vlt.vle (hab : a <ᵥ b) : a ≤ᵥ b :=
   le_of_lt (α := WithPreorder R) hab
