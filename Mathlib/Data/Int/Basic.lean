@@ -48,7 +48,7 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
   rw [show z + 1 - b = zb + 1 by lia]
-  have : b + zb = z := by omega
+  have : b + zb = z := by lia
   subst this
   convert cast_heq _ _
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
