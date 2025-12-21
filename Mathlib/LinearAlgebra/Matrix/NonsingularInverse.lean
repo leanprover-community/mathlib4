@@ -194,9 +194,6 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
-@[deprecated (since := "2025-04-22")]
-alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
-
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 

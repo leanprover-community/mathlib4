@@ -212,7 +212,7 @@ theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
     lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
-  apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
+  apply ((le_csSup_iff' (bddAbove_image.{_, u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
     obtain ⟨d, rfl⟩ := Cardinal.mem_range_lift_of_le (not_le.1 h).le
@@ -239,7 +239,7 @@ theorem lift_iSup_le {ι : Type v} {f : ι → Cardinal.{w}} {t : Cardinal} (hf 
 theorem lift_iSup_le_iff {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f))
     {t : Cardinal} : lift.{u} (iSup f) ≤ t ↔ ∀ i, lift.{u} (f i) ≤ t := by
   rw [lift_iSup hf]
-  exact ciSup_le_iff' (bddAbove_range_comp.{_,_,u} hf _)
+  exact ciSup_le_iff' (bddAbove_range_comp.{_, _, u} hf _)
 
 /-- To prove an inequality between the lifts to a common universe of two different supremums,
 it suffices to show that the lift of each cardinal from the smaller supremum
@@ -249,7 +249,7 @@ theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardina
     {f' : ι' → Cardinal.{w'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) {g : ι → ι'}
     (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
   rw [lift_iSup hf, lift_iSup hf']
-  exact ciSup_mono' (bddAbove_range_comp.{_,_,w} hf' _) fun i => ⟨_, h i⟩
+  exact ciSup_mono' (bddAbove_range_comp.{_, _, w} hf' _) fun i => ⟨_, h i⟩
 
 /-- A variant of `lift_iSup_le_lift_iSup` with universes specialized via `w = v` and `w' = v'`.
 This is sometimes necessary to avoid universe unification issues. -/
@@ -294,7 +294,7 @@ theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
 
 theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
     ∃ s : Finset α, n = s.card := by
-  obtain hα|hα := finite_or_infinite α
+  obtain hα | hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
     obtain ⟨t, -, rfl⟩ := @Finset.exists_subset_card_eq α .univ n <| by simpa using h
     exact ⟨t, rfl⟩
@@ -599,9 +599,6 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 
-@[deprecated (since := "2025-04-27")]
-alias mk_pNat := mk_pnat
-
 /-! ### Cardinalities of basic sets and types -/
 
 @[simp] theorem mk_additive : #(Additive α) = #α := rfl
@@ -676,7 +673,7 @@ theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
 
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{max u w} #(range f) = lift.{max v w} #α :=
-  lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+  lift_mk_eq.{v, u, w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{u} #(range f) = lift.{v} #α :=
@@ -751,7 +748,7 @@ theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #�
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
   refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
-  rw [← lift_sum, lift_id'.{_,u}]
+  rw [← lift_sum, lift_id'.{_, u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
   rw [sUnion_eq_iUnion]

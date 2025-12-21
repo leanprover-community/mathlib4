@@ -187,7 +187,7 @@ For an abelian group `A` and an element `a ∈ A`, there is a character `c : ℤ
 does not exist, `c` is defined by `m • a ↦ m / 2`.
 -/
 noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
-  let l :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let l : ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
     Submodule.liftQSpanSingleton _
       (CharacterModule.int.divByNat <|
         if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
