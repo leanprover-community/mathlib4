@@ -130,16 +130,16 @@ theorem assoc (a b c : ℕ → R) : (a ⋆ b) ⋆ c = a ⋆ (b ⋆ c) := by
     (mul_assoc (toPowerSeries a) (toPowerSeries b) (toPowerSeries c))
   simp only [← toPowerSeries_mul, coeff_toPowerSeries] at h; exact h
 
-theorem left_distrib (a b c : ℕ → R) : a ⋆ (b + c) = a ⋆ b + a ⋆ c := by
+@[simp] lemma left_distrib (a b c : ℕ → R) : a ⋆ (b + c) = a ⋆ b + a ⋆ c := by
   ext n; simp only [Pi.add_apply, apply_eq, mul_add, Finset.sum_add_distrib]
 
-theorem right_distrib (a b c : ℕ → R) : (a + b) ⋆ c = a ⋆ c + b ⋆ c := by
+@[simp] lemma right_distrib (a b c : ℕ → R) : (a + b) ⋆ c = a ⋆ c + b ⋆ c := by
   ext n; simp only [apply_eq, Pi.add_apply, add_mul, Finset.sum_add_distrib]
 
-theorem zero_mul (a : ℕ → R) : (0 : ℕ → R) ⋆ a = 0 := by
+@[simp] lemma zero_mul (a : ℕ → R) : (0 : ℕ → R) ⋆ a = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.zero_mul, Finset.sum_const_zero]
 
-theorem mul_zero (a : ℕ → R) : a ⋆ (0 : ℕ → R) = 0 := by
+@[simp] lemma mul_zero (a : ℕ → R) : a ⋆ (0 : ℕ → R) = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.mul_zero, Finset.sum_const_zero]
 
 /-! ### Identity Element
