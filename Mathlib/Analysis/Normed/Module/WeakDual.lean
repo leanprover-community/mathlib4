@@ -331,7 +331,7 @@ open Metric NormedSpace Function ContinuousLinearMap Pointwise Topology
 
 open scoped BigOperators Topology
 
-/- Move the next two lemmas above, checking hp-/
+/- Move the next two lemmas above, checking that hp are preserved (quite minimal here). -/
 lemma IsClosed_image_ball [CompleteSpace E] : IsClosed
     ((inclusionInDoubleDual 𝕜 E) '' closedBall 0 1) :=
   inclusionInDoubleDualLi 𝕜 (E := E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
@@ -343,40 +343,10 @@ lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual �
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
-theorem Helly_opp {I : Type*} [Fintype I] (f : I → StrongDual 𝕜₁ E₁) (α : I → 𝕜₁) :
-    (∀ {ε : ℝ} (_ : 0 < ε), ∃ x : E₁, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) →
-    (∀ β : I → 𝕜₁, ‖∑ i : I, β i * α i‖ ≤ ‖∑ i : I, β i • f i‖) := by
-  intro h β
-  · by_cases hβ : β = 0
-    · simp [hβ]
-    replace hβ : 0 < ∑ i, ‖β i‖ := by
-      apply Finset.sum_pos' (s := Finset.univ) (fun i _ ↦ norm_nonneg (β i))
-      simpa [← not_forall, ← funext_iff]
-    apply le_of_forall_pos_le_add
-    intro ε hε
-    set ε' := ε * (∑ i, ‖β i‖)⁻¹ with hε'
-    obtain ⟨x, hx_le, h_lt⟩ := h (ε := ε') (by positivity)
-    have : ‖(∑ i, β i * α i) - (∑ i, β i * (f i x))‖ ≤ ε' * ∑ i, ‖β i‖ := by
-      grw [← Finset.sum_sub_distrib, Finset.mul_sum, norm_sum_le]
-      apply Finset.sum_le_sum (fun i _ ↦ ?_)
-      rw [← mul_sub, norm_mul, mul_comm, ← norm_neg, neg_sub]
-      exact mul_le_mul_of_nonneg_right (le_of_lt (h_lt i)) <| norm_nonneg (β i)
-    calc ‖(∑ i, β i * α i)‖ ≤ ‖(∑ i, β i * α i) - (∑ i, β i * (f i x))‖ + ‖∑ i, β i * (f i x)‖ := by
-                                  apply norm_le_norm_sub_add
-        _ ≤ ‖∑ i : I, β i * (f i x)‖ + ε' * ∑ i : I, ‖β i‖ := by
-                grw [this, add_comm, add_le_add_left]
-                rfl
-        _ ≤ ‖∑ i : I, β i • f i‖ + ε' * ∑ i : I, ‖β i‖ := by
-                grw [add_le_add_left]
-                erw [← sum_apply Finset.univ (fun i ↦ β i • f i) x]
-                exact ContinuousLinearMap.unit_le_opNorm _ _ hx_le
-        _ ≤ ‖∑ i : I, β i • f i‖ + ε := by
-          rw [hε', mul_assoc, inv_mul_cancel₀ (by positivity), mul_one]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /- Using `RCLike.geometric_hahn_banach_closed_point` can be extended to `RCLike`-/
-theorem Helly {I : Type*} [Fintype I] /- [DecidableEq I] -/ (f : I → StrongDual ℝ F) (γ : I → ℝ)
+theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual ℝ F) (γ : I → ℝ)
     (H : ∀ β : I → ℝ, ‖∑ i : I, β i * γ i‖ ≤ ‖∑ i : I, β i • f i‖) :
     ∀ {ε : ℝ} (_ : 0 < ε), ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - γ i‖ < ε := by
   classical
@@ -404,10 +374,7 @@ theorem Helly {I : Type*} [Fintype I] /- [DecidableEq I] -/ (f : I → StrongDua
     simp_rw [smul_eq_mul, mul_comm, ← smul_eq_mul]
     have h1 (i : I) : f i x • g ((Pi.single i 1) : I → ℝ) =
       g ((f i) x • ((Pi.single i 1) : I → ℝ)) := by
-      simp-- [Eq.symm (map_smul_of_tower g ((f i) x) (Pi.single i 1))]
-    -- have h2 (i : I) : (f i) x • ((Pi.single i (1 : ℝ)) : I → ℝ) =
-    --   (Pi.single i ((f i) x) : I → ℝ):= by
-    --   rw [← Pi.single_smul i ((f i) x) 1, smul_eq_mul, mul_one]
+      simp
     simp_rw [h1, ← Pi.single_smul, smul_eq_mul, mul_one, ← map_sum,
       Finset.univ_sum_single fun i ↦ (f i) x]
   have hright : α < ∑ i, β i • γ i := by
@@ -433,9 +400,6 @@ theorem Helly {I : Type*} [Fintype I] /- [DecidableEq I] -/ (f : I → StrongDua
   specialize H β
   exact not_le_of_gt uff H
 
-
-
--- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
 theorem three (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (hφ : ‖φ‖ ≤ 1)
     {ε : ℝ} (hε : 0 < ε)
     (f : I → StrongDual ℝ F) : ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
