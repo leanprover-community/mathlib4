@@ -686,10 +686,11 @@ lemma pow {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) : Meromorphic (f ^ 
 lemma zpow {f : 𝕜 → 𝕜} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).zpow n
 
 @[fun_prop]
-lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) := fun x ↦ (hf x).deriv
+protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) :=
+    fun x ↦ (hf x).deriv
 
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
-    Meromorphic (_root_.deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+    Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
 
 end Meromorphic
