@@ -156,37 +156,25 @@ section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
-nonrec theorem HasStrictDerivAt.fun_const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun y => c • f y) (c • f') x := by
-  simpa using (hf.const_smul c).hasStrictDerivAt
-
-nonrec theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
+@[to_fun]
+theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (c • f) (c • f') x := by
-  simpa using (hf.const_smul c).hasStrictDerivAt
+  simpa using (HasStrictFDerivAt.const_smul hf c).hasStrictDerivAt
 
-nonrec theorem HasDerivAtFilter.fun_const_smul (c : R) (hf : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun y => c • f y) (c • f') x L := by
-  simpa using (hf.const_smul c).hasDerivAtFilter
-
-nonrec theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' x L) :
+@[to_fun]
+theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (c • f) (c • f') x L := by
-  simpa using (hf.const_smul c).hasDerivAtFilter
+  simpa using (HasFDerivAtFilter.const_smul hf c).hasDerivAtFilter
 
-nonrec theorem HasDerivWithinAt.fun_const_smul (c : R) (hf : HasDerivWithinAt f f' s x) :
-    HasDerivWithinAt (fun y => c • f y) (c • f') s x :=
-  hf.const_smul c
-
-nonrec theorem HasDerivWithinAt.const_smul (c : R) (hf : HasDerivWithinAt f f' s x) :
+@[to_fun]
+theorem HasDerivWithinAt.const_smul (c : R) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (c • f) (c • f') s x :=
-  hf.const_smul c
+  HasDerivAtFilter.const_smul c hf
 
-nonrec theorem HasDerivAt.fun_const_smul (c : R) (hf : HasDerivAt f f' x) :
-    HasDerivAt (fun y => c • f y) (c • f') x :=
-  hf.const_smul c
-
-nonrec theorem HasDerivAt.const_smul (c : R) (hf : HasDerivAt f f' x) :
+@[to_fun]
+theorem HasDerivAt.const_smul (c : R) (hf : HasDerivAt f f' x) :
     HasDerivAt (c • f) (c • f') x :=
-  hf.const_smul c
+  HasDerivAtFilter.const_smul c hf
 
 theorem derivWithin_fun_const_smul (c : R) (hf : DifferentiableWithinAt 𝕜 f s x) :
     derivWithin (fun y => c • f y) s x = c • derivWithin f s x := by
