@@ -10300,6 +10300,13 @@ public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 public import Mathlib.CategoryTheory.Subobject.Types
 public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+public import Mathlib.CategoryTheory.Subpresheaf.Finite
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves
+public import Mathlib.CategoryTheory.Subpresheaf.Subobject
 public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
