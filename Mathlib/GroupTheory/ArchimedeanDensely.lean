@@ -100,6 +100,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
+set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
@@ -366,11 +367,10 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
       rw [LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered]
       intro hd
       obtain ⟨y, hy⟩ := exists_ne (0 : G)
-      wlog hy' : 0 < y generalizing y
+      wlog! hy' : 0 < y generalizing y
       · refine this (-y) ?_ ?_
         · simp [hy]
-        · simp only [not_lt] at hy'
-          simp [lt_of_le_of_ne hy' hy]
+        · simp [lt_of_le_of_ne hy' hy]
       obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩
       obtain ⟨w, hw, hw'⟩ := exists_between hz'
       exact hz'' ⟨w, hw.le⟩ hw hw'

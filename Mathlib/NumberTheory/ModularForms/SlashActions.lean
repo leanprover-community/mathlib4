@@ -52,6 +52,14 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
 
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
+@[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
+    [SlashAction β G α] (k : β) (g : G) {a : ι → α} {s : Finset ι} :
+    (∑ i ∈ s, a i) ∣[k] g = ∑ i ∈ s, a i ∣[k] g := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i t hi IH => simp [hi, IH]
+
 /-- Slash_action induced by a monoid homomorphism. -/
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
@@ -60,6 +68,13 @@ def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H
   slash_one k a := by simp only [map_one, SlashAction.slash_one]
   slash_mul k g gg a := by simp only [map_mul, SlashAction.slash_mul]
   add_slash _ g _ _ := SlashAction.add_slash _ (h g) _ _
+
+@[simp]
+lemma SlashAction.slash_eq_zero_iff {β G α : Type*} [Group G] [AddGroup α] [SlashAction β G α]
+    (k : β) (g : G) (a : α) : a ∣[k] g = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  apply_fun (· ∣[k] g⁻¹) at h
+  simpa [← SlashAction.slash_mul] using h
 
 namespace ModularForm
 
@@ -190,6 +205,26 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
+
+open Finset in
+lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
+    {s : Finset ι} (hs : s.Nonempty) :
+    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1) • (∏ i ∈ s, f i ∣[k] g) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp_all
+  | insert i t hi IH =>
+    rcases t.eq_empty_or_nonempty with rfl | ht
+    · simp
+    simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ,
+      mul_add, mul_one, add_comm]
+    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by grind, pow_succ,
+      ← mul_smul, mul_comm]
+
+lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
+    {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
+      |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
+  simpa using ModularForm.prod_slash Finset.univ_nonempty
 
 end
 

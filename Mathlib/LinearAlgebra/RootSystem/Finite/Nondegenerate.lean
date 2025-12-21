@@ -205,6 +205,10 @@ theorem posRootForm_posForm_pos_of_ne_zero {x : P.rootSpan S} (hx : x ≠ 0) :
     exact ⟨Finset.mem_univ i, mul_self_pos.mpr hi⟩
   exact Finset.sum_pos' (fun i a ↦ mul_self_nonneg ((P.coroot'In S i) x)) this
 
+lemma posRootForm_rootFormIn_posDef : (P.RootFormIn S).toQuadraticMap.PosDef := by
+  intro x hx
+  simpa using P.posRootForm_posForm_pos_of_ne_zero S hx
+
 lemma posRootForm_posForm_anisotropic :
     (P.posRootForm S).posForm.toQuadraticMap.Anisotropic :=
   fun _ hx ↦ Classical.byContradiction fun h ↦
@@ -255,10 +259,13 @@ lemma disjoint_corootSpan_ker_corootForm :
     Disjoint (P.corootSpan R) (LinearMap.ker P.CorootForm) :=
   P.flip.disjoint_rootSpan_ker_rootForm
 
-lemma _root_.RootSystem.rootForm_nondegenerate (P : RootSystem ι R M N) [P.IsAnisotropic] :
+lemma rootForm_nondegenerate [P.IsRootSystem] :
     P.RootForm.Nondegenerate :=
   LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
     simpa using P.disjoint_rootSpan_ker_rootForm
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
 
 end IsDomain
 
@@ -294,7 +301,7 @@ lemma ker_rootForm_eq_dualAnnihilator :
   have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R)
   have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
   rw [← P.finrank_corootSpan_eq', P.toPerfPair.finrank_eq, Subspace.dual_finrank_eq] at aux1
-  omega
+  lia
 
 lemma ker_corootForm_eq_dualAnnihilator :
     LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm :=
@@ -377,10 +384,12 @@ lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
   contrapose! h
   exact P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero hx h.symm
 
-lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
+lemma rootForm_anisotropic [P.IsRootSystem] :
     P.RootForm.toQuadraticMap.Anisotropic :=
-  fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by
-    simpa only [rootSpan, P.span_root_eq_top] using Submodule.mem_top
+  fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by simp
+
+@[deprecated (since := "2025-12-14")]
+alias _root_.RootSystem.rootForm_anisotropic := rootForm_anisotropic
 
 end LinearOrderedCommRing
 
