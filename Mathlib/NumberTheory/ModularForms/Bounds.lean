@@ -270,8 +270,8 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   rw [isBigO_iff]
   rw [IsBigOWith, eventually_comap] at hC
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
-  have := Tendsto.eventually (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop) hC
-  filter_upwards [eventually_gt_atTop 0, this] with n hn hn'
+  filter_upwards [eventually_gt_atTop 0,
+    (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop).eventually hC] with n hn hn'
   rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
   simp only [ofReal_div, ofReal_one, ofReal_natCast]
@@ -281,19 +281,18 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   have (x : ℝ) : F x ≤ 1 / h * ((1 / Real.exp (-2 * Real.pi / ↑h))) * (C * n ^ e) := by
     simp only [F, norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
       mul_assoc, Real.norm_of_nonneg hh.le]
-    refine mul_le_mul_of_nonneg_left (mul_le_mul ?_ ?_ ?_ ?_) ?_
+    gcongr
     · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add, mul_I_im, ← ofReal_one,
         ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div, div_right_comm, ← Real.exp_nat_mul,
         mul_div_cancel₀ _ (mod_cast hn.ne')]
-    · refine (hn' _ ?_).trans (le_of_eq ?_) <;>
+    · refine (hn' _ ?_).trans (le_of_eq (?_)) <;>
         simp_rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im,
           zero_add, mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re]
       · simp
       · rw [one_div, Real.rpow_neg_eq_inv_rpow, inv_inv, Real.norm_of_nonneg (by positivity)]
-    all_goals positivity
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
   · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
-    · simp_rw [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
+    · simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
     · exact (continuous f).comp (by fun_prop)
   · exact continuous_const.intervalIntegrable ..
