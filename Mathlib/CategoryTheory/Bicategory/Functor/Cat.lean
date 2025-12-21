@@ -91,15 +91,17 @@ variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (a : X ⟶ Y)
 
 @[reassoc]
 lemma mapComp_hom_naturality :
-    (F.map (f ≫ g)).map a ≫ (F.mapComp f g).hom.app Y =
-      (F.mapComp f g).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
-  (F.mapComp f g).hom.naturality a
+    (F.map (f ≫ g)).toFunctor.map a ≫ (F.mapComp f g).hom.toNatTrans.app Y =
+    (F.mapComp f g).hom.toNatTrans.app X ≫
+      (F.map g).toFunctor.map ((F.map f).toFunctor.map a) :=
+  (F.mapComp f g).hom.toNatTrans.naturality a
 
 @[reassoc]
 lemma mapComp_inv_naturality :
-    (F.map g).map ((F.map f).map a) ≫ (F.mapComp f g).inv.app Y =
-    (F.mapComp f g).inv.app X ≫ (F.map (f ≫ g)).map a :=
-  (F.mapComp f g).inv.naturality a
+    (F.map g).toFunctor.map ((F.map f).toFunctor.map a) ≫
+      (F.mapComp f g).inv.toNatTrans.app Y =
+    (F.mapComp f g).inv.toNatTrans.app X ≫ (F.map (f ≫ g)).toFunctor.map a :=
+  (F.mapComp f g).inv.toNatTrans.naturality a
 
 end
 

@@ -134,11 +134,6 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
         gf₁.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind),
       F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc
       q.op.toLoc gf₂.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind)]
-  hom_self Y q i g h := by
-    simp [← Cat.Hom₂.comp_app]
-  hom_comp Y q i₁ i₂ i₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
-    simp only [← Cat.Hom₂.comp_app]
-    simp
 
 /-- Constructor for isomorphisms in `Pseudofunctor.DescentData`. -/
 @[simps]
@@ -148,8 +143,7 @@ def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.o
     (F.map f₁.op.toLoc).toFunctor.map (e i₁).hom ≫ D₂.hom q f₁ f₂ =
       D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (e i₂).hom := by cat_disch) : D₁ ≅ D₂ where
   hom :=
-    { hom i := (e i).hom
-      comm := comm }
+    { hom i := (e i).hom }
   inv :=
     { hom i := (e i).inv
       comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
@@ -177,12 +171,12 @@ variable {F f} {S' : C} {p : S' ⟶ S} {ι' : Type t'} {X' : ι' → C} {f' : �
 def pullFunctorObjHom (D : F.DescentData f)
     ⦃Y : C⦄ (q : Y ⟶ S') ⦃j₁ j₂ : ι'⦄ (f₁ : Y ⟶ X' j₁) (f₂ : Y ⟶ X' j₂)
     (hf₁ : f₁ ≫ f' j₁ = q := by cat_disch) (hf₂ : f₂ ≫ f' j₂ = q := by cat_disch) :
-    (F.map f₁.op.toLoc).obj ((F.map (p' j₁).op.toLoc).obj (D.obj (α j₁))) ⟶
-      (F.map f₂.op.toLoc).obj ((F.map (p' j₂).op.toLoc).obj (D.obj (α j₂))) :=
-  (F.mapComp (p' j₁).op.toLoc f₁.op.toLoc).inv.app _ ≫
+    (F.map f₁.op.toLoc).toFunctor.obj ((F.map (p' j₁).op.toLoc).toFunctor.obj (D.obj (α j₁))) ⟶
+      (F.map f₂.op.toLoc).toFunctor.obj ((F.map (p' j₂).op.toLoc).toFunctor.obj (D.obj (α j₂))) :=
+  (F.mapComp (p' j₁).op.toLoc f₁.op.toLoc).inv.toNatTrans.app _ ≫
     D.hom (q ≫ p) (f₁ ≫ p' _) (f₂ ≫ p' _) (by simp [w, reassoc_of% hf₁])
       (by simp [w, reassoc_of% hf₂]) ≫
-    (F.mapComp (p' j₂).op.toLoc f₂.op.toLoc).hom.app _
+    (F.mapComp (p' j₂).op.toLoc f₂.op.toLoc).hom.toNatTrans.app _
 
 @[reassoc]
 lemma pullFunctorObjHom_eq (D : F.DescentData f)
@@ -193,10 +187,10 @@ lemma pullFunctorObjHom_eq (D : F.DescentData f)
     (hf₁' : f₁ ≫ p' j₁ = f₁' := by cat_disch)
     (hf₂' : f₂ ≫ p' j₂ = f₂' := by cat_disch) :
   pullFunctorObjHom w D q f₁ f₂ =
-    (F.mapComp' _ _ _).inv.app _ ≫ D.hom q' f₁' f₂'
+    (F.mapComp' _ _ _).inv.toNatTrans.app _ ≫ D.hom q' f₁' f₂'
       (by rw [← hq', ← hf₁', Category.assoc, w, reassoc_of% hf₁])
       (by rw [← hq', ← hf₂', Category.assoc, w, reassoc_of% hf₂]) ≫
-      (F.mapComp' _ _ _).hom.app _ := by
+      (F.mapComp' _ _ _).hom.toNatTrans.app _ := by
   subst hq' hf₁' hf₂'
   simp [mapComp'_eq_mapComp, pullFunctorObjHom]
 
@@ -204,7 +198,7 @@ lemma pullFunctorObjHom_eq (D : F.DescentData f)
 @[simps]
 def pullFunctorObj (D : F.DescentData f) :
     F.DescentData f' where
-  obj j := (F.map (p' _).op.toLoc).obj (D.obj (α j))
+  obj j := (F.map (p' _).op.toLoc).toFunctor.obj (D.obj (α j))
   hom Y q j₁ j₂ f₁ f₂ hf₁ hf₂ := pullFunctorObjHom w _ _ _ _
   pullHom_hom Y' Y g q q' hq j₁ j₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
     rw [pullFunctorObjHom_eq _ _ _ _ _ (q' ≫ p) (gf₁ ≫ p' j₁) (gf₂ ≫ p' j₂),
@@ -212,11 +206,11 @@ def pullFunctorObj (D : F.DescentData f) :
     rw [← D.pullHom_hom g (q ≫ p) (q' ≫ p) (by rw [reassoc_of% hq])
       (f₁ ≫ p' j₁) (f₂ ≫ p' j₂) (by rw [Category.assoc, w, reassoc_of% hf₁])
       (by rw [Category.assoc, w, reassoc_of% hf₂]) (gf₁ ≫ p' j₁) (gf₂ ≫ p' j₂)
-      (by aesop) (by aesop)]
+      (by cat_disch) (by cat_disch)]
     dsimp [pullHom]
     simp only [Functor.map_comp, Category.assoc]
-    rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ _ _ (by aesop),
-      mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ _ (by aesop)]
+    rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ _ _ (by cat_disch),
+      mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ _ (by cat_disch)]
   hom_self Y q j g hg := by
     rw [pullFunctorObjHom_eq _ _ _ _ _ _ _ _ rfl rfl rfl rfl rfl,
       D.hom_self _ _ (by cat_disch)]
@@ -237,7 +231,7 @@ this functor only depends on `f` and `f'`, see `pullFunctorIso`.) -/
 def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
   obj D := pullFunctorObj w D
   map {D₁ D₂} φ :=
-    { hom j := (F.map (p' j).op.toLoc).map (φ.hom (α j))
+    { hom j := (F.map (p' j).op.toLoc).toFunctor.map (φ.hom (α j))
       comm Y q j₁ j₂ f₁ f₂ hf₁ hf₂ := by
         have := φ.comm (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂)
           (by rw [Category.assoc, w, reassoc_of% hf₁])
@@ -257,9 +251,10 @@ followed by the application of `pullFunctor F w : F.DescentData f ⥤ F.DescentD
 * by considering the obvious descent data relative to `f'` given by pulling
 back the object `M` to `S'`. -/
 def toDescentDataCompPullFunctorIso :
-    F.toDescentData f ⋙ pullFunctor F w ≅ F.map p.op.toLoc ⋙ F.toDescentData f' :=
+    F.toDescentData f ⋙ pullFunctor F w ≅ (F.map p.op.toLoc).toFunctor ⋙ F.toDescentData f' :=
   NatIso.ofComponents
-    (fun M ↦ isoMk (fun i ↦ (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).symm.app M)
+    (fun M ↦ isoMk (fun i ↦ (Cat.Hom.toNatIso
+        (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc)).symm.app M)
       (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ by
         dsimp
         rw [F.isoMapOfCommSq_eq _ _  rfl, F.isoMapOfCommSq_eq _ _  rfl]
@@ -270,12 +265,12 @@ def toDescentDataCompPullFunctorIso :
             (by grind) (by grind) M,
           pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' i₁) (f₂ ≫ p' i₂),
           ← cancel_mono ((F.mapComp' (f' i₂).op.toLoc f₂.op.toLoc q.op.toLoc
-            (by grind)).inv.app _)]
+            (by grind)).inv.toNatTrans.app _)]
         dsimp
         simp only [Category.assoc,
           ← F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app p.op.toLoc
             (f' i₂).op.toLoc f₂.op.toLoc _ q.op.toLoc (p.op.toLoc ≫ q.op.toLoc) rfl
-            (by grind) (by grind) M, Iso.hom_inv_id_app, Category.comp_id,
+            (by grind) (by grind) M,
           ← F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc (f (α i₁)).op.toLoc
             (p' i₁).op.toLoc f₁.op.toLoc (p.op.toLoc ≫ (f' i₁).op.toLoc) _
             (p.op.toLoc ≫ q.op.toLoc) (by grind) rfl (by grind) M,
@@ -285,7 +280,7 @@ def toDescentDataCompPullFunctorIso :
         simp))
     (fun f ↦ by
       ext i
-      exact (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).inv.naturality f)
+      exact (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).inv.toNatTrans.naturality f)
 
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
@@ -297,19 +292,18 @@ def pullFunctorIso {β : ι' → ι} {p'' : ∀ j, X' j ⟶ X (β j)}
   NatIso.ofComponents (fun D ↦ isoMk (fun j ↦ D.iso _ _ _) (by
     intro Y q j₁ j₂ f₁ f₂ hf₁ hf₂
     dsimp
-    rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) _ _ rfl (by aesop) (by aesop),
-      pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) _ _ rfl (by aesop) (by aesop),
-      map_eq_pullHom_assoc _ _ (f₁ ≫ p' j₁) (f₁ ≫ p'' j₁) (by aesop) (by aesop),
-      map_eq_pullHom _ _ (f₂ ≫ p' j₂) (f₂ ≫ p'' j₂) (by aesop) (by aesop)]
-    simp only [Iso.hom_inv_id_app_assoc, Category.assoc, NatIso.cancel_natIso_inv_left,
-      NatIso.cancel_natIso_hom_right_assoc, op_comp, Quiver.Hom.comp_toLoc]
+    rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) _ _ rfl (by cat_disch) (by cat_disch),
+      pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) _ _ rfl (by cat_disch) (by cat_disch),
+      map_eq_pullHom_assoc _ _ (f₁ ≫ p' j₁) (f₁ ≫ p'' j₁) (by cat_disch) (by cat_disch),
+      map_eq_pullHom _ _ (f₂ ≫ p' j₂) (f₂ ≫ p'' j₂) (by cat_disch) (by cat_disch)]
+    simp only [Cat.Hom.hom_inv_id_toNatTrans_app_assoc, Category.assoc]
     rw [pullHom_hom _ _ _ (q ≫ p) (by rw [w, reassoc_of% hf₁]) _ _
-        rfl (by aesop) _ _ rfl rfl, hom_comp,
+        rfl (by cat_disch) _ _ rfl rfl, hom_comp_assoc,
       pullHom_hom _ _ _ (q ≫ p) (by rw [w, reassoc_of% hf₂]) _ _
-        rfl (by aesop) _ _ rfl rfl, hom_comp]))
-    (fun {D₁ D₂} φ ↦ by
+        rfl (by cat_disch) _ _ rfl rfl, hom_comp_assoc]))
+    (fun φ ↦ by
       ext j
-      exact φ.comm _ _ _ rfl (by aesop))
+      exact φ.comm _ _ _ rfl (by cat_disch))
 
 variable (S) in
 /-- The functor `F.DescentData f ⥤ F.DescentData f` corresponding to `pullFunctor`
@@ -317,7 +311,7 @@ applied to identity morphisms is isomorphic to the identity functor. -/
 @[simps!]
 def pullFunctorIdIso :
     pullFunctor F (p := 𝟙 S) (p' := fun _ ↦ 𝟙 _) (w := by simp) ≅ 𝟭 (F.DescentData f) :=
-  NatIso.ofComponents (fun D ↦ isoMk (fun i ↦ (F.mapId _).app _) (by
+  NatIso.ofComponents (fun D ↦ isoMk (fun i ↦ (Cat.Hom.toNatIso (F.mapId _)).app _) (by
     intro Y q i₁ i₂ f₁ f₂ hf₁ hf₂
     dsimp
     rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ q f₁ f₂ rfl]
@@ -336,7 +330,7 @@ def pullFunctorCompIso
         dsimp
         rw [← hr', Category.assoc, w, reassoc_of% w', hr]) :=
   NatIso.ofComponents
-    (fun D ↦ isoMk (fun _ ↦ (F.mapComp' _ _ _ (by grind)).symm.app _) (by
+    (fun D ↦ isoMk (fun _ ↦ (Cat.Hom.toNatIso (F.mapComp' _ _ _ (by grind))).symm.app _) (by
       intro Y s k₁ k₂ f₁ f₂ hf₁ hf₂
       dsimp
       rw [pullFunctorObjHom_eq _ _ _ _ _  (s ≫ r) _ _ rfl,
@@ -381,7 +375,7 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
     dsimp
     rw [← F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_app_assoc _ _ _ _ _ _ rfl rfl (by simp),
       mapComp'_comp_id_hom_app, mapComp'_id_comp_inv_app_assoc, ← Functor.map_comp_assoc,
-      Iso.inv_hom_id_app]
+      Cat.Hom.inv_hom_id_toNatTrans_app]
     simp [D.hom_self _ _ rfl]
 
 end DescentData
