@@ -212,6 +212,7 @@ theorem sInf_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = 0 :=
 theorem iInf_of_not_bddBelow (hf : ¬BddBelow (Set.range f)) : ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
 
+@[simp]
 theorem sSup_neg (s : Set ℝ) : sSup (-s) = -sInf s := by
   obtain rfl | hn := s.eq_empty_or_nonempty; · simp
   by_cases hb : BddBelow s
@@ -219,6 +220,7 @@ theorem sSup_neg (s : Set ℝ) : sSup (-s) = -sInf s := by
   · rw [csInf_of_not_bddBelow hb, Real.sInf_empty, csSup_of_not_bddAbove (bddAbove_neg.not.2 hb),
       Real.sSup_empty, neg_zero]
 
+@[simp]
 theorem sInf_neg (s : Set ℝ) : sInf (-s) = -sSup s := by
   rw [← neg_eq_iff_eq_neg, ← Real.sSup_neg, neg_neg]
 
