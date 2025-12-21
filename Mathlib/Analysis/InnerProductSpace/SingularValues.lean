@@ -310,10 +310,13 @@ public theorem singularValues_smul (c : 𝕜) (i : ℕ)
 
 end LinearMap
 
+-- TODO: This should probably be moved to another file
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜]
   {m n : Type*} [Fintype m] [Fintype n] [DecidableEq n]
+  -- `a` and `b` should be thought of as subtypes of ℕ
+  {a b : Type*} [Fintype a] [Fintype b] (ea : a ↪ ℕ) (eb : b ↪ ℕ)
   (M : Matrix m n 𝕜)
 
 public noncomputable def singularValues : ℕ →₀ ℝ≥0 := M.toEuclideanLin.singularValues
@@ -357,7 +360,22 @@ public theorem singularValues_le_rank {n : ℕ}
 
 public theorem support_singularValues : M.singularValues.support = Finset.range M.rank := sorry
 
--- These should be thought of as subtypes of ℕ
-variable {a b : Type*} [Fintype a] [Fintype b]
+noncomputable def rightSingularMatrix
+  : Matrix n b 𝕜 := Matrix.of fun i j ↦
+    (Pi.basisFun 𝕜 n).repr (M.toEuclideanLin.rightSingularVectors (eb j)) i
+
+noncomputable def leftSingularMatrix
+  : Matrix m a 𝕜 := Matrix.of fun i j ↦
+    (Pi.basisFun 𝕜 m).repr (M.toEuclideanLin.leftSingularVectors (ea j)) i
+
+noncomputable def centerSingularMatrix
+  : Matrix a b 𝕜 := Matrix.of fun i j ↦ if ea i = eb j then
+    RCLike.ofReal ↑(M.singularValues (ea i))
+  else 0
+
+theorem SVD (hea : Finset.range M.rank ⊆ Finset.image ea Finset.univ)
+  (heb : Finset.range M.rank ⊆ Finset.image eb Finset.univ)
+  : M.leftSingularMatrix ea * M.centerSingularMatrix ea eb * (M.rightSingularMatrix eb)ᴴ = M := by
+  sorry
 
 end Matrix
