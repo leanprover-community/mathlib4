@@ -74,6 +74,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
+@[use_set_notation]
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α
@@ -195,36 +196,9 @@ section Subset
 
 variable {s t : Finset α}
 
-instance : HasSubset (Finset α) :=
-  ⟨fun s t => ∀ ⦃a⦄, a ∈ s → a ∈ t⟩
-
-instance : HasSSubset (Finset α) :=
-  ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
-
 instance partialOrder : PartialOrder (Finset α) := inferInstance
 
 theorem subset_of_le : s ≤ t → s ⊆ t := id
-
-instance : IsRefl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsRefl (Finset α) (· ≤ ·)
-
-instance : IsTrans (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
-
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)
-
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
-
-instance : IsTrans (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· < ·)
-
-instance : IsAsymm (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsAsymm (Finset α) (· < ·)
-
-instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
   Iff.rfl

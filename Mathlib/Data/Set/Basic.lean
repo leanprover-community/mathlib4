@@ -82,9 +82,6 @@ instance instBoundedOrder : BoundedOrder (Set α) where
   bot := ∅
   top := univ
 
-instance : HasSSubset (Set α) :=
-  ⟨(· < ·)⟩
-
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
   rfl
@@ -102,7 +99,7 @@ theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·
   rfl
 
 @[simp]
-theorem le_eq_subset : ((· ≤ ·) : Set α → Set α → Prop) = (· ⊆ ·) :=
+theorem le_eq_subset : (· ≤ ·) = ((· ⊆ ·) : Set α → Set α → Prop) :=
   rfl
 
 @[simp]
@@ -237,40 +234,6 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
   rfl
 
 /-! ### Subset and strict subset relations -/
-
-
-instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (· ≤ ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (· ≤ ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
-
-instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  show IsAntisymm (Set α) (· ≤ ·) by infer_instance
-
-instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  show IsIrrefl (Set α) (· < ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
-
-instance : IsAsymm (Set α) (· ⊂ ·) :=
-  show IsAsymm (Set α) (· < ·) by infer_instance
-
-instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
 @[grind =]

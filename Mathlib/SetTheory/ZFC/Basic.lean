@@ -44,7 +44,7 @@ universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
@@ -218,12 +218,7 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[deprecated (since := "2025-11-05")] alias nonempty_toSet_iff := nonempty_coe
 
-/-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
-protected def Subset (x y : ZFSet.{u}) :=
-  ∀ ⦃z⦄, z ∈ x → z ∈ y
-
-instance : HasSubset ZFSet := ⟨ZFSet.Subset⟩
-instance : HasSSubset ZFSet := ⟨(· < ·)⟩
+instance : Preorder ZFSet := inferInstance
 
 @[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
 @[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl

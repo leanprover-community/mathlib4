@@ -189,9 +189,12 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
+instance (priority := 100) : LE A where
+  le H K := ∀ ⦃x⦄, x ∈ H → x ∈ K
+
 instance (priority := 100) instPartialOrder : PartialOrder A :=
-  { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
-    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
+  { instLE, PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
+    lt := fun s t ↦ s ≤ t ∧ ¬t ≤ s }
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl

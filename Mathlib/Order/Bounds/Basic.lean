@@ -133,8 +133,8 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 @[simp] lemma IsCoinitialFor.of_subset (hst : s ⊆ t) : IsCoinitialFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
-alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
+alias LE.le.iscofinalfor := IsCofinalFor.of_subset
+alias LE.le.iscoinitialfor := IsCoinitialFor.of_subset
 
 @[refl] protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
 @[refl] protected lemma IsCoinitialFor.rfl : IsCoinitialFor s s := .of_subset .rfl
@@ -960,7 +960,7 @@ theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
 
 theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
-  simp [IsLeast, mem_lowerBounds]
+  simp [IsLeast, mem_lowerBounds, sdiff_le_iff]
 
 theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
     IsGreatest {w | Disjoint w a} (aᶜ) := by

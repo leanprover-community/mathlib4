@@ -116,7 +116,7 @@ lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   suffices t ⊆ s \ t by
     have h := @disjoint_sdiff_self_right _ t s _
     specialize h le_rfl this
-    simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h
+    simp only [Set.bot_eq_empty, subset_empty_iff] at h
     refine hC.empty_notMem_disjointOfDiff hs ht ?_
     rwa [← h]
   rw [← hC.sUnion_disjointOfDiff hs ht]
@@ -142,7 +142,6 @@ lemma pairwiseDisjoint_insert_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ 
   refine PairwiseDisjoint.insert_of_notMem h (hC.notMem_disjointOfDiff hs ht) fun u hu ↦ ?_
   simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_disjointOfDiff hs ht)
-  simp only [Set.le_eq_subset]
   exact subset_sUnion_of_mem hu
 
 end disjointOfDiff
@@ -288,7 +287,7 @@ lemma disjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : �
   have h_disj : u ≤ ⊥ :=
     hC.disjoint_sUnion_disjointOfDiffUnion hs hI (subset_sUnion_of_mem huI)
     (subset_sUnion_of_mem hu_disjointOfDiffUnion)
-  simp only [Set.bot_eq_empty, Set.le_eq_subset, subset_empty_iff] at h_disj
+  simp only [Set.bot_eq_empty, subset_empty_iff] at h_disj
   refine hC.empty_notMem_disjointOfDiffUnion hs hI ?_
   rwa [h_disj] at hu_disjointOfDiffUnion
 
@@ -364,7 +363,6 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
             (hC.subset_of_diffUnion_disjointOfDiffUnion h1.1 h1.2) ?_
             (@disjoint_sdiff_left _ (⋃₀ J) s) (Or.inl
               (hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2))
-          simp only [mem_coe, Set.le_eq_subset]
           apply sUnion_subset_iff.mp
           exact (hK3 i hi).trans (subset_sUnion_of_mem hi)
         have h8 : Function.onFun Disjoint K1 s i := by

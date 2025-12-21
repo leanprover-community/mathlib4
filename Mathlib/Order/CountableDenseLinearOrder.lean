@@ -196,7 +196,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
-    · change _ ⊆ f'.val.image _
+    · change f.val ⊆ f'.val.image _
       rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
 

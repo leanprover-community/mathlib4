@@ -516,7 +516,7 @@ theorem indep_iff : M.Indep I ↔ ∃ B, M.IsBase B ∧ I ⊆ B :=
   M.indep_iff' (I := I)
 
 theorem setOf_indep_eq (M : Matroid α) : {I | M.Indep I} = lowerClosure ({B | M.IsBase B}) := by
-  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf, le_eq_subset]
+  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf]
 
 theorem Indep.exists_isBase_superset (hI : M.Indep I) : ∃ B, M.IsBase B ∧ I ⊆ B :=
   indep_iff.1 hI
