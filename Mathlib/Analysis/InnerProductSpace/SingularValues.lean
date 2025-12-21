@@ -269,10 +269,14 @@ Let `T : E →ₗ[𝕜] F`. Suppose `σ₁, ..., σₙ` are the singular values 
 right singular vectors of `T`, and `f₁, ..., fₙ` are the left singular vectors of `T`. Then,
 `T = σ₁f₁e₁ᴴ + ... + σₙfₙeₙᴴ`, where `xᴴ` denotes the conjugate transpose/dual vector `y ↦ ⟪x, y⟫`.
 -/
-theorem finsum_svd_2
-  : finsum (fun i : ℕ ↦ ((T.singularValues i).toReal : 𝕜) • dualTensorHom 𝕜 E F
-      (InnerProductSpace.toDualMap 𝕜 E (T.rightSingularVectors i) ⊗ₜ[𝕜] T.leftSingularVectors i))
-      = T := sorry
+def outerProduct (w : F) (v : E) : E →ₗ[𝕜] F :=
+  .comp (LinearMap.toSpanSingleton 𝕜 F w) (innerₛₗ 𝕜 v)
+
+theorem finsum_svd_2 :
+  finsum (fun i : ℕ ↦
+    ((T.singularValues i).toReal : 𝕜) •
+      outerProduct (T.leftSingularVectors i) (T.rightSingularVectors i)
+  ) = T := sorry
 
 /-
 These are lemmas that don't necessarily fit into any category, but need to be established
