@@ -75,7 +75,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
 private theorem nthRoot.always_exists (n a : ℕ) :
     ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by
   have H : ∃ c, a < (c + 1) ^ (n + 1) := ⟨a, Nat.le_self_pow (by positivity) (a + 1)⟩
-  let (eq := hc) c := Nat.find H
+  let +nondep (eq := hc) c := Nat.find H
   refine ⟨c, ?_, hc ▸ Nat.find_spec H⟩
   cases c with
   | zero => simp
