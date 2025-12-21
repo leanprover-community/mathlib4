@@ -160,22 +160,9 @@ def cartesianMonoidalCategory (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks
 
 attribute [local instance] cartesianMonoidalCategory
 
-#print CartesianMonoidalCategory.toSemiCartesianMonoidalCategory
-
-#check SemiCartesianMonoidalCategory.toMonoidalCategory
-
-instance (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks C] :
-    MonoidalCategory C :=
-  by
-    letI := cartesianMonoidalCategory T h
-    infer_instance
-
-
 example (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks C] (Y : C) :
   letI := cartesianMonoidalCategory T h
   X ⊗ Y = pullbackObj (h.from X) (h.from Y) := rfl
-
-
 
 end ChosenPullbacks
 
@@ -195,7 +182,7 @@ def mapPullbackIsoProd [ChosenPullbacks C] (Y Z : Over X) :
     (Over.map Z.hom).obj ((pullback Z.hom).obj Y) ≅ Y ⊗ Z :=
   Iso.refl _
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma mapPullbackIsoProd_hom [ChosenPullbacks C] {Y Z : Over X} :
     (mapPullbackIsoProd Y Z).hom = 𝟙 _ :=
   rfl
