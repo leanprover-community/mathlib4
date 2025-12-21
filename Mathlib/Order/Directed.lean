@@ -309,13 +309,14 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
 end PartialOrder
 
 -- see Note [lower instance priority]
-@[to_dual]
-instance (priority := 100) [SemilatticeSup α] : IsDirectedOrder α :=
+@[to_dual instIsCodirectedOrder]
+instance (priority := 100) SemilatticeSup.instIsDirectedOrder [SemilatticeSup α] :
+    IsDirectedOrder α :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
 -- see Note [lower instance priority]
-@[to_dual]
-instance (priority := 100) [LE α] [OrderTop α] : IsDirectedOrder α :=
+@[to_dual instIsCodirectedOrder]
+instance (priority := 100) OrderTop.instIsDirectedOrder [LE α] [OrderTop α] : IsDirectedOrder α :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
 
 namespace DirectedOn
