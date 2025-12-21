@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Operator.Completeness
 public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Topology.MetricSpace.PiNat
-
+public import Mathlib.Analysis.LocallyConvex.Separation
 /-!
 # Weak dual of normed space
 -- **ADD SOMETHING?**
@@ -81,6 +81,7 @@ give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a su
 
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
+* [H. Brezis, *Functional Analysis, Sobolev spaces, and partial differential equations*][brezis2011]
 
 ## Tags
 
@@ -342,10 +343,10 @@ lemma WeakClosure_subset_closedBall {s : Set (StrongDual 𝕜₁ (StrongDual �
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
-theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜₁ E₁) (α : I → 𝕜₁) :
-    (∀ {ε : ℝ} (hε : 0 < ε), ∃ x : E₁, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) ↔
+theorem Helly_opp {I : Type*} [Fintype I] (f : I → StrongDual 𝕜₁ E₁) (α : I → 𝕜₁) :
+    (∀ {ε : ℝ} (_ : 0 < ε), ∃ x : E₁, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - α i‖ < ε) →
     (∀ β : I → 𝕜₁, ‖∑ i : I, β i * α i‖ ≤ ‖∑ i : I, β i • f i‖) := by
-  refine ⟨fun h β ↦ ?_, fun h ↦ ?_⟩
+  intro h β
   · by_cases hβ : β = 0
     · simp [hβ]
     replace hβ : 0 < ∑ i, ‖β i‖ := by
@@ -371,14 +372,74 @@ theorem Helly {I : Type*} [Fintype I] (f : I → StrongDual 𝕜₁ E₁) (α : 
                 exact ContinuousLinearMap.unit_le_opNorm _ _ hx_le
         _ ≤ ‖∑ i : I, β i • f i‖ + ε := by
           rw [hε', mul_assoc, inv_mul_cancel₀ (by positivity), mul_one]
-  · sorry --for the first direction, `𝕜₁` and `E₁` were enough
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+/- Using `RCLike.geometric_hahn_banach_closed_point` can be extended to `RCLike`-/
+theorem Helly {I : Type*} [Fintype I] /- [DecidableEq I] -/ (f : I → StrongDual ℝ F) (γ : I → ℝ)
+    (H : ∀ β : I → ℝ, ‖∑ i : I, β i * γ i‖ ≤ ‖∑ i : I, β i • f i‖) :
+    ∀ {ε : ℝ} (_ : 0 < ε), ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - γ i‖ < ε := by
+  classical
+  let φ : F →ₗ[ℝ] (I → ℝ) :=
+    { toFun := fun x ↦ (fun i ↦ f i x)
+      map_add' (x y) := by simp [Pi.add_def]
+      map_smul' := by simp [Pi.smul_def] }
+  suffices hφ : γ ∈ closure (φ '' closedBall 0 1) by
+    intro ε hε
+    rw [Metric.mem_closure_iff] at hφ
+    obtain ⟨t, ⟨x, hx_mem, rfl⟩, ht_dist⟩ := hφ ε hε
+    refine ⟨x, mem_closedBall_zero_iff.mp hx_mem, fun i ↦ ?_⟩
+    rw [dist_pi_lt_iff hε] at ht_dist
+    specialize ht_dist i
+    rw [dist_comm] at ht_dist
+    congr
+  by_contra h_abs
+  obtain ⟨g, α, hg, hα⟩ := geometric_hahn_banach_closed_point
+    ((convex_closedBall 0 1).linear_image φ).closure isClosed_closure h_abs
+  let β : I → ℝ := fun i ↦ g (Pi.single i 1)
+  have hleft (x : _) (hx : x ∈ closedBall 0 1) : (∑ i, β i • f i) x ≤ α := by
+    apply le_of_lt <| lt_of_eq_of_lt _ <| hg (φ x) (subset_closure ⟨x, hx, rfl⟩)
+    simp only [coe_sum', coe_smul', Finset.sum_apply, Pi.smul_apply, LinearMap.coe_mk,
+      AddHom.coe_mk, β, φ]
+    simp_rw [smul_eq_mul, mul_comm, ← smul_eq_mul]
+    have h1 (i : I) : f i x • g ((Pi.single i 1) : I → ℝ) =
+      g ((f i) x • ((Pi.single i 1) : I → ℝ)) := by
+      simp-- [Eq.symm (map_smul_of_tower g ((f i) x) (Pi.single i 1))]
+    -- have h2 (i : I) : (f i) x • ((Pi.single i (1 : ℝ)) : I → ℝ) =
+    --   (Pi.single i ((f i) x) : I → ℝ):= by
+    --   rw [← Pi.single_smul i ((f i) x) 1, smul_eq_mul, mul_one]
+    simp_rw [h1, ← Pi.single_smul, smul_eq_mul, mul_one, ← map_sum,
+      Finset.univ_sum_single fun i ↦ (f i) x]
+  have hright : α < ∑ i, β i • γ i := by
+    apply lt_of_lt_of_eq hα
+    simp_rw [β, smul_eq_mul, mul_comm, ← smul_eq_mul, ← map_smul, ← map_sum]
+    congr
+    exact pi_eq_sum_univ' γ
+  replace hleft (x : _) (hx : x ∈ closedBall 0 1) : ‖(∑ i, β i • f i) x‖ ≤ α := by
+    rw [Real.norm_eq_abs, abs_eq_max_neg]
+    apply max_le
+    · exact hleft x hx
+    · rw [← map_neg]
+      apply hleft (-x)
+      simp_all
+  replace hleft : ‖∑ i, β i • f i‖ ≤ α := by
+    refine ContinuousLinearMap.opNorm_le_of_unit_norm ?_ (fun x hx ↦ ?_)
+    · apply le_trans (norm_nonneg _) <| hleft 0 (mem_closedBall_self (zero_le_one))
+    · apply le_trans (hleft x (mem_closedBall_zero_iff.mpr (le_of_eq hx))) (by rfl)
+  replace h : ‖∑ i, β i • f i‖ < ∑ i, β i • γ i := lt_of_le_of_lt hleft hright
+  have uff : ∑ i, β i • γ i ≤ ‖∑ i, β i • γ i‖ := by
+    exact Real.le_norm_self (∑ i, β i • γ i)
+  replace uff : _ < _ := lt_of_lt_of_le h uff
+  specialize H β
+  exact not_le_of_gt uff H
+
 
 
 -- #synth Module 𝕜 E (restate without `ε`?) -- I might be implicit below
-theorem three (I : Type*) [Fintype I] {φ : StrongDual 𝕜 (StrongDual 𝕜 E)} (hφ : ‖φ‖ ≤ 1)
+theorem three (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (hφ : ‖φ‖ ≤ 1)
     {ε : ℝ} (hε : 0 < ε)
-    (f : I → StrongDual 𝕜 E) : ∃ x : E, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
-  apply (Helly 𝕜 f (fun i ↦ φ (f i))).mpr _ hε
+    (f : I → StrongDual ℝ F) : ∃ x : F, ‖x‖ ≤ 1 ∧ ∀ i, ‖f i x - φ (f i)‖ < ε := by
+  apply Helly f (fun i ↦ φ (f i)) _ hε
   intro β
   calc ‖∑ i, β i * φ (f i)‖ = ‖φ (∑ i, β i • f i)‖ := by simp
                           _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
@@ -390,19 +451,19 @@ to move the inclusion back to `Normed.Module.Dual` and to keep here the full equ
 
 See [K. Yosida, "Functional Analysis", Chap IV, 8, Corollary to Theorem 3]. -/
 -- **RENAME!!!**
-theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜 E)) := inferInstance
-    closure[𝒯] (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)
-    = closedBall (0 : StrongDual 𝕜 (StrongDual 𝕜 E)) 1 := by
-  have : (inclusionInDoubleDualLi 𝕜 (E := E)) '' closedBall 0 1 ⊆ closedBall 0 1 := by
+theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F)) := inferInstance
+    closure[𝒯] (inclusionInDoubleDual ℝ F '' closedBall 0 1)
+    = closedBall (0 : StrongDual ℝ (StrongDual ℝ F)) 1 := by
+  have : (inclusionInDoubleDualLi ℝ (E := F)) '' closedBall 0 1 ⊆ closedBall 0 1 := by
     rw [Set.image_subset_iff]
     intro _ hx
     simp_all
   apply (WeakClosure_subset_closedBall _ this).antisymm
   -- have uno := @LinearMap.weakBilin_withSeminorms 𝕜 (StrongDual 𝕜 E) E _ _ _ _ _
   --   (topDualPairing 𝕜 E)
-  -- let F := (topDualPairing 𝕜 (StrongDual 𝕜 E)).toSeminormFamily
+  -- let F := (topDualPairing 𝕜 (StrongDual 𝕜  E)).toSeminormFamily
   -- let f := F 0
-  set B' := topDualPairing 𝕜 (StrongDual 𝕜 E) with hB'
+  set B' := topDualPairing ℝ (StrongDual ℝ F) with hB'
   let F' := LinearMap.toSeminormFamily B'
   -- let B := (topDualPairing 𝕜 E) This, I don't care
   -- let Estar' := WeakBilin B'
@@ -410,7 +471,7 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜
   -- let Estar'₀ := WeakDual 𝕜 (StrongDual 𝕜 E)
   -- let Estar'₁ := WeakDual 𝕜 E This is the weak top on E* not on E**
   -- let g₀ : Estar'₀ → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
-  have uno : WithSeminorms (𝕜 := 𝕜) (E := WeakDual 𝕜 (StrongDual 𝕜 E)) F' := by
+  have uno : WithSeminorms (𝕜 := ℝ) (E := WeakDual ℝ (StrongDual ℝ F)) F' := by
     apply LinearMap.weakBilin_withSeminorms
   -- have due'' := uno.hasBasis_zero_ball
   -- have due' := uno.mem_nhds_iff
@@ -427,15 +488,15 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜
   -- ·
 
 --
-  have tre := mem_closure_iff_nhds_basis' (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-    (t := (inclusionInDoubleDualLi 𝕜 (E := E) '' closedBall 0 1)) due --ci siamo quasi
+  have tre := mem_closure_iff_nhds_basis' (X := WeakDual ℝ (StrongDual ℝ F))
+    (t := (inclusionInDoubleDualLi ℝ (E := F) '' closedBall 0 1)) due --ci siamo quasi
   rw [tre]
   rintro ⟨I, ε⟩ hε
   -- refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
   -- · sorry
   · simp only [mem_closedBall] at hξ
-    obtain ⟨y, hy_le, hy_eq⟩ := three 𝕜 I hξ hε (·)
-    refine ⟨inclusionInDoubleDual 𝕜 E y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
+    obtain ⟨y, hy_le, hy_eq⟩ := three I hξ hε (·)
+    refine ⟨inclusionInDoubleDual ℝ F y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
     · --simp only at hy_le --useless of course
       simp only [Seminorm.mem_ball]
       apply Seminorm.finset_sup_apply_lt hε
@@ -444,34 +505,12 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜
       replace hy_eq := sub_zero (a := ξ) ▸ hy_eq ⟨i, hi⟩
       rw [LinearMap.toSeminormFamily_apply]
       simp only [map_sub, LinearMap.sub_apply, gt_iff_lt]
-      have repl_ξ := @topDualPairing_apply 𝕜 _ _ _ _ _ _ _ _ ξ i
-      have repl_iDD := @topDualPairing_apply 𝕜 _ _ _ _ _ _ _ _ (inclusionInDoubleDual 𝕜 E y) i
+      have repl_ξ := @topDualPairing_apply ℝ _ _ _ _ _ _ _ _ ξ i
+      have repl_iDD := @topDualPairing_apply ℝ _ _ _ _ _ _ _ _ (inclusionInDoubleDual ℝ F y) i
       -- rw [hB']
       erw [repl_ξ, repl_iDD] --not very nice, probably related to `(·)`
       exact hy_eq
 
-      -- simp only at hy_eq
---
---       set ξ' : StrongDual 𝕜 (StrongDual 𝕜 E):= by
---         use ξ
---         exact map_continuous ξ with hξ'
---         -- not really nice...
---       set v : StrongDual 𝕜 E →L[𝕜] 𝕜 := (inclusionInDoubleDual 𝕜 E) y - ξ' with hv
---       erw [← hv]
---       convert_to (⨆ i : I, F' i) v < ε
---       rw [Seminorm.coe_iSup_eq]
---       have := @Seminorm.iSup_apply 𝕜 _ _ _ _ I (fun i ↦ F' i) ?_ v
---       -- rw [hξ']
---       -- simp_rw [Finset.sup_eq_iSup]
---       -- simp at this
---
---         -- (x := ((inclusionInDoubleDual 𝕜 E) y - ξ))
---       -- rw [this]
---       -- simp only [Set.mem_image, mem_closedBall, dist_zero_right]
---       -- refine ⟨y, ?_, rfl⟩
---       -- sorry -- use somewhere hy.1
---     · simp
---       sorry -- use somewhere hy.2
 
 
 end Goldstine
