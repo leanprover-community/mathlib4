@@ -350,6 +350,7 @@ variable {f} in
 /-- Up to an equivalence, the category `DescentData` for a pseudofunctor `F` and
 a family of morphisms `f : X i ⟶ S` is unchanged when we replace `S` by an isomorphic object,
 or when we replace `f` by another family which generate the same sieve. -/
+@[simps]
 def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j, X' j ⟶ S'}
     (e : S' ≅ S) {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)}
     (w : ∀ j, p' j ≫ f (α j) = f' j ≫ e.hom)
@@ -359,9 +360,9 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
   inverse := pullFunctor F w'
   unitIso :=
     (pullFunctorIdIso F S).symm ≪≫ pullFunctorIso _ _ _ ≪≫
-      (pullFunctorCompIso _ _ _ _ (e.inv_hom_id) (fun _ ↦ rfl)).symm
+      (pullFunctorCompIso _ _ _ _ e.inv_hom_id (fun _ ↦ rfl)).symm
   counitIso :=
-    pullFunctorCompIso _ _ _ _ (e.hom_inv_id) (fun _ ↦ rfl) ≪≫
+    pullFunctorCompIso _ _ _ _ e.hom_inv_id (fun _ ↦ rfl) ≪≫
       pullFunctorIso _ _ _ ≪≫ pullFunctorIdIso F S'
   functor_unitIso_comp D := by
     ext j
