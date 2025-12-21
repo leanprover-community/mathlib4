@@ -424,6 +424,10 @@ theorem nonempty_iff_univ_nonempty : Nonempty α ↔ (univ : Set α).Nonempty :=
   ⟨fun ⟨x⟩ => ⟨x, trivial⟩, fun ⟨x, _⟩ => ⟨x⟩⟩
 
 @[simp]
+lemma nonempty_univ_iff (s : Set α) : (Set.univ : Set s).Nonempty ↔ s.Nonempty := by
+  rw [← nonempty_iff_univ_nonempty, nonempty_coe_sort]
+
+@[simp]
 theorem univ_nonempty : ∀ [Nonempty α], (univ : Set α).Nonempty
   | ⟨x⟩ => ⟨x, trivial⟩
 

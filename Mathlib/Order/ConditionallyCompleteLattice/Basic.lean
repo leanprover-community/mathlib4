@@ -550,16 +550,11 @@ theorem csInf_eq_bot_of_bot_mem [OrderBot α] {s : Set α} (hs : ⊥ ∈ s) : sI
 theorem csSup_eq_top_of_top_mem [OrderTop α] {s : Set α} (hs : ⊤ ∈ s) : sSup s = ⊤ :=
   csInf_eq_bot_of_bot_mem (α := αᵒᵈ) hs
 
-open Function
-
 variable [WellFoundedLT α]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id s hs :=
-  IsLeast.csInf_eq ⟨argminOn_mem _ _ _, fun _ ha => argminOn_le id _ ha⟩
-
 theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
-  rw [sInf_eq_argmin_on hs]
-  exact ⟨argminOn_mem _ _ _, fun a ha => argminOn_le id _ ha⟩
+  suffices IsLeast s ((InvImage.wf id wellFounded_lt).min s hs) by rwa [IsLeast.csInf_eq this]
+  exact ⟨WellFounded.min_mem _ _ _, fun x hx ↦ WellFounded.min_le _ hx hs⟩
 
 theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
   le_isGLB_iff (isLeast_csInf hs).isGLB
