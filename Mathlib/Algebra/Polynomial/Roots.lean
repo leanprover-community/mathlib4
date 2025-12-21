@@ -668,7 +668,7 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R
 open Cardinal in
 lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card
     (f : R[X]) (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) : f = 0 := by
-  obtain hR|hR := finite_or_infinite R
+  obtain hR | hR := finite_or_infinite R
   · have := Fintype.ofFinite R
     apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
     simpa only [mk_fintype, Nat.cast_lt] using hfR
