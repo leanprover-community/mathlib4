@@ -35,7 +35,7 @@ is also proved later in the file.
 
 ## Tags
 
-uniform integrable, uniformly tight, Vitali convergence theorem
+uniformly integrable, uniformly tight, Vitali convergence theorem
 -/
 
 @[expose] public section
@@ -260,7 +260,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   set E : Set α := Ef ∪ Eg
   -- use uniform integrability to get control on the limit over E
   have hgE' := MemLp.restrict E hg'
-  have huiE := hui.restrict  E
+  have huiE := hui.restrict E
   have hfgE : (∀ᵐ x ∂(μ.restrict E), Tendsto (fun n => f n x) atTop (𝓝 (g x))) :=
     ae_restrict_of_ae hfg
   -- `tendsto_Lp_of_tendsto_ae_of_meas` needs to
@@ -278,7 +278,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   have hfngEε := calc
     eLpNorm (E.indicator (f n - g)) p μ
       = eLpNorm (f n - g) p (μ.restrict E) := eLpNorm_indicator_eq_eLpNorm_restrict hmE
-    _ ≤ ε / 3                            := hfngε n hn
+    _ ≤ ε / 3                              := hfngε n hn
   -- get exterior estimates
   have hmgEc : AEStronglyMeasurable _ μ := (hg.indicator hmE.compl).aestronglyMeasurable
   have hgEcε := calc

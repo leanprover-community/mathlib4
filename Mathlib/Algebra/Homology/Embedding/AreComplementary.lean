@@ -31,7 +31,7 @@ namespace ComplexShape
 
 namespace Embedding
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (e₁ : Embedding c₁ c) (e₂ : Embedding c₂ c)
 
 /-- Two embedding `e₁` and `e₂` into a complex shape `c : ComplexShape ι`
@@ -296,7 +296,7 @@ namespace HomologicalComplex
 
 section
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
   (K : HomologicalComplex C c) {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c}
   [e₁.IsTruncLE] [e₂.IsTruncGE] (ac : e₁.AreComplementary e₂)
 
