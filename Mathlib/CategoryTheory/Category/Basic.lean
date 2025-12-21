@@ -224,8 +224,8 @@ section
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 @[to_dual existing assoc]
-def Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
-    h ≫ g ≫ f = (h ≫ g) ≫ f := by grind
+lemma Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
+    h ≫ g ≫ f = (h ≫ g) ≫ f := (Category.assoc h g f).symm
 
 /-- postcompose an equation between morphisms by another morphism -/
 @[to_dual (reorder := w h) whisker_eq
