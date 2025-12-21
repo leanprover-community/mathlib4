@@ -160,6 +160,20 @@ def ofFinitePresentation [FinitePresentation R S] :
 
 section Construction
 
+/-- Transport a presentation along an algebra isomorphism. -/
+@[simps toGenerators relation]
+def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) :
+    Presentation R T ι σ where
+  __ := Generators.ofAlgEquiv P.toGenerators e
+  relation i := P.relation i
+  span_range_relation_eq_ker := by simp [P.span_range_relation_eq_ker]
+
+@[simp]
+lemma dimension_ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) : (P.ofAlgEquiv e).dimension = P.dimension :=
+  rfl
+
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
 noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
     Presentation R S PEmpty.{w + 1} PEmpty.{t + 1} where
