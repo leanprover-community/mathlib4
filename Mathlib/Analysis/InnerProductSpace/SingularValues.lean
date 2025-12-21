@@ -323,6 +323,17 @@ public theorem nnnorm_sub_of_finrank_le_le_singularValues {n : ℕ} {R : E →�
   (hR : Module.finrank 𝕜 (range T) ≤ n)
   : ‖(T - R).toContinuousLinearMap‖₊ ≤ T.singularValues n:= sorry
 
+/--
+A characterization of singular values. Part of 7.92 in LADR 4th edition.
+-/
+public theorem iInf_finrank_le_eq_singularValues (n : ℕ) :
+  ⨅ S : {R : E →ₗ[𝕜] F // Module.finrank 𝕜 (range T) ≤ n},
+    ‖(T - S).toContinuousLinearMap‖₊ = T.singularValues n := by
+  -- This should be a direct consequence of the previous few lemmas, rather than very difficult
+  -- as it was in the infinite-dimensional case.
+  -- This is a low priority theorem.
+  sorry
+
 /-
 These are lemmas that don't necessarily fit into any category, but need to be established
 eventually. They will need to be moved around later.
