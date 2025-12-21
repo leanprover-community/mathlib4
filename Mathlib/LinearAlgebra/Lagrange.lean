@@ -449,10 +449,40 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
-open scoped Classical in
-theorem interpolate_poly_eq_self
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+theorem interpolate_formula : interpolate s v r =
+    ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) * (∏ j ∈ s.erase i, (X - C (v j))) := by
+  simp_rw [interpolate_apply]
+  unfold Lagrange.basis basisDivisor
+  congr! 1 with i hi
+  rw [division_def, C_mul, prod_mul_distrib, mul_assoc, ← prod_inv_distrib, map_prod]
+
+theorem iterate_derivative_interpolate [CommRing ι] (hvs : Set.InjOn v s) {k : ℕ} (hk : k ≤ #s - 1) :
+    derivative^[k] (interpolate s v r) = k.factorial *
+      ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) *
+      ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∏ a ∈ t, (X - C (v a)) := by
+  classical
+  simp_rw [interpolate_formula, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
+    ← mul_assoc, mul_comm (a := (k.factorial : F[X])), mul_assoc]
+  congr! 2 with i hi
+  have hvs' := hvs.mono (coe_subset.mpr (erase_subset i s))
+  calc
+    derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
+    derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by
+      rw [Finset.prod_image hvs']
+    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powerset with #t = #s - (k + 1),
+      ∏ va ∈ t, (X - C va) := by
+      have hcard : #((s.erase i).image v) = #s - 1 := by
+        rw [card_image_of_injOn hvs', card_erase_of_mem hi]
+      have : k ≤ #((s.erase i).image v) := by rwa [hcard]
+      rw [iterate_derivative_prod_X_sub_C this]
+      congr! 5
+      omega
+    _ = k.factorial * ∑ t ∈ (s.erase i).powerset with #t = #s - (k + 1),
+      ∏ a ∈ t, (X - C (v a)) := by
+      sorry
+
+-- later: analog of below
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
@@ -469,7 +499,7 @@ theorem leadingCoeff_eq_sum
   have s_card : s.card > 0 := by by_contra! h; simp_all
   have hP' : P.degree < s.card := by grind [Nat.cast_lt]
   rw [leadingCoeff, P_natDegree]
-  rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
+  rw (occs := [1]) [eq_interpolate hvs hP']
   rw [interpolate_apply, finset_sum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
