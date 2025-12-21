@@ -50,7 +50,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
 Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
 def laurentAux : RatFunc R →+* RatFunc R :=
   RatFunc.mapRingHom
-    ( { toFun := taylor r
+    ({ toFun := taylor r
         map_add' := map_add (taylor r)
         map_mul' := taylor_mul _
         map_zero' := map_zero (taylor r)

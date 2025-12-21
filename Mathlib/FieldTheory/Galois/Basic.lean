@@ -320,8 +320,7 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
     (IntermediateField.le_iff_le _ _).mpr le_rfl
-  suffices
-    finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
+  suffices finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
     exact (IntermediateField.eq_of_le_of_finrank_eq' K_le this).symm
   classical
   rw [IntermediateField.finrank_fixedField_eq_card,
