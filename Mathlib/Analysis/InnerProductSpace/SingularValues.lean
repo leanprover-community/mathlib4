@@ -160,17 +160,33 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
       (T.isSymmetric_adjoint_comp_self.eigenvectorBasis rfl)
       (Set.toFinite _)
 
+public noncomputable def leftSingularVectors : ℕ →₀ F :=
+  have := T -- Temporary trick to make sure that T is a paramater of the definition
+  sorry
+
 public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := sorry
+
+public theorem leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n) (i : Fin n)
+  : (sorry : Prop) := sorry
 
 public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
   : T.rightSingularVectors i = 0 := sorry
 
+public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 F ≤ i)
+  : T.leftSingularVectors i = 0 := sorry
+
 public theorem hasEigenvector_adjoint_comp_self_rightSingularVectors
   {i : ℕ} (hi : i < Module.finrank 𝕜 E)
-  : Module.End.HasEigenvector (adjoint T ∘ₗ T) (T.singularValues i ^ 2).toReal
+  : Module.End.HasEigenvector (adjoint T ∘ₗ T) ((T.singularValues i).toReal ^ 2)
     (T.rightSingularVectors i) := by
   -- Prove from `LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis`
+  sorry
+
+public theorem hasEigenvector_self_comp_adjoint_leftSingularVectors
+  {i : ℕ} (hi : i < Module.finrank 𝕜 F)
+  : Module.End.HasEigenvector (T ∘ₗ adjoint T) ((T.singularValues i).toReal ^ 2)
+    (T.leftSingularVectors i) := by
   sorry
 
 public theorem orthonormal_rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n)
@@ -178,8 +194,12 @@ public theorem orthonormal_rightSingularVectors_fin {n : ℕ} (hn : Module.finra
   -- Need to somehow use the fact that the `eigenvectorBasis` is an `OrthonormalBasis`.
   sorry
 
+public theorem orthonormal_leftSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 F = n)
+  : Orthonormal 𝕜 (fun i : Fin n ↦ T.leftSingularVectors i) := by
+  sorry
+
 /--
-The infinite list of right singular vectors is orthogonal.
+The infinite sequence of right singular vectors is orthogonal.
 
 The first `dim(E)` right singular vectors are also unit vectors and thus orthonormal: see
 `orthonormal_rightSingularVectors_fin`
@@ -188,5 +208,8 @@ TODO: Not sure if the name `orthogonal_rightSingularVectors` is better.
 -/
 public theorem pairwise_inner_rightSingularVectors_eq_zero
   : Pairwise fun (i j : ℕ) ↦ ⟪T.rightSingularVectors i, T.rightSingularVectors j⟫_𝕜 = 0 := sorry
+
+public theorem pairwise_inner_leftSingularVectors_eq_zero
+  : Pairwise fun (i j : ℕ) ↦ ⟪T.leftSingularVectors i, T.leftSingularVectors j⟫_𝕜 = 0 := sorry
 
 end LinearMap
