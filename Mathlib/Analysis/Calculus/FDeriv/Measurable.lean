@@ -404,7 +404,7 @@ theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [Mea
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
     [h : SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
-  rcases h.out with h𝕜|hF
+  rcases h.out with h𝕜 | hF
   · exact stronglyMeasurable_iff_measurable_separable.2
       ⟨measurable_deriv f, isSeparable_range_deriv _⟩
   · exact (measurable_deriv f).stronglyMeasurable
@@ -928,7 +928,7 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  rcases h.out with hα|hF
+  rcases h.out with hα | hF
   · have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
     apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)
