@@ -17,15 +17,15 @@ In this file we introduce establish some basic facts of positive linear function
 
 ## Main results
 
-- `f_of_self_adjoint_is_real`: if `a` is a self-adjoint element of the C*-algebra, `f a` must
+- `re_of_isSelfAdjoint`: if `a` is a self-adjoint element of the C*-algebra, `f a` must
   be a real number.
-- `f_of_a_star_a_is_real`: a useful corrollary that states that `f (a * star a)` is real for all
+- `re_of_self_star_self`: a useful corrollary that states that `f (a * star a)` is real for all
   `a` in `A`.
 - `PreInnerProductSpaceOnA` : the `PreInnerProductSpace` structure over `A` induced by defining
   the inner product, `inner ℂ a b := f (star a * b)`.
-- `f_inner_mul_inner_self_le` : the inner product satisfies a version of the Cauchy-Schwarz
+- `induced_inner_mul_inner_self_le` : the inner product satisfies a version of the Cauchy-Schwarz
   inequality.
-- `f_inner_norm_sq_self_le` : the inner product satisfies the Cauchy-Schwarz inequality.
+- `induced_inner_norm_sq_self_le` : the inner product satisfies the Cauchy-Schwarz inequality.
 -/
 
 @[expose] public section
