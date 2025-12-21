@@ -19,9 +19,10 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic
 
+/-- An `(attr := ...)` argument for applying the same attributes to multiple declarations. -/
 syntax optAttrArg := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
 
-/-- An `(attr := ...)` otion for apply the same attributes to multiple declarations. -/
+/-- Elaborate an `(attr := ...)` argument. -/
 def elabOptAttrArg : TSyntax ``optAttrArg → TermElabM (Array Attribute)
   | `(optAttrArg| (attr := $[$attrs],*)) => elabAttrs attrs
   | _ => pure #[]
@@ -55,7 +56,7 @@ Arguments:
   If it is `none`, only the doc-string of `src` is used.
 -/
 def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
-    (attrs : (TSyntax ``optAttrArg))
+    (attrs : TSyntax ``optAttrArg)
     (construct : Expr → List Name → MetaM (Expr × List Name))
     (docstringPrefix? : Option String := none) :
     MetaM Unit := do
