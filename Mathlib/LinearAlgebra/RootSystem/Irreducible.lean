@@ -87,6 +87,20 @@ lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
   have h' : P.reflection i x ∈ (q : Submodule K M) := P.mem_invtRootSubmodule_iff.mp q.property i hx
   contradiction
 
+open Module in
+lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    q = ⊤ ↔ ∀ i, P.root i ∈ (q : Submodule K M) := by
+  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  rw [Subtype.mk_eq_top_iff (by simp), Submodule.eq_top_iff']
+  intro x
+  by_contra hx₀
+  have h' : x ∈ Submodule.span K (Set.range P.root) := by
+    simp [‹P.IsRootSystem›.span_root_eq_top, Submodule.mem_top]
+  exact hx₀ (Submodule.span_le.mpr (Set.range_subset_iff.mpr h) h')
+
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
