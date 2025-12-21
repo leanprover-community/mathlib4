@@ -124,14 +124,13 @@ def vlt (x y : R) : Prop := ¬ y ≤ᵥ x
 
 macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.vlt $a $b)
 
-lemma vlt_iff (x y : R) : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
+@[simp, grind =] lemma not_vle {x y : R} : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
+@[simp, grind =] lemma not_vlt {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
 
-@[deprecated (since := "2025-12-20")] alias srel_iff := vlt_iff
+@[deprecated not_vle (since := "2025-12-20")]
+lemma srel_iff {x y : R} : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 
-@[simp]
-lemma not_vlt_iff {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := Iff.rfl.not_left
-
-@[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt_iff
+@[deprecated (since := "2025-12-20")] alias not_srel_iff := not_vlt
 
 @[simp]
 lemma vle_refl (x : R) : x ≤ᵥ x := by
@@ -223,7 +222,7 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
 
 @[simp] lemma zero_vlt_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose! hy
-  rw [not_vlt_iff] at hy ⊢
+  rw [not_vlt] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
   exact vle_mul_cancel hx hy
 
@@ -510,7 +509,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t := by
-  rw [lt_iff_not_ge, vlt_iff, mk_le_mk]
+  rw [lt_iff_not_ge, ← not_vle, mk_le_mk]
 
 @[simp]
 lemma ValueGroupWithZero.mk_pos {x : R} {s : posSubmonoid R} :
@@ -659,7 +658,7 @@ lemma vle_iff_le : x ≤ᵥ y ↔ v x ≤ v y :=
 @[deprecated (since := "2025-12-20")] alias rel_iff_le := vle_iff_le
 
 lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
-  simp [lt_iff_not_ge, ← Compatible.vle_iff_le, vlt_iff]
+  simp [lt_iff_not_ge, ← Compatible.vle_iff_le]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
 
@@ -706,7 +705,7 @@ instance : Preorder (WithPreorder R) where
   le_refl _ := vle_refl _
   le_trans _ _ _ := vle_trans
   lt (x y : R) := x <ᵥ y
-  lt_iff_le_not_ge (x y : R) := by have := vle_total x y; aesop
+  lt_iff_le_not_ge (x y : R) := by have := vle_total x y; grind
 
 /-- The valuative relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
@@ -983,7 +982,7 @@ lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGr
   obtain ⟨a, b, hab⟩ := exists_valuation_div_valuation_eq γ.val
   lift a to posSubmonoid R using by
     contrapose! hab
-    rw [posSubmonoid_def, not_vlt_iff, ← valuation_eq_zero_iff] at hab
+    rw [posSubmonoid_def, not_vlt, ← valuation_eq_zero_iff] at hab
     simp [hab, eq_comm]
   use a, b
 
@@ -1110,9 +1109,8 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   [ValuativeRel A] [ValuativeRel B] [Algebra A B]
   [ValuativeExtension A B]
 
-lemma vlt_iff_vlt (a b : A) :
-    algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
-  rw [vlt_iff, vle_iff_vle, vlt_iff]
+lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
+  rw [← not_vle, vle_iff_vle, not_vle]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_srel := vlt_iff_vlt
 
