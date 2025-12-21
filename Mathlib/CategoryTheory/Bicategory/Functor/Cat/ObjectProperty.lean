@@ -108,6 +108,16 @@ def mapComp {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) :
   ((P.prop Z).fullyFaithfulι.whiskeringRight _).preimageIso
     (Functor.isoWhiskerLeft (P.prop X).ι (Cat.Hom.toNatIso (F.mapComp f g)))
 
+@[simp]
+lemma mapComp_hom_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
+    (P.mapComp f g).hom.app M = ObjectProperty.homMk
+      ((F.mapComp f g).hom.toNatTrans.app M.obj) := rfl
+
+@[simp]
+lemma mapComp_inv_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
+    (P.mapComp f g).inv.app M = ObjectProperty.homMk
+      ((F.mapComp f g).inv.toNatTrans.app M.obj) := rfl
+
 /-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
 the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj B`
 consisting of objects satisfying `P`. -/
