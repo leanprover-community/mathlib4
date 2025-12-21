@@ -42,7 +42,10 @@ initialize registerBuiltinAttribute {
       throwError "`to_fun` can only be used as a global attribute"
     addRelatedDecl src "fun_" "" ref stx? (docstringPrefix? := s!"Eta-expanded form of `{src}`")
       fun value levels => do
-      let r ← Push.pullCore .lambda (← inferType value) none
+      let type ← inferType value
+      let r ← Push.pullCore .lambda type none
+      if r.expr == type then
+        throwError "`@[to_fun]` failed to eta-expand any part of `{.ofConstName src}`."
       return (← r.mkCast value, levels)
   | _ => throwUnsupportedSyntax }
 

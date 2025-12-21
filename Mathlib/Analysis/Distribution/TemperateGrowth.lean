@@ -160,7 +160,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
     _ = _ := by rw [mul_pow, ← pow_mul, pow_add]; ring
 
 /-- Composition of two temperate growth functions is of temperate growth. -/
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   apply hf.comp' (t := Set.univ)
