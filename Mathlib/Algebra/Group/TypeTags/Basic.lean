@@ -11,7 +11,6 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Set
-public import Mathlib.Util.AssertExists
 public import Mathlib.Logic.Nontrivial.Basic
 
 /-!

@@ -5,7 +5,6 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Mathlib.Util.AssertExists
 public import Mathlib.Data.List.Defs
 
 /-!
