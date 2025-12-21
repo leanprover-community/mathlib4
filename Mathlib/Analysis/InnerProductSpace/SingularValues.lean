@@ -3,7 +3,7 @@ module
 public import Mathlib
 
 namespace LinearMap
-open NNReal
+open NNReal InnerProductSpace
 
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
@@ -95,6 +95,13 @@ public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) 
 
 
 
+public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
+  {n : ℕ} (hn : n < Module.finrank 𝕜 E)
+  : Module.End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
+  -- Can use `LinearMap.IsSymmetric.hasEigenvalue_eigenvalues`, or maybe this easily is provable
+  -- from `hasEigenvector_adjoint_comp_self_rightSingularVectors`.
+  sorry
+
 public theorem singularValues_antitone : Antitone T.singularValues := by
   -- Use `LinearMap.IsSymmetric.eigenvalues_antitone`, and either
   -- a) both of `LinearMap.singularValues_fin` and `LinearMap.eigenvalues_adjoint_comp_self_nonneg`
@@ -146,5 +153,40 @@ public theorem support_singularValues
     exact hn (T.singularValues_le_rank h)
   · intro hn
     exact (T.singularValues_lt_rank hn).ne'
+
+public noncomputable def rightSingularVectors : ℕ →₀ E :=
+  Finsupp.embDomain Fin.valEmbedding <|
+    Finsupp.ofSupportFinite
+      (T.isSymmetric_adjoint_comp_self.eigenvectorBasis rfl)
+      (Set.toFinite _)
+
+public theorem rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
+  : T.rightSingularVectors i = T.isSymmetric_adjoint_comp_self.eigenvectorBasis hn i := sorry
+
+public theorem rightSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 𝕜 E ≤ i)
+  : T.rightSingularVectors i = 0 := sorry
+
+public theorem hasEigenvector_adjoint_comp_self_rightSingularVectors
+  {i : ℕ} (hi : i < Module.finrank 𝕜 E)
+  : Module.End.HasEigenvector (adjoint T ∘ₗ T) (T.singularValues i ^ 2).toReal
+    (T.rightSingularVectors i) := by
+  -- Prove from `LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis`
+  sorry
+
+public theorem orthonormal_rightSingularVectors_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+  : Orthonormal 𝕜 (fun i : Fin n ↦ T.rightSingularVectors i) := by
+  -- Need to somehow use the fact that the `eigenvectorBasis` is an `OrthonormalBasis`.
+  sorry
+
+/--
+The infinite list of right singular vectors is orthogonal.
+
+The first `dim(E)` right singular vectors are also unit vectors and thus orthonormal: see
+`orthonormal_rightSingularVectors_fin`
+
+TODO: Not sure if the name `orthogonal_rightSingularVectors` is better.
+-/
+public theorem pairwise_inner_rightSingularVectors_eq_zero
+  : Pairwise fun (i j : ℕ) ↦ ⟪T.rightSingularVectors i, T.rightSingularVectors j⟫_𝕜 = 0 := sorry
 
 end LinearMap
