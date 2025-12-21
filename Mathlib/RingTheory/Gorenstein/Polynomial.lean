@@ -129,7 +129,7 @@ lemma Polynomial.localization_at_comap_maximal_isGorenstein_of_isGorenstein [IsN
     rw [maxeq]
     exact subsing i hi
   · let RXp := Localization.AtPrime p
-    have isp := (Ideal.isPrime_map_C_of_isPrime (IsMaximal.isPrime' (maximalIdeal R)))
+    have isp : ((maximalIdeal R).map C).IsPrime := Ideal.isPrime_map_C_of_isPrime
     have disj : Disjoint (p.primeCompl : Set R[X]) _ := disjoint_compl_left_iff.mpr lep
     let _ : (Ideal.map (algebraMap R RXp) (maximalIdeal R)).IsPrime := by
       rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map, algebraMap_eq]
