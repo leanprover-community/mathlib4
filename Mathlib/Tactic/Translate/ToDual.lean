@@ -151,8 +151,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cocones", ["Cones"]),
   ("fan", ["Cofan"]),
   ("cofan", ["Fan"]),
-  ("limit", ["Colimit"]),
-  ("colimit", ["Limit"]),
+
+  /- These cause problem with `IsSuccLimit` and `IsPredLimit`. -/
+  -- ("limit", ["Colimit"]),
+  -- ("colimit", ["Limit"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
