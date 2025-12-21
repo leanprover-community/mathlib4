@@ -363,26 +363,27 @@ noncomputable def fderivCLM :
 
 end fderiv
 
-section
+section iteratedFDeriv
 
 --
 open Distribution ContinuousMultilinearMap
 --
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 -- variable [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
--- variable [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 --
 noncomputable def iteratedFDerivCLM (i : ℕ) :
     𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E [×i]→L[ℝ] F) :=
-  Nat.recOn i
-    (mapCLM (continuousMultilinearCurryFin0 ℝ E F).symm)
-    fun j rec ↦
-      letI C : (E →L[ℝ] E [×j]→L[ℝ] F) →L[ℝ] (E [×(j+1)]→L[ℝ] F) :=
-        (continuousMultilinearCurryLeftEquiv ℝ (fun (_ : Fin j.succ) ↦ E) F).symm
-      (mapCLM C) ∘L fderivCLM ∘L rec
+  sorry -- fails to find a `Module ℝ (ContinuousMultilinearMap ℝ (fun i ↦ E) F)` instance; was
+  -- Nat.recOn i
+  --   (mapCLM (continuousMultilinearCurryFin0 ℝ E F).symm)
+  --   fun j rec ↦
+  --     letI C : (E →L[ℝ] E [×j]→L[ℝ] F) →L[ℝ] (E [×(j+1)]→L[ℝ] F) :=
+  --       (continuousMultilinearCurryLeftEquiv ℝ (fun (_ : Fin j.succ) ↦ E) F).symm
+  --     (mapCLM C) ∘L fderivCLM ∘L rec
 --
 -- TODO: write lemmas for this...
 --
+
 end iteratedFDeriv
 
 end Distribution
