@@ -252,8 +252,6 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
--- TODO: fix the linter violations, perhaps using a tactics which allows avoiding the rename_i
-set_option linter.flexible false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
@@ -306,8 +304,8 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
-  cases n <;> simp
+@[deprecated not_lt_zero (since := "2025-12-03")]
+protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
