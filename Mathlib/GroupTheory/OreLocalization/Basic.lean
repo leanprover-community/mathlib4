@@ -47,6 +47,7 @@ namespace OreLocalization
 
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
+set_option backward.proofsInPublic true in
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
@@ -483,7 +484,7 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
         rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
-  map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
+  map_one' := by rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂

@@ -59,7 +59,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ ≤ ∑ j ∈ Finset.univ.erase i, ‖A i j‖ :=
                 (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
 
-/-- If `A` is a row strictly dominant diagonal matrix, then it's determinant is nonzero. -/
+/-- If `A` is a row strictly dominant diagonal matrix, then its determinant is nonzero. -/
 theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   contrapose! h
@@ -69,7 +69,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k
   rw [Module.End.hasEigenvalue_iff, Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
-/-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/
+/-- If `A` is a column strictly dominant diagonal matrix, then its determinant is nonzero. -/
 theorem det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i ∈ Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]

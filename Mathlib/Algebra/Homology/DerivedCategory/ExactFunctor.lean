@@ -98,6 +98,10 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
+instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+    (ComplexShape.up ℤ)).functor.CommShift ℤ :=
+  inferInstanceAs ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
+
 /-- `DerivedCategory.singleFunctor` commutes with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
     DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
