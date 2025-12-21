@@ -25,7 +25,7 @@ The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B �
 This construction should be preferred when defining functors out of a sum.
 
 We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
-`inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
+`inrCompSum' : inr_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
