@@ -560,6 +560,28 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff φ =
 
 end Semiring
 
+section toSubring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a formal power series `p` and a subring `T` that contains the
+ coefficients of `p`, return the corresponding formal power series
+ whose coefficients are in `T`. -/
+def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : ℕ} : (p.toSubring T hp).coeff n = p.coeff n := by
+  rw [toSubring, coeff_mk]
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff :=
+  coeff_zero_eq_constantCoeff_apply p
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := ext fun n => by simp
+
+end toSubring
+
 section CommSemiring
 
 variable [CommSemiring R]
