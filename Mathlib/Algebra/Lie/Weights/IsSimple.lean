@@ -351,10 +351,10 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       rw [coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
       exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
     rw [h] at h_sl2_le
-    simp at h_sl2_le
-    have tt := sl2SubmoduleOfRoot_ne_bot i.1 hα₀
-    contradiction
-  · simp [h, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal]
+    simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule, le_bot_iff,
+      LieSubmodule.toSubmodule_eq_bot] at h_sl2_le
+    exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
+  · simp [h, invtSubmoduleToLieIdeal]
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
