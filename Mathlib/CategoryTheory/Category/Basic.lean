@@ -300,29 +300,28 @@ theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
-@[to_dual
+@[to_dual (reorder := f g)
 /-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
 -/]
-instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
+instance epi_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
-@[to_dual
+@[to_dual (reorder := hf hg)
 /-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
 -/]
-theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
+theorem epi_comp' {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
   inferInstance
 
-@[to_dual]
-theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g :=
+@[to_dual (reorder := f g)]
+theorem epi_of_epi (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g :=
   ⟨fun _ _ w => (cancel_epi (f ≫ g)).1 <| by simp only [Category.assoc, w]⟩
 
 @[to_dual]
-theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
-    (w : f ≫ g = h) : Epi g := by
+theorem epi_of_epi_fac {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h] (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
 /-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
@@ -330,8 +329,7 @@ is injective. -/
 @[to_dual
 /-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
 is injective. -/]
-lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
-    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+lemma epi_iff_forall_injective (f : X ⟶ Y) : Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
   ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
 
 @[to_dual]
