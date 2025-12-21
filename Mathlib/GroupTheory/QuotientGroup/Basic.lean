@@ -271,7 +271,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
   letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
   letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
   let
-    φ :-- φ is the natural homomorphism H →* (HN)/N.
+    φ : -- φ is the natural homomorphism H →* (HN)/N.
       H →*
       _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
