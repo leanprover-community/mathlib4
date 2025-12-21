@@ -135,21 +135,25 @@ attribute [local instance] ChosenPullbacksAlong.comp
 
 /-- The identity morphisms `𝟙 _` are exponentiable. -/
 @[simps]
-instance id (I : C) : ExponentiableMorphism (𝟙 I) :=
+def id (I : C) : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
+
+attribute [local instance] ExponentiableMorphism.id
 
 /-- The pushforward of the identity is naturally isomorphic to the identity functor. -/
 def pushforwardIdIso (I : C) : pushforward (𝟙 I) ≅ 𝟭 (Over I) := Iso.refl _
 
 /-- The composition of exponentiable morphisms is exponentiable. -/
 @[simps]
-instance comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
+def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     ExponentiableMorphism (f ≫ g) :=
   ⟨pushforward f ⋙ pushforward g,
     ofNatIsoLeft (pullbackAdjPushforward g |>.comp <| pullbackAdjPushforward f)
     (pullbackComp f g).symm⟩
+
+attribute [local instance] ExponentiableMorphism.comp
 
 /-- The natural isomorphism between pushforward of the composition and the composition of
 pushforward functors. -/
