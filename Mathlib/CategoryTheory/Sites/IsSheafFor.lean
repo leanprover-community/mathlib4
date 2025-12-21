@@ -795,6 +795,33 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
+/-- If `P` is a presheaf of types and `π : (i : I) → X i ⟶ B` is a family
+of morphism, this is the map from `P.obj (op B)` to the subtype of compatible
+families in `P.obj (op (X i))`. -/
+@[simps]
+def Arrows.toCompatible (s : P.obj (op B)) :
+    Subtype (Arrows.Compatible P π) where
+  val i := P.map (π i).op s
+  property i j Z gi gj h := by
+    dsimp
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, h]
+
+theorem isSheafFor_arrows_iff_bijective_toCompabible :
+    (ofArrows X π).IsSheafFor P ↔
+      Function.Bijective (Arrows.toCompatible P π) := by
+  rw [isSheafFor_arrows_iff]
+  refine ⟨fun h ↦ ⟨fun x₁ x₂ hx ↦
+      (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
+        (congr_fun (congr_arg Subtype.val hx.symm)),
+      fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
+  · obtain ⟨x, hx, _⟩ := h y hy
+    exact ⟨x, by ext; apply hx⟩
+  · obtain ⟨y, hy⟩ := h.2 ⟨x, hx⟩
+    rw [Subtype.ext_iff] at hy
+    dsimp at hy
+    subst hy
+    exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
+
 variable [(ofArrows X π).HasPairwisePullbacks]
 
 /--
