@@ -86,17 +86,32 @@ public theorem singularValues_of_finrank_le {i : ℕ}
 
 /- `T.singularValues i ^ 2` means `(↑(T.singularValues i)) ^ 2`, which  complies with the simp lemma
 `NNReal.coe_pow`. -/
+
 public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
   -- Should follow from `LinearMap.singularValues_fin` and
   -- `LinearMap.eigenvalues_adjoint_comp_self_nonneg`.
-  sorry
+  simp [T.singularValues_fin hn i, Real.sq_sqrt (T.eigenvalues_adjoint_comp_self_nonneg hn i)]
+
+
 
 public theorem singularValues_antitone : Antitone T.singularValues := by
   -- Use `LinearMap.IsSymmetric.eigenvalues_antitone`, and either
   -- a) both of `LinearMap.singularValues_fin` and `LinearMap.eigenvalues_adjoint_comp_self_nonneg`
   -- or b) `LinearMap.sq_singularValues_fin` and some order lemmas about squaring and `NNReal`
-  sorry
+  intro i j hij
+  by_cases hi : Module.finrank 𝕜 E ≤ i
+  · rw [T.singularValues_of_finrank_le hi, T.singularValues_of_finrank_le (hi.trans hij)]
+  by_cases hj : Module.finrank 𝕜 E ≤ j
+  · simp [T.singularValues_of_finrank_le hj, zero_le _]
+  push_neg at hi hj
+  have : (T.singularValues j : ℝ) ^ 2 ≤ (T.singularValues i : ℝ) ^ 2 := by
+    rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
+    exact T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hij
+  have h1 := Real.sqrt_le_sqrt this
+  simp only [Real.sqrt_sq (NNReal.coe_nonneg _)] at h1
+  exact NNReal.coe_le_coe.1 h1
+
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
@@ -114,14 +129,22 @@ public theorem singularValues_rank
   sorry
 
 public theorem singularValues_le_rank {n : ℕ}
-  (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 := by
+  (hn : Module.finrank 𝕜 (range T) ≤ n) : T.singularValues n = 0 :=
   -- This should follow directly from `LinearMap.singularValues_rank`,
   -- `LinearMap.singularValues_antitone`, and order properties of `ℝ≥0`.
-  sorry
+  le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
 
 public theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
   -- Follows from `singularValues_lt_rank` and `singularValues_le_rank`.
-  sorry
+  ext n
+  simp only [Finsupp.mem_support_iff, Finset.mem_range, ne_eq]
+  constructor
+  · intro hn
+    by_contra h
+    push_neg at h
+    exact hn (T.singularValues_le_rank h)
+  · intro hn
+    exact (T.singularValues_lt_rank hn).ne'
 
 end LinearMap
