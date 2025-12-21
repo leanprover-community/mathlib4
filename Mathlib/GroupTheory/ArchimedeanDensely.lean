@@ -129,10 +129,10 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     have ypos : 1 < y' := by
       simp [hy', eq_comm, ← hxy, hx]
     have hxc : closure {x} = closure {x'} := by
-      rcases max_cases x x⁻¹ with H|H <;>
+      rcases max_cases x x⁻¹ with H | H <;>
       simp [hx', H.left]
     have hyc : closure {y} = closure {y'} := by
-      rcases max_cases y y⁻¹ with H|H <;>
+      rcases max_cases y y⁻¹ with H | H <;>
       simp [hy', H.left]
     refine ⟨⟨⟨
       fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
@@ -182,7 +182,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
-    rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
+    rcases key with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
     · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
@@ -269,7 +269,7 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
   suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
-    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
+    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩ | h
     · simpa [this h] using ⟨h⟩
     · simp only [h, not_true_eq_false, iff_false, not_nonempty_iff]
       exact ⟨fun H ↦ (this H) h⟩

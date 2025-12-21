@@ -481,7 +481,7 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk _ _ (by lia),
       MulAut.conj_apply, inv_simple, alternatingWord_succ' j i, even_two, Even.mul_right,
       ↓reduceIte, wordProd_cons]
-    rw [(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
+    rw [(by ring : 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]
     simp [mul_assoc]
 
 end CoxeterSystem
