@@ -85,26 +85,6 @@ lemma mapComp'_naturality_2 :
 
 end
 
-section
-
-variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (a : X ⟶ Y)
-
-@[reassoc]
-lemma mapComp_hom_naturality :
-    (F.map (f ≫ g)).toFunctor.map a ≫ (F.mapComp f g).hom.toNatTrans.app Y =
-    (F.mapComp f g).hom.toNatTrans.app X ≫
-      (F.map g).toFunctor.map ((F.map f).toFunctor.map a) :=
-  (F.mapComp f g).hom.toNatTrans.naturality a
-
-@[reassoc]
-lemma mapComp_inv_naturality :
-    (F.map g).toFunctor.map ((F.map f).toFunctor.map a) ≫
-      (F.mapComp f g).inv.toNatTrans.app Y =
-    (F.mapComp f g).inv.toNatTrans.app X ≫ (F.map (f ≫ g)).toFunctor.map a :=
-  (F.mapComp f g).inv.toNatTrans.naturality a
-
-end
-
 end naturality
 
 end Pseudofunctor
