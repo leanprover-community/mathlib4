@@ -358,7 +358,7 @@ protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : 
     CurveIntegrable (ω₁ + ω₂) γ := by
   simpa [CurveIntegrable] using IntervalIntegrable.add h₁ h₂
 
--- TODO: @[to_fun] generates wrong lemma name
+-- TODO: `to_fun` generates wrong lemma name
 theorem curveIntegral_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     curveIntegral (ω₁ + ω₂) γ = ∫ᶜ x in γ, ω₁ x + ∫ᶜ x in γ, ω₂ x := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
