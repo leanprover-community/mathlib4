@@ -155,13 +155,13 @@ instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
 
 @[simp] lemma of_symm_zero : (ofProd c).symm (0 : ofTwoCocycle c) = 0 := rfl
 @[simp] lemma of_symm_add (x y : ofTwoCocycle c) :
-  (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
+    (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
 @[simp] lemma of_symm_smul (r : R) (x : ofTwoCocycle c) :
-  (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
+    (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
 
 @[simp] lemma of_nsmul (n : ℕ) (x : L × M) : (ofProd c) (n • x) = n • (ofProd c) x := rfl
 @[simp] lemma of_symm_nsmul (n : ℕ) (x : ofTwoCocycle c) :
-  (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
+    (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
 
 instance : LieRing (ofTwoCocycle c) where
   bracket x y :=
@@ -343,6 +343,7 @@ lemma lie_apply_proj_of_leftInverse_eq [IsLieAbelian M] (E : Extension R M L) {s
   rw [← sub_eq_zero, ← sub_lie]
   exact trivial_lie_zero E.proj.ker E.proj.ker ⟨_, (by simp [hs.eq])⟩ y
 
+set_option backward.privateInPublic true in
 /-- A preparatory function for making a 2-cocycle from a linear splitting of an extension. -/
 private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) :
@@ -354,6 +355,8 @@ private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
   map_add' x y := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The 2-cocycle attached to an extension with a linear section. -/
 @[simps]
 noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}

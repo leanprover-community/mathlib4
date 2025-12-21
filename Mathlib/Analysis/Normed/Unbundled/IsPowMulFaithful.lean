@@ -50,7 +50,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
     rw [← rpow_natCast, ← rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel₀ hn0, rpow_one]
   apply le_of_pow_le_pow_left₀ (ne_of_gt hn)
     (mul_nonneg (rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))
-  · rw [mul_pow, h, ← hβ _ hn, ← RingHom.map_pow]
+  · rw [mul_pow, h, ← hβ _ hn, ← map_pow]
     apply le_trans (hC (x ^ n))
     rw [mul_le_mul_iff_right₀ hC0]
     exact map_pow_le_pow _ _ (Nat.one_le_iff_ne_zero.mp hn)

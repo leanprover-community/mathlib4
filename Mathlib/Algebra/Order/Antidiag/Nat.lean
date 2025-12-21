@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.Tactic.IntervalCases
 import Mathlib.Data.PNat.Basic
 
@@ -68,7 +68,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
   · simp_rw [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply,
       Function.comp_def, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
       Function.Embedding.coeFn_mk, ← Additive.ofMul.symm_apply_eq, Additive.ofMul_symm_eq,
-      toMul_sum, (Equiv.piCongrRight fun _=> Additive.ofMul).surjective.exists,
+      toMul_sum, (Equiv.piCongrRight fun _ => Additive.ofMul).surjective.exists,
       Equiv.piCongrRight_apply, Pi.map_apply, toMul_ofMul, ← PNat.coe_inj, PNat.mk_coe,
       PNat.coe_prod]
     constructor
@@ -137,7 +137,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       rw [Fin.nontrivial_iff_two_le]
       obtain rfl | hd' := eq_or_ne d 0
       · exact i.elim0
-      omega
+      lia
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true]
