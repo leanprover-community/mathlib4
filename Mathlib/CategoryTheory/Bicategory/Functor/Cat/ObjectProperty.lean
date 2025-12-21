@@ -120,6 +120,7 @@ def fullsubcategory : Pseudofunctor B Cat where
   mapComp f g := Cat.Hom.isoMk (P.mapComp f g)
 
 /-- The inclusion of `P.fullsubcategory` in `F`. -/
+@[simps]
 def ι : StrongTrans P.fullsubcategory F where
   app X := Cat.Hom.ofFunctor (P.prop (X := X)).ι
   naturality f := Iso.refl _
