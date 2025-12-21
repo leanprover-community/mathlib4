@@ -242,7 +242,7 @@ which are not used in the remainder of the type. If so, it suggests modifying th
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/
-register_option linter.unusedFintypeInType : Bool := {
+public register_option linter.unusedFintypeInType : Bool := {
   defValue := false
   descr := "enable the unused `Fintype` instance linter, which lints against `Fintype` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
