@@ -73,6 +73,11 @@ lemma IsReal.comap (f : k →+* K) {w : InfinitePlace K} (hφ : IsReal w) :
   rw [← mk_embedding w, isReal_mk_iff] at hφ
   exact hφ.comp f
 
+lemma IsComplex.of_comap (f : k →+* K) {w : InfinitePlace K} (hf : IsComplex (w.comap f)) :
+    IsComplex w := by
+  rw [← not_isReal_iff_isComplex] at hf ⊢
+  exact (IsReal.comap f).mt hf
+
 lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
     IsReal (w.comap (f : k →+* K)) ↔ IsReal w := by
   rw [← mk_embedding w, comap_mk, isReal_mk_iff, isReal_mk_iff, ComplexEmbedding.isReal_comp_iff]

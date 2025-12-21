@@ -586,7 +586,7 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
--- this variant is then renamed with a `Aux` suffix
+-- this variant is then renamed with an `Aux` suffix
 
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux

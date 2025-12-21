@@ -607,6 +607,11 @@ theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x =
 protected theorem Filter.EventuallyEq.deriv (h : f₁ =ᶠ[𝓝 x] f) : deriv f₁ =ᶠ[𝓝 x] deriv f :=
   h.eventuallyEq_nhds.mono fun _ h => h.deriv_eq
 
+theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv f₁ =ᶠ[𝓝[≠] x] deriv f := by
+  rw [Filter.EventuallyEq, ← eventually_nhdsNE_eventually_nhds_iff] at *
+  filter_upwards [h] with y hy
+  apply Filter.EventuallyEq.deriv hy
+
 end congr
 
 section id
@@ -882,7 +887,7 @@ variable (σ) {f : 𝕜 → 𝕜} {f' : 𝕜}
 
 /-- If `f` has derivative `f'` at `x`, and `σ, σ'` are mutually inverse normed-ring automorphisms,
 then `σ ∘ f ∘ σ'` has derivative `σ f'` at `σ x`. -/
-lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ  f') (σ x) :=
+lemma HasDerivAt.comp_ringHom (hf : HasDerivAt f f' x) : HasDerivAt (σ ∘ f ∘ σ') (σ f') (σ x) :=
   hf.comp_semilinear σ' ⟨σ.toSemilinearMap, σ.isometry.continuous⟩
 
 /-- If `f` is differentiable at `x`, and `L` is `σ`-semilinear, then `L ∘ f ∘ σ⁻¹` is

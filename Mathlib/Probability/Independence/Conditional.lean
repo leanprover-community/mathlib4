@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Condexp
@@ -57,7 +57,8 @@ These notations are scoped in the `ProbabilityTheory` namespace.
 ## Implementation notes
 
 The definitions of conditional independence in this file are a particular case of independence with
-respect to a kernel and a measure, as defined in the file `Probability/Independence/Kernel.lean`.
+respect to a kernel and a measure, as defined in the file
+`Mathlib/Probability/Independence/Kernel.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
 
 -/
