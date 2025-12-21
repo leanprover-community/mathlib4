@@ -46,9 +46,7 @@ theorem IsOpenImmersion.of_flat_of_mono {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f
       of_postcomp (W := @Flat) f' U.ι hU (by rwa [← heq])
     have hfinpres : LocallyOfFinitePresentation f' :=
       of_postcomp (W := @LocallyOfFinitePresentation) f' U.ι hU (by rwa [← heq])
-    have hmono : Mono f' := by
-      convert mono_of_mono f' U.ι
-      rwa [← heq]
+    have hmono : Mono f' := mono_of_mono_fac heq.symm
     rw [heq]
     have := this f' ⟨fun ⟨x, ⟨y, hy⟩⟩ ↦
       ⟨y, by apply U.ι.injective; simp [← Scheme.Hom.comp_apply, f', hy]⟩⟩
