@@ -58,33 +58,8 @@ def toGNS : A ≃ₗ[ℂ] (GNS f) := LinearEquiv.refl ℂ _
 /-- The map from the GNS space to the C⋆-algebra, as a linear equivalence. -/
 def ofGNS : (GNS f) ≃ₗ[ℂ] A := (toGNS f).symm
 
-@[simp] lemma toGNS_apply (a : A) : toGNS f a = (a : (GNS f)) := rfl
-@[simp] lemma ofGNS_apply (a : (GNS f)) : ofGNS f a = (a : A) := rfl
-
 variable [StarOrderedRing A]
 instance : StarOrderedRing (GNS f) := inferInstanceAs (StarOrderedRing A)
-
-/-- Only an implementation for the instances below. -/
-noncomputable def preInnerProductSpace :
-    PreInnerProductSpace.Core ℂ (GNS f) where
-  inner x y := f (star (ofGNS f x) * ofGNS f y)
-  conj_inner_symm x y := star_star (ofGNS f y) ▸
-    star_mul (star _) (ofGNS f x) ▸ map_star f _ |>.symm
-  re_inner_nonneg _ := RCLike.nonneg_iff.mp (map_nonneg f (star_mul_self_nonneg _)) |>.1
-  add_left _ _ _ := by simp [add_mul]
-  smul_left _ _ _ := by simp
-
-noncomputable instance : SeminormedAddCommGroup (GNS f) :=
-  InnerProductSpace.Core.toSeminormedAddCommGroup (c := preInnerProductSpace f)
-noncomputable instance : InnerProductSpace ℂ (GNS f) := InnerProductSpace.ofCore _
-noncomputable instance : NormedSpace ℂ (GNS f) :=
-  InnerProductSpace.Core.toNormedSpace (c := preInnerProductSpace f)
-
-lemma GNS_inner_def (a b : (GNS f)) :
-    inner ℂ a b = f (star (ofGNS f a) * ofGNS f b) := rfl
-
-lemma GNS_norm_def (a : (GNS f)) :
-    ‖a‖ = (f (star (ofGNS f a) * ofGNS f a)).re.sqrt := rfl
 
 instance N (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (GNS f) where
   carrier := {a : (GNS f) | f (star a * a) = 0}
