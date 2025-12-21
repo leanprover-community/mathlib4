@@ -105,7 +105,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
 @[to_additive (attr := simp)]
 lemma mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b := rfl
