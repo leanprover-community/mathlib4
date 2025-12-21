@@ -3,11 +3,11 @@ Copyright (c) 2025 Gregory Wickham. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory Wickham
 -/
-
 module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Defs
-public import Mathlib.Algebra.Star.SelfAdjoint
 
 /-!
 # Positive linear functionals on C*-algebras
@@ -37,22 +37,25 @@ open Complex
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 variable (f : A →ₚ[ℂ] ℂ)
 
+namespace PositiveLinearFunctional
+
 /--
 If `f` is a positive linear functional and `a` is self-adjoint, then `f a` is a real number.
 -/
-lemma f_of_self_adjoint_is_real (a : A) (ha : IsSelfAdjoint a) : (f (a)).re = f (a) :=
+lemma re_of_isSelfAdjoint (a : A) (ha : IsSelfAdjoint a) : (f (a)).re = f (a) :=
   conj_eq_iff_re.mp (map_isSelfAdjoint f a ha)
 
 /--
 If `f` is a positive linear functional, then `f (a * star a)` is a real number.
 -/
-lemma f_of_a_star_a_is_real (a : A) : (f (a * star a)).re = f (a * star a) :=
-  f_of_self_adjoint_is_real f (a * star a) (IsSelfAdjoint.mul_star_self a)
+lemma re_of_self_star_self (a : A) : (f (a * star a)).re = f (a * star a) :=
+  re_of_isSelfAdjoint f (a * star a) (IsSelfAdjoint.mul_star_self a)
 
 /--
 If `f` is a positive linear functional, then `f (star a * b)` is a semi-inner product
 (positive semidefinite sesquilinear form) which makes `A` into a `PreInnerProductSpace`.
 -/
+private
 noncomputable instance PreInnerProductSpaceOnA : PreInnerProductSpace.Core ℂ (A) where
   inner a b := f (star a * b)
   conj_inner_symm x y := by apply star_inj.mp; rw [← map_star f (star x * y)]; simp
@@ -96,3 +99,5 @@ lemma f_maps_zero_prod_to_zero
   rw [← norm_eq_zero]
   norm_cast at hab
   exact (_root_.sq_nonpos_iff ‖f (star a * b)‖).mp hab
+
+end PositiveLinearFunctional

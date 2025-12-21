@@ -3,10 +3,10 @@ Copyright (c) 2025 Gregory Wickham. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory Wickham
 -/
-
 module
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
+
 public import Mathlib.Analysis.CStarAlgebra.GNSConstruction.Defs
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # The *-homomorphism of the GNS construction
@@ -34,11 +34,61 @@ open UniformSpace
 open UniformSpace.Completion
 open Submodule
 open ContinuousLinearMap
+open PositiveLinearFunctional
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A]
 variable (f : A →ₚ[ℂ] ℂ)
 
-open GNS
+namespace PositiveLinearMap
+/--
+Multiplication of elements of `A` is linear. This is used to construct our desired *-homomorphism.
+-/
+noncomputable
+def A_GNS_mul : A →ₗ[ℂ] (GNS f) →ₗ[ℂ] (GNS f)
+  := (LinearMap.mul ℂ ((GNS f)))
+
+lemma A_GNS_mul_apply (a : A) (b : GNS f) :
+  f.A_GNS_mul a b = (f.toGNS a) * b := by rfl
+
+instance : HMul A f.GNS f.GNS where
+  hMul a b := (f.toGNS a) * b
+
+instance : HMul f.GNS A f.GNS where
+  hMul a b := (f.ofGNS a) * b
+
+lemma A_GNS_mul_hMul (a : A) (b : GNS f) : a * b = f.A_GNS_mul a b := by rfl
+
+variable (a : A) [StarOrderedRing A]
+
+/--
+This theorem allows us to extend multiplication of elements of `A` to multiplicaton of and element
+of `A` with an element of `A / N f`.
+-/
+theorem A_A_mul_well_defined_onQuot :
+  N f ≤ Submodule.comap (A_GNS_mul f a) (N f) := by
+  intro x xh
+  have hab := f_inner_norm_sq_self_le f ((star a) * (a * x)) x
+  rw [star_mul, star_star, xh, mul_zero] at hab
+  norm_cast at hab
+  apply (_root_.sq_nonpos_iff ‖f (star (a * x) * a * x)‖).mp at hab
+  rwa [norm_eq_zero, mul_assoc] at hab
+
+/--
+This defines a linear operator on `A / N f` by left multiplication by a fixed element of `A`.
+-/
+noncomputable
+def π_OfA_onQuot_nonCont : (A_mod_N f) →ₗ[ℂ] (A_mod_N f) where
+  toFun := Submodule.mapQ (N f) (N f) (A_GNS_mul f a) (A_A_mul_well_defined_onQuot f a)
+  map_add' := by simp
+  map_smul' := by simp
+
+/--
+When the element of `A / N f` is constructed from an element of `A`, the linear operator
+simplifies to multiplication.
+-/
+@[simp]
+lemma π_OfA_onQuot_apply (b : (GNS f)) :
+  (π_OfA_onQuot_nonCont f a) (Submodule.Quotient.mk b) = Submodule.Quotient.mk (a * b) := by rfl
 
 /--
 This positive linear functional simply helps with some of the below proofs. There should be no
@@ -59,47 +109,9 @@ def g (b : A) : A →ₚ[ℂ] ℂ where
     exact PositiveLinearMap.map_nonneg f (star_mul_self_nonneg (q * b))
 
 @[simp]
-lemma g_apply (b : WithFunctional A f) (x : WithFunctional A f) :
+lemma g_apply (b : (GNS f)) (x : (GNS f)) :
   f (star b * x * b) = (g f b) x := by rfl
 
-variable (a : WithFunctional A f)
-
-/--
-Multiplication of elements of `A` is linear. This is used to construct our desired *-homomorphism.
--/
-noncomputable
-instance A_A_mul : WithFunctional A f →ₗ[ℂ] WithFunctional A f
-  := (mul ℂ (WithFunctional A f)) a
-
-/--
-This theorem allows us to extend multiplication of elements of `A` to multiplicaton of and element
-of `A` with an element of `A / N f`.
--/
-theorem A_A_mul_well_defined_onQuot :
-  GNS.N f ≤ Submodule.comap (A_A_mul f a) (GNS.N f) := by
-  intro x xh
-  have hab := f_inner_norm_sq_self_le f ((star a) * (a * x)) x
-  rw [star_mul, star_star, xh, mul_zero] at hab
-  norm_cast at hab
-  apply (_root_.sq_nonpos_iff ‖f (star (a * x) * a * x)‖).mp at hab
-  rwa [norm_eq_zero, mul_assoc] at hab
-
-/--
-This defines a linear operator on `A / N f` by left multiplication by a fixed element of `A`.
--/
-noncomputable
-def π_OfA_onQuot_nonCont : (A_mod_N f) →ₗ[ℂ] (A_mod_N f) where
-  toFun := Submodule.mapQ (GNS.N f) (GNS.N f) (A_A_mul f a) (A_A_mul_well_defined_onQuot f a)
-  map_add' := by simp
-  map_smul' := by simp
-
-/--
-When the element of `A / N f` is constructed from an element of `A`, the linear operator
-simplifies to multiplication.
--/
-@[simp]
-lemma π_OfA_onQuot_apply (b : WithFunctional A f) :
-  (π_OfA_onQuot_nonCont f a) (Submodule.Quotient.mk b) = Submodule.Quotient.mk (a * b) := by rfl
 
 /--
 The linear operator has a bounded unit ball.
@@ -111,7 +123,7 @@ lemma π_OfA_onQuot_bounded_unit_ball :
   induction b using Submodule.Quotient.induction_on with | _ b
   rw [inner_f_apply_on_quot_mk, RCLike.re_to_complex] at bh
   have bh' : √(f (star b * b)).re ≤ 1 := by linarith
-  have prodInR := f_of_a_star_a_is_real f (star b)
+  have prodInR := re_of_self_star_self f (star b)
   have staraaPos := (mul_star_self_nonneg (star a : A))
   have starbPos := PositiveLinearMap.map_nonneg f (mul_star_self_nonneg (star b : A))
   rw [star_star, π_OfA_onQuot_apply] at *
@@ -122,7 +134,7 @@ lemma π_OfA_onQuot_bounded_unit_ball :
   nth_rw 2 [mul_assoc]
   rw [g_apply]
   have g_of_one : (g f b) 1 = f (star b * b) := by simp [← g_apply f b 1]
-  have g_of_star_a_a_real := f_of_a_star_a_is_real (g f b) (star a)
+  have g_of_star_a_a_real := re_of_self_star_self (g f b) (star a)
   have gval_real : ((g f b) (star a * a)).re = ((g f b) (star a * a)) := by
     rwa [star_star] at g_of_star_a_a_real
   have g_pos := PositiveLinearMap.map_nonneg (g f b) (mul_star_self_nonneg (star a : A))
@@ -159,7 +171,7 @@ lemma π_eq_π_nonCont_on_input (b : A_mod_N f) :
   (π_ofA_onQuot f a) b = (π_OfA_onQuot_nonCont f a) b := by dsimp [π_ofA_onQuot]
 
 @[simp]
-lemma π_apply_on_quot (b : WithFunctional A f) :
+lemma π_apply_on_quot (b : (GNS f)) :
   ((π_ofA_onQuot f a) (Submodule.Quotient.mk b)) = Submodule.Quotient.mk (a * b) := by simp
 
 @[simp]
@@ -171,7 +183,7 @@ lemma π_completion_onQuot_equiv (b : A_mod_N f) :
 We define the linear operator, which is parameterized by an `a : A`, as a continuous linear map.
 -/
 noncomputable
-def π_OfA (a : WithFunctional A f) : H f →L[ℂ] H f where
+def π_OfA (a : (GNS f)) : H f →L[ℂ] H f where
   toFun := Completion.map (π_ofA_onQuot f a)
   map_add' x y := by
     induction x using Completion.induction_on with
@@ -231,7 +243,7 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     | hp => exact (isClosed_eq (by continuity) (by continuity))
     | ih c
     induction c using Quotient.induction_on
-    simp [π_OfA, π_OfA_onQuot_nonCont, A_A_mul, Completion.coe_add]
+    simp [π_OfA, π_OfA_onQuot_nonCont, A_GNS_mul, Completion.coe_add]
   commutes' r := by
     simp only [← RingHom.smulOneHom_eq_algebraMap, RingHom.smulOneHom_apply, π_OfA]
     congr
@@ -254,3 +266,5 @@ def π : StarAlgHom ℂ A (H f →L[ℂ] H f) where
     induction y using Quotient.induction_on
     have (a b : A_mod_N f) : inner ℂ (coe' a) (coe' b) = inner_f f a b := by rw [inner_coe]; rfl
     simp [π_OfA, this, mul_assoc]
+
+end PositiveLinearMap
