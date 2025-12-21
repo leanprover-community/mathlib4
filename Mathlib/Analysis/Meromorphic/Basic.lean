@@ -354,13 +354,6 @@ protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Merom
   fun_prop
 
 /--
-Derivatives of meromorphic functions are meromorphic.
--/
-@[fun_prop]
-theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv f z) x := h.deriv
-
-/--
 Iterated derivatives of meromorphic functions are meromorphic.
 -/
 @[fun_prop] theorem iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
@@ -369,13 +362,6 @@ Iterated derivatives of meromorphic functions are meromorphic.
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
-
-/--
-Iterated derivatives of meromorphic functions are meromorphic.
--/
-@[fun_prop] theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
-    (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x := h.iterated_deriv
 
 end MeromorphicAt
 
@@ -496,23 +482,12 @@ include hs in
 
 include hf in
 /-- Derivatives of meromorphic functions are meromorphic. -/
--- TODO: to_fun generates the same statement; missing push tag
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
-/-- Derivatives of meromorphic functions are meromorphic. -/
-theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
-
-include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
--- TODO: to_fun generates the same statement; missing push tag
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
-
-include hf in
-/-- Iterated derivatives of meromorphic functions are meromorphic. -/
-theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
-  MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
 
 end arithmetic
 
