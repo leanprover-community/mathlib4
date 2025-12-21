@@ -752,7 +752,7 @@ lemma vlt_of_vlt_of_vle (hab : a <ᵥ b) (hbc : b ≤ᵥ c) : a <ᵥ c :=
 
 alias vlt.trans_vle := vlt_of_vlt_of_vle
 
-@[deprecated (since := "2025-12-20")] alias SRel.trans_rel := vlt.trans_le
+@[deprecated (since := "2025-12-20")] alias SRel.trans_rel := vlt.trans_vle
 
 lemma vlt_of_vle_of_vlt (hab : a ≤ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
   lt_of_le_of_lt (α := WithPreorder R) hab hbc
@@ -903,7 +903,7 @@ lemma inv_vlt_one (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
 lemma one_vlt_inv (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
   (one_vle_inv hx).not
 
-@[deprecated (since := "2025-12-20")] alias one_srel_inv := onv_vlt_inv
+@[deprecated (since := "2025-12-20")] alias one_srel_inv := one_vlt_inv
 
 end Field
 
