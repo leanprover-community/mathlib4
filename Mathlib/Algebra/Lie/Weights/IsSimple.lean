@@ -334,15 +334,6 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
   simp only [center_eq_bot, LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero] at h_y_center
   exact hy_ne_zero h_y_center
 
-lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
-    {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
-    {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
-    [LieAlgebra.IsKilling K L] [LieModule.IsTriangularizable K H L]
-    {α : LieModule.Weight K H L} (hα : α.IsNonZero) :
-    sl2SubmoduleOfRoot hα ≠ ⊥ := by
-  rw [sl2SubmoduleOfRoot_eq_sup]
-  exact ne_bot_of_le_ne_bot α.genWeightSpace_ne_bot (le_sup_of_le_left le_sup_left)
-
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
     (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
     invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
@@ -361,7 +352,7 @@ lemma LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot
       exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
     rw [h] at h_sl2_le
     simp at h_sl2_le
-    have tt := LieAlgebra.IsKilling.sl2SubmoduleOfRoot_ne_bot hα₀
+    have tt := sl2SubmoduleOfRoot_ne_bot i.1 hα₀
     contradiction
   · simp [h, LieAlgebra.IsKilling.invtSubmoduleToLieIdeal]
 
