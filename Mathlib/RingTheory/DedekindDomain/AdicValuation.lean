@@ -439,11 +439,17 @@ lemma valuedAdicCompletion_surjective :
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
 
--- Direct typeclass search in the right direction so it doesn't look for
+-- We direct typeclass search in the right direction so it doesn't look for
 -- the mathematically invalid `MulAction (v.adicCompletionIntegers K) K`
 -- (which takes a long time to fail when all of mathlib is imported)
+instance : Module (v.adicCompletionIntegers K) (v.adicCompletion K) :=
+  Algebra.toModule
+
 instance : MulAction (v.adicCompletionIntegers K) (v.adicCompletion K) :=
   Algebra.toModule.toMulAction
+
+instance : SMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
+  Algebra.toModule.toMulAction.toSMul
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
