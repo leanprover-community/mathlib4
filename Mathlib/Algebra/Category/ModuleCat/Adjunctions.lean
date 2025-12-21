@@ -242,9 +242,7 @@ instance categoryFree : Category (Free R C) where
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
     -- This imitates the proof of associativity for `MonoidAlgebra`.
-    simp only [sum_sum_index, sum_single_index, single_zero, single_add,
-      forall_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
-      zero_mul, mul_zero, sum_zero, sum_add]
+    simp [sum_sum_index, add_mul, mul_add, Category.assoc, mul_assoc]
 
 namespace Free
 
