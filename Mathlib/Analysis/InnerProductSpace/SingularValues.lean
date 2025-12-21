@@ -67,7 +67,9 @@ of this.
 -/
 public theorem singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) := by
-  sorry
+  subst hn
+  exact Finsupp.embDomain_apply_self _ _ i
+
 
 /--
 `LinearMap.singularValues_fin` when combined with this characterizes the singular values.
@@ -79,7 +81,8 @@ public theorem singularValues_of_finrank_le {i : ℕ}
   (hi : Module.finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
   -- Unlike the `rank(T)` lemma, this should follow directly from the definition.
   -- You shouldn't have to do anything with eigenvalues, just the way the `Finsupp.embDomain` works.
-  sorry
+  apply Finsupp.embDomain_notin_range
+  simp [hi]
 
 /- `T.singularValues i ^ 2` means `(↑(T.singularValues i)) ^ 2`, which  complies with the simp lemma
 `NNReal.coe_pow`. -/
