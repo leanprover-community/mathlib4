@@ -190,7 +190,7 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x 
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction x <;> induction y  <;>
+  induction x <;> induction y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 
@@ -365,6 +365,34 @@ lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   · simp
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
   · simp
+
+lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+@[simp] lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨hy0, _⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
+@[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨_, hy0⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
 
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by

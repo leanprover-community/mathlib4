@@ -88,7 +88,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
   apply G.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  rw [MonoidHom.map_inv, MonoidHom.map_inv, inv_inj]
+  rw [map_inv, map_inv, inv_inj]
   exact hfg
 
 /-- Taking inverses in the colimit. See also `colimitInvAux`. -/

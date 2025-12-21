@@ -148,32 +148,25 @@ lemma pseudofunctor_right_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
   simp [← this]
 
+attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
+  pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
+  conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
 /-- The pseudofunctor from `Schemeᵒᵖ` to the bicategory of adjunctions which sends
 a scheme `X` to the category `X.Modules` of sheaves of modules over `X`.
 (This contains both the covariant and the contravariant functorialities of
 these categories.) -/
+@[simps! obj_obj map_l map_r map_adj
+  mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr
+  mapComp_hom_τl mapComp_hom_τr mapComp_inv_τl mapComp_inv_τr]
 noncomputable def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
     (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
-    (fun _ ↦ Adj.iso₂Mk (pullbackId _) (pushforwardId _).symm (by
-      dsimp
-      rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv]
-      apply conjugateEquiv_pullbackId_hom))
-    (fun _ _ ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
-      dsimp
-      rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv,
-        Adjunction.toCat_comp_toCat]
-      apply conjugateEquiv_pullbackComp_inv))
-    (fun _ _ _ ↦ by ext : 1; apply pseudofunctor_associativity _ _ _)
-    (fun _ ↦ by ext : 1; apply pseudofunctor_left_unitality)
-    (fun _ ↦ by ext : 1; apply pseudofunctor_right_unitality)
-
-attribute [simps! obj_obj map_l map_r map_adj] pseudofunctor
-attribute [simps! mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr] pseudofunctor
-attribute [simps! mapComp_hom_τl mapComp_hom_τr] pseudofunctor
-attribute [simps! mapComp_inv_τl mapComp_inv_τr] pseudofunctor
+    (fun _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackId _))
+        (Cat.Hom.isoMk (pushforwardId _).symm))
+    (fun _ _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackComp _ _).symm)
+        (Cat.Hom.isoMk (pushforwardComp _ _)))
 
 end Modules
 

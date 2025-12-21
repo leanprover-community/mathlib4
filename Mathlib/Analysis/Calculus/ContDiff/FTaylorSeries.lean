@@ -109,9 +109,9 @@ noncomputable section
 open ENat NNReal Topology Filter Set Fin Filter Function
 
 /-- Smoothness exponent for analytic functions. -/
-scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
+scoped[ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
-scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+scoped[ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
 
 open scoped ContDiff Pointwise
 
@@ -194,7 +194,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; cutsat)
+      apply (H m.succ).fderivWithin m (by norm_cast; lia)
     · intro m _
       apply (H m).cont m (by simp)
 
@@ -825,11 +825,11 @@ theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
-      subset_closure) isClosed_closure
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans subset_closure)
+      isClosed_closure
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans
       ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
 
 theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=

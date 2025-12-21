@@ -207,8 +207,7 @@ end Kernel
 
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
-  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
-      simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
+  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by simp⟩⟩
 
 instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by

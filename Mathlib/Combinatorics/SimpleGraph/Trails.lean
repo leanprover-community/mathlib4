@@ -68,11 +68,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
           and_iff_right_iff_imp]
         rintro rfl rfl
         exact G.loopless _ huv
-      · rw [Nat.even_add_one, ih, ← not_iff_not]
-        simp only [huv.ne.symm, Ne, not_true, false_and, not_forall,
-          not_false_iff, exists_prop, and_true, Classical.not_not, true_and, iff_and_self]
-        rintro rfl
-        exact huv.ne
+      · have := huv.ne; grind
     · grind
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk

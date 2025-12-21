@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, S
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Ring.CharZero
@@ -60,6 +61,11 @@ lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff
 alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
+
+@[simp]
+theorem abs_zpow (a : α) (p : ℤ) : |a ^ p| = |a| ^ p := map_zpow₀ absHom a p
+
+theorem abs_neg_one_zpow (p : ℤ) : |(-1 : α) ^ p| = 1 := by simp
 
 omit [IsStrictOrderedRing α] in
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by

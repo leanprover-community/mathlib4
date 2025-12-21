@@ -60,7 +60,7 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     (X ^ n - C a).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    simp only [hn, pow_zero, ← C.map_one, ← map_sub, splits_C]
+    simp only [hn, pow_zero, ← C.map_one, ← map_sub, Splits.C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
@@ -69,8 +69,8 @@ private
 theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
-  rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
-    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
+  rw [(X_pow_sub_C_splits_of_isPrimitiveRoot hζ e).eq_prod_roots_of_monic
+    (monic_X_pow_sub_C _ hn.ne'), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
 lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
@@ -327,7 +327,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
-      eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
+      eq_comm, Splits.adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
 lemma adjoinRootXPowSubCEquiv_root :
@@ -360,14 +360,14 @@ variable (a) (L)
 noncomputable
 abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
     (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
-  (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
+  (rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
 lemma rootOfSplitsXPowSubC_pow [NeZero n] :
     (rootOfSplitsXPowSubC (NeZero.pos n) a L) ^ n = algebraMap K L a := by
-  have := map_rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
-  simp only [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at this
-  exact this _
+  have := eval_rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
+    (by simp [degree_X_pow_sub_C (NeZero.pos n), NeZero.ne n])
+  simpa only [eval_map, eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] using this
 
 variable {a}
 
@@ -405,7 +405,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
-/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is a `n`-th primitive root of unity
+/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is an `n`-th primitive root of unity
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
@@ -525,7 +525,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     rw [mem_primitiveRoots finrank_pos] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
-      IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
+      IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite K α)]
     apply Algebra.adjoin_mono
     rw [Set.singleton_subset_iff, mem_rootSet_of_ne (X_pow_sub_C_ne_zero finrank_pos a),
       aeval_def, eval₂_sub, eval₂_X_pow, eval₂_C, ha, sub_self]

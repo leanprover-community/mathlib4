@@ -10,6 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -35,6 +36,10 @@ your own code.
 assert_not_exists Ring
 
 open Function
+
+lemma Irreducible.coe_ne_zero {M₀ S : Type*} [MonoidWithZero M₀] [SetLike S M₀]
+    [SubmonoidClass S M₀] {s : S} {x : s} (hx : Irreducible x) : (x : M₀) ≠ 0 :=
+  fun h ↦ hx.1 <| by simpa using hx.2 (a := x) (b := x) (by ext; simp [h])
 
 section
 variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
@@ -177,16 +182,14 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
-instance [IsLeftCancelMulZero M₀] :
-    LeftCancelMonoid M₀⁰ where
-  mul_left_cancel _ _ _ h :=  Subtype.ext <|
-    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
+  mul_left_cancel z _ _ h := Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
-instance [IsRightCancelMulZero M₀] :
-    RightCancelMonoid M₀⁰ where
-  mul_right_cancel _ _ _ h := Subtype.ext <|
-    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsRightCancelMulZero M₀] : RightCancelMonoid M₀⁰ where
+  mul_right_cancel z _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
 end Nontrivial
@@ -332,6 +335,11 @@ theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
   fun ⟨c, hc⟩ ↦ ⟨⟨c, (mul_mem_nonZeroDivisors.mp (hc ▸ b.prop)).2⟩,
     by simp_rw [Subtype.ext_iff, Submonoid.coe_mul, hc]⟩⟩
 
+lemma prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors
+    {ι : Type*} {s : Finset ι} {f : ι → M₀} (h : ∀ i ∈ s, f i ∈ M₀⁰) :
+    ∏ i ∈ s, f i ∈ M₀⁰ :=
+  s.prod_induction _ _ (fun _ _ ↦ and_imp.mp mul_mem_nonZeroDivisors.mpr) (one_mem _) h
+
 end CommMonoidWithZero
 
 section GroupWithZero
@@ -391,8 +399,8 @@ section CommMonoidWithZero
 variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
 
 theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
-  rw [mem_nonZeroDivisors_iff_right, mem_nonZeroDivisors_iff_right, ← not_iff_not]
-  push_neg
+  rw [mem_nonZeroDivisors_iff_right, mem_nonZeroDivisors_iff_right]
+  contrapose!
   constructor
   · rintro ⟨⟨x⟩, hx₁, hx₂⟩
     refine ⟨x, ?_, ?_⟩

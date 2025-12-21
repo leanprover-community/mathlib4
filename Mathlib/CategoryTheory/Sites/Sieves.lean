@@ -245,6 +245,19 @@ lemma ofArrows.hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S
     (hf : ofArrows X f g) : f hf.idx = eqToHom hf.obj_idx ≫ g := by
   simp [eq_eqToHom_comp_hom_idx hf]
 
+lemma ofArrows_comp_le {X : C} {ι σ : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) (a : σ → ι) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) ≤ ofArrows Y f := by
+  rintro - - ⟨i⟩
+  use a i
+
+lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
+    (f : ∀ i, Y i ⟶ X) {a : σ → ι} (ha : a.Surjective) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) = ofArrows Y f := by
+  refine le_antisymm (ofArrows_comp_le f a) ?_
+  rintro - - ⟨i⟩
+  obtain ⟨j, rfl⟩ := ha i
+  use j
+
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
 `Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
@@ -397,7 +410,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
 
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
-      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
+      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t i.2 ‹_›).uncurry := by
   ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
   · rintro ⟨Y, g, f, hf, ht, hv⟩
     exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
@@ -716,7 +729,7 @@ lemma pullback_ofObjects_eq_top
     ofObjects Y X = ⊤ := by
   ext Z h
   simp only [top_apply, iff_true]
-  rw [mem_ofObjects_iff ]
+  rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`

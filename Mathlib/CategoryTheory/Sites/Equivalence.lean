@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
+
 /-!
 # Equivalences of sheaf categories
 
@@ -76,6 +76,26 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
+
+lemma isDenseSubsite_functor_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
+
+lemma isDenseSubsite_inverse_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
 
 variable [e.inverse.IsDenseSubsite K J]
 
@@ -156,7 +176,7 @@ include K e in
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J K e A)
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
 include K e in
@@ -227,10 +247,10 @@ lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f
   have h₁ : K.W (A := A) =
-    Localization.LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A ⋙
+    ObjectProperty.isLocal (· ∈ Set.range (sheafToPresheaf J A ⋙
       ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op)).obj) := by
-    rw [W_eq_W_range_sheafToPresheaf_obj, ← LeftBousfield.W_isoClosure]
-    conv_rhs => rw [← LeftBousfield.W_isoClosure]
+    rw [W_eq_isLocal_range_sheafToPresheaf_obj, ← ObjectProperty.isoClosure_isLocal]
+    conv_rhs => rw [← ObjectProperty.isoClosure_isLocal]
     apply congr_arg
     ext P
     constructor
@@ -247,7 +267,7 @@ lemma W_inverseImage_whiskeringLeft :
     exact Function.Bijective.of_comp_iff'
       (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
         (fun g ↦ f ≫ g)
-  rw [h₁, J.W_eq_W_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
+  rw [h₁, J.W_eq_isLocal_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor
   · rintro h _ ⟨R, rfl⟩
     exact (h₂ R).1 (h _ ⟨R, rfl⟩)
