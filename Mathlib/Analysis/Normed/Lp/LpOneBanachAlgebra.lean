@@ -406,7 +406,7 @@ end OneNormedCommRing
 section OneAlgebra
 
 variable {𝕜 : Type*} {R : Type*}
-variable [NormedField 𝕜] [NormedCommRing R] [NormOneClass R] [NormedAlgebra 𝕜 R]
+variable [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 
 namespace lp
 
@@ -416,7 +416,6 @@ For a NormedField 𝕜 acting on R via NormedAlgebra 𝕜 R, we establish the al
 structure on ℓ¹. The key is that scalar multiplication by 𝕜 commutes with the
 Cauchy product multiplication. -/
 
-omit [NormOneClass R] in
 /-- Scalar multiplication satisfies `(c • f) * g = c • (f * g)` for Cauchy product. -/
 theorem one_smul_mul_assoc (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
     (c • f) * g = c • (f * g) := Subtype.ext <| funext fun n => by
@@ -425,7 +424,6 @@ theorem one_smul_mul_assoc (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
   intro kl _
   exact smul_mul_assoc c (f kl.1) (g kl.2)
 
-omit [NormOneClass R] in
 /-- Scalar multiplication satisfies `f * (c • g) = c • (f * g)` for Cauchy product. -/
 theorem one_mul_smul_comm (c : 𝕜) (f g : lp (fun _ : ℕ => R) 1) :
     f * (c • g) = c • (f * g) := Subtype.ext <| funext fun n => by
