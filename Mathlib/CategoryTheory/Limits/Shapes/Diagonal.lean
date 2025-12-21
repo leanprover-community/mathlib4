@@ -463,4 +463,23 @@ theorem pullback_lift_map_isPullback {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y �
   IsPullback.of_iso_pullback ⟨by rw [lift_fst, lift_fst]⟩
     (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).symm (by simp) (by simp)
 
+lemma isPullback_map_snd_snd {X Y Z S : C} (f : X ⟶ S) (g : Y ⟶ S) (h : Z ⟶ S) :
+    IsPullback (pullback.map _ _ _ _ (pullback.snd f g) (pullback.snd f h) f
+        pullback.condition pullback.condition)
+      (pullback.fst (pullback.fst f g) (pullback.fst f h))
+      (pullback.fst g h) (pullback.snd f g) := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+  · intro c
+    refine pullback.lift c.snd
+        (pullback.lift (c.snd ≫ pullback.fst _ _) (c.fst ≫ pullback.snd _ _) ?_) ?_
+    · simp [pullback.condition, ← c.condition_assoc]
+    · simp
+  · intro c
+    apply pullback.hom_ext <;> simp [c.condition]
+  · intro c
+    apply pullback.hom_ext <;> simp
+  · intro c m hfst hsnd
+    refine pullback.hom_ext (by simpa) ?_
+    apply pullback.hom_ext <;> simp [← hsnd, pullback.condition, ← hfst]
+
 end CategoryTheory.Limits
