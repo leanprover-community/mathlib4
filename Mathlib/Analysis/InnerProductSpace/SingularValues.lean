@@ -2,8 +2,10 @@ module
 
 public import Mathlib
 
+open NNReal
+
 namespace LinearMap
-open NNReal InnerProductSpace
+open InnerProductSpace
 
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
@@ -59,6 +61,7 @@ normed vector spaces.
 public noncomputable def singularValues : ℕ →₀ ℝ≥0 :=
   Finsupp.embDomain Fin.valEmbedding <|
     Finsupp.ofSupportFinite
+      -- TODO: Consider using `NNReal.sqrt` and pushing the coercion inside.
       (fun i ↦ Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues rfl i))
       (Set.toFinite _)
 
@@ -306,3 +309,55 @@ public theorem singularValues_smul (c : 𝕜) (i : ℕ)
 -- We might need one which states that the first singular value equals the operator norm.
 
 end LinearMap
+
+namespace Matrix
+
+variable {𝕜 : Type*} [RCLike 𝕜]
+  {m n : Type*} [Fintype m] [Fintype n] [DecidableEq n]
+  (M : Matrix m n 𝕜)
+
+public noncomputable def singularValues : ℕ →₀ ℝ≥0 := M.toEuclideanLin.singularValues
+
+@[simp]
+public theorem singularValues_toEuclideanLin
+  : M.toEuclideanLin.singularValues = M.singularValues := (rfl)
+
+@[simp]
+public theorem _root_.LinearMap.singularValues_toMatrix
+  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
+  -- TODO: If this doesn't hold for arbitrary bases, feel free to switch these out with orthonormal
+  -- bases.
+  (v₁ : Module.Basis n 𝕜 E) (v₂ : Module.Basis m 𝕜 F) (T : E →ₗ[𝕜] F)
+  : (T.toMatrix v₁ v₂).singularValues = T.singularValues := sorry
+
+public theorem singularValues_fin (i : Fin (Fintype.card n))
+  : M.singularValues i =
+    Real.toNNReal √(M.isHermitian_conjTranspose_mul_self.eigenvalues₀ i) := sorry
+
+public theorem sq_singularValues_fin (i : Fin (Fintype.card n))
+  : M.singularValues i ^ 2 = M.isHermitian_conjTranspose_mul_self.eigenvalues₀ i := sorry
+
+public theorem singularValues_of_finrank_le {i : ℕ}
+  (hi : Fintype.card n ≤ i) : M.singularValues i = 0 := by
+  sorry
+
+public theorem singularValues_antitone : Antitone M.singularValues := sorry
+
+public theorem singularValues_lt_rank {i : ℕ} (hi : i < M.rank)
+  : 0 < M.singularValues i := by
+  sorry
+
+public theorem singularValues_rank : M.singularValues M.rank = 0 := by
+  sorry
+
+public theorem singularValues_le_rank {n : ℕ}
+  (hn : M.rank ≤ n) : M.singularValues n = 0 :=
+  sorry
+
+public theorem support_singularValues : M.singularValues.support = Finset.range M.rank := sorry
+
+-- These should be thought of as subtypes of ℕ
+variable {a b : Type*} [Fintype a] [Fintype b]
+
+end Matrix
