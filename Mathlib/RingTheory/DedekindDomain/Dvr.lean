@@ -176,3 +176,8 @@ instance IsDedekindDomainDvr.isIntegrallyClosed [h : IsDedekindDomainDvr A] :
 /-- If an integral domain is Noetherian, and the localization at every nonzero prime is
 a discrete valuation ring, then it is a Dedekind domain. -/
 instance IsDedekindDomainDvr.isDedekindDomain [IsDedekindDomainDvr A] : IsDedekindDomain A where
+
+instance fg_subgroup_pi_z {M : Type*} [Finite M] (H : AddSubgroup (M → ℤ)) : H.FG := by
+  have : Module.Finite ℤ H.toIntSubmodule := inferInstance
+  rw [Module.Finite.iff_fg, Submodule.fg_iff_addSubgroup_fg] at this
+  exact this
