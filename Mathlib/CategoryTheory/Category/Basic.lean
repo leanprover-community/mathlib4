@@ -301,11 +301,11 @@ theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
 as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
-@[to_dual (reorder := f g)
+@[to_dual (reorder := f g, 7 9)
 /-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
 `Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
 -/]
-instance epi_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [Epi g] : Epi (f ≫ g) :=
+instance epi_comp (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
