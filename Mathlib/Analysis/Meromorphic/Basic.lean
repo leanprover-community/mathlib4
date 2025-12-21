@@ -562,8 +562,6 @@ lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
 
 lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
 
-lemma meromorphicOn_univ (hf : Meromorphic f) : MeromorphicOn f Set.univ := fun x _ ↦ hf x
-
 @[to_fun (attr := fun_prop)]
 lemma neg (hf : Meromorphic f) : Meromorphic (-f) := fun x ↦ (hf x).neg
 
@@ -618,7 +616,7 @@ The singular set of a meromorphic function is countable.
 theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
     (h : Meromorphic f) :
     {z | AnalyticAt 𝕜 f z}ᶜ.Countable := by
-  simpa using h.meromorphicOn_univ.countable_compl_analyticAt_inter
+  simpa using (h.meromorphicOn (s := univ)).countable_compl_analyticAt_inter
 
 @[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
   countable_compl_analyticAt
