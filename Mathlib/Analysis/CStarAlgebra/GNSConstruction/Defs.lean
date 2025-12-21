@@ -91,7 +91,7 @@ instance N (f : A →ₚ[ℂ] ℂ) : Submodule ℂ (GNS f) where
   add_mem' := by
     intro a b ha hb
     rw [Set.mem_setOf_eq] at *
-    simp [left_distrib, right_distrib, ha, hb, f_maps_zero_prod_to_zero]
+    simp [left_distrib, right_distrib, ha, hb, maps_zero_prod_to_zero]
   zero_mem' := by simp
   smul_mem' c x hx := by
     rw [Set.mem_setOf_eq] at hx
@@ -119,7 +119,7 @@ This theorem allows us to extend `sq` from `A → A → ℂ` to `A → N f → �
 -/
 theorem sq_well_defined (a : (GNS f)) : N f ≤ LinearMap.ker ((sq f a)) := by
   intro b bh
-  have hab := f_inner_norm_sq_self_le f a b
+  have hab := induced_inner_norm_sq_self_le f a b
   rw [bh, mul_zero] at hab
   norm_cast at hab
   rwa [sq_nonpos_iff, norm_eq_zero] at hab
@@ -141,7 +141,7 @@ theorem half_sq_well_defined : N f ≤ LinearMap.ker (half_sq f) := by
   intro a ah
   change Submodule.liftQ (N f) (sq f a) (sq_well_defined f a) = 0
   ext b
-  have hab := f_inner_norm_sq_self_le f a b
+  have hab := induced_inner_norm_sq_self_le f a b
   rw [ah, zero_mul] at hab
   norm_cast at hab
   rwa [sq_nonpos_iff, norm_eq_zero] at hab

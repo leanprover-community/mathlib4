@@ -67,7 +67,7 @@ of `A` with an element of `A / N f`.
 theorem A_A_mul_well_defined_onQuot :
   N f ≤ Submodule.comap (A_GNS_mul f a) (N f) := by
   intro x xh
-  have hab := f_inner_norm_sq_self_le f ((star a) * (a * x)) x
+  have hab := induced_inner_norm_sq_self_le f ((star a) * (a * x)) x
   rw [star_mul, star_star, xh, mul_zero] at hab
   norm_cast at hab
   apply (_root_.sq_nonpos_iff ‖f (star (a * x) * a * x)‖).mp at hab

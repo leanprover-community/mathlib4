@@ -69,7 +69,7 @@ noncomputable instance PreInnerProductSpaceOnA : PreInnerProductSpace.Core ℂ (
 /--
 The semi-inner product `f (star a * b)` satisfies a version of the Cauchy-Schwarz inequality.
 -/
-theorem f_inner_mul_inner_self_le (a b : A) :
+theorem induced_inner_mul_inner_self_le (a b : A) :
     ‖f (star a * b)‖ * ‖f (star b * a)‖ ≤ RCLike.re (f (star a * a)) * RCLike.re (f (star b * b)) :=
   RCLike.ofReal_le_ofReal.mp
     (InnerProductSpace.Core.inner_mul_inner_self_le (c := PreInnerProductSpaceOnA f) a b)
@@ -77,9 +77,9 @@ theorem f_inner_mul_inner_self_le (a b : A) :
 /--
 The semi-inner product `f (star a * b)` satisfies the Cauchy-Schwarz inequality.
 -/
-theorem f_inner_norm_sq_self_le (a b : A) :
+theorem induced_inner_norm_sq_self_le (a b : A) :
     norm (f (star a * b)) ^ 2 ≤ f (star a * a) * f (star b * b) := by
-  have cs := f_inner_mul_inner_self_le f a b
+  have cs := induced_inner_mul_inner_self_le f a b
   apply Complex.real_le_real.mpr at cs
   have inner_re := InnerProductSpace.Core.inner_self_ofReal_re (c := PreInnerProductSpaceOnA f)
   nth_rw 2 [Complex.ofReal_mul] at cs
@@ -92,9 +92,9 @@ theorem f_inner_norm_sq_self_le (a b : A) :
 /--
 If `f (star a * a) = 0`, then for all `b : A`, `f (star a * b) = 0`.
 -/
-lemma f_maps_zero_prod_to_zero
+lemma maps_zero_prod_to_zero
   (a b : A) (h : f (star a * a) = 0) : f (star a * b) = 0 := by
-  have hab := f_inner_norm_sq_self_le f a b
+  have hab := induced_inner_norm_sq_self_le f a b
   rw [h, zero_mul] at hab
   rw [← norm_eq_zero]
   norm_cast at hab
