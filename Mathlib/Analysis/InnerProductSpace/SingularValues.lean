@@ -166,6 +166,9 @@ public noncomputable def rightSingularVectors : ℕ →₀ E :=
       (Set.toFinite _)
 
 public noncomputable def leftSingularVectors : ℕ →₀ F :=
+  -- This definition could be wrong and might need to be changed.
+  -- Can this be defined so that `rightSingularVectors_adjoint` and `leftSingularVectors_adjoint`
+  -- still work?
   (adjoint T).rightSingularVectors
 
 @[simp]
@@ -191,6 +194,7 @@ public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 
   -- As seen in `leftSingularVectors_fin`, the proofs of the corresponding left singular vector
   -- lemmas should be very short (usually one-liners) following directly from the corresponding
   -- right singular vector lemma.
+  -- Not if `leftSingularVectors` is changed to have a nontrivial definition, though.
   sorry
 
 @[simp]
@@ -245,6 +249,30 @@ TODO: Is this actually true, given our definition of leftSingularVectors?
 public theorem apply_rightSingularVectors {i : ℕ} (hi : i < Module.finrank 𝕜 (range T))
   : T (T.rightSingularVectors i) =
     ((T.singularValues i).toReal : 𝕜) • T.leftSingularVectors i := sorry
+
+/--
+The singular value decomposition.
+
+Equation 7.71 from LADR 4th edition.
+-/
+theorem finsum_singular_value_decomposition (v : E)
+  : finsum (fun i : ℕ ↦ ((T.singularValues i).toReal : 𝕜) • ⟪v, T.rightSingularVectors i⟫_𝕜
+    • T.leftSingularVectors i) = T v := by
+    -- This is the main challenging theorem.
+    sorry
+
+-- In the infinite-dimensional case, this is actually stronger than the previous lemma because
+-- this corresponds to uniform convergence whereas the other corresponds to pointwise convergence.
+-- But here, summations are finite, so no notion of convergence is needed.
+/--
+Let `T : E →ₗ[𝕜] F`. Suppose `σ₁, ..., σₙ` are the singular values of `T`, `e₁, ..., eₙ` are the
+right singular vectors of `T`, and `f₁, ..., fₙ` are the left singular vectors of `T`. Then,
+`T = σ₁f₁e₁ᴴ + ... + σₙfₙeₙᴴ`, where `xᴴ` denotes the conjugate transpose/dual vector `y ↦ ⟪x, y⟫`.
+-/
+theorem finsum_svd_2
+  : finsum (fun i : ℕ ↦ ((T.singularValues i).toReal : 𝕜) • dualTensorHom 𝕜 E F
+      (InnerProductSpace.toDualMap 𝕜 E (T.rightSingularVectors i) ⊗ₜ[𝕜] T.leftSingularVectors i))
+      = T := sorry
 
 /-
 These are lemmas that don't necessarily fit into any category, but need to be established
