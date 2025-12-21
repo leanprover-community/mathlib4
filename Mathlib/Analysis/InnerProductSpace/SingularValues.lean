@@ -262,7 +262,9 @@ theorem finsum_singular_value_decomposition (v : E)
   : finsum (fun i : ℕ ↦ ((T.singularValues i).toReal : 𝕜) • ⟪v, T.rightSingularVectors i⟫_𝕜
     • T.leftSingularVectors i) = T v := by
     -- This is the main challenging theorem.
-    -- You might want to prove this after the stuff about best approximations.
+    -- You might want to prove this after the stuff about best approximations (or maybe not if we
+    -- plan to split this into another file, or if the proofs the following depend on the proof of
+    -- the SVD).
     sorry
 
 -- In the infinite-dimensional case, this is actually stronger than the previous lemma because
@@ -425,6 +427,11 @@ noncomputable def leftSingularMatrix
   : Matrix m a 𝕜 := Matrix.of fun i j ↦
     (Pi.basisFun 𝕜 m).repr (M.toEuclideanLin.leftSingularVectors (ea j)) i
 
+/-
+TODO: right and left singular matrices have orthogonal columns. They also have orthonormal columns
+iff `range(ea) ⊆ [0,rank(M))` and `range(eb) ⊆ [0,rank(M))`.
+-/
+
 noncomputable def centerSingularMatrix
   : Matrix a b 𝕜 := Matrix.of fun i j ↦ if ea i = eb j then
     RCLike.ofReal ↑(M.singularValues (ea i))
@@ -434,5 +441,12 @@ theorem SVD (hea : Finset.range M.rank ⊆ Finset.image ea Finset.univ)
   (heb : Finset.range M.rank ⊆ Finset.image eb Finset.univ)
   : M.leftSingularMatrix ea * M.centerSingularMatrix ea eb * (M.rightSingularMatrix eb)ᴴ = M := by
   sorry
+
+/-
+TODO:
+- Center singular matrix of the zero matrix is 0
+- Center singular matrix of cM is ‖c‖ times the center singular matrix of M
+- If the center singular matrix is square, then it is diagonal.
+-/
 
 end Matrix
