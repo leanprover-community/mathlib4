@@ -44,6 +44,8 @@ initialize registerBuiltinAttribute {
       fun value levels => do
       let type ← inferType value
       let r ← Push.pullCore .lambda type none
+      if r.expr == type then
+        throwError "`@[to_fun]` failed to eta-expand any part of `{.ofConstName src}`."
       -- Ensure that the returned `value` has type `r.expr`.
       let value ← match r.proof? with
         | none => mkExpectedTypeHint value r.expr
