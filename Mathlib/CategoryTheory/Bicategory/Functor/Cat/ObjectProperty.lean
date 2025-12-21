@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Cat
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # Properties of objects in target categories of a pseudofunctor to `Cat`
@@ -23,6 +25,8 @@ the property, then it satisfies the property. Assuming this, show that
 `P.fullsubcategory` if a stack if the original pseudofunctor was.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
