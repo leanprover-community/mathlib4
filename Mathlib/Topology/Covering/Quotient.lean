@@ -80,7 +80,8 @@ include hfG
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
 `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
 `Trivialization` over the base set `p(U)`. -/
-@[to_additive /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
+@[to_additive (attr := simps! source target baseSet)
+/-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
 other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
 `Trivialization` over the base set `p(U)`. -/]
 noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTopology G]
@@ -216,11 +217,11 @@ end MulAction
 
 omit hf in
 @[to_additive] lemma isQuotientCoveringMap_of_isDiscrete_ker_monoidHom [Group E]
-    [IsTopologicalGroup E] [Group X] {f : E →* X} (hf : IsQuotientMap f) {S : Subgroup E}
-    (disc : IsDiscrete (S : Set E)) (eq : f.ker = S) :
-    IsQuotientCoveringMap f S :=
-  hf.isQuotientCoveringMap_of_subgroup S disc fun {_ _} ↦ by
-    rw [eq_comm, ← mul_inv_eq_one, ← map_inv, ← map_mul, ← eq]; rfl
+    [IsTopologicalGroup E] [Group X] {f : E →* X} (hf : IsQuotientMap f)
+    (disc : IsDiscrete (f.ker : Set E)) :
+    IsQuotientCoveringMap f f.ker :=
+  hf.isQuotientCoveringMap_of_subgroup f.ker disc fun {_ _} ↦ by
+    rw [eq_comm, ← mul_inv_eq_one, ← map_inv, ← map_mul]; rfl
 
 end Topology.IsQuotientMap
 
