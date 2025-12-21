@@ -88,13 +88,30 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category MonoidalCategory Adjunction CartesianMonoidalCategory
+open Category Adjunction MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] {X : C} {f : Over X}
+
+attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryOver
+
+namespace Over
+
+/-- The naturality of the iterated slice equivalence up to isomorphism. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
+    Over.iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ Over.iteratedSliceForward g :=
+  NatIso.ofComponents (fun h => Iso.refl _) (by cat_disch)
+
+/-- The natural isomorphism witnessing `Over.map` in the iterated slice is
+compatible with `Over.map` base category, mediated by the iterated slice equivalence. -/
+@[simps! hom_app inv_app]
+def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
+    f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
+
+end Over
 
 namespace ChosenPullbacks
-
--- variable {X : C}
 
 open ChosenPullbacksAlong
 
@@ -105,23 +122,25 @@ def binaryFan (T Y Z : C) (h : Limits.IsTerminal T)
   Limits.BinaryFan.mk (P:= pullbackObj (h.from Y) (h.from Z)) (fst _ _) (snd _ _)
 
 @[simp]
-theorem binaryFan_pt (T Y Z : C) (h : Limits.IsTerminal T)
-    [ChosenPullbacksAlong <| h.from Z] :
-    (binaryFan T Y Z h).pt = pullbackObj (h.from Y) (h.from Z) :=
+theorem binaryFan_pt {T Y Z : C} {h : Limits.IsTerminal T}
+  [ChosenPullbacksAlong <| h.from Z] :
+  (binaryFan T Y Z h).pt = pullbackObj (h.from Y) (h.from Z) :=
   rfl
 
 @[simp]
-theorem binaryFan_fst (T Y Z : C) (h : Limits.IsTerminal T)
-    [ChosenPullbacksAlong <| h.from Z] :
-    (binaryFan T Y Z h).fst = fst (h.from Y) (h.from Z) :=
+theorem binaryFan_fst {T Y Z : C} {h : Limits.IsTerminal T}
+  [ChosenPullbacksAlong <| h.from Z] :
+  (binaryFan T Y Z h).fst = fst (h.from Y) (h.from Z) :=
   rfl
 
 @[simp]
-theorem binaryFan_snd (T Y Z : C) (h : Limits.IsTerminal T)
-    [ChosenPullbacksAlong <| h.from Z] :
-    (binaryFan T Y Z h).snd = snd (h.from Y) (h.from Z) :=
+theorem binaryFan_snd {T Y Z : C} {h : Limits.IsTerminal T}
+  [ChosenPullbacksAlong <| h.from Z] :
+  (binaryFan T Y Z h).snd = snd (h.from Y) (h.from Z) :=
   rfl
 
+/-- The binary fan constructed via the chosen pullback along the morphism from `Z` to the terminal
+object is a binary product. -/
 def binaryFanIsBinaryProduct (T Y Z : C) (h : Limits.IsTerminal T)
     [ChosenPullbacksAlong <| h.from Z] :
     Limits.IsLimit (binaryFan T Y Z h) :=
@@ -139,13 +158,30 @@ def cartesianMonoidalCategory (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks
     ⟨Limits.asEmptyCone T, h⟩
     (fun Y Z ↦ ⟨_, binaryFanIsBinaryProduct T Y Z h⟩)
 
+attribute [local instance] cartesianMonoidalCategory
+
+#print CartesianMonoidalCategory.toSemiCartesianMonoidalCategory
+
+#check SemiCartesianMonoidalCategory.toMonoidalCategory
+
+instance (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks C] :
+    MonoidalCategory C :=
+  by
+    letI := cartesianMonoidalCategory T h
+    infer_instance
+
+
+example (T : C) (h : Limits.IsTerminal T) [ChosenPullbacks C] (Y : C) :
+  letI := cartesianMonoidalCategory T h
+  X ⊗ Y = pullbackObj (h.from X) (h.from Y) := rfl
+
+
+
 end ChosenPullbacks
 
 namespace ChosenPullbacks
 
 open ChosenPullbacksAlong
-
-attribute [local instance] cartesianMonoidalCategoryOver
 
 variable {X : C}
 
@@ -187,34 +223,19 @@ theorem pullbackMapNatIsoTensorRight_hom_app [ChosenPullbacks C] {Y : Over X} (Z
     (pullbackMapNatIsoTensorRight Z).hom.app Y = 𝟙 _ := by
   cat_disch
 
-def _root_.Over.mapIsoMapLeft {U V : Over X} (p : U ⟶ V) :
-    Over.map p ≅ U.iteratedSliceEquiv.functor ⋙ Over.map p.left ⋙ V.iteratedSliceEquiv.inverse :=
-  NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _))) (by cat_disch)
-
-/-
-A
-|
-|  g
-Z ---⟶  Y
- \     /
-  \  /
-    X
-
+/-- If `C` has chosen pullbacks, then `Over X` also has chosen pullbacks`.
+Note: Move this to the file ChosenPullbacksAlong before merging.
 -/
-
--- /-- If `C` has chosen pullbacks, then `Over I` also has chosen pullbacks`. -/
--- instance chosenPullbacksOver [ChosenPullbacks C] :
---     ChosenPullbacks (Over X) := fun {Y Z : Over X} g => {
---   pullback := Y.iteratedSliceEquiv.functor ⋙ pullback g.left ⋙ Z.iteratedSliceEquiv.inverse,
---   mapPullbackAdj.unit.app A :=
---     Over.homMk (
---       Over.homMk (
---           (mapPullbackAdj g.left).unit.app (Over.mk (Y:= A.left.left) A.hom.left) |>.left)
---             (by simp; sorry)) (by cat_disch)
---   mapPullbackAdj.unit.naturality := by sorry
---   mapPullbackAdj.counit.app := sorry
---     }
-
+@[simps]
+instance chosenPullbacksOver [ChosenPullbacks C] :
+    ChosenPullbacks (Over X) := fun {Y Z : Over X} g => {
+  pullback := Y.iteratedSliceForward ⋙ pullback g.left ⋙ Z.iteratedSliceBackward
+  mapPullbackAdj :=
+    Z.iteratedSliceEquiv.toAdjunction.comp (mapPullbackAdj g.left) |>.comp
+        Y.iteratedSliceEquiv.symm.toAdjunction |>.ofNatIsoLeft
+      (Functor.associator _ _ _ ≪≫
+        Over.iteratedSliceEquivOverMapIso g)
+  }
 
 end ChosenPullbacks
 
@@ -225,18 +246,13 @@ open BraidedCategory ChosenPullbacksAlong ChosenPullbacks
 attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
 
 /-- A exponentiable morphism is an exponentiable object in the slice category of its codomain. -/
-def exponentiableOverMk [ChosenPullbacks C] {X I : C} (f : X ⟶ I)
-    [ExponentiableMorphism f] :
+def exponentiableOverMk [ChosenPullbacks C] {X I : C}
+    (f : X ⟶ I) [ExponentiableMorphism f] :
     Exponentiable (Over.mk f) where
   rightAdj := pullback f ⋙ pushforward f
   adj := ofNatIsoLeft (F:= pullback f ⋙ Over.map f)
     ((pullbackAdjPushforward f).comp (mapPullbackAdj f))
     ((pullbackMapNatIsoTensorRight <| Over.mk f) ≪≫ (tensorLeftIsoTensorRight _).symm)
-
--- attribute [local instance] cartesianMonoidalCategory
-
--- instance foo [ChosenPullbacks C] : CartesianMonoidalCategory C :=
---   cartesianMonoidalCategory T h
 
 instance [CartesianMonoidalCategory C] [ChosenPullbacks C] (X : C) [Exponentiable X] :
     ChosenPullbacksAlong (curryId X) := by
@@ -248,10 +264,11 @@ section functor `Over (Over.mk f) ⥤ Over J`. -/
 def ofExponentiable [ChosenPullbacks C] {I : C} (X : Over I)
     [Exponentiable X] :
     ExponentiableMorphism X.hom :=
-  ⟨X.iteratedSliceEquiv.inverse ⋙ Over.sections X, by
-    refine ofNatIsoLeft (Adjunction.comp ?_ ?_) (toOverIteratedSliceForwardIsoPullback X.hom)
-    · exact Over.toOverSectionsAdj X
-    · apply (Over.mk X.hom).iteratedSliceEquiv.toAdjunction⟩
+  ⟨X.iteratedSliceEquiv.inverse ⋙ Over.sections X,
+    ofNatIsoLeft
+      (Adjunction.comp (Over.toOverSectionsAdj X) (Over.mk X.hom).iteratedSliceEquiv.toAdjunction)
+      (toOverIteratedSliceForwardIsoPullback X.hom)⟩
+
 
 end ExponentiableMorphism
 
@@ -264,7 +281,7 @@ class ChosenPushforwards [ChosenPullbacks C] where
 
 namespace ChosenPushforwards
 
-open Over ExponentiableMorphism
+open Over ChosenPullbacksAlong ChosenPullbacks ExponentiableMorphism
 
 variable {C} [ChosenPullbacks C] [ChosenPushforwards C]
 
@@ -277,6 +294,8 @@ instance cartesianClosedOver (I : C) :
 end ChosenPushforwards
 
 namespace CartesianClosedOver
+
+attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryOver
 
 variable {C} [ChosenPullbacks C] {I J : C} [CartesianClosed (Over J)]
 
@@ -310,73 +329,24 @@ instance ofChosenPushforwards [ChosenPushforwards C] : LocallyCartesianClosed C 
 instance ofCartesianClosedOver [Π (I : C), CartesianClosed (Over I)] :
   LocallyCartesianClosed C where
 
-variable [ChosenPullbacks C] [LocallyCartesianClosed C]
+variable [LocallyCartesianClosed C]
 
 /-- Every morphism in a locally cartesian closed category is exponentiable. -/
-instance {I J : C} (f : I ⟶ J) : ExponentiableMorphism f := ChosenPushforwards.exponentiable f
-
-attribute [instance] cartesianMonoidalCategory
-attribute [instance] cartesianMonoidalCategoryOver
-
-
-
-#exit
-
-variable {D : Type u₂} [Category.{v₂} D]
-
-example {F : C ⥤ C} {G : C ⥤ C} {e : C ≌ D} (adjFG : F ⊣ G) :
-    e.inverse ⋙ F ⋙ e.functor ⊣ e.inverse ⋙ G ⋙ e.functor where
-  unit.app X := by
-    simp
-    let d1 := e.unitIso.hom.app
-    simp at d1
-    let d2 := G.map (d1 X)
-    let d3 : R.obj X ⟶ G.obj (F.obj (R.obj X)) := adjFG.unit.app (R.obj X)
-    let d4 := d3 ≫ d2
-    let d5 := L.map d4
-    let d6 := adjLR.counit.app (L.obj (R.obj X))
-    sorry
-  counit.app := sorry
-
-
-
+instance exponentiableMorphism {I J : C} (f : I ⟶ J) : ExponentiableMorphism f :=
+  ChosenPushforwards.exponentiable f
 
 /-- A locally cartesian closed category with a terminal object is cartesian closed. -/
-def cartesianClosed (T : C) (h : Limits.IsTerminal T) :
-    letI := cartesianMonoidalCategory T h
-    CartesianClosed C := letI := cartesianMonoidalCategory T h; ⟨fun X => {
-      rightAdj := toOverUnit C ⋙ exp ((toOverUnit C).obj X) ⋙ Over.forget _
-      adj := by
-        let adj1 : Over.forget _ ⊣ toOver _ := forgetAdjToOver (𝟙_ C)
-        let iso1 : toOver _ ≅ toOverUnit C := toOverIsoToOverUnit
-        let adj2 : Over.forget _ ⊣ toOverUnit C := by exact adj1.ofNatIsoRight iso1
-        fapply Adjunction.ofNatIsoLeft
-        · exact toOverUnit C ⋙ tensorLeft ((toOverUnit C).obj X) ⋙ Over.forget (𝟙_ C)
-        · nth_rewrite 2 [← CategoryTheory.Functor.assoc]
-          apply adj2.comp
-
-        · sorry
-    }⟩
-
-
-#check cartesianClosedOfEquiv
-
-/-- A locally cartesian closed category with a terminal object is cartesian closed. -/
-noncomputable def cartesianClosed' (T : C) (h : Limits.IsTerminal T) :
+noncomputable def cartesianClosed (T : C) (h : Limits.IsTerminal T) :
     letI := cartesianMonoidalCategory T h
     CartesianClosed C :=
     let := cartesianMonoidalCategory T h
     cartesianClosedOfEquiv <| equivToOverUnit C
 
 /-- The slices of a locally cartesian closed category are locally cartesian closed. -/
-def overLocallyCartesianClosed (I : C) : LocallyCartesianClosed (Over I) := by
-  apply (config := { allowSynthFailures:= true}) mkOfCartesianClosedOver
+noncomputable def overLocallyCartesianClosed (I : C) : LocallyCartesianClosed (Over I) := by
+  apply (config := { allowSynthFailures:= true}) ofCartesianClosedOver
   intro X
   exact cartesianClosedOfEquiv (C := Over (X.left)) X.iteratedSliceEquiv.symm
-
-/-- The exponential `X^^A` in the slice category `Over I` is isomorphic to the pushforward of the
-pullback of `X` along `A`. -/
-def expIso {I : C} (A X : Over I) :  Pi A (Reindex A X) ≅ A ⟹ X := Iso.refl _
 
 end LocallyCartesianClosed
 
