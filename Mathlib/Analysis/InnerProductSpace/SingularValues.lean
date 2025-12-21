@@ -145,6 +145,7 @@ public theorem singularValues_le_rank {n : ℕ}
   -- `LinearMap.singularValues_antitone`, and order properties of `ℝ≥0`.
   le_antisymm (T.singularValues_rank ▸ T.singularValues_antitone hn) (zero_le _)
 
+@[simp]
 public theorem support_singularValues
   : T.singularValues.support = Finset.range (Module.finrank 𝕜 (range T)) := by
   -- Follows from `singularValues_lt_rank` and `singularValues_le_rank`.
@@ -192,6 +193,14 @@ public theorem leftSingularVectors_of_finrank_le {i : ℕ} (hi : Module.finrank 
   -- right singular vector lemma.
   sorry
 
+@[simp]
+public theorem support_rightSingularVectors
+  : T.rightSingularVectors.support = Finset.range (Module.finrank 𝕜 E) := sorry
+
+@[simp]
+public theorem support_leftSingularVectors
+  : T.leftSingularVectors.support = Finset.range (Module.finrank 𝕜 F) := sorry
+
 public theorem hasEigenvector_adjoint_comp_self_rightSingularVectors
   {i : ℕ} (hi : i < Module.finrank 𝕜 E)
   : Module.End.HasEigenvector (adjoint T ∘ₗ T) ((T.singularValues i).toReal ^ 2)
@@ -227,5 +236,32 @@ public theorem pairwise_inner_rightSingularVectors_eq_zero
 
 public theorem pairwise_inner_leftSingularVectors_eq_zero
   : Pairwise fun (i j : ℕ) ↦ ⟪T.leftSingularVectors i, T.leftSingularVectors j⟫_𝕜 = 0 := sorry
+
+/-
+These are lemmas that don't necessarily fit into any category, but need to be established
+eventually. They will need to be moved around later.
+-/
+
+@[simp]
+public theorem singularValues_zero (i : ℕ) : (0 : E →ₗ[𝕜] F).singularValues i = 0 := by
+  -- Might be able to prove this from `singularValues_smul`.
+  sorry
+
+/--
+Use `LinearMap.singularValues_of_finrank_le` for the rest of the characterization of the singular
+values of the identity map.
+
+TODO: Not sure if should be phrased in terms of `1` or `id` or `LinearEquiv.refl`.
+-/
+public theorem singularValues_one_of_lt_finrank {i : ℕ} (hi : i < Module.finrank 𝕜 E)
+  : (1 : E →ₗ[𝕜] E).singularValues i = 1 := sorry
+
+@[simp]
+public theorem singularValues_smul (c : 𝕜) (i : ℕ)
+  : (c • T).singularValues i = ‖c‖ * T.singularValues i := by
+  -- This one might require some facts about complex numbers
+  sorry
+
+-- We might need one which states that the first singular value equals the operator norm.
 
 end LinearMap
