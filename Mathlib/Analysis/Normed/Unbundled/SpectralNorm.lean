@@ -496,7 +496,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
-      convert le_ciSup (Finite.bddAbove_range _) σ
+      apply le_ciSup (Finite.bddAbove_range _) σ
       · rfl
       all_goals infer_instance
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
