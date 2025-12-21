@@ -3,12 +3,16 @@ Copyright (c) 2025 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Order.PartialSups
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Order.PartialSups
 
 /-!
 # Results about `partialSups` of functions taking values in a `Group`
 -/
+
+@[expose] public section
 
 variable {α ι : Type*}
 

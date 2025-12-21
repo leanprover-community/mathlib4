@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.Topology.Algebra.UniformMulAction
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition
@@ -39,6 +41,8 @@ is useful for the Lebesgue decomposition theorem.
 
 Jordan decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -275,7 +279,10 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
-  all_goals first | linarith | assumption
+  · linarith
+  · linarith
+  · assumption
+  · assumption
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/

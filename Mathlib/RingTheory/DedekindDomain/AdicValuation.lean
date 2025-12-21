@@ -3,12 +3,14 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-import Mathlib.Data.Int.WithZero
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithVal
+module
+
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Adic valuations on Dedekind domains
@@ -26,8 +28,8 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
-- `IsDedekindDomain.HeightOneSpectrum.adicAbv v`is the `v`-adic absolute value on `K` defined as `b`
-  raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
+  `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -57,6 +59,8 @@ We are only interested in Dedekind domains with Krull dimension 1.
 ## Tags
 dedekind domain, dedekind ring, adic valuation
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -131,12 +135,10 @@ theorem intValuation.map_add_le_max' (x y : R) :
   classical
   by_cases hx : x = 0
   · rw [hx, zero_add]
-    conv_rhs => rw [intValuationDef, if_pos rfl]
-    rw [max_eq_right (WithZero.zero_le (v.intValuationDef y))]
+    order
   · by_cases hy : y = 0
     · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, intValuationDef, if_pos rfl]
-      rw [max_eq_right (WithZero.zero_le (v.intValuationDef x))]
+      order
     · by_cases hxy : x + y = 0
       · rw [intValuationDef, if_pos hxy]; exact zero_le'
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
@@ -178,10 +180,6 @@ theorem intValuation_def {r : R} :
     v.intValuation r = if r = 0 then 0 else
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   rfl
-
-@[deprecated intValuation_apply (since := "2025-04-26")]
-theorem intValuation_toFun (r : R) :
-    v.intValuation r = v.intValuationDef r := rfl
 
 open scoped Classical in
 theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
@@ -278,6 +276,13 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   rw [v.intValuation_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one]
   exact v.associates_irreducible
 
+@[simp]
+theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
+    v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
+  refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
+  exact le_antisymm (v.intValuation_le_one x) <| by
+    simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
+
 /-! ### Adic valuations on the field of fractions `K` -/
 
 variable (K) in
@@ -324,6 +329,24 @@ open scoped algebraMap in
 theorem valuation_lt_one_iff_mem (r : R) :
     v.valuation K r < 1 ↔ r ∈ v.asIdeal := by
   rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_mem r
+
+variable (K) in
+open scoped algebraMap in
+/-- The `v` adic valuation of `a / b ∈ K` is `≤ 1` if and only if `b ∉ v`, provided that `a` and
+`b` are coprime at `v`. -/
+theorem valuation_div_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
+    (h : b ∈ v.asIdeal → a ∉ v.asIdeal) :
+    v.valuation K (a / b) ≤ 1 ↔ b ∉ v.asIdeal := by
+  refine ⟨fun hv ↦ ?_, fun hb ↦ by
+    simp [valuation_of_algebraMap, intValuation_eq_one_iff.2 hb, intValuation_le_one]⟩
+  contrapose! hv
+  have ha₀ : a ≠ 0 := fun _ ↦ by simp_all
+  have hva : v.valuation K a ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [ha₀])
+  have hvb : v.valuation K b ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [hb])
+  rw [← WithZero.log_lt_log one_ne_zero ((Valuation.ne_zero_iff _).2 (by simp [ha₀, hb])),
+    map_div₀, WithZero.log_div hva hvb, WithZero.log_one, Int.sub_pos,
+    WithZero.log_lt_log hvb hva]
+  simpa [valuation_of_algebraMap, intValuation_eq_one_iff.2 <| h hv, intValuation_lt_one_iff_mem]
 
 variable (K)
 
@@ -486,11 +509,9 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine ValuationSubring.mul_mem _ _ _ ?_ x.2
-      rw [h]
+      rw [algebraMap_adicCompletion]
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
@@ -622,9 +643,25 @@ theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 variable {R K} in
 theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
     v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
+  contrapose
+  rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
 
 end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum
+
+namespace Rat
+
+open IsDedekindDomain.HeightOneSpectrum
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+
+theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
+    𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
+  have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
+  have : (x.den : R) ≠ 0 := by simp
+  simp [x.num_div_den, ← 𝔭.valuation_div_le_one_iff ℚ x.num this
+    (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
+
+end Rat

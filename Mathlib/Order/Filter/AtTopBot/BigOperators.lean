@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Two lemmas about limit of `Π b ∈ s, f b` along
@@ -13,6 +15,8 @@ In this file we prove two auxiliary lemmas
 about `Filter.atTop : Filter (Finset _)` and `∏ b ∈ s, f b`.
 These lemmas are useful to build the theory of absolutely convergent series.
 -/
+
+@[expose] public section
 
 open Filter Finset
 

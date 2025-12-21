@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of open neighborhoods of a point
@@ -25,6 +27,8 @@ Besides `OpenNhds`, the main constructions here are:
                     `OpenNhds (f x)`.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory TopologicalSpace Opposite Topology
 
@@ -35,21 +39,16 @@ variable {X Y : TopCat.{u}} (f : X ⟶ Y)
 namespace TopologicalSpace
 
 /-- The type of open neighbourhoods of a point `x` in a (bundled) topological space. -/
-def OpenNhds (x : X) :=
-  ObjectProperty.FullSubcategory fun U : Opens X => x ∈ U
+def OpenNhds (x : X) : Type u := { U : Opens X // x ∈ U }
 
 namespace OpenNhds
 variable {x : X} {U V W : OpenNhds x}
 
-instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
-  le U V := U.1 ≤ V.1
-  le_refl _ := le_rfl
-  le_trans _ _ _ := le_trans
-  le_antisymm _ _ i j := ObjectProperty.FullSubcategory.ext <| le_antisymm i j
+instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
+  inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
 
 instance (x : X) : Lattice (OpenNhds x) :=
-  { OpenNhds.partialOrder x with
-    inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
+  { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
     inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
     inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
@@ -64,8 +63,6 @@ instance (x : X) : OrderTop (OpenNhds x) where
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
-
-instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
 
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
@@ -92,7 +89,7 @@ def infLERight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
 /-- The inclusion functor from open neighbourhoods of `x`
 to open sets in the ambient topological space. -/
 def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
-  ObjectProperty.ι _
+  (Subtype.mono_coe _).functor
 
 @[simp]
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=

@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Arithmetic-geometric sequences
@@ -27,6 +29,8 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
   monotone.
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 
@@ -89,7 +93,7 @@ lemma arithGeom_same_eq_mul_div (ha : a ≠ 1) (n : ℕ) :
 lemma arithGeom_zero_eq_mul_div' (ha : a ≠ 1) (n : ℕ) :
     arithGeom a b 0 n = b * (1 - a ^ n) / (1 - a) := by
   rw [arithGeom_eq ha n]
-  field
+  ring
 
 lemma arithGeom_zero_eq_mul_div (ha : a ≠ 1) (n : ℕ) :
     arithGeom a b 0 n = b * (a ^ n - 1) / (a - 1) := by

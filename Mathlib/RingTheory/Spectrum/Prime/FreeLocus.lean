@@ -3,16 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Localization.Free
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.RingTheory.TensorProduct.Free
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.LocalProperties.Projective
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Localization.Free
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -31,6 +33,8 @@ Let `M` be a finitely presented `R`-module.
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
 
 -/
+
+@[expose] public section
 
 universe uR uM
 
@@ -319,8 +323,8 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
   simp [rankAtStalk, e.finrank_eq]
 
 lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
-    rankAtStalk (S ⊗[R] M) p = rankAtStalk M ((algebraMap R S).specComap p) := by
-  let q : PrimeSpectrum R := (algebraMap R S).specComap p
+    rankAtStalk (S ⊗[R] M) p = rankAtStalk M (p.comap (algebraMap R S)) := by
+  let q : PrimeSpectrum R := p.comap (algebraMap R S)
   let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
       Localization.AtPrime p.asIdeal ⊗[Localization.AtPrime q.asIdeal]
         LocalizedModule q.asIdeal.primeCompl M :=
@@ -347,7 +351,7 @@ lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Modul
 lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algebra R S]
     (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     [Module.Finite S N] [Module.Flat S N] (p : PrimeSpectrum S) :
-    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M ((algebraMap R S).specComap p) := by
+    rankAtStalk (N ⊗[R] M) p = rankAtStalk N p * rankAtStalk M (p.comap (algebraMap R S)) := by
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 

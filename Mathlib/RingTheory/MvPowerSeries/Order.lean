@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
@@ -114,6 +115,8 @@ TODO: Define a coercion to MvPolynomial.
 
 -/
 
+@[expose] public section
+
 namespace MvPowerSeries
 
 noncomputable section
@@ -128,9 +131,7 @@ variable (w : σ → ℕ) {f g : MvPowerSeries σ R}
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
-  refine not_iff_not.mp ?_
-  simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact MvPowerSeries.ext_iff
+  simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
@@ -216,7 +217,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
-  · rw [h, weightedOrder_eq_top_iff, LinearMap.map_zero]
+  · rw [h, weightedOrder_eq_top_iff, map_zero]
   · rw [weightedOrder_eq_nat]
     constructor
     · use d
@@ -291,6 +292,11 @@ theorem le_weightedOrder_mul :
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
 
+theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
+  induction n with
+  | zero => simp
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
+
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
@@ -335,6 +341,15 @@ theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.we
   by_contra! h
   have : f = 0 := by simpa using (weightedOrder_add_of_weightedOrder_ne w h).symm
   simp [this] at h
+
+@[simp]
+theorem weightedOrder_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T) :
+    (p.toSubring T hp).weightedOrder w = p.weightedOrder w := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine le_weightedOrder w fun d hd => by
+      simp [coeff_eq_zero_of_lt_weightedOrder w hd, ←p.coeff_toSubring T hp]
+  · refine le_weightedOrder w fun d hd => by
+      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_eq_zero_of_lt_weightedOrder w hd)
 
 end Ring
 
@@ -440,9 +455,23 @@ theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
 
 alias order_mul_ge := le_order_mul
 
+theorem le_order_pow (n : ℕ) : n • f.order ≤ (f ^ n).order :=
+  le_weightedOrder_pow _ n
+
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
+
+theorem order_ne_zero_iff_constCoeff_eq_zero :
+    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+  constructor
+  · intro h
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| MvPowerSeries.le_order fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [(degree_eq_zero_iff d).mp hd, h]
 
 section Ring
 
@@ -466,6 +495,13 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ �
 
 @[simp]
 theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrder_neg _ f
+
+@[simp]
+theorem order_toSubring (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T) :
+    (p.toSubring T hp).order = p.order := by
+  refine eq_of_le_of_ge ?_ ?_
+  · exact le_order fun d hd => by simp [coeff_of_lt_order hd, ←p.coeff_toSubring T hp]
+  · exact le_order fun d hd => by exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order hd)
 
 end Ring
 

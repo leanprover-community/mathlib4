@@ -3,14 +3,16 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.AddTorsor.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
 
@@ -42,6 +44,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 
 open Affine
 
@@ -628,7 +632,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => 
 are the same. -/
 theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
   rw [decomp]
-  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
+  simp only [map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
 theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     (f : k →ᵃ[k] k) (a b : k) :

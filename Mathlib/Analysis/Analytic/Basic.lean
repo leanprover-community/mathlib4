@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.ConvergenceRadius
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.Analysis.Analytic.ConvergenceRadius
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Analytic functions
@@ -48,6 +50,8 @@ We develop the basic properties of these notions, notably:
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*}
 
@@ -734,7 +738,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
 theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesWithinAt f p s x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y)
-      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
+      =O[𝓝[(x + ·) ⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
@@ -880,7 +884,7 @@ of the partial sums of this power series on strict subdisks of the disk of conve
 theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
-      ((x + ·)⁻¹' (insert x s) ∩ Metric.ball (0 : E) r') := by
+      ((x + ·) ⁻¹' (insert x s) ∩ Metric.ball (0 : E) r') := by
   obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
     x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := hf.uniform_geometric_approx h
   refine Metric.tendstoUniformlyOn_iff.2 fun ε εpos => ?_
@@ -907,7 +911,7 @@ is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
-      ((x + ·)⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r) := by
+      ((x + ·) ⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r) := by
   intro u hu y hy
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
   have : EMetric.ball (0 : E) r' ∈ 𝓝 y := IsOpen.mem_nhds EMetric.isOpen_ball yr'
@@ -978,7 +982,7 @@ protected theorem HasFPowerSeriesWithinOnBall.continuousOn
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     ContinuousOn f (insert x s ∩ EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
-    Eventually.of_forall fun n =>
+    Frequently.of_forall fun n =>
       ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
 
 /-- If a function admits a power series expansion on a ball, then it is continuous there. -/

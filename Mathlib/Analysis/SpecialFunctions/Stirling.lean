@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Real.Pi.Wallis
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula
@@ -31,6 +33,8 @@ ingredients are
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
 -/
+
+@[expose] public section
 
 
 open scoped Topology Real Nat Asymptotics
@@ -124,7 +128,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   field_simp
   ring_nf
   norm_cast
-  cutsat
+  lia
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :

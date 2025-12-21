@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # Uniform integrability
@@ -14,7 +16,7 @@ as well as the probability theory sense). This file also contains the Vitali con
 which establishes a relation between uniform integrability, convergence in measure and
 Lp convergence.
 
-Uniform integrability plays a vital role in the theory of martingales most notably is used to
+Uniform integrability plays a vital role in the theory of martingales and most notably is used to
 formulate the martingale convergence theorem.
 
 ## Main definitions
@@ -22,13 +24,13 @@ formulate the martingale convergence theorem.
 * `MeasureTheory.UnifIntegrable`: uniform integrability in the measure theory sense.
   In particular, a sequence of functions `f` is uniformly integrable if for all `ε > 0`, there
   exists some `δ > 0` such that for all sets `s` of smaller measure than `δ`, the Lp-norm of
-  `f i` restricted `s` is smaller than `ε` for all `i`.
+  `f i` restricted to `s` is smaller than `ε` for all `i`.
 * `MeasureTheory.UniformIntegrable`: uniform integrability in the probability theory sense.
   In particular, a sequence of measurable functions `f` is uniformly integrable in the
   probability theory sense if it is uniformly integrable in the measure theory sense and
   has uniformly bounded Lp-norm.
 
-# Main results
+## Main results
 
 * `MeasureTheory.unifIntegrable_finite`: a finite sequence of Lp functions is uniformly
   integrable.
@@ -39,8 +41,10 @@ formulate the martingale convergence theorem.
   and converges in measure.
 
 ## Tags
-uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
+uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -57,7 +61,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 
 A sequence of functions `f` is said to be uniformly integrable if for all `ε > 0`, there exists
 some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-norm of `f i`
-restricted on `s` is less than `ε`.
+restricted to `s` is less than `ε`.
 
 Uniform integrability is also known as uniformly absolutely continuous integrals. -/
 def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
@@ -268,8 +272,7 @@ latter provides `0 < M`. -/
 theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : StronglyMeasurable f) {ε : ℝ}
     (hε : 0 < ε) : ∃ M : ℝ, eLpNorm ({ x | M ≤ ‖f x‖₊ }.indicator f) p μ ≤ ENNReal.ofReal ε := by
   by_cases hp_ne_zero : p = 0
-  · refine ⟨1, hp_ne_zero.symm ▸ ?_⟩
-    simp [eLpNorm_exponent_zero]
+  · exact ⟨1, by simp [hp_ne_zero]⟩
   by_cases hp_ne_top : p = ∞
   · subst hp_ne_top
     obtain ⟨M, hM⟩ := hf.eLpNormEssSup_indicator_norm_ge_eq_zero hmeas
@@ -307,10 +310,8 @@ theorem MemLp.eLpNorm_indicator_norm_ge_pos_le (hf : MemLp f p μ) (hmeas : Stro
   obtain ⟨M, hM⟩ := hf.eLpNorm_indicator_norm_ge_le hmeas hε
   refine
     ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), le_trans (eLpNorm_mono fun x => ?_) hM⟩
-  rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  refine Set.indicator_le_indicator_of_subset (fun x hx => ?_) (fun x => norm_nonneg (f x)) x
-  rw [Set.mem_setOf_eq] at hx -- removing the `rw` breaks the proof!
-  exact (max_le_iff.1 hx).1
+  simp only [norm_indicator_eq_indicator_norm]
+  grw [← le_max_left]
 
 end
 
@@ -451,22 +452,6 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
 
 end
 
-theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
-    {p : ℝ≥0∞} (hp' : p ≠ ∞) {s : Set α} (hs : MeasurableSet[m] s)
-    {f g : α → β} {c : ℝ} (hc : 0 ≤ c) (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
-    eLpNorm (s.indicator (f - g)) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
-  by_cases hp : p = 0
-  · simp [hp]
-  have : ∀ x, ‖s.indicator (f - g) x‖ ≤ ‖s.indicator (fun _ => c) x‖ := by
-    intro x
-    by_cases hx : x ∈ s
-    · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.sub_apply, ← dist_eq_norm,
-        Real.norm_eq_abs, abs_of_nonneg hc]
-      exact hf x hx
-    · simp [Set.indicator_of_notMem hx]
-  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
-    Real.norm_eq_abs, abs_of_nonneg hc]
-
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -508,7 +493,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   have hlt : eLpNorm (tᶜ.indicator (f n - g)) p μ ≤ ENNReal.ofReal (ε.toReal / 3) := by
     specialize hN n hn
     have : 0 ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)) := by positivity
-    have := eLpNorm_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
+    have := eLpNorm_indicator_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine le_trans this ?_
@@ -685,8 +670,39 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
       rwa [Set.mem_setOf, hx] at hfx
   refine ⟨max C 1, lt_max_of_lt_right one_pos, fun i => le_trans (eLpNorm_mono fun x => ?_) (hCg i)⟩
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  exact Set.indicator_le_indicator_of_subset
-    (fun x hx => Set.mem_setOf_eq ▸ le_trans (le_max_left _ _) hx) (fun _ => norm_nonneg _) _
+  grw [← le_max_left]
+
+/-- If `fn` is `UnifIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
+    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
+  intro ε hε
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine eLpNorm_le_of_tendstoInMeasure
+    (Eventually.of_forall fun n => hδ' (s n) t ht ht') (hs.indicator t) ?_
+  exact fun n => (hfn (s n)).indicator ht
+
+/-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
+    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+  intro ε hε
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine Lp.eLpNorm_le_of_ae_tendsto
+    (Eventually.of_forall (f := u) fun n => hδ' (s n) t ht ht') ?_ ?_
+  · exact fun n => (hfn (s n)).indicator ht
+  · filter_upwards [hs] with a ha
+    by_cases memt : a ∈ t
+    · simpa [memt]
+    · simp [memt]
 
 end UnifIntegrable
 
@@ -903,6 +919,31 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
   convert uniformIntegrable_average hp hf using 2 with n
   ext x
   simp [div_eq_inv_mul]
+
+/-- If `fn` is `UniformIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UniformIntegrable`. -/
+lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UniformIntegrable fn p μ) :
+    UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
+  refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_tendstoInMeasure u (fun i => hUI.1 i), ?_⟩
+  · exact hs.aestronglyMeasurable (fun n => hUI.1 (s n))
+  · obtain ⟨C, hC⟩ := hUI.2.2
+    exact ⟨C, fun ⟨f, s, hs⟩ => eLpNorm_le_of_tendstoInMeasure
+      (Eventually.of_forall fun n => hC (s n)) hs (fun n => hUI.1 (s n))⟩
+
+/-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
+`UniformIntegrable`. -/
+lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
+    [IsCountablyGenerated u] {fn : ι → α → β}
+    (hUI : UniformIntegrable fn p μ) :
+    UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
+  refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_ae_tendsto u (fun i => hUI.1 i), ?_⟩
+  · exact aestronglyMeasurable_of_tendsto_ae u (fun n => hUI.1 (s n)) hs
+  · obtain ⟨C, hC⟩ := hUI.2.2
+    exact ⟨C, fun ⟨f, s, hs⟩ => Lp.eLpNorm_le_of_ae_tendsto
+      (Eventually.of_forall fun n => hC (s n)) (fun n => hUI.1 (s n)) hs⟩
 
 end UniformIntegrable
 

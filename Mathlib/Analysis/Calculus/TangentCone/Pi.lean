@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone.Basic
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 /-!
 # Indexed product of sets with unique differentiability property
@@ -12,6 +14,8 @@ In this file we prove that the indexed product
 of a family sets with unique differentiability property
 has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped Topology
@@ -39,8 +43,6 @@ theorem mapsTo_tangentConeAt_pi [DecidableEq ι] {i : ι} (hi : ∀ j ≠ i, x j
     · suffices Tendsto (fun n => c n • d' n j) atTop (𝓝 0) by simpa [hj]
       refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
       exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
-
-@[deprecated (since := "2025-04-27")] alias mapsTo_tangentCone_pi := mapsTo_tangentConeAt_pi
 
 variable (ι E)
 variable [Finite ι]

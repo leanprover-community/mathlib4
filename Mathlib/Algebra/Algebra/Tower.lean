@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Towers of algebras
@@ -18,6 +20,8 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -104,7 +108,7 @@ variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
-  ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
+  ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
 /-- See note [partially-applied ext lemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
@@ -400,4 +404,4 @@ theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [Co
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 
-end  Algebra.algebraMapSubmonoid
+end Algebra.algebraMapSubmonoid

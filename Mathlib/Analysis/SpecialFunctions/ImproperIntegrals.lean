@@ -3,11 +3,13 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+module
+
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Evaluation of specific improper integrals
@@ -24,6 +26,8 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 - `Mathlib/Analysis/SpecialFunctions/Gaussian.lean` -- integral of `exp (-x ^ 2)`
 - `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
 -/
+
+@[expose] public section
 
 
 open Real Set Filter MeasureTheory intervalIntegral

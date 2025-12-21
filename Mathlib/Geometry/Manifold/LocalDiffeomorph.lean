@@ -3,9 +3,10 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -29,7 +30,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
   and similarly for a local diffeomorphism on `s`.
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `IsLocalDiffeomorph.diffeomorph_of_bijective`:
+* `IsLocalDiffeomorph.diffeomorphOfBijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
 * `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
@@ -55,6 +56,8 @@ practice.
 local diffeomorphism, manifold
 
 -/
+
+@[expose] public section
 
 open Manifold Set TopologicalSpace
 
@@ -252,7 +255,7 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! # Basic properties of local diffeomorphisms -/
+/-! ### Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}
@@ -328,11 +331,11 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
+noncomputable def IsLocalDiffeomorph.diffeomorphOfBijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
-  -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
+  -- Choose diffeomorphisms φ_x which coincide with `f` near `x`.
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
   -- they're both inverses to g. In fact, the latter suffices for our proof.
@@ -355,6 +358,9 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
+
+@[deprecated (since := "2025-12-19")]
+alias IsLocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorphOfBijective
 
 end Basic
 
@@ -387,7 +393,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       hf.localInverse_left_inv hf.localInverse_mem_target]
   continuous_toFun := (mfderiv I J f x).cont
   continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
-  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_add' := fun x_1 y ↦ map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]

@@ -3,10 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Analysis.LocallyConvex.Separation
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Spaces with separating dual
@@ -31,6 +33,8 @@ Under the assumption `SeparatingDual R V`, we show in
 `SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
 -/
+
+@[expose] public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]

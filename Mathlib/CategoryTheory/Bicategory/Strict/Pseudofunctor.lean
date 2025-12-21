@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Pseudofunctors from strict bicategory
@@ -21,6 +23,8 @@ isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 (see `Pseudofunctor.isoMapOfCommSq`).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -152,7 +156,7 @@ lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
 lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
-      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
   simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 @[to_app (attr := reassoc)]

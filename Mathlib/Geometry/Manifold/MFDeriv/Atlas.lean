@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -18,13 +20,15 @@ We show that
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
-  there are also spelling with trivial kernel and full range
+  there are also spellings with trivial kernel and full range
 
 In particular, (extended) charts have bijective differential.
 
 ## Tags
 charts, differentiable, bijective
 -/
+
+@[expose] public section
 
 noncomputable section
 

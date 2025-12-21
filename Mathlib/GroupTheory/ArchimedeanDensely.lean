@@ -3,13 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
-import Mathlib.Data.Int.Interval
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Order.Interval.Finset.DenselyOrdered
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -21,6 +23,8 @@ integers, or they are densely ordered.
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
+
+@[expose] public section
 
 open Set
 open scoped WithZero
@@ -96,6 +100,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
+set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
@@ -271,7 +276,7 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  cutsat
+  lia
 
 /-- Any non-trivial linearly ordered archimedean additive group is either cyclic, or densely
 ordered, exclusively. -/
@@ -362,11 +367,10 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
       rw [LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered]
       intro hd
       obtain ⟨y, hy⟩ := exists_ne (0 : G)
-      wlog hy' : 0 < y generalizing y
+      wlog! hy' : 0 < y generalizing y
       · refine this (-y) ?_ ?_
         · simp [hy]
-        · simp only [not_lt] at hy'
-          simp [lt_of_le_of_ne hy' hy]
+        · simp [lt_of_le_of_ne hy' hy]
       obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩
       obtain ⟨w, hw, hw'⟩ := exists_between hz'
       exact hz'' ⟨w, hw.le⟩ hw hw'

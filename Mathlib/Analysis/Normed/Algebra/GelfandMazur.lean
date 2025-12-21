@@ -3,7 +3,9 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Polynomial.Factorization
+module
+
+public import Mathlib.Analysis.Polynomial.Factorization
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem
@@ -108,6 +110,8 @@ which is bounded by `(M ^ n + c ^ n) / M ^ (n - 1) = M * (1 + (c / M) ^ n)`, whe
 `c = ‖(a' - a) • x - (b' - b) • 1‖ < M`. So, letting `n` tend to infinity, we obtain that
 `M ≤ ‖x ^ 2 - a' • x + b' • 1‖ ≤ M`, as desired.
 -/
+
+@[expose] public section
 
 /-!
 ### Auxiliary results used in both cases

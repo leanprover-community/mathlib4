@@ -3,14 +3,18 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Opposite
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Non-zero divisors in a ring
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -36,7 +40,7 @@ theorem IsLeftRegular.pow_injective [IsMulTorsionFree R]
 @[to_additive]
 theorem IsRightRegular.pow_injective {M : Type*} [Monoid M] [IsMulTorsionFree M] {x : M}
     (hx : IsRightRegular x) (hx' : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
-  MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective  <|
+  MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective <|
     (MulOpposite.op_eq_one_iff x).not.mpr hx'
 
 theorem IsMulTorsionFree.pow_right_injective {M : Type*} [CancelMonoid M] [IsMulTorsionFree M]

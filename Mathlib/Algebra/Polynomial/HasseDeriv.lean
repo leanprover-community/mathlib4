@@ -3,12 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Choose.Vandermonde
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Vandermonde
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Hasse derivative of polynomials
@@ -38,6 +40,8 @@ in `Data/Polynomial/Taylor.lean`.
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

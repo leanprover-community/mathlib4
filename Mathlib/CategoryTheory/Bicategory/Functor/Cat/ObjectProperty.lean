@@ -52,7 +52,9 @@ abbrev Obj (X : B) := (P.prop X).FullSubcategory
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`,
 this is the condition that `P` is preserved by the application of the functors `F.obj`. -/
 class IsClosedUnderMapObj (P : F.ObjectProperty) : Prop where
-  map_obj (P) {X Y : B} {M : F.obj X} (hM : P.prop X M) (f : X ⟶ Y) : P.prop Y ((F.map f).obj M)
+  map_obj (P) {X Y : B} {M : F.obj X} (hM : P.prop X M) (f : X ⟶ Y) :
+    P.prop Y ((F.map f).toFunctor.obj M)
+
 export IsClosedUnderMapObj (map_obj)
 
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`, this is the
@@ -72,7 +74,8 @@ in `B`, this is the functor `P.Obj X ⥤ P.Obj Y` that is induced by `F.map f`. 
 @[simps!]
 def map {X Y : B} (f : X ⟶ Y) :
     P.Obj X ⥤ P.Obj Y :=
-  (P.prop Y).lift (ObjectProperty.ι _ ⋙ F.map f) (fun M ↦ P.map_obj M.2 f)
+  (P.prop Y).lift (ObjectProperty.ι _ ⋙ (F.map f).toFunctor)
+    (fun M ↦ P.map_obj M.2 f)
 
 /-- Given a property `P` of objects for `F : Pseudofunctor B Cat` and
 a `2`-morphism in `B`, this is the induced natural transformation between
@@ -81,53 +84,44 @@ the induced functors on the fullsubcategories of objects satisfying `P`. -/
 def map₂ {X Y : B} {f g : X ⟶ Y} (α : f ⟶ g) :
     P.map f ⟶ P.map g :=
   ((P.prop Y).fullyFaithfulι.whiskeringRight _).preimage
-    (Functor.whiskerLeft (P.prop X).ι (F.map₂ α))
+    (Functor.whiskerLeft (P.prop X).ι (F.map₂ α).toNatTrans)
 
 /-- Auxiliary definition for `fullsubcategory`. -/
 def mapId (X : B) :
     P.map (𝟙 X) ≅ 𝟭 _ :=
   ((P.prop X).fullyFaithfulι.whiskeringRight _).preimageIso
-    (Functor.isoWhiskerLeft (P.prop X).ι (F.mapId X))
+    (Functor.isoWhiskerLeft (P.prop X).ι (Cat.Hom.toNatIso (F.mapId X)))
 
 @[simp]
 lemma mapId_hom_app {X : B} (M : P.Obj X) :
-  (P.mapId X).hom.app M = (F.mapId X).hom.app M.obj := rfl
+  (P.mapId X).hom.app M = ObjectProperty.homMk
+    ((F.mapId X).hom.toNatTrans.app M.obj) := rfl
 
 @[simp]
 lemma mapId_inv_app {X : B} (M : P.Obj X) :
-  (P.mapId X).inv.app M = (F.mapId X).inv.app M.obj := rfl
+  (P.mapId X).inv.app M = ObjectProperty.homMk
+    ((F.mapId X).inv.toNatTrans.app M.obj) := rfl
 
 /-- Auxiliary definition for `fullsubcategory`. -/
 def mapComp {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) ≅ P.map f ⋙ P.map g :=
   ((P.prop Z).fullyFaithfulι.whiskeringRight _).preimageIso
-    (Functor.isoWhiskerLeft (P.prop X).ι (F.mapComp f g))
+    (Functor.isoWhiskerLeft (P.prop X).ι (Cat.Hom.toNatIso (F.mapComp f g)))
 
--- better wait for #26446
 /-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
 the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj B`
 consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
   obj X := Cat.of (P.Obj X)
-  map f := P.map f
-  map₂ α := P.map₂ α
-  mapId X := P.mapId X
-  mapComp f g := P.mapComp f g
-  map₂_id := sorry
-  map₂_comp := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
-  map₂_whisker_left := sorry
-  map₂_whisker_right := sorry
-
-attribute [local simp] Cat.leftUnitor_hom_app Cat.rightUnitor_inv_app
-  Cat.associator_hom_app Cat.associator_inv_app
+  map f := Cat.Hom.ofFunctor (P.map f)
+  map₂ α := Cat.Hom₂.ofNatTrans (P.map₂ α)
+  mapId X := Cat.Hom.isoMk (P.mapId X)
+  mapComp f g := Cat.Hom.isoMk (P.mapComp f g)
 
 /-- The inclusion of `P.fullsubcategory` in `F`. -/
 def ι : StrongTrans P.fullsubcategory F where
-  app X := (P.prop (X := X)).ι
+  app X := Cat.Hom.ofFunctor (P.prop (X := X)).ι
   naturality f := Iso.refl _
 
 end
