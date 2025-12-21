@@ -89,7 +89,7 @@ weak convergence of measures, finite measure
 noncomputable section
 
 open BoundedContinuousFunction Filter MeasureTheory Set Topology
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Function
 
 namespace MeasureTheory
 
@@ -111,7 +111,7 @@ and using the associated weak topology (essentially the weak-star topology on th
 -/
 
 
-variable {Ω : Type*} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] {s t : Set Ω}
 
 /-- Finite measures are defined as the subtype of measures that have the property of being finite
 measures (i.e., their total mass is finite). -/
@@ -172,6 +172,12 @@ theorem apply_union_le (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ �
   have := measure_union_le (μ := (μ : Measure Ω)) s₁ s₂
   apply (ENNReal.toNNReal_mono (by finiteness) this).trans_eq
   rw [ENNReal.toNNReal_add (by finiteness) (by finiteness), coeFn_def]
+
+theorem mono_null (μ : FiniteMeasure Ω) (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
+  eq_bot_mono (apply_mono μ h) ht
+
+lemma pos_mono (μ : FiniteMeasure Ω) (h : s ⊆ t) (hs : 0 < μ s) :
+    0 < μ t := hs.trans_le <| μ.apply_mono h
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
@@ -306,6 +312,15 @@ lemma restrict_union {μ : FiniteMeasure Ω} {s t : Set Ω} (h : Disjoint s t) (
     μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t := by
   ext u hu
   simp [Measure.restrict_union h ht]
+
+lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset ι}
+    {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
+  ext t ht
+  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+  rw [Measure.restrict_biUnion_finset hd hm]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
+  conv_rhs => rw [← Finset.sum_attach]
 
 @[simp]
 theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A = 0 ↔ μ A = 0 := by
@@ -562,6 +577,8 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
   rw [tendsto_iff_forall_toWeakDualBCNN_tendsto]
   simp_rw [toWeakDualBCNN_apply _ _, ← testAgainstNN_coe_eq, ENNReal.tendsto_coe,
     ENNReal.toNNReal_coe]
+
+instance : R1Space (FiniteMeasure Ω) := IsInducing.r1Space (f := toWeakDualBCNN) ⟨rfl⟩
 
 end weak_convergence -- section
 

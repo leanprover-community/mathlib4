@@ -469,7 +469,7 @@ lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpa
 integrates in the same way bounded continuous functions, and is regular. -/
 lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     (μ : Measure X) [IsFiniteMeasure μ] {K : Set X} (hK : IsCompact K) (h : μ Kᶜ = 0) :
-    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧
+    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧ ν Kᶜ = 0 ∧
       ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
   let μ' : Measure K := μ.comap Subtype.val
   obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ (ν : Measure K), ν.Regular ∧ IsFiniteMeasure ν ∧
@@ -477,7 +477,9 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     have : CompactSpace K := isCompact_iff_compactSpace.mp hK
     exact Measure.exists_regular_eq_of_compactSpace μ'
   refine ⟨ν'.map Subtype.val, Measure.InnerRegular.map_of_continuous (by fun_prop),
-    by infer_instance, fun g ↦ ?_⟩
+    by infer_instance, ?_, fun g ↦ ?_⟩
+  · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
+    simp
   convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
