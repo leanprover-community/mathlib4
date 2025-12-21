@@ -227,8 +227,8 @@ noncomputable def ofFun (f : E → F) (μ : Measure E := by volume_tac) : 𝓓'(
 @[simp]
 lemma ofFunWithOrder_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
     {φ : 𝓓^{n}(Ω, ℝ)} :
-    ofFunWithOrder Ω n f μ φ = ∫ x, φ x • f x ∂μ := by sorry
-  -- simp [ofFunWithOrder, hf]
+    ofFunWithOrder Ω n f μ φ = ∫ x, φ x • f x ∂μ := by
+  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM_apply hf]
 
 @[simp]
 lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
@@ -238,11 +238,11 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
 
 lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
     (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
-  sorry
-  -- ext φ
-  -- simp_rw [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
-  --   TestFunction.integralAgainstBilinLM, hf]
-  -- dsimp
+  ext φ
+  simp_rw [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
+    TestFunction.integralAgainstBilinLM, hf]
+  dsimp
+  congr -- TODO: this line used to be not necessary!
 
 lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
     ofFun Ω f μ = 0 := by
@@ -257,9 +257,9 @@ lemma ofFun_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict �
 
 @[simp]
 lemma ofFunWithOrder_zero {μ : Measure E} : ofFunWithOrder Ω n (0 : E → F) μ = 0 := by
-  sorry
-  -- ext φ
-  -- simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM, TestFunction.integralAgainstBilinLM]
+  ext φ
+  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM, TestFunction.integralAgainstBilinLM]
+  congr -- TODO: this line used to be not necessary!
 
 @[simp]
 lemma ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ = 0 := by
@@ -275,13 +275,10 @@ lemma integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ)) (hf : 
 lemma ofFun_add {f g : E → F} {μ : Measure E}
     (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
     ofFun Ω (f + g) μ = ofFun Ω f μ + ofFun Ω g μ := by
-  sorry
-  -- ext φ
-  -- simp only [ContinuousLinearMap.add_apply]
-  -- rw [ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
-  --   ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
-  -- congr with x
-  -- simp
+  ext φ
+  rw [ContinuousLinearMap.add_apply, ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
+    ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
+  simp
 
 lemma ofFun_neg {f : E → F} {μ : Measure E} : ofFun Ω (-f) μ = -ofFun Ω f μ := by
   ext φ
@@ -299,11 +296,12 @@ lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) �
     simp [ofFun_of_not_locallyIntegrable this, ofFun_of_not_locallyIntegrable hf]
   ext φ
   rw [ofFun_apply (hf.smul c)]
-  sorry
-  -- simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul']
-  -- rw [ofFun_apply hf, ← integral_smul c]
-  -- congr with x
-  -- module
+  simp only [Pi.smul_apply]
+  rw [ContinuousLinearMap.coe_smul']
+  dsimp -- TODO: this used to be not necessary!
+  rw [ofFun_apply hf, ← integral_smul c]
+  congr with x
+  module
 
 end ofFun
 
