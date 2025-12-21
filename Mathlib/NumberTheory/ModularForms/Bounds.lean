@@ -232,24 +232,24 @@ lemma ModularFormClass.exists_bound {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL 
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * (max 1 (1 / (τ.im) ^ k)) := by
   obtain ⟨C, hC⟩ := ModularFormClass.exists_petersson_le hk Γ f f
   refine ⟨C.sqrt, fun τ ↦ ?_⟩
+  lift k to ℕ using hk
   specialize hC τ
   have hC' : 0 ≤ C := le_trans (by positivity) <| (div_le_iff₀ (by positivity)).mpr hC
-  rw [← sqrt_le_sqrt_iff ((norm_nonneg _).trans hC), petersson, norm_mul, sqrt_mul (norm_nonneg _),
-    norm_mul, Complex.norm_conj, sqrt_mul_self (norm_nonneg _), norm_zpow, Complex.norm_real,
-    norm_of_nonneg τ.im_pos.le, ← rpow_intCast, sqrt_eq_rpow, ← rpow_mul τ.im_pos.le, mul_one_div,
-    sqrt_mul hC', ← le_div_iff₀ (by positivity)] at hC
-  refine hC.trans (le_of_eq ?_)
-  -- Now just a slightly tedious manipulation of `rpow`'s to finish
-  rw [mul_div_assoc]
-  congr 1
-  have aux : 1 / τ.im ^ k * τ.im ^ (k / 2 : ℝ) = (1 / τ.im) ^ (k / 2 : ℝ) := by
-    rw [one_div_mul_eq_div, div_rpow zero_le_one τ.im_pos.le, one_rpow,
-      div_eq_div_iff (zpow_ne_zero _ τ.im_ne_zero) (by positivity), one_mul, ← rpow_add τ.im_pos,
-      add_halves, rpow_intCast]
-  rw [div_eq_iff (by positivity), max_mul_of_nonneg _ _ (by positivity), one_mul,
-    sqrt_eq_rpow, ← rpow_intCast, ← rpow_mul (by positivity), mul_one_div, aux]
-  exact MonotoneOn.map_max (fun _ ha _ _ h ↦ rpow_le_rpow ha h (by positivity)) τ.im_pos.le
-    (show 0 ≤ 1 / τ.im by positivity)
+  have h : 0 < ‖(τ.im : ℂ) ^ (k : ℤ)‖ := mod_cast norm_pos_iff.mpr (pow_ne_zero _ τ.im_ne_zero)
+  rw [petersson, norm_mul, norm_mul, Complex.norm_conj, ← sq, ← le_div_iff₀ h, mul_div_assoc] at hC
+  rw [← sq_le_sq₀ (by positivity) (by positivity), mul_pow, sq_sqrt hC']
+  refine hC.trans (congrArg (C * ·) ?_).le
+  -- remains to show `(max τ.im (1 / τ.im)) ^ k / ‖τ.im ^ k‖ = (max 1 (1 / τ.im ^ k)) ^ 2`,
+  -- which is easier after lifting to `NNReal`
+  generalize h : τ.im = t
+  have ht : 0 < t := h ▸ τ.im_pos
+  lift t to NNReal using ht.le
+  rw [← coe_nnnorm]
+  norm_cast at ⊢ ht
+  rw [(monotone_id.pow_const k).map_max (f := (· ^ k)), ← max_div_div_right (by positivity),
+    (monotone_id.pow_const 2).map_max (f := (· ^ 2))]
+  simp_rw [NNReal.coe_pow, nnnorm_pow, NNReal.nnnorm_eq, div_pow, one_pow, div_div, pow_two]
+  rw [div_self (by positivity)]
 
 local notation "𝕢" => Function.Periodic.qParam
 
