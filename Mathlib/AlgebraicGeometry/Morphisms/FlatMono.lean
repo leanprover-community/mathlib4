@@ -52,7 +52,7 @@ theorem IsOpenImmersion.of_flat_of_mono {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f
       ⟨y, by apply U.ι.injective; simp [← Scheme.Hom.comp_apply, f', hy]⟩⟩
     infer_instance
   have hhomeo : IsHomeomorph f.base := ⟨f.continuous, f.isOpenMap, f.injective, f.surjective⟩
-  have : QuasiCompact f := ⟨fun U hU hc ↦ (hhomeo.homeomorph).isCompact_preimage.mpr hc⟩
+  have : QuasiCompact f := ⟨fun U hU hc ↦ hhomeo.homeomorph.isCompact_preimage.mpr hc⟩
   have := Flat.isIso_of_surjective_of_mono f
   exact .of_isIso f
 
