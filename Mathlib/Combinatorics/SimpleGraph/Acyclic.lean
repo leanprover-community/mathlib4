@@ -362,10 +362,12 @@ lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsT
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
 /--
-Adding an edge to an acyclic graph preserves acyclicity if there endpoints are not reachable.
+Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
-theorem IsAcyclic.add_edge_acyclic {G : SimpleGraph V} (hG : IsAcyclic G) (x y : V)
-    (hxy : ¬ Reachable G x y) : IsAcyclic <| G ⊔ fromEdgeSet {s(x,y)} := by
+theorem isAcyclic_add_edge_iff_of_not_reachable
+    {G : SimpleGraph V} (x y : V) (hxy : ¬ G.Reachable x y) :
+    (G ⊔ fromEdgeSet {s(x,y)}).IsAcyclic ↔ IsAcyclic G := by
+  refine ⟨fun h ↦ h.anti le_sup_left, fun hG ↦ ?_⟩
   have x_neq_y : x ≠ y := fun c => (c ▸ hxy) (Reachable.refl y)
   have h_add_remove : (G ⊔ fromEdgeSet {s(x,y)}) \ fromEdgeSet {s(x,y)} = G := by
     simpa using fun h => hxy h.reachable
@@ -411,7 +413,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
         have : _ := ConnectedComponent.mem_supp_congr_adj (F.connectedComponentMk u) hc
         grind
   have : DecidableEq V := Classical.decEq V
-  apply hF.2.add_edge_acyclic
+  refine (isAcyclic_add_edge_iff_of_not_reachable u' v' ?_).mpr hF.2
   intro hc
   rw [←ConnectedComponent.eq] at hc
   suffices F.connectedComponentMk u' = s by
