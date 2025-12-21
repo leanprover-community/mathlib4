@@ -262,6 +262,7 @@ theorem finsum_singular_value_decomposition (v : E)
   : finsum (fun i : ℕ ↦ ((T.singularValues i).toReal : 𝕜) • ⟪v, T.rightSingularVectors i⟫_𝕜
     • T.leftSingularVectors i) = T v := by
     -- This is the main challenging theorem.
+    -- You might want to prove this after the stuff about best approximations.
     sorry
 
 -- In the infinite-dimensional case, this is actually stronger than the previous lemma because
@@ -273,13 +274,54 @@ right singular vectors of `T`, and `f₁, ..., fₙ` are the left singular vecto
 `T = σ₁f₁e₁ᴴ + ... + σₙfₙeₙᴴ`, where `xᴴ` denotes the conjugate transpose/dual vector `y ↦ ⟪x, y⟫`.
 -/
 def outerProduct (w : F) (v : E) : E →ₗ[𝕜] F :=
-  .comp (LinearMap.toSpanSingleton 𝕜 F w) (innerₛₗ 𝕜 v)
+  LinearMap.toSpanSingleton 𝕜 F w ∘ₗ innerₛₗ 𝕜 v
 
 theorem finsum_svd_2 :
   finsum (fun i : ℕ ↦
     ((T.singularValues i).toReal : 𝕜) •
       outerProduct (T.leftSingularVectors i) (T.rightSingularVectors i)
   ) = T := sorry
+
+/-
+This sectino is based on 7.92 from LADR 4th edition.
+Part of the reason we are doing this now is because it helps to demonstrate the power of the
+particular form of the matrix SVD below, which is that it is also the truncated SVD if you make
+a and b too small.
+
+However, maybe it makes sense to move this into another file.
+-/
+
+/--
+The low-rank approximation of a linear map.
+-/
+public noncomputable def approximation (n : ℕ) : E →ₗ[𝕜] F :=
+  ∑ i ∈ Finset.range n, outerProduct (T.leftSingularVectors i) (T.rightSingularVectors i)
+
+/--
+Part of 7.92 of from LADR 4th edition.
+-/
+@[simp]
+public theorem rank_approximation (n : ℕ)
+  : Module.finrank 𝕜 (range (T.approximation n)) = min n (Module.finrank 𝕜 (range T)) := by
+  sorry
+
+/--
+Part of 7.92 from LADR 4th edition.
+-/
+public theorem nnnorm_self_sub_approximation (n : ℕ)
+  : ‖(T - T.approximation n).toContinuousLinearMap‖₊ = T.singularValues n := sorry
+
+public theorem approximation_eq_self_iff (n : ℕ)
+  : T.approximation n = T ↔ Module.finrank 𝕜 (range T) ≤ n := by
+  -- Feel free to split this into multiple lemmas. Probably follows from `rank_approximation`.
+  sorry
+
+/--
+Part of 7.92 of from LADR 4th edition.
+-/
+public theorem nnnorm_sub_of_finrank_le_le_singularValues {n : ℕ} {R : E →ₗ[𝕜] F}
+  (hR : Module.finrank 𝕜 (range T) ≤ n)
+  : ‖(T - R).toContinuousLinearMap‖₊ ≤ T.singularValues n:= sorry
 
 /-
 These are lemmas that don't necessarily fit into any category, but need to be established
@@ -305,6 +347,10 @@ public theorem singularValues_smul (c : 𝕜) (i : ℕ)
   : (c • T).singularValues i = ‖c‖ * T.singularValues i := by
   -- This one might require some facts about complex numbers
   sorry
+
+-- TODO: Maybe we should figure out how to get rid of the `T.toContinuousLinearMap`.
+public theorem singularValues_zero_eq_nnnorm
+  : T.singularValues 0 = ‖T.toContinuousLinearMap‖₊ := sorry
 
 -- We might need one which states that the first singular value equals the operator norm.
 
