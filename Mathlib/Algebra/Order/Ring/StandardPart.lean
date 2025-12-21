@@ -110,10 +110,7 @@ namespace FiniteResidueField
 noncomputable instance : Field (FiniteResidueField K) :=
   inferInstanceAs (Field (IsLocalRing.ResidueField _))
 
-#adaptation_note /-- Removed `private':
-This had been private, but while disabling `set_option backward.privateInPublic` as a global option
-we have made it public again. -/
-theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
@@ -122,10 +119,12 @@ theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, FiniteElement.not_isUnit_iff_mk_pos] at hy ⊢
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
+@[no_expose]
 noncomputable instance : LinearOrder (FiniteResidueField K) :=
   @Quotient.instLinearOrder _ _ _ ordConnected_preimage_mk' (Classical.decRel _)
 
 /-- The quotient map from finite elements on the field to the associated residue field. -/
+@[no_expose]
 def mk : FiniteElement K →+*o FiniteResidueField K where
   monotone' _ _ h := Quotient.mk_monotone h
   __ := IsLocalRing.residue (FiniteElement K)
@@ -299,7 +298,7 @@ theorem stdPart_sub (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
   rw [sub_eq_add_neg, sub_eq_add_neg, stdPart_add hx, stdPart_neg]
   rwa [mk_neg]
 
-theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
+theorem stdPart_mul (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
     stdPart (x * y) = stdPart x * stdPart y := by
   unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
