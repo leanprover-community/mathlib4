@@ -403,7 +403,7 @@ end lp
 
 end OneNormedCommRing
 
-section OneAlgebra
+section Algebra
 
 variable {𝕜 : Type*} {R : Type*}
 variable [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
@@ -448,7 +448,7 @@ instance oneNormedAlgebra : NormedAlgebra 𝕜 (lp (fun _ : ℕ => R) 1) where
 
 end lp
 
-end OneAlgebra
+end Algebra
 
 end
 
