@@ -367,7 +367,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         · exact Set.image_subset_range ..
         · rw [BasicConstructibleSetData.toSet, BasicConstructibleSetData.toSet, Set.preimage_diff,
             preimage_comap_zeroLocus, preimage_comap_zeroLocus, Set.preimage_image_eq]
-          swap; · exact localization_specComap_injective _ (.powers c)
+          swap; · exact localization_comap_injective _ (.powers c)
           simp only [AlgHom.toLinearMap_apply] at hq₁g₁
           simp only [← Set.range_comp, comp_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
             hq₁g₁ _ hxT₁, Set.image_singleton, map_mul, ← hf₁, mul_comm x.1, ← mul_assoc,
@@ -507,14 +507,14 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             · subst hkj; gcongr; exact (degree_modByMonic_le _ hi).trans hle
             · rfl
           · gcongr; simpa using (degree_modByMonic_lt _ hi).trans_le hle
-        calc  (c.val j).degree.succ * c'.degBound ^ c'.degBound
+        calc (c.val j).degree.succ * c'.degBound ^ c'.degBound
           _ ≤ c.degBound * c.degBound ^ c'.degBound := by
             gcongr
             delta InductionObj.degBound
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> omega
+          _ ≤ c.degBound ^ c.degBound := by gcongr <;> lia
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
@@ -755,11 +755,11 @@ lemma chevalley_mvPolynomialC
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
     fun i ↦ pow_le_pow_right' h1M ?_ <| (hU₂ C hCU).2 i⟩⟩
   · unfold S' at hT₁
-    rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
+    rw [← hU₁, ← hT₁, ← Set.image_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
     change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
     rw [← OrderIso.image_eq_preimage_symm, Set.image_image]
-    simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
+    simp only [comapEquiv_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm
   · refine (numBound_mono hS' _ fun _ _ ↦ ?_).trans
@@ -854,8 +854,8 @@ lemma chevalley_mvPolynomial_mvPolynomial
     · simp [hs]
     · rw [Set.preimage_image_eq _ (comap_injective_of_surjective g hg'),
         Set.preimage_inter, hs, Set.preimage_range, Set.inter_univ,
-        ← Set.preimage_comp, ← ContinuousMap.coe_comp, ← comap_comp, hσ]
-      simp only [comap_id, ContinuousMap.coe_id, Set.preimage_id_eq, id_eq]
+        ← Set.preimage_comp, ← comap_comp, hσ]
+      simp only [comap_id, Set.preimage_id']
   have hS' : comap g '' S.toSet = S'.toSet := by
     simp only [S', BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion₂,
       Finset.set_biUnion_finset_image, ← comp_def (g := finSumFinEquiv.symm), Set.range_comp,
@@ -891,7 +891,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
           simp only [degrees_C, Multiset.zero_union]
           exact degrees_map_le.trans (hf _))
   refine ⟨T, ?_, fun C hCT ↦ ⟨(hT' C hCT).1, fun i j ↦ ?_⟩⟩
-  · rwa [← hg, comap_comp, ContinuousMap.coe_comp, Set.image_comp, hS']
+  · rwa [← hg, comap_comp, Set.image_comp, hS']
   · have := (hT' C hCT).2 i
     rw [← Submodule.restrictScalars_pow (MvPolynomialC.degBound_pos ..).ne', ← degreesLE_nsmul,
       Submodule.restrictScalars_mem, mem_degreesLE,
