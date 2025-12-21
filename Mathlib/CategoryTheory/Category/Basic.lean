@@ -228,7 +228,8 @@ def Category.assoc' {W X Y Z : C} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y) :
     h ≫ g ≫ f = (h ≫ g) ≫ f := by grind
 
 /-- postcompose an equation between morphisms by another morphism -/
-@[to_dual whisker_eq /-- precompose an equation between morphisms by another morphism -/]
+@[to_dual (reorder := w h) whisker_eq
+/-- precompose an equation between morphisms by another morphism -/]
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
 
 /--
