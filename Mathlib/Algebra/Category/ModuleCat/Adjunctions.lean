@@ -96,7 +96,7 @@ lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
     (adj R).homEquiv X M = freeHomEquiv := by
   simp only [adj, Adjunction.mkOfHomEquiv_homEquiv]
 
-instance : (forget (ModuleCat.{u} R)).IsRightAdjoint  :=
+instance : (forget (ModuleCat.{u} R)).IsRightAdjoint :=
   (adj R).isRightAdjoint
 
 end
@@ -212,7 +212,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category C]`,
+/-- `Free R C` is a type synonym for `C`, which, given `[CommRing R]` and `[Category* C]`,
 we will equip with a category structure where the morphisms are formal `R`-linear combinations
 of the morphisms in `C`.
 -/

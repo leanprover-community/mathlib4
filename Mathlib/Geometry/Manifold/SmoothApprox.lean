@@ -91,7 +91,7 @@ theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
     exact ⟨g, fun x ↦ (hg x).1, fun x ↦ (hg x).2.1, fun x ↦ mt (hg x).2.2⟩
   have t_conv (x) : Convex ℝ (t x) := (convex_ball (f x) (ε x)).inter <|
     (convex_singleton _).setOf_const_imp.inter (convex_singleton _).setOf_const_imp
-  apply exists_contMDiffOn_forall_mem_convex_of_local I t_conv
+  apply exists_contMDiffMap_forall_mem_convex_of_local I t_conv
   intro x
   by_cases hx : x ∈ S
   · refine ⟨U, mem_nhdsSet_iff_forall.mp hU x hx, ?_⟩

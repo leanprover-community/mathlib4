@@ -57,7 +57,7 @@ variable {α : Type*}
 -/
 
 
-/-- We say that a type has `MeasurableAdd` if `(· + c)` and `(· + c)` are measurable functions.
+/-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· + ·)` see `MeasurableAdd₂`. -/
 class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_const_add : ∀ c : M, Measurable (c + ·)
@@ -65,7 +65,7 @@ class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
 
 export MeasurableAdd (measurable_const_add measurable_add_const)
 
-/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable functions.
+/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable function.
 For a typeclass assuming measurability of `(c + ·)` and `(· + c)` see `MeasurableAdd`. -/
 class MeasurableAdd₂ (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_add : Measurable fun p : M × M => p.1 + p.2
@@ -81,7 +81,7 @@ class MeasurableMul (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
 
 export MeasurableMul (measurable_const_mul measurable_mul_const)
 
-/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable functions.
+/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable function.
 For a typeclass assuming measurability of `(c * ·)` and `(· * c)` see `MeasurableMul`. -/
 @[to_additive MeasurableAdd₂]
 class MeasurableMul₂ (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
@@ -219,7 +219,7 @@ class MeasurableSub (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
 
 export MeasurableSub (measurable_const_sub measurable_sub_const)
 
-/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable functions.
+/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable function.
 For a typeclass assuming measurability of `(c - ·)` and `(· - c)` see `MeasurableSub`. -/
 class MeasurableSub₂ (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
   measurable_sub : Measurable fun p : G × G => p.1 - p.2
@@ -235,7 +235,7 @@ class MeasurableDiv (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop wher
 
 export MeasurableDiv (measurable_const_div measurable_div_const)
 
-/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable functions.
+/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable function.
 For a typeclass assuming measurability of `(c / ·)` and `(· / c)` see `MeasurableDiv`. -/
 @[to_additive MeasurableSub₂]
 class MeasurableDiv₂ (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop where
@@ -531,13 +531,9 @@ lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Meas
     (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
   (hg.comp <| measurable_id.prodMk hh).const_smul _
 
-@[deprecated (since := "2025-04-23")] alias Measurable.const_smul' := Measurable.fun_const_smul
-
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
-
-@[deprecated (since := "2025-04-23")] alias AEMeasurable.const_smul' := AEMeasurable.fun_const_smul
 
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=

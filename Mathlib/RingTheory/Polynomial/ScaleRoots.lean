@@ -308,6 +308,8 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
 
+@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
+
 end CommSemiring
 
 section Ring
