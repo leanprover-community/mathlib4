@@ -379,7 +379,51 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
       Cat.Hom.inv_hom_id_toNatTrans_app]
     simp [D.hom_self _ _ rfl]
 
+/-- Morphisms between objects in the image of the functor `F.toDescentData f`
+identify to compatible families of sections of the presheaf `F.presheafHom M N` on
+the object `Over.mk (𝟙 S)`, relatively to the family of morphisms in `Over S`
+corresponding to the family `f`. -/
+def subtypeCompatibleHomEquiv {M N : F.obj (.mk (op S))} :
+    Subtype (Presieve.Arrows.Compatible (F.presheafHom M N)
+      (X := fun i ↦ Over.mk (f i)) (B := Over.mk (𝟙 S)) (fun i ↦ Over.homMk (f i))) ≃
+    ((F.toDescentData f).obj M ⟶ (F.toDescentData f).obj N) where
+  toFun φ :=
+    { hom := φ.val
+      comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
+        have := φ.property i₁ i₂ (Over.mk q) (Over.homMk f₁) (Over.homMk f₂) (by cat_disch)
+        dsimp at this
+        simp [map_eq_pullHom (φ.val i₁) f₁ q q (by cat_disch) (by cat_disch),
+          map_eq_pullHom (φ.val i₂) f₂ q q (by cat_disch) (by cat_disch), this] }
+  invFun g :=
+    { val := g.hom
+      property i₁ i₂ Z f₁ f₂ h := by
+        simpa [map_eq_pullHom (g.hom i₁) f₁.left Z.hom Z.hom (Over.w f₁) (Over.w f₁),
+          map_eq_pullHom (g.hom i₂) f₂.left Z.hom Z.hom (Over.w f₂) (Over.w f₂),
+          cancel_epi, cancel_mono] using g.comm Z.hom f₁.left f₂.left (Over.w f₁) (Over.w f₂) }
+
+lemma subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
+    {M N : F.obj (.mk (op S))} (φ : M ⟶ N) :
+    subtypeCompatibleHomEquiv F f (Presieve.Arrows.toCompatible _ _
+      (F.presheafHomObjHomEquiv φ)) =
+      (F.toDescentData f).map φ := by
+  ext i
+  simp [subtypeCompatibleHomEquiv, presheafHomObjHomEquiv, pullHom,
+    Category.assoc, ← Functor.map_comp,
+    Pseudofunctor.mapComp'_id_comp_hom_app_assoc,
+    Pseudofunctor.mapComp'_id_comp_inv_app]
+
 end DescentData
+
+lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
+    Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
+  Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
+    (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i)) (fun i ↦ Over.homMk (f i))) := by
+  rw [Presieve.isSheafFor_arrows_iff_bijective_toCompabible,
+    ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
+    ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
+  convert Iff.rfl
+  ext φ : 1
+  apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
 end Pseudofunctor
 

@@ -691,6 +691,10 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
 
+theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
+    IsSheafFor P R ↔ IsSheafFor P' R :=
+  ⟨isSheafFor_iso i, isSheafFor_iso i.symm⟩
+
 /-- The property of being separated for some presieve is preserved under isomorphisms. -/
 theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
     IsSeparatedFor P' R := by

@@ -131,6 +131,13 @@ def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
   map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
+/-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
+@[simps! -isSimp]
+def presheafHomObjHomEquiv {M N : (F.obj (.mk (op S)))} :
+    (M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S))) :=
+  Iso.homCongr ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app M)
+    ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app N)
+
 /-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
