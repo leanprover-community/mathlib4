@@ -727,7 +727,7 @@ lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMul
     (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b) :
     Function.Surjective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
   have epi := (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact a b h).epi_f
-    (ext_hom_eq_zero_of_mem_ann mem b)
+    (smul_id_postcomp_eq_zero_of_mem_ann mem b)
   exact (AddCommGrpCat.epi_iff_surjective _).mp epi
 
 lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
@@ -1064,7 +1064,8 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
       · apply IsLocalRing.le_maximalIdeal
         simp only [ne_eq, LinearMap.ker_eq_top]
         by_contra eq0
-        have : f = 0 := by rw [← LinearMap.toSpanSingleton_one R _ f, eq0, LinearMap.zero_apply]
+        have : f = 0 := by
+          rw [← LinearMap.toSpanSingleton_apply_one R _ f, eq0, LinearMap.zero_apply]
         let _ := quotient_maximal_hom_nontrivial R
         absurd hf
         simp [this]
