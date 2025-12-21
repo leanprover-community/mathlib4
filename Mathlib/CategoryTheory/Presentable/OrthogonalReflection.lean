@@ -46,7 +46,7 @@ a transfinite iteration to this `SuccStruct`, we obtain the following results
 under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
 a regular cardinal) such that the domains and codomains of the morphisms
-satisfying `W` are `κ`-presentable :
+satisfying `W` are `κ`-presentable:
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
@@ -431,7 +431,9 @@ as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
   (W.isLocal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
     ⟨_, isLocal_reflectionObj Z hW⟩ where
-  homEquiv {A} := Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2)
+  homEquiv {A} :=
+    (ObjectProperty.fullyFaithfulι _).homEquiv.trans
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
 
 variable (W κ)
 
