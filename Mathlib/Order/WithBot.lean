@@ -617,9 +617,7 @@ lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
 
 end PartialOrder
 
-end WithBot
-
-instance WithBot.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   sup
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊥, ⊥ => ⊥
@@ -631,7 +629,7 @@ instance WithBot.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α
   sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
 @[to_dual existing]
-instance WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
+instance _root_.WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
   inf
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | ⊤, ⊤ => ⊤
@@ -642,72 +640,73 @@ instance WithTop.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
 
-instance WithBot.semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) where
   inf := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
 
 @[to_dual existing]
-instance WithTop.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
+instance _root_.WithTop.semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) where
   sup := .map₂ (· ⊔ ·)
   le_sup_left x y := by cases x <;> cases y <;> simp
   le_sup_right x y := by cases x <;> cases y <;> simp
   sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
-@[to_dual]
-theorem WithBot.coe_sup [SemilatticeSup α] (a b : α) :
+@[to_dual (attr := simp, norm_cast)]
+theorem coe_sup [SemilatticeSup α] (a b : α) :
     ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b := rfl
 
-@[to_dual]
-theorem WithBot.coe_inf [SemilatticeInf α] (a b : α) :
+@[to_dual (attr := simp, norm_cast)]
+theorem coe_inf [SemilatticeInf α] (a b : α) :
     ((a ⊓ b : α) : WithBot α) = (a : WithBot α) ⊓ b := rfl
 
-instance WithBot.lattice [Lattice α] : Lattice (WithBot α) where
+instance lattice [Lattice α] : Lattice (WithBot α) where
 
 @[to_dual existing]
-instance WithTop.lattice [Lattice α] : Lattice (WithTop α) where
+instance _root_.WithTop.lattice [Lattice α] : Lattice (WithTop α) where
 
-instance WithBot.distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
+instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
   le_sup_inf x y z := by
     cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
 @[to_dual existing]
-instance WithTop.distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
+instance _root_.WithTop.distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
   le_sup_inf x y z := by
-    cases x <;> cases y <;> cases z <;> simp [← coe_inf, ← coe_sup]
+    cases x <;> cases y <;> cases z <;> simp [← WithTop.coe_inf, ← WithTop.coe_sup]
     simpa [← coe_inf, ← coe_sup] using le_sup_inf
 
 @[to_dual]
-instance WithBot.decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
 @[to_dual]
-instance WithBot.decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
 @[to_dual]
-instance WithBot.decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance WithBot.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
+instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
   total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
 
-instance WithTop.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
+instance _root_.WithTop.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
   total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
 
-instance WithBot.linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
+instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
 
 @[to_dual existing]
-instance WithTop.linearOrder [LinearOrder α] : LinearOrder (WithTop α) := Lattice.toLinearOrder _
+instance _root_.WithTop.linearOrder [LinearOrder α] : LinearOrder (WithTop α) :=
+  Lattice.toLinearOrder _
 
 @[to_dual]
-instance WithBot.instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
   wf := .intro fun
   | ⊥ => ⟨_, by simp⟩
   | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih ↦ .intro _ fun
@@ -715,14 +714,14 @@ instance WithBot.instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (W
     | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
 
 @[to_dual]
-instance WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
   wf := have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
     (wellFounded_gt.1 a).rec fun _ _ ih ↦ ⟨_, by simpa [WithBot.forall]⟩
   .intro fun
     | (a : α) => acc_some a
     | ⊥ => ⟨_, by simpa [WithBot.forall]⟩
 
-lemma WithBot.denselyOrdered_iff [LT α] [NoMinOrder α] :
+lemma denselyOrdered_iff [LT α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) ↔ DenselyOrdered α := by
   constructor <;> intro h <;> constructor
   · intro a b hab
@@ -733,61 +732,59 @@ lemma WithBot.denselyOrdered_iff [LT α] [NoMinOrder α] :
   · simpa [WithBot.exists, WithBot.forall, exists_lt] using DenselyOrdered.dense
 
 @[to_dual existing]
-lemma WithTop.denselyOrdered_iff [LT α] [NoMaxOrder α] :
+lemma _root_.WithTop.denselyOrdered_iff [LT α] [NoMaxOrder α] :
     DenselyOrdered (WithTop α) ↔ DenselyOrdered α := by
   constructor <;> intro h <;> constructor
   · intro a b hab
-    obtain ⟨c, hc⟩ := exists_between (coe_lt_coe.mpr hab)
+    obtain ⟨c, hc⟩ := exists_between (WithTop.coe_lt_coe.mpr hab)
     induction c with
     | top => simp at hc
     | coe c => exact ⟨c, by simpa using hc⟩
   · simpa [WithTop.exists, WithTop.forall, exists_gt] using DenselyOrdered.dense
 
 @[to_dual]
-instance WithBot.denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :
+instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) :=
   denselyOrdered_iff.mpr inferInstance
 
-instance WithBot.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
+instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithBot α) (· < ·) where
   trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
 
-instance WithTop.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
+instance _root_.WithTop.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) where
   trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
-instance WithBot.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
   IsWellOrder (WithBot α) (· < ·) where
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
-instance WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
+instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
   IsWellOrder (WithTop α) (· < ·) where
 
-instance WithBot.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
+instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithBot α) (· > ·) :=
   have : IsTrichotomous α (· < ·) := .swap _; .swap _
 
-instance WithTop.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
+instance _root_.WithTop.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithTop α) (· > ·) :=
   have : IsTrichotomous α (· < ·) := .swap _; .swap _
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
-instance WithBot.IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
+instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
     IsWellOrder (WithBot α) (· > ·) where
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
-instance WithTop.IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
+instance _root_.WithTop.IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
     IsWellOrder (WithTop α) (· > ·) where
-
-namespace WithBot
 
 section LinearOrder
 variable [LinearOrder α] {x y : WithBot α}
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual]
 lemma coe_min (a b : α) : ↑(min a b) = min (a : WithBot α) b := rfl
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual]
 lemma coe_max (a b : α) : ↑(max a b) = max (a : WithBot α) b := rfl
 
 variable [DenselyOrdered α] [NoMinOrder α]
@@ -802,14 +799,19 @@ lemma ge_of_forall_gt_iff_ge : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by
 
 end LinearOrder
 
-@[to_dual]
+@[to_dual lt_iff_exists_coe_btwn']
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
-    a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
+    a < b ↔ ∃ x : α, a < x ∧ x < b :=
   ⟨fun h =>
     let ⟨_, hy⟩ := exists_between h
     let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.1
     ⟨x, hx.1 ▸ hy⟩,
     fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
+
+@[to_dual lt_iff_exists_coe_btwn]
+theorem lt_iff_exists_coe_btwn' [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
+    a < b ↔ ∃ x : α, x < b ∧ a < x := by
+  rw [lt_iff_exists_coe_btwn]; simp_rw [and_comm]
 
 @[to_dual]
 instance noTopOrder [LE α] [NoTopOrder α] [Nonempty α] : NoTopOrder (WithBot α) where
