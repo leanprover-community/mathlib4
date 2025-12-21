@@ -664,7 +664,7 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
     [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
     ∃ n, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
   nontriviality (R ⊗[k] K)
-  obtain (hq|hq) := expChar_is_prime_or_one k q
+  obtain (hq | hq) := expChar_is_prime_or_one k q
   induction x with
   | zero => exact ⟨0, 0, by simp⟩
   | add x y h h' =>
@@ -691,6 +691,6 @@ lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparabl
   let q := ringExpChar k
   obtain ⟨n, hr⟩ := exists_pow_pow_mem_range_tensorProduct_of_expChar q x
   refine ⟨q ^ n, pow_pos ?_ _, hr⟩
-  obtain (hq|hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
+  obtain (hq | hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
 
 end
