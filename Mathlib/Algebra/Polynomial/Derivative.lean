@@ -632,6 +632,24 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
     derivative^[n] ((X - C c) ^ n) = n.factorial := by
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
+theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degree < k) :
+    derivative^[k] P = 0 := by
+  induction k generalizing P
+  case zero => exact degree_eq_bot.mp <| WithBot.lt_coe_bot.mp h
+  case succ k ind =>
+    by_cases P = 0
+    case pos hP => simp [hP]
+    case neg hP =>
+      rw [Function.iterate_add_apply, Function.iterate_one]
+      by_cases derivative P = 0
+      case pos hP' => simp [hP']
+      case neg hP' =>
+        have hP'' : P.natDegree ≠ 0 := by
+          contrapose! hP'
+          exact derivative_of_natDegree_zero hP'
+        refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
+        linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
+
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
     k.factorial * ∑ T ∈ S.powerset with #T = #S - k, ∏ a ∈ T, (X - C a):= by
