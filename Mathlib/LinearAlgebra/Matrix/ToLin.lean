@@ -1201,6 +1201,8 @@ theorem isStablyFiniteRing_iff_injective_of_surjective :
     have := (LinearEquiv.ofBijective f ⟨h _ _ surj, surj⟩).symm_comp
     rwa [← left_inv_eq_right_inv this eq]
 
+/-- `Module.End.injective_of_surjective` is the more general version for finite free `A`-modules
+not necessarily of the form `Fin n → A`, but this version requires less imports. -/
 theorem Module.End.injective_of_surjective_fin [IsStablyFiniteRing A] {n}
     {f : Module.End A (Fin n → A)} (hf : Surjective f) : Injective f :=
   isStablyFiniteRing_iff_injective_of_surjective.mp ‹_› n f hf
