@@ -354,13 +354,6 @@ protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Merom
   fun_prop
 
 /--
-Derivatives of meromorphic functions are meromorphic.
--/
-@[fun_prop]
-theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv f z) x := h.deriv
-
-/--
 Iterated derivatives of meromorphic functions are meromorphic.
 -/
 @[fun_prop] theorem iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
@@ -369,13 +362,6 @@ Iterated derivatives of meromorphic functions are meromorphic.
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
-
-/--
-Iterated derivatives of meromorphic functions are meromorphic.
--/
-@[fun_prop] theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
-    (h : MeromorphicAt f x) :
-    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x := h.iterated_deriv
 
 end MeromorphicAt
 
@@ -496,23 +482,12 @@ include hs in
 
 include hf in
 /-- Derivatives of meromorphic functions are meromorphic. -/
--- TODO: to_fun generates the same statement; missing push tag
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
-/-- Derivatives of meromorphic functions are meromorphic. -/
-theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
-
-include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
--- TODO: to_fun generates the same statement; missing push tag
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
-
-include hf in
-/-- Iterated derivatives of meromorphic functions are meromorphic. -/
-theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
-  MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U := hf.iterated_deriv
 
 end arithmetic
 
@@ -564,3 +539,65 @@ theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelS
     (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
 
 end MeromorphicOn
+
+/-- Meromorphy of a function on all of 𝕜. -/
+@[fun_prop]
+def Meromorphic (f : 𝕜 → E) := ∀ x, MeromorphicAt f x
+
+/-- A function is meromorphic iff it is meromorphic on Set.univ. -/
+@[simp]
+lemma meromorphicOn_univ {f : 𝕜 → E} : MeromorphicOn f Set.univ ↔ Meromorphic f := by tauto
+
+namespace Meromorphic
+
+variable
+  {ι : Type*} {s : Finset ι}
+  {f g : 𝕜 → E} {F : ι → 𝕜 → 𝕜} {G : ι → 𝕜 → E}
+
+@[fun_prop]
+lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
+
+lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
+
+@[to_fun (attr := fun_prop)]
+lemma neg (hf : Meromorphic f) : Meromorphic (-f) := fun x ↦ (hf x).neg
+
+@[to_fun (attr := fun_prop)]
+lemma add (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f + g) := fun x ↦ (hf x).add (hg x)
+
+@[to_fun (attr := fun_prop)]
+theorem sum (h : ∀ σ, Meromorphic (G σ)) :
+    Meromorphic (∑ n ∈ s, G n) := fun x ↦ MeromorphicAt.sum (h · x)
+
+@[to_fun (attr := fun_prop)]
+lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f - g) := fun x ↦ (hf x).sub (hg x)
+
+@[to_fun (attr := fun_prop)]
+lemma mul {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f * g) := fun x ↦ (hf x).mul (hg x)
+
+@[to_fun (attr := fun_prop)]
+theorem prod (h : ∀ σ, Meromorphic (F σ)) :
+    Meromorphic (∏ n ∈ s, F n) := fun x ↦ MeromorphicAt.prod (h · x)
+
+@[to_fun (attr := fun_prop)]
+lemma div {f g : 𝕜 → 𝕜} (hf : Meromorphic f) (hg : Meromorphic g) :
+    Meromorphic (f / g) := fun x ↦ (hf x).div (hg x)
+
+@[to_fun (attr := fun_prop)]
+lemma pow {f : 𝕜 → 𝕜} {n : ℕ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).pow n
+
+@[to_fun (attr := fun_prop)]
+lemma zpow {f : 𝕜 → 𝕜} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f ^ n) := fun x ↦ (hf x).zpow n
+
+@[fun_prop]
+protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) :=
+    fun x ↦ (hf x).deriv
+
+@[fun_prop]
+lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
+    Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+
+end Meromorphic
