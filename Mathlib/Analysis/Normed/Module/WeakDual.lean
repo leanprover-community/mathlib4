@@ -445,11 +445,12 @@ theorem three (I : Type*) [Fintype I] {φ : StrongDual ℝ (StrongDual ℝ F)} (
                           _ ≤ ‖φ‖ * ‖∑ i, β i • f i‖ := ContinuousLinearMap.le_opNorm ..
                           _ ≤ ‖∑ i, β i • f i‖ := by grw [hφ, one_mul]
 
+open LinearMap in
 /-- Goldstine Lemma: the image along `inclusionInDoubleDual` of the (unit) ball of `E` is dense in
 the unit sphere of the double dual. The result below is somewhat stronger, and it would be better
 to move the inclusion back to `Normed.Module.Dual` and to keep here the full equality.
 
-See [K. Yosida, "Functional Analysis", Chap IV, 8, Corollary to Theorem 3]. -/
+See Chapter 3.5, Lemma 3.4 in [brezis2011]. -/
 -- **RENAME!!!**
 theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F)) := inferInstance
     closure[𝒯] (inclusionInDoubleDual ℝ F '' closedBall 0 1)
@@ -458,58 +459,29 @@ theorem goldstine : letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ F
     rw [Set.image_subset_iff]
     intro _ hx
     simp_all
+  /- Since the weak* topology is weaker than the strong one, the above inclusion suffices to reduce
+    the claim to proving that the weak*-closure of the image is contained in the unit ball. Observe
+    that the above inclusion depends on the inclusion in the double dual being an isometry (or a
+    contraction, at least). -/
   apply (WeakClosure_subset_closedBall _ this).antisymm
-  -- have uno := @LinearMap.weakBilin_withSeminorms 𝕜 (StrongDual 𝕜 E) E _ _ _ _ _
-  --   (topDualPairing 𝕜 E)
-  -- let F := (topDualPairing 𝕜 (StrongDual 𝕜  E)).toSeminormFamily
-  -- let f := F 0
-  set B' := topDualPairing ℝ (StrongDual ℝ F) with hB'
-  let F' := LinearMap.toSeminormFamily B'
-  -- let B := (topDualPairing 𝕜 E) This, I don't care
-  -- let Estar' := WeakBilin B'
-  -- let f : Estar' → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
-  -- let Estar'₀ := WeakDual 𝕜 (StrongDual 𝕜 E)
-  -- let Estar'₁ := WeakDual 𝕜 E This is the weak top on E* not on E**
-  -- let g₀ : Estar'₀ → StrongDual 𝕜 (StrongDual 𝕜 E) := fun x ↦ x
-  have uno : WithSeminorms (𝕜 := ℝ) (E := WeakDual ℝ (StrongDual ℝ F)) F' := by
-    apply LinearMap.weakBilin_withSeminorms
-  -- have due'' := uno.hasBasis_zero_ball
-  -- have due' := uno.mem_nhds_iff
+  have h_WithSeminorms : WithSeminorms (𝕜 := ℝ) (E := WeakDual ℝ (StrongDual ℝ F))
+    (toSeminormFamily <| topDualPairing ℝ (StrongDual ℝ F)) := weakBilin_withSeminorms ..
   intro ξ hξ
-  have due := uno.hasBasis_ball (x := ξ)
-  -- have tre' := mem_closure_iff_nhds_basis (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-  --   (t := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) due'' --ci siamo quasi
-  -- -- above, use mem_closure_iff_nhds_basis nhds_basis_ball
-  -- have brez := mem_closure_iff_nhds (X := WeakDual 𝕜 (StrongDual 𝕜 E))
-  --   (s := (inclusionInDoubleDual 𝕜 E '' closedBall 0 1)) (x := ξ)
-  -- rw [brez]
-  -- refine ⟨fun hξ ↦ ?_, fun hξ U hU ↦ ?_⟩
-  -- · sorry
-  -- ·
-
---
-  have tre := mem_closure_iff_nhds_basis' (X := WeakDual ℝ (StrongDual ℝ F))
-    (t := (inclusionInDoubleDualLi ℝ (E := F) '' closedBall 0 1)) due --ci siamo quasi
-  rw [tre]
+  rw [mem_closure_iff_nhds_basis' (X := WeakDual ℝ (StrongDual ℝ F))
+    (t := (inclusionInDoubleDualLi ℝ '' closedBall 0 1)) <| h_WithSeminorms.hasBasis_ball (x := ξ)]
+  /- The weak*-topology has a basis of neighboroods of `0` defined by finitely many seminorms (this
+    is `h_WithSeminorms`) so that `ξ` lies in the closure can be checked on those seminorms. -/
   rintro ⟨I, ε⟩ hε
-  -- refine ⟨fun hξ ↦ ?_, fun hξ ⟨I, ε⟩ hε ↦ ?_⟩
-  -- · sorry
-  · simp only [mem_closedBall] at hξ
-    obtain ⟨y, hy_le, hy_eq⟩ := three I hξ hε (·)
-    refine ⟨inclusionInDoubleDual ℝ F y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
-    · --simp only at hy_le --useless of course
-      simp only [Seminorm.mem_ball]
-      apply Seminorm.finset_sup_apply_lt hε
-      intro i hi
-      -- simp only --remove
-      replace hy_eq := sub_zero (a := ξ) ▸ hy_eq ⟨i, hi⟩
-      rw [LinearMap.toSeminormFamily_apply]
-      simp only [map_sub, LinearMap.sub_apply, gt_iff_lt]
-      have repl_ξ := @topDualPairing_apply ℝ _ _ _ _ _ _ _ _ ξ i
-      have repl_iDD := @topDualPairing_apply ℝ _ _ _ _ _ _ _ _ (inclusionInDoubleDual ℝ F y) i
-      -- rw [hB']
-      erw [repl_ξ, repl_iDD] --not very nice, probably related to `(·)`
-      exact hy_eq
+  simp only [mem_closedBall] at hξ
+  /- Using Helly's lemma **FAE : Insert right name!** we obtain from `ξ` an element `y` that
+    is `ε`-close to `ξ` in all seminorms defining the neighborood we're looking at. -/
+  obtain ⟨y, hy_le, hy_eq⟩ := three I hξ hε (·)
+  refine ⟨inclusionInDoubleDual ℝ F y, ?_, ⟨y, by simp [hy_le], rfl⟩⟩
+  simp only [Seminorm.mem_ball]
+  apply Seminorm.finset_sup_apply_lt hε
+  intro i hi
+  replace hy_eq := sub_zero (a := ξ) ▸ hy_eq ⟨i, hi⟩
+  simpa
 
 
 
