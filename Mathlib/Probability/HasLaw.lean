@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Moments.Variance
-public import Mathlib.Tactic.ToFun
 
 /-!
 # Law of a random variable
@@ -82,13 +81,18 @@ lemma HasLaw.isFiniteMeasure [IsFiniteMeasure μ] (hX : HasLaw X μ P) : IsFinit
 lemma HasLaw.isProbabilityMeasure [IsProbabilityMeasure μ] (hX : HasLaw X μ P) :
     IsProbabilityMeasure P := hX.isProbabilityMeasure_iff.2 ‹_›
 
-@[to_fun (attr := fun_prop)]
+@[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (Y ∘ X) ν P where
   aemeasurable := (hX.map_eq ▸ hY.aemeasurable).comp_aemeasurable hX.aemeasurable
   map_eq := by
     rw [← AEMeasurable.map_map_of_aemeasurable _ hX.aemeasurable, hX.map_eq, hY.map_eq]
     rw [hX.map_eq]; exact hY.aemeasurable
+
+@[fun_prop]
+lemma HasLaw.fun_comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
+    (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (fun ω ↦ Y (X ω)) ν P :=
+  hY.comp hX
 
 @[to_additive]
 lemma IndepFun.hasLaw_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
